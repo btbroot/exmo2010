@@ -52,6 +52,9 @@ class Parameter(models.Model):
       ('code', 'group'),
     )
     ordering = ('group__group__code', 'group__code', 'code')
+    permissions = (
+      ('can_change_own_score', 'Can change own score'),
+    )
 
 
 class Criteria(models.Model):
