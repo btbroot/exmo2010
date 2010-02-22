@@ -29,8 +29,8 @@ class Score(models.Model):
   organization = models.ForeignKey(Organization)
   parameter    = models.ForeignKey(Parameter)
   quality      = models.ForeignKey(Quality)
-  score        = models.IntegerField(null = True)
-  author       = models.ForeignKey(User)
+  score        = models.IntegerField(null = True, blank = True)
+  author       = models.ForeignKey(User, null = True, blank = True)
   
   class Meta:
     unique_together = (
