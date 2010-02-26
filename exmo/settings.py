@@ -2,6 +2,9 @@
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+#TEMPLATE_STRING_IF_INVALID = 'INVALID TEMPLATE STRING %s'
+TEMPLATE_STRING_IF_INVALID = ''
+#INTERNAL_IPS = ('127.0.0.1',)
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -61,6 +64,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'exmo.urls'
@@ -69,7 +73,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'tpl',
+    '/home/al/local_projects/IIFD/exmo/templates',
 )
 
 INSTALLED_APPS = (
@@ -78,5 +82,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.admindocs',
+    'debug_toolbar',
     'exmo.exmo2010',
 )

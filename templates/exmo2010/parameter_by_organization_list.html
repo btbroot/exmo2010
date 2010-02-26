@@ -1,0 +1,7 @@
+<h1>Parameters for {{ organization }}</h1>
+
+<ul>
+{% for object in object_list %}
+  <li><a href="{% url exmo.exmo2010.views.score_by_organization_parameter_detail organization.pk object.pk %}" name="edit">{{ object }}<a></li>
+{% endfor %}
+</ul>

@@ -1,0 +1,18 @@
+<h1>Score {{ object }}</h1>
+
+<form
+  method="post"
+  action="{% url exmo.exmo2010.views.score_by_organization_parameter_detail object.organization.pk object.parameter.pk %}"
+>
+  <dl>
+    <dt>{{ form.required.label_tag }}</dt><dd>{{ form.required }} {{ form.required.errors }}</dd>
+    <dt>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</dd>
+    <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
+    <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
+    <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
+    <dt>{{ form.comments.label_tag }}</dt><dd>{{ form.comments }} {{ form.comments.errors }}</dd>
+  </dl>
+  <input type="submit"><input type="reset">
+</form>
+
+{{ request }}

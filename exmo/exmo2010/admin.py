@@ -1,13 +1,9 @@
-from exmo.exmo2010.models import Score, Organization, Category, Subcategory, Parameter, Criteria
+import exmo.exmo2010.models
 from django.contrib import admin
 
-class ScoreAdmin(admin.ModelAdmin):
-  #list_filter   = ('organization', 'author')
-  list_display  = ('organization', 'parameter', 'criteria')
-
-admin.site.register(Score, ScoreAdmin)
-admin.site.register(Organization)
-admin.site.register(Category)
-admin.site.register(Subcategory)
-admin.site.register(Parameter)
-admin.site.register(Criteria)
+admin.site.register(exmo.exmo2010.models.Organization)
+admin.site.register(exmo.exmo2010.models.Category)
+admin.site.register(exmo.exmo2010.models.Subcategory)
+admin.site.register(exmo.exmo2010.models.Parameter)
+admin.site.register(exmo.exmo2010.models.OrganizationType)
+admin.site.register(exmo.exmo2010.models.Score)

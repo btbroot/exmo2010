@@ -1,0 +1,9 @@
+<h1>Organizations</h1>
+
+<ul>
+{% for object in object_list %}
+  <li><a href="{% url exmo.exmo2010.views.parameter_by_organization_list object.pk %}" name="edit">{{ object }}<a></li>
+{% endfor %}
+</ul>
+
+
