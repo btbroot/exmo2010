@@ -12,11 +12,34 @@ class OrganizationType(models.Model):
     ordering = ('name',)
 
 
+class Federal(models.Model):
+  name         = models.CharField(max_length = 200, unique = True)
+
+  def __unicode__(self):
+    return self.name
+
+  class Meta:
+    ordering = ('name',)
+
+
+class Entity(models.Model):
+  name         = models.CharField(max_length = 200, unique = True)
+  federal      = models.ForeignKey(Federal)
+
+  def __unicode__(self):
+    return self.name
+
+  class Meta:
+    ordering = ('name',)
+
+
 class Organization(models.Model):
   name         = models.CharField(max_length = 200, unique = True)
   url          = models.URLField(max_length = 200, unique = True)
   type         = models.ForeignKey(OrganizationType)
-  comments     = models.TextField(null = True, blank = True,)
+  entity       = models.ForeignKey(Entity, null = True, blank = True)
+  keywords     = models.CharField(max_length = 200, null = True, blank = True)
+  comments     = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
     return self.name
@@ -74,22 +97,39 @@ class Parameter(models.Model):
     ordering = ('group__group__code', 'group__code', 'code')
 
 
+class Task(models.Model):
+  user         = models.ForeignKey(User)
+  organization = models.ForeignKey(Organization) 
+
+  def __unicode__(self):
+    return '%s: %s' % (self.user.username, self.organization.name)
+
+  class Meta:
+    unique_together = (
+      ('user', 'organization'),
+    )
+    ordering = ('user__username', 'organization__name')
+
+
 class Score(models.Model):
-  organization = models.ForeignKey(Organization)
+  task         = models.ForeignKey(Task)
   parameter    = models.ForeignKey(Parameter)
   required     = models.BooleanField(default = True)
   found        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2)))
   complete     = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
+  completeComment = models.TextField(null = True, blank = True)
   topical      = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
+  topicalComment = models.TextField(null = True, blank = True)
   accessible   = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  comments     = models.TextField(null = True, blank = True,)
-  user         = models.ForeignKey(User, null = True)
+  assessibleComment = models.TextField(null = True, blank = True)
+  comment      = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
-    return '%s [%d.%d.%d]' % (self.organization.name, self.parameter.group.group.code, self.parameter.group.code, self.parameter.code)
+    return '%s: %s [%d.%d.%d]' % (self.task.user.username, self.task.organization.name, self.parameter.group.group.code, self.parameter.group.code, self.parameter.code)
 
   class Meta:
     unique_together = (
-      ('organization', 'parameter'),
+      ('task', 'parameter'),
     )
-    ordering = ('organization', 'parameter')
+    ordering = ('task__user__username', 'task__organization__name', 'parameter__group__group__code', 'parameter__group__code', 'parameter__code')
+
