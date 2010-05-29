@@ -2,7 +2,7 @@
 
 <form
   method="post"
-  action="{% url exmo.exmo2010.views.score_by_organization_parameter_detail object.organization.pk object.parameter.pk %}"
+  action="."
 >
   <dl>
     <dt>{{ form.required.label_tag }}</dt><dd>{{ form.required }} {{ form.required.errors }}</dd>
@@ -11,8 +11,10 @@
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
     <dt>{{ form.comments.label_tag }}</dt><dd>{{ form.comments }} {{ form.comments.errors }}</dd>
+    {{ form.task.as_hidden }}
+    {{ form.parameter.as_hidden }}
   </dl>
-  <input type="submit"><input type="reset">
+  <input type="submit" value="Save"><input type="reset" value="Reset">
 </form>
 
 {{ request }}
