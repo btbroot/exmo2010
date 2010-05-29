@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
-from exmo.exmo2010.models import Organization
+from exmo.exmo2010.models import Organization, Score
 
 urlpatterns = patterns('',
   (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -26,6 +26,15 @@ urlpatterns = patterns('',
   (
     r'^score/(\d+)/(\d+)/$',
     'exmo.exmo2010.views.score_by_organization_parameter_detail'
+  ),
+
+  (
+    r'^score/(?P<object_id>\d+)/$',
+    'django.views.generic.create_update.update_object',
+    {
+      'model': Score,
+      'post_save_redirect': '/exmo2010/score/%s' % '%(id)s'
+    }
   ),
 
   #(
