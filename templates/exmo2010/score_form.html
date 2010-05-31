@@ -2,17 +2,22 @@
 
 <form
   method="post"
-  action="{% url exmo.exmo2010.views.score_by_organization_parameter_detail object.organization.pk object.parameter.pk %}"
+  action="."
 >
   <dl>
     <dt>{{ form.required.label_tag }}</dt><dd>{{ form.required }} {{ form.required.errors }}</dd>
     <dt>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</dd>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
+    <dt>{{ form.completeComment.label_tag }}</dt><dd>{{ form.completeComment }} {{ form.completeComment.errors }}</dd>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
+    <dt>{{ form.topicalComment.label_tag }}</dt><dd>{{ form.topicalComment }} {{ form.topicalComment.errors }}</dd>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
-    <dt>{{ form.comments.label_tag }}</dt><dd>{{ form.comments }} {{ form.comments.errors }}</dd>
+    <dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
+    <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
+    {{ form.task.as_hidden }}
+    {{ form.parameter.as_hidden }}
   </dl>
-  <input type="submit"><input type="reset">
+  <input type="submit" value="Save"><input type="reset" value="Reset">
 </form>
 
 {{ request }}

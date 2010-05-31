@@ -18,4 +18,4 @@ admin.site.register(exmo.exmo2010.models.OrganizationType, OrganizationTypeAdmin
 admin.site.register(exmo.exmo2010.models.Score)
 admin.site.register(exmo.exmo2010.models.Entity)
 admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
-admin.site.register(exmo.exmo2010.models.Link)
+admin.site.register(exmo.exmo2010.models.Task)

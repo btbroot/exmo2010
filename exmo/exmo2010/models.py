@@ -122,7 +122,7 @@ class Score(models.Model):
   topical      = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   topicalComment = models.TextField(null = True, blank = True)
   accessible   = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  assessibleComment = models.TextField(null = True, blank = True)
+  accessibleComment = models.TextField(null = True, blank = True)
   comment      = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
