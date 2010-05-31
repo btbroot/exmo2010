@@ -81,6 +81,7 @@ class Parameter(models.Model):
   description        = models.TextField(null = True, blank = True)
   group              = models.ForeignKey(Subcategory)
   type               = models.ManyToManyField(OrganizationType)
+  exclude            = models.ManyToManyField(Organization)
   weight             = models.PositiveIntegerField()
   completeRequired   = models.BooleanField(default = True)
   topicalRequired    = models.BooleanField(default = True)
@@ -99,7 +100,8 @@ class Parameter(models.Model):
 
 class Task(models.Model):
   user         = models.ForeignKey(User)
-  organization = models.ForeignKey(Organization) 
+  organization = models.ForeignKey(Organization)
+  open         = models.BooleanField()
 
   def __unicode__(self):
     return '%s: %s' % (self.user.username, self.organization.name)
@@ -114,7 +116,6 @@ class Task(models.Model):
 class Score(models.Model):
   task         = models.ForeignKey(Task)
   parameter    = models.ForeignKey(Parameter)
-  required     = models.BooleanField(default = True)
   found        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2)))
   complete     = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   completeComment = models.TextField(null = True, blank = True)
