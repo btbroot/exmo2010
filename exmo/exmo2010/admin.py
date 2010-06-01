@@ -1,5 +1,9 @@
 import exmo.exmo2010.models
 from django.contrib import admin
+from reversion.admin import VersionAdmin
+
+class ScoreAdmin(VersionAdmin):
+    pass
 
 class OrganizationTypeAdmin(admin.ModelAdmin):
   list_display = ('pk', 'name')
@@ -15,7 +19,7 @@ admin.site.register(exmo.exmo2010.models.Category)
 admin.site.register(exmo.exmo2010.models.Subcategory)
 admin.site.register(exmo.exmo2010.models.Parameter)
 admin.site.register(exmo.exmo2010.models.OrganizationType, OrganizationTypeAdmin)
-admin.site.register(exmo.exmo2010.models.Score)
+admin.site.register(exmo.exmo2010.models.Score, ScoreAdmin)
 admin.site.register(exmo.exmo2010.models.Entity)
 admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
 admin.site.register(exmo.exmo2010.models.Task)
