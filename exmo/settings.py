@@ -85,4 +85,5 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 #    'debug_toolbar',
     'exmo.exmo2010',
+    'reversion',
 )
