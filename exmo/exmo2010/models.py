@@ -134,3 +134,4 @@ class Score(models.Model):
     )
     ordering = ('task__user__username', 'task__organization__name', 'parameter__group__group__code', 'parameter__group__code', 'parameter__code')
 
+reversion.register(Score)
