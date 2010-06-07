@@ -75,7 +75,7 @@ def score_list_by_task(request, task_id):
 	pk_order='-'
     if request.GET.get('status_order','') == '':
 	status_order='-'
-    if request.GET.get('order_by') == 'pk':
+    if request.GET.get('order_by') == 'pk' and (request.GET.get('pk_order','') in ('','-')):
       order_by = request.GET.get('pk_order','') + 'parameter__' + request.GET.get('order_by','pk')
     else:
       order_by = 'parameter__pk'
