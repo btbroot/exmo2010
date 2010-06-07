@@ -140,4 +140,11 @@ class Score(models.Model):
     )
     ordering = ('task__user__username', 'task__organization__name', 'parameter__group__group__code', 'parameter__group__code', 'parameter__code')
 
+  def status(self):
+    from reversion.models import Version
+    # try to count changes
+    if Version.objects.get_for_object(self).count() > 1:
+	return True
+
+
 reversion.register(Score)
