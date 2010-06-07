@@ -34,15 +34,33 @@ def score_by_organization_parameter_detail(request, organization_id, parameter_i
       #form = ContactForm() # An unbound form
   return update_object(request, model = Score, object_id = score.pk)
 
+from django import forms
+from django.utils.safestring import mark_safe
+class HorizRadioRenderer(forms.RadioSelect.renderer):
+    """ this overrides widget method to put radio buttons horizontally
+        instead of vertically.
+    """
+    def render(self):
+            """Outputs radios"""
+            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+
+class ScoreForm(forms.ModelForm):
+    class Meta:
+	model = Score
+	widgets = {
+            'found': forms.RadioSelect(renderer=HorizRadioRenderer),
+            'complete': forms.RadioSelect(renderer=HorizRadioRenderer),
+            'topical': forms.RadioSelect(renderer=HorizRadioRenderer),
+            'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
+        }
+
 from django.core.urlresolvers import reverse
 def score_detail(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    parameter = score.parameter
     return update_object(
       request,
-      model = Score,
+      form_class = ScoreForm,
       object_id = score.pk,
-      extra_context={'parameter': parameter},
       post_save_redirect = reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk])
     )
 

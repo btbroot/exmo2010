@@ -1,30 +1,65 @@
 {% include "common.html" %}
 {{ block_user }}
-<h1>Score {{ object }}</h1>
+<h2><a href={{object.task.organization.url }}>{{object.task.organization.name}}</a></h2>
+<div id=links>
+<a href="{% url exmo.exmo2010.views.score_list_by_task object.task.pk %}">К списку оценок</a>
+</div>
+<!--<style>
+#parameter_desc {
+    position:fixed;
+    right:5%;
+    top:30%;
+    width:60%;
+}
+</style>-->
 
+<div id=parameter_desc>
+<table id=parameter_desc_table>
+<th>Описание параметра</th>
+<tr><td>
+Наименование: {{ object.parameter }}<br>
+Описание: {{ object.parameter.description }}
+</td></tr>
+</table>
+</div>
+
+<div id=score_form>
 <form
   method="post"
   action="."
 >
-  <dl>
-    <dt>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</dd>
-{% if parameter.completeRequired %}
+  <div id=score_form_body>
+    <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
+{% if object.parameter.completeRequired %}
+    <div id=score_form_complete>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
-    <dt>{{ form.completeComment.label_tag }}</dt><dd>{{ form.completeComment }} {{ form.completeComment.errors }}</dd>
+      <div id=score_form_completeComment>
+	<dt>{{ form.completeComment.label_tag }}</dt><dd>{{ form.completeComment }} {{ form.completeComment.errors }}</dd>
+      </div>
+    </div>
 {% endif %}
-{% if parameter.topicalRequired %}
+{% if object.parameter.topicalRequired %}
+    <div id=score_form_topical>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
-    <dt>{{ form.topicalComment.label_tag }}</dt><dd>{{ form.topicalComment }} {{ form.topicalComment.errors }}</dd>
+      <div id=score_form_topicalComment>
+	<dt>{{ form.topicalComment.label_tag }}</dt><dd>{{ form.topicalComment }} {{ form.topicalComment.errors }}</dd>
+      </div>
+    </div>
 {% endif %}
-{% if parameter.accessibleRequired %}
+{% if object.parameter.accessibleRequired %}
+    <div id=score_form_accessible>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
-    <dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
+      <div id=score_form_accessibleComment>
+	<dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
+      </div>
+    </div>
 {% endif %}
+    <div id=score_form_comment>
     <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
+    </div>
     {{ form.task.as_hidden }}
     {{ form.parameter.as_hidden }}
-  </dl>
+  </div>
   <input type="submit" value="Save"><input type="reset" value="Reset">
 </form>
-
-{{ request }}
+</div>
