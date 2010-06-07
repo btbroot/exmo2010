@@ -93,6 +93,9 @@ class Parameter(models.Model):
   def __unicode__(self):
     return '%d.%d.%d. %s' % (self.group.group.code, self.group.code, self.code, self.name)
 
+  def fullcode(self):
+    return '%d.%d.%d' % (self.group.group.code, self.group.code, self.code)
+
   class Meta:
     unique_together = (
       ('name', 'group'),
