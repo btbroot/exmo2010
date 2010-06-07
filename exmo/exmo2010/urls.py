@@ -29,13 +29,15 @@ urlpatterns = patterns('',
   ),
 
   (
-    r'^score/(?P<object_id>\d+)/$',
-    'django.views.generic.create_update.update_object',
-    {
-      'model': Score,
-      'post_save_redirect': '/exmo2010/score/%s' % '%(id)s'
-    }
+    r'^score/(\d+)/$',
+    'exmo.exmo2010.views.score_detail'
   ),
+
+  (
+    r'^task/(\d+)/$',
+    'exmo.exmo2010.views.score_list_by_task'
+  ),
+
 
   #(
     #r'^tasks/add/?$',

@@ -1,0 +1,21 @@
+{% include "common.html" %}
+{{ block_user }}
+{% if task.organization.url %}
+<a href={{task.organization.url}}><h1>{{ task.organization }}</h1></a>
+{% else %}
+<h1>{{ task.organization }}</h1>
+{% endif %}
+
+<table width=100%>
+<th><a href=?order_by=pk&pk_order={{pk_order}}>Код</a></th>
+<th>Наименование</th>
+<th><a href=?order_by=status&status_order={{status_order}}>Статус</a></th>
+
+{% for object in object_list %}
+  <tr align=center>
+    <td><a href="{% url exmo.exmo2010.views.score_detail object.pk %}" name="edit">{{ object.parameter.fullcode }}<a></td>
+    <td><a href="{% url exmo.exmo2010.views.score_detail object.pk %}" name="edit">{{ object.parameter.name }}<a></td>
+    <td>{% if object.status %}OK{%else%}NONE{%endif%}</td>
+  </tr>
+{% endfor %}
+</table>

@@ -1,3 +1,5 @@
+{% include "common.html" %}
+{{ block_user }}
 <h1>Score {{ object }}</h1>
 
 <form
@@ -7,12 +9,18 @@
   <dl>
     <dt>{{ form.required.label_tag }}</dt><dd>{{ form.required }} {{ form.required.errors }}</dd>
     <dt>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</dd>
+{% if parameter.completeRequired %}
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
     <dt>{{ form.completeComment.label_tag }}</dt><dd>{{ form.completeComment }} {{ form.completeComment.errors }}</dd>
+{% endif %}
+{% if parameter.topicalRequired %}
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
     <dt>{{ form.topicalComment.label_tag }}</dt><dd>{{ form.topicalComment }} {{ form.topicalComment.errors }}</dd>
+{% endif %}
+{% if parameter.accessibleRequired %}
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
     <dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
+{% endif %}
     <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
     {{ form.task.as_hidden }}
     {{ form.parameter.as_hidden }}
