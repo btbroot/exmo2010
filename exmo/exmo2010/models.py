@@ -120,25 +120,37 @@ class Task(models.Model):
 
 
 class Score(models.Model):
-  task         = models.ForeignKey(Task)
-  parameter    = models.ForeignKey(Parameter)
-  found        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2)))
-  complete     = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  completeComment = models.TextField(null = True, blank = True)
-  topical      = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  topicalComment = models.TextField(null = True, blank = True)
-  accessible   = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
+  task              = models.ForeignKey(Task)
+  parameter         = models.ForeignKey(Parameter)
+  found             = models.PositiveIntegerField(choices = ((1, 1), (2, 2)))
+  complete          = models.PositiveIntegerField(choices = ((1, 1), (2, 2), (3, 3)))
+  completeComment   = models.TextField(null = True, blank = True)
+  topical           = models.PositiveIntegerField(choices = ((1, 1), (2, 2), (3, 3)))
+  topicalComment    = models.TextField(null = True, blank = True)
+  accessible        = models.PositiveIntegerField(choices = ((1, 1), (2, 2), (3, 3)))
   accessibleComment = models.TextField(null = True, blank = True)
-  comment      = models.TextField(null = True, blank = True)
+  comment           = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
-    return '%s: %s [%d.%d.%d]' % (self.task.user.username, self.task.organization.name, self.parameter.group.group.code, self.parameter.group.code, self.parameter.code)
+    return '%s: %s [%d.%d.%d]' % (
+      self.task.user.username,
+      self.task.organization.name,
+      self.parameter.group.group.code,
+      self.parameter.group.code,
+      self.parameter.code
+    )
 
   class Meta:
     unique_together = (
       ('task', 'parameter'),
     )
-    ordering = ('task__user__username', 'task__organization__name', 'parameter__group__group__code', 'parameter__group__code', 'parameter__code')
+    ordering = (
+      'task__user__username',
+      'task__organization__name',
+      'parameter__group__group__code',
+      'parameter__group__code',
+      'parameter__code'
+    )
 
   def status(self):
     from reversion.models import Version
