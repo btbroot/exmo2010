@@ -116,7 +116,7 @@ class Task(models.Model):
     unique_together = (
       ('user', 'organization'),
     )
-    ordering = ('user__username', 'organization__name')
+    ordering = ('organization__name', 'user__username')
 
 
 class Score(models.Model):

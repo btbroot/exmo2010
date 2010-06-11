@@ -1,0 +1,21 @@
+{% load table_header %}
+{% include "exmo2010/paginator.html" %}
+
+<h1>Task list</h1>
+
+<a href="">Add</a>
+
+<table>
+  {% table_header headers %}
+  <tbody>
+    {% for object in object_list %}
+      <tr>
+      <td><a href="">Scores</a> <a href="">Update</a> <a href="">Delete</a></td>
+      <td>{{ object.organization.name }}</td>
+      <td>{{ object.user.username }}</td>
+      <td>{{ object.open }}</td>
+      <td>{{ object.complete }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

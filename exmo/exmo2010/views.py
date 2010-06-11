@@ -1,3 +1,4 @@
+from exmo.exmo2010.sort_headers import SortHeaders
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object
@@ -88,3 +89,19 @@ def score_list_by_task(request, task_id):
       {'task': task, 'object_list': object_list, 'user': request.user, 'pk_order': pk_order, 'status_order': status_order},
       context_instance=RequestContext(request)
     )
+
+def table(request, headers, **kwargs):
+  '''Generic sortable table view'''
+  sort_headers = SortHeaders(request, headers)
+  kwargs['queryset'] = kwargs['queryset'].order_by(
+    sort_headers.get_order_by()
+  )
+  if 'extra_context' not in kwargs:
+    kwargs['extra_context'] = {}
+  kwargs['extra_context'].update(
+    {
+      'headers': sort_headers.headers(),
+    }
+  )
+  return object_list(request, **kwargs)
+

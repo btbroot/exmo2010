@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
-from exmo.exmo2010.models import Organization, Score
+from exmo.exmo2010.models import Organization, Score, Task
 
 urlpatterns = patterns('',
   (r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -38,6 +38,22 @@ urlpatterns = patterns('',
     'exmo.exmo2010.views.score_list_by_task'
   ),
 
+  (
+    r'^tasks/$',
+    'exmo.exmo2010.views.table',
+    {
+        'queryset':     Task.objects.all(),
+        'paginate_by':  5,
+        'headers':      (
+                          ('', None),
+                          ('Organization', 'organization__name'),
+                          ('Expert', 'user__username'),
+                          ('Open', 'open'),
+                          ('Complete', None),
+                        ),
+    },
+    'task_list',
+  ),
 
   #(
     #r'^tasks/add/?$',
