@@ -56,9 +56,16 @@ class ScoreForm(forms.ModelForm):
         }
 
 from django.core.urlresolvers import reverse
+from reversion import revision
+from exmo.exmo2010.helpers import construct_change_message
+@revision.create_on_success
 def score_detail(request, task_id, parameter_id):
     score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
     score = Score.objects.get(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
+    if request.method == 'POST':
+	form = ScoreForm(request.POST,instance=score)
+	message = construct_change_message(request,form, None)
+	revision.comment = message
     return update_object(
       request,
       form_class = ScoreForm,
