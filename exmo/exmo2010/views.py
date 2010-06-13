@@ -56,8 +56,9 @@ class ScoreForm(forms.ModelForm):
         }
 
 from django.core.urlresolvers import reverse
-def score_detail(request, score_id):
-    score = get_object_or_404(Score, pk = score_id)
+def score_detail(request, task_id, parameter_id):
+    score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
+    score = Score.objects.get(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
     return update_object(
       request,
       form_class = ScoreForm,
@@ -65,29 +66,24 @@ def score_detail(request, score_id):
       post_save_redirect = reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk])
     )
 
-def getStatus( anObject ):
-    return anObject.status()
-
-from django.template import RequestContext
+from django.db.models import Q
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
-    pk_order = status_order = ''
-    if request.GET.get('pk_order','') == '':
-	pk_order='-'
-    if request.GET.get('status_order','') == '':
-	status_order='-'
-    if request.GET.get('order_by') == 'pk' and (request.GET.get('pk_order','') in ('','-')):
-      order_by = request.GET.get('pk_order','') + 'parameter__' + request.GET.get('order_by','pk')
-    else:
-      order_by = 'parameter__pk'
-    object_list = list(Score.objects.filter(task=task).order_by(order_by))
-    if request.GET.get('order_by') == 'status':
-      object_list.sort(key=getStatus)
-      if status_order == '-':
-        object_list.reverse()
-    return render_to_response('score_list.html',
-      {'task': task, 'object_list': object_list, 'user': request.user, 'pk_order': pk_order, 'status_order': status_order},
-      context_instance=RequestContext(request)
+    queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
+      select={
+        'status':'SELECT COUNT(*) FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table)
+      }
+    )
+    return table(request,
+      headers=(
+        ('Code', 'code'),
+        ('Name', 'name'),
+        ('Status', 'status'),
+      ),
+      queryset=queryset,
+      paginate_by=15,
+      template_name='score_list.html',
+      extra_context={'task': task},
     )
 
 def table(request, headers, **kwargs):

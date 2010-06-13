@@ -1,21 +1,17 @@
-{% include "common.html" %}
-{{ block_user }}
-{% if task.organization.url %}
-<a href={{task.organization.url}}><h1>{{ task.organization }}</h1></a>
-{% else %}
-<h1>{{ task.organization }}</h1>
-{% endif %}
+{% load table_header %}
+{% include "exmo2010/paginator.html" %}
 
-<table width=100%>
-<th><a href=?order_by=pk&pk_order={{pk_order}}>Код</a></th>
-<th>Наименование</th>
-<th><a href=?order_by=status&status_order={{status_order}}>Статус</a></th>
+<h1>Score list for {{task.organization}}</h1>
 
-{% for object in object_list %}
-  <tr align=center>
-    <td><a href="{% url exmo.exmo2010.views.score_detail object.pk %}" name="edit">{{ object.parameter.fullcode }}<a></td>
-    <td><a href="{% url exmo.exmo2010.views.score_detail object.pk %}" name="edit">{{ object.parameter.name }}<a></td>
-    <td>{% if object.status %}OK{%else%}NONE{%endif%}</td>
-  </tr>
-{% endfor %}
+<table>
+  {% table_header headers %}
+  <tbody>
+    {% for object in object_list %}
+      <tr>
+      <td>{{ object.fullcode }}</td>
+      <td><a href={% url exmo.exmo2010.views.score_detail task.pk object.pk %}>{{ object.name }}</a></td>
+      <td>{%if object.status %} OK {% else %} not OK {% endif %}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
 </table>

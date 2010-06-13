@@ -29,7 +29,7 @@ urlpatterns = patterns('',
   ),
 
   (
-    r'^score/(\d+)/$',
+    r'^score/(\d+)_(\d+)/$',
     'exmo.exmo2010.views.score_detail'
   ),
 
