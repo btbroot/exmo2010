@@ -1,28 +1,30 @@
 <!-- http://www.tummy.com/Community/Articles/django-pagination/ -->
+{% load append_to_get %}
+
 <div class="pager">
    {% if has_previous %}
       <span class="page">
-      <a href="?page={{ previous }}">&lt; Prev</a>
+      <a href="{% append_to_get page=previous %}">&lt; Prev</a>
       </span>
    {% endif %}
 
    {% if not hide_first %}
-      <span class="page"><a href="?page=1">1</a></span>
+      <span class="page"><a href="{% append_to_get page=1 %}">1</a></span>
       <span class="ellipsis">...</span>
    {% endif %}
    {% for linkpage in page_numbers %}
       {% ifequal linkpage page %}
          <span class="current">{{ page }}</span>
       {% else %}
-         <span class="page"><a href="?page={{ linkpage }}"
+         <span class="page"><a href="{% append_to_get page=linkpage %}"
                >{{ linkpage }}</a></span>
       {% endifequal %}
    {% endfor %}
    {% if not hide_last %}
       <span class="ellipsis">...</span>
-      <span class="page"><a href="?page=last">{{ pages }}</a></span>
+      <span class="page"><a href="{% append_to_get page="last" %}">{{ pages }}</a></span>
    {% endif %}
    {% if has_next %}
-      <span class="page"><a href="?page={{ next }}">Next &gt;</a></span>
+      <span class="page"><a href="{% append_to_get page=next %}">Next &gt;</a></span>
    {% endif %}
 </div>
