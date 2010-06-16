@@ -55,20 +55,25 @@ class ScoreForm(forms.ModelForm):
             'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
         }
 
+@login_required
 def score_detail(request, task_id, parameter_id):
     score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
     return score_detail_direct(request, score[0].pk)
 
+from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from reversion import revision
 from exmo.exmo2010.helpers import construct_change_message
 @revision.create_on_success
+@login_required
 def score_detail_direct(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    if request.method == 'POST':
+    if request.user.is_superuser or request.user == score.task.user:
+      if request.method == 'POST':
 	form = ScoreForm(request.POST,instance=score)
 	message = construct_change_message(request,form, None)
 	revision.comment = message
+    else: return HttpResponseForbidden('Forbidden')
     return update_object(
       request,
       form_class = ScoreForm,
@@ -77,13 +82,16 @@ def score_detail_direct(request, score_id):
     )
 
 from django.db.models import Q
+@login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
-    queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
-      select={
-        'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table),
-      }
-    )
+    if request.user.is_superuser or request.user == task.user:
+      queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
+        select={
+          'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table),
+        }
+      )
+    else: return HttpResponseForbidden('Forbidden')
     return table(request,
       headers=(
         ('Code', 'code'),
