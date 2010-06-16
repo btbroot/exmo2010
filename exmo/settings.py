@@ -76,6 +76,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '/home/al/iifd/exmo/templates',
+    '/home/boris/Projects/iifd/exmo/templates/',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

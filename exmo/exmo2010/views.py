@@ -55,13 +55,16 @@ class ScoreForm(forms.ModelForm):
             'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
         }
 
+def score_detail(request, task_id, parameter_id):
+    score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
+    return score_detail_direct(request, score[0].pk)
+
 from django.core.urlresolvers import reverse
 from reversion import revision
 from exmo.exmo2010.helpers import construct_change_message
 @revision.create_on_success
-def score_detail(request, task_id, parameter_id):
-    score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
-    score = Score.objects.get(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
+def score_detail_direct(request, score_id):
+    score = get_object_or_404(Score, pk = score_id)
     if request.method == 'POST':
 	form = ScoreForm(request.POST,instance=score)
 	message = construct_change_message(request,form, None)
@@ -78,7 +81,7 @@ def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
     queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
       select={
-        'status':'SELECT COUNT(*) FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table)
+        'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table),
       }
     )
     return table(request,
@@ -89,7 +92,7 @@ def score_list_by_task(request, task_id):
       ),
       queryset=queryset,
       paginate_by=15,
-      template_name='score_list.html',
+      template_name='exmo2010/score_list.html',
       extra_context={'task': task},
     )
 
