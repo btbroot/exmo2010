@@ -9,7 +9,8 @@
     {% for object in object_list %}
       <tr>
       <td>{{ object.fullcode }}</td>
-      <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status %}{% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
+      <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status %}?{{request.GET.urlencode}}
+      {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
       <td>{%if object.status %} OK {% else %} not OK {% endif %}</td>
       </tr>
     {% endfor %}

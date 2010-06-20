@@ -78,7 +78,7 @@ def score_detail_direct(request, score_id):
       request,
       form_class = ScoreForm,
       object_id = score.pk,
-      post_save_redirect = reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk])
+      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode())
     )
 
 from django.db.models import Q
