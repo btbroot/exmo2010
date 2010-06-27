@@ -29,14 +29,16 @@ urlpatterns = patterns('',
     r'^tasks/$',
     'exmo.exmo2010.views.table',
     {
-        'queryset':     Task.objects.all(),
+        'queryset':     Task.objects.all().extra(
+            select = {'complete': '(%s) * 100 / ((%s)-(%s))' % (Task.count_scores, Task.count_parameters, Task.count_excludes)}
+         ),
         'paginate_by':  5,
         'headers':      (
                           ('', None),
                           ('Organization', 'organization__name'),
                           ('Expert', 'user__username'),
                           ('Open', 'open'),
-                          ('Complete', None),
+                          ('Complete', 'complete'),
                         ),
     },
     'task_list',
