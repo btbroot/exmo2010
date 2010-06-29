@@ -109,6 +109,8 @@ def table(request, headers, **kwargs):
   sort_headers = SortHeaders(request, headers)
   kwargs['queryset'] = kwargs['queryset'].order_by(
     sort_headers.get_order_by()
+  ).filter(
+    **sort_headers.get_filter()
   )
   if 'extra_context' not in kwargs:
     kwargs['extra_context'] = {}
@@ -119,3 +121,24 @@ def table(request, headers, **kwargs):
   )
   return object_list(request, **kwargs)
 
+
+@login_required
+def tasks(request):
+    queryset = Task.objects.extra(select = {'complete': Task.c_complete})
+    # Or, filtered by user
+    #queryset = queryset.filter(user = XXX)
+    headers = (
+                ('', None, None, None),
+                ('Organization', 'organization__name', 'organization__name', None),
+                ('Expert', 'user__username', 'user__username', None),
+                ('Open', 'open', 'open', int),
+                ('Complete', 'complete', None, None)
+              )
+    # Or, without Expert
+    #headers = (
+                #('', None),
+                #('Organization', 'organization__name'),
+                #('Open', 'open'),
+                #('Complete', 'complete'),
+              #)
+    return table(request, headers, queryset = queryset, paginate_by = 5)

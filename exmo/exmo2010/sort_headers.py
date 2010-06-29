@@ -1,7 +1,10 @@
+import urllib, string
+
 # http://djangosnippets.org/snippets/308/
 
 ORDER_VAR = 'o'
 ORDER_TYPE_VAR = 'ot'
+FILTER_PREFIX = 'filter'
 
 class SortHeaders:
     """
@@ -44,8 +47,8 @@ class SortHeaders:
             number if you're sorting a paginated list of items.
         """
         if default_order_field is None:
-            for i, (header, query_lookup) in enumerate(headers):
-                if query_lookup is not None:
+            for i, (header, order_criterion, filter_criterion, filter_func) in enumerate(headers):
+                if order_criterion is not None:
                     default_order_field = i
                     break
         if default_order_field is None:
@@ -57,6 +60,7 @@ class SortHeaders:
         self.header_defs = headers
         self.additional_params = additional_params
         self.order_field, self.order_type = default_order_field, default_order_type
+        self.filter_field, self.filter_expr, self.filter_pattern = None, None, None
 
         # Determine order field and order type for the current request
         params = dict(request.GET.items())
@@ -70,21 +74,40 @@ class SortHeaders:
                 pass # Use the default
         if ORDER_TYPE_VAR in params and params[ORDER_TYPE_VAR] in ('asc', 'desc'):
             self.order_type = params[ORDER_TYPE_VAR]
+        for k,v in params.items():
+          if k.startswith(FILTER_PREFIX):
+            try:
+                new_filter_field = int(string.replace(k, FILTER_PREFIX, ''))
+                if headers[new_filter_field][1] is not None:
+                    self.filter_field = new_filter_field
+                    self.filter_pattern = urllib.unquote(v)
+            except (IndexError, ValueError):
+                pass # Use the default
+            break
 
     def headers(self):
         """
         Generates dicts containing header and sort link details for
         all defined headers.
         """
-        for i, (header, order_criterion) in enumerate(self.header_defs):
+        for i, (header, order_criterion, filter_criterion, filter_func) in enumerate(self.header_defs):
             th_classes = []
             new_order_type = 'asc'
             if i == self.order_field:
                 th_classes.append('sorted %sending' % self.order_type)
                 new_order_type = {'asc': 'desc', 'desc': 'asc'}[self.order_type]
+            if i == self.filter_field:
+              pattern = self.filter_pattern
+            else:
+              pattern = ''
             yield {
                 'text': header,
                 'sortable': order_criterion is not None,
+                'filterable': filter_criterion is not None,
+                'filter': pattern,
+                'i': i,
+                'o': self.order_field,
+                'ot': self.order_type,
                 'url': self.get_query_string({ORDER_VAR: i, ORDER_TYPE_VAR: new_order_type}),
                 'class_attr': (th_classes and ' class="%s"' % ' '.join(th_classes) or ''),
             }
@@ -95,7 +118,7 @@ class SortHeaders:
         parameters, including any additonal parameters which should
         always be present.
         """
-        finalparams = self.params # Remember what were in the beginning
+        finalparams = self.params # Remember what params were in the beginning
         finalparams.update(params) # Now override them
         params = finalparams # Now as before
         params.update(self.additional_params)
@@ -112,3 +135,15 @@ class SortHeaders:
             self.order_type == 'desc' and '-' or '',
             self.header_defs[self.order_field][1],
         )
+
+    def get_filter(self):
+      if (self.filter_field != None) and self.filter_pattern:
+        func = self.header_defs[self.filter_field][3]
+        if func:
+          pattern = func(self.filter_pattern)
+        else:
+          pattern = self.filter_pattern
+        filter_dict = {self.header_defs[self.filter_field][2] + '__contains': pattern}
+      else:
+        filter_dict = {}
+      return filter_dict

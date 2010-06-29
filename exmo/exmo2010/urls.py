@@ -25,24 +25,7 @@ urlpatterns = patterns('',
     'exmo.exmo2010.views.score_list_by_task'
   ),
 
-  (
-    r'^tasks/$',
-    'exmo.exmo2010.views.table',
-    {
-        'queryset':     Task.objects.all().extra(
-            select = {'complete': '(%s) * 100 / ((%s)-(%s))' % (Task.count_scores, Task.count_parameters, Task.count_excludes)}
-         ),
-        'paginate_by':  5,
-        'headers':      (
-                          ('', None),
-                          ('Organization', 'organization__name'),
-                          ('Expert', 'user__username'),
-                          ('Open', 'open'),
-                          ('Complete', 'complete'),
-                        ),
-    },
-    'task_list',
-  ),
+  ( r'^tasks/$', 'exmo.exmo2010.views.tasks'),
   (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}),
   (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}),
 )
