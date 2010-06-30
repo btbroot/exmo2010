@@ -79,6 +79,8 @@ TEMPLATE_DIRS = (
     '/home/boris/Projects/iifd/exmo/templates/',
 )
 
+LOGIN_REDIRECT_URL = '/exmo2010/tasks/'
+
 TEMPLATE_CONTEXT_PROCESSORS = (
   "django.contrib.auth.context_processors.auth",
   "django.core.context_processors.debug",
