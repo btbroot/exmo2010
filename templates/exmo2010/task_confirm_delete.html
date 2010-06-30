@@ -1,3 +1,4 @@
+{% include "exmo2010/header.html" %}
 <form method="POST" action="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}">
   <p>Delete this task?</p>
   <input type="submit">

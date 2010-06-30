@@ -1,5 +1,4 @@
-{% include "exmo2010/common.html" %}
-{{ block_user }}
+{% include "exmo2010/header.html" %}
 <h2><a href={{object.task.organization.url }}>{{object.task.organization.name}}</a></h2>
 <div id=links>
 <a href="{% url exmo.exmo2010.views.score_list_by_task object.task.pk %}">К списку оценок</a>
