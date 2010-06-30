@@ -126,21 +126,23 @@ def table(request, headers, **kwargs):
 def tasks(request):
     queryset = Task.objects.extra(select = {'complete': Task.c_complete})
     # Or, filtered by user
-    #queryset = queryset.filter(user = XXX)
-    headers = (
+    if request.user.is_superuser:
+      headers = (
                 ('', None, None, None),
                 ('Organization', 'organization__name', 'organization__name', None),
                 ('Expert', 'user__username', 'user__username', None),
                 ('Open', 'open', 'open', int),
                 ('%Complete', 'complete', None, None)
               )
+    else:
+      queryset = queryset.filter(user = request.user)
     # Or, without Expert
-    #headers = (
-                #('', None),
-                #('Organization', 'organization__name'),
-                #('Open', 'open'),
-                #('Complete', 'complete'),
-              #)
+      headers = (
+                ('', None),
+                ('Organization', 'organization__name'),
+                ('Open', 'open'),
+                ('Complete', 'complete'),
+              )
     return table(request, headers, queryset = queryset, paginate_by = 5)
 
 
