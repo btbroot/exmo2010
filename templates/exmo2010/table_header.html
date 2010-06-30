@@ -5,7 +5,7 @@
       {{ header.text }}
       {% if header.sortable %}</a>{% endif %}
       {% if header.filterable %}
-        <form method="GET">
+        <form>
         <input name="filter{{ header.i }}" value="{{ header.filter }}">
         <input name="o" value="{{ header.o }}" type="hidden">
         <input name="ot" value="{{ header.ot }}" type="hidden">

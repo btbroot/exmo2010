@@ -1,7 +1,7 @@
 from exmo.exmo2010.sort_headers import SortHeaders
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
-from django.views.generic.create_update import update_object
+from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from exmo.exmo2010.models import Organization, Parameter, Score, Task
 
@@ -94,9 +94,9 @@ def score_list_by_task(request, task_id):
     else: return HttpResponseForbidden('Forbidden')
     return table(request,
       headers=(
-        ('Code', 'code'),
-        ('Name', 'name'),
-        ('Status', 'status'),
+        ('Code', 'code', None, None),
+        ('Name', 'name', 'name', None),
+        ('Status', 'status', None, None),
       ),
       queryset=queryset,
       paginate_by=15,
@@ -132,7 +132,7 @@ def tasks(request):
                 ('Organization', 'organization__name', 'organization__name', None),
                 ('Expert', 'user__username', 'user__username', None),
                 ('Open', 'open', 'open', int),
-                ('Complete', 'complete', None, None)
+                ('%Complete', 'complete', None, None)
               )
     # Or, without Expert
     #headers = (
@@ -142,3 +142,18 @@ def tasks(request):
                 #('Complete', 'complete'),
               #)
     return table(request, headers, queryset = queryset, paginate_by = 5)
+
+
+@revision.create_on_success
+@login_required
+def task_manager(request, id, method):
+  if request.user.is_superuser:
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks'), request.GET.urlencode())
+    if method == 'add':
+      return create_object(request, model = Task, post_save_redirect = redirect)
+    elif method == 'delete':
+      return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect)
+    else:
+      return update_object(request, model = Task, object_id = id, post_save_redirect = redirect)
+  else:
+    return HttpResponseForbidden()

@@ -3,18 +3,18 @@
 
 <h1>Task list</h1>
 
-<a href="">Add</a>
+<a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">Add a new task</a>
 
 <table>
   {% table_header headers %}
   <tbody>
     {% for object in object_list %}
       <tr>
-      <td><a href="">Scores</a> <a href="">Update</a> <a href="">Delete</a></td>
-      <td>{{ object.organization.name }}</td>
+      <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">Delete</a></td>
+      <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}">{{ object.organization.name }}</a></td>
       <td>{{ object.user.username }}</td>
-      <td>{{ object.open }}</td>
-      <td>{{ object.complete }}</td>
+      <td>{% if object.open %}+{% endif %}</td>
+      <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       </tr>
     {% endfor %}
   </tbody>

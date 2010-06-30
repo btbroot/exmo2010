@@ -1,7 +1,7 @@
 {% load table_header %}
 {% include "exmo2010/paginator.html" %}
 
-<h1>Score list for {{task.organization}}</h1>
+<h1>Score list for {{task.organization}} ({{task.user}})</h1>
 
 <table>
   {% table_header headers %}
@@ -11,7 +11,7 @@
       <td>{{ object.fullcode }}</td>
       <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status %}?{{request.GET.urlencode}}
       {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
-      <td>{%if object.status %} OK {% else %} not OK {% endif %}</td>
+      <td>{%if object.status %}OK{% else %}&nbsp;{% endif %}</td>
       </tr>
     {% endfor %}
   </tbody>
