@@ -1,3 +1,10 @@
+# Copyright 2010 Al Nikolov <root@root.spb.ru>, Helsinki, Finland
+# Copyright 2010 Institute of Information Freedom Development, non-profit partnership, Saint-Petersburg, Russia
+#
+# This file is part of EXMO2010 software.
+#
+# EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written permission from the
+# above copyright holders.
 from django.conf.urls.defaults import *
 from django.contrib.auth.models import User
 from exmo.exmo2010.models import Organization, Score, Task
