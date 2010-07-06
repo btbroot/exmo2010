@@ -28,7 +28,4 @@ urlpatterns = patterns('',
   ( r'^tasks/$', 'exmo.exmo2010.views.tasks' ),
 
   ( r'^tasks/task/(\d+)_(\w+)/$', 'exmo.exmo2010.views.task_manager' ),
-
-  (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}),
-  (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}),
 )
