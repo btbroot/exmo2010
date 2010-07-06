@@ -1,3 +1,10 @@
+# Copyright 2010 Al Nikolov <root@root.spb.ru>, Helsinki, Finland
+# Copyright 2010 Institute of Information Freedom Development, non-profit partnership, Saint-Petersburg, Russia
+#
+# This file is part of EXMO2010 software.
+#
+# EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written permission from the
+# above copyright holders.
 #from contrib.admin
 from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list

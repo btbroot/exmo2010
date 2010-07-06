@@ -1,3 +1,10 @@
+# Copyright 2010 Al Nikolov <root@root.spb.ru>, Helsinki, Finland
+# Copyright 2010 Institute of Information Freedom Development, non-profit partnership, Saint-Petersburg, Russia
+#
+# This file is part of EXMO2010 software.
+#
+# EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written permission from the
+# above copyright holders.
 from exmo.exmo2010.sort_headers import SortHeaders
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail

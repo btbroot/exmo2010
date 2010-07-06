@@ -7,12 +7,3 @@ This file is part of EXMO2010 software.
 EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written permission from the
 above copyright holders.
 -->
-<h1>Organizations</h1>
-
-<ul>
-{% for object in object_list %}
-  <li><a href="{% url exmo.exmo2010.views.parameter_by_organization_list object.pk %}" name="edit">{{ object }}<a></li>
-{% endfor %}
-</ul>
-
-
