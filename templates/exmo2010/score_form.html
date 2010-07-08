@@ -8,9 +8,9 @@ EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written p
 above copyright holders.
 -->
 {% include "exmo2010/header.html" %}
-<h2><a href={{object.task.organization.url }}>{{object.task.organization.name}}</a></h2>
+<h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
 <div id=links>
-<a href="{% url exmo.exmo2010.views.score_list_by_task object.task.pk %}">К списку оценок</a>
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">К списку оценок</a>
 </div>
 <!--<style>
 #parameter_desc {
@@ -25,8 +25,8 @@ above copyright holders.
 <table id=parameter_desc_table>
 <th>Описание параметра</th>
 <tr><td>
-Наименование: {{ object.parameter }}<br>
-Описание: {{ object.parameter.description }}
+Наименование: {{ parameter }}<br>
+Описание: {{ parameter.description }}
 </td></tr>
 </table>
 </div>
@@ -38,7 +38,7 @@ above copyright holders.
 >
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
-{% if object.parameter.completeRequired %}
+{% if parameter.completeRequired %}
     <div id=score_form_complete>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
       <div id=score_form_completeComment>
@@ -46,7 +46,7 @@ above copyright holders.
       </div>
     </div>
 {% endif %}
-{% if object.parameter.topicalRequired %}
+{% if parameter.topicalRequired %}
     <div id=score_form_topical>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
       <div id=score_form_topicalComment>
@@ -54,7 +54,7 @@ above copyright holders.
       </div>
     </div>
 {% endif %}
-{% if object.parameter.accessibleRequired %}
+{% if parameter.accessibleRequired %}
     <div id=score_form_accessible>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
       <div id=score_form_accessibleComment>
@@ -65,8 +65,11 @@ above copyright holders.
     <div id=score_form_comment>
     <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
     </div>
-    {{ form.task.as_hidden }}
-    {{ form.parameter.as_hidden }}
+    <input type="hidden" name="task" id="id_task" value="{{task.pk}}" />
+    <input type="hidden" name="parameter" id="id_parameter" value="{{parameter.pk}}" />
+    {# form.task.as_hidden #}
+    {# form.parameter.as_hidden #}
+
   </div>
   <input type="submit" value="Save"><input type="reset" value="Reset">
 </form>

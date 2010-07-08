@@ -64,8 +64,16 @@ class ScoreForm(forms.ModelForm):
 
 @login_required
 def score_detail(request, task_id, parameter_id):
-    score = Score.objects.get_or_create(task = Task.objects.get(pk=task_id), parameter = Parameter.objects.get(pk = parameter_id))
-    return score_detail_direct(request, score[0].pk)
+    return create_object(
+      request,
+      form_class = ScoreForm,
+      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task_id]), request.GET.urlencode()),
+      extra_context = {
+        'create': True,
+        'task': get_object_or_404(Task, pk = task_id),
+        'parameter': get_object_or_404(Parameter, pk = parameter_id),
+        }
+    )
 
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -85,7 +93,11 @@ def score_detail_direct(request, score_id):
       request,
       form_class = ScoreForm,
       object_id = score.pk,
-      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode())
+      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode()),
+      extra_context = {
+        'task': score.task,
+        'parameter': score.parameter,
+      }
     )
 
 from django.db.models import Q
