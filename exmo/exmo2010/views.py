@@ -157,10 +157,10 @@ def tasks(request):
       queryset = queryset.filter(user = request.user)
     # Or, without Expert
       headers = (
-                ('', None),
-                ('Organization', 'organization__name'),
-                ('Open', 'open'),
-                ('Complete', 'complete'),
+                ('', None, None, None),
+                ('Organization', 'organization__name', 'organization__name', None),
+                ('Open', 'open', 'open', int),
+                ('%Complete', 'complete', None, None)
               )
     return table(request, headers, queryset = queryset, paginate_by = 5)
 
