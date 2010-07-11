@@ -56,7 +56,6 @@ class ScoreForm(forms.ModelForm):
     class Meta:
 	model = Score
 	widgets = {
-            'found': forms.RadioSelect(renderer=HorizRadioRenderer),
             'complete': forms.RadioSelect(renderer=HorizRadioRenderer),
             'topical': forms.RadioSelect(renderer=HorizRadioRenderer),
             'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
