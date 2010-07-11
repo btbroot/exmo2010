@@ -64,13 +64,16 @@ class ScoreForm(forms.ModelForm):
 
 @login_required
 def score_detail(request, task_id, parameter_id):
+    task = get_object_or_404(Task, pk = task_id)
+    if not task.open and not request.user.is_superuser:
+	return HttpResponseForbidden('Task closed')
     return create_object(
       request,
       form_class = ScoreForm,
-      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task_id]), request.GET.urlencode()),
+      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode()),
       extra_context = {
         'create': True,
-        'task': get_object_or_404(Task, pk = task_id),
+        'task': task,
         'parameter': get_object_or_404(Parameter, pk = parameter_id),
         }
     )
@@ -83,6 +86,8 @@ from exmo.exmo2010.helpers import construct_change_message
 @login_required
 def score_detail_direct(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
+    if not score.task.open and not request.user.is_superuser:
+	return HttpResponseForbidden('Task closed')
     if request.user.is_superuser or request.user == score.task.user:
       if request.method == 'POST':
 	form = ScoreForm(request.POST,instance=score)
@@ -104,6 +109,8 @@ from django.db.models import Q
 @login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
+    if not task.open and not request.user.is_superuser:
+	return HttpResponseForbidden('Task closed')
     if request.user.is_superuser or request.user == task.user:
       queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
         select={
