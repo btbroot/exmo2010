@@ -1,4 +1,4 @@
-# Copyright 2010 Al Nikolov <root@root.spb.ru>, Helsinki, Finland
+# Copyright 2010 Al Nikolov <root@toor.spb.ru>, Helsinki, Finland
 # Copyright 2010 Institute of Information Freedom Development, non-profit partnership, Saint-Petersburg, Russia
 #
 # This file is part of EXMO2010 software.
