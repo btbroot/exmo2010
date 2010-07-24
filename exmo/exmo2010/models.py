@@ -114,6 +114,7 @@ class Task(models.Model):
   user         = models.ForeignKey(User)
   organization = models.ForeignKey(Organization)
   open         = models.BooleanField()
+  approved     = models.BooleanField()
   c_scores     = 'SELECT COUNT(*) FROM "exmo2010_score" WHERE "exmo2010_score"."task_id" = "exmo2010_task"."id"'
   c_parameters = 'SELECT COUNT(*) FROM "exmo2010_organization" JOIN "exmo2010_parameter_type" ON ("exmo2010_organization"."type_id" = "exmo2010_parameter_type"."organizationtype_id") WHERE "exmo2010_organization"."id" = "exmo2010_task"."organization_id"'
   c_excludes   = 'SELECT COUNT(*) FROM "exmo2010_organization" JOIN "exmo2010_parameter_exclude" ON ("exmo2010_organization"."id" = "exmo2010_parameter_exclude"."organization_id") WHERE "exmo2010_organization"."id" = "exmo2010_task"."organization_id"'
