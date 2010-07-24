@@ -163,7 +163,6 @@ def tasks(request):
       queryset = queryset.filter(user = request.user)
     # Or, without Expert
       headers = (
-                ('', None, None, None),
                 ('Organization', 'organization__name', 'organization__name', None),
                 ('Open', 'open', 'open', int),
                 ('%Complete', 'complete', None, None)
