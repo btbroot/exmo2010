@@ -134,7 +134,7 @@ class Task(models.Model):
 class Score(models.Model):
   task              = models.ForeignKey(Task)
   parameter         = models.ForeignKey(Parameter)
-  found             = models.BooleanField()
+  found             = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 2)))
   complete          = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   completeComment   = models.TextField(null = True, blank = True)
   topical           = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
