@@ -23,7 +23,7 @@ urlpatterns = patterns('',
   ),
 
   (
-    r'^score/(\d+)/$',
+    r'^score/(\d+)_(\w+)/$',
     'exmo.exmo2010.views.score_detail_direct'
   ),
 

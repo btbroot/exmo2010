@@ -19,9 +19,10 @@ above copyright holders.
     {% for object in object_list %}
       <tr>
       <td>{{ object.fullcode }}</td>
-      <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status %}?{{request.GET.urlencode}}
+      <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}
       {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
       <td>{%if object.status %}OK{% else %}&nbsp;{% endif %}</td>
+      <td>{%if object.status %}<a href={% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}>delete</a>{% else %}&nbsp;{% endif %}</td>
       </tr>
     {% endfor %}
   </tbody>
