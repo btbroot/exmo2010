@@ -141,6 +141,12 @@ class Score(models.Model):
   topicalComment    = models.TextField(null = True, blank = True)
   accessible        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   accessibleComment = models.TextField(null = True, blank = True)
+  accessibleHTML    = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 2)))
+  accessibleHTMLComment = models.TextField(null = True, blank = True)
+  accessibleDigital = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 2)))
+  accessibleDigitalComment = models.TextField(null = True, blank = True)
+  accessibleGraph   = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 2)))
+  accessibleGraphComment = models.TextField(null = True, blank = True)
   comment           = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
