@@ -1,10 +1,20 @@
-# Copyright 2010 Al Nikolov <root@toor.spb.ru>, Helsinki, Finland
-# Copyright 2010 Institute of Information Freedom Development, non-profit partnership, Saint-Petersburg, Russia
-#
 # This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
 #
-# EXMO2010 is NOT distributable. NOBODY is permitted to use it without a written permission from the
-# above copyright holders.
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 # Django settings for exmo project.
 
 DEBUG = True
@@ -20,7 +30,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = '/home/boris/exmo.sqlite3'             # Or path to database file if using sqlite3.
+DATABASE_NAME = '/home/al/exmo.sqlite3'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -108,3 +118,5 @@ INSTALLED_APPS = (
     'exmo.exmo2010',
     'reversion',
 )
+
+STATIC_DOC_ROOT = '/home/al/iifd/exmo/static'
