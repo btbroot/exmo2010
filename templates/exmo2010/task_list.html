@@ -22,17 +22,19 @@
 {% include "exmo2010/paginator.html" %}
 
 <h1>Task list</h1>
-
+{%if request.user.is_superuser%}
 <a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">Add a new task</a>
-
+{%endif%}
 <table>
   {% table_header headers %}
   <tbody>
     {% for object in object_list %}
       <tr>
+      {%if request.user.is_superuser%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">Delete</a></td>
+      {%endif%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}">{{ object.organization.name }}</a></td>
-      <td>{{ object.user.username }}</td>
+      {%if request.user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
       <td>{% if object.open %}+{% endif %}</td>
       <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       </tr>

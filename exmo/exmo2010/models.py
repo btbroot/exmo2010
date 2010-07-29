@@ -124,9 +124,10 @@ class Task(models.Model):
   user         = models.ForeignKey(User)
   organization = models.ForeignKey(Organization)
   open         = models.BooleanField()
-  c_scores     = 'SELECT COUNT(*) FROM "exmo2010_score" WHERE "exmo2010_score"."task_id" = "exmo2010_task"."id"'
-  c_parameters = 'SELECT COUNT(*) FROM "exmo2010_organization" JOIN "exmo2010_parameter_type" ON ("exmo2010_organization"."type_id" = "exmo2010_parameter_type"."organizationtype_id") WHERE "exmo2010_organization"."id" = "exmo2010_task"."organization_id"'
-  c_excludes   = 'SELECT COUNT(*) FROM "exmo2010_organization" JOIN "exmo2010_parameter_exclude" ON ("exmo2010_organization"."id" = "exmo2010_parameter_exclude"."organization_id") WHERE "exmo2010_organization"."id" = "exmo2010_task"."organization_id"'
+  approved     = models.BooleanField()
+  c_scores     = 'SELECT COUNT(*) FROM exmo2010_score WHERE exmo2010_score.task_id = exmo2010_task.id'
+  c_parameters = 'SELECT COUNT(*) FROM exmo2010_organization JOIN exmo2010_parameter_type ON (exmo2010_organization.type_id = exmo2010_parameter_type.organizationtype_id) WHERE exmo2010_organization.id = exmo2010_task.organization_id'
+  c_excludes   = 'SELECT COUNT(*) FROM exmo2010_organization JOIN exmo2010_parameter_exclude ON (exmo2010_organization.id = exmo2010_parameter_exclude.organization_id) WHERE exmo2010_organization.id = exmo2010_task.organization_id'
   c_complete   = '(%s) * 100 / ((%s) - (%s))' % (c_scores, c_parameters, c_excludes)
   # TODO: Those aggregates shall really filter out "impossible" combinations like an existing Score on an excluded Parameter
 
@@ -144,13 +145,19 @@ class Task(models.Model):
 class Score(models.Model):
   task              = models.ForeignKey(Task)
   parameter         = models.ForeignKey(Parameter)
-  found             = models.BooleanField()
+  found             = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
   complete          = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   completeComment   = models.TextField(null = True, blank = True)
   topical           = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   topicalComment    = models.TextField(null = True, blank = True)
   accessible        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   accessibleComment = models.TextField(null = True, blank = True)
+  accessibleHTML    = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  accessibleHTMLComment = models.TextField(null = True, blank = True)
+  accessibleDigital = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  accessibleDigitalComment = models.TextField(null = True, blank = True)
+  accessibleGraph   = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  accessibleGraphComment = models.TextField(null = True, blank = True)
   comment           = models.TextField(null = True, blank = True)
 
   def __unicode__(self):

@@ -18,6 +18,15 @@
 import exmo.exmo2010.models
 from django.contrib import admin
 from reversion.admin import VersionAdmin
+from django.db import models
+
+class ParameterAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.ManyToManyField: {
+            'widget': admin.widgets.FilteredSelectMultiple('',
+                                                           is_stacked=False)
+        },
+    }
 
 class ScoreAdmin(VersionAdmin):
     pass
@@ -34,7 +43,7 @@ class FederalAdmin(admin.ModelAdmin):
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
 admin.site.register(exmo.exmo2010.models.Category)
 admin.site.register(exmo.exmo2010.models.Subcategory)
-admin.site.register(exmo.exmo2010.models.Parameter)
+admin.site.register(exmo.exmo2010.models.Parameter, ParameterAdmin)
 admin.site.register(exmo.exmo2010.models.OrganizationType, OrganizationTypeAdmin)
 admin.site.register(exmo.exmo2010.models.Score, ScoreAdmin)
 admin.site.register(exmo.exmo2010.models.Entity)
