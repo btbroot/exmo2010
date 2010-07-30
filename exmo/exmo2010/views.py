@@ -191,16 +191,17 @@ def tasks(request):
 @login_required
 def task_manager(request, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks'), request.GET.urlencode())
-    task = get_object_or_404(Task, pk = id)
     if method == 'add':
       if request.user.is_superuser:
 	return create_object(request, model = Task, post_save_redirect = redirect)
       else: return HttpResponseForbidden('Forbidden')
     elif method == 'delete':
+      task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
 	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect)
       else: return HttpResponseForbidden('Forbidden')
     else: #update
+      task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or request.user == task.user:
         return update_object(request, model = Task, object_id = id, post_save_redirect = redirect)
       else: return HttpResponseForbidden('Forbidden')
