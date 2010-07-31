@@ -187,6 +187,8 @@ def tasks(request):
     return table(request, headers, queryset = queryset, paginate_by = 5)
 
 
+from django.http import HttpResponseRedirect
+from django.template import RequestContext
 @revision.create_on_success
 @login_required
 def task_manager(request, id, method):
@@ -199,6 +201,18 @@ def task_manager(request, id, method):
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
 	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect)
+      else: return HttpResponseForbidden('Forbidden')
+    elif method == 'close':
+      task = get_object_or_404(Task, pk = id)
+      if request.user.is_superuser or task.user == request.user:
+        if task.open:
+          if request.method == 'GET':
+	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request))
+          elif request.method == 'POST':
+	    task.open = False
+	    task.save()
+	    return HttpResponseRedirect(redirect)
+	else: return HttpResponseForbidden('Already closed')
       else: return HttpResponseForbidden('Forbidden')
     else: #update
       task = get_object_or_404(Task, pk = id)

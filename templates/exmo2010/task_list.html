@@ -35,7 +35,7 @@
       {%endif%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}">{{ object.organization.name }}</a></td>
       {%if request.user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
-      <td>{% if object.open %}+{% endif %}</td>
+      <td>{% if object.open %}<a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">close</a>{% else %}closed{% endif %}</td>
       <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       </tr>
     {% endfor %}
