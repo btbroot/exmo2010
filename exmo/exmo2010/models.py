@@ -193,3 +193,4 @@ class Score(models.Model):
     )
 
 reversion.register(Score)
+reversion.register(Task)
