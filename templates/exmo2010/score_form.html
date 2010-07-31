@@ -48,7 +48,7 @@
 >
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
-{% if parameter.ptype.completeRequired %}
+{% if parameter.type.complete %}
     <div id=score_form_complete>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
       <div id=score_form_completeComment>
@@ -56,7 +56,7 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.ptype.topicalRequired %}
+{% if parameter.type.topical %}
     <div id=score_form_topical>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
       <div id=score_form_topicalComment>
@@ -64,29 +64,29 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.ptype.accessibleRequired %}
+{% if parameter.type.accessible %}
     <div id=score_form_accessible>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
       <div id=score_form_accessibleComment>
 	<dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.ptype.accessibleHTMLRequired %}
-    <dt>{{ form.accessibleHTML.label_tag }}</dt><dd>{{ form.accessibleHTML }} {{ form.accessibleHTML.errors }}</dd>
-      <div id=score_form_accessibleHTMLComment>
-	<dt>{{ form.accessibleHTMLComment.label_tag }}</dt><dd>{{ form.accessibleHTMLComment }} {{ form.accessibleHTMLComment.errors }}</dd>
+{% if parameter.type.hypertext %}
+    <dt>{{ form.hypertext.label_tag }}</dt><dd>{{ form.hypertext }} {{ form.hypertext.errors }}</dd>
+      <div id=score_form_hypertextComment>
+	<dt>{{ form.hypertextComment.label_tag }}</dt><dd>{{ form.hypertextComment }} {{ form.hypertextComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.ptype.accessibleDigitalRequired %}
-    <dt>{{ form.accessibleDigital.label_tag }}</dt><dd>{{ form.accessibleDigital }} {{ form.accessibleDigital.errors }}</dd>
-      <div id=score_form_accessibleDigitalComment>
-	<dt>{{ form.accessibleDigitalComment.label_tag }}</dt><dd>{{ form.accessibleDigitalComment }} {{ form.accessibleDigitalComment.errors }}</dd>
+{% if parameter.type.document %}
+    <dt>{{ form.document.label_tag }}</dt><dd>{{ form.document }} {{ form.document.errors }}</dd>
+      <div id=score_form_documentComment>
+	<dt>{{ form.documentComment.label_tag }}</dt><dd>{{ form.documentComment }} {{ form.documentComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.ptype.accessibleGraphRequired %}
-    <dt>{{ form.accessibleGraph.label_tag }}</dt><dd>{{ form.accessibleGraph }} {{ form.accessibleGraph.errors }}</dd>
-      <div id=score_form_accessibleGraphComment>
-	<dt>{{ form.accessibleGraphComment.label_tag }}</dt><dd>{{ form.accessibleGraphComment }} {{ form.accessibleGraphComment.errors }}</dd>
+{% if parameter.type.image %}
+    <dt>{{ form.image.label_tag }}</dt><dd>{{ form.image }} {{ form.image.errors }}</dd>
+      <div id=score_form_imageComment>
+	<dt>{{ form.imageComment.label_tag }}</dt><dd>{{ form.imageComment }} {{ form.imageComment.errors }}</dd>
       </div>
     </div>
 {% endif %}

@@ -97,12 +97,12 @@ class Subcategory(models.Model):
 class ParameterType(models.Model):
   name               = models.CharField(max_length = 200, unique = True)
   description        = models.TextField(null = True, blank = True)
-  completeRequired   = models.BooleanField(default = True)
-  topicalRequired    = models.BooleanField(default = True)
-  accessibleRequired = models.BooleanField(default = True)
-  accessibleHTMLRequired = models.BooleanField(default = True)
-  accessibleDigitalRequired = models.BooleanField(default = True)
-  accessibleGraphRequired = models.BooleanField(default = True)
+  complete           = models.BooleanField(default = True)
+  topical            = models.BooleanField(default = True)
+  accessible         = models.BooleanField(default = True)
+  hypertext          = models.BooleanField(default = True)
+  document           = models.BooleanField(default = True)
+  image              = models.BooleanField(default = True)
 
   def __unicode__(self):
     return self.name
@@ -112,10 +112,9 @@ class Parameter(models.Model):
   name               = models.CharField(max_length = 200)
   description        = models.TextField(null = True, blank = True)
   group              = models.ForeignKey(Subcategory)
-  type               = models.ManyToManyField(OrganizationType)
-  ptype              = models.ForeignKey(ParameterType)
+  type               = models.ForeignKey(ParameterType)
+  organizationType   = models.ManyToManyField(OrganizationType)
   exclude            = models.ManyToManyField(Organization, null = True, blank = True)
-  weight             = models.PositiveIntegerField()
 
   def __unicode__(self):
     return '%d.%d.%d. %s' % (self.group.group.code, self.group.code, self.code, self.name)
@@ -136,9 +135,17 @@ class Task(models.Model):
   organization = models.ForeignKey(Organization)
   open         = models.BooleanField()
   approved     = models.BooleanField()
-  c_scores     = 'SELECT COUNT(*) FROM exmo2010_score WHERE exmo2010_score.task_id = exmo2010_task.id'
-  c_parameters = 'SELECT COUNT(*) FROM exmo2010_organization JOIN exmo2010_parameter_type ON (exmo2010_organization.type_id = exmo2010_parameter_type.organizationtype_id) WHERE exmo2010_organization.id = exmo2010_task.organization_id'
-  c_excludes   = 'SELECT COUNT(*) FROM exmo2010_organization JOIN exmo2010_parameter_exclude ON (exmo2010_organization.id = exmo2010_parameter_exclude.organization_id) WHERE exmo2010_organization.id = exmo2010_task.organization_id'
+  c_scores     = '''SELECT COUNT(*)
+    FROM exmo2010_Score
+    WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''
+  c_parameters = '''SELECT COUNT(*)
+    FROM exmo2010_Organization JOIN exmo2010_Parameter_OrganizationType
+    ON exmo2010_Organization.Type_id = exmo2010_Parameter_OrganizationType.OrganizationType_id
+    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''
+  c_excludes   = '''SELECT COUNT(*)
+    FROM exmo2010_Organization JOIN exmo2010_Parameter_Exclude
+    ON exmo2010_Organization.id = exmo2010_Parameter_Exclude.Organization_id
+    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''
   c_complete   = '(%s) * 100 / ((%s) - (%s))' % (c_scores, c_parameters, c_excludes)
   # TODO: Those aggregates shall really filter out "impossible" combinations like an existing Score on an excluded Parameter
 
@@ -152,7 +159,6 @@ class Task(models.Model):
     ordering = ('organization__name', 'user__username')
 
 
-
 class Score(models.Model):
   task              = models.ForeignKey(Task)
   parameter         = models.ForeignKey(Parameter)
@@ -163,12 +169,12 @@ class Score(models.Model):
   topicalComment    = models.TextField(null = True, blank = True)
   accessible        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
   accessibleComment = models.TextField(null = True, blank = True)
-  accessibleHTML    = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  accessibleHTMLComment = models.TextField(null = True, blank = True)
-  accessibleDigital = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  accessibleDigitalComment = models.TextField(null = True, blank = True)
-  accessibleGraph   = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  accessibleGraphComment = models.TextField(null = True, blank = True)
+  hypertext         = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  hypertextComment  = models.TextField(null = True, blank = True)
+  document          = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  documentComment   = models.TextField(null = True, blank = True)
+  image             = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
+  imageComment      = models.TextField(null = True, blank = True)
   comment           = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
