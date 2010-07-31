@@ -48,7 +48,7 @@
 >
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
-{% if parameter.completeRequired %}
+{% if parameter.ptype.completeRequired %}
     <div id=score_form_complete>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
       <div id=score_form_completeComment>
@@ -56,7 +56,7 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.topicalRequired %}
+{% if parameter.ptype.topicalRequired %}
     <div id=score_form_topical>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
       <div id=score_form_topicalComment>
@@ -64,20 +64,26 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.accessibleRequired %}
+{% if parameter.ptype.accessibleRequired %}
     <div id=score_form_accessible>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
       <div id=score_form_accessibleComment>
 	<dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
       </div>
+{% endif %}
+{% if parameter.ptype.accessibleHTMLRequired %}
     <dt>{{ form.accessibleHTML.label_tag }}</dt><dd>{{ form.accessibleHTML }} {{ form.accessibleHTML.errors }}</dd>
       <div id=score_form_accessibleHTMLComment>
 	<dt>{{ form.accessibleHTMLComment.label_tag }}</dt><dd>{{ form.accessibleHTMLComment }} {{ form.accessibleHTMLComment.errors }}</dd>
       </div>
+{% endif %}
+{% if parameter.ptype.accessibleDigitalRequired %}
     <dt>{{ form.accessibleDigital.label_tag }}</dt><dd>{{ form.accessibleDigital }} {{ form.accessibleDigital.errors }}</dd>
       <div id=score_form_accessibleDigitalComment>
 	<dt>{{ form.accessibleDigitalComment.label_tag }}</dt><dd>{{ form.accessibleDigitalComment }} {{ form.accessibleDigitalComment.errors }}</dd>
       </div>
+{% endif %}
+{% if parameter.ptype.accessibleGraphRequired %}
     <dt>{{ form.accessibleGraph.label_tag }}</dt><dd>{{ form.accessibleGraph }} {{ form.accessibleGraph.errors }}</dd>
       <div id=score_form_accessibleGraphComment>
 	<dt>{{ form.accessibleGraphComment.label_tag }}</dt><dd>{{ form.accessibleGraphComment }} {{ form.accessibleGraphComment.errors }}</dd>

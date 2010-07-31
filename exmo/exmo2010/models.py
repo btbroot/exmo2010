@@ -94,17 +94,28 @@ class Subcategory(models.Model):
     ordering = ('group__code', 'code')
 
 
+class ParameterType(models.Model):
+  name               = models.CharField(max_length = 200, unique = True)
+  description        = models.TextField(null = True, blank = True)
+  completeRequired   = models.BooleanField(default = True)
+  topicalRequired    = models.BooleanField(default = True)
+  accessibleRequired = models.BooleanField(default = True)
+  accessibleHTMLRequired = models.BooleanField(default = True)
+  accessibleDigitalRequired = models.BooleanField(default = True)
+  accessibleGraphRequired = models.BooleanField(default = True)
+
+  def __unicode__(self):
+    return self.name
+
 class Parameter(models.Model):
   code               = models.PositiveIntegerField()
   name               = models.CharField(max_length = 200)
   description        = models.TextField(null = True, blank = True)
   group              = models.ForeignKey(Subcategory)
   type               = models.ManyToManyField(OrganizationType)
+  ptype              = models.ForeignKey(ParameterType)
   exclude            = models.ManyToManyField(Organization, null = True, blank = True)
   weight             = models.PositiveIntegerField()
-  completeRequired   = models.BooleanField(default = True)
-  topicalRequired    = models.BooleanField(default = True)
-  accessibleRequired = models.BooleanField(default = True)
 
   def __unicode__(self):
     return '%d.%d.%d. %s' % (self.group.group.code, self.group.code, self.code, self.name)
