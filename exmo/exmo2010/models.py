@@ -186,6 +186,38 @@ class Score(models.Model):
       self.parameter.code
     )
 
+  def clean(self):
+    from django.core.exceptions import ValidationError
+    if self.found:
+      if self.parameter.type.complete   and self.complete   in ('', None):
+        raise ValidationError('Complete must be set')
+      if self.parameter.type.topical    and self.topical    in ('', None):
+        raise ValidationError('Topical must be set')
+      if self.parameter.type.accessible and self.accessible in ('', None):
+        raise ValidationError('Accessible must be set')
+      if self.parameter.type.hypertext  and self.hypertext  in ('', None):
+        raise ValidationError('Hypertext must be set')
+      if self.parameter.type.document   and self.document   in ('', None):
+        raise ValidationError('Document must be set')
+      if self.parameter.type.image      and self.image      in ('', None):
+        raise ValidationError('Image must be set')
+    elif any((
+        self.complete,
+        self.topical,
+        self.accessible,
+        self.hypertext,
+        self.document,
+        self.image,
+        self.completeComment,
+        self.topicalComment,
+        self.accessibleComment,
+        self.hypertextComment,
+        self.documentComment,
+        self.imageComment
+        )):
+      raise ValidationError('Not found, but some excessive data persists')
+
+
   class Meta:
     unique_together = (
       ('task', 'parameter'),
