@@ -1,0 +1,10 @@
+#!/bin/sh
+
+./manage.py dumpdata \
+  exmo2010.ParameterType \
+  exmo2010.Category \
+  exmo2010.Subcategory \
+  exmo2010.OrganizationType \
+  exmo2010.Parameter \
+  exmo2010.Organization \
+> exmo2010/fixtures/initial_data.json
