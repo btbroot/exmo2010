@@ -54,7 +54,7 @@ class Entity(models.Model):
 
 class Organization(models.Model):
   name         = models.CharField(max_length = 200, unique = True)
-  url          = models.URLField(max_length = 200, unique = True)
+  url          = models.URLField(max_length = 200, null = True, blank = True)
   type         = models.ForeignKey(OrganizationType)
   entity       = models.ForeignKey(Entity, null = True, blank = True)
   keywords     = models.CharField(max_length = 200, null = True, blank = True)
