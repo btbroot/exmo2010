@@ -28,7 +28,7 @@ def parameter_by_organization_list(request, organization_id):
   return object_list(
     request,
     queryset = Parameter.objects.filter(
-      type = organization.type,
+      organizationType = organization.type,
     ),
     template_name = 'exmo2010/parameter_by_organization_list.html',
     extra_context = {'organization': organization},
@@ -36,7 +36,7 @@ def parameter_by_organization_list(request, organization_id):
 
 def score_by_organization_parameter_detail(request, organization_id, parameter_id):
   organization = get_object_or_404(Organization, pk = organization_id)
-  parameter = get_object_or_404(Parameter, pk = parameter_id, type = organization.type)
+  parameter = get_object_or_404(Parameter, pk = parameter_id, organizationType = organization.type)
   score, created = Score.objects.get_or_create(
     organization = organization,
     parameter = parameter,
@@ -127,7 +127,7 @@ def score_list_by_task(request, task_id):
     if not task.open and not request.user.is_superuser:
 	return HttpResponseForbidden('Task closed')
     if request.user.is_superuser or request.user == task.user:
-      queryset = Parameter.objects.filter(Q(type=task.organization.type), ~Q(exclude=task.organization)).extra(
+      queryset = Parameter.objects.filter(Q(organizationType=task.organization.type), ~Q(exclude=task.organization)).extra(
         select={
           'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table),
         }
