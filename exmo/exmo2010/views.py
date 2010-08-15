@@ -139,10 +139,10 @@ def score_list_by_task(request, task_id):
     else: return HttpResponseForbidden('Forbidden')
     return table(request,
       headers=(
-        ('Code', 'code', None, None),
+        ('Code', None, None, None),
         ('Name', 'name', 'name', None),
-        ('Status', 'status', None, None),
-        ('', None, None, None),
+        ('Scores', None, None, None),
+        ('Action', None, None, None),
       ),
       queryset=queryset,
       paginate_by=15,
