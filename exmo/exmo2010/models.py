@@ -86,6 +86,9 @@ class Subcategory(models.Model):
   def __unicode__(self):
     return '%d.%d. %s' % (self.group.code, self.code, self.name)
 
+  def fullcode(self):
+    return '%d.%d' % (self.group.code, self.code)
+
   class Meta:
     unique_together = (
       ('name', 'group'),
