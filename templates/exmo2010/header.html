@@ -17,14 +17,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="/media/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/media/css/changelists.css" />
+<link rel="stylesheet" href="/exmo2010/static/exmo2010/generic.css" type="text/css" />
+</head>
+<body>
 {% block nav %}
-<style>
-    #userinfo {
-	width: 100%;
-    }
-    form { margin: 0px; padding: 0px; }
-    table { border-color: #CCCCCC; border-collapse: collapse; }
-</style>
 <div id=userinfo>
 {% if user.is_authenticated %}
 Welcome, {{user.first_name}} {{user.last_name}} ({%firstof user.email%}) (<a href={% url django.contrib.auth.views.logout %}>Logout</a>)&nbsp;|

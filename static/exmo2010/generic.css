@@ -1,0 +1,17 @@
+#footer {
+        font-size:10px;
+        }
+
+#userinfo {
+        width:100%;
+        }
+
+form {
+        margin: 0px;
+        padding: 0px;
+        }
+
+#score_list td {
+        border-collapse: collapse;
+        border: 1px solid;
+        }
