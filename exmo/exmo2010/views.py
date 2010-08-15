@@ -145,7 +145,6 @@ def score_list_by_task(request, task_id):
         ('Action', None, None, None),
       ),
       queryset=queryset,
-      paginate_by=15,
       template_name='exmo2010/score_list.html',
       extra_context={'task': task},
     )
