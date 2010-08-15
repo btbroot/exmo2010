@@ -19,8 +19,7 @@
 {% endcomment %}
 {% include "exmo2010/header.html" %}
 {% load table_header %}
-{% include "exmo2010/paginator.html" %}
-
+<div id=task_list>
 <h1>Task list</h1>
 {%if request.user.is_superuser%}
 <a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">Add a new task</a>
@@ -41,4 +40,6 @@
     {% endfor %}
   </tbody>
 </table>
+{% include "exmo2010/paginator.html" %}
+</div>
 {% include "exmo2010/footer.html" %}
