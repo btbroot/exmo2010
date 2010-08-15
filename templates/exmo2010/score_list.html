@@ -19,22 +19,67 @@
 {% endcomment %}
 {% include "exmo2010/header.html" %}
 {% load table_header %}
-{% include "exmo2010/paginator.html" %}
+{% load i18n %}
+{% load get_object_by_pk%}
 
+<div id=score_list>
 <h1>Score list for {{task.organization}} ({{task.user}})</h1>
-
 <table>
   {% table_header headers %}
   <tbody>
     {% for object in object_list %}
-      <tr>
-      <td>{{ object.fullcode }}</td>
+      <tr width=100%>
+      <td width=4%>{{ object.fullcode }}</td>
       <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}
       {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
-      <td>{%if object.status %}OK{% else %}&nbsp;{% endif %}</td>
-      <td>{%if object.status %}<a href={% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}>delete</a>{% else %}&nbsp;{% endif %}</td>
+      <td width=35%>
+      {%if object.status%}
+      {%get_object_by_pk exmo2010.Score object.status as score %}
+      <b>{% trans "Complete" %}:</b>
+      {%if score.complete %}
+      {{score.complete}}
+      {% else %}
+      -
+      {% endif %};
+      <b>{% trans "Topical" %}:</b>
+      {%if score.topical %}
+      {{score.topical}}
+      {% else %}
+      -
+      {% endif %};
+      <b>{% trans "Accessible" %}:</b>
+      {%if score.accessible %}
+      {{score.accessible}}
+      {% else %}
+      -
+      {% endif %};
+      <b>{% trans "Hypertext" %}:</b>
+      {%if score.hypertext %}
+      {{score.hypertext}}
+      {% else %}
+      -
+      {% endif %};
+      <b>{% trans "Document" %}:</b>
+      {%if score.document %}
+      {{score.document}}
+      {% else %}
+      -
+      {% endif %};
+      <b>{% trans "Image" %}:</b>
+      {%if score.image %}
+      {{score.image}}
+      {% else %}
+      -
+      {% endif %};
+      {%endif%}
+      </td>
+      <td width=2%>
+        {%if object.status %}<a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
+        {% else %}&nbsp;
+        {% endif %}</td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% include "exmo2010/footer.html" %}
