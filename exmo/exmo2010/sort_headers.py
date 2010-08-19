@@ -63,20 +63,21 @@ class SortHeaders:
             values. For example, this might contain the current page
             number if you're sorting a paginated list of items.
         """
-        if default_order_field is None:
-            for i, (header, order_criterion, filter_criterion, filter_func) in enumerate(headers):
-                if order_criterion is not None:
-                    default_order_field = i
-                    break
-        if default_order_field is None:
-            raise AttributeError('No default_order_field was specified and none of the header definitions given were sortable.')
+#        if default_order_field is None:
+#            for i, (header, order_criterion, filter_criterion, filter_func) in enumerate(headers):
+#                if order_criterion is not None:
+#                    default_order_field = i
+#                    break
+#        if default_order_field is None:
+#            raise AttributeError('No default_order_field was specified and none of the header definitions given were sortable.')
         if default_order_type not in ('asc', 'desc'):
             raise AttributeError('If given, default_order_type must be one of \'asc\' or \'desc\'.')
         if additional_params is None: additional_params = {}
 
         self.header_defs = headers
         self.additional_params = additional_params
-        self.order_field, self.order_type = default_order_field, default_order_type
+#        self.order_field, self.order_type = default_order_field, default_order_type
+        self.order_field, self.order_type = None, default_order_type
         self.filter_field, self.filter_expr, self.filter_pattern = None, None, None
 
         # Determine order field and order type for the current request
@@ -148,10 +149,11 @@ class SortHeaders:
         field and order type, for use with the Django ORM's
         ``order_by`` method.
         """
-        return '%s%s' % (
-            self.order_type == 'desc' and '-' or '',
-            self.header_defs[self.order_field][1],
-        )
+	if self.order_type and self.order_field:
+            return '%s%s' % (
+                self.order_type == 'desc' and '-' or '',
+                self.header_defs[self.order_field][1],
+            )
 
     def get_filter(self):
       if (self.filter_field != None) and self.filter_pattern:

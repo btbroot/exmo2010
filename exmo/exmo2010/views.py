@@ -152,9 +152,10 @@ def score_list_by_task(request, task_id):
 def table(request, headers, **kwargs):
   '''Generic sortable table view'''
   sort_headers = SortHeaders(request, headers)
-  kwargs['queryset'] = kwargs['queryset'].order_by(
-    sort_headers.get_order_by()
-  ).filter(
+  if sort_headers.get_order_by():
+        kwargs['queryset'] = kwargs['queryset'].order_by(
+        sort_headers.get_order_by())
+  kwargs['queryset'] = kwargs['queryset'].filter(
     **sort_headers.get_filter()
   )
   if 'extra_context' not in kwargs:
