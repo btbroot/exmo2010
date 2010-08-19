@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from exmo.exmo2010.sort_headers import SortHeaders
+from exmo.exmo2010.forms import ScoreForm, TaskForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
@@ -51,29 +52,6 @@ def score_by_organization_parameter_detail(request, organization_id, parameter_i
   #else:
       #form = ContactForm() # An unbound form
   return update_object(request, model = Score, object_id = score.pk)
-
-from django import forms
-from django.utils.safestring import mark_safe
-class HorizRadioRenderer(forms.RadioSelect.renderer):
-    """ this overrides widget method to put radio buttons horizontally
-        instead of vertically.
-    """
-    def render(self):
-            """Outputs radios"""
-            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
-
-class ScoreForm(forms.ModelForm):
-    class Meta:
-	model = Score
-	widgets = {
-	    'found': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'complete': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'topical': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'document': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'hypertext': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'image': forms.RadioSelect(renderer=HorizRadioRenderer),
-        }
 
 @login_required
 def score_detail(request, task_id, parameter_id):
@@ -199,7 +177,7 @@ def task_manager(request, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks'), request.GET.urlencode())
     if method == 'add':
       if request.user.is_superuser:
-	return create_object(request, model = Task, post_save_redirect = redirect)
+	return create_object(request, form_class = TaskForm, post_save_redirect = redirect)
       else: return HttpResponseForbidden('Forbidden')
     elif method == 'delete':
       task = get_object_or_404(Task, pk = id)
@@ -221,5 +199,5 @@ def task_manager(request, id, method):
     else: #update
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or request.user == task.user:
-        return update_object(request, model = Task, object_id = id, post_save_redirect = redirect)
+        return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect)
       else: return HttpResponseForbidden('Forbidden')
