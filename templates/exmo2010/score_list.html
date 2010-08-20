@@ -24,7 +24,7 @@
 
 <div id=score_list>
 <h1>Score list for {{task.organization}} ({{task.user}})</h1>
-<table>
+<table class="listing">
   {% table_header headers %}
   <tbody>
     {% for object in object_list %}
@@ -32,47 +32,83 @@
       <td width=4%>{{ object.fullcode }}</td>
       <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}
       {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
-      <td width=35%>
       {%if object.status%}
       {%get_object_by_pk exmo2010.Score object.status as score %}
-      <b>{% trans "Complete" %}:</b>
+      <td width=55px
       {%if score.complete %}
-      {{score.complete}}
+        {%if score.complete == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
       {% else %}
-      -
-      {% endif %};
-      <b>{% trans "Topical" %}:</b>
-      {%if score.topical %}
-      {{score.topical}}
-      {% else %}
-      -
-      {% endif %};
-      <b>{% trans "Accessible" %}:</b>
-      {%if score.accessible %}
-      {{score.accessible}}
-      {% else %}
-      -
-      {% endif %};
-      <b>{% trans "Hypertext" %}:</b>
-      {%if score.hypertext %}
-      {{score.hypertext}}
-      {% else %}
-      -
-      {% endif %};
-      <b>{% trans "Document" %}:</b>
-      {%if score.document %}
-      {{score.document}}
-      {% else %}
-      -
-      {% endif %};
-      <b>{% trans "Image" %}:</b>
-      {%if score.image %}
-      {{score.image}}
-      {% else %}
-      -
-      {% endif %};
-      {%endif%}
+      class="score-none"
+      {% endif %}>
+      {%if score.complete %}{{score.complete}}{%else%}&nbsp;{%endif%}
       </td>
+      <td width=55px
+      {%if score.topical %}
+        {%if score.topical == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
+      {% else %}
+      class="score-none"
+      {% endif %}>
+      {%if score.topical %}{{score.topical}}{%else%}&nbsp;{%endif%}
+      </td>
+      <td width=55px
+      {%if score.accessible %}
+        {%if score.accessible == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
+      {% else %}
+      class="score-none"
+      {% endif %}>
+      {%if score.accessible %}{{score.accessible}}{%else%}&nbsp;{%endif%}
+      </td>
+      <td width=55px
+      {%if score.hypertext != None %}
+        {%if score.hypertext == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
+      {% else %}
+      class="score-none"
+      {% endif %}>
+      {%if score.hypertext != None %}{{score.hypertext}}{%else%}&nbsp;{%endif%}
+      </td>
+      <td width=55px
+      {%if score.document != None %}
+        {%if score.document == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
+      {% else %}
+      class="score-none"
+      {% endif %}>
+      {%if score.document != None %}{{score.document}}{%else%}&nbsp;{%endif%}
+      </td>
+      <td width=55px
+      {%if score.image != None %}
+        {%if score.image == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}
+      {% else %}
+      class="score-none"
+      {% endif %}>
+      {%if score.image != None %}{{score.image}}{%else%}&nbsp;{%endif%}
+      </td>
+      {%else%}
+        <td colspan=6></td>
+      {%endif%}
       <td width=2%>
         {%if object.status %}<a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
         {% else %}&nbsp;
