@@ -22,6 +22,7 @@ from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from exmo.exmo2010.models import Organization, Parameter, Score, Task
+from django.utils.translation import ugettext as _
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -81,16 +82,16 @@ def score_detail_direct(request, score_id, method='update'):
     if method == 'delete':
       if request.user.is_superuser or request.user == score.task.user:
 	return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
-      else: return HttpResponseForbidden('Forbidden')
+      else: return HttpResponseForbidden_(('Forbidden'))
     else: #update
       if not score.task.open and not request.user.is_superuser:
-	return HttpResponseForbidden('Task closed')
+	return HttpResponseForbidden(_('Task closed'))
       if request.user.is_superuser or request.user == score.task.user:
         if request.method == 'POST':
 	    form = ScoreForm(request.POST,instance=score)
 	    message = construct_change_message(request,form, None)
 	    revision.comment = message
-      else: return HttpResponseForbidden('Forbidden')
+      else: return HttpResponseForbidden(_('Forbidden'))
       return update_object(
 	request,
 	form_class = ScoreForm,
@@ -118,9 +119,14 @@ def score_list_by_task(request, task_id):
     return table(request,
       headers=(
         ('Code', None, None, None),
-        ('Name', 'name', 'name', None),
-        ('Scores', None, None, None),
-        ('Action', None, None, None),
+        (_('Name'), 'name', 'name', None),
+        (_('Complete'), None, None, None),
+        (_('Topical'), None, None, None),
+        (_('Accessible'), None, None, None),
+        (_('HTML'), None, None, None),
+        (_('Document'), None, None, None),
+        (_('Image'), None, None, None),
+        (_('Action'), None, None, None),
       ),
       queryset=queryset,
       template_name='exmo2010/score_list.html',
@@ -153,18 +159,18 @@ def tasks(request):
     if request.user.is_superuser:
       headers = (
                 ('', None, None, None),
-                ('Organization', 'organization__name', 'organization__name', None),
-                ('Expert', 'user__username', 'user__username', None),
-                ('Open', 'open', 'open', int),
-                ('%Complete', 'complete', None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None),
+                (_('Expert'), 'user__username', 'user__username', None),
+                (_('Open'), 'open', 'open', int),
+                (_('Complete'), 'complete', None, None)
               )
     else:
       queryset = queryset.filter(user = request.user)
     # Or, without Expert
       headers = (
-                ('Organization', 'organization__name', 'organization__name', None),
-                ('Open', 'open', 'open', int),
-                ('%Complete', 'complete', None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None),
+                (_('Open'), 'open', 'open', int),
+                (_('Complete'), 'complete', None, None)
               )
     return table(request, headers, queryset = queryset, paginate_by = 5)
 
@@ -178,12 +184,12 @@ def task_manager(request, id, method):
     if method == 'add':
       if request.user.is_superuser:
 	return create_object(request, form_class = TaskForm, post_save_redirect = redirect)
-      else: return HttpResponseForbidden('Forbidden')
+      else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'delete':
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
 	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect)
-      else: return HttpResponseForbidden('Forbidden')
+      else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or task.user == request.user:
@@ -194,10 +200,10 @@ def task_manager(request, id, method):
 	    task.open = False
 	    task.save()
 	    return HttpResponseRedirect(redirect)
-	else: return HttpResponseForbidden('Already closed')
-      else: return HttpResponseForbidden('Forbidden')
+	else: return HttpResponseForbidden(_('Already closed'))
+      else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or request.user == task.user:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect)
-      else: return HttpResponseForbidden('Forbidden')
+      else: return HttpResponseForbidden(_('Forbidden'))
