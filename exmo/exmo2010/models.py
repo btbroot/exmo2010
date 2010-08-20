@@ -135,7 +135,6 @@ class Task(models.Model):
   user         = models.ForeignKey(User)
   organization = models.ForeignKey(Organization)
   open         = models.BooleanField()
-  approved     = models.BooleanField()
   c_scores     = '''SELECT COUNT(*)
     FROM exmo2010_Score
     WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''.lower()
