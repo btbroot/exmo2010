@@ -30,3 +30,7 @@ form {
         border-collapse: collapse;
         border: 1px solid;
         }
+
+#score_list table {
+        width: 100%
+        }

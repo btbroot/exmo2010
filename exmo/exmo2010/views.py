@@ -21,8 +21,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
-from exmo.exmo2010.models import Organization, Parameter, Score, Task
 from django.utils.translation import ugettext as _
+from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -130,7 +130,7 @@ def score_list_by_task(request, task_id):
       ),
       queryset=queryset,
       template_name='exmo2010/score_list.html',
-      extra_context={'task': task},
+      extra_context={'task': task, 'categories': Category.objects.all(), 'subcategories': Subcategory.objects.all()},
     )
 
 def table(request, headers, **kwargs):

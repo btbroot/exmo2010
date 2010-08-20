@@ -18,9 +18,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-import reversion
-
-
 class OrganizationType(models.Model):
   name         = models.CharField(max_length = 200, unique = True)
 
@@ -232,6 +229,3 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
-
-reversion.register(Score)
-reversion.register(Task)
