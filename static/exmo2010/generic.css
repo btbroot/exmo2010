@@ -1,0 +1,36 @@
+#footer {
+        font-size:10px;
+        }
+
+#userinfo {
+        width:100%;
+        }
+
+form {
+        margin: 0px;
+        padding: 0px;
+        }
+
+#score_list .score-ok-nonzero{
+	background:green;
+	text-align: center;
+        }
+
+#score_list .score-ok-zero{
+	background:red;
+	text-align: center;
+        }
+
+#score_list .score-none {
+	background:gray;
+
+        }
+
+#score_list td {
+        border-collapse: collapse;
+        border: 1px solid;
+        }
+
+#score_list table {
+        width: 100%
+        }

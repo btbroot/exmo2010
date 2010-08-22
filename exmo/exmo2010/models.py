@@ -18,9 +18,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-import reversion
-
-
 class OrganizationType(models.Model):
   name         = models.CharField(max_length = 200, unique = True)
 
@@ -85,6 +82,9 @@ class Subcategory(models.Model):
 
   def __unicode__(self):
     return '%d.%d. %s' % (self.group.code, self.code, self.name)
+
+  def fullcode(self):
+    return '%d.%d' % (self.group.code, self.code)
 
   class Meta:
     unique_together = (
@@ -230,6 +230,3 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
-
-reversion.register(Score)
-reversion.register(Task)
