@@ -114,6 +114,7 @@ class Parameter(models.Model):
   code               = models.PositiveIntegerField()
   name               = models.CharField(max_length = 200)
   description        = models.TextField(null = True, blank = True)
+  weight             = models.PositiveIntegerField()
   group              = models.ForeignKey(Subcategory)
   type               = models.ForeignKey(ParameterType)
   organizationType   = models.ManyToManyField(OrganizationType)
