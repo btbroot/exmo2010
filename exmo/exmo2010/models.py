@@ -19,7 +19,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class OrganizationType(models.Model):
-  name         = models.CharField(max_length = 200, unique = True)
+  name         = models.CharField(max_length = 255, unique = True)
 
   def __unicode__(self):
     return self.name
@@ -29,7 +29,7 @@ class OrganizationType(models.Model):
 
 
 class Federal(models.Model):
-  name         = models.CharField(max_length = 200, unique = True)
+  name         = models.CharField(max_length = 255, unique = True)
 
   def __unicode__(self):
     return self.name
@@ -39,7 +39,7 @@ class Federal(models.Model):
 
 
 class Entity(models.Model):
-  name         = models.CharField(max_length = 200, unique = True)
+  name         = models.CharField(max_length = 255, unique = True)
   federal      = models.ForeignKey(Federal)
 
   def __unicode__(self):
@@ -50,11 +50,11 @@ class Entity(models.Model):
 
 
 class Organization(models.Model):
-  name         = models.CharField(max_length = 200, unique = True)
-  url          = models.URLField(max_length = 200, null = True, blank = True)
+  name         = models.CharField(max_length = 255, unique = True)
+  url          = models.URLField(max_length = 255, null = True, blank = True)
   type         = models.ForeignKey(OrganizationType)
   entity       = models.ForeignKey(Entity, null = True, blank = True)
-  keywords     = models.CharField(max_length = 200, null = True, blank = True)
+  keywords     = models.CharField(max_length = 255, null = True, blank = True)
   comments     = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
@@ -66,7 +66,7 @@ class Organization(models.Model):
 
 class Category(models.Model):
   code         = models.PositiveIntegerField(unique = True)
-  name         = models.CharField(max_length = 200, unique = True)
+  name         = models.CharField(max_length = 255, unique = True)
 
   def __unicode__(self):
     return '%d. %s' % (self.code, self.name)
@@ -77,7 +77,7 @@ class Category(models.Model):
 
 class Subcategory(models.Model):
   code         = models.PositiveIntegerField()
-  name         = models.CharField(max_length = 200)
+  name         = models.CharField(max_length = 255)
   group        = models.ForeignKey(Category)
 
   def __unicode__(self):
@@ -95,7 +95,7 @@ class Subcategory(models.Model):
 
 
 class ParameterType(models.Model):
-  name               = models.CharField(max_length = 200, unique = True)
+  name               = models.CharField(max_length = 255, unique = True)
   description        = models.TextField(null = True, blank = True)
   complete           = models.BooleanField(default = True)
   topical            = models.BooleanField(default = True)
@@ -109,7 +109,7 @@ class ParameterType(models.Model):
 
 class Parameter(models.Model):
   code               = models.PositiveIntegerField()
-  name               = models.CharField(max_length = 200)
+  name               = models.CharField(max_length = 255)
   description        = models.TextField(null = True, blank = True)
   weight             = models.PositiveIntegerField()
   group              = models.ForeignKey(Subcategory)
