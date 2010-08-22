@@ -17,6 +17,7 @@
 #
 from django.conf.urls.defaults import *
 from django.contrib import admin
+from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -25,5 +26,6 @@ urlpatterns = patterns('',
   (r'^exmo2010/', include('exmo.exmo2010.urls')),
   (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}),
   (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}),
+  ( r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT} ),
 )
 
