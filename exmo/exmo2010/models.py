@@ -54,7 +54,7 @@ class Organization(models.Model):
   url          = models.URLField(max_length = 255, null = True, blank = True)
   type         = models.ForeignKey(OrganizationType)
   entity       = models.ForeignKey(Entity, null = True, blank = True)
-  keywords     = models.CharField(max_length = 255, null = True, blank = True)
+  keywords     = models.TextField(null = True, blank = True)
   comments     = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
