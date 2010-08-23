@@ -53,6 +53,10 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+# Site root prefix. For runserver is '/' for exmo-online is '/exmo-online/'.
+# Valid only with trailing slash.
+SITE_PREFIX = '/'
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ''
@@ -60,12 +64,12 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = SITE_PREFIX+'static/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = SITE_PREFIX+'media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'zou(k9*+vc69ji$xlpy+e-poi1s6_*q3#0+)=(pgv(wxb&94dd'
@@ -122,3 +126,5 @@ SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../static/')
 STATIC_DOC_ROOT = os.path.join(SITE_ROOT, '../static/exmo2010')
 TEMPLATE_DIRS = ( os.path.join(SITE_ROOT, '../templates/'),)
+LOGIN_URL = SITE_PREFIX+'accounts/login/'
+LOGOUT_URL = SITE_PREFIX+'accounts/logout/'
