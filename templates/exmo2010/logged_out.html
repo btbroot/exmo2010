@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,7 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-<p>Thanks for spending some quality time with the Web site today.</p>
+{% load i18n %}
+{% block content %}
+<p>{% trans 'Thanks for spending some quality time with the Web site today' %}.</p>
 
-<p><a href="{% url django.contrib.auth.views.login %}">Log in again</a></p>
-{% include "exmo2010/footer.html" %}
+<p><a href="{% url django.contrib.auth.views.login %}">{% trans 'Log in again' %}</a></p>
+{% endblock %}
+{%block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

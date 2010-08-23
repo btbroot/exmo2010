@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,20 +18,32 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
+{% load i18n %}
+
+{% block extrastyle %}{% load adminmedia %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/login.css" />{% endblock %}
+
+{% block bodyclass %}login{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
 {% if error_message %}
 <p class="errornote">{{ error_message }}</p>
 {% endif %}
-<div id="content-main" align=center valign=top>
+<div id="content-main">
 <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
   <div class="form-row">
-    <label for="id_username">Username:</label> <input type="text" name="username" id="id_username" />
+    <label for="id_username">{% trans 'Username:' %}</label> <input type="text" name="username" id="id_username" />
   </div>
   <div class="form-row">
-    <label for="id_password">Password:</label> <input type="password" name="password" id="id_password" />
+    <label for="id_password">{% trans 'Password:' %}</label> <input type="password" name="password" id="id_password" />
     <input type="hidden" name="this_is_the_login_form" value="1" />
   </div>
   <div class="submit-row">
-    <label>&nbsp;</label><input type="submit" value="Log in" />
+    <label>&nbsp;</label><input type="submit" value="{% trans 'Log in' %}" />
   </div>
 </form>
 
@@ -38,4 +51,4 @@
 document.getElementById('id_username').focus()
 </script>
 </div>
-{% include "exmo2010/footer.html" %}
+{% endblock %}

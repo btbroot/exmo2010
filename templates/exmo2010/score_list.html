@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,14 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% include "exmo2010/header.html" %}
-{% load table_header %}
-{% load i18n %}
-{% load get_object_by_pk%}
-
+{% load table_header i18n get_object_by_pk %}
+{% block title %}{% trans "Score list for" %} {{task.organization}} ({{task.user}}){% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
+{% block content %}
 <div id=score_list>
-
-<h1>Score list for {{task.organization}} ({{task.user}})</h1>
+<h2><a href="{{task.organization.url}}">{{task.organization}}</a></h2>
 <table>
 {% table_header headers %}
 <tbody>
@@ -126,4 +125,5 @@
         {%endfor%}
     </tbody></table>
 </div><br>
-{% include "exmo2010/footer.html" %}
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

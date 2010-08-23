@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,26 +18,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% include "exmo2010/header.html" %}
-<h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
-<div id=links>
-<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">К списку оценок</a>
+{% load i18n %}
+{% block title %}{{parameter}}{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.tasks %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{{ task.organization }} ({{ task.user }})</a>
 </div>
-<!--<style>
-#parameter_desc {
-    position:fixed;
-    right:5%;
-    top:30%;
-    width:60%;
-}
-</style>-->
+{% endblock %}
 
+{% block content %}
+<h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
 <div id=parameter_desc>
 <table id=parameter_desc_table>
-<th>Описание параметра</th>
+<th>{% trans 'Parameter description' %}</th>
 <tr><td>
-Наименование: {{ parameter }}<br>
-Описание: {{ parameter.description }}
+{% trans 'Name' %}: {{ parameter }}<br>
+{% trans 'Description' %}: {{ parameter.description }}
 </td></tr>
 </table>
 </div>
@@ -104,4 +101,5 @@
   <input type="submit" value="Save"><input type="reset" class=button value="Reset">
 </form>
 </div>
-{% include "exmo2010/footer.html" %}
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

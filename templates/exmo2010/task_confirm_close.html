@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,9 +18,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% include "exmo2010/header.html" %}
+{% load i18n %}
+{% block content %}
 <form method="POST" action="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">
-  <p>Close this task?</p>
+  <p>{% trans 'Close this task?' %}</p>
   <input type="submit">
 </form>
-{% include "exmo2010/footer.html" %}
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "exmo2010/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Exmo' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% trans 'Exmo' %} {% if user.is_superuser %}(<a href={% url admin:index %}>{% trans "Admin" %}</a>){%endif%}<h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
