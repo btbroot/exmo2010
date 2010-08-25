@@ -28,10 +28,10 @@
 {% table_header headers %}
 <tbody>
         {%for category in categories%}
-            <tr><td colspan=9>{{category}}</td></tr>
+            <tr><td colspan=10>{{category}}</td></tr>
             {%for subcategory in subcategories%}
             {%if subcategory.group == category%}
-                <tr><td colspan=9>{{subcategory}}</td></tr>
+                <tr><td colspan=10>{{subcategory}}</td></tr>
                 {%for object in object_list%}{%if object.group == subcategory%}
       <tr width=100%>
       <td width=4%>{{ object.fullcode }}</td>
@@ -39,6 +39,14 @@
       {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
       {%if object.status%}
       {%get_object_by_pk exmo2010.Score object.status as score %}
+      <td width=55px
+        {%if score.found == 0 %}
+          class="score-ok-zero"
+        {%else%}
+          class="score-ok-nonzero"
+        {%endif%}>
+      {{score.found}}
+      </td>
       <td width=55px
       {%if score.complete %}
         {%if score.complete == 0 %}
@@ -112,7 +120,7 @@
       {%if score.image != None %}{{score.image}}{%else%}&nbsp;{%endif%}
       </td>
       {%else%}
-        <td colspan=6></td>
+        <td colspan=7></td>
       {%endif%}
       <td width=6%>
         {%if object.status %}<a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>

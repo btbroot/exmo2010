@@ -120,6 +120,7 @@ def score_list_by_task(request, task_id):
       headers=(
         ('Code', None, None, None),
         (_('Name'), 'name', 'name', None),
+        (_('Found'), None, None, None),
         (_('Complete'), None, None, None),
         (_('Topical'), None, None, None),
         (_('Accessible'), None, None, None),
