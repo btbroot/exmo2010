@@ -163,7 +163,7 @@ def tasks(request):
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Expert'), 'user__username', 'user__username', None),
                 (_('Open'), 'open', 'open', int),
-                (_('Complete'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None)
               )
     else:
       queryset = queryset.filter(user = request.user)
@@ -171,7 +171,7 @@ def tasks(request):
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Open'), 'open', 'open', int),
-                (_('Complete'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None)
               )
     return table(request, headers, queryset = queryset, paginate_by = 5)
 

@@ -1,0 +1,254 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-25 15:41+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: exmo/exmo2010/forms.py:34
+msgid "This user account is inactive"
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:27
+#, python-format
+msgid "Changed %s."
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:27 exmo/exmo2010/helpers.py:37
+msgid "and"
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:32
+#, python-format
+msgid "Added %(name)s \"%(object)s\"."
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:36
+#, python-format
+msgid "Changed %(list)s for %(name)s \"%(object)s\"."
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:41
+#, python-format
+msgid "Deleted %(name)s \"%(object)s\"."
+msgstr ""
+
+#: exmo/exmo2010/helpers.py:45
+msgid "No fields changed."
+msgstr ""
+
+#: exmo/exmo2010/views.py:88
+msgid "Task closed"
+msgstr "Задача закрыта"
+
+#: exmo/exmo2010/views.py:94 exmo/exmo2010/views.py:188
+#: exmo/exmo2010/views.py:193 exmo/exmo2010/views.py:205
+#: exmo/exmo2010/views.py:210
+msgid "Forbidden"
+msgstr "Запрещено"
+
+#: exmo/exmo2010/views.py:122 templates/exmo2010/score_form.html:35
+msgid "Name"
+msgstr "Имя"
+
+#: exmo/exmo2010/views.py:123
+msgid "Found"
+msgstr "Найдено"
+
+#: exmo/exmo2010/views.py:124
+msgid "Complete"
+msgstr "Полнота"
+
+#: exmo/exmo2010/views.py:125
+msgid "Topical"
+msgstr "Актуальность"
+
+#: exmo/exmo2010/views.py:126
+msgid "Accessible"
+msgstr "Доступность"
+
+#: exmo/exmo2010/views.py:127
+msgid "HTML"
+msgstr ""
+
+#: exmo/exmo2010/views.py:128
+msgid "Document"
+msgstr "Документ"
+
+#: exmo/exmo2010/views.py:129
+msgid "Image"
+msgstr "Граф."
+
+#: exmo/exmo2010/views.py:130
+msgid "Action"
+msgstr "Действие"
+
+#: exmo/exmo2010/views.py:163 exmo/exmo2010/views.py:172
+msgid "Organization"
+msgstr "Организация"
+
+#: exmo/exmo2010/views.py:164
+msgid "Expert"
+msgstr "Эксперт"
+
+#: exmo/exmo2010/views.py:165 exmo/exmo2010/views.py:173
+msgid "Open"
+msgstr "Открыта"
+
+#: exmo/exmo2010/views.py:166 exmo/exmo2010/views.py:174
+msgid "Complete%"
+msgstr "Выполнено%"
+
+#: exmo/exmo2010/views.py:204
+msgid "Already closed"
+msgstr "Задача уже закрыта"
+
+#: templates/404.html:4 templates/404.html.py:8
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: templates/404.html:10
+msgid "We're sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500.html:4
+msgid "Server error (500)"
+msgstr ""
+
+#: templates/500.html:7
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: templates/500.html:8
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: templates/exmo2010/base.html:29
+msgid "Welcome,"
+msgstr "Добро пожаловать,"
+
+#: templates/exmo2010/base.html:34
+msgid "Documentation"
+msgstr "Документация"
+
+#: templates/exmo2010/base.html:42
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: templates/exmo2010/base.html:49
+msgid "Log out"
+msgstr "Выйти"
+
+#: templates/exmo2010/base.html:57
+#: templates/exmo2010/score_confirm_delete.html:23
+#: templates/exmo2010/score_form.html:24
+msgid "Home"
+msgstr "Домой"
+
+#: templates/exmo2010/base_site.html:4 templates/exmo2010/base_site.html:7
+msgid "Exmo"
+msgstr ""
+
+#: templates/exmo2010/base_site.html:7 templates/exmo2010/header.html:33
+msgid "Admin"
+msgstr ""
+
+#: templates/exmo2010/header.html:32
+msgid "Welcome"
+msgstr ""
+
+#: templates/exmo2010/header.html:32
+msgid "Logout"
+msgstr ""
+
+#: templates/exmo2010/header.html:35
+msgid "Welcome, Anonymous"
+msgstr ""
+
+#: templates/exmo2010/header.html:35
+msgid "Login"
+msgstr ""
+
+#: templates/exmo2010/logged_out.html:23
+msgid "Thanks for spending some quality time with the Web site today"
+msgstr ""
+
+#: templates/exmo2010/logged_out.html:25
+msgid "Log in again"
+msgstr "Войти снова"
+
+#: templates/exmo2010/login.html:39
+msgid "Username:"
+msgstr "Имя пользователя:"
+
+#: templates/exmo2010/login.html:42
+msgid "Password:"
+msgstr "Пароль:"
+
+#: templates/exmo2010/login.html:46
+msgid "Log in"
+msgstr "Войти"
+
+#: templates/exmo2010/score_confirm_delete.html:24
+msgid "Return to score list"
+msgstr "Вернуться к списку оценок"
+
+#: templates/exmo2010/score_confirm_delete.html:29
+msgid "Delete this score?"
+msgstr "Удалить оценку?"
+
+#: templates/exmo2010/score_form.html:33
+msgid "Parameter description"
+msgstr "Описание параметра"
+
+#: templates/exmo2010/score_form.html:36
+msgid "Description"
+msgstr "Описание"
+
+#: templates/exmo2010/score_list.html:22
+msgid "Score list for"
+msgstr "Оценки для"
+
+#: templates/exmo2010/score_list.html:126 templates/exmo2010/task_list.html:34
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/exmo2010/task_confirm_close.html:24
+msgid "Close this task?"
+msgstr "Закрыть задачу?"
+
+#: templates/exmo2010/task_confirm_delete.html:24
+msgid "Delete this task?"
+msgstr "Удалить задачу?"
+
+#: templates/exmo2010/task_list.html:24
+msgid "Task list"
+msgstr "Список задач"
+
+#: templates/exmo2010/task_list.html:26
+msgid "Add a new task"
+msgstr "Добавить задачу"
+
+#: templates/exmo2010/task_list.html:38
+msgid "close"
+msgstr "закрыть"
+
+#: templates/exmo2010/task_list.html:38
+msgid "closed"
+msgstr "закрыта"

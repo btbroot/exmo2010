@@ -19,11 +19,11 @@
 #
 {% endcomment %}
 {% block content %}
-{% load table_header %}
+{% load table_header i18n %}
 <div id=task_list>
-<h2>Task list</h2>
+<h2>{% trans 'Task list' %}</h2>
 {%if request.user.is_superuser%}
-<a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">Add a new task</a>
+<a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add a new task' %}</a>
 {%endif%}
 <table>
   {% table_header headers %}
@@ -31,11 +31,11 @@
     {% for object in object_list %}
       <tr>
       {%if request.user.is_superuser%}
-      <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">Delete</a></td>
+      <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">{% trans 'Delete' %}</a></td>
       {%endif%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}">{{ object.organization.name }}</a></td>
       {%if request.user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
-      <td>{% if object.open %}<a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">close</a>{% else %}closed{% endif %}</td>
+      <td>{% if object.open %}<a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>{% else %}{% trans 'closed' %}{% endif %}</td>
       <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       </tr>
     {% endfor %}

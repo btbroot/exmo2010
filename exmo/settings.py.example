@@ -127,3 +127,4 @@ TEMPLATE_DIRS = ( os.path.join(SITE_ROOT, '../templates/'),)
 LOGIN_URL = SITE_PREFIX+'accounts/login/'
 LOGOUT_URL = SITE_PREFIX+'accounts/logout/'
 LOGIN_REDIRECT_URL = SITE_PREFIX+'exmo2010/tasks/'
+LOCALE_PATHS = ( os.path.join(SITE_ROOT, '../locale/'),)
