@@ -51,7 +51,9 @@ class AppendGetNode(template.Node):
         for key in self.dict_pairs:
             get[key] = self.dict_pairs[key].resolve(context)
 
-        path = context['request'].META['PATH_INFO']
+        path_info = context['request'].META['PATH_INFO']
+        script_name = context['request'].META['SCRIPT_NAME']
+        path = '%s%s' % (script_name, path_info)
 
         #print "&".join(["%s=%s" % (key, value) for (key, value) in get.items() if value])
 
