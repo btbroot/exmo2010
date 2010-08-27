@@ -57,16 +57,19 @@ def score_by_organization_parameter_detail(request, organization_id, parameter_i
 @login_required
 def score_detail(request, task_id, parameter_id):
     task = get_object_or_404(Task, pk = task_id)
+    parameter = get_object_or_404(Parameter, pk = parameter_id)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
+    redirect = redirect.replace("%","%%")
     if not task.open and not request.user.is_superuser:
 	return HttpResponseForbidden('Task closed')
     return create_object(
       request,
       form_class = ScoreForm,
-      post_save_redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode()),
+      post_save_redirect = redirect,
       extra_context = {
         'create': True,
         'task': task,
-        'parameter': get_object_or_404(Parameter, pk = parameter_id),
+        'parameter': parameter,
         }
     )
 
@@ -78,7 +81,8 @@ from exmo.exmo2010.helpers import construct_change_message
 @login_required
 def score_detail_direct(request, score_id, method='update'):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode())
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
+    redirect = redirect.replace("%","%%")
     if method == 'delete':
       if request.user.is_superuser or request.user == score.task.user:
 	return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
@@ -182,6 +186,7 @@ from django.template import RequestContext
 @login_required
 def task_manager(request, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks'), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
     if method == 'add':
       if request.user.is_superuser:
 	return create_object(request, form_class = TaskForm, post_save_redirect = redirect)

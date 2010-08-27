@@ -28,15 +28,15 @@
 {% table_header headers %}
 <tbody>
         {%for category in categories%}
-            <tr><td colspan=10>{{category}}</td></tr>
+            <tr id='parameter_{{category.code}}'><td colspan=10>{{category}}</td></tr>
             {%for subcategory in subcategories%}
             {%if subcategory.group == category%}
-                <tr><td colspan=10>{{subcategory}}</td></tr>
+                <tr id='parameter_{{subcategory.fullcode}}'><td colspan=10>{{subcategory}}</td></tr>
                 {%for object in object_list%}{%if object.group == subcategory%}
-      <tr width=100%>
+      <tr width=100% id='parameter_{{object.fullcode}}'>
       <td width=4%>{{ object.fullcode }}</td>
-      <td><a href={%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}
-      {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}{% endif %}>{{ object.name }}</a></td>
+      <td><a href="{%if object.status %}{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}
+      {% else %}{% url exmo.exmo2010.views.score_detail task.pk object.pk %}?{{request.GET.urlencode}}{% endif %}">{{ object.name }}</a></td>
       {%if object.status%}
       {%get_object_by_pk exmo2010.Score object.status as score %}
       <td width=55px
