@@ -173,7 +173,7 @@ def tasks(request):
                 (_('Open'), 'open', 'open', int),
                 (_('Complete%'), 'complete', None, None)
               )
-    return table(request, headers, queryset = queryset, paginate_by = 5)
+    return table(request, headers, queryset = queryset, paginate_by = 15)
 
 
 from django.http import HttpResponseRedirect
