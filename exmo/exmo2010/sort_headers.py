@@ -162,7 +162,7 @@ class SortHeaders:
           pattern = func(self.filter_pattern)
         else:
           pattern = self.filter_pattern
-        filter_dict = {self.header_defs[self.filter_field][2] + '__contains': pattern}
+        filter_dict = {self.header_defs[self.filter_field][2] + '__icontains': pattern}
       else:
         filter_dict = {}
       return filter_dict
