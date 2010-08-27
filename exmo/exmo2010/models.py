@@ -138,15 +138,15 @@ class Task(models.Model):
   approved     = models.BooleanField()
   c_scores     = '''SELECT COUNT(*)
     FROM exmo2010_Score
-    WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''
+    WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''.lower()
   c_parameters = '''SELECT COUNT(*)
-    FROM exmo2010_Organization JOIN exmo2010_Parameter_OrganizationType
-    ON exmo2010_Organization.Type_id = exmo2010_Parameter_OrganizationType.OrganizationType_id
-    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''
+    FROM exmo2010_organization JOIN exmo2010_parameter_organizationType
+    ON exmo2010_organization.type_id = exmo2010_parameter_organizationType.organizationtype_id
+    WHERE exmo2010_organization.id = exmo2010_task.organization_id'''
   c_excludes   = '''SELECT COUNT(*)
     FROM exmo2010_Organization JOIN exmo2010_Parameter_Exclude
     ON exmo2010_Organization.id = exmo2010_Parameter_Exclude.Organization_id
-    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''
+    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''.lower()
   c_complete   = '(%s) * 100 / ((%s) - (%s))' % (c_scores, c_parameters, c_excludes)
   # TODO: Those aggregates shall really filter out "impossible" combinations like an existing Score on an excluded Parameter
 
