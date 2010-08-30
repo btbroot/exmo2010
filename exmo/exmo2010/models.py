@@ -58,10 +58,7 @@ class Organization(models.Model):
   comments     = models.TextField(null = True, blank = True)
 
   def __unicode__(self):
-    return self.name
-
-  class Meta:
-    ordering = ('name',)
+    return '%d. %s' % (self.pk, self.name)
 
 
 class Category(models.Model):
