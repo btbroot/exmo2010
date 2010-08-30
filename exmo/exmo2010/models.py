@@ -60,6 +60,9 @@ class Organization(models.Model):
   def __unicode__(self):
     return '%d. %s' % (self.pk, self.name)
 
+  class Meta:
+    ordering = ('id',)
+
 
 class Category(models.Model):
   code         = models.PositiveIntegerField(unique = True)
