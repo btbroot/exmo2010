@@ -1,10 +1,12 @@
 #!/bin/sh
 
-./manage.py dumpdata \
-  exmo2010.ParameterType \
-  exmo2010.Category \
-  exmo2010.Subcategory \
-  exmo2010.OrganizationType \
-  exmo2010.Parameter \
-  exmo2010.Organization \
+./manage.py dumpdata --indent=1 \
+  exmo2010.parametertype \
+  exmo2010.category \
+  exmo2010.subcategory \
+  exmo2010.organizationtype \
+  exmo2010.parameter \
+  exmo2010.organization \
+  exmo2010.federal \
+  exmo2010.entity \
 > exmo2010/fixtures/initial_data.json
