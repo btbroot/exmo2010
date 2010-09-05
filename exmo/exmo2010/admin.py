@@ -28,6 +28,10 @@ class ParameterAdmin(admin.ModelAdmin):
         },
     }
 
+
+class TaskAdmin(VersionAdmin):
+    pass
+
 class ScoreAdmin(VersionAdmin):
     pass
 
@@ -49,4 +53,4 @@ admin.site.register(exmo.exmo2010.models.OrganizationType, OrganizationTypeAdmin
 admin.site.register(exmo.exmo2010.models.Score, ScoreAdmin)
 admin.site.register(exmo.exmo2010.models.Entity)
 admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
-admin.site.register(exmo.exmo2010.models.Task)
+admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
