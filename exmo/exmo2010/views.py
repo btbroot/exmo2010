@@ -138,6 +138,121 @@ def score_list_by_task(request, task_id):
       extra_context={'task': task, 'categories': Category.objects.all(), 'subcategories': Subcategory.objects.all()},
     )
 
+
+import csv
+from django.http import HttpResponse
+@login_required
+def task_export(request, id):
+    task = get_object_or_404(Task, pk = id)
+    if not task.open and not request.user.is_superuser:
+	return HttpResponseForbidden('Task closed')
+    if request.user != task.user or not request.user.is_superuser:
+        return HttpResponseForbidden('Forbidden')
+    parameters = Parameter.objects.filter(organizationType=task.organization.type).exclude(exclude=task.organization)
+    scores     = Score.objects.filter(task=id)
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
+    writer = csv.writer(response)
+    writer.writerow([
+        'Code',
+        'Name',
+        'Type',
+        'Found',
+        'Complete',
+        'CompleteComment',
+        'Topical',
+        'TopicalComment',
+        'Accessible',
+        'AccessibleComment',
+        'Hypertext',
+        'HypertextComment',
+        'Document',
+        'DocumentComment',
+        'Image',
+        'ImageComment',
+        'Comment'
+    ])
+    for p in parameters:
+        out = (
+            p.fullcode(),
+            p.name.encode("utf-8"),
+            p.type.name.encode("utf-8")
+        )
+        try:
+            s = scores.get(parameter=p)
+        except:
+            pass
+        else:
+            out += (
+                s.found,
+                s.complete,
+                s.completeComment.encode("utf-8"),
+                s.topical,
+                s.topicalComment.encode("utf-8"),
+                s.accessible,
+                s.accessibleComment.encode("utf-8"),
+                s.hypertext,
+                s.hypertextComment.encode("utf-8"),
+                s.document,
+                s.documentComment.encode("utf-8"),
+                s.image,
+                s.imageComment.encode("utf-8"),
+                s.comment.encode("utf-8")
+            )
+        writer.writerow(out)
+    return response
+
+import re
+@login_required
+def task_import(request, id):
+    task = get_object_or_404(Task, pk = id)
+    if not task.open and not request.user.is_superuser:
+        return HttpResponseForbidden('Task closed')
+    if request.user != task.user or not request.user.is_superuser:
+        return HttpResponseForbidden('Forbidden')
+    if not request.FILES.has_key('taskfile'):
+        return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
+    reader = csv.reader(request.FILES['taskfile'])
+    errLog = []
+    rowCount = 0
+    try:
+        for row in reader:
+            code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
+            if not code: continue
+            parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
+            try:
+                score = Score.objects.get(task = task, parameter = parameter)
+            except Score.DoesNotExist:
+                score = Score()
+            try:
+                score.task              = task
+                score.parameter         = parameter
+                score.found             = int(row[3] or 0)
+                score.complete          = int(row[4] or 0)
+                score.completeComment   = row[5]
+                score.topical           = int(row[6] or 0)
+                score.topicalComment    = row[7]
+                score.accessible        = int(row[8] or 0)
+                score.accessibleComment = row[9]
+                score.hypertext         = int(row[10] or 0)
+                score.hypertextComment  = row[11]
+                score.document          = int(row[12] or 0)
+                score.documentComment   = row[13]
+                score.image             = int(row[14] or 0)
+                score.imageComment      = row[15]
+                score.comment           = row[16]
+                score.save()
+            except Exception, e :
+                errLog.append("%d: %s" % (reader.line_num, e))
+            else:
+                rowCount += 1
+    except csv.Error, e:
+           errLog.append("%d: %s" % (reader.line_num, e))
+    return render_to_response('exmo2010/task_import_log.html',
+        { 'task': id, 'file': request.FILES['taskfile'], 'errLog': errLog, 'rowCount': rowCount }
+    )
+
+
 def table(request, headers, **kwargs):
   '''Generic sortable table view'''
   sort_headers = SortHeaders(request, headers)

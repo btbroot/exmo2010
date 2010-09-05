@@ -50,4 +50,6 @@ urlpatterns = patterns('',
 
   (r'^api/organization/$', 'exmo.exmo2010.api.organization_lookup'),
 
+  ( r'^tasks/taskimport/(\d+)/$', 'exmo.exmo2010.views.task_import' ),
+  ( r'^tasks/taskexport/(\d+)/$', 'exmo.exmo2010.views.task_export' ),
 )

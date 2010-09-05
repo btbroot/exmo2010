@@ -24,6 +24,14 @@
 {% block content %}
 <div id=score_list>
 <h2><a href="{{task.organization.url}}">{{task.organization.name}}</a></h2>
+<div id=csv>
+   <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task CSV" %}</a>
+   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="POST" enctype="multipart/form-data">
+     <input type="file" name="taskfile">
+     <input type="submit" value="{% trans "Import task CVS" %}">
+   </form>
+   {% if importLog %}<div>{{importLog}}</div>{% endif %}
+</div>
 <table>
 {% table_header headers %}
 <tbody>
