@@ -145,12 +145,12 @@ from django.http import HttpResponse
 def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
     if not task.open and not request.user.is_superuser:
-	return HttpResponseForbidden('Task closed')
+        return HttpResponseForbidden('Task closed')
     if not request.user.is_superuser and request.user != task.user:
         return HttpResponseForbidden('Forbidden')
-    parameters = Parameter.objects.filter(organizationType=task.organization.type).exclude(exclude=task.organization)
-    scores     = Score.objects.filter(task=id)
-    response = HttpResponse(mimetype='text/csv')
+    parameters = Parameter.objects.filter(organizationType = task.organization.type).exclude(exclude = task.organization)
+    scores     = Score.objects.filter(task = id)
+    response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
     writer = csv.writer(response)
     writer.writerow([
@@ -179,9 +179,24 @@ def task_export(request, id):
             p.type.name.encode("utf-8")
         )
         try:
-            s = scores.get(parameter=p)
+            s = scores.get(parameter = p)
         except:
-            pass
+            out += (
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                ''
+            )
         else:
             out += (
                 s.found,
@@ -203,9 +218,17 @@ def task_export(request, id):
     return response
 
 import re
+from django.core.exceptions import ValidationError
 @revision.create_on_success
 @login_required
 def task_import(request, id):
+
+    def safeConvert(string, toType):
+        if string:
+            return toType(string)
+        else:
+            return None
+
     task = get_object_or_404(Task, pk = id)
     if not task.open and not request.user.is_superuser:
         return HttpResponseForbidden('Task closed')
@@ -219,41 +242,57 @@ def task_import(request, id):
     try:
         for row in reader:
             code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
-            if not code: continue
+            if not code or (
+                row[3]  == '' and
+                row[4]  == '' and
+                row[5]  == '' and
+                row[6]  == '' and
+                row[7]  == '' and
+                row[8]  == '' and
+                row[9]  == '' and
+                row[10] == '' and
+                row[11] == '' and
+                row[12] == '' and
+                row[13] == '' and
+                row[14] == '' and
+                row[15] == '' and
+                row[16] == ''
+              ):
+                continue
             parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
             try:
                 score = Score.objects.get(task = task, parameter = parameter)
             except Score.DoesNotExist:
                 score = Score()
+            score.task      = task
+            score.parameter = parameter
             try:
-                score.task              = task
-                score.parameter         = parameter
-                score.found             = int(row[3] or 0)
-                score.complete          = int(row[4] or 0)
-                score.completeComment   = row[5]
-                score.topical           = int(row[6] or 0)
-                score.topicalComment    = row[7]
-                score.accessible        = int(row[8] or 0)
-                score.accessibleComment = row[9]
-                score.hypertext         = int(row[10] or 0)
-                score.hypertextComment  = row[11]
-                score.document          = int(row[12] or 0)
-                score.documentComment   = row[13]
-                score.image             = int(row[14] or 0)
-                score.imageComment      = row[15]
-                score.comment           = row[16]
-                from django.core.exceptions import ValidationError
-                try:
-                    score.full_clean()
-                    score.save()
-                except ValidationError, e:
-                    errLog.append("%d: %s" % (reader.line_num, ' '.join(s for s in e.message_dict['__all__'])))
-            except Exception, e :
-                errLog.append("%d: %s" % (reader.line_num, e))
+                score.found             = safeConvert(row[3], int)
+                score.complete          = safeConvert(row[4], int)
+                score.completeComment   = safeConvert(row[5], str)
+                score.topical           = safeConvert(row[6], int)
+                score.topicalComment    = safeConvert(row[7], str)
+                score.accessible        = safeConvert(row[8], int)
+                score.accessibleComment = safeConvert(row[9], str)
+                score.hypertext         = safeConvert(row[10], int)
+                score.hypertextComment  = safeConvert(row[11], str)
+                score.document          = safeConvert(row[12], int)
+                score.documentComment   = safeConvert(row[13], str)
+                score.image             = safeConvert(row[14], int)
+                score.imageComment      = safeConvert(row[15], str)
+                score.comment           = safeConvert(row[16], str)
+                score.full_clean()
+                score.save()
+            except ValidationError, e:
+                errLog.append("row %d (validation). %s" % (
+                    reader.line_num,
+                    '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
+            except Exception, e:
+                errLog.append("row %d. %s" % (reader.line_num, e))
             else:
                 rowCount += 1
     except csv.Error, e:
-           errLog.append("%d: %s" % (reader.line_num, e))
+           errLog.append("row %d (csv). %s" % (reader.line_num, e))
     return render_to_response('exmo2010/task_import_log.html',
         { 'task': id, 'file': request.FILES['taskfile'], 'errLog': errLog, 'rowCount': rowCount }
     )
