@@ -203,6 +203,7 @@ def task_export(request, id):
     return response
 
 import re
+@revision.create_on_success
 @login_required
 def task_import(request, id):
     task = get_object_or_404(Task, pk = id)
@@ -241,7 +242,12 @@ def task_import(request, id):
                 score.image             = int(row[14] or 0)
                 score.imageComment      = row[15]
                 score.comment           = row[16]
-                score.save()
+                from django.core.exceptions import ValidationError
+                try:
+                    score.full_clean()
+                    score.save()
+                except ValidationError, e:
+                    errLog.append("%d: %s" % (reader.line_num, ' '.join(s for s in e.message_dict['__all__'])))
             except Exception, e :
                 errLog.append("%d: %s" % (reader.line_num, e))
             else:
