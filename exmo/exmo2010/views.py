@@ -146,7 +146,7 @@ def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
     if not task.open and not request.user.is_superuser:
 	return HttpResponseForbidden('Task closed')
-    if request.user != task.user or not request.user.is_superuser:
+    if not request.user.is_superuser and request.user != task.user:
         return HttpResponseForbidden('Forbidden')
     parameters = Parameter.objects.filter(organizationType=task.organization.type).exclude(exclude=task.organization)
     scores     = Score.objects.filter(task=id)
@@ -208,7 +208,7 @@ def task_import(request, id):
     task = get_object_or_404(Task, pk = id)
     if not task.open and not request.user.is_superuser:
         return HttpResponseForbidden('Task closed')
-    if request.user != task.user or not request.user.is_superuser:
+    if request.user != task.user and not request.user.is_superuser:
         return HttpResponseForbidden('Forbidden')
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
