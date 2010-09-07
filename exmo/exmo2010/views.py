@@ -241,32 +241,32 @@ def task_import(request, id):
     rowCount = 0
     try:
         for row in reader:
-            code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
-            if not code or (
-                row[3]  == '' and
-                row[4]  == '' and
-                row[5]  == '' and
-                row[6]  == '' and
-                row[7]  == '' and
-                row[8]  == '' and
-                row[9]  == '' and
-                row[10] == '' and
-                row[11] == '' and
-                row[12] == '' and
-                row[13] == '' and
-                row[14] == '' and
-                row[15] == '' and
-                row[16] == ''
-              ):
-                continue
-            parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
             try:
-                score = Score.objects.get(task = task, parameter = parameter)
-            except Score.DoesNotExist:
-                score = Score()
-            score.task      = task
-            score.parameter = parameter
-            try:
+                code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
+                if not code or (
+                    row[3]  == '' and
+                    row[4]  == '' and
+                    row[5]  == '' and
+                    row[6]  == '' and
+                    row[7]  == '' and
+                    row[8]  == '' and
+                    row[9]  == '' and
+                    row[10] == '' and
+                    row[11] == '' and
+                    row[12] == '' and
+                    row[13] == '' and
+                    row[14] == '' and
+                    row[15] == '' and
+                    row[16] == ''
+                ):
+                    continue
+                parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
+                try:
+                    score = Score.objects.get(task = task, parameter = parameter)
+                except Score.DoesNotExist:
+                    score = Score()
+                score.task              = task
+                score.parameter         = parameter
                 score.found             = safeConvert(row[3], int)
                 score.complete          = safeConvert(row[4], int)
                 score.completeComment   = safeConvert(row[5], str)
