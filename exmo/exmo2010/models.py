@@ -17,6 +17,7 @@
 #
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 class OrganizationType(models.Model):
   name         = models.CharField(max_length = 255, unique = True)
@@ -199,17 +200,17 @@ class Score(models.Model):
     from django.core.exceptions import ValidationError
     if self.found:
       if self.parameter.type.complete   and self.complete   in ('', None):
-        raise ValidationError('Complete must be set')
+        raise ValidationError(_('Complete must be set'))
       if self.parameter.type.topical    and self.topical    in ('', None):
-        raise ValidationError('Topical must be set')
+        raise ValidationError(_('Topical must be set'))
       if self.parameter.type.accessible and self.accessible in ('', None):
-        raise ValidationError('Accessible must be set')
+        raise ValidationError(_('Accessible must be set'))
       if self.parameter.type.hypertext  and self.hypertext  in ('', None):
-        raise ValidationError('Hypertext must be set')
+        raise ValidationError(_('Hypertext must be set'))
       if self.parameter.type.document   and self.document   in ('', None):
-        raise ValidationError('Document must be set')
+        raise ValidationError(_('Document must be set'))
       if self.parameter.type.image      and self.image      in ('', None):
-        raise ValidationError('Image must be set')
+        raise ValidationError(_('Image must be set'))
     elif any((
         self.complete,
         self.topical,
@@ -224,7 +225,7 @@ class Score(models.Model):
         self.documentComment,
         self.imageComment
         )):
-      raise ValidationError('Not found, but some excessive data persists')
+      raise ValidationError(_('Not found, but some excessive data persists'))
 
 
   class Meta:

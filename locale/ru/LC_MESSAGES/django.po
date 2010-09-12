@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-25 15:41+0400\n"
+"POT-Creation-Date: 2010-09-12 20:59+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,69 +51,113 @@ msgstr ""
 msgid "No fields changed."
 msgstr ""
 
-#: exmo/exmo2010/views.py:88
+#: exmo/exmo2010/models.py:149
+msgid "open"
+msgstr ""
+
+#: exmo/exmo2010/models.py:150
+msgid "ready"
+msgstr ""
+
+#: exmo/exmo2010/models.py:151
+msgid "approved"
+msgstr ""
+
+#: exmo/exmo2010/models.py:211
+msgid "Complete must be set"
+msgstr ""
+
+#: exmo/exmo2010/models.py:213
+msgid "Topical must be set"
+msgstr ""
+
+#: exmo/exmo2010/models.py:215
+#, fuzzy
+msgid "Accessible must be set"
+msgstr "Доступность"
+
+#: exmo/exmo2010/models.py:217
+msgid "Hypertext must be set"
+msgstr ""
+
+#: exmo/exmo2010/models.py:219
+msgid "Document must be set"
+msgstr ""
+
+#: exmo/exmo2010/models.py:221
+msgid "Image must be set"
+msgstr ""
+
+#: exmo/exmo2010/models.py:236
+msgid "Not found, but some excessive data persists"
+msgstr ""
+
+#: exmo/exmo2010/views.py:96
 msgid "Task closed"
 msgstr "Задача закрыта"
 
-#: exmo/exmo2010/views.py:94 exmo/exmo2010/views.py:188
-#: exmo/exmo2010/views.py:193 exmo/exmo2010/views.py:205
-#: exmo/exmo2010/views.py:210
+#: exmo/exmo2010/views.py:102 exmo/exmo2010/views.py:369
+#: exmo/exmo2010/views.py:371 exmo/exmo2010/views.py:385
+#: exmo/exmo2010/views.py:390 exmo/exmo2010/views.py:402
+#: exmo/exmo2010/views.py:407
 msgid "Forbidden"
 msgstr "Запрещено"
 
-#: exmo/exmo2010/views.py:122 templates/exmo2010/score_form.html:35
+#: exmo/exmo2010/views.py:129 templates/exmo2010/score_form.html:35
 msgid "Name"
 msgstr "Имя"
 
-#: exmo/exmo2010/views.py:123
+#: exmo/exmo2010/views.py:130
 msgid "Found"
 msgstr "Найдено"
 
-#: exmo/exmo2010/views.py:124
+#: exmo/exmo2010/views.py:131
 msgid "Complete"
 msgstr "Полнота"
 
-#: exmo/exmo2010/views.py:125
+#: exmo/exmo2010/views.py:132
 msgid "Topical"
 msgstr "Актуальность"
 
-#: exmo/exmo2010/views.py:126
+#: exmo/exmo2010/views.py:133
 msgid "Accessible"
 msgstr "Доступность"
 
-#: exmo/exmo2010/views.py:127
+#: exmo/exmo2010/views.py:134
 msgid "HTML"
 msgstr ""
 
-#: exmo/exmo2010/views.py:128
+#: exmo/exmo2010/views.py:135
 msgid "Document"
 msgstr "Документ"
 
-#: exmo/exmo2010/views.py:129
+#: exmo/exmo2010/views.py:136
 msgid "Image"
 msgstr "Граф."
 
-#: exmo/exmo2010/views.py:130
+#: exmo/exmo2010/views.py:137
 msgid "Action"
 msgstr "Действие"
 
-#: exmo/exmo2010/views.py:163 exmo/exmo2010/views.py:172
+#: exmo/exmo2010/views.py:337 exmo/exmo2010/views.py:346
+#: exmo/exmo2010/views.py:354 exmo/exmo2010/views.py:365
 msgid "Organization"
 msgstr "Организация"
 
-#: exmo/exmo2010/views.py:164
+#: exmo/exmo2010/views.py:338
 msgid "Expert"
 msgstr "Эксперт"
 
-#: exmo/exmo2010/views.py:165 exmo/exmo2010/views.py:173
-msgid "Open"
-msgstr "Открыта"
+#: exmo/exmo2010/views.py:339 exmo/exmo2010/views.py:347
+msgid "Status"
+msgstr ""
 
-#: exmo/exmo2010/views.py:166 exmo/exmo2010/views.py:174
+#: exmo/exmo2010/views.py:340 exmo/exmo2010/views.py:348
+#: exmo/exmo2010/views.py:355 exmo/exmo2010/views.py:366
 msgid "Complete%"
 msgstr "Выполнено%"
 
-#: exmo/exmo2010/views.py:204
+#: exmo/exmo2010/views.py:401
 msgid "Already closed"
 msgstr "Задача уже закрыта"
 
@@ -139,23 +183,23 @@ msgid ""
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: templates/exmo2010/base.html:29
+#: templates/exmo2010/base.html:30
 msgid "Welcome,"
 msgstr "Добро пожаловать,"
 
-#: templates/exmo2010/base.html:34
+#: templates/exmo2010/base.html:35
 msgid "Documentation"
 msgstr "Документация"
 
-#: templates/exmo2010/base.html:42
+#: templates/exmo2010/base.html:43
 msgid "Change password"
 msgstr "Сменить пароль"
 
-#: templates/exmo2010/base.html:49
+#: templates/exmo2010/base.html:50
 msgid "Log out"
 msgstr "Выйти"
 
-#: templates/exmo2010/base.html:57
+#: templates/exmo2010/base.html:58
 #: templates/exmo2010/score_confirm_delete.html:23
 #: templates/exmo2010/score_form.html:24
 msgid "Home"
@@ -225,7 +269,15 @@ msgstr "Описание"
 msgid "Score list for"
 msgstr "Оценки для"
 
-#: templates/exmo2010/score_list.html:126 templates/exmo2010/task_list.html:34
+#: templates/exmo2010/score_list.html:28
+msgid "Export task CSV"
+msgstr ""
+
+#: templates/exmo2010/score_list.html:31
+msgid "Import task CVS"
+msgstr ""
+
+#: templates/exmo2010/score_list.html:144 templates/exmo2010/task_list.html:34
 msgid "Delete"
 msgstr "Удалить"
 
@@ -236,6 +288,22 @@ msgstr "Закрыть задачу?"
 #: templates/exmo2010/task_confirm_delete.html:24
 msgid "Delete this task?"
 msgstr "Удалить задачу?"
+
+#: templates/exmo2010/task_import_log.html:22
+msgid "Import results"
+msgstr ""
+
+#: templates/exmo2010/task_import_log.html:26
+msgid "Rows ok"
+msgstr ""
+
+#: templates/exmo2010/task_import_log.html:28
+msgid "Errors encountered"
+msgstr ""
+
+#: templates/exmo2010/task_import_log.html:36
+msgid "Back to the task"
+msgstr ""
 
 #: templates/exmo2010/task_list.html:24
 msgid "Task list"
@@ -252,3 +320,6 @@ msgstr "закрыть"
 #: templates/exmo2010/task_list.html:38
 msgid "closed"
 msgstr "закрыта"
+
+#~ msgid "Open"
+#~ msgstr "Открыта"
