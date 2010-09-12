@@ -239,3 +239,9 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
+
+class Discus(models.Model):
+  user          = models.ForeignKey(User)
+  score         = models.ForeignKey(Score)
+  comment       = models.TextField()
+  date          = models.DateTimeField(auto_now = True)
