@@ -131,10 +131,19 @@ class Parameter(models.Model):
     ordering = ('group__group__code', 'group__code', 'code')
 
 
+TASK_OPEN       = 0
+TASK_READY      = 1
+TASK_APPROVED   = 2
+
 class Task(models.Model):
+  TASK_STATUS = (
+    (TASK_OPEN, _('open')),
+    (TASK_READY, _('ready')),
+    (TASK_APPROVED, _('approved'))
+  )
   user         = models.ForeignKey(User)
   organization = models.ForeignKey(Organization)
-  open         = models.BooleanField()
+  status       = models.PositiveIntegerField(choices = TASK_STATUS)
   c_scores     = '''SELECT COUNT(*)
     FROM exmo2010_Score
     WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''.lower()

@@ -23,6 +23,9 @@ from django.views.generic.create_update import update_object, create_object, del
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
+from exmo2010.models import TASK_APPROVED, TASK_OPEN, TASK_READY
+from django.contrib.auth.models import Group
+from django.db.models import Q
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -60,7 +63,7 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    if not task.open and not request.user.is_superuser:
+    if not task.status == TASK_OPEN and not request.user.is_superuser:
 	return HttpResponseForbidden('Task closed')
     return create_object(
       request,
@@ -88,7 +91,7 @@ def score_detail_direct(request, score_id, method='update'):
 	return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
       else: return HttpResponseForbidden_(('Forbidden'))
     else: #update
-      if not score.task.open and not request.user.is_superuser:
+      if not score.task.status == TASK_OPEN and not request.user.is_superuser:
 	return HttpResponseForbidden(_('Task closed'))
       if request.user.is_superuser or request.user == score.task.user:
         if request.method == 'POST':
@@ -107,11 +110,10 @@ def score_detail_direct(request, score_id, method='update'):
         }
       )
 
-from django.db.models import Q
 @login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
-    if not task.open and not request.user.is_superuser:
+    if not task.status == TASK_OPEN and not request.user.is_superuser:
 	return HttpResponseForbidden('Task closed')
     if request.user.is_superuser or request.user == task.user:
       queryset = Parameter.objects.filter(Q(organizationType=task.organization.type), ~Q(exclude=task.organization)).extra(
@@ -144,7 +146,7 @@ from django.http import HttpResponse
 @login_required
 def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
-    if not task.open and not request.user.is_superuser:
+    if not task.status == TASK_OPEN and not request.user.is_superuser:
         return HttpResponseForbidden('Task closed')
     if not request.user.is_superuser and request.user != task.user:
         return HttpResponseForbidden('Forbidden')
@@ -230,7 +232,7 @@ def task_import(request, id):
             return None
 
     task = get_object_or_404(Task, pk = id)
-    if not task.open and not request.user.is_superuser:
+    if not task.status == TASK_OPEN and not request.user.is_superuser:
         return HttpResponseForbidden('Task closed')
     if request.user != task.user and not request.user.is_superuser:
         return HttpResponseForbidden('Forbidden')
@@ -359,11 +361,11 @@ def task_manager(request, id, method):
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or task.user == request.user:
-        if task.open:
+        if task.status == TASK_OPEN:
           if request.method == 'GET':
 	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request))
           elif request.method == 'POST':
-	    task.open = False
+	    task.status = TASK_READY
 	    task.save()
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already closed'))
