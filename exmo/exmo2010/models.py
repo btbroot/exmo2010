@@ -240,7 +240,7 @@ class Score(models.Model):
       'parameter__code'
     )
 
-class Discus(models.Model):
+class Feedback(models.Model):
   user          = models.ForeignKey(User)
   score         = models.ForeignKey(Score)
   comment       = models.TextField()
