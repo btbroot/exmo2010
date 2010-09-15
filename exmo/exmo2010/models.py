@@ -51,16 +51,28 @@ class Entity(models.Model):
 
 
 class Organization(models.Model):
+  '''
+  name -- Uniq organization name
+  url -- Internet site URL
+  type -- Type of organization (FOIV, ROIV, ROIZ, etc)
+  entity -- Federal district for organization (if organization not federal)
+  keywords -- Keywords for autocomplete and search
+  comments -- Additional comment
+  keyname -- Field identifies the group name from auth.models.Group model.
+  '''
+
   name         = models.CharField(max_length = 255, unique = True)
   url          = models.URLField(max_length = 255, null = True, blank = True)
   type         = models.ForeignKey(OrganizationType)
   entity       = models.ForeignKey(Entity, null = True, blank = True)
   keywords     = models.TextField(null = True, blank = True)
   comments     = models.TextField(null = True, blank = True)
+  keyname      = models.CharField(max_length = 255, unique = True)
 
   def __unicode__(self):
     return '%d. %s' % (self.pk, self.name)
 
+#hack TODO: revert ordering by 'name'
   class Meta:
     ordering = ('id',)
 
