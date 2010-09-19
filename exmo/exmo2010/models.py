@@ -131,6 +131,19 @@ class ParameterType(models.Model):
 
 
 
+class Monitoring(models.Model):
+  name               = models.CharField(max_length = 255, default = "-")
+  type               = models.ForeignKey(OrganizationType)
+
+  def __unicode__(self):
+    return '%s: %s' % (self.type.name, self.name)
+
+  class Meta:
+    unique_together = (('name', 'type'))
+    ordering = ('type__name', 'name')
+
+
+
 class Parameter(models.Model):
   code               = models.PositiveIntegerField()
   name               = models.CharField(max_length = 255)
@@ -138,7 +151,7 @@ class Parameter(models.Model):
   weight             = models.PositiveIntegerField()
   group              = models.ForeignKey(Subcategory)
   type               = models.ForeignKey(ParameterType)
-  organizationType   = models.ManyToManyField(OrganizationType)
+  monitoring         = models.ManyToManyField(Monitoring)
   exclude            = models.ManyToManyField(Organization, null = True, blank = True)
 
   def __unicode__(self):
@@ -153,19 +166,6 @@ class Parameter(models.Model):
       ('code', 'group'),
     )
     ordering = ('group__group__code', 'group__code', 'code')
-
-
-
-class Monitoring(models.Model):
-  name               = models.CharField(max_length = 255, default = "-")
-  type               = models.ForeignKey(OrganizationType)
-
-  def __unicode__(self):
-    return '%s: %s' % (self.type.name, self.name)
-
-  class Meta:
-    unique_together = (('name', 'type'))
-    ordering = ('type__name', 'name')
 
 
 
@@ -187,9 +187,8 @@ class Task(models.Model):
     FROM exmo2010_Score
     WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''.lower()
   c_parameters = '''SELECT COUNT(*)
-    FROM exmo2010_organization JOIN exmo2010_parameter_organizationType
-    ON exmo2010_organization.type_id = exmo2010_parameter_organizationType.organizationtype_id
-    WHERE exmo2010_organization.id = exmo2010_task.organization_id'''
+    FROM exmo2010_Parameter_Monitoring
+    WHERE exmo2010_Parameter_Monitoring.monitoring_id = exmo2010_Task.monitoring_id'''.lower()
   c_excludes   = '''SELECT COUNT(*)
     FROM exmo2010_Organization JOIN exmo2010_Parameter_Exclude
     ON exmo2010_Organization.id = exmo2010_Parameter_Exclude.Organization_id

@@ -138,7 +138,7 @@ def score_detail_direct(request, score_id, method='update'):
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
     if check_permission(request.user, task) != PERM_NOPERM:
-      queryset = Parameter.objects.filter(Q(organizationType=task.organization.type), ~Q(exclude=task.organization)).extra(
+      queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
         select={
           'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
         }
