@@ -43,3 +43,29 @@ def construct_change_message(request, form, formsets):
                                              'object': force_unicode(deleted_object)})
         change_message = ' '.join(change_message)
         return change_message or _('No fields changed.')
+
+
+PERM_NOPERM=0
+PERM_ADMIN=1
+PERM_EXPERT=2
+PERM_ORGANIZATION=3
+PERM_CUSTOMER=4
+
+def check_permission(user, task):
+    '''check user permission for task and scores of task'''
+    groups = user.groups.all()
+    if user.is_superuser:
+        return PERM_ADMIN
+    elif Group.objects.get(name='experts') in groups and user == task.user:
+        return PERM_EXPERT
+    elif Group.objects.get(name='customers') in groups and task.status == TASK_APPROVED:
+        return PERM_CUSTOMER
+    elif Group.objects.get(name='organizations') in groups and task.status == TASK_APPROVED:
+        try:
+            g = Group.objects.get(name = task.organization.keyname)
+            if g in groups:
+                return PERM_ORGANIZATION
+        except:
+            return PERM_NOPERM
+    else:
+        return PERM_NOPERM

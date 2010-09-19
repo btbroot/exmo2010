@@ -23,9 +23,11 @@ from django.views.generic.create_update import update_object, create_object, del
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
-from exmo2010.models import TASK_APPROVED, TASK_OPEN, TASK_READY
+from exmo.exmo2010.models import TASK_APPROVED, TASK_OPEN, TASK_READY
 from django.contrib.auth.models import Group
 from django.db.models import Q
+from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
+from exmo.exmo2010.helpers import check_permission
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -57,24 +59,29 @@ def score_by_organization_parameter_detail(request, organization_id, parameter_i
       #form = ContactForm() # An unbound form
   return update_object(request, model = Score, object_id = score.pk)
 
+
 @login_required
 def score_detail(request, task_id, parameter_id):
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    if not task.status == TASK_OPEN and not request.user.is_superuser:
-	return HttpResponseForbidden('Task closed')
-    return create_object(
-      request,
-      form_class = ScoreForm,
-      post_save_redirect = redirect,
-      extra_context = {
-        'create': True,
-        'task': task,
-        'parameter': parameter,
-        }
-    )
+    if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.status == TASK_OPEN):
+      return create_object(
+        request,
+        form_class = ScoreForm,
+        post_save_redirect = redirect,
+        extra_context = {
+          'create': True,
+          'task': task,
+          'parameter': parameter,
+          }
+      )
+    elif check_permission(request.user, task) == PERM_EXPERT and task.status != TASK_OPEN:
+      return HttpResponseForbidden(_('Task closed'))
+    else:
+      return HttpResponseForbidden(_('Forbidden'))
+
 
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -87,18 +94,19 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
-      if request.user.is_superuser or request.user == score.task.user:
-	return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
-      else: return HttpResponseForbidden_(('Forbidden'))
-    else: #update
-      if not score.task.status == TASK_OPEN and not request.user.is_superuser:
-	return HttpResponseForbidden(_('Task closed'))
-      if request.user.is_superuser or request.user == score.task.user:
-        if request.method == 'POST':
-	    form = ScoreForm(request.POST,instance=score)
-	    message = construct_change_message(request,form, None)
-	    revision.comment = message
+      if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.status == TASK_OPEN):
+        return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
       else: return HttpResponseForbidden(_('Forbidden'))
+    elif method == 'update':
+      if check_permission(request.user, score.task) == PERM_EXPERT and score.task.status != TASK_OPEN:
+        return HttpResponseForbidden(_('Task closed'))
+      elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.status == TASK_OPEN):
+        if request.method == 'POST':
+            form = ScoreForm(request.POST,instance=score)
+            message = construct_change_message(request,form, None)
+            revision.comment = message
+      else:
+        return HttpResponseForbidden(_('Forbidden'))
       return update_object(
 	request,
 	form_class = ScoreForm,
@@ -107,21 +115,33 @@ def score_detail_direct(request, score_id, method='update'):
 	extra_context = {
           'task': score.task,
           'parameter': score.parameter,
+          'comments': Feedback.objects.filter(score = score)
         }
       )
+    elif method == 'view':
+      return object_detail(
+	request,
+	queryset = Score.objects.all(),
+	object_id = score.pk,
+	extra_context = {
+          'task': score.task,
+          'parameter': score.parameter,
+          'comments': Feedback.objects.filter(score = score)
+        }
+      )
+    else: return HttpResponseForbidden(_('Forbidden'))
+
 
 @login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
-    if not task.status == TASK_OPEN and not request.user.is_superuser:
-	return HttpResponseForbidden('Task closed')
-    if request.user.is_superuser or request.user == task.user:
+    if check_permission(request.user, task) != PERM_NOPERM:
       queryset = Parameter.objects.filter(Q(organizationType=task.organization.type), ~Q(exclude=task.organization)).extra(
         select={
-          'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table,task.pk, Parameter._meta.db_table),
+          'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
         }
       )
-    else: return HttpResponseForbidden('Forbidden')
+    else: return HttpResponseForbidden(_('Forbidden'))
     return table(request,
       headers=(
         ('Code', None, None, None),
@@ -146,10 +166,8 @@ from django.http import HttpResponse
 @login_required
 def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
-    if not task.status == TASK_OPEN and not request.user.is_superuser:
-        return HttpResponseForbidden('Task closed')
-    if not request.user.is_superuser and request.user != task.user:
-        return HttpResponseForbidden('Forbidden')
+    if check_permission(request.user, task) == PERM_NOPERM:
+        return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(organizationType = task.organization.type).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
     response = HttpResponse(mimetype = 'text/csv')
@@ -232,10 +250,10 @@ def task_import(request, id):
             return None
 
     task = get_object_or_404(Task, pk = id)
-    if not task.status == TASK_OPEN and not request.user.is_superuser:
-        return HttpResponseForbidden('Task closed')
-    if request.user != task.user and not request.user.is_superuser:
-        return HttpResponseForbidden('Forbidden')
+    if check_permission(request.user, task) == PERM_EXPERT and task.status != TASK_OPEN:
+        return HttpResponseForbidden(_('Task closed'))
+    elif check_permission(request.user, task) != PERM_ADMIN and not (check_permission(request.user, task) == PERM_EXPERT and task.status == TASK_OPEN):
+        return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
     reader = csv.reader(request.FILES['taskfile'])
@@ -321,24 +339,57 @@ def table(request, headers, **kwargs):
 
 @login_required
 def tasks(request):
+    '''We have 3 generic group: experts, customers, organizations.
+    Superusers: all tasks
+    Experts: only own tasks
+    Customers: all approved tasks
+    organizations: all approved tasks of organizations that belongs to user
+    Also for every ogranization we can have group'''
+
     queryset = Task.objects.extra(select = {'complete': Task.c_complete})
+    groups = request.user.groups.all()
     # Or, filtered by user
     if request.user.is_superuser:
       headers = (
                 ('', None, None, None),
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Expert'), 'user__username', 'user__username', None),
-                (_('Open'), 'open', 'open', int),
+                (_('Status'), 'status', 'status', int),
                 (_('Complete%'), 'complete', None, None)
               )
-    else:
+    elif Group.objects.get(name='experts') in groups:
       queryset = queryset.filter(user = request.user)
     # Or, without Expert
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Open'), 'open', 'open', int),
+                (_('Status'), 'status', 'status', int),
                 (_('Complete%'), 'complete', None, None)
               )
+    elif Group.objects.get(name='customers') in groups:
+      queryset = queryset.filter(status = TASK_APPROVED)
+      headers = (
+                (_('Organization'), 'organization__name', 'organization__name', None),
+                (_('Complete%'), 'complete', None, None)
+              )
+    elif Group.objects.get(name='organizations') in groups:
+      orgs = []
+      for group in groups:
+        org = None
+        try: org = Organization.objects.get(keyname = group.name)
+        except: continue
+        if org: orgs.append(org)
+      query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
+      if query:
+        queryset = queryset.filter(status = TASK_APPROVED)
+        queryset = queryset.filter(eval(query))
+        headers = (
+                (_('Organization'), 'organization__name', 'organization__name', None),
+                (_('Complete%'), 'complete', None, None)
+                )
+      else: #no organization to show
+        return HttpResponseForbidden(_('Forbidden'))
+    else: #we dont know how are you
+        return HttpResponseForbidden(_('Forbidden'))
     return table(request, headers, queryset = queryset, paginate_by = 15)
 
 
@@ -360,7 +411,7 @@ def task_manager(request, id, method):
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
-      if request.user.is_superuser or task.user == request.user:
+      if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         if task.status == TASK_OPEN:
           if request.method == 'GET':
 	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request))
@@ -368,10 +419,23 @@ def task_manager(request, id, method):
 	    task.status = TASK_READY
 	    task.save()
 	    return HttpResponseRedirect(redirect)
-	else: return HttpResponseForbidden(_('Already closed'))
+	else:
+	  return HttpResponseForbidden(_('Already closed'))
+      else: return HttpResponseForbidden(_('Forbidden'))
+    elif method == 'approve':
+      task = get_object_or_404(Task, pk = id)
+      if request.user.is_superuser:
+        if task.status == TASK_READY:
+          if request.method == 'GET':
+	    return render_to_response('exmo2010/task_confirm_approve.html', { 'object': task }, context_instance=RequestContext(request))
+          elif request.method == 'POST':
+	    task.status = TASK_APPROVED
+	    task.save()
+	    return HttpResponseRedirect(redirect)
+	else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
-      if request.user.is_superuser or request.user == task.user:
+      if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect)
       else: return HttpResponseForbidden(_('Forbidden'))

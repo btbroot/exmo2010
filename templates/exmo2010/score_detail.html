@@ -1,0 +1,111 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+{% block title %}{{parameter}}{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.tasks %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{{ task.organization.name }} ({{ task.user }})</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
+<div id=parameter_desc>
+<table id=parameter_desc_table>
+<th>{% trans 'Parameter description' %}</th>
+<tr><td>
+{% trans 'Name' %}: {{ parameter }}<br>
+{% trans 'Description' %}: {{ parameter.description }}
+</td></tr>
+</table>
+</div>
+
+<div id=score_detail>
+    <div id=score_detail_found>{% trans 'Found: ' %}{{ object.found }}</div>
+{% if parameter.type.complete and object.complete %}
+    <div id=score_detail_complete>
+    {% trans 'Complete: ' %}: {{ object.complete }}
+      {%if object.completeComment %}
+       <div id=score_detail_completeComment>
+        {% trans 'Comment: ' %}{{ object.completeComment }}
+       </div>
+      {% endif %}
+    </div>
+{% endif %}
+{% if parameter.type.topical and object.topical %}
+    <div id=score_detail_topical>
+    {% trans 'Topical: ' %}{{ object.topical }}
+      {% if object.topicalComment %}
+      <div id=score_detail_topicalComment>
+        {% trans 'Comment: ' %}{{ object.topicalComment }}
+      </div>
+      {% endif %}
+    </div>
+{% endif %}
+{% if parameter.type.accessible and object.accessible %}
+    <div id=score_detail_accessible>
+    {% trans 'Accessible: ' %}{{ object.accessible }}
+    {% if object.accessibleComment %}
+      <div id=score_detail_accessibleComment>
+        {% trans 'Comment: ' %}{{ object.accessibleComment }}
+      </div>
+    {% endif %}
+    </div>
+{% endif %}
+{% if parameter.type.hypertext and object.hypertext %}
+    <div id=score_detail_hypertext>
+    {% trans 'Hypertext: ' %}{{ object.hypertext }}
+      {% if object.hypertextComment %}
+      <div id=score_detail_hypertextComment>
+        {% trans 'Comment: ' %}{{ object.hypertextComment }}
+      </div>
+      {% endif %}
+    </div>
+{% endif %}
+{% if parameter.type.document and object.document %}
+    <div id=score_detail_document>
+    {% trans 'Document: ' %}{{ object.document }}
+    {% if object.documentComment %}
+      <div id=score_detail_documentComment>
+        {{ object.documentComment }}
+      </div>
+    {% endif %}
+    </div>
+{% endif %}
+{% if parameter.type.image and object.image %}
+    <div id=score_detail_image>
+    {% trans 'Image: ' %}{{ object.image }}
+    {% if object.imageComment %}
+      <div id=score_detail_imageComment>
+        {{ object.imageComment }}
+      </div>
+    {% endif %}
+    </div>
+{% endif %}
+{% if object.comment %}
+    <div id=score_detail_comment>
+    {% trans 'Comment: ' %}{{ object.comment }}
+    </div>
+{% endif %}
+</div>
+{% include "exmo2010/score_feedback.html" %}
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

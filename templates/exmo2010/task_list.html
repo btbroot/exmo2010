@@ -19,29 +19,49 @@
 #
 {% endcomment %}
 {% block content %}
-{% load table_header i18n %}
+{% load table_header i18n in_group has_status %}
 <div id=task_list>
 <h2>{% trans 'Task list' %}</h2>
-{%if request.user.is_superuser%}
+{%if user.is_superuser%}
 <a href="{% url exmo.exmo2010.views.task_manager 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add a new task' %}</a>
 {%endif%}
+{% if object_list %}
 <table>
   {% table_header headers %}
   <tbody>
     {% for object in object_list %}
       <tr>
-      {%if request.user.is_superuser%}
+      {%if user.is_superuser%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">{% trans 'Delete' %}</a></td>
       {%endif%}
       <td><a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}">{{ object.organization.name }}</a></td>
-      {%if request.user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
-      <td>{% if object.open %}<a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>{% else %}{% trans 'closed' %}{% endif %}</td>
+      {%if user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
+      {% if user.is_superuser or user|in_group:'experts' %}
+      <td>
+        {% if object|has_status:'TASK_OPEN' %}
+         <a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+        {% endif %}
+        {% if object|has_status:'TASK_READY' %}
+         {% if user.is_superuser %}
+          <a href="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
+         {% else %}
+          {% trans 'closed' %}
+         {% endif %}
+        {% endif %}
+        {% if object|has_status:'TASK_APPROVED' %}
+         {% trans 'approved' %}
+        {% endif %}
+      </td>
+      {% endif %}
       <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 {% include "exmo2010/paginator.html" %}
+{% else %}
+{% trans 'Empty list' %}
+{% endif %}
 </div>
 {%endblock%}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
