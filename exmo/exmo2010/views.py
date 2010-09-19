@@ -17,6 +17,7 @@
 #
 from exmo.exmo2010.sort_headers import SortHeaders
 from exmo.exmo2010.forms import ScoreForm, TaskForm
+from exmo.exmo2010.forms import FeedbackForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
@@ -24,6 +25,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import TASK_APPROVED, TASK_OPEN, TASK_READY
+from exmo.exmo2010.models import Feedback
 from django.contrib.auth.models import Group
 from django.db.models import Q
 from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
@@ -439,3 +441,18 @@ def task_manager(request, id, method):
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect)
       else: return HttpResponseForbidden(_('Forbidden'))
+
+
+@login_required
+def add_comment(request, score_id):
+    score = get_object_or_404(Score, pk = score_id)
+    if check_permission(request.user, score.task) != PERM_NOPERM:
+        return create_object(
+            request,
+            form_class = FeedbackForm,
+            post_save_redirect = reverse('exmo.exmo2010.views.score_detail_direct', args = [score.pk, 'update']),
+            extra_context = {
+                'score': score
+            }
+        )
+    else: return HttpResponseForbidden(_('Forbidden'))
