@@ -18,6 +18,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
+
+
 
 class OrganizationType(models.Model):
   name         = models.CharField(max_length = 255, unique = True)
@@ -27,6 +30,7 @@ class OrganizationType(models.Model):
 
   class Meta:
     ordering = ('name',)
+
 
 
 class Federal(models.Model):
@@ -39,6 +43,7 @@ class Federal(models.Model):
     ordering = ('name',)
 
 
+
 class Entity(models.Model):
   name         = models.CharField(max_length = 255, unique = True)
   federal      = models.ForeignKey(Federal)
@@ -48,6 +53,7 @@ class Entity(models.Model):
 
   class Meta:
     ordering = ('name',)
+
 
 
 class Organization(models.Model):
@@ -77,6 +83,7 @@ class Organization(models.Model):
     ordering = ('id',)
 
 
+
 class Category(models.Model):
   code         = models.PositiveIntegerField(unique = True)
   name         = models.CharField(max_length = 255, unique = True)
@@ -86,6 +93,7 @@ class Category(models.Model):
 
   class Meta:
     ordering = ('code',)
+
 
 
 class Subcategory(models.Model):
@@ -107,6 +115,7 @@ class Subcategory(models.Model):
     ordering = ('group__code', 'code')
 
 
+
 class ParameterType(models.Model):
   name               = models.CharField(max_length = 255, unique = True)
   description        = models.TextField(null = True, blank = True)
@@ -119,6 +128,8 @@ class ParameterType(models.Model):
 
   def __unicode__(self):
     return self.name
+
+
 
 class Parameter(models.Model):
   code               = models.PositiveIntegerField()
@@ -144,6 +155,20 @@ class Parameter(models.Model):
     ordering = ('group__group__code', 'group__code', 'code')
 
 
+
+class Monitoring(models.Model):
+  name               = models.CharField(max_length = 255, default = "-")
+  type               = models.ForeignKey(OrganizationType)
+
+  def __unicode__(self):
+    return '%s: %s' % (self.type.name, self.name)
+
+  class Meta:
+    unique_together = (('name', 'type'))
+    ordering = ('type__name', 'name')
+
+
+
 TASK_OPEN       = 0
 TASK_READY      = 1
 TASK_APPROVED   = 2
@@ -156,6 +181,7 @@ class Task(models.Model):
   )
   user         = models.ForeignKey(User)
   organization = models.ForeignKey(Organization)
+  monitoring   = models.ForeignKey(Monitoring)
   status       = models.PositiveIntegerField(choices = TASK_STATUS)
   c_scores     = '''SELECT COUNT(*)
     FROM exmo2010_Score
@@ -176,9 +202,13 @@ class Task(models.Model):
 
   class Meta:
     unique_together = (
-      ('user', 'organization'),
+      ('user', 'organization', 'monitoring'),
     )
-    ordering = ('organization__name', 'user__username')
+    ordering = ('monitoring__name', 'organization__name', 'user__username')
+
+  def clean(self):
+    if self.organization.type != self.monitoring.type:
+      raise ValidationError(_('Ambigous organization type.'))
 
 
 class Score(models.Model):
@@ -209,7 +239,6 @@ class Score(models.Model):
     )
 
   def clean(self):
-    from django.core.exceptions import ValidationError
     if self.found:
       if self.parameter.type.complete   and self.complete   in ('', None):
         raise ValidationError(_('Complete must be set'))
@@ -251,6 +280,8 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
+
+
 
 class Feedback(models.Model):
   user          = models.ForeignKey(User)

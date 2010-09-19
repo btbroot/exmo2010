@@ -44,6 +44,9 @@ class OrganizationAdmin(admin.ModelAdmin):
 class FederalAdmin(admin.ModelAdmin):
   list_display = ('pk', 'name')
 
+class MonitoringAdmin(admin.ModelAdmin):
+  list_display = ('type', 'name')
+
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
 admin.site.register(exmo.exmo2010.models.Category)
 admin.site.register(exmo.exmo2010.models.Subcategory)
@@ -55,3 +58,4 @@ admin.site.register(exmo.exmo2010.models.Entity)
 admin.site.register(exmo.exmo2010.models.Feedback)
 admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
 admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
+admin.site.register(exmo.exmo2010.models.Monitoring, MonitoringAdmin)
