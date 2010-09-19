@@ -18,9 +18,9 @@ class ObjectByPk(Node):
 def get_object_by_pk(parser, token):
     bits = token.contents.split()
     if len(bits) != 5:
-        raise TemplateSyntaxError, "get_object_by_pk tag takes exactly four arguments"
+        raise template.TemplateSyntaxError, "get_object_by_pk tag takes exactly four arguments"
     if bits[3] != 'as':
-        raise TemplateSyntaxError, "third argument to get_object_by_pk tag must be 'as'"
+        raise template.TemplateSyntaxError, "third argument to get_object_by_pk tag must be 'as'"
     return ObjectByPk(bits[1], bits[2], bits[4])
 
 get_object_by_pk = register.tag(get_object_by_pk)
