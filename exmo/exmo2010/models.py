@@ -183,18 +183,83 @@ class Task(models.Model):
   organization = models.ForeignKey(Organization)
   monitoring   = models.ForeignKey(Monitoring)
   status       = models.PositiveIntegerField(choices = TASK_STATUS)
-  c_scores     = '''SELECT COUNT(*)
+  _scores_invalid = '''
     FROM exmo2010_Score
-    WHERE exmo2010_Score.Task_id = exmo2010_Task.id'''.lower()
-  c_parameters = '''SELECT COUNT(*)
-    FROM exmo2010_Parameter_Monitoring
-    WHERE exmo2010_Parameter_Monitoring.monitoring_id = exmo2010_Task.monitoring_id'''.lower()
-  c_excludes   = '''SELECT COUNT(*)
-    FROM exmo2010_Organization JOIN exmo2010_Parameter_Exclude
-    ON exmo2010_Organization.id = exmo2010_Parameter_Exclude.Organization_id
-    WHERE exmo2010_Organization.id = exmo2010_Task.Organization_id'''.lower()
-  c_complete   = '(%s) * 100 / ((%s) - (%s))' % (c_scores, c_parameters, c_excludes)
-  # TODO: Those aggregates shall really filter out "impossible" combinations like an existing Score on an excluded Parameter
+    JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
+    JOIN exmo2010_Parameter_Exclude ON exmo2010_Parameter.id = exmo2010_Parameter_Exclude.parameter_id
+    WHERE exmo2010_Parameter_Exclude.organization_id = exmo2010_Task.Organization_id
+    '''
+  _scores = '''
+    FROM exmo2010_Score
+    JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
+    JOIN exmo2010_ParameterType ON exmo2010_Parameter.type_id = exmo2010_ParameterType.id
+    WHERE exmo2010_Score.Task_id = exmo2010_Task.id
+    AND exmo2010_Score.id NOT IN (SELECT exmo2010_Score.id %s)
+    ''' % _scores_invalid
+  _parameters_invalid = '''
+    FROM exmo2010_Parameter_Exclude
+    WHERE exmo2010_Parameter_Exclude.Organization_id = exmo2010_Task.Organization_id
+    '''
+  _parameters = '''
+    FROM exmo2010_Parameter
+    JOIN exmo2010_Parameter_Monitoring ON exmo2010_Parameter.id = exmo2010_Parameter_Monitoring.parameter_id
+    WHERE exmo2010_Parameter_Monitoring.monitoring_id = exmo2010_Task.monitoring_id
+    AND exmo2010_Parameter_Monitoring.parameter_id NOT IN (SELECT exmo2010_Parameter_Exclude.id %s)
+    ''' % _parameters_invalid
+  _complete   = '((SELECT COUNT(*) %s) * 100 / (SELECT COUNT(*) %s))' % (_scores, _parameters)
+  _openness_max = 'SELECT SUM(exmo2010_Parameter.weight) %s AND exmo2010_Parameter.weight > 0' % _parameters
+  _score_value = '''
+    exmo2010_Parameter.weight *
+    exmo2010_Score.found *
+    CASE exmo2010_ParameterType.complete
+      WHEN 0 THEN 1 ELSE
+      CASE exmo2010_Score.complete
+        WHEN 1 THEN 0.2
+        WHEN 2 THEN 0.5
+        WHEN 3 THEN 1
+      END
+    END *
+    CASE exmo2010_ParameterType.topical
+      WHEN 0 THEN 1 ELSE
+      CASE exmo2010_Score.topical
+        WHEN 1 THEN 0.7
+        WHEN 2 THEN 0.85
+        WHEN 3 THEN 1
+      END
+    END *
+    CASE exmo2010_ParameterType.accessible
+      WHEN 0 THEN 1 ELSE
+      CASE exmo2010_Score.accessible
+        WHEN 1 THEN 0.9
+        WHEN 2 THEN 0.95
+        WHEN 3 THEN 1
+      END
+    END *
+    CASE exmo2010_ParameterType.hypertext
+      WHEN 0 THEN 1 ELSE
+      CASE exmo2010_ParameterType.document
+        WHEN 0 THEN
+          CASE exmo2010_Score.hypertext
+            WHEN 0 THEN 0.2
+            WHEN 1 THEN 1
+          END ELSE
+          CASE exmo2010_Score.hypertext
+            WHEN 0 THEN
+              CASE exmo2010_Score.document
+                WHEN 0 THEN 0.2
+                WHEN 1 THEN 0.2
+              END
+            WHEN 1 THEN
+              CASE exmo2010_Score.document
+                WHEN 0 THEN 0.9
+                WHEN 1 THEN 1
+              END
+          END
+      END
+    END
+  '''
+  _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
+  _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
   def __unicode__(self):
     return '%s: %s' % (self.user.username, self.organization.name)

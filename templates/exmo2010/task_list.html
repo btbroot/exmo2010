@@ -54,6 +54,7 @@
       </td>
       {% endif %}
       <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
+      <td>{{ object.openness }}</td>
       </tr>
     {% endfor %}
   </tbody>

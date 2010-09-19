@@ -348,7 +348,7 @@ def tasks(request):
     organizations: all approved tasks of organizations that belongs to user
     Also for every ogranization we can have group'''
 
-    queryset = Task.objects.extra(select = {'complete': Task.c_complete})
+    queryset = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness})
     groups = request.user.groups.all()
     # Or, filtered by user
     if request.user.is_superuser:
@@ -357,7 +357,8 @@ def tasks(request):
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Expert'), 'user__username', 'user__username', None),
                 (_('Status'), 'status', 'status', int),
-                (_('Complete%'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None),
+                (_('Openness%'), 'openness', None, None)
               )
     elif Group.objects.get(name='experts') in groups:
       queryset = queryset.filter(user = request.user)
@@ -365,13 +366,15 @@ def tasks(request):
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Status'), 'status', 'status', int),
-                (_('Complete%'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None),
+                (_('Openness%'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
       queryset = queryset.filter(status = TASK_APPROVED)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete%'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None),
+                (_('Openness%'), 'openness', None, None)
               )
     elif Group.objects.get(name='organizations') in groups:
       orgs = []
@@ -386,7 +389,8 @@ def tasks(request):
         queryset = queryset.filter(eval(query))
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete%'), 'complete', None, None)
+                (_('Complete%'), 'complete', None, None),
+                (_('Openness%'), 'openness', None, None)
                 )
       else: #no organization to show
         return HttpResponseForbidden(_('Forbidden'))
