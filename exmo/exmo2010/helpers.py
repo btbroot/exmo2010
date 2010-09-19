@@ -51,6 +51,7 @@ PERM_EXPERT=2
 PERM_ORGANIZATION=3
 PERM_CUSTOMER=4
 
+from django.contrib.auth.models import Group
 def check_permission(user, task):
     '''check user permission for task and scores of task'''
     groups = user.groups.all()
