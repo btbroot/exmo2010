@@ -148,7 +148,7 @@ class Parameter(models.Model):
   code               = models.PositiveIntegerField()
   name               = models.CharField(max_length = 255)
   description        = models.TextField(null = True, blank = True)
-  weight             = models.PositiveIntegerField()
+  weight             = models.IntegerField()
   group              = models.ForeignKey(Subcategory)
   type               = models.ForeignKey(ParameterType)
   monitoring         = models.ManyToManyField(Monitoring)
