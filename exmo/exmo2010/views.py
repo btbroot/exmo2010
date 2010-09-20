@@ -24,7 +24,6 @@ from django.views.generic.create_update import update_object, create_object, del
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
-from exmo.exmo2010.models import TASK_APPROVED, TASK_OPEN, TASK_READY
 from exmo.exmo2010.models import Feedback
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -68,7 +67,7 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.status == TASK_OPEN):
+    if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.open):
       return create_object(
         request,
         form_class = ScoreForm,
@@ -79,7 +78,7 @@ def score_detail(request, task_id, parameter_id):
           'parameter': parameter,
           }
       )
-    elif check_permission(request.user, task) == PERM_EXPERT and task.status != TASK_OPEN:
+    elif check_permission(request.user, task) == PERM_EXPERT and not task.open:
       return HttpResponseForbidden(_('Task closed'))
     else:
       return HttpResponseForbidden(_('Forbidden'))
@@ -96,13 +95,13 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
-      if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.status == TASK_OPEN):
+      if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
-      if check_permission(request.user, score.task) == PERM_EXPERT and score.task.status != TASK_OPEN:
+      if check_permission(request.user, score.task) == PERM_EXPERT and not score.task.open:
         return HttpResponseForbidden(_('Task closed'))
-      elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.status == TASK_OPEN):
+      elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
         if request.method == 'POST':
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
@@ -252,9 +251,9 @@ def task_import(request, id):
             return None
 
     task = get_object_or_404(Task, pk = id)
-    if check_permission(request.user, task) == PERM_EXPERT and task.status != TASK_OPEN:
+    if check_permission(request.user, task) == PERM_EXPERT and not task.open:
         return HttpResponseForbidden(_('Task closed'))
-    elif check_permission(request.user, task) != PERM_ADMIN and not (check_permission(request.user, task) == PERM_EXPERT and task.status == TASK_OPEN):
+    elif check_permission(request.user, task) != PERM_ADMIN and not (check_permission(request.user, task) == PERM_EXPERT and task.open):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
@@ -370,7 +369,7 @@ def tasks(request):
                 (_('Openness%'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
-      queryset = queryset.filter(status = TASK_APPROVED)
+      queryset = queryset.approved_tasks.all()
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Complete%'), 'complete', None, None),
@@ -385,7 +384,7 @@ def tasks(request):
         if org: orgs.append(org)
       query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
       if query:
-        queryset = queryset.filter(status = TASK_APPROVED)
+        queryset = queryset.approved_tasks.all()
         queryset = queryset.filter(eval(query))
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
@@ -418,11 +417,11 @@ def task_manager(request, id, method):
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
-        if task.status == TASK_OPEN:
+        if task.open:
           if request.method == 'GET':
 	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request))
           elif request.method == 'POST':
-	    task.status = TASK_READY
+	    task.ready = True
 	    task.save()
 	    return HttpResponseRedirect(redirect)
 	else:
@@ -431,11 +430,11 @@ def task_manager(request, id, method):
     elif method == 'approve':
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
-        if task.status == TASK_READY:
+        if task.ready:
           if request.method == 'GET':
 	    return render_to_response('exmo2010/task_confirm_approve.html', { 'object': task }, context_instance=RequestContext(request))
           elif request.method == 'POST':
-	    task.status = TASK_APPROVED
+	    task.approved= True
 	    task.save()
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already approved'))

@@ -169,12 +169,29 @@ class Parameter(models.Model):
 
 
 
-TASK_OPEN       = 0
-TASK_READY      = 1
-TASK_APPROVED   = 2
+class OpenTaskManager(models.Manager):
+  def get_query_set(self):
+        return super(OpenTaskManager, self).get_query_set().filter(status = Task.TASK_OPEN)
+
+
+
+class ReadyTaskManager(models.Manager):
+  def get_query_set(self):
+        return super(ReadyTaskManager, self).get_query_set().filter(status = Task.TASK_READY)
+
+
+
+class ApprovedTaskManager(models.Manager):
+  def get_query_set(self):
+        return super(ApprovedTaskManager, self).get_query_set().filter(status = Task.TASK_APPROVED)
+
+
 
 class Task(models.Model):
-  TASK_STATUS = (
+  TASK_OPEN       = 0
+  TASK_READY      = 1
+  TASK_APPROVED   = 2
+  TASK_STATUS     = (
     (TASK_OPEN, _('open')),
     (TASK_READY, _('ready')),
     (TASK_APPROVED, _('approved'))
@@ -261,6 +278,14 @@ class Task(models.Model):
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
+# want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
+# sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
+
+  objects = models.Manager() # The default manager.
+  open_tasks = OpenTaskManager()
+  ready_tasks = ReadyTaskManager()
+  approved_tasks = ApprovedTaskManager()
+
   def __unicode__(self):
     return '%s: %s' % (self.user.username, self.organization.name)
 
@@ -273,6 +298,35 @@ class Task(models.Model):
   def clean(self):
     if self.organization.type != self.monitoring.type:
       raise ValidationError(_('Ambigous organization type.'))
+
+  def _get_open(self):
+    if self.status == self.TASK_OPEN: return True
+    else: return False
+
+  def _get_ready(self):
+    if self.status == self.TASK_READY: return True
+    else: return False
+
+  def _get_approved(self):
+    if self.status == self.TASK_APPROVED: return True
+    else: return False
+
+  def _set_open(self, val):
+    if val:
+        self.status = self.TASK_OPEN
+
+  def _set_ready(self ,val):
+    if val:
+        self.status = self.TASK_READY
+
+  def _set_approved(self, val):
+    if val:
+        self.status = self.TASK_APPROVED
+
+  open = property(_get_open, _set_open)
+  ready = property(_get_ready, _set_ready)
+  approved = property(_get_approved, _set_approved)
+
 
 
 class Score(models.Model):

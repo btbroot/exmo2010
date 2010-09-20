@@ -19,7 +19,7 @@
 #
 {% endcomment %}
 {% block content %}
-{% load table_header i18n in_group has_status %}
+{% load table_header i18n in_group %}
 <div id=task_list>
 <h2>{% trans 'Task list' %}</h2>
 {%if user.is_superuser%}
@@ -38,17 +38,17 @@
       {%if user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
       {% if user.is_superuser or user|in_group:'experts' %}
       <td>
-        {% if object|has_status:'TASK_OPEN' %}
+        {% if object.open %}
          <a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
         {% endif %}
-        {% if object|has_status:'TASK_READY' %}
+        {% if object.ready %}
          {% if user.is_superuser %}
           <a href="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% else %}
           {% trans 'closed' %}
          {% endif %}
         {% endif %}
-        {% if object|has_status:'TASK_APPROVED' %}
+        {% if object.approved %}
          {% trans 'approved' %}
         {% endif %}
       </td>

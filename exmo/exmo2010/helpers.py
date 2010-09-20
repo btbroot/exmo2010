@@ -52,7 +52,6 @@ PERM_ORGANIZATION=3
 PERM_CUSTOMER=4
 
 from django.contrib.auth.models import Group
-from exmo.exmo2010.models import TASK_APPROVED
 def check_permission(user, task):
     '''check user permission for task and scores of task'''
     groups = user.groups.all()
@@ -60,9 +59,9 @@ def check_permission(user, task):
         return PERM_ADMIN
     elif Group.objects.get(name='experts') in groups and user == task.user:
         return PERM_EXPERT
-    elif Group.objects.get(name='customers') in groups and task.status == TASK_APPROVED:
+    elif Group.objects.get(name='customers') in groups and task.approved:
         return PERM_CUSTOMER
-    elif Group.objects.get(name='organizations') in groups and task.status == TASK_APPROVED:
+    elif Group.objects.get(name='organizations') in groups and task.approved:
         try:
             g = Group.objects.get(name = task.organization.keyname)
             if g in groups:
