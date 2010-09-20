@@ -19,13 +19,14 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% block title %}{{parameter}}{% endblock %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.tasks %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{{ task.organization.name }} ({{ task.user }})</a>
-</div>
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list task.monitoring.pk %}">{{ task.monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{{ user }}</a>&rsaquo;
+{{title}}
 {% endblock %}
-
 {% block content %}
 <h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
 <div id=parameter_desc>
@@ -41,10 +42,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 <div id=score_form>
-<form
-  method="post"
-  action="."
->
+<form method="post" action="">
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
 {% if parameter.type.complete %}
@@ -101,7 +99,7 @@
   <input type="submit" value="Save"><input type="reset" class=button value="Reset">
 </form>
 </div>
-{% if not create %}
+{% if object %}
 {% include "exmo2010/score_feedback.html" %}
 {% endif %}
 {% endblock %}

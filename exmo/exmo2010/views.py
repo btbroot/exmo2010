@@ -68,15 +68,16 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
+    title = _('New score for %s from %s') % ( task.organization.name, request.user )
     if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.open):
       return create_object(
         request,
         form_class = ScoreForm,
         post_save_redirect = redirect,
         extra_context = {
-          'create': True,
           'task': task,
           'parameter': parameter,
+          'title': title,
           }
       )
     elif check_permission(request.user, task) == PERM_EXPERT and not task.open:
@@ -96,10 +97,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
+      title = _('Delete score for %s from %s') % ( score.task.organization.name, request.user )
       if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
-        return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect)
+        return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
+      title = _('Edit score for %s from %s') % ( score.task.organization.name, request.user )
       if check_permission(request.user, score.task) == PERM_EXPERT and not score.task.open:
         return HttpResponseForbidden(_('Task closed'))
       elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
@@ -117,10 +120,12 @@ def score_detail_direct(request, score_id, method='update'):
 	extra_context = {
           'task': score.task,
           'parameter': score.parameter,
-          'comments': Feedback.objects.filter(score = score)
+          'comments': Feedback.objects.filter(score = score),
+          'title': title,
         }
       )
     elif method == 'view':
+      title = _('View score for %s') % ( score.task.organization.name )
       return object_detail(
 	request,
 	queryset = Score.objects.all(),
@@ -128,7 +133,8 @@ def score_detail_direct(request, score_id, method='update'):
 	extra_context = {
           'task': score.task,
           'parameter': score.parameter,
-          'comments': Feedback.objects.filter(score = score)
+          'comments': Feedback.objects.filter(score = score),
+          'title': title,
         }
       )
     else: return HttpResponseForbidden(_('Forbidden'))
@@ -137,6 +143,7 @@ def score_detail_direct(request, score_id, method='update'):
 @login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
+    title = _('Score list for %s') % ( task.organization.name )
     if check_permission(request.user, task) != PERM_NOPERM:
       queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
         select={
@@ -159,7 +166,12 @@ def score_list_by_task(request, task_id):
       ),
       queryset=queryset,
       template_name='exmo2010/score_list.html',
-      extra_context={'task': task, 'categories': Category.objects.all(), 'subcategories': Subcategory.objects.all()},
+      extra_context={
+        'task': task,
+        'categories': Category.objects.all(),
+        'subcategories': Subcategory.objects.all(),
+        'title': title,
+        }
     )
 
 
@@ -339,16 +351,22 @@ def table(request, headers, **kwargs):
   return object_list(request, **kwargs)
 
 
-@login_required
 def tasks(request):
+    return HttpResponseRedirect(reverse('exmo.exmo2010.views.monitoring_list'))
+
+@login_required
+def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id):
     '''We have 3 generic group: experts, customers, organizations.
     Superusers: all tasks
     Experts: only own tasks
     Customers: all approved tasks
     organizations: all approved tasks of organizations that belongs to user
     Also for every ogranization we can have group'''
-
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+    organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
+    title = _('Task list for %s of %s') % ( organization.name, monitoring.type )
     queryset = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+    queryset = queryset.filter(monitoring = monitoring, organization = organization)
     groups = request.user.groups.all()
     # Or, filtered by user
     if request.user.is_superuser:
@@ -396,31 +414,37 @@ def tasks(request):
         return HttpResponseForbidden(_('Forbidden'))
     else: #we dont know how are you
         return HttpResponseForbidden(_('Forbidden'))
-    return table(request, headers, queryset = queryset, paginate_by = 15)
+    return table(request, headers, queryset = queryset, paginate_by = 15, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+
 
 
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 @revision.create_on_success
 @login_required
-def task_manager(request, id, method):
-    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks'), request.GET.urlencode())
+def task_manager(request, monitoring_id, organization_id, id, method):
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+    organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':
+      title = _('Add new task for %s of %s') % ( organization.name, monitoring.type )
       if request.user.is_superuser:
-	return create_object(request, form_class = TaskForm, post_save_redirect = redirect)
+	return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'delete':
+      title = _('Delete task for %s of %s') % ( organization.name, monitoring.type )
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
-	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect)
+	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
+      title = _('Close task for %s of %s') % ( organization.name, monitoring.type )
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         if task.open:
           if request.method == 'GET':
-	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request))
+	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request), extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
           elif request.method == 'POST':
 	    task.ready = True
 	    task.save()
@@ -429,11 +453,12 @@ def task_manager(request, id, method):
 	  return HttpResponseForbidden(_('Already closed'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
+      title = _('Approve task for %s of %s') % ( organization.name, monitoring.type )
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
         if task.ready:
           if request.method == 'GET':
-	    return render_to_response('exmo2010/task_confirm_approve.html', { 'object': task }, context_instance=RequestContext(request))
+	    return render_to_response('exmo2010/task_confirm_approve.html', { 'object': task }, context_instance=RequestContext(request), extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
           elif request.method == 'POST':
 	    task.approved= True
 	    task.save()
@@ -442,8 +467,9 @@ def task_manager(request, id, method):
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
+      title = _('Edit task for %s of %s') % ( organization.name, monitoring.type )
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
-        return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect)
+        return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
 
 
@@ -500,3 +526,46 @@ def monitoring_manager(request, id, method):
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Edit monitoring %s') % monitoring.type
         return update_object(request, model = Monitoring, object_id = id, post_save_redirect = redirect, extra_context = {'title': title})
+
+
+
+@login_required
+def organization_list(request, id):
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    title = _('Organizations for monitoring "%s"') % monitoring.type
+    queryset = Organization.objects.filter(type = monitoring.type)
+    headers =   (
+                (_('Action'), None, None, None),
+                (_('Name'), 'name', 'name', None),
+                )
+    return table(
+        request,
+        headers,
+        queryset = queryset,
+        paginate_by = 50,
+        extra_context = {
+            'title': title,
+            'monitoring': monitoring,
+        },
+    )
+
+
+
+@login_required
+def organization_manager(request, monitoring_id, id, method):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.organization_list', args=[monitoring.pk]), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
+    if method == 'add':
+        title = _('Add new organization')
+        return create_object(request, model = Organization, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+    elif method == 'delete':
+        organization = get_object_or_404(Organization, pk = id)
+        title = _('Delete organization %s') % organization.type
+        return delete_object(request, model = Organization, object_id = id, post_delete_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+    else: #update
+        organization = get_object_or_404(Organization, pk = id)
+        title = _('Edit organization %s') % organization.type
+        return update_object(request, model = Organization, object_id = id, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})

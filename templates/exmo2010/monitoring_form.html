@@ -20,14 +20,14 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.tasks %}">{% trans 'Home' %}</a>&rsaquo;
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-{% if object %}{{ object.type }}{% else %}{% trans 'New' %}{% endif %}
+{{ title }}
 </div>
 {% endblock %}
 
 {% block content %}
-<form method="POST" action="">
+<form method="POST" action="?{{request.GET.urlencode}}">
   {{ form.as_p }}
   <input type="submit"><input class="button" type="reset">
 </form>

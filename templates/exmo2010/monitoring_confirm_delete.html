@@ -20,12 +20,13 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.tasks %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;{{ object.type }}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
+{{ title }}
 </div>
 {% endblock %}
 {% block content %}
-<form method="POST" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}">
+<form method="POST" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">
   <p>{% trans 'Delete this monitoring?' %}</p>
   <input type="submit">
 </form>

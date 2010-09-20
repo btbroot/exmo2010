@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -17,12 +18,36 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-<h1>Organizations</h1>
-
-<ul>
-{% for object in object_list %}
-  <li><a href="{% url exmo.exmo2010.views.parameter_by_organization_list object.pk %}" name="edit">{{ object }}<a></li>
-{% endfor %}
-</ul>
-
-
+{% load table_header i18n in_group adminmedia %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">Monitoring</a>&rsaquo;
+{{title}}
+</div>
+{% endblock %}
+{% block content %}
+<div id=monitoring_list>
+<table>
+  {% table_header headers %}
+  <tbody>
+    <tr><td>
+        {%if user.is_superuser%}
+            <a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
+        {%endif%}</td><td>{% trans 'Add new organization' %}</td></tr>
+    {% for object in object_list %}
+      <tr>
+      <td>
+        {%if user.is_superuser%}
+            <a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+            <a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
+        {%endif%}
+      </td>
+      <td><a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "exmo2010/paginator.html" %}
+</div>
+{%endblock%}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
