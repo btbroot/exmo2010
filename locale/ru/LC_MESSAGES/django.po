@@ -337,7 +337,7 @@ msgstr "Экспортировать задачу в CVS"
 
 #: templates/exmo2010/score_list.html:32
 msgid "Import task CVS"
-msgstr "Испортировать задачу из CVS"
+msgstr "Импортировать задачу из CVS"
 
 #: templates/exmo2010/score_list.html:158 templates/exmo2010/task_list.html:35
 msgid "Delete"
