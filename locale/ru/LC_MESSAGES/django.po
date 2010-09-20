@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-12 20:59+0400\n"
+"POT-Creation-Date: 2010-09-20 13:34+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: exmo/exmo2010/forms.py:34
+#: exmo/exmo2010/forms.py:40
 msgid "This user account is inactive"
 msgstr ""
 
@@ -51,114 +51,135 @@ msgstr ""
 msgid "No fields changed."
 msgstr ""
 
-#: exmo/exmo2010/models.py:149
+#: exmo/exmo2010/models.py:178
 msgid "open"
 msgstr ""
 
-#: exmo/exmo2010/models.py:150
+#: exmo/exmo2010/models.py:179
 msgid "ready"
 msgstr ""
 
-#: exmo/exmo2010/models.py:151
+#: exmo/exmo2010/models.py:180 templates/exmo2010/task_list.html:52
 msgid "approved"
 msgstr ""
 
-#: exmo/exmo2010/models.py:211
+#: exmo/exmo2010/models.py:275
+msgid "Ambigous organization type."
+msgstr ""
+
+#: exmo/exmo2010/models.py:308
 msgid "Complete must be set"
 msgstr ""
 
-#: exmo/exmo2010/models.py:213
+#: exmo/exmo2010/models.py:310
 msgid "Topical must be set"
 msgstr ""
 
-#: exmo/exmo2010/models.py:215
+#: exmo/exmo2010/models.py:312
 #, fuzzy
 msgid "Accessible must be set"
 msgstr "Доступность"
 
-#: exmo/exmo2010/models.py:217
+#: exmo/exmo2010/models.py:314
 msgid "Hypertext must be set"
 msgstr ""
 
-#: exmo/exmo2010/models.py:219
+#: exmo/exmo2010/models.py:316
 msgid "Document must be set"
 msgstr ""
 
-#: exmo/exmo2010/models.py:221
+#: exmo/exmo2010/models.py:318
 msgid "Image must be set"
 msgstr ""
 
-#: exmo/exmo2010/models.py:236
+#: exmo/exmo2010/models.py:333
 msgid "Not found, but some excessive data persists"
 msgstr ""
 
-#: exmo/exmo2010/views.py:96
+#: exmo/exmo2010/views.py:83 exmo/exmo2010/views.py:104
+#: exmo/exmo2010/views.py:256
 msgid "Task closed"
 msgstr "Задача закрыта"
 
-#: exmo/exmo2010/views.py:102 exmo/exmo2010/views.py:369
-#: exmo/exmo2010/views.py:371 exmo/exmo2010/views.py:385
-#: exmo/exmo2010/views.py:390 exmo/exmo2010/views.py:402
-#: exmo/exmo2010/views.py:407
+#: exmo/exmo2010/views.py:85 exmo/exmo2010/views.py:101
+#: exmo/exmo2010/views.py:111 exmo/exmo2010/views.py:134
+#: exmo/exmo2010/views.py:146 exmo/exmo2010/views.py:172
+#: exmo/exmo2010/views.py:258 exmo/exmo2010/views.py:396
+#: exmo/exmo2010/views.py:398 exmo/exmo2010/views.py:412
+#: exmo/exmo2010/views.py:417 exmo/exmo2010/views.py:430
+#: exmo/exmo2010/views.py:442 exmo/exmo2010/views.py:447
+#: exmo/exmo2010/views.py:462
 msgid "Forbidden"
 msgstr "Запрещено"
 
-#: exmo/exmo2010/views.py:129 templates/exmo2010/score_form.html:35
+#: exmo/exmo2010/views.py:150 templates/exmo2010/score_detail.html:35
+#: templates/exmo2010/score_form.html:35
 msgid "Name"
 msgstr "Имя"
 
-#: exmo/exmo2010/views.py:130
+#: exmo/exmo2010/views.py:151
 msgid "Found"
 msgstr "Найдено"
 
-#: exmo/exmo2010/views.py:131
+#: exmo/exmo2010/views.py:152
 msgid "Complete"
 msgstr "Полнота"
 
-#: exmo/exmo2010/views.py:132
+#: exmo/exmo2010/views.py:153
 msgid "Topical"
 msgstr "Актуальность"
 
-#: exmo/exmo2010/views.py:133
+#: exmo/exmo2010/views.py:154
 msgid "Accessible"
 msgstr "Доступность"
 
-#: exmo/exmo2010/views.py:134
+#: exmo/exmo2010/views.py:155
 msgid "HTML"
 msgstr ""
 
-#: exmo/exmo2010/views.py:135
+#: exmo/exmo2010/views.py:156
 msgid "Document"
 msgstr "Документ"
 
-#: exmo/exmo2010/views.py:136
+#: exmo/exmo2010/views.py:157
 msgid "Image"
 msgstr "Граф."
 
-#: exmo/exmo2010/views.py:137
+#: exmo/exmo2010/views.py:158
 msgid "Action"
 msgstr "Действие"
 
-#: exmo/exmo2010/views.py:337 exmo/exmo2010/views.py:346
-#: exmo/exmo2010/views.py:354 exmo/exmo2010/views.py:365
+#: exmo/exmo2010/views.py:357 exmo/exmo2010/views.py:367
+#: exmo/exmo2010/views.py:375 exmo/exmo2010/views.py:391
 msgid "Organization"
 msgstr "Организация"
 
-#: exmo/exmo2010/views.py:338
+#: exmo/exmo2010/views.py:358
 msgid "Expert"
 msgstr "Эксперт"
 
-#: exmo/exmo2010/views.py:339 exmo/exmo2010/views.py:347
+#: exmo/exmo2010/views.py:359 exmo/exmo2010/views.py:368
 msgid "Status"
 msgstr ""
 
-#: exmo/exmo2010/views.py:340 exmo/exmo2010/views.py:348
-#: exmo/exmo2010/views.py:355 exmo/exmo2010/views.py:366
+#: exmo/exmo2010/views.py:360 exmo/exmo2010/views.py:369
+#: exmo/exmo2010/views.py:376 exmo/exmo2010/views.py:392
 msgid "Complete%"
 msgstr "Выполнено%"
 
-#: exmo/exmo2010/views.py:401
+#: exmo/exmo2010/views.py:361 exmo/exmo2010/views.py:370
+#: exmo/exmo2010/views.py:377 exmo/exmo2010/views.py:393
+#, fuzzy
+msgid "Openness%"
+msgstr "Открыта"
+
+#: exmo/exmo2010/views.py:429
 msgid "Already closed"
+msgstr "Задача уже закрыта"
+
+#: exmo/exmo2010/views.py:441
+#, fuzzy
+msgid "Already approved"
 msgstr "Задача уже закрыта"
 
 #: templates/404.html:4 templates/404.html.py:8
@@ -201,37 +222,22 @@ msgstr "Выйти"
 
 #: templates/exmo2010/base.html:58
 #: templates/exmo2010/score_confirm_delete.html:23
+#: templates/exmo2010/score_detail.html:24
 #: templates/exmo2010/score_form.html:24
 msgid "Home"
 msgstr "Домой"
 
 #: templates/exmo2010/base_site.html:4 templates/exmo2010/base_site.html:7
 msgid "Exmo"
-msgstr ""
+msgstr "Экспертный мониторинг"
 
-#: templates/exmo2010/base_site.html:7 templates/exmo2010/header.html:33
+#: templates/exmo2010/base_site.html:7
 msgid "Admin"
-msgstr ""
-
-#: templates/exmo2010/header.html:32
-msgid "Welcome"
-msgstr ""
-
-#: templates/exmo2010/header.html:32
-msgid "Logout"
-msgstr ""
-
-#: templates/exmo2010/header.html:35
-msgid "Welcome, Anonymous"
-msgstr ""
-
-#: templates/exmo2010/header.html:35
-msgid "Login"
-msgstr ""
+msgstr "Админка"
 
 #: templates/exmo2010/logged_out.html:23
 msgid "Thanks for spending some quality time with the Web site today"
-msgstr ""
+msgstr "Спасибо за проведенное время с нами"
 
 #: templates/exmo2010/logged_out.html:25
 msgid "Log in again"
@@ -257,29 +263,92 @@ msgstr "Вернуться к списку оценок"
 msgid "Delete this score?"
 msgstr "Удалить оценку?"
 
+#: templates/exmo2010/score_detail.html:33
 #: templates/exmo2010/score_form.html:33
 msgid "Parameter description"
 msgstr "Описание параметра"
 
+#: templates/exmo2010/score_detail.html:36
 #: templates/exmo2010/score_form.html:36
 msgid "Description"
 msgstr "Описание"
+
+#: templates/exmo2010/score_detail.html:42
+msgid "Found: "
+msgstr "Найдено: "
+
+#: templates/exmo2010/score_detail.html:45
+msgid "Complete: "
+msgstr "Полнота: "
+
+#: templates/exmo2010/score_detail.html:48
+#: templates/exmo2010/score_detail.html:58
+#: templates/exmo2010/score_detail.html:68
+#: templates/exmo2010/score_detail.html:78
+#: templates/exmo2010/score_detail.html:105
+msgid "Comment: "
+msgstr "Комментарий: "
+
+#: templates/exmo2010/score_detail.html:55
+msgid "Topical: "
+msgstr "Актуальность: "
+
+#: templates/exmo2010/score_detail.html:65
+msgid "Accessible: "
+msgstr "Доступность: "
+
+#: templates/exmo2010/score_detail.html:75
+msgid "Hypertext: "
+msgstr "Гипертекст: "
+
+#: templates/exmo2010/score_detail.html:85
+msgid "Document: "
+msgstr "Документ: "
+
+#: templates/exmo2010/score_detail.html:95
+msgid "Image: "
+msgstr "Граф.: "
+
+#: templates/exmo2010/score_feedback.html:24
+msgid "Comments: "
+msgstr "Комментарии: "
+
+#: templates/exmo2010/score_feedback.html:27
+msgid "Date"
+msgstr "Дата"
+
+#: templates/exmo2010/score_feedback.html:28
+msgid "User"
+msgstr "Пользователь"
+
+#: templates/exmo2010/score_feedback.html:29
+#: templates/exmo2010/score_list.html:162
+msgid "Comment"
+msgstr "Комментарий"
+
+#: templates/exmo2010/score_feedback.html:42
+msgid "Add new comment"
+msgstr "Добавить комментарий"
 
 #: templates/exmo2010/score_list.html:22
 msgid "Score list for"
 msgstr "Оценки для"
 
-#: templates/exmo2010/score_list.html:28
+#: templates/exmo2010/score_list.html:29
 msgid "Export task CSV"
-msgstr ""
+msgstr "Экспортировать задачу в CVS"
 
-#: templates/exmo2010/score_list.html:31
+#: templates/exmo2010/score_list.html:32
 msgid "Import task CVS"
-msgstr ""
+msgstr "Испортировать задачу из CVS"
 
-#: templates/exmo2010/score_list.html:144 templates/exmo2010/task_list.html:34
+#: templates/exmo2010/score_list.html:158 templates/exmo2010/task_list.html:35
 msgid "Delete"
 msgstr "Удалить"
+
+#: templates/exmo2010/task_confirm_approve.html:24
+msgid "Approve this task?"
+msgstr "Одобрить задачу?"
 
 #: templates/exmo2010/task_confirm_close.html:24
 msgid "Close this task?"
@@ -291,19 +360,19 @@ msgstr "Удалить задачу?"
 
 #: templates/exmo2010/task_import_log.html:22
 msgid "Import results"
-msgstr ""
+msgstr "Результаты импорта"
 
 #: templates/exmo2010/task_import_log.html:26
 msgid "Rows ok"
-msgstr ""
+msgstr "Обработано строк"
 
 #: templates/exmo2010/task_import_log.html:28
 msgid "Errors encountered"
-msgstr ""
+msgstr "Ошибок"
 
 #: templates/exmo2010/task_import_log.html:36
 msgid "Back to the task"
-msgstr ""
+msgstr "Вернуться к задаче"
 
 #: templates/exmo2010/task_list.html:24
 msgid "Task list"
@@ -313,13 +382,18 @@ msgstr "Список задач"
 msgid "Add a new task"
 msgstr "Добавить задачу"
 
-#: templates/exmo2010/task_list.html:38
+#: templates/exmo2010/task_list.html:42
 msgid "close"
 msgstr "закрыть"
 
-#: templates/exmo2010/task_list.html:38
+#: templates/exmo2010/task_list.html:46
+msgid "approve"
+msgstr "одобрить"
+
+#: templates/exmo2010/task_list.html:48
 msgid "closed"
 msgstr "закрыта"
 
-#~ msgid "Open"
-#~ msgstr "Открыта"
+#: templates/exmo2010/task_list.html:64
+msgid "Empty list"
+msgstr "Нет материалов для отображения"
