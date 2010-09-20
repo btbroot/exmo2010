@@ -101,6 +101,8 @@
   <input type="submit" value="Save"><input type="reset" class=button value="Reset">
 </form>
 </div>
+{% if not create %}
 {% include "exmo2010/score_feedback.html" %}
+{% endif %}
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
