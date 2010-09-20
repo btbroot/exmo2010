@@ -25,6 +25,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Feedback
+from exmo.exmo2010.models import Monitoring
 from django.contrib.auth.models import Group
 from django.db.models import Q
 from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
@@ -446,6 +447,7 @@ def task_manager(request, id, method):
       else: return HttpResponseForbidden(_('Forbidden'))
 
 
+
 @login_required
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
@@ -459,3 +461,42 @@ def add_comment(request, score_id):
             }
         )
     else: return HttpResponseForbidden(_('Forbidden'))
+
+
+
+@login_required
+def monitoring_list(request):
+    queryset = Monitoring.objects.all()
+    headers =   (
+                (_('Action'), None, None, None),
+                (_('Type'), 'type__name', 'type__name', None),
+                )
+    return table(
+        request,
+        headers,
+        queryset = queryset,
+        paginate_by = 15,
+        extra_context = {
+            'title': _('Monitoring list')
+        },
+    )
+
+
+
+@login_required
+def monitoring_manager(request, id, method):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.monitoring_list'), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
+    if method == 'add':
+        title = _('Add new monitoring')
+        return create_object(request, model = Monitoring, post_save_redirect = redirect, extra_context = {'title': title})
+    elif method == 'delete':
+        monitoring = get_object_or_404(Monitoring, pk = id)
+        title = _('Delete monitoring %s') % monitoring.type
+        return delete_object(request, model = Monitoring, object_id = id, post_delete_redirect = redirect, extra_context = {'title': title})
+    else: #update
+        monitoring = get_object_or_404(Monitoring, pk = id)
+        title = _('Edit monitoring %s') % monitoring.type
+        return update_object(request, model = Monitoring, object_id = id, post_save_redirect = redirect, extra_context = {'title': title})
