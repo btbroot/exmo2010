@@ -53,4 +53,10 @@ urlpatterns = patterns('',
   ( r'^tasks/taskimport/(\d+)/$', 'exmo.exmo2010.views.task_import' ),
   ( r'^tasks/taskexport/(\d+)/$', 'exmo.exmo2010.views.task_export' ),
   ( r'^score/(\d+)/comment/add$', 'exmo.exmo2010.views.add_comment' ),
+
+  ( r'^monitorings/$', 'none' ),
+  ( r'^monitoring/(\d+)/$', 'none' ),
+  ( r'^monitoring/(\d+)/organizations/$', 'none' ),
+  ( r'^monitoring/(\d+)/organization/(\d+)/$', 'none' ),
+  ( r'^monitoring/(\d+)/organization/(\d+)/tasks/$', 'none' ),
 )
