@@ -76,11 +76,11 @@ class Organization(models.Model):
   keyname      = models.CharField(max_length = 255, unique = True)
 
   def __unicode__(self):
-    return '%d. %s' % (self.pk, self.name)
+    return '%s' % (self.name)
 
 #hack TODO: revert ordering by 'name'
   class Meta:
-    ordering = ('id',)
+    ordering = ('name',)
 
 
 
