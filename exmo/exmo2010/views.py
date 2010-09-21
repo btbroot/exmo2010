@@ -183,7 +183,7 @@ def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
     if check_permission(request.user, task) == PERM_NOPERM:
         return HttpResponseForbidden(_('Forbidden'))
-    parameters = Parameter.objects.filter(organizationType = task.organization.type).exclude(exclude = task.organization)
+    parameters = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
     response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
