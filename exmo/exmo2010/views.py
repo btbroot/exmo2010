@@ -502,7 +502,8 @@ def add_comment(request, score_id):
             form_class = FeedbackForm,
             post_save_redirect = reverse('exmo.exmo2010.views.score_detail_direct', args = [score.pk, 'update']),
             extra_context = {
-                'score': score
+                'score': score,
+                'title': _('Add new comment'),
             }
         )
     else: return HttpResponseForbidden(_('Forbidden'))

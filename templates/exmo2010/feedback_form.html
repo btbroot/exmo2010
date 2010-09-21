@@ -18,7 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n adminmedia in_group %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list score.task.monitoring.pk %}">{{ score.task.monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization score.task.monitoring.pk, score.task.organization.pk %}">{{ score.task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task score.task.pk %}">{% trans 'Score list for ' %}{{ score.task.organization.name }}</a>&rsaquo;
+{% if user|in_group:'experts' and score.task.open or user.is_superuser %}
+<a href="{% url exmo.exmo2010.views.score_detail_direct score.pk 'update' %}">{{ score.parameter }}</a>&rsaquo;
+{% else %}
+<a href="{% url exmo.exmo2010.views.score_detail_direct score.pk 'view' %}">{{ score.parameter }}</a>&rsaquo;
+{% endif %}
+{{title}}
+{% endblock %}
 {% block content %}
 <form method="POST" action="">
   <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
