@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 
+
 class HorizRadioRenderer(forms.RadioSelect.renderer):
     """ this overrides widget method to put radio buttons horizontally
         instead of vertically.
@@ -13,6 +14,28 @@ class HorizRadioRenderer(forms.RadioSelect.renderer):
     def render(self):
             """Outputs radios"""
             return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+
+
+from django.utils.html import escape
+def add_required_label_tag(original_function):
+  """Adds the 'required' CSS class and an asterisks to required field labels."""
+  def required_label_tag(self, contents=None, attrs=None):
+    contents = contents or escape(self.label)
+    if self.field.required:
+      if not self.label.endswith(" * "):
+        self.label += " * "
+        contents += " * "
+      attrs = {'class': 'required'}
+    return original_function(self, contents, attrs)
+  return required_label_tag
+
+def decorate_bound_field():
+  from django.forms.forms import BoundField
+  BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
+
+
+decorate_bound_field()
+
 
 class ScoreForm(forms.ModelForm):
     class Meta:
@@ -27,10 +50,12 @@ class ScoreForm(forms.ModelForm):
             'image': forms.RadioSelect(renderer=HorizRadioRenderer),
         }
 
+
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
         fields = ('user','score','comment')
+
 
 class TaskForm(forms.ModelForm):
     def clean_user(self):
