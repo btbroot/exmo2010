@@ -34,10 +34,10 @@
 
 {% if user.is_superuser or user|in_group:"experts" %}
 <div id=csv>
-   <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task CSV" %}</a>
    <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="POST" enctype="multipart/form-data">
+     <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task to CSV" %}</a>&nbsp;
      <input type="file" name="taskfile">
-     <input type="submit" value="{% trans "Import task CVS" %}">
+     <input type="submit" value="{% trans "Import task from CSV" %}">
    </form>
    {% if importLog %}<div>{{importLog}}</div>{% endif %}
 </div>
