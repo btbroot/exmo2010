@@ -68,7 +68,7 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    title = _('New score for %s from %s') % ( task.organization.name, request.user )
+    title = _('New score for %(name)s from %(user)s') %  { 'name': task.organization.name, 'user': request.user }
     if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.open):
       return create_object(
         request,
@@ -97,12 +97,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
-      title = _('Delete score for %s from %s') % ( score.task.organization.name, request.user )
+      title = _('Delete score for %(org)s from %(user)s') % { 'org': score.task.organization.name, 'user': request.user }
       if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
-      title = _('Edit score for %s from %s') % ( score.task.organization.name, request.user )
+      title = _('Edit score for %(org)s from %(user)s') % { 'org': score.task.organization.name, 'user': request.user }
       if check_permission(request.user, score.task) == PERM_EXPERT and not score.task.open:
         return HttpResponseForbidden(_('Task closed'))
       elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
@@ -365,7 +365,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     Also for every ogranization we can have group'''
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
-    title = _('Task list for %s of %s') % ( organization.name, monitoring.type )
+    title = _('Task list for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
     queryset = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness})
     queryset = queryset.filter(monitoring = monitoring, organization = organization)
     groups = request.user.groups.all()
@@ -429,18 +429,18 @@ def task_manager(request, monitoring_id, organization_id, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':
-      title = _('Add new task for %s of %s') % ( organization.name, monitoring.type )
+      title = _('Add new task for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
       if request.user.is_superuser:
 	return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'delete':
-      title = _('Delete task for %s of %s') % ( organization.name, monitoring.type )
+      title = _('Delete task for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
 	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
-      title = _('Close task for %s of %s') % ( organization.name, monitoring.type )
+      title = _('Close task for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         if task.open:
@@ -463,7 +463,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	  return HttpResponseForbidden(_('Already closed'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
-      title = _('Approve task for %s of %s') % ( organization.name, monitoring.type )
+      title = _('Approve task for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
       task = get_object_or_404(Task, pk = id)
       if request.user.is_superuser:
         if task.ready:
@@ -486,7 +486,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
-      title = _('Edit task for %s of %s') % ( organization.name, monitoring.type )
+      title = _('Edit task for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
