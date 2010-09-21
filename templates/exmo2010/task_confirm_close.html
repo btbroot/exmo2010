@@ -27,7 +27,7 @@
 {{title}}
 {% endblock %}
 {% block content %}
-<form method="POST" action="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">
+<form method="POST" action="{% url exmo.exmo2010.views.task_manager object.monitoring.pk,object.organization.pk,object.pk,'close' %}?{{ request.GET.urlencode }}">
   <p>{% trans 'Close this task?' %}</p>
   <input type="submit">
 </form>
