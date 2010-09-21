@@ -237,51 +237,52 @@ def task_export(request, id):
         if p.group.group.code != category:
           category = p.group.group.code
           out = (p.group.group.code, p.group.group.name.encode("utf-8"))
-        elif p.group.code != subcategory:
+          writer.writerow(out)
+        if p.group.code != subcategory:
           subcategory = p.group.code
           out = (p.group.fullcode(), p.group.name.encode("utf-8"))
+          writer.writerow(out)
+        out = (
+            p.fullcode(),
+            p.name.encode("utf-8"),
+            p.type.name.encode("utf-8")
+        )
+        try:
+            s = scores.get(parameter = p)
+        except:
+            out += (
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                ''
+            )
         else:
-          out = (
-              p.fullcode(),
-              p.name.encode("utf-8"),
-              p.type.name.encode("utf-8")
-          )
-          try:
-              s = scores.get(parameter = p)
-          except:
-              out += (
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  '',
-                  ''
-              )
-          else:
-              out += (
-                  s.found,
-                  s.complete,
-                  safeConvert(s.completeComment),
-                  s.topical,
-                  safeConvert(s.topicalComment),
-                  s.accessible,
-                  safeConvert(s.accessibleComment),
-                  s.hypertext,
-                  safeConvert(s.hypertextComment),
-                  s.document,
-                  safeConvert(s.documentComment),
-                  s.image,
-                  safeConvert(s.imageComment),
-                  safeConvert(s.comment)
-              )
+            out += (
+                s.found,
+                s.complete,
+                safeConvert(s.completeComment),
+                s.topical,
+                safeConvert(s.topicalComment),
+                s.accessible,
+                safeConvert(s.accessibleComment),
+                s.hypertext,
+                safeConvert(s.hypertextComment),
+                s.document,
+                safeConvert(s.documentComment),
+                s.image,
+                safeConvert(s.imageComment),
+                safeConvert(s.comment)
+            )
         writer.writerow(out)
     return response
 
