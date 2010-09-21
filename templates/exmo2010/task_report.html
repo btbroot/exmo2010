@@ -1,4 +1,3 @@
-{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -18,33 +17,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n get_object_by_pk break in_group adminmedia %}
-{% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.organization_list task.monitoring.pk %}">{{ task.monitoring.type }}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
-{{title}}
-</div>
-{% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
-{% block content %}
-<div id=score_list>
-<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>{% if task.openness %}&nbsp;&mdash;&nbsp;{% trans 'Openness: ' %}{{ task.openness }}{% endif %}</h2>
+{% spaceless %}
+{% load i18n get_object_by_pk break %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% trans "Task " %} {{ task.id }}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<h1>{{ task.user }}: {{ task.organization.name }}: {{ task.monitoring.name }}</h1>
 
-{% if user.is_superuser or user|in_group:"experts" %}
-<div id=utility>
-   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="POST" enctype="multipart/form-data">
-     <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
-     <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a> /
-     <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
-     <label>{% trans "Import task from CSV" %}: <input type="file" name="taskfile"></label><input type="submit" value="">
-   </form>
-   {% if importLog %}<div>{{importLog}}</div>{% endif %}
-</div>
-{% endif %}
 <table>
-{% table_header headers %}
 <tbody>
         {%for category in categories%}
 
@@ -65,20 +51,7 @@
       <tr width=100% id='parameter_{{object.fullcode}}'>
       <td width=4%>{{ object.fullcode }}</td>
       <td>
-      {% if user|in_group:'experts' and task.open or user.is_superuser %}
-       {% if object.status %}
-        <a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-       {% else %}
-        <a href="{% url exmo.exmo2010.views.score_detail task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-       {% endif %}
-       {% if user.is_superuser %}
-            &nbsp;<a href="{% url exmo.exmo2010.views.parameter_manager task.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
-       {% endif %}
-      {% else %}
-       {% if object.status %}
-         <a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'view' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-       {% endif %}
-      {% endif %}
+        {{ object.name }}
       </td>
       {%if object.status%}
       {%get_object_by_pk exmo2010.Score object.status as score %}
@@ -165,15 +138,6 @@
       {%else%}
         <td colspan=7></td>
       {%endif%}
-      <td width=6%>
-       {% if user.is_superuser or user|in_group:"experts" %}
-        {%if object.status %}<a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
-        {% else %}&nbsp;
-        {% endif %}
-       {% else %}
-        {%if object.status %}<a href="{% url exmo.exmo2010.views.add_comment object.pk %}">{% trans "Comment" %}</a>{% endif %}
-       {% endif %}
-      </td>
       </tr>
     {% endif %}
     {% endfor %}
@@ -181,5 +145,5 @@
         {%endfor%}
     </tbody></table>
 </div><br>
-{% endblock %}
+{% endspaceless %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

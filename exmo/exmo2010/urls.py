@@ -37,10 +37,7 @@ urlpatterns = patterns('',
     'exmo.exmo2010.views.score_detail_direct'
   ),
 
-  (
-    r'^scores/(\d+)/$',
-    'exmo.exmo2010.views.score_list_by_task'
-  ),
+  ( r'^scores/(\d+)/(print|printfull)?$', 'exmo.exmo2010.views.score_list_by_task' ),
 
   ( r'^tasks/$', 'exmo.exmo2010.views.tasks' ),
 

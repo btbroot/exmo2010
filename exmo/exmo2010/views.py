@@ -141,7 +141,7 @@ def score_detail_direct(request, score_id, method='update'):
 
 
 @login_required
-def score_list_by_task(request, task_id):
+def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
     task = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
@@ -152,28 +152,45 @@ def score_list_by_task(request, task_id):
         }
       )
     else: return HttpResponseForbidden(_('Forbidden'))
-    return table(request,
-      headers=(
-        ('Code', None, None, None),
-        (_('Name'), 'name', 'name', None),
-        (_('Found'), None, None, None),
-        (_('Complete'), None, None, None),
-        (_('Topical'), None, None, None),
-        (_('Accessible'), None, None, None),
-        (_('HTML'), None, None, None),
-        (_('Document'), None, None, None),
-        (_('Image'), None, None, None),
-        (_('Action'), None, None, None),
-      ),
-      queryset=queryset,
-      template_name='exmo2010/score_list.html',
-      extra_context={
-        'task': task,
-        'categories': Category.objects.all(),
-        'subcategories': Subcategory.objects.all(),
-        'title': title,
+    if report:
+      # Print report
+      return object_list(
+        request,
+        queryset = queryset,
+        template_name='exmo2010/task_report.html',
+        extra_context={
+          'task': task,
+          'categories': Category.objects.all(),
+          'subcategories': Subcategory.objects.all(),
+          'title': title,
+          'report': report
         }
-    )
+      )
+    else:
+      # Regular application page
+      return table(
+        request,
+        headers=(
+          ('Code', None, None, None),
+          (_('Name'), 'name', 'name', None),
+          (_('Found'), None, None, None),
+          (_('Complete'), None, None, None),
+          (_('Topical'), None, None, None),
+          (_('Accessible'), None, None, None),
+          (_('HTML'), None, None, None),
+          (_('Document'), None, None, None),
+          (_('Image'), None, None, None),
+          (_('Action'), None, None, None),
+        ),
+        queryset=queryset,
+        template_name='exmo2010/score_list.html',
+        extra_context={
+          'task': task,
+          'categories': Category.objects.all(),
+          'subcategories': Subcategory.objects.all(),
+          'title': title,
+          }
+      )
 
 
 import csv
