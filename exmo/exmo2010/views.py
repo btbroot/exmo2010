@@ -444,7 +444,16 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
         if task.open:
           if request.method == 'GET':
-	    return render_to_response('exmo2010/task_confirm_close.html', { 'object': task }, context_instance=RequestContext(request), extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+	    return render_to_response(
+	        'exmo2010/task_confirm_close.html',
+	        {
+	            'object': task,
+	            'monitoring': monitoring,
+	            'organization': organization,
+	            'title': title,
+	        },
+	        context_instance=RequestContext(request),
+	        )
           elif request.method == 'POST':
 	    task.ready = True
 	    task.save()
@@ -458,7 +467,16 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       if request.user.is_superuser:
         if task.ready:
           if request.method == 'GET':
-	    return render_to_response('exmo2010/task_confirm_approve.html', { 'object': task }, context_instance=RequestContext(request), extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+	    return render_to_response(
+	        'exmo2010/task_confirm_approve.html',
+	        {
+	            'object': task,
+	            'monitoring': monitoring,
+	            'organization': organization,
+	            'title': title
+	        },
+	        context_instance=RequestContext(request),
+	        )
           elif request.method == 'POST':
 	    task.approved= True
 	    task.save()
