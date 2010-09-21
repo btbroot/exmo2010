@@ -514,6 +514,7 @@ def monitoring_list(request):
     headers =   (
                 (_('Action'), None, None, None),
                 (_('Type'), 'type__name', 'type__name', None),
+                (_('Name'), 'name', 'name', None),
                 )
     return table(
         request,
