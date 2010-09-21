@@ -29,7 +29,7 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
 {% block content %}
 <div id=score_list>
-<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>&nbsp;&mdash;&nbsp;{% trans 'Openness: ' %}{{ task.openness }}</h2>
+<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>{% if task.openness %}&nbsp;&mdash;&nbsp;{% trans 'Openness: ' %}{{ task.openness }}{% endif %}</h2>
 
 {% if user.is_superuser or user|in_group:"experts" %}
 <div id=csv>
