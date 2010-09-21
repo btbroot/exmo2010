@@ -35,7 +35,7 @@
 {% endif %}
 
 <form method="POST" action="{% url exmo.exmo2010.views.organization_manager monitoring.pk,object.pk,'delete' %}?{{request.GET.urlencode}}">
-  <p>{% trans 'Delete this monitoring?' %}</p>
+  <p>{% trans 'Delete this organization?' %}</p>
   <input type="submit">
 </form>
 {% endblock %}
