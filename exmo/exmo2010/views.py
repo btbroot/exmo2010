@@ -416,7 +416,9 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Openness%'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
-      queryset = queryset.approved_tasks.all()
+      queryset = Task.approved_tasks.all()
+      queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+      queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Complete%'), 'complete', None, None),
@@ -431,7 +433,9 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         if org: orgs.append(org)
       query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
       if query:
-        queryset = queryset.approved_tasks.all()
+        queryset = Task.approved_tasks.all()
+        queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+        queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
