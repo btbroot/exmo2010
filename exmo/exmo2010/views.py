@@ -372,7 +372,6 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     # Or, filtered by user
     if request.user.is_superuser:
       headers = (
-                ('', None, None, None),
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Expert'), 'user__username', 'user__username', None),
                 (_('Status'), 'status', 'status', int),
@@ -514,9 +513,8 @@ def add_comment(request, score_id):
 def monitoring_list(request):
     queryset = Monitoring.objects.all()
     headers =   (
-                (_('Action'), None, None, None),
-                (_('Type'), 'type__name', 'type__name', None),
                 (_('Name'), 'name', 'name', None),
+                (_('Type'), 'type__name', 'type__name', None),
                 )
     return table(
         request,
@@ -565,7 +563,6 @@ def organization_list(request, id):
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
     queryset = Organization.objects.filter(type = monitoring.type)
     headers =   (
-                (_('Action'), None, None, None),
                 (_('Name'), 'name', 'name', None),
                 )
     return table(

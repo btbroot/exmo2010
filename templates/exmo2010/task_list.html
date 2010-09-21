@@ -31,19 +31,20 @@
 <table>
   {% table_header headers %}
   <tbody>
-    <tr><td>
+    <tr><td colspan=5>
         {%if user.is_superuser%}
-            <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, 0,'add' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
-        {%endif%}</td><td colspan=5>{% trans 'Add new task' %}</td></tr>
+            <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
+        {%endif%}
+    </td></tr>
     {% for object in object_list %}
       <tr>
       <td>
+        <a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.organization.name }}</a>
         {%if user.is_superuser%}
-            <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
             <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>
-      <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.organization.name }}</a></td>
       {%if user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
       {% if user.is_superuser or user|in_group:'experts' %}
       <td>
