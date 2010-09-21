@@ -26,6 +26,7 @@
 </div>
 {% endblock %}
 {% block content %}
+<div id="rating"><a href="{% url exmo.exmo2010.views.rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a></div>
 <div id=organization_list>
 <table>
   {% table_header headers %}

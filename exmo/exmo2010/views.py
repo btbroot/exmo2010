@@ -669,3 +669,18 @@ def parameter_manager(request, task_id, id, method):
                 'task': task,
                 }
             )
+
+
+
+@login_required
+def rating(request, id):
+  monitoring = get_object_or_404(Monitoring, pk = id)
+  return object_list(
+    request,
+    queryset = Organization.objects.filter(type = monitoring.type).filter(task__status = Task.TASK_OPEN).extra(select = {'openness': Task._openness}).order_by('-openness'),
+    template_name = 'exmo2010/rating.html',
+    extra_context = { 'monitoring': monitoring }
+  )
+
+
+
