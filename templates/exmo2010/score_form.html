@@ -25,7 +25,7 @@
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.organization_list task.monitoring.pk %}">{{ task.monitoring.type }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{% trans 'Score list for ' %}{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
