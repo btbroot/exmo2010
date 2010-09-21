@@ -1,0 +1,39 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n adminmedia %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list task.monitoring.pk %}">{{ task.monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task task.pk %}">{% trans 'Score list for ' %}{{ task.organization.name }}</a>&rsaquo;
+{{title}}
+{% endblock %}
+
+{% block content %}
+<form method="POST" action="{% url exmo.exmo2010.views.parameter_manager task.pk,object.pk,'delete' %}">
+  <p>{% trans 'Delete this parameter?' %}</p>
+  <input type="submit">
+</form>
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

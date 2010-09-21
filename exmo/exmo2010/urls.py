@@ -46,6 +46,8 @@ urlpatterns = patterns('',
 
   ( r'^tasks/task/(\d+)_(\w+)/$', 'exmo.exmo2010.views.task_manager' ),
 
+  ( r'^tasks/task/(\d+)/parameter/(\d+)_(\w+)/$', 'exmo.exmo2010.views.parameter_manager' ),
+
   ( r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DOC_ROOT} ),
 
   (r'^api/organization/$', 'exmo.exmo2010.api.organization_lookup'),

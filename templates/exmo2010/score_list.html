@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n get_object_by_pk break in_group %}
+{% load table_header i18n get_object_by_pk break in_group adminmedia %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -68,6 +68,10 @@
         <a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% else %}
         <a href="{% url exmo.exmo2010.views.score_detail task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+       {% endif %}
+       {% if user.is_superuser %}
+            &nbsp;<a href="{% url exmo.exmo2010.views.parameter_manager task.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+            <a href="{% url exmo.exmo2010.views.parameter_manager task.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
        {% endif %}
       {% else %}
        {% if object.status %}

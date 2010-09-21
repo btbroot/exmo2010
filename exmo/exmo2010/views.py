@@ -608,3 +608,38 @@ def organization_manager(request, monitoring_id, id, method):
         organization = get_object_or_404(Organization, pk = id)
         title = _('Edit organization %s') % monitoring.type
         return update_object(request, model = Organization, object_id = id, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+
+
+
+@login_required
+def parameter_manager(request, task_id, id, method):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    task = get_object_or_404(Task, pk = task_id)
+    parameter = get_object_or_404(Parameter, pk = id)
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
+    if method == 'delete':
+        title = _('Delete parameter %s') % parameter
+        return delete_object(
+            request,
+            model = Parameter,
+            object_id = id,
+            post_delete_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'task': task,
+                }
+            )
+    else: #update
+        title = _('Edit parameter %s') % parameter
+        return update_object(
+            request,
+            model = Parameter,
+            object_id = id,
+            post_save_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'task': task,
+                }
+            )
