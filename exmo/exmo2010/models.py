@@ -205,26 +205,26 @@ class Task(models.Model):
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
     JOIN exmo2010_Parameter_Exclude ON exmo2010_Parameter.id = exmo2010_Parameter_Exclude.parameter_id
     WHERE exmo2010_Parameter_Exclude.organization_id = exmo2010_Task.Organization_id
-    '''
+    '''.lower()
   _scores = '''
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
     JOIN exmo2010_ParameterType ON exmo2010_Parameter.type_id = exmo2010_ParameterType.id
     WHERE exmo2010_Score.Task_id = exmo2010_Task.id
     AND exmo2010_Score.id NOT IN (SELECT exmo2010_Score.id %s)
-    ''' % _scores_invalid
+    '''.lower() % _scores_invalid
   _parameters_invalid = '''
     FROM exmo2010_Parameter_Exclude
     WHERE exmo2010_Parameter_Exclude.Organization_id = exmo2010_Task.Organization_id
-    '''
+    '''.lower()
   _parameters = '''
     FROM exmo2010_Parameter
     JOIN exmo2010_Parameter_Monitoring ON exmo2010_Parameter.id = exmo2010_Parameter_Monitoring.parameter_id
     WHERE exmo2010_Parameter_Monitoring.monitoring_id = exmo2010_Task.monitoring_id
     AND exmo2010_Parameter_Monitoring.parameter_id NOT IN (SELECT exmo2010_Parameter_Exclude.id %s)
-    ''' % _parameters_invalid
-  _complete   = '((SELECT COUNT(*) %s) * 100 / (SELECT COUNT(*) %s))' % (_scores, _parameters)
-  _openness_max = 'SELECT SUM(exmo2010_Parameter.weight) %s AND exmo2010_Parameter.weight > 0' % _parameters
+    '''.lower() % _parameters_invalid
+  _complete   = '((SELECT COUNT(*) %s) * 100 / (SELECT COUNT(*) %s))'.lower() % (_scores, _parameters)
+  _openness_max = 'SELECT SUM(exmo2010_Parameter.weight) %s AND exmo2010_Parameter.weight > 0'.lower() % _parameters
   _score_value = '''
     exmo2010_Parameter.weight *
     exmo2010_Score.found *
@@ -274,7 +274,7 @@ class Task(models.Model):
           END
       END
     END
-  '''
+  '''.lower()
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
