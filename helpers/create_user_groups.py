@@ -34,13 +34,13 @@ customer_g = Group.objects.get(name=generic_group[2])
 for oo in o:
     if oo.keyname:
         try:
-            g = Group.objects.get(name=oo.keyname)
+            g = Group.objects.get(name=oo.keyname[:80])
         except Group.DoesNotExist:
             g = Group(name=oo.keyname)
             g.save()
 
         try:
-            u = User.objects.get(username=oo.keyname)
+            u = User.objects.get(username=oo.keyname[:30])
         except User.DoesNotExist:
             u = User(username=oo.keyname)
             u.save()
