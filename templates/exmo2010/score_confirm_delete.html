@@ -26,6 +26,7 @@
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization object.task.monitoring.pk, object.task.organization.pk %}">{{ object.task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.score_list_by_task object.task.pk %}">{{ object.task.user }}</a>&rsaquo;
 {{title}}
+</div>
 {% endblock %}
 {% block content %}
 <form method="POST" action="{% url exmo.exmo2010.views.score_detail_direct object.pk,'delete' %}">

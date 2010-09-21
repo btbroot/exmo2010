@@ -25,6 +25,7 @@
 <a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{{ monitoring.type }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
 {{title}}
+</div>
 {% endblock %}
 {% block content %}
 <form method="POST" action="{% url exmo.exmo2010.views.task_manager object.monitoring.pk,object.organization.pk,object.pk,'close' %}?{{ request.GET.urlencode }}">

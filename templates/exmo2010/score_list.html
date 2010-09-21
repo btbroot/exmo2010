@@ -25,6 +25,7 @@
 <a href="{% url exmo.exmo2010.views.organization_list task.monitoring.pk %}">{{ task.monitoring.type }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 {{title}}
+</div>
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
 {% block content %}

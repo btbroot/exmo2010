@@ -328,8 +328,9 @@ def task_import(request, id):
                 rowCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
+    title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html',
-        { 'task': id, 'file': request.FILES['taskfile'], 'errLog': errLog, 'rowCount': rowCount }
+        { 'task': task, 'file': request.FILES['taskfile'], 'errLog': errLog, 'rowCount': rowCount, 'title': title }
     )
 
 
