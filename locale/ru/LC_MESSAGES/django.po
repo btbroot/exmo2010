@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-21 16:46+0400\n"
+"POT-Creation-Date: 2010-09-21 17:39+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -386,6 +386,8 @@ msgstr "Мониторинг"
 #: templates/exmo2010/feedback_form.html:28
 #: templates/exmo2010/parameter_confirm_delete.html:29
 #: templates/exmo2010/parameter_form.html:29
+#: templates/exmo2010/score_detail.html:28
+#: templates/exmo2010/score_form.html:28
 #: templates/exmo2010/task_import_log.html:29
 msgid "Score list for"
 msgstr "Оценки для"
