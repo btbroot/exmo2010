@@ -36,17 +36,17 @@ for oo in o:
         try:
             g = Group.objects.get(name=oo.keyname[:80])
         except Group.DoesNotExist:
-            g = Group(name=oo.keyname)
+            g = Group(name=oo.keyname[:80])
             g.save()
 
         try:
             u = User.objects.get(username=oo.keyname[:30])
         except User.DoesNotExist:
-            u = User(username=oo.keyname)
+            u = User(username=oo.keyname[:30])
             u.save()
 
         u.groups.add(g, organizations_g)
         passwd=hashlib.md5(str(random.randrange(100000,999999))).hexdigest()[:8]
         u.set_password(passwd)
         u.save()
-        print u"%s:\nlogin: %s\npassword: %s\n" % (oo, u.username, passwd)
+        print oo,':',u.username[:30],':',passwd
