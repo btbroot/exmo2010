@@ -540,7 +540,16 @@ def monitoring_manager(request, id, method):
     elif method == 'delete':
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Delete monitoring %s') % monitoring.type
-        return delete_object(request, model = Monitoring, object_id = id, post_delete_redirect = redirect, extra_context = {'title': title})
+        return delete_object(
+            request,
+            model = Monitoring,
+            object_id = id,
+            post_delete_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'deleted_objects': Task.objects.filter(monitoring = monitoring),
+                }
+            )
     else: #update
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Edit monitoring %s') % monitoring.type
@@ -583,7 +592,18 @@ def organization_manager(request, monitoring_id, id, method):
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk = id)
         title = _('Delete organization %s') % organization.type
-        return delete_object(request, model = Organization, object_id = id, post_delete_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+        title = _('Delete organization %s') % monitoring.type
+        return delete_object(
+            request,
+            model = Organization,
+            object_id = id,
+            post_delete_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'monitoring': monitoring,
+                'deleted_objects': Task.objects.filter(organization = organization),
+                }
+            )
     else: #update
         organization = get_object_or_404(Organization, pk = id)
         title = _('Edit organization %s') % organization.type

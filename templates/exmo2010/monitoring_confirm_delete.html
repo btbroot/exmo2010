@@ -26,6 +26,12 @@
 </div>
 {% endblock %}
 {% block content %}
+{% if deleted_objects %}
+{% trans 'When you delete monitoring you also delete this tasks:'%}<br>
+{% for do in deleted_objects %}
+<a href="{% url exmo.exmo2010.views.score_list_by_task do.pk %}">{{ do }}</a><br>
+{% endfor %}
+{% endif %}
 <form method="POST" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">
   <p>{% trans 'Delete this monitoring?' %}</p>
   <input type="submit">
