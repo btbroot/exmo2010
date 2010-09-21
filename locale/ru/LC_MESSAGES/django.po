@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-21 14:39+0400\n"
+"POT-Creation-Date: 2010-09-21 15:52+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -133,6 +133,7 @@ msgid "View score for %s"
 msgstr "Просмотр оценок для %s"
 
 #: exmo/exmo2010/views.py:147
+#, python-format
 msgid "Score list for %s"
 msgstr "Оценки для %s"
 
@@ -263,9 +264,8 @@ msgid "Edit monitoring %s"
 msgstr "Редактировать мониторинг %s"
 
 #: exmo/exmo2010/views.py:565
-#, python-format
-msgid "Organizations for monitoring \"%s\""
-msgstr "Организации мониторинга  \"%s\""
+msgid "Organizations for monitoring %(name)s with type %(type)s"
+msgstr "Организации мониторинга %(name)s для типа %(type)s"
 
 #: exmo/exmo2010/views.py:592
 #, python-format
@@ -273,10 +273,12 @@ msgid "Add new organization for %s"
 msgstr "Добавить новую организацию для %s"
 
 #: exmo/exmo2010/views.py:596
+#, python-format
 msgid "Delete organization %s"
 msgstr "Удалить организацию %s"
 
 #: exmo/exmo2010/views.py:610
+#, python-format
 msgid "Edit organization %s"
 msgstr "Редактировать организацию %s"
 

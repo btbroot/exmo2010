@@ -562,7 +562,7 @@ def monitoring_manager(request, id, method):
 @login_required
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    title = _('Organizations for monitoring "%s"') % monitoring.type
+    title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
     queryset = Organization.objects.filter(type = monitoring.type)
     headers =   (
                 (_('Action'), None, None, None),
