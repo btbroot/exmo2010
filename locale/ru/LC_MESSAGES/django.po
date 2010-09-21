@@ -98,7 +98,7 @@ msgstr ""
 #: exmo/exmo2010/views.py:71
 #, python-format
 msgid "New score for %(name)s from %(user)s"
-msgstr "новая оценка для %(org)s от %(user)s"
+msgstr "Новая оценка для %(name)s от %(user)s"
 
 #: exmo/exmo2010/views.py:84 exmo/exmo2010/views.py:107
 #: exmo/exmo2010/views.py:269
