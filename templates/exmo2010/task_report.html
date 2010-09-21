@@ -31,6 +31,17 @@
 <h1>{{ task.user }}: {{ task.organization.name }}: {{ task.monitoring.name }}</h1>
 
 <table>
+<thead>
+  <td>{% trans 'Code' %}</td>
+  <td>{% trans 'Name' %}</td>
+  <td>{% trans 'Found' %}</td>
+  <td>{% trans 'Complete' %}</td>
+  <td>{% trans 'Topical' %}</td>
+  <td>{% trans 'Accessible' %}</td>
+  <td>{% trans 'HTML' %}</td>
+  <td>{% trans 'Document' %}</td>
+  <td>{% trans 'Image' %}</td>
+</thead>
 <tbody>
         {%for category in categories%}
 
@@ -135,6 +146,14 @@
       {% endif %}>
       {%if score.image != None %}{{score.image}}{%else%}&nbsp;{%endif%}
       </td>
+      {% if report == 'printfull' %}
+        {% if score.completeComment %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}
+        {% if score.topicalComment %}</tr><tr><td>{% trans 'topicalComment' %}</td><td colspan=7>{{ score.topicalComment|linebreaks }}</td>{% endif %}
+        {% if score.accessibleComment %}</tr><tr><td>{% trans 'accessibleComment' %}</td><td colspan=7>{{ score.accessibleComment|linebreaks }}</td>{% endif %}
+        {% if score.hypertextComment %}</tr><tr><td>{% trans 'hypertextComment' %}</td><td colspan=7>{{ score.hypertextComment|linebreaks }}</td>{% endif %}
+        {% if score.documentComment %}</tr><tr><td>{% trans 'documentComment' %}</td><td colspan=7>{{ score.documentComment|linebreaks }}</td>{% endif %}
+        {% if score.comment %}</tr><tr><td>{% trans 'comment' %}</td><td colspan=7>{{ score.comment|linebreaks }}</td>{% endif %}
+      {% endif %}
       {%else%}
         <td colspan=7></td>
       {%endif%}
