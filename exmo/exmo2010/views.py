@@ -143,6 +143,7 @@ def score_detail_direct(request, score_id, method='update'):
 @login_required
 def score_list_by_task(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
+    task = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
     if check_permission(request.user, task) != PERM_NOPERM:
       queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
