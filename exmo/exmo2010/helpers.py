@@ -63,7 +63,7 @@ def check_permission(user, task):
         return PERM_CUSTOMER
     elif Group.objects.get(name='organizations') in groups and task.approved:
         try:
-            g = Group.objects.get(name = task.organization.keyname)
+            g = Group.objects.get(name = task.organization.keyname[:80])
             if g in groups:
                 return PERM_ORGANIZATION
         except:
