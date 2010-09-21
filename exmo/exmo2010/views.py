@@ -587,11 +587,10 @@ def organization_manager(request, monitoring_id, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.views.organization_list', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':
-        title = _('Add new organization')
+        title = _('Add new organization for %s') % monitoring.type
         return create_object(request, model = Organization, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk = id)
-        title = _('Delete organization %s') % organization.type
         title = _('Delete organization %s') % monitoring.type
         return delete_object(
             request,
@@ -606,5 +605,5 @@ def organization_manager(request, monitoring_id, id, method):
             )
     else: #update
         organization = get_object_or_404(Organization, pk = id)
-        title = _('Edit organization %s') % organization.type
+        title = _('Edit organization %s') % monitoring.type
         return update_object(request, model = Organization, object_id = id, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
