@@ -32,7 +32,7 @@
 {% endblock %}
 {% block content %}
 
-<div id="success">{% trans "Rows ok" %}: {{rowCount}}</div>
+<div id="success">{% trans "Rows ok/all" %}: {{rowOKCount}}/{{rowALLCount}}</div>
 {% if errLog %}
   <div id="failure">{% trans "Errors encountered" %}:
   <ul>

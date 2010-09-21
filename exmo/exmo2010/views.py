@@ -180,6 +180,13 @@ import csv
 from django.http import HttpResponse
 @login_required
 def task_export(request, id):
+
+    def safeConvert(string):
+      if string:
+        return string.encode("utf-8")
+      else:
+        return ''
+
     task = get_object_or_404(Task, pk = id)
     if check_permission(request.user, task) == PERM_NOPERM:
         return HttpResponseForbidden(_('Forbidden'))
@@ -207,48 +214,57 @@ def task_export(request, id):
         'ImageComment',
         'Comment'
     ])
+    category = None
+    subcategory = None
     for p in parameters:
-        out = (
-            p.fullcode(),
-            p.name.encode("utf-8"),
-            p.type.name.encode("utf-8")
-        )
-        try:
-            s = scores.get(parameter = p)
-        except:
-            out += (
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                ''
-            )
+        if p.group.group.code != category:
+          category = p.group.group.code
+          out = (p.group.group.code, p.group.group.name.encode("utf-8"))
+        elif p.group.code != subcategory:
+          subcategory = p.group.code
+          out = (p.group.fullcode(), p.group.name.encode("utf-8"))
         else:
-            out += (
-                s.found,
-                s.complete,
-                s.completeComment.encode("utf-8"),
-                s.topical,
-                s.topicalComment.encode("utf-8"),
-                s.accessible,
-                s.accessibleComment.encode("utf-8"),
-                s.hypertext,
-                s.hypertextComment.encode("utf-8"),
-                s.document,
-                s.documentComment.encode("utf-8"),
-                s.image,
-                s.imageComment.encode("utf-8"),
-                s.comment.encode("utf-8")
-            )
+          out = (
+              p.fullcode(),
+              p.name.encode("utf-8"),
+              p.type.name.encode("utf-8")
+          )
+          try:
+              s = scores.get(parameter = p)
+          except:
+              out += (
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  '',
+                  ''
+              )
+          else:
+              out += (
+                  s.found,
+                  s.complete,
+                  safeConvert(s.completeComment),
+                  s.topical,
+                  safeConvert(s.topicalComment),
+                  s.accessible,
+                  safeConvert(s.accessibleComment),
+                  s.hypertext,
+                  safeConvert(s.hypertextComment),
+                  s.document,
+                  safeConvert(s.documentComment),
+                  s.image,
+                  safeConvert(s.imageComment),
+                  safeConvert(s.comment)
+              )
         writer.writerow(out)
     return response
 
@@ -273,12 +289,17 @@ def task_import(request, id):
         return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
     reader = csv.reader(request.FILES['taskfile'])
     errLog = []
-    rowCount = 0
+    rowOKCount = 0
+    rowALLCount = 0
     try:
         for row in reader:
+            rowALLCount += 1
             try:
                 code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
-                if not code or (
+                if not code:
+                  errLog.append("row %d (csv). Not a code: %s" % (reader.line_num, row[0]))
+                  continue
+                if (
                     row[3]  == '' and
                     row[4]  == '' and
                     row[5]  == '' and
@@ -293,7 +314,8 @@ def task_import(request, id):
                     row[14] == '' and
                     row[15] == '' and
                     row[16] == ''
-                ):
+                  ):
+                    errLog.append("row %d (csv). Empty score: %s" % (reader.line_num, row[0]))
                     continue
                 parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
                 try:
@@ -325,13 +347,18 @@ def task_import(request, id):
             except Exception, e:
                 errLog.append("row %d. %s" % (reader.line_num, e))
             else:
-                rowCount += 1
+                rowOKCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
     title = _('Import CSV for task %s') % task
-    return render_to_response('exmo2010/task_import_log.html',
-        { 'task': task, 'file': request.FILES['taskfile'], 'errLog': errLog, 'rowCount': rowCount, 'title': title }
-    )
+    return render_to_response('exmo2010/task_import_log.html', {
+      'task': task,
+      'file': request.FILES['taskfile'],
+      'errLog': errLog,
+      'rowOKCount': rowOKCount,
+      'rowALLCount': rowALLCount,
+      'title': title
+    })
 
 
 def table(request, headers, **kwargs):
