@@ -35,11 +35,11 @@
 </div>
 {% endblock %}
 {% block content %}
-<form method="POST" action="">
+<form method="post" action="">
   <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
   <input type="hidden" name="user" id="id_user" value="{{user.pk}}" />
   <input type="hidden" name="score" id="id_score" value="{{score.pk}}" />
-  <input type="submit"><input class="button" type="reset">
+  <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

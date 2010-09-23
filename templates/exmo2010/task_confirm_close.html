@@ -28,9 +28,9 @@
 </div>
 {% endblock %}
 {% block content %}
-<form method="POST" action="{% url exmo.exmo2010.views.task_manager object.monitoring.pk,object.organization.pk,object.pk,'close' %}?{{ request.GET.urlencode }}">
+<form method="post" action="{% url exmo.exmo2010.views.task_manager object.monitoring.pk,object.organization.pk,object.pk,'close' %}?{{ request.GET.urlencode }}">
   <p>{% trans 'Close this task?' %}</p>
-  <input type="submit">
+  <p><input type="submit" /></p>
 </form>
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

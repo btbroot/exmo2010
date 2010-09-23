@@ -31,7 +31,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="POST" action="?{{request.GET.urlencode}}">
+<form method="post" action="?{{request.GET.urlencode}}">
   <p>{{form.name.label_tag}}{{ form.name }} {{ form.name.errors }}</p>
   <p>{{form.url.label_tag}}{{ form.url }} {{ form.url.errors }}</p>
   <p>{{form.entity.label_tag}}{{ form.entity }} {{ form.entity.errors }}</p>
@@ -39,7 +39,7 @@
   <p>{{form.comments.label_tag}}{{ form.comments }} {{ form.comments.errors }}</p>
   <p>{{form.keyname.label_tag}}{{ form.keyname }} {{ form.keyname.errors }}</p>
   <p><input type="hidden" name="type" id="id_type" value="{{monitoring.type.pk}}" /></p>
-  <p><input type="submit"><input class="button" type="reset"></p>
+  <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
