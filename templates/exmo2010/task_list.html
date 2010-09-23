@@ -22,7 +22,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{{ monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
