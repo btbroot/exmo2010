@@ -34,7 +34,7 @@
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Name" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>{% for object in object_list %}
-    <tr><td>{{ forloop.counter }}</td><td>{{ object.name }}</td><td>{{ object.url }}</td><td>{{ object.openness }}</td></tr>
+    <tr><td>{{ forloop.counter }}</td><td>{{ object.name }}</td><td>{{ object.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
   {% endfor %}</tbody>
 </table>
 </div>
