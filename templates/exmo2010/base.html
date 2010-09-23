@@ -24,18 +24,16 @@
         <div id="branding">
         {% block branding %}{% endblock %}
         </div>
+        {% if user.is_active %}
         <div id="user-tools">
             {% trans 'Welcome,' %}
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
-                {% if logout_url %}
-                    <a href="{{ logout_url }}">
-                {% else %}
-                    <a href="{{ root_path }}logout/">
-                {% endif %}
+                    <a href="{% url django.contrib.auth.views.logout %}">
                 {% trans 'Log out' %}</a>
             {% endblock %}
         </div>
+        {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
     <!-- END Header -->
