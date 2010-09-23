@@ -546,10 +546,14 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
     if check_permission(request.user, score.task) != PERM_NOPERM:
+        if request.user.is_superuser or check_permission(request.user, score.task) == PERM_EXPERT:
+            method = 'update'
+        else:
+            method = 'view'
         return create_object(
             request,
             form_class = FeedbackForm,
-            post_save_redirect = reverse('exmo.exmo2010.views.score_detail_direct', args = [score.pk, 'update']),
+            post_save_redirect = reverse('exmo.exmo2010.views.score_detail_direct', args = [score.pk, method]),
             extra_context = {
                 'score': score,
                 'title': _('Add new comment'),
