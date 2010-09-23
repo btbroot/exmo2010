@@ -171,7 +171,7 @@ def score_list_by_task(request, task_id, report=None):
       return table(
         request,
         headers=(
-          ('Code', None, None, None),
+          (_('Code'), None, None, None),
           (_('Name'), 'name', 'name', None),
           (_('Found'), None, None, None),
           (_('Complete'), None, None, None),
@@ -421,8 +421,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Expert'), 'user__username', 'user__username', None),
                 (_('Status'), 'status', 'status', int),
-                (_('Complete%'), 'complete', None, None),
-                (_('Openness%'), 'openness', None, None)
+                (_('Complete, %'), 'complete', None, None),
+                (_('Openness, %'), 'openness', None, None)
               )
     elif Group.objects.get(name='experts') in groups:
       queryset = queryset.filter(user = request.user)
@@ -430,8 +430,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Status'), 'status', 'status', int),
-                (_('Complete%'), 'complete', None, None),
-                (_('Openness%'), 'openness', None, None)
+                (_('Complete, %'), 'complete', None, None),
+                (_('Openness, %'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
       queryset = Task.approved_tasks.all()
@@ -439,8 +439,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete%'), 'complete', None, None),
-                (_('Openness%'), 'openness', None, None)
+                (_('Complete, %'), 'complete', None, None),
+                (_('Openness, %'), 'openness', None, None)
               )
     elif Group.objects.get(name='organizations') in groups:
       orgs = []
@@ -457,8 +457,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         queryset = queryset.filter(eval(query))
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete%'), 'complete', None, None),
-                (_('Openness%'), 'openness', None, None)
+                (_('Complete, %'), 'complete', None, None),
+                (_('Openness, %'), 'openness', None, None)
                 )
       else: #no organization to show
         return HttpResponseForbidden(_('Forbidden'))
