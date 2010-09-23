@@ -616,6 +616,17 @@ def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
     queryset = Organization.objects.filter(type = monitoring.type)
+    groups = request.user.groups.all()
+    if Group.objects.get(name='organizations') in groups:
+      orgs = []
+      for group in groups:
+        org = None
+        try: org = Organization.objects.get(keyname = group.name)
+        except: continue
+        if org: orgs.append(org)
+      query = " | ".join(["Q(pk = %d)" % org.pk for org in orgs])
+      if query:
+        queryset = queryset.filter(eval(query))
     headers =   (
                 (_('Name'), 'name', 'name', None),
                 )
