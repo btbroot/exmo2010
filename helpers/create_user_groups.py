@@ -34,19 +34,19 @@ customer_g = Group.objects.get(name=generic_group[2])
 for oo in o:
     if oo.keyname:
         try:
-            g = Group.objects.get(name=oo.keyname[:80])
+            g = Group.objects.get(name=oo.keyname)
         except Group.DoesNotExist:
-            g = Group(name=oo.keyname[:80])
+            g = Group(name=oo.keyname)
             g.save()
 
         try:
-            u = User.objects.get(username=oo.keyname[:30])
+            u = User.objects.get(username=oo.keyname)
         except User.DoesNotExist:
-            u = User(username=oo.keyname[:30])
+            u = User(username=oo.keyname)
             u.save()
 
         u.groups.add(g, organizations_g)
         passwd=hashlib.md5(str(random.randrange(100000,999999))).hexdigest()[:8]
         u.set_password(passwd)
         u.save()
-        print oo,':',u.username[:30],':',passwd
+        print oo,':',u.username,':',passwd

@@ -64,7 +64,7 @@ class Organization(models.Model):
   entity -- Federal district for organization (if organization not federal)
   keywords -- Keywords for autocomplete and search
   comments -- Additional comment
-  keyname -- Field identifies the group name from auth.models.Group model.
+  keyname -- Field identifies the group name from auth.models.Group model. Maxlength for auth.models.Group is 30, so this field also have, max_length = 30
   '''
 
   name         = models.CharField(max_length = 255, unique = True)
@@ -73,7 +73,7 @@ class Organization(models.Model):
   entity       = models.ForeignKey(Entity, null = True, blank = True)
   keywords     = models.TextField(null = True, blank = True)
   comments     = models.TextField(null = True, blank = True)
-  keyname      = models.CharField(max_length = 255, unique = True)
+  keyname      = models.CharField(max_length = 30, unique = True)
 
   def __unicode__(self):
     return '%s' % (self.name)
