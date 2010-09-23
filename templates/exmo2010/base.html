@@ -24,7 +24,6 @@
         <div id="branding">
         {% block branding %}{% endblock %}
         </div>
-        
         {% if user.is_active and user.is_staff %}
         <div id="user-tools">
             {% trans 'Welcome,' %}
@@ -42,6 +41,19 @@
                 {% endif %}
                 {% trans 'Change password' %}</a> /
                 {% url django.contrib.auth.views.logout as logout_url %}
+                {% if logout_url %}
+                    <a href="{{ logout_url }}">
+                {% else %}
+                    <a href="{{ root_path }}logout/">
+                {% endif %}
+                {% trans 'Log out' %}</a>
+            {% endblock %}
+        </div>
+        {% else %}
+        <div id="user-tools">
+            {% trans 'Welcome,' %}
+            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
+            {% block userlinks %}
                 {% if logout_url %}
                     <a href="{{ logout_url }}">
                 {% else %}
