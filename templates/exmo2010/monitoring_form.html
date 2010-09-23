@@ -27,6 +27,8 @@
 </div>
 {% endblock %}
 
+<p>{{ form.non_field_errors }}</p>
+
 {% block content %}
 <form method="POST" action="?{{request.GET.urlencode}}">
   {{ form.as_p }}

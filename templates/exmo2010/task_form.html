@@ -29,6 +29,9 @@
 {% endblock %}
 </div>
 {% block content %}
+
+<p>{{ form.non_field_errors }}</p>
+
 <form method="POST" action="?{{request.GET.urlencode}}">
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
   <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>

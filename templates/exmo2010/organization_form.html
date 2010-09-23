@@ -28,6 +28,8 @@
 </div>
 {% endblock %}
 
+<p>{{ form.non_field_errors }}</p>
+
 {% block content %}
 <form method="POST" action="?{{request.GET.urlencode}}">
   <p>{{form.name.label_tag}}{{ form.name }} {{ form.name.errors }}</p>
