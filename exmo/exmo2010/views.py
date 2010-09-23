@@ -411,7 +411,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     Also for every ogranization we can have group'''
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
-    title = _('Task list for %(org)s of %(type)s') % { 'org': organization.name, 'type': monitoring.type }
+    title = _('Task list for %(org)s for monitoring %(mon) of %(type)s') % { 'org': organization.name, 'type': monitoring.type, 'mon': monitoring.name }
     queryset = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness})
     queryset = queryset.filter(monitoring = monitoring, organization = organization)
     groups = request.user.groups.all()

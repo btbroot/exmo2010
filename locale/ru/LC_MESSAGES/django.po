@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-23 15:06+0400\n"
+"POT-Creation-Date: 2010-09-23 15:12+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,9 +186,8 @@ msgid "Import CSV for task %s"
 msgstr "Импортировать CVS для задачи %s"
 
 #: exmo/exmo2010/views.py:414
-#, python-format
-msgid "Task list for %(org)s of %(type)s"
-msgstr "Список задач %(org)s мониторинга %(type)s"
+msgid "Task list for %(org)s for monitoring %(mon) of %(type)s"
+msgstr "Список задач %(org)s мониторинга %(mon) для типа %(type)s"
 
 #: exmo/exmo2010/views.py:421 exmo/exmo2010/views.py:431
 #: exmo/exmo2010/views.py:441 exmo/exmo2010/views.py:459
