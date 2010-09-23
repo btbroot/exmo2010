@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-23 15:12+0400\n"
+"POT-Creation-Date: 2010-09-23 15:29+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,8 +186,8 @@ msgid "Import CSV for task %s"
 msgstr "Импортировать CVS для задачи %s"
 
 #: exmo/exmo2010/views.py:414
-msgid "Task list for %(org)s for monitoring %(mon) of %(type)s"
-msgstr "Список задач %(org)s мониторинга %(mon) для типа %(type)s"
+msgid "Task list for %(org)s for monitoring %(mon)s of %(type)s"
+msgstr "Список задач %(org)s мониторинга %(mon)s для типа %(type)s"
 
 #: exmo/exmo2010/views.py:421 exmo/exmo2010/views.py:431
 #: exmo/exmo2010/views.py:441 exmo/exmo2010/views.py:459
@@ -323,23 +323,15 @@ msgid ""
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: templates/exmo2010/base.html:30
+#: templates/exmo2010/base.html:28
 msgid "Welcome,"
 msgstr "Добро пожаловать,"
 
-#: templates/exmo2010/base.html:35
-msgid "Documentation"
-msgstr "Документация"
-
-#: templates/exmo2010/base.html:43
-msgid "Change password"
-msgstr "Сменить пароль"
-
-#: templates/exmo2010/base.html:50
+#: templates/exmo2010/base.html:36
 msgid "Log out"
 msgstr "Выйти"
 
-#: templates/exmo2010/base.html:58 templates/exmo2010/feedback_form.html:24
+#: templates/exmo2010/base.html:43 templates/exmo2010/feedback_form.html:24
 #: templates/exmo2010/monitoring_confirm_delete.html:23
 #: templates/exmo2010/monitoring_form.html:24
 #: templates/exmo2010/organization_confirm_delete.html:23
@@ -656,3 +648,9 @@ msgstr "Комментарий к критерию 'Формат файла дл
 #: templates/exmo2010/task_report.html:155
 msgid "comment"
 msgstr "Комментарий"
+
+#~ msgid "Documentation"
+#~ msgstr "Документация"
+
+#~ msgid "Change password"
+#~ msgstr "Сменить пароль"
