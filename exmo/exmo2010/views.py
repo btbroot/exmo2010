@@ -30,6 +30,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
 from exmo.exmo2010.helpers import check_permission
+from django.db.models import Count
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -615,7 +616,7 @@ def monitoring_manager(request, id, method):
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
-    queryset = Organization.objects.filter(type = monitoring.type)
+    queryset = Organization.objects.filter(type = monitoring.type).annotate(Count('task'))
     groups = request.user.groups.all()
     if Group.objects.get(name='organizations') in groups:
       orgs = []
@@ -629,6 +630,7 @@ def organization_list(request, id):
         queryset = queryset.filter(eval(query))
     headers =   (
                 (_('Name'), 'name', 'name', None),
+                (_('Tasks'), 'task__count', None, None),
                 )
     return table(
         request,

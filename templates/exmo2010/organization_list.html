@@ -43,6 +43,9 @@
             &nbsp;<a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
         {%endif%}
       </td>
+      <td>
+        {{ object.task__count }}
+      </td>
       </tr>
     {% endfor %}
   </tbody>
