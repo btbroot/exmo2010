@@ -23,7 +23,7 @@ from django.core.exceptions import ValidationError
 
 
 class OrganizationType(models.Model):
-  name         = models.CharField(max_length = 255, unique = True)
+  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
 
   def __unicode__(self):
     return self.name
@@ -34,7 +34,7 @@ class OrganizationType(models.Model):
 
 
 class Federal(models.Model):
-  name         = models.CharField(max_length = 255, unique = True)
+  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
 
   def __unicode__(self):
     return self.name
@@ -45,8 +45,8 @@ class Federal(models.Model):
 
 
 class Entity(models.Model):
-  name         = models.CharField(max_length = 255, unique = True)
-  federal      = models.ForeignKey(Federal)
+  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
+  federal      = models.ForeignKey(Federal, verbose_name=_('federal'))
 
   def __unicode__(self):
     return self.name
@@ -67,26 +67,25 @@ class Organization(models.Model):
   keyname -- Field identifies the group name from auth.models.Group model. Maxlength for auth.models.Group is 30, so this field also have, max_length = 30
   '''
 
-  name         = models.CharField(max_length = 255, unique = True)
-  url          = models.URLField(max_length = 255, null = True, blank = True)
-  type         = models.ForeignKey(OrganizationType)
-  entity       = models.ForeignKey(Entity, null = True, blank = True)
-  keywords     = models.TextField(null = True, blank = True)
-  comments     = models.TextField(null = True, blank = True)
-  keyname      = models.CharField(max_length = 30, unique = True)
+  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
+  url          = models.URLField(max_length = 255, null = True, blank = True, verbose_name=_('url'))
+  type         = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
+  entity       = models.ForeignKey(Entity, null = True, blank = True, verbose_name=_('entity'))
+  keywords     = models.TextField(null = True, blank = True, verbose_name=_('keywords'))
+  comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
+  keyname      = models.CharField(max_length = 30, unique = True, verbose_name=_('keyname'))
 
   def __unicode__(self):
     return '%s' % (self.name)
 
-#hack TODO: revert ordering by 'name'
   class Meta:
     ordering = ('name',)
 
 
 
 class Category(models.Model):
-  code         = models.PositiveIntegerField(unique = True)
-  name         = models.CharField(max_length = 255, unique = True)
+  code         = models.PositiveIntegerField(unique = True, verbose_name=_('code'))
+  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
 
   def __unicode__(self):
     return '%d. %s' % (self.code, self.name)
@@ -97,9 +96,9 @@ class Category(models.Model):
 
 
 class Subcategory(models.Model):
-  code         = models.PositiveIntegerField()
-  name         = models.CharField(max_length = 255)
-  group        = models.ForeignKey(Category)
+  code         = models.PositiveIntegerField(verbose_name=_('code'))
+  name         = models.CharField(max_length = 255, verbose_name=_('name'))
+  group        = models.ForeignKey(Category, verbose_name=_('category'))
 
   def __unicode__(self):
     return '%d.%d. %s' % (self.group.code, self.code, self.name)
@@ -117,14 +116,14 @@ class Subcategory(models.Model):
 
 
 class ParameterType(models.Model):
-  name               = models.CharField(max_length = 255, unique = True)
-  description        = models.TextField(null = True, blank = True)
-  complete           = models.BooleanField(default = True)
-  topical            = models.BooleanField(default = True)
-  accessible         = models.BooleanField(default = True)
-  hypertext          = models.BooleanField(default = True)
-  document           = models.BooleanField(default = True)
-  image              = models.BooleanField(default = True)
+  name               = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
+  description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
+  complete           = models.BooleanField(default = True, verbose_name=_('complete'))
+  topical            = models.BooleanField(default = True, verbose_name=_('topical'))
+  accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
+  hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
+  document           = models.BooleanField(default = True, verbose_name=_('document'))
+  image              = models.BooleanField(default = True, verbose_name=_('image'))
 
   def __unicode__(self):
     return self.name
@@ -132,8 +131,8 @@ class ParameterType(models.Model):
 
 
 class Monitoring(models.Model):
-  name               = models.CharField(max_length = 255, default = "-")
-  type               = models.ForeignKey(OrganizationType)
+  name               = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+  type               = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
 
   def __unicode__(self):
     return '%s: %s' % (self.type.name, self.name)
@@ -145,14 +144,14 @@ class Monitoring(models.Model):
 
 
 class Parameter(models.Model):
-  code               = models.PositiveIntegerField()
-  name               = models.CharField(max_length = 255)
-  description        = models.TextField(null = True, blank = True)
-  weight             = models.IntegerField()
-  group              = models.ForeignKey(Subcategory)
-  type               = models.ForeignKey(ParameterType)
-  monitoring         = models.ManyToManyField(Monitoring)
-  exclude            = models.ManyToManyField(Organization, null = True, blank = True)
+  code               = models.PositiveIntegerField(verbose_name=_('code'))
+  name               = models.CharField(max_length = 255, verbose_name=_('name'))
+  description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
+  weight             = models.IntegerField(verbose_name=_('weight'))
+  group              = models.ForeignKey(Subcategory, verbose_name=_('subcategory'))
+  type               = models.ForeignKey(ParameterType, verbose_name=_('parameter type'))
+  monitoring         = models.ManyToManyField(Monitoring, verbose_name=_('monitoring'))
+  exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
 
   def __unicode__(self):
     return '%d.%d.%d. %s' % (self.group.group.code, self.group.code, self.code, self.name)
@@ -196,10 +195,10 @@ class Task(models.Model):
     (TASK_READY, _('ready')),
     (TASK_APPROVED, _('approved'))
   )
-  user         = models.ForeignKey(User)
-  organization = models.ForeignKey(Organization)
-  monitoring   = models.ForeignKey(Monitoring)
-  status       = models.PositiveIntegerField(choices = TASK_STATUS)
+  user         = models.ForeignKey(User, verbose_name=_('user'))
+  organization = models.ForeignKey(Organization, verbose_name=_('organization'))
+  monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+  status       = models.PositiveIntegerField(choices = TASK_STATUS, verbose_name=_('status'))
   _scores_invalid = '''
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
@@ -330,22 +329,22 @@ class Task(models.Model):
 
 
 class Score(models.Model):
-  task              = models.ForeignKey(Task)
-  parameter         = models.ForeignKey(Parameter)
-  found             = models.PositiveIntegerField(choices = ((0, 0), (1, 1)))
-  complete          = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  completeComment   = models.TextField(null = True, blank = True)
-  topical           = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  topicalComment    = models.TextField(null = True, blank = True)
-  accessible        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)))
-  accessibleComment = models.TextField(null = True, blank = True)
-  hypertext         = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  hypertextComment  = models.TextField(null = True, blank = True)
-  document          = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  documentComment   = models.TextField(null = True, blank = True)
-  image             = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)))
-  imageComment      = models.TextField(null = True, blank = True)
-  comment           = models.TextField(null = True, blank = True)
+  task              = models.ForeignKey(Task, verbose_name=_('task'))
+  parameter         = models.ForeignKey(Parameter, verbose_name=_('parameter'))
+  found             = models.PositiveIntegerField(choices = ((0, 0), (1, 1)), verbose_name=_('found'))
+  complete          = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('complete'))
+  completeComment   = models.TextField(null = True, blank = True, verbose_name=_('completeComment'))
+  topical           = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('topical'))
+  topicalComment    = models.TextField(null = True, blank = True, verbose_name=_('topicalComment'))
+  accessible        = models.PositiveIntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('accessible'))
+  accessibleComment = models.TextField(null = True, blank = True, verbose_name=_('accessibleComment'))
+  hypertext         = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('hypertext'))
+  hypertextComment  = models.TextField(null = True, blank = True, verbose_name=_('hypertextComment'))
+  document          = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('document'))
+  documentComment   = models.TextField(null = True, blank = True, verbose_name=_('documentComment'))
+  image             = models.PositiveIntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('image'))
+  imageComment      = models.TextField(null = True, blank = True, verbose_name=_('imageComment'))
+  comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
 
   def __unicode__(self):
     return '%s: %s [%d.%d.%d]' % (
@@ -402,7 +401,7 @@ class Score(models.Model):
 
 
 class Feedback(models.Model):
-  user          = models.ForeignKey(User)
-  score         = models.ForeignKey(Score)
-  comment       = models.TextField()
-  date          = models.DateTimeField(auto_now = True)
+  user          = models.ForeignKey(User, verbose_name=_('user'))
+  score         = models.ForeignKey(Score, verbose_name=_('score'))
+  comment       = models.TextField(verbose_name=_('comment'))
+  date          = models.DateTimeField(auto_now = True, verbose_name=_('date'))

@@ -31,7 +31,7 @@
 {% endblock %}
 {% block content %}
 <div id=score_list>
-<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>{% if task.openness %}&nbsp;&mdash;&nbsp;{% trans 'Openness: ' %}{{ task.openness|floatformat:3 }}%{% endif %}</h2>
+<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>{% if task.openness %}&nbsp;&mdash;&nbsp;{% trans 'Openness' %}:&nbsp;{{ task.openness|floatformat:3 }}%{% endif %}</h2>
 
 {% if user.is_superuser or user|in_group:"experts" %}
 <div id=utility>

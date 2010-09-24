@@ -42,66 +42,66 @@
     <th>{% trans 'Value' %}</th>
     </thead>
     <tbody>
-    <tr><td>{% trans 'Found: ' %}</td><td>{{ object.found }}</td>
+    <tr><td>{% trans 'Found' %}</td><td>{{ object.found }}</td>
 {% if parameter.type.complete and object.complete %}
     <tr><td>
-    {% trans 'Complete: ' %}</td><td> {{ object.complete }}</td></tr>
+    {% trans 'Complete' %}</td><td> {{ object.complete }}</td></tr>
       {%if object.completeComment %}
        <tr><td>
-        {% trans 'Comment for complete: ' %}</td><td>{{ object.completeComment }}</td>
+        {% trans 'Comment for complete' %}</td><td>{{ object.completeComment }}</td>
        </tr>
       {% endif %}
 {% endif %}
 {% if parameter.type.topical and object.topical %}
     <tr><td>
-    {% trans 'Topical: ' %}</td><td>{{ object.topical }}</td></tr>
+    {% trans 'Topical' %}</td><td>{{ object.topical }}</td></tr>
       {% if object.topicalComment %}
       <tr><td>
-        {% trans 'Comment for topical: ' %}</td><td>{{ object.topicalComment }}</td>
+        {% trans 'Comment for topical' %}</td><td>{{ object.topicalComment }}</td>
       </tr>
       {% endif %}
 {% endif %}
 {% if parameter.type.accessible and object.accessible %}
     <tr id=score_detail_accessible><td>
-    {% trans 'Accessible: ' %}</td><td>{{ object.accessible }}</td></tr>
+    {% trans 'Accessible' %}</td><td>{{ object.accessible }}</td></tr>
     {% if object.accessibleComment %}
       <tr id=score_detail_accessibleComment><td>
-        {% trans 'Comment for accessible: ' %}</td><td>{{ object.accessibleComment }}</td></tr>
+        {% trans 'Comment for accessible' %}</td><td>{{ object.accessibleComment }}</td></tr>
     {% endif %}
 {% endif %}
 {% if parameter.type.hypertext and object.hypertext %}
     <tr id=score_detail_hypertext>
-    <td>{% trans 'Hypertext: ' %}</td><td>{{ object.hypertext }}</td>
+    <td>{% trans 'Hypertext' %}</td><td>{{ object.hypertext }}</td>
     </tr>
       {% if object.hypertextComment %}
       <tr id=score_detail_hypertextComment>
-        <td>{% trans 'Comment for hypertext: ' %}</td><td>{{ object.hypertextComment }}</td>
+        <td>{% trans 'Comment for hypertext' %}</td><td>{{ object.hypertextComment }}</td>
       </tr>
       {% endif %}
 {% endif %}
 {% if parameter.type.document and object.document %}
     <tr id=score_detail_document>
-    <td>{% trans 'Document: ' %}</td><td>{{ object.document }}</td>
+    <td>{% trans 'Document' %}</td><td>{{ object.document }}</td>
     </tr>
     {% if object.documentComment %}
       <tr id=score_detail_documentComment>
-        <td>{% trans 'Comment for document: ' %}</td><td>{{ object.documentComment }}</td>
+        <td>{% trans 'Comment for document' %}</td><td>{{ object.documentComment }}</td>
       </tr>
     {% endif %}
 {% endif %}
 {% if parameter.type.image and object.image %}
     <tr id=score_detail_image>
-    <td>{% trans 'Image: ' %}</td><td>{{ object.image }}</td>
+    <td>{% trans 'Image' %}</td><td>{{ object.image }}</td>
     </tr>
     {% if object.imageComment %}
       <tr id=score_detail_imageComment>
-        <td>{% trans 'Comment for image: ' %}</td><td>{{ object.imageComment }}</td>
+        <td>{% trans 'Comment for image' %}</td><td>{{ object.imageComment }}</td>
       </tr>
     {% endif %}
 {% endif %}
 {% if object.comment %}
     <tr id=score_detail_comment>
-    <td>{% trans 'Common parameter comment: ' %}</td><td>{{ object.comment }}</td>
+    <td>{% trans 'Common parameter comment' %}</td><td>{{ object.comment }}</td>
     </tr>
 {% endif %}
     </tbody>
