@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-24 16:43+0400\n"
+"POT-Creation-Date: 2010-09-24 17:03+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -272,19 +271,16 @@ msgid "Forbidden"
 msgstr "Запрещено"
 
 #: exmo/exmo2010/views.py:100
-#, python-format
-msgid "Delete score for %(org)s from %(user)s"
-msgstr "Удалить оценку для %(org)s от %(user)s"
+msgid "Delete score %s"
+msgstr "Удалить оценку %s"
 
 #: exmo/exmo2010/views.py:105
-#, python-format
-msgid "Edit score for %(org)s from %(user)s"
-msgstr "Редактировать оценку для %(org)s от %(user)s"
+msgid "Edit score %s"
+msgstr "Редактировать оценку %s"
 
 #: exmo/exmo2010/views.py:128
-#, python-format
-msgid "View score for %s"
-msgstr "Просмотр оценок для %s"
+msgid "View score %s"
+msgstr "Просмотр оценки %s"
 
 #: exmo/exmo2010/views.py:147
 #, python-format
@@ -787,6 +783,12 @@ msgstr "закрыта"
 #: templates/exmo2010/task_report.html:25
 msgid "Task "
 msgstr "Задача "
+
+#~ msgid "Delete score for %(org)s from %(user)s"
+#~ msgstr "Удалить оценку для %(org)s от %(user)s"
+
+#~ msgid "Edit score for %(org)s from %(user)s"
+#~ msgstr "Редактировать оценку для %(org)s от %(user)s"
 
 #~ msgid "Found: "
 #~ msgstr "Наличие: "

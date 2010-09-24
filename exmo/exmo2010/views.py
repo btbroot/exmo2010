@@ -97,12 +97,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
-      title = _('Delete score for %(org)s from %(user)s') % { 'org': score.task.organization.name, 'user': request.user }
+      title = _('Delete score %s') % score.parameter
       if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
-      title = _('Edit score for %(org)s from %(user)s') % { 'org': score.task.organization.name, 'user': request.user }
+      title = _('Edit score %s') % score.parameter
       if check_permission(request.user, score.task) == PERM_EXPERT and not score.task.open:
         return HttpResponseForbidden(_('Task closed'))
       elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
@@ -125,7 +125,7 @@ def score_detail_direct(request, score_id, method='update'):
         }
       )
     elif method == 'view':
-      title = _('View score for %s') % ( score.task.organization.name )
+      title = _('View score %s') % score.parameter
       return object_detail(
 	request,
 	queryset = Score.objects.all(),
