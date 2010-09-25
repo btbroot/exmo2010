@@ -546,8 +546,8 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 @login_required
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    if check_permission(request.user, score.task) != PERM_NOPERM:
-        if request.user.is_superuser or check_permission(request.user, score.task) == PERM_EXPERT:
+    if check_permission(request.user, score.task) != PERM_NOPERM and check_permission(request.user, score.task) != PERM_EXPERT:
+        if request.user.is_superuser:
             method = 'update'
         else:
             method = 'view'
