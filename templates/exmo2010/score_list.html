@@ -33,19 +33,20 @@
 <div id=score_list>
 <h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>{% if task.openness %}&nbsp;&mdash;&nbsp;{% trans 'Openness' %}:&nbsp;{{ task.openness|floatformat:3 }}%{% endif %}</h2>
 
-{% if user.is_superuser or user|in_group:"experts" %}
 <div id=utility>
-   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="post" enctype="multipart/form-data">
-    <p>
+{% if user.is_superuser or user|in_group:"experts"  or user|in_group:"organizations" %}
      <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
-     <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a> /
+     <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a>
+{% endif %}
+{% if user.is_superuser or user|in_group:"experts" %}
+   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="post" enctype="multipart/form-data">
      <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
      <label>{% trans "Import task from CSV" %}: <input type="file" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
-    </p>
    </form>
    {% if importLog %}<div>{{importLog}}</div>{% endif %}
-</div>
 {% endif %}
+</div>
+
 <table>
 {% table_header headers %}
 <tbody>
