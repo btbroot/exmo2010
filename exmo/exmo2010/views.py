@@ -628,9 +628,14 @@ def organization_list(request, id):
       query = " | ".join(["Q(pk = %d)" % org.pk for org in orgs])
       if query:
         queryset = queryset.filter(eval(query))
-    headers =   (
+    if user.is_superuser:
+        headers = (
                 (_('Name'), 'name', 'name', None),
                 (_('Tasks'), 'task__count', None, None),
+                )
+    else:
+        headers = (
+                (_('Name'), 'name', 'name', None),
                 )
     return table(
         request,
