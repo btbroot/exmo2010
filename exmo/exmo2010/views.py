@@ -733,6 +733,6 @@ def user_profile(request, id):
         request,
         form_class = UserForm,
         object_id = user.pk,
-        post_save_redirect = reverse('exmo.exmo2010.views.monitoring_list'),
+        post_save_redirect = reverse('exmo.exmo2010.views.user_profile', args=[user.pk]),
         template_name = 'exmo2010/user_form.html',
     )
