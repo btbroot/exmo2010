@@ -27,6 +27,8 @@ urlpatterns = patterns('',
   (r'^exmo2010/', include('exmo.exmo2010.urls')),
   (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}),
   (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}),
-  ( r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT} ),
+  (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT} ),
+  (r'^accounts/password_change$', 'django.contrib.auth.views.password_change', {'template_name':'exmo2010/password_change_form.html' }),
+  (r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }),
+  (r'^accounts/profile/(\d+)$','exmo.exmo2010.views.user_profile'),
 )
-

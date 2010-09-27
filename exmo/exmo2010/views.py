@@ -17,6 +17,7 @@
 #
 from exmo.exmo2010.sort_headers import SortHeaders
 from exmo.exmo2010.forms import ScoreForm, TaskForm
+from exmo.exmo2010.forms import UserForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
@@ -25,10 +26,12 @@ from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Monitoring
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 from django.db.models import Q
 from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
 from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_protect
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -539,7 +542,6 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 
 
 
-from django.views.decorators.csrf import csrf_protect
 @csrf_protect
 @login_required
 def add_comment(request, score_id):
@@ -721,3 +723,16 @@ def rating(request, id):
 
 
 
+@csrf_protect
+@login_required
+def user_profile(request, id):
+    user = get_object_or_404(User, pk = id)
+    if not request.user.is_superuser and request.user != user:
+        return HttpResponseForbidden(_('Forbidden'))
+    return update_object(
+        request,
+        form_class = UserForm,
+        object_id = user.pk,
+        post_save_redirect = reverse('exmo.exmo2010.views.monitoring_list'),
+        template_name = 'exmo2010/user_form.html',
+    )

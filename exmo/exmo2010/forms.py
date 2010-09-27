@@ -61,3 +61,20 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
+
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        exclude = (
+            'username',
+            'password',
+            'groups',
+            'user_permissions',
+            'is_staff',
+            'is_active',
+            'is_superuser',
+            'last_login',
+            'date_joined'
+        )

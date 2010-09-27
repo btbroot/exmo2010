@@ -29,8 +29,9 @@
             {% trans 'Welcome,' %}
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
-                    <a href="{% url django.contrib.auth.views.logout %}">
-                {% trans 'Log out' %}</a>
+            <a href="{% url exmo.exmo2010.views.user_profile user.pk %}">{% trans 'Profile' %}</a> /
+            <a href="{% url django.contrib.auth.views.password_change %}">{% trans 'Change password' %}</a> /
+            <a href="{% url django.contrib.auth.views.logout %}">{% trans 'Log out' %}</a>
             {% endblock %}
         </div>
         {% endif %}
