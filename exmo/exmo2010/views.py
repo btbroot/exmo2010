@@ -17,14 +17,12 @@
 #
 from exmo.exmo2010.sort_headers import SortHeaders
 from exmo.exmo2010.forms import ScoreForm, TaskForm
-from exmo.exmo2010.forms import FeedbackForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
-from exmo.exmo2010.models import Feedback
 from exmo.exmo2010.models import Monitoring
 from django.contrib.auth.models import Group
 from django.db.models import Q
@@ -121,7 +119,6 @@ def score_detail_direct(request, score_id, method='update'):
 	extra_context = {
           'task': score.task,
           'parameter': score.parameter,
-          'comments': Feedback.objects.filter(score = score),
           'title': title,
         }
       )
@@ -134,7 +131,6 @@ def score_detail_direct(request, score_id, method='update'):
 	extra_context = {
           'task': score.task,
           'parameter': score.parameter,
-          'comments': Feedback.objects.filter(score = score),
           'title': title,
         }
       )
@@ -543,23 +539,20 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 
 
 
+from django.views.decorators.csrf import csrf_protect
+@csrf_protect
 @login_required
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
     if check_permission(request.user, score.task) != PERM_NOPERM and check_permission(request.user, score.task) != PERM_EXPERT:
-        if request.user.is_superuser:
-            method = 'update'
-        else:
-            method = 'view'
-        return create_object(
-            request,
-            form_class = FeedbackForm,
-            post_save_redirect = reverse('exmo.exmo2010.views.score_detail_direct', args = [score.pk, method]),
-            extra_context = {
-                'score': score,
-                'title': _('Add new comment'),
-            }
-        )
+	return render_to_response(
+	        'exmo2010/score_comment_form.html',
+	        {
+	            'score': score,
+	            'title': _('Add new comment'),
+	        },
+	        context_instance=RequestContext(request),
+	        )
     else: return HttpResponseForbidden(_('Forbidden'))
 
 

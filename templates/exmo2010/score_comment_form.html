@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia in_group %}
+{% load i18n adminmedia in_group comments %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
@@ -35,11 +35,28 @@
 </div>
 {% endblock %}
 {% block content %}
-<form method="post" action="">
-  <dt>{{ form.comment.label_tag }}</dt><dd>{{ form.comment }} {{ form.comment.errors }}</dd>
-  <input type="hidden" name="user" id="id_user" value="{{user.pk}}" />
-  <input type="hidden" name="score" id="id_score" value="{{score.pk}}" />
-  <p><input type="submit" /><input class="button" type="reset" /></p>
+{% get_comment_form for score as form %}
+<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+  {{ form.content_type.as_hidden }}
+  {{ form.object_pk.as_hidden }}
+  {{ form.timestamp.as_hidden }}
+  {{ form.security_hash.as_hidden }}
+  {% if user %}
+  <input type="hidden" name="id_user" value="{{ user }}" />
+  {% else %}
+  <p>{{ form.user.label_tag }}{{ form.user }}</p>
+  {% endif %}
+  {% if user.email %}
+  <input type="hidden" name="id_email" value="{{ user.email }}" />
+  {% else %}
+  <p>{{ form.email.label_tag }}{{ form.email }}</p>
+  {% endif %}
+  <p>{{ form.comment.label_tag }}{{ form.comment }}</p>
+  <input type="hidden" name="next" value="{% if user|in_group:'experts' and score.task.open or user.is_superuser %}{% url exmo.exmo2010.views.score_detail_direct score.pk 'update' %}{% else %}{% url exmo.exmo2010.views.score_detail_direct score.pk 'view' %}{% endif %}" />
+  <tr>
+    <td></td>
+    <td><input type="submit" name="post" class="submit-post" value="{% trans 'Post' %}"></td>
+  </tr>
 </form>
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

@@ -18,6 +18,10 @@
 #from contrib.admin
 from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list
+from django.contrib.auth.models import Group, User
+
+
+
 def construct_change_message(request, form, formsets):
         """
         Construct a change message from a changed object.
@@ -51,7 +55,6 @@ PERM_EXPERT=2
 PERM_ORGANIZATION=3
 PERM_CUSTOMER=4
 
-from django.contrib.auth.models import Group
 def check_permission(user, task):
     '''check user permission for task and scores of task'''
     groups = user.groups.all()
@@ -63,10 +66,51 @@ def check_permission(user, task):
         return PERM_CUSTOMER
     elif Group.objects.get(name='organizations') in groups and task.approved:
         try:
-            g = Group.objects.get(name = task.organization.keyname[:80])
+            g = Group.objects.get(name = task.organization.keyname)
             if g in groups:
                 return PERM_ORGANIZATION
         except:
             return PERM_NOPERM
     else:
         return PERM_NOPERM
+
+def get_recipients(comment):
+    score = comment.content_object
+    res = []
+    if comment.user.email:
+        res.append(comment.user.email)
+    for user in User.objects.filter(is_superuser = True):
+        if user.email:
+            res.append(user.email)
+    if score.task.user.email:
+        res.append(score.task.user.email)
+    try:
+        g = Group.objects.get(name = score.task.organization.keyname)
+        users = User.objects.filter(group = g)
+        for u in users:
+            if u.email:
+                res.append(u.email)
+    except:
+        pass
+    return list(set(res))
+
+
+
+from django.core.mail import send_mail
+from django.template import loader, Context
+from django.conf import settings
+def comment_notification(sender, **kwargs):
+    comment = kwargs['comment']
+    recipients = get_recipients(comment)
+    if not recipients: return False
+    subject = '%(prefix)s%(org)s: %(code)s' % { 'prefix':settings.EMAIL_SUBJECT_PREFIX, 'org': comment.content_object.task.organization.name.split(':')[0], 'code': comment.content_object.parameter.fullcode() }
+    if comment.user.email and comment.user.email not in recipients:
+        t = loader.get_template('exmo2010/score_comment_email.html')
+        c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': False, 'comment':comment })
+        message = t.render(c)
+        send_mail(subject, message, settings.SERVER_EMAIL, [comment.user.email])
+    for r in recipients:
+        t = loader.get_template('exmo2010/score_comment_email.html')
+        c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment })
+        message = t.render(c)
+        send_mail(subject, message, settings.SERVER_EMAIL, [r])

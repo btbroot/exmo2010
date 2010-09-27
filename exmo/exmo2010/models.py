@@ -397,11 +397,3 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
-
-
-
-class Feedback(models.Model):
-  user          = models.ForeignKey(User, verbose_name=_('user'))
-  score         = models.ForeignKey(Score, verbose_name=_('score'))
-  comment       = models.TextField(verbose_name=_('comment'))
-  date          = models.DateTimeField(auto_now = True, verbose_name=_('date'))

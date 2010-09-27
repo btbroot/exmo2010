@@ -87,6 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -109,6 +110,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.comments',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
@@ -128,3 +130,5 @@ LOGIN_URL = SITE_PREFIX+'accounts/login/'
 LOGOUT_URL = SITE_PREFIX+'accounts/logout/'
 LOGIN_REDIRECT_URL = SITE_PREFIX+'exmo2010/monitorings/'
 LOCALE_PATHS = ( os.path.join(SITE_ROOT, '../locale/'),)
+SERVER_EMAIL = 'www-data@svobodainfo.org'
+EMAIL_SUBJECT_PREFIX = '[exmo] '

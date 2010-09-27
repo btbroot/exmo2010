@@ -1,7 +1,6 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from exmo.exmo2010.models import Score, Task
-from exmo.exmo2010.models import Feedback
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -50,11 +49,6 @@ class ScoreForm(forms.ModelForm):
             'image': forms.RadioSelect(renderer=HorizRadioRenderer),
         }
 
-
-class FeedbackForm(forms.ModelForm):
-    class Meta:
-        model = Feedback
-        fields = ('user','score','comment')
 
 
 class TaskForm(forms.ModelForm):
