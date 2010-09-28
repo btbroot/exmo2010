@@ -34,7 +34,7 @@
 {% endfor %}
 {% endif %}
 
-<form method="post" action="{% url exmo.exmo2010.views.organization_manager monitoring.pk,object.pk,'delete' %}?{{request.GET.urlencode}}">
+<form method="post" action="{% url exmo.exmo2010.views.organization_manager monitoring.pk,object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{% trans 'Delete this organization?' %}</p>
   <p><input type="submit" /></p>
 </form>

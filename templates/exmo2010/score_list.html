@@ -39,7 +39,7 @@
      <a href="{% url exmo.exmo2010.views.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a>
 {% endif %}
 {% if user.is_superuser or user|in_group:"experts" %}
-   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="post" enctype="multipart/form-data">
+   <form action="{% url exmo.exmo2010.views.task_import task.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
      <a href="{% url exmo.exmo2010.views.task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
      <label>{% trans "Import task from CSV" %}: <input type="file" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>

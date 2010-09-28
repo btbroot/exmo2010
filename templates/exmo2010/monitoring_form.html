@@ -30,7 +30,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="?{{request.GET.urlencode}}">
+<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   {{ form.as_p }}
   <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>

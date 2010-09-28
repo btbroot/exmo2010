@@ -32,7 +32,7 @@
 
 <p>{{ form.non_field_errors }}</p>
 
-<form method="post" action="?{{request.GET.urlencode}}">
+<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
   <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
   <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>

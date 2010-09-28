@@ -31,7 +31,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="?{{request.GET.urlencode}}">
+<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{{form.name.label_tag}}{{ form.name }} {{ form.name.errors }}</p>
   <p>{{form.url.label_tag}}{{ form.url }} {{ form.url.errors }}</p>
   <p>{{form.entity.label_tag}}{{ form.entity }} {{ form.entity.errors }}</p>

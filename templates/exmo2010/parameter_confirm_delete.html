@@ -32,7 +32,7 @@
 {% endblock %}
 
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.views.parameter_manager task.pk,object.pk,'delete' %}">
+<form method="post" action="{% url exmo.exmo2010.views.parameter_manager task.pk,object.pk,'delete' %}">{% csrf_token %}
   <p>{% trans 'Delete this parameter?' %}</p>
   <p><input type="submit" /></p>
 </form>

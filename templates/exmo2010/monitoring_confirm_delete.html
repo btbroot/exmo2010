@@ -32,7 +32,7 @@
 <a href="{% url exmo.exmo2010.views.score_list_by_task do.pk %}">{{ do }}</a><br>
 {% endfor %}
 {% endif %}
-<form method="post" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">
+<form method="post" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{% trans 'Delete this monitoring?' %}</p>
   <p><input type="submit" /></p>
 </form>

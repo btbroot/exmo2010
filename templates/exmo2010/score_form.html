@@ -44,7 +44,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 <div id=score_form>
-<form method="post" action="">
+<form method="post" action="">{% csrf_token %}
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
 {% if parameter.type.complete %}

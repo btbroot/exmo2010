@@ -29,7 +29,7 @@
 </div>
 {% endblock %}
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.views.score_detail_direct object.pk,'delete' %}">
+<form method="post" action="{% url exmo.exmo2010.views.score_detail_direct object.pk,'delete' %}">{% csrf_token %}
   <p>{% trans 'Delete this score?' %}</p>
   <p><input type="submit" /></p>
 </form>
