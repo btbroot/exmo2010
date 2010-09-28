@@ -77,6 +77,8 @@ def check_permission(user, task):
 def get_recipients(comment):
     score = comment.content_object
     res = []
+    if comment.user_email:
+        res.append(comment.user_email)
     if comment.user.email:
         res.append(comment.user.email)
     for user in User.objects.filter(is_superuser = True):
