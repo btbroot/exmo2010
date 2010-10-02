@@ -528,7 +528,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
-	    task.approved= True
+	    task.approved = True
 	    task.save()
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already approved'))
