@@ -132,3 +132,5 @@ LOGIN_REDIRECT_URL = SITE_PREFIX+'exmo2010/monitorings/'
 LOCALE_PATHS = ( os.path.join(SITE_ROOT, '../locale/'),)
 SERVER_EMAIL = 'www-data@svobodainfo.org'
 EMAIL_SUBJECT_PREFIX = '[exmo] '
+FORCE_SCRIPT_NAME = ""
+DEFAULT_FROM_EMAIL = SERVER_EMAIL

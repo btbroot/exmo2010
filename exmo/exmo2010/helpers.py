@@ -74,26 +74,39 @@ def check_permission(user, task):
     else:
         return PERM_NOPERM
 
-def get_recipients(comment):
+def get_recipients_admin(comment):
     score = comment.content_object
     res = []
-    if comment.user_email:
-        res.append(comment.user_email)
-    if comment.user.email:
-        res.append(comment.user.email)
     for user in User.objects.filter(is_superuser = True):
-        if user.email:
+        if user.email and user.is_active:
             res.append(user.email)
-    if score.task.user.email:
+    if score.task.user.email and score.task.user.is_active:
         res.append(score.task.user.email)
+    if comment.user.is_superuser or comment.user == score.task.user:
+        if comment.user.email and comment.user.is_active: res.append(comment.user.email)
+        if comment.user_email and comment.user.is_active: res.append(comment.user_email)
+    return list(set(res))
+
+def get_recipients_nonadmin(comment):
+    score = comment.content_object
+    res = []
     try:
-        g = Group.objects.get(name = score.task.organization.keyname)
-        users = User.objects.filter(group = g)
-        for u in users:
-            if u.email:
-                res.append(u.email)
+        if score.task.approved:
+            g = Group.objects.get(name = score.task.organization.keyname)
+            users = User.objects.filter(group = g)
+            for u in users:
+                if u.email and u.is_active:
+                    res.append(u.email)
     except:
         pass
+    if not comment.user.is_superuser and not comment.user == score.task.user:
+        if comment.user.email and comment.user.is_active: res.append(comment.user.email)
+        if comment.user_email and comment.user.is_active: res.append(comment.user_email)
+    for r in get_recipients_admin(comment):
+        try:
+            res.remove(r)
+        except:
+            pass
     return list(set(res))
 
 
@@ -103,16 +116,13 @@ from django.template import loader, Context
 from django.conf import settings
 def comment_notification(sender, **kwargs):
     comment = kwargs['comment']
-    recipients = get_recipients(comment)
-    if not recipients: return False
     subject = '%(prefix)s%(org)s: %(code)s' % { 'prefix':settings.EMAIL_SUBJECT_PREFIX, 'org': comment.content_object.task.organization.name.split(':')[0], 'code': comment.content_object.parameter.fullcode() }
-    if comment.user.email and comment.user.email not in recipients:
-        t = loader.get_template('exmo2010/score_comment_email.html')
-        c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': False, 'comment':comment })
-        message = t.render(c)
-        send_mail(subject, message, settings.SERVER_EMAIL, [comment.user.email])
-    for r in recipients:
-        t = loader.get_template('exmo2010/score_comment_email.html')
-        c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment })
-        message = t.render(c)
-        send_mail(subject, message, settings.SERVER_EMAIL, [r])
+    t = loader.get_template('exmo2010/score_comment_email.html')
+    c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': False, 'comment':comment })
+    message = t.render(c)
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_nonadmin(comment))
+
+    t = loader.get_template('exmo2010/score_comment_email.html')
+    c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment })
+    message = t.render(c)
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_admin(comment))
