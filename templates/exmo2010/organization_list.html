@@ -26,7 +26,9 @@
 </div>
 {% endblock %}
 {% block content %}
+{% if user.is_superuser %}
 <div id="rating"><a href="{% url exmo.exmo2010.views.rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a></div>
+{% endif %}
 <div id=organization_list>
 <table>
   {% table_header headers %}
