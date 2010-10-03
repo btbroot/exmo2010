@@ -611,7 +611,11 @@ def monitoring_manager(request, id, method):
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
-    queryset = Organization.objects.filter(type = monitoring.type).annotate(Count('task'))
+    queryset = Organization.objects.filter(type = monitoring.type).extra(
+        select = {
+            'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
+            }
+        )
     groups = request.user.groups.all()
     if Group.objects.get(name='organizations') in groups:
       orgs = []
