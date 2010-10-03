@@ -51,7 +51,7 @@
         {% if object.open %}
          <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
         {% endif %}
-        {% if object.ready %}
+        {% if not object.approved and not object.open %}
          {% if user.is_superuser %}
           <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% else %}

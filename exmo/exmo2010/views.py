@@ -434,7 +434,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Openness, %'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
-      queryset = Task.approved_tasks.all()
+      queryset = Task.objects.filter(approved = True)
       queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
@@ -451,7 +451,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         if org: orgs.append(org)
       query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
       if query:
-        queryset = Task.approved_tasks.all()
+        queryset = Task.objects.filter(approved = True)
         queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
@@ -505,7 +505,8 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
-	    task.ready = True
+	    task.open = False
+	    task.full_clean()
 	    task.save()
 	    return HttpResponseRedirect(redirect)
 	else:
@@ -515,7 +516,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       task = get_object_or_404(Task, pk = id)
       title = _('Approve task for %s') % task
       if request.user.is_superuser:
-        if task.ready:
+        if not task.open:
           if request.method == 'GET':
 	    return render_to_response(
 	        'exmo2010/task_confirm_approve.html',
@@ -528,8 +529,12 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
-	    task.approved = True
-	    task.save()
+	    try:
+	        task.approved = True
+	        task.full_clean()
+	        task.save()
+	    except ValidationError, e:
+	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
@@ -721,7 +726,7 @@ def rating(request, id):
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
   return object_list(
     request,
-    queryset = Organization.objects.filter(type = monitoring.type).filter(task__status = Task.TASK_OPEN).extra(select = {'openness': Task._openness}).order_by('-openness'),
+    queryset = Organization.objects.filter(type = monitoring.type).filter(task__approved = True).extra(select = {'openness': Task._openness}).order_by('-openness'),
     template_name = 'exmo2010/rating.html',
     extra_context = { 'monitoring': monitoring }
   )

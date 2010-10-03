@@ -31,12 +31,16 @@
 <h1>{% trans "Rating " %} {{ monitoring.name }}: {{ monitoring.type }}</h1>
 
 <div id=organization_list>
+{% if object_list %}
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Name" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>{% for object in object_list %}
     <tr><td>{{ forloop.counter }}</td><td>{{ object.name }}</td><td>{{ object.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
   {% endfor %}</tbody>
 </table>
+{% else %}
+{% trans 'Empty list' %}
+{% endif %}
 </div>
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
 </body></html>
