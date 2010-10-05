@@ -69,6 +69,8 @@ def check_permission(user, task):
             g = Group.objects.get(name = task.organization.keyname)
             if g in groups:
                 return PERM_ORGANIZATION
+            else:
+                return PERM_NOPERM
         except:
             return PERM_NOPERM
     else:
