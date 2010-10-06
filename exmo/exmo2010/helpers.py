@@ -95,7 +95,7 @@ def get_recipients_nonadmin(comment):
     try:
         if score.task.approved:
             g = Group.objects.get(name = score.task.organization.keyname)
-            users = User.objects.filter(group = g)
+            users = User.objects.filter(groups = g)
             for u in users:
                 if u.email and u.is_active:
                     res.append(u.email)
