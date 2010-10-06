@@ -309,7 +309,7 @@ class Task(models.Model):
     if self.organization.type != self.monitoring.type:
       raise ValidationError(_('Ambigous organization type.'))
     if self.approved and self.open:
-        raise ValidationError(_('Approved task must be open.'))
+        raise ValidationError(_('Approved task must be closed.'))
 
 
 
