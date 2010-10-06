@@ -45,11 +45,11 @@
       <tr>
       <td>
       <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
-        {%if user.is_superuser%}
+        {% if user.is_superuser %}
             &nbsp;<a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
         {%endif%}
       </td>
-      {%if user.is_superuser%}
+      {% if user.is_superuser or user|in_group:'experts' %}
       <td>
         {{ object.task__count }}
       </td>

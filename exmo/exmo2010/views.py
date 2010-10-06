@@ -632,6 +632,16 @@ def organization_list(request, id):
       query = " | ".join(["Q(pk = %d)" % org.pk for org in orgs])
       if query:
         queryset = queryset.filter(eval(query))
+    if Group.objects.get(name='experts') in groups:
+        queryset = Organization.objects.filter(type = monitoring.type).extra(
+            select = {
+                'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id and user_id = %s' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table, request.user.pk),
+                }
+            )
+        headers = (
+                (_('Name'), 'name', 'name', None),
+                (_('Tasks'), 'task__count', None, None),
+                )
     if request.user.is_superuser:
         headers = (
                 (_('Name'), 'name', 'name', None),
