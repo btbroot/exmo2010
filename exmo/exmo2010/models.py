@@ -361,9 +361,9 @@ class Score(models.Model):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
   def _get_claim(self):
-    if self.claim in (self.CLAIM_NEVER, self.CLAIM_NO):
-        return False
-    else: return True
+    if self.claim == self.CLAIM_YES:
+        return True
+    else: return False
 
   def _set_claim(self, val):
     if val:
