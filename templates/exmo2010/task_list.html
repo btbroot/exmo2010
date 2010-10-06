@@ -59,7 +59,11 @@
          {% endif %}
         {% endif %}
         {% if object.approved %}
-         {% trans 'approved' %}
+         {% if user.is_superuser %}
+          <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'open' %}?{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+         {% else %}
+           {% trans 'approved' %}
+         {% endif %}
         {% endif %}
       </td>
       {% endif %}

@@ -555,6 +555,33 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
+    elif method == 'open':
+      task = get_object_or_404(Task, pk = id)
+      title = _('Open task %s') % task
+      if request.user.is_superuser:
+        if task.approved:
+          if request.method == 'GET':
+	    return render_to_response(
+	        'exmo2010/task_confirm_open.html',
+	        {
+	            'object': task,
+	            'monitoring': monitoring,
+	            'organization': organization,
+	            'title': title
+	        },
+	        context_instance=RequestContext(request),
+	        )
+          elif request.method == 'POST':
+	    try:
+	        task.approved = False
+	        task.open = True
+	        task.full_clean()
+	        task.save()
+	    except ValidationError, e:
+	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+	    return HttpResponseRedirect(redirect)
+	else: return HttpResponseForbidden(_('Already open'))
+      else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
       title = _('Edit task %s') % task
