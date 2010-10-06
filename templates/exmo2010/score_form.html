@@ -94,11 +94,15 @@
     </div>
     <input type="hidden" name="task" id="id_task" value="{{task.pk}}" />
     <input type="hidden" name="parameter" id="id_parameter" value="{{parameter.pk}}" />
-    {# form.task.as_hidden #}
-    {# form.parameter.as_hidden #}
-
+    <div id=score_form_claim>
+    {% if object and user.is_superuser %}
+        <dt>{{ form.claim.label_tag }}</dt><dd>{{ form.claim }} {{ form.claim.errors }}</dd>
+    {% else %}
+        {{ form.claim.as_hidden }}
+    {% endif %}
+    </div>
   </div>
-  <p><input type="submit" value="Save" /><input type="reset" class=button value="Reset" /></p>
+  <p><input type="submit" value={% trans 'Save' %} /><input type="reset" class=button /></p>
 </form>
 </div>
 {% if object %}

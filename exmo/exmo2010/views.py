@@ -112,6 +112,14 @@ def score_detail_direct(request, score_id, method='update'):
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
             revision.comment = message
+            #empty message if no changes
+            if score.active_claim and message:
+            #use this veeeery carefully. by default POST dict is read-only -- this is not from good life.
+            #we replace original post with changed 'claim' value
+                old = request.POST._mutable
+                request.POST._mutable = True
+                request.POST['claim'] = Score.CLAIM_NO
+                request.POST._mutable = old
       else:
         return HttpResponseForbidden(_('Forbidden'))
       return update_object(

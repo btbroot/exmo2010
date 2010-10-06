@@ -179,7 +179,6 @@ class ParameterMonitoringProperty(models.Model):
 
 
 
-
 class Task(models.Model):
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
@@ -296,6 +295,14 @@ class Task(models.Model):
 
 
 class Score(models.Model):
+  CLAIM_NEVER = 0
+  CLAIM_YES = 1
+  CLAIM_NO = 2
+  CLAIM_STATUS = (
+    (CLAIM_NEVER, _('never')),
+    (CLAIM_YES, _('yes')),
+    (CLAIM_NO, _('no')),
+  )
   task              = models.ForeignKey(Task, verbose_name=_('task'))
   parameter         = models.ForeignKey(Parameter, verbose_name=_('parameter'))
   found             = models.IntegerField(choices = ((0, 0), (1, 1)), verbose_name=_('found'))
@@ -312,6 +319,7 @@ class Score(models.Model):
   image             = models.IntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('image'))
   imageComment      = models.TextField(null = True, blank = True, verbose_name=_('imageComment'))
   comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
+  claim             = models.IntegerField(choices = CLAIM_STATUS, default = CLAIM_NEVER, verbose_name=_('claim'))
 
   def __unicode__(self):
     return '%s: %s [%d.%d.%d]' % (
@@ -352,6 +360,18 @@ class Score(models.Model):
         )):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
+  def _get_claim(self):
+    if self.claim in (self.CLAIM_NEVER, self.CLAIM_NO):
+        return False
+    else: return True
+
+  def _set_claim(self, val):
+    if val:
+        self.claim = self.CLAIM_YES
+    else:
+        self.claim = self.CLAIM_NO
+
+  active_claim = property(_get_claim, _set_claim)
 
   class Meta:
     unique_together = (
