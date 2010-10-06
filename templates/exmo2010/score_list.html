@@ -85,7 +85,6 @@
       {% else %}
        {% if object.status %}
          <a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'view' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-         <img src="{% admin_media_prefix %}img/admin/icon_alert.gif" alt="{% trans 'claim'%}"/>
        {% endif %}
       {% endif %}
       </td>
