@@ -296,8 +296,8 @@ class Task(models.Model):
 
 class Score(models.Model):
   CLAIM_NEVER = 0
-  CLAIM_YES = 1
-  CLAIM_NO = 2
+  CLAIM_NO = 1
+  CLAIM_YES = 2
   CLAIM_STATUS = (
     (CLAIM_NEVER, _('never')),
     (CLAIM_YES, _('yes')),
