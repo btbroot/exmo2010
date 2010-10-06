@@ -34,7 +34,7 @@
 
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
-  <p>{{form.open.label_tag}}{{ form.open }} {{ form.open.errors }}</p>
+  <p>{{form.closed.label_tag}}{{ form.closed }} {{ form.closed.errors }}</p>
   <p>{{form.approved.label_tag}}{{ form.approved }} {{ form.approved.errors }}</p>
   <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
   <p><input type="hidden" name="organization" id="id_organization" value="{{organization.pk}}" /></p>

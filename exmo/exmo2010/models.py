@@ -184,7 +184,7 @@ class Task(models.Model):
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-  open         = models.BooleanField(default = True, verbose_name=_('open'))
+  closed         = models.BooleanField(default = False, verbose_name=_('closed'))
   approved     = models.BooleanField(default = False, verbose_name=_('approved'))
   _scores_invalid = '''
     FROM exmo2010_Score
@@ -265,6 +265,18 @@ class Task(models.Model):
   '''.lower()
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
+
+  def _get_open(self):
+    if self.closed: return False
+    else: return True
+
+  def _set_open(self, val):
+    if val:
+        self.closed = False
+    else:
+        self.closed = True
+
+  open = property(_get_open, _set_open)
 
   def __unicode__(self):
     return '%s: %s' % (self.user.username, self.organization.name)
