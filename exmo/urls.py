@@ -18,6 +18,8 @@
 from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
+from django.http import HttpResponsePermanentRedirect
+from django.core.urlresolvers import reverse
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -31,4 +33,5 @@ urlpatterns = patterns('',
   (r'^accounts/password_change$', 'django.contrib.auth.views.password_change', {'template_name':'exmo2010/password_change_form.html' }),
   (r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }),
   (r'^accounts/profile/(\d+)$','exmo.exmo2010.views.user_profile'),
+  (r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.views.monitoring_list'))),
 )
