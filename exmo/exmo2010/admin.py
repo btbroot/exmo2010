@@ -28,6 +28,9 @@ class ParameterAdmin(admin.ModelAdmin):
         },
     }
 
+class ParameterMonitoringPropertyInline(admin.StackedInline):
+  model = exmo.exmo2010.models.ParameterMonitoringProperty
+  max_num = 10
 
 class TaskAdmin(VersionAdmin):
     pass
@@ -46,6 +49,7 @@ class FederalAdmin(admin.ModelAdmin):
 
 class MonitoringAdmin(admin.ModelAdmin):
   list_display = ('type', 'name')
+  inlines = ParameterMonitoringPropertyInline,
 
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
 admin.site.register(exmo.exmo2010.models.Category)

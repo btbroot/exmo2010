@@ -147,10 +147,9 @@ class Parameter(models.Model):
   code               = models.PositiveIntegerField(verbose_name=_('code'))
   name               = models.CharField(max_length = 255, verbose_name=_('name'))
   description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
-  weight             = models.IntegerField(verbose_name=_('weight'))
   group              = models.ForeignKey(Subcategory, verbose_name=_('subcategory'))
   type               = models.ForeignKey(ParameterType, verbose_name=_('parameter type'))
-  monitoring         = models.ManyToManyField(Monitoring, verbose_name=_('monitoring'))
+  monitoring         = models.ManyToManyField(Monitoring, verbose_name=_('monitoring'), through='ParameterMonitoringProperty')
   exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
 
   def __unicode__(self):
@@ -165,6 +164,19 @@ class Parameter(models.Model):
       ('code', 'group'),
     )
     ordering = ('group__group__code', 'group__code', 'code')
+
+
+
+class ParameterMonitoringProperty(models.Model):
+  monitoring = models.ForeignKey(Monitoring)
+  parameter  = models.ForeignKey(Parameter)
+  weight     = models.IntegerField(verbose_name=_('weight'))
+
+  class Meta:
+    unique_together = (
+      ('monitoring', 'parameter'),
+    )
+
 
 
 
@@ -184,7 +196,9 @@ class Task(models.Model):
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
     JOIN exmo2010_ParameterType ON exmo2010_Parameter.type_id = exmo2010_ParameterType.id
-    WHERE exmo2010_Score.Task_id = exmo2010_Task.id
+    JOIN exmo2010_ParameterMonitoringProperty ON exmo2010_Parameter.id = exmo2010_ParameterMonitoringProperty.parameter_id
+    WHERE exmo2010_ParameterMonitoringProperty.monitoring_id = exmo2010_Task.monitoring_id
+    AND exmo2010_Score.Task_id = exmo2010_Task.id
     AND exmo2010_Score.id NOT IN (SELECT exmo2010_Score.id %s)
     '''.lower() % _scores_invalid
   _parameters_invalid = '''
@@ -193,14 +207,14 @@ class Task(models.Model):
     '''.lower()
   _parameters = '''
     FROM exmo2010_Parameter
-    JOIN exmo2010_Parameter_Monitoring ON exmo2010_Parameter.id = exmo2010_Parameter_Monitoring.parameter_id
-    WHERE exmo2010_Parameter_Monitoring.monitoring_id = exmo2010_Task.monitoring_id
-    AND exmo2010_Parameter_Monitoring.parameter_id NOT IN (SELECT exmo2010_Parameter_Exclude.id %s)
+    JOIN exmo2010_ParameterMonitoringProperty ON exmo2010_Parameter.id = exmo2010_ParameterMonitoringProperty.parameter_id
+    WHERE exmo2010_ParameterMonitoringProperty.monitoring_id = exmo2010_Task.monitoring_id
+    AND exmo2010_Parameter.id NOT IN (SELECT exmo2010_Parameter_Exclude.id %s)
     '''.lower() % _parameters_invalid
   _complete   = '((SELECT COUNT(*) %s) * 100 / (SELECT COUNT(*) %s))'.lower() % (_scores, _parameters)
-  _openness_max = 'SELECT SUM(exmo2010_Parameter.weight) %s AND exmo2010_Parameter.weight > 0'.lower() % _parameters
+  _openness_max = 'SELECT SUM(exmo2010_ParameterMonitoringProperty.weight) %s AND exmo2010_ParameterMonitoringProperty.weight > 0'.lower() % _parameters
   _score_value = '''
-    exmo2010_Parameter.weight *
+    exmo2010_ParameterMonitoringProperty.weight *
     exmo2010_Score.found *
     CASE exmo2010_ParameterType.complete
       WHEN 0 THEN 1 ELSE
