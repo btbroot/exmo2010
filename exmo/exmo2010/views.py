@@ -746,3 +746,78 @@ def user_profile(request, id):
         post_save_redirect = reverse('exmo.exmo2010.views.user_profile', args=[user.pk]),
         template_name = 'exmo2010/user_form.html',
     )
+
+
+
+
+import tempfile
+import copy
+import zipfile
+import os
+from cStringIO import StringIO
+@login_required
+def monitoring_by_criteria_mass_export(request, id):
+
+    def safeConvert(string):
+      if string:
+        return string.encode("utf-8")
+      else:
+        return ''
+
+    if not request.user.is_superuser: # TODO: check_permission
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    row_template = {
+        'Found':      [],
+        'Complete':   [],
+        'Topical':    [],
+        'Accessible': [],
+        'Hypertext':  [],
+        'Document':   [],
+        'Image':      []
+      }
+    spool = {}
+    writer = {}
+    handle = {}
+    for criteria in row_template.keys():
+      spool[criteria] = tempfile.mkstemp()
+      handle[criteria] = os.fdopen(spool[criteria][0], 'w')
+      writer[criteria] = csv.writer(handle[criteria])
+    header_row = True
+    for task in Task.objects.filter(monitoring = monitoring).filter(approved = True):
+      row = copy.deepcopy(row_template)
+      if header_row:
+        for criteria in row.keys():
+          row[criteria].append('')
+        for score in Score.objects.filter(task = task):
+          for criteria in row.keys():
+            row[criteria].append(score.parameter.fullcode())
+        for criteria in row.keys():
+          writer[criteria].writerow(row[criteria])
+        header_row = False
+        row = copy.deepcopy(row_template)
+      for criteria in row.keys():
+        row[criteria].append(safeConvert(task.organization.name))
+      for score in Score.objects.filter(task = task):
+        row['Found'].append(score.found)
+        row['Complete'].append(score.complete)
+        row['Topical'].append(score.topical)
+        row['Accessible'].append(score.accessible)
+        row['Hypertext'].append(score.hypertext)
+        row['Document'].append(score.document)
+        row['Image'].append(score.image)
+      for criteria in row.keys():
+        writer[criteria].writerow(row[criteria])
+    response = HttpResponse(mimetype = 'application/zip')
+    response['Content-Disposition'] = 'attachment; filename=monitoring-%s.zip' % id
+    buffer = StringIO()
+    writer = zipfile.ZipFile(buffer, 'w')
+    for criteria in row_template.keys():
+      handle[criteria].close()
+      writer.write(spool[criteria][1], criteria + '.csv')
+      os.unlink(spool[criteria][1])
+    writer.close()
+    buffer.flush()
+    response.write(buffer.getvalue())
+    buffer.close()
+    return response

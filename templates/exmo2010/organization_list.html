@@ -27,7 +27,10 @@
 {% endblock %}
 {% block content %}
 {% if user.is_superuser %}
-<div id="rating"><a href="{% url exmo.exmo2010.views.rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a></div>
+<div id="utility">
+  <a href="{% url exmo.exmo2010.views.rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a> /
+  <a href="{% url exmo.exmo2010.views.monitoring_by_criteria_mass_export monitoring.pk %}">{% trans 'Export by criteria' %}</a>
+</div>
 {% endif %}
 <div id=organization_list>
 <table>

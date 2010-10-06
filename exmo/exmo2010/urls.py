@@ -61,4 +61,5 @@ urlpatterns = patterns('',
   ( r'^monitoring/(\d+)/organization/(\d+)/task/(\d+)_(\w+)/$', 'exmo.exmo2010.views.task_manager' ),
 
   ( r'^monitoring/(\d+)/rating/$', 'exmo.exmo2010.views.rating' ),
+  ( r'^monitoring/(\d+)/by_criteria_mass_export/$', 'exmo.exmo2010.views.monitoring_by_criteria_mass_export' ),
 )
