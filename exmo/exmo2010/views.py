@@ -821,3 +821,42 @@ def monitoring_by_criteria_mass_export(request, id):
     response.write(buffer.getvalue())
     buffer.close()
     return response
+
+
+
+
+
+def mass_assign_tasks(request, id):
+  if not request.user.is_superuser: # TODO: check_permission
+    return HttpResponseForbidden(_('Forbidden'))
+  monitoring = get_object_or_404(Monitoring, pk = id)
+  organizations = Organization.objects.filter(type = monitoring.type)
+  users = User.objects.all() # TODO: filter by group 'experts'
+  log = []
+  if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
+    for organization_id in request.POST.getlist('organizations'):
+      for user_id in request.POST.getlist('users'):
+        try:
+          user = User.objects.get(pk = (user_id))
+          organization = Organization.objects.get(pk = int(organization_id))
+          task = Task(
+            user = user,
+            organization = organization,
+            monitoring = monitoring
+          )
+          task.full_clean()
+          task.save()
+        except ValidationError, e:
+          log.append('; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()]))
+        except Exception, e:
+          log.append(e)
+        else:
+          log.append('%s: %s' % (user.username, organization.name))
+  return render_to_response(
+    'exmo2010/mass_assign_tasks.html', {
+        'organizations': organizations,
+        'users': users,
+        'monitoring': monitoring,
+        'log': log
+    })
+

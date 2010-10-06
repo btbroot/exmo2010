@@ -1,0 +1,54 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+{% block title %}{% trans "Mass assign tasks" %} {{task}}/{{file}} {% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
+{{title}}
+</div>
+{% endblock %}
+{% block content %}
+
+{% if log %}
+  <div id="failure">{% trans "Process log:" %}:
+  <ul>
+  {% for message in log %}
+    <li>{{message}}</li>
+  {% endfor %}
+  </ul>
+  </div>
+{% endif %}
+
+<form method="post">
+<select multiple="multiple" name="users">
+  {% for user in users %}<option value="{{user.pk}}">{{user.username}}</option>{% endfor %}
+</select>
+<select multiple="multiple" name="organizations">
+  {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}
+</select>
+<input type="submit">
+</form>
+
+
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
