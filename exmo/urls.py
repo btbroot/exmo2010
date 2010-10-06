@@ -34,4 +34,5 @@ urlpatterns = patterns('',
   (r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }),
   (r'^accounts/profile/(\d+)$','exmo.exmo2010.views.user_profile'),
   (r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.views.monitoring_list'))),
+  (r'^exmo2010/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.views.monitoring_list'))),
 )
