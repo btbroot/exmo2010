@@ -18,25 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+{% load i18n %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
 {{title}}
-{% endblock %}
 </div>
+{% endblock %}
 {% block content %}
-
-<p>{{ form.non_field_errors }}</p>
-
-<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-  <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
-  <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
-  <p><input type="hidden" name="organization" id="id_organization" value="{{organization.pk}}" /></p>
-  <p><input type="submit" /><input class="button" type="reset" /></p>
+<form method="post" action="{% url exmo.exmo2010.views.task_manager object.monitoring.pk,object.organization.pk,object.pk,'open' %}?{{ request.GET.urlencode }}">{% csrf_token %}
+  <p>{% trans 'Open this task?' %}</p>
+  <p><input type="submit" /></p>
 </form>
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

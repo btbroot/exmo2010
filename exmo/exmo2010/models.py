@@ -183,8 +183,7 @@ class Task(models.Model):
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-  closed         = models.BooleanField(default = False, verbose_name=_('closed'))
-  approved     = models.BooleanField(default = False, verbose_name=_('approved'))
+  closed       = models.BooleanField(default = False, verbose_name=_('closed'))
   _scores_invalid = '''
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
@@ -275,7 +274,27 @@ class Task(models.Model):
     else:
         self.closed = True
 
+  def _get_approved(self):
+    try:
+        t = ApprovedTask.objects.get(task = self)
+    except ApprovedTask.DoesNotExist:
+        return False
+    else:
+        return True
+
+  def _set_approved(self, val):
+    if val:
+        ApprovedTask().add(self)
+    else:
+        try:
+            t = ApprovedTask.objects.get(task = self)
+        except ApprovedTask.DoesNotExist:
+            pass
+        else:
+            t.delete()
+
   open = property(_get_open, _set_open)
+  approved = property(_get_approved, _set_approved)
 
   def __unicode__(self):
     return '%s: %s' % (self.user.username, self.organization.name)
@@ -289,8 +308,31 @@ class Task(models.Model):
   def clean(self):
     if self.organization.type != self.monitoring.type:
       raise ValidationError(_('Ambigous organization type.'))
-    if Task.objects.filter(monitoring=self.monitoring, organization=self.organization, approved = True) and self.approved:
-        raise ValidationError(_('Only one task can be approved for %(org)s of monitoring %(mon)s.') % {'org': self.organization, 'mon': self.monitoring})
+    if self.approved and self.open:
+        raise ValidationError(_('Approved task must be open.'))
+
+
+
+class ApprovedTask(models.Model):
+  task         = models.ForeignKey(Task, verbose_name=_('task'))
+  organization = models.ForeignKey(Organization, verbose_name=_('organization'))
+  monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+
+  def add(self, task):
+    self.task = task
+    self.organization = task.organization
+    self.monitoring = task.monitoring
+    self.full_clean()
+    self.save()
+
+  def clean(self):
+    if self.task.open:
+        raise ValidationError(_('Only closed task can be approved for %(org)s of monitoring %(mon)s.') % {'org': self.organization, 'mon': self.monitoring})
+
+  class Meta:
+    unique_together = (
+      ('organization', 'monitoring'),
+    )
 
 
 

@@ -25,6 +25,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Monitoring
+from exmo.exmo2010.models import ApprovedTask
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -444,7 +445,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Openness, %'), 'openness', None, None)
               )
     elif Group.objects.get(name='customers') in groups:
-      queryset = Task.objects.filter(approved = True)
+      tpk = []
+      for t in ApprovedTask.objects.filter(monitoring = monitoring):
+        tpk.append(t.pk)
+      queryset = Task.objects.filter(pk__in = tpk)
       queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
@@ -461,7 +465,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         if org: orgs.append(org)
       query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
       if query:
-        queryset = Task.objects.filter(approved = True)
+        tpk = []
+        for t in ApprovedTask.objects.filter(monitoring = monitoring):
+            tpk.append(t.pk)
+        queryset = Task.objects.filter(pk__in = tpk)
         queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
@@ -744,9 +751,12 @@ def parameter_manager(request, task_id, id, method):
 def rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+  tpk = []
+  for t in ApprovedTask.objects.filter(monitoring = monitoring):
+    tpk.append(t.pk)
   return object_list(
     request,
-    queryset = Organization.objects.filter(type = monitoring.type).filter(task__approved = True).extra(select = {'openness': Task._openness}).order_by('-openness'),
+    queryset = Organization.objects.filter(task__pk__in=tpk).extra(select = {'openness': Task._openness}).order_by('-openness'),
     template_name = 'exmo2010/rating.html',
     extra_context = { 'monitoring': monitoring }
   )
@@ -804,7 +814,10 @@ def monitoring_by_criteria_mass_export(request, id):
       handle[criteria] = os.fdopen(spool[criteria][0], 'w')
       writer[criteria] = csv.writer(handle[criteria])
     header_row = True
-    for task in Task.objects.filter(monitoring = monitoring).filter(approved = True):
+    tpk = []
+    for t in ApprovedTask.objects.filter(monitoring = monitoring):
+        tpk.append(t.pk)
+    for task in Task.objects.filter(pk__in = tpk):
       row = copy.deepcopy(row_template)
       if header_row:
         for criteria in row.keys():
