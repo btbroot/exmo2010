@@ -3238,7 +3238,7 @@
   "fields": {
    "code": 1,
    "group": 78,
-   "name": "\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0444\u043e\u0440\u043c\u044b \u043e\u0431\u0440\u0430\u0449\u0435\u043d\u0438\u044f (\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0437\u0430\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0438 \u043d\u0430\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0437\u0430\u044f\u0432\u043b\u0435\u043d\u0438\u0435 \u0432 \u0433\u043e\u0441\u043e\u0440\u0433\u0430\u043d \u043f\u0440\u044f\u043c\u043e \u0441 \u0441\u0430\u0439\u0442\u0430)",
+   "name": "\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0438\u043d\u0442\u0435\u0440\u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0439 \u0444\u043e\u0440\u043c\u044b \u043e\u0431\u0440\u0430\u0449\u0435\u043d\u0438\u044f (\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0437\u0430\u043f\u043e\u043b\u043d\u0438\u0442\u044c \u0438 \u043d\u0430\u043f\u0440\u0430\u0432\u0438\u0442\u044c \u0437\u0430\u044f\u0432\u043b\u0435\u043d\u0438\u0435 \u043e \u043f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u0438\u0438 \u0433\u043e\u0441\u0443\u0441\u043b\u0443\u0433\u0438 \u0438\u043b\u0438 \u0432\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0438 \u0444\u0443\u043d\u043a\u0446\u0438\u0438 \u043f\u0440\u044f\u043c\u043e \u0441 \u0441\u0430\u0439\u0442\u0430)",
    "exclude": [],
    "type": 4,
    "description": ""
@@ -3310,7 +3310,7 @@
   "fields": {
    "code": 2,
    "group": 79,
-   "name": "\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0434\u0438\u0441\u0442\u0440\u0438\u0431\u0443\u0442\u0438\u0432\u043e\u0432 \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c (\u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e\u0433\u043e \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u043d\u043e\u0433\u043e \u043e\u0431\u0435\u0441\u043f\u0435\u0447\u0435\u043d\u0438\u044f) \u0434\u043b\u044f \u0440\u0430\u0431\u043e\u0442\u044b \u0441 \u0444\u043e\u0440\u043c\u0430\u043c\u0438 \u043e\u0431\u0440\u0430\u0449\u0435\u043d\u0438\u0439",
+   "name": "\u041d\u0430\u043b\u0438\u0447\u0438\u0435 \u0434\u0438\u0441\u0442\u0440\u0438\u0431\u0443\u0442\u0438\u0432\u043e\u0432 \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c (\u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e\u0433\u043e \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u043d\u043e\u0433\u043e \u043e\u0431\u0435\u0441\u043f\u0435\u0447\u0435\u043d\u0438\u044f) \u0434\u043b\u044f \u0440\u0430\u0431\u043e\u0442\u044b \u0441 \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u043c\u0438 \u0432 \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043d\u043d\u043e\u0439 \u0444\u043e\u0440\u043c\u0435",
    "exclude": [],
    "type": 4,
    "description": ""
@@ -3565,7 +3565,7 @@
    "name": "\u0418\u0437\u0432\u0435\u0449\u0435\u043d\u0438\u044f \u043e \u0437\u0430\u043a\u0443\u043f\u043a\u0430\u0445",
    "exclude": [],
    "type": 12,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -3577,7 +3577,7 @@
    "name": "\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u044f \u043e\u0431 \u0430\u0443\u043a\u0446\u0438\u043e\u043d\u0435",
    "exclude": [],
    "type": 11,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -3589,7 +3589,7 @@
    "name": "\u041f\u0440\u043e\u0435\u043a\u0442 \u043a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u0430",
    "exclude": [],
    "type": 11,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -3601,7 +3601,7 @@
    "name": "\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u0440\u0430\u0441\u0441\u043c\u043e\u0442\u0440\u0435\u043d\u0438\u044f \u0437\u0430\u044f\u0432\u043e\u043a \u043d\u0430 \u0443\u0447\u0430\u0441\u0442\u0438\u0435 \u0432 \u0430\u0443\u043a\u0446\u0438\u043e\u043d\u0435",
    "exclude": [],
    "type": 12,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -3613,7 +3613,7 @@
    "name": "\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u043f\u0440\u043e\u0432\u0435\u0434\u0435\u043d\u0438\u044f \u0430\u0443\u043a\u0446\u0438\u043e\u043d\u0430",
    "exclude": [],
    "type": 12,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -3625,7 +3625,7 @@
    "name": "\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u043f\u043e\u0434\u0432\u0435\u0434\u0435\u043d\u0438\u044f \u0438\u0442\u043e\u0433\u043e\u0432 \u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0433\u043e \u0430\u0443\u043a\u0446\u0438\u043e\u043d\u0430 \u0432 \u044d\u043b\u0435\u043a\u0442\u0440\u043e\u043d\u043d\u043e\u0439 \u0444\u043e\u0440\u043c\u0435",
    "exclude": [],
    "type": 12,
-   "description": null
+   "description": ""
   }
  },
  {
@@ -6113,69 +6113,6 @@
   }
  },
  {
-  "pk": 149,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 149,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 150,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 150,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 151,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 151,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 152,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 152,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 153,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 153,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 154,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 154,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 155,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 155,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
   "pk": 156,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
@@ -6221,19 +6158,217 @@
   }
  },
  {
-  "pk": 161,
+  "pk": 176,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
-   "parameter": 161,
+   "parameter": 176,
    "monitoring": 1,
    "weight": 1
   }
  },
  {
-  "pk": 162,
+  "pk": 293,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
-   "parameter": 162,
+   "parameter": 293,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 294,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 294,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 295,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 295,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 296,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 296,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 297,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 297,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 298,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 298,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 299,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 299,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 175,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 175,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 149,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 149,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 150,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 150,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 151,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 151,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 304,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 304,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 155,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 155,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 300,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 300,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 301,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 301,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 302,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 302,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 303,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 303,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 169,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 169,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 152,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 152,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 153,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 153,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 154,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 154,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 305,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 305,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 306,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 306,
    "monitoring": 1,
    "weight": 1
   }
@@ -6284,42 +6419,6 @@
   }
  },
  {
-  "pk": 168,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 168,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 169,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 169,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 170,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 170,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 171,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 171,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
   "pk": 172,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
@@ -6347,19 +6446,37 @@
   }
  },
  {
-  "pk": 175,
+  "pk": 178,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
-   "parameter": 175,
+   "parameter": 178,
    "monitoring": 1,
    "weight": 1
   }
  },
  {
-  "pk": 176,
+  "pk": 170,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
-   "parameter": 176,
+   "parameter": 170,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 168,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 168,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 161,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 161,
    "monitoring": 1,
    "weight": 1
   }
@@ -6374,10 +6491,19 @@
   }
  },
  {
-  "pk": 178,
+  "pk": 162,
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
-   "parameter": 178,
+   "parameter": 162,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 171,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 171,
    "monitoring": 1,
    "weight": 1
   }
@@ -6387,6 +6513,42 @@
   "model": "exmo2010.parametermonitoringproperty",
   "fields": {
    "parameter": 179,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 307,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 307,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 308,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 308,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 309,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 309,
+   "monitoring": 1,
+   "weight": 1
+  }
+ },
+ {
+  "pk": 310,
+  "model": "exmo2010.parametermonitoringproperty",
+  "fields": {
+   "parameter": 310,
    "monitoring": 1,
    "weight": 1
   }
@@ -7409,168 +7571,6 @@
   }
  },
  {
-  "pk": 293,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 293,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 294,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 294,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 295,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 295,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 296,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 296,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 297,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 297,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 298,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 298,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 299,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 299,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 300,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 300,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 301,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 301,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 302,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 302,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 303,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 303,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 304,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 304,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 305,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 305,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 306,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 306,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 307,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 307,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 308,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 308,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 309,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 309,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
-  "pk": 310,
-  "model": "exmo2010.parametermonitoringproperty",
-  "fields": {
-   "parameter": 310,
-   "monitoring": 1,
-   "weight": 1
-  }
- },
- {
   "pk": 76,
   "model": "exmo2010.organization",
   "fields": {
@@ -7632,19 +7632,6 @@
    "entity": null,
    "keyname": "midru",
    "keywords": "\u0434\u0438\u043f\u043b\u043e\u043c\u0430\u0442\u0438\u044f \u043a\u043e\u043d\u0441\u0443\u043b\u044c\u0441\u0442\u0432\u043e \u041b\u0430\u0432\u0440\u043e\u0432 \u043f\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u0438\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u0430 \u043c\u0435\u0436\u0434\u0443\u043d\u0430\u0440\u043e\u0434\u043d\u044b\u0439 \u0440\u0443\u0431\u0435\u0436  \u0432\u044a\u0435\u0437\u0434  \u043f\u043e\u0441\u043e\u043b \u043f\u043e\u0441\u043e\u043b\u044c\u0441\u0442\u0432\u043e \u042e\u041d\u0415\u0421\u041a\u041e \u0421\u041d\u0413 \u0415\u0432\u0440\u043e\u043f\u0430 \u0412\u0422\u041e",
-   "type": 1
-  }
- },
- {
-  "pk": 3,
-  "model": "exmo2010.organization",
-  "fields": {
-   "name": "\u041c\u0427\u0421 \u0420\u043e\u0441\u0441\u0438\u0438: \u041c\u0438\u043d\u0438\u0441\u0442\u0435\u0440\u0441\u0442\u0432\u043e \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438 \u043f\u043e \u0434\u0435\u043b\u0430\u043c \u0433\u0440\u0430\u0436\u0434\u0430\u043d\u0441\u043a\u043e\u0439 \u043e\u0431\u043e\u0440\u043e\u043d\u044b, \u0447\u0440\u0435\u0437\u0432\u044b\u0447\u0430\u0439\u043d\u044b\u043c \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u044f\u043c \u0438 \u043b\u0438\u043a\u0432\u0438\u0434\u0430\u0446\u0438\u0438 \u043f\u043e\u0441\u043b\u0435\u0434\u0441\u0442\u0432\u0438\u0439 \u0441\u0442\u0438\u0445\u0438\u0439\u043d\u044b\u0445 \u0431\u0435\u0434\u0441\u0442\u0432\u0438\u0439",
-   "url": "http://www.mchs.gov.ru",
-   "comments": null,
-   "entity": null,
-   "keyname": "mchsgovru",
-   "keywords": "\u043f\u043e\u0436\u0430\u0440\u043d\u0430\u044f \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u044c \u043d\u0430\u0432\u043e\u0434\u043d\u0435\u043d\u0438\u0435 \u0437\u0435\u043c\u043b\u0435\u0442\u0440\u044f\u0441\u0435\u043d\u0438\u0435 \u0441\u0435\u043b\u0435\u0437\u043d\u0438  \u0432\u0437\u0440\u044b\u0432\u044b \u043f\u0440\u043e\u0438\u0448\u0435\u0441\u0442\u0432\u0438\u044f \u0432\u043e\u0434\u043d\u044b\u0435 \u043e\u0431\u044a\u0435\u043a\u0442\u044b \u043f\u0430\u0432\u043e\u0434\u043a\u0438 \u0434\u0442\u043f \u0434\u043e\u0440\u043e\u0436\u043d\u043e-\u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u043d\u044b\u0435 \u043f\u0440\u043e\u0438\u0441\u0448\u0435\u0441\u0442\u0432\u0438\u044f \u044d\u043f\u0438\u0434\u0435\u043c\u0438\u044f \u0442\u0435\u0445\u043d\u043e\u0433\u0435\u043d\u043d\u044b\u0439 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440 \u0431\u0438\u043e\u043b\u043e\u0433\u043e-\u0441\u043e\u0446\u0438\u0430\u043b\u044c\u043d\u0430\u044f \u0428\u043e\u0439\u0433\u0443 \u043f\u043e\u0436\u0430\u0440\u044b",
    "type": 1
   }
  },
@@ -7844,6 +7831,19 @@
   }
  },
  {
+  "pk": 3,
+  "model": "exmo2010.organization",
+  "fields": {
+   "name": "\u041c\u0427\u0421 \u0420\u043e\u0441\u0441\u0438\u0438: \u041c\u0438\u043d\u0438\u0441\u0442\u0435\u0440\u0441\u0442\u0432\u043e \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438 \u043f\u043e \u0434\u0435\u043b\u0430\u043c \u0433\u0440\u0430\u0436\u0434\u0430\u043d\u0441\u043a\u043e\u0439 \u043e\u0431\u043e\u0440\u043e\u043d\u044b, \u0447\u0440\u0435\u0437\u0432\u044b\u0447\u0430\u0439\u043d\u044b\u043c \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u044f\u043c \u0438 \u043b\u0438\u043a\u0432\u0438\u0434\u0430\u0446\u0438\u0438 \u043f\u043e\u0441\u043b\u0435\u0434\u0441\u0442\u0432\u0438\u0439 \u0441\u0442\u0438\u0445\u0438\u0439\u043d\u044b\u0445 \u0431\u0435\u0434\u0441\u0442\u0432\u0438\u0439",
+   "url": "http://www.mchs.gov.ru",
+   "comments": null,
+   "entity": null,
+   "keyname": "mchsgovru",
+   "keywords": "\u043f\u043e\u0436\u0430\u0440\u043d\u0430\u044f \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u044c \u043d\u0430\u0432\u043e\u0434\u043d\u0435\u043d\u0438\u0435 \u0437\u0435\u043c\u043b\u0435\u0442\u0440\u044f\u0441\u0435\u043d\u0438\u0435 \u0441\u0435\u043b\u0435\u0437\u043d\u0438  \u0432\u0437\u0440\u044b\u0432\u044b \u043f\u0440\u043e\u0438\u0448\u0435\u0441\u0442\u0432\u0438\u044f \u0432\u043e\u0434\u043d\u044b\u0435 \u043e\u0431\u044a\u0435\u043a\u0442\u044b \u043f\u0430\u0432\u043e\u0434\u043a\u0438 \u0434\u0442\u043f \u0434\u043e\u0440\u043e\u0436\u043d\u043e-\u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u043d\u044b\u0435 \u043f\u0440\u043e\u0438\u0441\u0448\u0435\u0441\u0442\u0432\u0438\u044f \u044d\u043f\u0438\u0434\u0435\u043c\u0438\u044f \u0442\u0435\u0445\u043d\u043e\u0433\u0435\u043d\u043d\u044b\u0439 \u0445\u0430\u0440\u0430\u043a\u0442\u0435\u0440 \u0431\u0438\u043e\u043b\u043e\u0433\u043e-\u0441\u043e\u0446\u0438\u0430\u043b\u044c\u043d\u0430\u044f \u0428\u043e\u0439\u0433\u0443 \u043f\u043e\u0436\u0430\u0440\u044b",
+   "type": 1
+  }
+ },
+ {
   "pk": 29,
   "model": "exmo2010.organization",
   "fields": {
@@ -7852,6 +7852,19 @@
    "comments": null,
    "entity": null,
    "keyname": "favtru",
+   "keywords": "\u0430\u0432\u0438\u0430\u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 \u0430\u0432\u0438\u0430\u0446\u0438\u044f \u0430\u044d\u0440\u043e\u043f\u043e\u0440\u0442 \u0441\u0430\u043c\u043e\u043b\u0435\u0442",
+   "type": 1
+  }
+ },
+ {
+  "pk": 163,
+  "model": "exmo2010.organization",
+  "fields": {
+   "name": "\u0420\u043e\u0441\u0430\u0432\u0438\u0430\u0446\u0438\u044f2: \u0424\u0435\u0434\u0435\u0440\u0430\u043b\u044c\u043d\u043e\u0435 \u0430\u0433\u0435\u043d\u0442\u0441\u0442\u0432\u043e \u0432\u043e\u0437\u0434\u0443\u0448\u043d\u043e\u0433\u043e \u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u0430 \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438",
+   "url": "http://office-gw.logol.ru/favt/",
+   "comments": "",
+   "entity": null,
+   "keyname": "favtru2",
    "keywords": "\u0430\u0432\u0438\u0430\u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 \u0430\u0432\u0438\u0430\u0446\u0438\u044f \u0430\u044d\u0440\u043e\u043f\u043e\u0440\u0442 \u0441\u0430\u043c\u043e\u043b\u0435\u0442",
    "type": 1
   }
@@ -8173,8 +8186,8 @@
   "model": "exmo2010.organization",
   "fields": {
    "name": "\u0420\u043e\u0441\u0440\u0435\u0435\u0441\u0442\u0440: \u0424\u0435\u0434\u0435\u0440\u0430\u043b\u044c\u043d\u0430\u044f \u0441\u043b\u0443\u0436\u0431\u0430 \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u043e\u0439 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438, \u043a\u0430\u0434\u0430\u0441\u0442\u0440\u0430 \u0438 \u043a\u0430\u0440\u0442\u043e\u0433\u0440\u0430\u0444\u0438\u0438 \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438",
-   "url": "http://www.rosregistr.ru",
-   "comments": null,
+   "url": "http://www.rosreestr.ru/",
+   "comments": "",
    "entity": null,
    "keyname": "rosregistrru",
    "keywords": "\u0412\u0430\u0441\u0438\u043b\u044c\u0435\u0432 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440 \u0441\u0430\u043c\u043e\u0440\u0435\u0433\u0443\u043b\u0438\u0440\u0443\u043c\u044b\u0435 \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438  \u0443\u0447\u0435\u0442 \u0440\u0435\u0435\u0441\u0442\u0440 ",
@@ -8212,8 +8225,8 @@
   "model": "exmo2010.organization",
   "fields": {
    "name": "\u0420\u043e\u0441\u0441\u0432\u044f\u0437\u044c: \u0424\u0435\u0434\u0435\u0440\u0430\u043b\u044c\u043d\u043e\u0435 \u0430\u0433\u0435\u043d\u0442\u0441\u0442\u0432\u043e \u0441\u0432\u044f\u0437\u0438 \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438",
-   "url": "http://minkomsvjaz.ru/departments/rossvyaz/",
-   "comments": null,
+   "url": "http://www.rossvyaz.ru/",
+   "comments": "",
    "entity": null,
    "keyname": "minkomsvjazru-departments-ross",
    "keywords": "\u0441\u043e\u043e\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0435 \u043f\u043e\u0447\u0442\u0430 \u0442\u0435\u043b\u0435\u0432\u0435\u0449\u0430\u043d\u0438\u0435 \u0440\u0430\u0434\u0438\u043e\u0432\u0435\u0449\u0430\u043d\u0438\u0435  \u0442\u0430\u043a\u0441\u043e\u0444\u043e\u043d ",
@@ -8360,19 +8373,6 @@
    "entity": null,
    "keyname": "rosfinnadzorru",
    "keywords": "\u0434\u0435\u043d\u0435\u0436\u043d\u044b\u0439 \u044d\u043a\u043e\u043d\u043e\u043c\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u041f\u0430\u0432\u043b\u0435\u043d\u043a\u043e ",
-   "type": 1
-  }
- },
- {
-  "pk": 77,
-  "model": "exmo2010.organization",
-  "fields": {
-   "name": "\u0421\u0412\u0420 \u0420\u043e\u0441\u0441\u0438\u0438: \u0421\u043b\u0443\u0436\u0431\u0430 \u0432\u043d\u0435\u0448\u043d\u0435\u0439 \u0440\u0430\u0437\u0432\u0435\u0434\u043a\u0438 \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438",
-   "url": "http://www.svr.gov.ru",
-   "comments": null,
-   "entity": null,
-   "keyname": "svrgovru",
-   "keywords": "\u0420\u0424 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0424\u0440\u0430\u0434\u043a\u043e\u0432 ",
    "type": 1
   }
  },
@@ -8875,8 +8875,8 @@
   "model": "exmo2010.organization",
   "fields": {
    "name": "\u0421\u0430\u0439\u0442 \u0433\u043e\u0441\u0437\u0430\u043a\u0443\u043f\u043e\u043a_\u041e\u0440\u043b\u043e\u0432\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
-   "url": "http://www.adm.orel.ru",
-   "comments": null,
+   "url": "http://www.adm.orel.ru/pgz",
+   "comments": "",
    "entity": 26,
    "keyname": "admorelru",
    "keywords": "\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0442\u043e\u0440\u0433\u0438 \u0434\u043b\u044f \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0438 \u043c\u0443\u043d\u0438\u0446\u0438\u043f\u0430\u043b\u044c\u043d\u044b\u0445 \u043d\u0443\u0436\u0434",
@@ -9265,8 +9265,8 @@
   "model": "exmo2010.organization",
   "fields": {
    "name": "\u0421\u0430\u0439\u0442 \u0433\u043e\u0441\u0437\u0430\u043a\u0443\u043f\u043e\u043a_\u0422\u0430\u043c\u0431\u043e\u0432\u0441\u043a\u0430\u044f \u043e\u0431\u043b\u0430\u0441\u0442\u044c",
-   "url": "http://www.regadm.tambov.ru",
-   "comments": null,
+   "url": "http://www.regadm.tambov.ru/konkurs1/",
+   "comments": "",
    "entity": 64,
    "keyname": "regadmtambovru",
    "keywords": "\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0442\u043e\u0440\u0433\u0438 \u0434\u043b\u044f \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0438 \u043c\u0443\u043d\u0438\u0446\u0438\u043f\u0430\u043b\u044c\u043d\u044b\u0445 \u043d\u0443\u0436\u0434",
@@ -9466,6 +9466,19 @@
    "keyname": "dgzadmyarru",
    "keywords": "\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0435 \u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0433\u043e\u0441\u0437\u0430\u043a\u0443\u043f\u043a\u0438 \u0442\u043e\u0440\u0433\u0438 \u0434\u043b\u044f \u0433\u043e\u0441\u0443\u0434\u0430\u0440\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0438 \u043c\u0443\u043d\u0438\u0446\u0438\u043f\u0430\u043b\u044c\u043d\u044b\u0445 \u043d\u0443\u0436\u0434",
    "type": 2
+  }
+ },
+ {
+  "pk": 77,
+  "model": "exmo2010.organization",
+  "fields": {
+   "name": "\u0421\u0412\u0420 \u0420\u043e\u0441\u0441\u0438\u0438: \u0421\u043b\u0443\u0436\u0431\u0430 \u0432\u043d\u0435\u0448\u043d\u0435\u0439 \u0440\u0430\u0437\u0432\u0435\u0434\u043a\u0438 \u0420\u043e\u0441\u0441\u0438\u0439\u0441\u043a\u043e\u0439 \u0424\u0435\u0434\u0435\u0440\u0430\u0446\u0438\u0438",
+   "url": "http://www.svr.gov.ru",
+   "comments": null,
+   "entity": null,
+   "keyname": "svrgovru",
+   "keywords": "\u0420\u0424 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0424\u0440\u0430\u0434\u043a\u043e\u0432 ",
+   "type": 1
   }
  },
  {
