@@ -447,7 +447,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     elif Group.objects.get(name='customers') in groups:
       tpk = []
       for t in ApprovedTask.objects.filter(monitoring = monitoring):
-        tpk.append(t.pk)
+        tpk.append(t.task.pk)
       queryset = Task.objects.filter(pk__in = tpk)
       queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
@@ -467,7 +467,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       if query:
         tpk = []
         for t in ApprovedTask.objects.filter(monitoring = monitoring):
-            tpk.append(t.pk)
+            tpk.append(t.task.pk)
         queryset = Task.objects.filter(pk__in = tpk)
         queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
@@ -780,7 +780,7 @@ def rating(request, id):
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
   tpk = []
   for t in ApprovedTask.objects.filter(monitoring = monitoring):
-    tpk.append(t.pk)
+    tpk.append(t.task.pk)
   return object_list(
     request,
     queryset = Organization.objects.filter(task__pk__in=tpk).extra(select = {'openness': Task._openness}).order_by('-openness'),
@@ -843,7 +843,7 @@ def monitoring_by_criteria_mass_export(request, id):
     header_row = True
     tpk = []
     for t in ApprovedTask.objects.filter(monitoring = monitoring):
-        tpk.append(t.pk)
+        tpk.append(t.task.pk)
     for task in Task.objects.filter(pk__in = tpk):
       row = copy.deepcopy(row_template)
       if header_row:
