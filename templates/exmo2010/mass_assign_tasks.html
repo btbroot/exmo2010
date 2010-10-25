@@ -19,7 +19,6 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% block title %}{% trans "Mass assign tasks" %} {{task}}/{{file}} {% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -39,7 +38,7 @@
   </div>
 {% endif %}
 
-<form method="post">
+<form method="post">{% csrf_token %}
 <select multiple="multiple" name="users">
   {% for user in users %}<option value="{{user.pk}}">{{user.username}}</option>{% endfor %}
 </select>

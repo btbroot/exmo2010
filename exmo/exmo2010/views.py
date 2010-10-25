@@ -884,8 +884,7 @@ def monitoring_by_criteria_mass_export(request, id):
 
 
 
-
-
+@login_required
 def mass_assign_tasks(request, id):
   if not request.user.is_superuser: # TODO: check_permission
     return HttpResponseForbidden(_('Forbidden'))
@@ -917,6 +916,7 @@ def mass_assign_tasks(request, id):
         'organizations': organizations,
         'users': users,
         'monitoring': monitoring,
-        'log': log
-    })
+        'log': log,
+        'title':_('Mass assign tasks'),
+    }, context_instance=RequestContext(request))
 
