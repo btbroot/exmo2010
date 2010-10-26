@@ -19,6 +19,7 @@
 from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list
 from django.contrib.auth.models import Group, User
+from django.core.urlresolvers import reverse
 
 
 
@@ -118,13 +119,21 @@ from django.template import loader, Context
 from django.conf import settings
 def comment_notification(sender, **kwargs):
     comment = kwargs['comment']
-    subject = '%(prefix)s%(org)s: %(code)s' % { 'prefix':settings.EMAIL_SUBJECT_PREFIX, 'org': comment.content_object.task.organization.name.split(':')[0], 'code': comment.content_object.parameter.fullcode() }
+    request = kwargs['request']
+    score = comment.content_object
+    subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
+            'prefix': settings.EMAIL_SUBJECT_PREFIX,
+            'monitoring': score.task.monitoring,
+            'org': score.task.organization.name.split(':')[0],
+            'code': score.parameter.fullcode(),
+            }
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.views.score_detail_direct', args=[score.pk, 'view']))
     t = loader.get_template('exmo2010/score_comment_email.html')
-    c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': False, 'comment':comment })
+    c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
     message = t.render(c)
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_nonadmin(comment))
 
     t = loader.get_template('exmo2010/score_comment_email.html')
-    c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment })
+    c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment, 'url': url })
     message = t.render(c)
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_admin(comment))
