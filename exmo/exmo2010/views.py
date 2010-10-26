@@ -841,6 +841,7 @@ def monitoring_by_criteria_mass_export(request, id):
       handle[criteria] = os.fdopen(spool[criteria][0], 'w')
       writer[criteria] = csv.writer(handle[criteria])
     header_row = True
+    parameters = Parameter.objects.filter(monitoring = monitoring)
     tpk = []
     for t in ApprovedTask.objects.filter(monitoring = monitoring):
         tpk.append(t.task.pk)
@@ -848,24 +849,31 @@ def monitoring_by_criteria_mass_export(request, id):
       row = copy.deepcopy(row_template)
       if header_row:
         for criteria in row.keys():
-          row[criteria].append('')
-        for score in Score.objects.filter(task = task):
-          for criteria in row.keys():
-            row[criteria].append(score.parameter.fullcode())
-        for criteria in row.keys():
+          row[criteria] = [''] + [ p.fullcode() for p in parameters ]
           writer[criteria].writerow(row[criteria])
         header_row = False
         row = copy.deepcopy(row_template)
       for criteria in row.keys():
-        row[criteria].append(safeConvert(task.organization.name))
-      for score in Score.objects.filter(task = task):
-        row['Found'].append(score.found)
-        row['Complete'].append(score.complete)
-        row['Topical'].append(score.topical)
-        row['Accessible'].append(score.accessible)
-        row['Hypertext'].append(score.hypertext)
-        row['Document'].append(score.document)
-        row['Image'].append(score.image)
+        row[criteria] = [safeConvert(task.organization.name)]
+      for parameter in parameters:
+        try:
+          score = Score.objects.filter(task = task).filter(parameter = parameter)[0]
+        except IndexError:
+          row['Found'].append('')
+          row['Complete'].append('')
+          row['Topical'].append('')
+          row['Accessible'].append('')
+          row['Hypertext'].append('')
+          row['Document'].append('')
+          row['Image'].append('')
+        else:
+          row['Found'].append(score.found)
+          row['Complete'].append(score.complete)
+          row['Topical'].append(score.topical)
+          row['Accessible'].append(score.accessible)
+          row['Hypertext'].append(score.hypertext)
+          row['Document'].append(score.document)
+          row['Image'].append(score.image)
       for criteria in row.keys():
         writer[criteria].writerow(row[criteria])
     response = HttpResponse(mimetype = 'application/zip')
