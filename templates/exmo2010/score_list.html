@@ -89,7 +89,7 @@
       {{score.found}}
       </td>
       <td width=55px
-      {%if score.complete %}
+      {%if score.complete and object.type.complete %}
         {%if score.complete == 0 %}
           class="score-ok-zero"
         {%else%}
@@ -101,7 +101,7 @@
       {{score.complete|default:"&nbsp;"}}
       </td>
       <td width=55px
-      {%if score.topical %}
+      {%if score.topical and object.type.topical %}
         {%if score.topical == 0 %}
           class="score-ok-zero"
         {%else%}
@@ -113,7 +113,7 @@
       {{score.topical|default:"&nbsp;"}}
       </td>
       <td width=55px
-      {%if score.accessible %}
+      {%if score.accessible and object.type.accessible %}
         {%if score.accessible == 0 %}
           class="score-ok-zero"
         {%else%}
@@ -125,7 +125,7 @@
       {{score.accessible|default:"&nbsp;"}}
       </td>
       <td width=55px
-      {%if score.hypertext != None %}
+      {%if score.hypertext != None and object.type.hypertext %}
         {%if score.hypertext == 0 %}
           class="score-ok-zero"
         {%else%}
@@ -137,7 +137,7 @@
       {{score.hypertext|default_if_none:"&nbsp;"}}
       </td>
       <td width=55px
-      {%if score.document != None %}
+      {%if score.document != None and object.type.document %}
         {%if score.document == 0 %}
           class="score-ok-zero"
         {%else%}
@@ -149,7 +149,7 @@
       {{score.document|default_if_none:"&nbsp;"}}
       </td>
       <td width=55px
-      {%if score.image != None %}
+      {%if score.image != None and object.type.image %}
         {%if score.image == 0 %}
           class="score-ok-zero"
         {%else%}
