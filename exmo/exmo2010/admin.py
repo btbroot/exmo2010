@@ -19,6 +19,9 @@ import exmo.exmo2010.models
 from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.db import models
+from django.contrib.auth.admin import UserAdmin
+
+UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
 class ParameterAdmin(admin.ModelAdmin):
     formfield_overrides = {
