@@ -29,7 +29,6 @@ from exmo.exmo2010.models import ApprovedTask
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
-from exmo.exmo2010.helpers import PERM_NOPERM, PERM_ADMIN, PERM_EXPERT, PERM_ORGANIZATION, PERM_CUSTOMER
 from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
@@ -72,7 +71,7 @@ def score_detail(request, task_id, parameter_id):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
     title = _('New score for %(name)s from %(user)s') %  { 'name': task.organization.name, 'user': request.user }
-    if check_permission(request.user, task) == PERM_ADMIN or (check_permission(request.user, task) == PERM_EXPERT and task.open):
+    if check_permission(request.user, 'TASK_EXPERT', task):
       return create_object(
         request,
         form_class = ScoreForm,
@@ -83,8 +82,6 @@ def score_detail(request, task_id, parameter_id):
           'title': title,
           }
       )
-    elif check_permission(request.user, task) == PERM_EXPERT and not task.open:
-      return HttpResponseForbidden(_('Task closed'))
     else:
       return HttpResponseForbidden(_('Forbidden'))
 
@@ -101,14 +98,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete score %s') % score.parameter
-      if check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
+      if check_permission(request.user, 'TASK_EXPERT', score.task):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
       title = _('Edit score %s') % score.parameter
-      if check_permission(request.user, score.task) == PERM_EXPERT and not score.task.open:
-        return HttpResponseForbidden(_('Task closed'))
-      elif check_permission(request.user, score.task) == PERM_ADMIN or (check_permission(request.user, score.task) == PERM_EXPERT and score.task.open):
+      if check_permission(request.user, 'TASK_EXPERT', score.task):
         if request.method == 'POST':
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
@@ -137,6 +132,7 @@ def score_detail_direct(request, score_id, method='update'):
         }
       )
     elif method == 'view':
+      if not check_permission(request.user, 'TASK_VIEW', score.task): return HttpResponseForbidden(_('Forbidden'))
       title = _('View score %s') % score.parameter
       return object_detail(
 	request,
@@ -156,7 +152,7 @@ def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
     task = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
-    if check_permission(request.user, task) != PERM_NOPERM:
+    if check_permission(request.user, 'TASK_VIEW', task):
       queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
         select={
           'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
@@ -216,7 +212,7 @@ def task_export(request, id):
         return ''
 
     task = get_object_or_404(Task, pk = id)
-    if check_permission(request.user, task) == PERM_NOPERM:
+    if not check_permission(request.user, 'TASK_EXPERT', task):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
@@ -310,9 +306,7 @@ def task_import(request, id):
             return None
 
     task = get_object_or_404(Task, pk = id)
-    if check_permission(request.user, task) == PERM_EXPERT and not task.open:
-        return HttpResponseForbidden(_('Task closed'))
-    elif check_permission(request.user, task) != PERM_ADMIN and not (check_permission(request.user, task) == PERM_EXPERT and task.open):
+    if not check_permission(request.user, 'TASK_EXPERT', task):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[id]))
@@ -508,7 +502,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
       title = _('Close task %s') % task
-      if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
+      if check_permission(request.user, 'TASK_EXPERT', task):
         if task.open:
           if request.method == 'GET':
 	    return render_to_response(
@@ -585,7 +579,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
     else: #update
       task = get_object_or_404(Task, pk = id)
       title = _('Edit task %s') % task
-      if request.user.is_superuser or check_permission(request.user, task) == PERM_EXPERT:
+      if request.user.is_superuser:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
 
@@ -595,7 +589,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 @login_required
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    if check_permission(request.user, score.task) != PERM_NOPERM and check_permission(request.user, score.task) != PERM_EXPERT:
+    if check_permission(request.user, 'SCORE_COMMENT', score):
 	return render_to_response(
 	        'exmo2010/score_comment_form.html',
 	        {

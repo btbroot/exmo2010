@@ -50,32 +50,52 @@ def construct_change_message(request, form, formsets):
         return change_message or _('No fields changed.')
 
 
-PERM_NOPERM=0
-PERM_ADMIN=1
-PERM_EXPERT=2
-PERM_ORGANIZATION=3
-PERM_CUSTOMER=4
+priv_list = [
+    'TASK_ADMIN',
+    'TASK_EXPERT',
+    'TASK_VIEW',
+    'SCORE_COMMENT',
+    ]
 
-def check_permission(user, task):
-    '''check user permission for task and scores of task'''
+def check_permission(user, priv, context = None):
+    '''check user permission for context'''
+    if priv not in priv_list: return False
+    if user.is_superuser and user.is_active: return True
+    if context == None:
+        return False
+
     groups = user.groups.all()
-    if user.is_superuser:
-        return PERM_ADMIN
-    elif Group.objects.get(name='experts') in groups and user == task.user:
-        return PERM_EXPERT
-    elif Group.objects.get(name='customers') in groups and task.approved:
-        return PERM_CUSTOMER
-    elif Group.objects.get(name='organizations') in groups and task.approved:
-        try:
-            g = Group.objects.get(name = task.organization.keyname)
-            if g in groups:
-                return PERM_ORGANIZATION
-            else:
-                return PERM_NOPERM
-        except:
-            return PERM_NOPERM
-    else:
-        return PERM_NOPERM
+    if context._meta.object_name == 'Task':
+        task = context
+        if Group.objects.get(name='experts') in groups and user == task.user and task.open and priv == 'TASK_EXPERT':
+            return True
+        if Group.objects.get(name='experts') in groups and user == task.user and priv == 'TASK_VIEW':
+            return True
+        elif Group.objects.get(name='customers') in groups and task.approved and priv == 'TASK_VIEW':
+            return True
+        elif Group.objects.get(name='organizations') in groups and task.approved and priv == 'TASK_VIEW':
+            try:
+                g = Group.objects.get(name = task.organization.keyname)
+                if g in groups:
+                    return True
+                else:
+                    return False
+            except:
+                return False
+
+    if context._meta.object_name == 'Score':
+        task = context.task
+        if Group.objects.get(name='organizations') in groups and task.approved and priv == 'SCORE_COMMENT':
+            try:
+                g = Group.objects.get(name = task.organization.keyname)
+                if g in groups:
+                    return True
+                else:
+                    return False
+            except:
+                return False
+
+    return False
 
 def get_recipients_admin(comment):
     score = comment.content_object
