@@ -88,6 +88,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+#    'exmo.middleware.StatsMiddleware',
 #    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 

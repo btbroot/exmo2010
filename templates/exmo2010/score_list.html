@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n get_object_by_pk break in_group adminmedia %}
+{% load table_header i18n get_object_by_pk in_group adminmedia %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
 {% block breadcrumbs %}
@@ -50,22 +50,13 @@
 <table>
 {% table_header headers %}
 <tbody>
-        {%for category in categories%}
-
-{%for object in object_list%}{%if object.group.group == category%}
-            <tr id='parameter_{{category.code}}'><td colspan=10>{{category}}</td></tr>
-{{ forloop|break }}
-{%endif%}{%endfor%}
-
-            {%for subcategory in subcategories%}
-            {%if subcategory.group == category%}
-
-{%for object in object_list%}{%if object.group == subcategory%}
-                <tr id='parameter_{{subcategory.fullcode}}'><td colspan=10>{{subcategory}}</td></tr>
-{{ forloop|break }}
-{%endif%}{%endfor%}
-
-                {%for object in object_list%}{%if object.group == subcategory%}
+{%for object in object_list%}
+  {% ifchanged object.group.group %}
+    <tr id='parameter_{{object.group.group.fullcode}}'><td colspan=10>{{object.group.group}}</td></tr>
+  {% endifchanged %}
+  {% ifchanged object.group %}
+    <tr id='parameter_{{object.group.fullcode}}'><td colspan=10>{{object.group}}</td></tr>
+  {% endifchanged %}
       <tr width=100% id='parameter_{{object.fullcode}}'>
       <td width=4%>{{ object.fullcode }}</td>
       <td>
@@ -107,7 +98,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.complete %}{{score.complete}}{%else%}&nbsp;{%endif%}
+      {{score.complete|default:"&nbsp;"}}
       </td>
       <td width=55px
       {%if score.topical %}
@@ -119,7 +110,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.topical %}{{score.topical}}{%else%}&nbsp;{%endif%}
+      {{score.topical|default:"&nbsp;"}}
       </td>
       <td width=55px
       {%if score.accessible %}
@@ -131,7 +122,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.accessible %}{{score.accessible}}{%else%}&nbsp;{%endif%}
+      {{score.accessible|default:"&nbsp;"}}
       </td>
       <td width=55px
       {%if score.hypertext != None %}
@@ -143,7 +134,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.hypertext != None %}{{score.hypertext}}{%else%}&nbsp;{%endif%}
+      {{score.hypertext|default_if_none:"&nbsp;"}}
       </td>
       <td width=55px
       {%if score.document != None %}
@@ -155,7 +146,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.document != None %}{{score.document}}{%else%}&nbsp;{%endif%}
+      {{score.document|default_if_none:"&nbsp;"}}
       </td>
       <td width=55px
       {%if score.image != None %}
@@ -167,7 +158,7 @@
       {% else %}
       class="score-none"
       {% endif %}>
-      {%if score.image != None %}{{score.image}}{%else%}&nbsp;{%endif%}
+      {{score.image|default_if_none:"&nbsp;"}}
       </td>
       {%else%}
         <td colspan=7></td>
@@ -182,10 +173,7 @@
        {% endif %}
       </td>
       </tr>
-    {% endif %}
-    {% endfor %}
-    {%endif%}{%endfor%}
-        {%endfor%}
+{% endfor %}
     </tbody></table>
 </div><br>
 {% endblock %}
