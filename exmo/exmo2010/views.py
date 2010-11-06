@@ -150,7 +150,7 @@ def score_detail_direct(request, score_id, method='update'):
 @login_required
 def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
-    task = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness}).get(pk = task_id)
+    task = Task.objects.extra(select = {'complete': Task._complete}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
     if check_permission(request.user, 'TASK_VIEW', task):
       queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
@@ -417,7 +417,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
     title = _('Task list for %s') % organization.name
-    queryset = Task.objects.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+    queryset = Task.objects.extra(select = {'complete': Task._complete})
     queryset = queryset.filter(monitoring = monitoring, organization = organization)
     groups = request.user.groups.all()
     # Or, filtered by user
@@ -427,7 +427,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Expert'), 'user__username', 'user__username', None),
                 (_('Status'), 'status', 'status', int),
                 (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), 'openness', None, None)
+                (_('Openness, %'), None, None, None)
               )
     elif Group.objects.get(name='experts') in groups:
       queryset = queryset.filter(user = request.user)
@@ -436,19 +436,19 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Status'), 'status', 'status', int),
                 (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), 'openness', None, None)
+                (_('Openness, %'), None, None, None)
               )
     elif Group.objects.get(name='customers') in groups:
       tpk = []
       for t in ApprovedTask.objects.filter(monitoring = monitoring):
         tpk.append(t.task.pk)
       queryset = Task.objects.filter(pk__in = tpk)
-      queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+      queryset = queryset.extra(select = {'complete': Task._complete})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), 'openness', None, None)
+                (_('Openness, %'), None, None, None)
               )
     elif Group.objects.get(name='organizations') in groups:
       orgs = []
@@ -463,13 +463,13 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         for t in ApprovedTask.objects.filter(monitoring = monitoring):
             tpk.append(t.task.pk)
         queryset = Task.objects.filter(pk__in = tpk)
-        queryset = queryset.extra(select = {'complete': Task._complete, 'openness': Task._openness})
+        queryset = queryset.extra(select = {'complete': Task._complete})
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None),
                 (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), 'openness', None, None)
+                (_('Openness, %'), None, None, None)
                 )
       else: #no organization to show
         return HttpResponseForbidden(_('Forbidden'))
@@ -777,7 +777,7 @@ def rating(request, id):
     tpk.append(t.task.pk)
   return object_list(
     request,
-    queryset = Organization.objects.filter(task__pk__in=tpk).extra(select = {'openness': Task._openness}).order_by('-openness'),
+    queryset = Task.objects.filter(pk__in = tpk),
     template_name = 'exmo2010/rating.html',
     extra_context = { 'monitoring': monitoring }
   )

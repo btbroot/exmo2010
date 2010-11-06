@@ -30,12 +30,14 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 <h1>{% trans "Rating " %} {{ monitoring.name }}: {{ monitoring.type }}</h1>
 
+{% regroup object_list|dictsortreversed:'openness' by pk as object_list1 %}
+
 <div id=organization_list>
-{% if object_list %}
+{% if object_list1 %}
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Name" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>{% for object in object_list %}
-    <tr><td>{{ forloop.counter }}</td><td>{{ object.name }}</td><td>{{ object.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
+    <tr><td>{{ forloop.counter }}</td><td>{{ object.organization.name }}</td><td>{{ object.organization.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
   {% endfor %}</tbody>
 </table>
 {% else %}

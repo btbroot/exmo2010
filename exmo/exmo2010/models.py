@@ -179,6 +179,7 @@ class ParameterMonitoringProperty(models.Model):
 
 
 
+from django.db.models import Count
 class Task(models.Model):
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
@@ -263,6 +264,18 @@ class Task(models.Model):
   '''.lower()
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
+
+  def openness(self):
+    parameters = Parameter.objects.filter(monitoring = self.monitoring).exclude(exclude = self.organization).extra(
+        select={
+          'score':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, self.pk, Parameter._meta.db_table),
+        })
+    openness_max = ParameterMonitoringProperty.objects.filter(monitoring = self.monitoring).aggregate(weight = Count('weight'))['weight']
+    openness_actual = 0
+    for parameter in parameters:
+        if parameter.score: openness_actual = openness_actual + Score.objects.get(pk = parameter.score).openness()
+    openness = float(openness_actual * 100) / openness_max
+    return openness
 
   def _get_open(self):
     if self.closed: return False
@@ -412,6 +425,42 @@ class Score(models.Model):
         self.claim = self.CLAIM_YES
     else:
         self.claim = self.CLAIM_NO
+
+  def openness(self):
+    try:
+        weight = ParameterMonitoringProperty.objects.get(parameter = self.parameter, monitoring = self.task.monitoring).weight
+        found = self.found
+        complete = 1
+        topical = 1
+        accessible = 1
+        format = 1
+        if self.parameter.type.complete:
+            if self.complete == 1: complete = 0.2
+            if self.complete == 2: complete = 0.5
+            if self.complete == 3: complete = 1
+        if self.parameter.type.topical:
+            if self.topical == 1: topical = 0.7
+            if self.topical == 2: topical = 0.85
+            if self.topical == 3: topical = 1
+        if self.parameter.type.accessible:
+            if self.accessible == 1: accessible = 0.9
+            if self.accessible == 2: accessible = 0.95
+            if self.accessible == 3: accessible = 1
+        if self.parameter.type.hypertext:
+            if self.parameter.type.document:
+                if self.hypertext == 0:
+                    if self.document == 0: format = 0.2
+                    if self.document == 1: format = 0.2
+                if self.hypertext == 1:
+                    if self.document == 0: format = 0.9
+                    if self.document == 1: format = 1
+            else:
+                if self.hypertext == 0: format = 0.2
+                if self.hypertext == 1: format = 1
+        openness = weight * found * complete * topical * accessible * format
+        return openness
+    except:
+        return 0
 
   active_claim = property(_get_claim, _set_claim)
 

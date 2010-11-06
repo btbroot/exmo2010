@@ -34,6 +34,7 @@
 <thead>
   <td>{% trans 'Code' %}</td>
   <td>{% trans 'Name' %}</td>
+  <td>{% trans 'Openness' %}</td>
   <td>{% trans 'Found' %}</td>
   <td>{% trans 'Complete' %}</td>
   <td>{% trans 'Topical' %}</td>
@@ -66,6 +67,7 @@
       </td>
       {%if object.status%}
       {%get_object_by_pk exmo2010.Score object.status as score %}
+      <td>{{ score.openness }}</td
       <td width=55px
         {%if score.found == 0 %}
           class="score-ok-zero"
