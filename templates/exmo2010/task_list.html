@@ -49,20 +49,20 @@
       {% if user.is_superuser or user|in_group:'experts' %}
       <td>
         {% if object.open %}
-         <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+        {% trans 'opened' %}
+         : <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
         {% endif %}
-        {% if not object.approved and not object.open %}
+        {% if object.ready %}
+         {% trans 'closed' %}
          {% if user.is_superuser %}
-          <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
+          : <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% else %}
-          {% trans 'closed' %}
          {% endif %}
         {% endif %}
         {% if object.approved %}
+         {% trans 'approved' %}
          {% if user.is_superuser %}
-          <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'open' %}?{{ request.GET.urlencode }}">{% trans 'open' %}</a>
-         {% else %}
-           {% trans 'approved' %}
+          : <a href="{% url exmo.exmo2010.views.task_manager monitoring.pk, organization.pk, object.pk,'open' %}?{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
       </td>

@@ -25,7 +25,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010.models import ApprovedTask
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -439,10 +438,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Openness, %'), None, None, None)
               )
     elif Group.objects.get(name='customers') in groups:
-      tpk = []
-      for t in ApprovedTask.objects.filter(monitoring = monitoring):
-        tpk.append(t.task.pk)
-      queryset = Task.objects.filter(pk__in = tpk)
+      queryset = Task.approved_tasks.all()
       queryset = queryset.extra(select = {'complete': Task._complete})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
@@ -459,10 +455,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         if org: orgs.append(org)
       query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
       if query:
-        tpk = []
-        for t in ApprovedTask.objects.filter(monitoring = monitoring):
-            tpk.append(t.task.pk)
-        queryset = Task.objects.filter(pk__in = tpk)
+        queryset = Task.approved_tasks.all()
         queryset = queryset.extra(select = {'complete': Task._complete})
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
@@ -516,7 +509,7 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
-	    task.open = False
+	    task.ready = True
 	    task.full_clean()
 	    task.save()
 	    return HttpResponseRedirect(redirect)
@@ -772,12 +765,9 @@ def parameter_manager(request, task_id, id, method):
 def rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
-  tpk = []
-  for t in ApprovedTask.objects.filter(monitoring = monitoring):
-    tpk.append(t.task.pk)
   return object_list(
     request,
-    queryset = Task.objects.filter(pk__in = tpk),
+    queryset = Task.approved_tasks.filter(monitoring = monitoring),
     template_name = 'exmo2010/rating.html',
     extra_context = { 'monitoring': monitoring }
   )
@@ -836,10 +826,7 @@ def monitoring_by_criteria_mass_export(request, id):
       writer[criteria] = csv.writer(handle[criteria])
     header_row = True
     parameters = Parameter.objects.filter(monitoring = monitoring)
-    tpk = []
-    for t in ApprovedTask.objects.filter(monitoring = monitoring):
-        tpk.append(t.task.pk)
-    for task in Task.objects.filter(pk__in = tpk):
+    for task in Task.approved_tasks.filter(monitoring = monitoring):
       row = copy.deepcopy(row_template)
       if header_row:
         for criteria in row.keys():
