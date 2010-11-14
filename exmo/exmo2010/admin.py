@@ -33,7 +33,7 @@ class ParameterAdmin(admin.ModelAdmin):
 
 class ParameterMonitoringPropertyInline(admin.StackedInline):
   model = exmo.exmo2010.models.ParameterMonitoringProperty
-  max_num = 10
+  max_num = 300
 
 class TaskAdmin(VersionAdmin):
     pass
