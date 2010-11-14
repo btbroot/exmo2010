@@ -296,7 +296,7 @@ class Task(models.Model):
         select={
           'score':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, self.pk, Parameter._meta.db_table),
         })
-    openness_max = ParameterMonitoringProperty.objects.filter(monitoring = self.monitoring).aggregate(weight = Count('weight'))['weight']
+    openness_max = Parameter.objects.filter(monitoring = self.monitoring).exclude(exclude = self.organization).aggregate(weight = Count('parametermonitoringproperty__weight'))['weight']
     openness_actual = 0
     for parameter in parameters:
         if parameter.score: openness_actual = openness_actual + Score.objects.get(pk = parameter.score).openness()
