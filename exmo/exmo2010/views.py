@@ -273,22 +273,44 @@ def task_export(request, id):
                 ''
             )
         else:
-            out += (
-                s.found,
-                s.complete,
-                safeConvert(s.completeComment),
-                s.topical,
-                safeConvert(s.topicalComment),
-                s.accessible,
-                safeConvert(s.accessibleComment),
-                s.hypertext,
-                safeConvert(s.hypertextComment),
-                s.document,
-                safeConvert(s.documentComment),
+            out += (s.found,)
+            if p.type.complete:
+                out += (
+                    s.complete,
+                    safeConvert(s.completeComment))
+            else:
+                out += ('','')
+            if p.type.topical:
+                out += (
+                    s.topical,
+                    safeConvert(s.topicalComment))
+            else:
+                out += ('','')
+            if p.type.accessible:
+                out += (
+                    s.accessible,
+                    safeConvert(s.accessibleComment))
+            else:
+                out += ('','')
+            if p.type.hypertext:
+                out += (
+                    s.hypertext,
+                    safeConvert(s.hypertextComment))
+            else:
+                out += ('','')
+            if p.type.document:
+                out += (
+                    s.document,
+                    safeConvert(s.documentComment))
+            else:
+                out += ('','')
+            if p.type.image:
+                out += (
                 s.image,
-                safeConvert(s.imageComment),
-                safeConvert(s.comment)
-            )
+                safeConvert(s.imageComment))
+            else:
+                out += ('','')
+            out += (safeConvert(s.comment),)
         writer.writerow(out)
     return response
 
