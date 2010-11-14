@@ -861,6 +861,8 @@ def monitoring_by_criteria_mass_export(request, id):
       for parameter in parameters:
         try:
           score = Score.objects.filter(task = task).filter(parameter = parameter)[0]
+          if task.organization in parameter.exclude.all():
+            raise IndexError
         except IndexError:
           row['Found'].append('')
           row['Complete'].append('')
