@@ -873,12 +873,30 @@ def monitoring_by_criteria_mass_export(request, id):
           row['Image'].append('')
         else:
           row['Found'].append(score.found)
-          row['Complete'].append(score.complete)
-          row['Topical'].append(score.topical)
-          row['Accessible'].append(score.accessible)
-          row['Hypertext'].append(score.hypertext)
-          row['Document'].append(score.document)
-          row['Image'].append(score.image)
+          if score.parameter.type.complete:
+            row['Complete'].append(score.complete)
+          else:
+            row['Complete'].append('')
+          if score.parameter.type.complete:
+            row['Topical'].append(score.topical)
+          else:
+            row['Topical'].append('')
+          if score.parameter.type.accessible:
+            row['Accessible'].append(score.accessible)
+          else:
+            row['Accessible'].append('')
+          if score.parameter.type.hypertext:
+            row['Hypertext'].append(score.hypertext)
+          else:
+            row['Hypertext'].append('')
+          if score.parameter.type.document:
+            row['Document'].append(score.document)
+          else:
+            row['Document'].append('')
+          if score.parameter.type.image:
+            row['Image'].append(score.image)
+          else:
+            row['Image'].append('')
       for criteria in row.keys():
         writer[criteria].writerow(row[criteria])
     response = HttpResponse(mimetype = 'application/zip')
