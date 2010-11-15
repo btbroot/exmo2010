@@ -94,7 +94,6 @@ class ParameterForm(forms.ModelForm):
 class ParameterMonitoringPropertyForm(forms.ModelForm):
     class Meta:
         model = ParameterMonitoringProperty
-        exclude = ('monitoring')
 
     def __init__(self, *args, **kwargs):
         monitoring = kwargs.pop('monitoring')
