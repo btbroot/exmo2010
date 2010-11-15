@@ -18,8 +18,6 @@
 from exmo.exmo2010.sort_headers import SortHeaders
 from exmo.exmo2010.forms import ScoreForm, TaskForm
 from exmo.exmo2010.forms import UserForm
-from exmo.exmo2010.forms import ParameterForm
-from exmo.exmo2010.forms import ParameterMonitoringPropertyForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
@@ -27,7 +25,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010.models import ParameterMonitoringProperty
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -773,35 +770,16 @@ def parameter_manager(request, task_id, id, method):
             )
     else: #update
         title = _('Edit parameter %s') % parameter
-        from django.forms.models import inlineformset_factory
-        from django.utils.functional import curry
-        form = ParameterForm(instance = parameter)
-        # Create the formset class
-        WeigthFormset = inlineformset_factory(Parameter, ParameterMonitoringProperty, extra=0, form=ParameterMonitoringPropertyForm, can_delete=False)
-        WeigthFormset.form = staticmethod(curry(ParameterMonitoringPropertyForm, monitoring=task.monitoring, parameter=parameter))
-        # Create the formset
-        formset = WeigthFormset(instance = parameter)
-        dict = {
-            "form": form,
-            "formset" : formset,
-            "instance" : parameter,
-            "task" : task,
-        }
-        if request.method == "POST":
-            form = ParameterForm(request.POST, instance = parameter)
-            formset = WeigthFormset(request.POST, instance = parameter)
-            if form.is_valid() and formset.is_valid():
-                form.save()
-                formset.save()
-                return HttpResponseRedirect(reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]))
-            else:
-                return HttpResponseRedirect(reverse('exmo.exmo2010.views.parameter_manager', args=[task.pk,parameter.pk,'update']))
-        return render_to_response(
-            "exmo2010/parameter_form.html",
-            dict,
-            context_instance=RequestContext(request)
-        )
-
+        return update_object(
+            request,
+            model = Parameter,
+            object_id = id,
+            post_save_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'task': task,
+                }
+            )
 
 
 
