@@ -1,6 +1,9 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from exmo.exmo2010.models import Score, Task
+from exmo.exmo2010.models import Parameter
+from exmo.exmo2010.models import ParameterMonitoringProperty
+from exmo.exmo2010.models import Monitoring
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -78,3 +81,23 @@ class UserForm(forms.ModelForm):
             'last_login',
             'date_joined'
         )
+
+
+
+class ParameterForm(forms.ModelForm):
+    class Meta:
+        model = Parameter
+        exclude = ('monitoring')
+
+
+
+class ParameterMonitoringPropertyForm(forms.ModelForm):
+    class Meta:
+        model = ParameterMonitoringProperty
+        exclude = ('monitoring')
+
+    def __init__(self, *args, **kwargs):
+        monitoring = kwargs.pop('monitoring')
+        parameter = kwargs.pop('parameter')
+        super(ParameterMonitoringPropertyForm, self).__init__(*args, **kwargs)
+        self.fields["weight"].queryset = ParameterMonitoringProperty.objects.filter(monitoring=monitoring, parameter=parameter)

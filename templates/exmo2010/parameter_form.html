@@ -36,6 +36,7 @@
 {% block content %}
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
 {{ form.as_p }}
+{{ formset }}
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
