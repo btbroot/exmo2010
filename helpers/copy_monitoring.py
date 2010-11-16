@@ -33,10 +33,8 @@ def copy_monitoring(monitoring_pk):
             user = t.user,
             organization = t.organization,
             monitoring = m,
-            closed = t.closed,
+            status = t.status,
             )
-        task.save()
-        task.approved = t.approved
         task.save()
         scores = em.Score.objects.filter(task = t)
         for s in scores:
@@ -61,4 +59,4 @@ def copy_monitoring(monitoring_pk):
             score.save()
 
 
-copy_monitoring(3)
+copy_monitoring(1)
