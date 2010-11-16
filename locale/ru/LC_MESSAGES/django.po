@@ -117,7 +117,7 @@ msgstr "Гипертекстовый формат"
 
 #: exmo/exmo2010/models.py:125 exmo/exmo2010/models.py:379
 msgid "document"
-msgstr "Фомат документа для скачивания"
+msgstr "Формат документа для скачивания"
 
 #: exmo/exmo2010/models.py:126 exmo/exmo2010/models.py:381
 msgid "image"
