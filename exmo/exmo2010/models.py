@@ -293,9 +293,7 @@ class Task(models.Model):
 
   def openness_max(self):
     parameters = Parameter.objects.filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).exclude(exclude = self.organization)
-    openness_max = 0
-    for parameter in parameters:
-        openness_max = openness_max + ParameterMonitoringProperty.objects.get(monitoring = self.monitoring, parameter = parameter).weight
+    openness_max = sum([ParameterMonitoringProperty.objects.get(monitoring = self.monitoring, parameter = parameter).weight for parameter in parameters])
     return openness_max
 
   def openness_actual(self):
@@ -303,9 +301,7 @@ class Task(models.Model):
         select={
           'score':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, self.pk, Parameter._meta.db_table),
         })
-    openness_actual = 0
-    for parameter in parameters:
-        if parameter.score: openness_actual = openness_actual + Score.objects.get(pk = parameter.score).openness()
+    openness_actual = sum([Score.objects.get(pk = parameter.score).openness() for parameter in parameters])
     return openness_actual
 
   def openness(self):
