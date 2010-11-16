@@ -291,21 +291,14 @@ class Task(models.Model):
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
-  def openness_max(self):
-    parameters = Parameter.objects.filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).exclude(exclude = self.organization)
-    openness_max = sum([ParameterMonitoringProperty.objects.get(monitoring = self.monitoring, parameter = parameter).weight for parameter in parameters])
-    return openness_max
-
-  def openness_actual(self):
-    parameters = Parameter.objects.filter(monitoring = self.monitoring).exclude(exclude = self.organization).extra(
-        select={
-          'score':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, self.pk, Parameter._meta.db_table),
-        })
-    openness_actual = sum([Score.objects.get(pk = parameter.score).openness() for parameter in parameters])
-    return openness_actual
-
   def openness(self):
-    openness = float(self.openness_actual() * 100) / self.openness_max()
+    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.monitoring)).exclude(parameter__exclude = self.organization).extra(
+        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
+    openness_actual = sum([openness_helper(s,s.weight) for s in scores])
+    parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).extra(
+        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
+    openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
+    openness = float(openness_actual * 100) / openness_max
     return openness
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
@@ -441,38 +434,9 @@ class Score(models.Model):
   def openness(self):
     try:
         weight = ParameterMonitoringProperty.objects.get(parameter = self.parameter, monitoring = self.task.monitoring).weight
-        found = self.found
-        complete = 1
-        topical = 1
-        accessible = 1
-        format = 1
-        if self.parameter.type.complete:
-            if self.complete == 1: complete = 0.2
-            if self.complete == 2: complete = 0.5
-            if self.complete == 3: complete = 1
-        if self.parameter.type.topical:
-            if self.topical == 1: topical = 0.7
-            if self.topical == 2: topical = 0.85
-            if self.topical == 3: topical = 1
-        if self.parameter.type.accessible:
-            if self.accessible == 1: accessible = 0.9
-            if self.accessible == 2: accessible = 0.95
-            if self.accessible == 3: accessible = 1
-        if self.parameter.type.hypertext:
-            if self.parameter.type.document:
-                if self.hypertext == 0:
-                    if self.document == 0: format = 0.2
-                    if self.document == 1: format = 0.2
-                if self.hypertext == 1:
-                    if self.document == 0: format = 0.9
-                    if self.document == 1: format = 1
-            else:
-                if self.hypertext == 0: format = 0.2
-                if self.hypertext == 1: format = 1
-        openness = weight * found * complete * topical * accessible * format
-        return openness
     except:
         return 0
+    return openness_helper(self, weight)
 
   active_claim = property(_get_claim, _set_claim)
 
@@ -487,3 +451,42 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
+
+
+
+def openness_helper(score, weight_in=0):
+    try:
+        weight = score.weight
+    except:
+        weight = weight_in
+
+    found = score.found
+    complete = 1
+    topical = 1
+    accessible = 1
+    format = 1
+    if score.parameter.type.complete:
+        if score.complete == 1: complete = 0.2
+        if score.complete == 2: complete = 0.5
+        if score.complete == 3: complete = 1
+    if score.parameter.type.topical:
+        if score.topical == 1: topical = 0.7
+        if score.topical == 2: topical = 0.85
+        if score.topical == 3: topical = 1
+    if score.parameter.type.accessible:
+        if score.accessible == 1: accessible = 0.9
+        if score.accessible == 2: accessible = 0.95
+        if score.accessible == 3: accessible = 1
+    if score.parameter.type.hypertext:
+        if score.parameter.type.document:
+            if score.hypertext == 0:
+                if score.document == 0: format = 0.2
+                if score.document == 1: format = 0.2
+            if score.hypertext == 1:
+                if score.document == 0: format = 0.9
+                if score.document == 1: format = 1
+        else:
+            if score.hypertext == 0: format = 0.2
+            if score.hypertext == 1: format = 1
+    openness = weight * found * complete * topical * accessible * format
+    return openness
