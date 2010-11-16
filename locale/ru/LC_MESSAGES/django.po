@@ -342,7 +342,7 @@ msgstr "Гипертекстовый формат"
 #: exmo/exmo2010/views.py:187 templates/exmo2010/score_detail.html:84
 #: templates/exmo2010/task_report.html:43
 msgid "Document"
-msgstr "Фомат документа для скачивания"
+msgstr "Формат документа для скачивания"
 
 #: exmo/exmo2010/views.py:188 templates/exmo2010/score_detail.html:94
 #: templates/exmo2010/task_report.html:44
