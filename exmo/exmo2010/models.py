@@ -291,16 +291,25 @@ class Task(models.Model):
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
   _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
-  def openness(self):
+  def openness_max(self):
+    parameters = Parameter.objects.filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).exclude(exclude = self.organization)
+    openness_max = 0
+    for parameter in parameters:
+        openness_max = openness_max + ParameterMonitoringProperty.objects.get(monitoring = self.monitoring, parameter = parameter).weight
+    return openness_max
+
+  def openness_actual(self):
     parameters = Parameter.objects.filter(monitoring = self.monitoring).exclude(exclude = self.organization).extra(
         select={
           'score':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, self.pk, Parameter._meta.db_table),
         })
-    openness_max = Parameter.objects.filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).exclude(exclude = self.organization).aggregate(weight = Count('parametermonitoringproperty__weight'))['weight']
     openness_actual = 0
     for parameter in parameters:
         if parameter.score: openness_actual = openness_actual + Score.objects.get(pk = parameter.score).openness()
-    openness = float(openness_actual * 100) / openness_max
+    return openness_actual
+
+  def openness(self):
+    openness = float(self.openness_actual() * 100) / self.openness_max()
     return openness
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
