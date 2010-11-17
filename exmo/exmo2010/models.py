@@ -405,18 +405,18 @@ class Score(models.Model):
       if self.parameter.type.image      and self.image      in ('', None):
         raise ValidationError(_('Image must be set'))
     elif any((
-        self.complete,
-        self.topical,
-        self.accessible,
-        self.hypertext,
-        self.document,
-        self.image,
-        self.completeComment,
-        self.topicalComment,
-        self.accessibleComment,
-        self.hypertextComment,
-        self.documentComment,
-        self.imageComment
+        self.complete!=None,
+        self.topical!=None,
+        self.accessible!=None,
+        self.hypertext!=None,
+        self.document!=None,
+        self.image!=None,
+        self.completeComment!="",
+        self.topicalComment!="",
+        self.accessibleComment!="",
+        self.hypertextComment!="",
+        self.documentComment!="",
+        self.imageComment!=""
         )):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
