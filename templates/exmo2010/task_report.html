@@ -28,6 +28,7 @@
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<div>
 <h1>{% if user.is_superuser %}{{ task.user }}: {% endif %}{{ task.organization.name }}: {{ task.monitoring.name }}</h1>
 
 <table>
