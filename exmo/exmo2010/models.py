@@ -411,14 +411,14 @@ class Score(models.Model):
         self.hypertext!=None,
         self.document!=None,
         self.image!=None,
-        self.completeComment!="",
-        self.topicalComment!="",
-        self.accessibleComment!="",
-        self.hypertextComment!="",
-        self.documentComment!="",
-        self.imageComment!=""
+        self.completeComment not in (None, ""),
+        self.topicalComment not in (None, ""),
+        self.accessibleComment not in (None, ""),
+        self.hypertextComment not in (None, ""),
+        self.documentComment not in (None, ""),
+        self.imageComment not in (None, ""),
         )):
-      raise ValidationError(_('Not found, but some excessive data persists'))
+      raise ValidationError(_('Not found, but some excessive data persists, %s') % self.topicalComment)
 
   def _get_claim(self):
     if self.claim == self.CLAIM_YES:
