@@ -418,7 +418,7 @@ class Score(models.Model):
         self.documentComment not in (None, ""),
         self.imageComment not in (None, ""),
         )):
-      raise ValidationError(_('Not found, but some excessive data persists, %s') % self.topicalComment)
+      raise ValidationError(_('Not found, but some excessive data persists'))
 
   def _get_claim(self):
     if self.claim == self.CLAIM_YES:
