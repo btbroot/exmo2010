@@ -932,7 +932,8 @@ def mass_assign_tasks(request, id):
           task = Task(
             user = user,
             organization = organization,
-            monitoring = monitoring
+            monitoring = monitoring,
+            status = Task.TASK_OPEN,
           )
           task.full_clean()
           task.save()
