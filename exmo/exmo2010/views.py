@@ -121,11 +121,11 @@ def score_detail_direct(request, score_id, method='update'):
       else:
         return HttpResponseForbidden(_('Forbidden'))
       return update_object(
-	request,
-	form_class = ScoreForm,
-	object_id = score.pk,
-	post_save_redirect = redirect,
-	extra_context = {
+        request,
+        form_class = ScoreForm,
+        object_id = score.pk,
+        post_save_redirect = redirect,
+        extra_context = {
           'task': score.task,
           'parameter': score.parameter,
           'title': title,
@@ -135,10 +135,10 @@ def score_detail_direct(request, score_id, method='update'):
       if not check_permission(request.user, 'TASK_VIEW', score.task): return HttpResponseForbidden(_('Forbidden'))
       title = _('View score %s') % score.parameter
       return object_detail(
-	request,
-	queryset = Score.objects.all(),
-	object_id = score.pk,
-	extra_context = {
+        request,
+        queryset = Score.objects.all(),
+        object_id = score.pk,
+        extra_context = {
           'task': score.task,
           'parameter': score.parameter,
           'title': title,
@@ -506,13 +506,13 @@ def task_manager(request, monitoring_id, organization_id, id, method):
     if method == 'add':
       title = _('Add new task for %s') % organization.name
       if request.user.is_superuser:
-	return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+        return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'delete':
       task = get_object_or_404(Task, pk = id)
       title = _('Delete task %s') % task
       if request.user.is_superuser:
-	return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+        return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
       task = get_object_or_404(Task, pk = id)
@@ -520,27 +520,27 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       if check_permission(request.user, 'TASK_EXPERT', task):
         if task.open:
           if request.method == 'GET':
-	    return render_to_response(
-	        'exmo2010/task_confirm_close.html',
-	        {
-	            'object': task,
-	            'monitoring': monitoring,
-	            'organization': organization,
-	            'title': title,
-	        },
-	        context_instance=RequestContext(request),
-	        )
+            return render_to_response(
+                'exmo2010/task_confirm_close.html',
+                {
+                    'object': task,
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title,
+                },
+                context_instance=RequestContext(request),
+                )
           elif request.method == 'POST':
-	    task.ready = True
-	    try:
-	        task.full_clean()
-	    except ValidationError, e:
-	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-	    else:
-	        task.save()
-	    return HttpResponseRedirect(redirect)
-	else:
-	  return HttpResponseForbidden(_('Already closed'))
+            task.ready = True
+            try:
+                task.full_clean()
+            except ValidationError, e:
+                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+            else:
+                task.save()
+            return HttpResponseRedirect(redirect)
+        else:
+          return HttpResponseForbidden(_('Already closed'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
       task = get_object_or_404(Task, pk = id)
@@ -548,26 +548,26 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       if request.user.is_superuser:
         if not task.open:
           if request.method == 'GET':
-	    return render_to_response(
-	        'exmo2010/task_confirm_approve.html',
-	        {
-	            'object': task,
-	            'monitoring': monitoring,
-	            'organization': organization,
-	            'title': title
-	        },
-	        context_instance=RequestContext(request),
-	        )
+            return render_to_response(
+                'exmo2010/task_confirm_approve.html',
+                {
+                    'object': task,
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title
+                },
+                context_instance=RequestContext(request),
+                )
           elif request.method == 'POST':
             task.approved = True
-	    try:
-	        task.full_clean()
-	    except ValidationError, e:
-	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-	    else:
-	        task.save()
-	    return HttpResponseRedirect(redirect)
-	else: return HttpResponseForbidden(_('Already approved'))
+            try:
+                task.full_clean()
+            except ValidationError, e:
+                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+            else:
+                task.save()
+            return HttpResponseRedirect(redirect)
+        else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
       task = get_object_or_404(Task, pk = id)
@@ -575,26 +575,26 @@ def task_manager(request, monitoring_id, organization_id, id, method):
       if request.user.is_superuser:
         if task.approved:
           if request.method == 'GET':
-	    return render_to_response(
-	        'exmo2010/task_confirm_open.html',
-	        {
-	            'object': task,
-	            'monitoring': monitoring,
-	            'organization': organization,
-	            'title': title
-	        },
-	        context_instance=RequestContext(request),
-	        )
+            return render_to_response(
+                'exmo2010/task_confirm_open.html',
+                {
+                    'object': task,
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title
+                },
+                context_instance=RequestContext(request),
+                )
           elif request.method == 'POST':
             task.open = True
-	    try:
-	        task.full_clean()
-	    except ValidationError, e:
-	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-	    else:
-	        task.save()
-	    return HttpResponseRedirect(redirect)
-	else: return HttpResponseForbidden(_('Already open'))
+            try:
+                task.full_clean()
+            except ValidationError, e:
+                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+            else:
+                task.save()
+            return HttpResponseRedirect(redirect)
+        else: return HttpResponseForbidden(_('Already open'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       task = get_object_or_404(Task, pk = id)
@@ -610,14 +610,14 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 def add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
     if check_permission(request.user, 'SCORE_COMMENT', score):
-	return render_to_response(
-	        'exmo2010/score_comment_form.html',
-	        {
-	            'score': score,
-	            'title': _('Add new comment'),
-	        },
-	        context_instance=RequestContext(request),
-	        )
+        return render_to_response(
+                'exmo2010/score_comment_form.html',
+                {
+                    'score': score,
+                    'title': _('Add new comment'),
+                },
+                context_instance=RequestContext(request),
+                )
     else: return HttpResponseForbidden(_('Forbidden'))
 
 

@@ -21,6 +21,6 @@ def organization_lookup(request):
                 results = [ x.name for x in model_results ]
     json = ""
     for x in results:
-	json = "%s \n %s" % (x, json)
+        json = "%s \n %s" % (x, json)
 #    json = simplejson.dumps(results)
     return HttpResponse(json, mimetype='application/json')
