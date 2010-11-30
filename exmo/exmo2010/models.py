@@ -320,9 +320,11 @@ class Task(models.Model):
 
   def clean(self):
     if self.organization.type != self.monitoring.type:
-      raise ValidationError(_('Ambigous organization type.'))
-    if self.approved and self.open:
-        raise ValidationError(_('Approved task must be closed.'))
+        raise ValidationError(_('Ambigous organization type.'))
+    if self.ready or self.approved:
+        complete = Task.objects.extra(select = {'complete': Task._complete}).get(pk = self.pk).complete
+        if complete != 100:
+            raise ValidationError(_('Ready task must be 100% complete.'))
 
   def _get_open(self):
     if self.status == self.TASK_OPEN: return True

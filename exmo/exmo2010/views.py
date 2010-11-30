@@ -31,6 +31,7 @@ from django.db.models import Q
 from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
+from django.core.exceptions import ValidationError
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -315,7 +316,6 @@ def task_export(request, id):
     return response
 
 import re
-from django.core.exceptions import ValidationError
 @revision.create_on_success
 @login_required
 def task_import(request, id):
@@ -532,8 +532,12 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        )
           elif request.method == 'POST':
 	    task.ready = True
-	    task.full_clean()
-	    task.save()
+	    try:
+	        task.full_clean()
+	    except ValidationError, e:
+	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+	    else:
+	        task.save()
 	    return HttpResponseRedirect(redirect)
 	else:
 	  return HttpResponseForbidden(_('Already closed'))
@@ -555,12 +559,13 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
+            task.approved = True
 	    try:
-	        task.approved = True
 	        task.full_clean()
-	        task.save()
 	    except ValidationError, e:
 	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+	    else:
+	        task.save()
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
@@ -581,13 +586,13 @@ def task_manager(request, monitoring_id, organization_id, id, method):
 	        context_instance=RequestContext(request),
 	        )
           elif request.method == 'POST':
+            task.open = True
 	    try:
-	        task.approved = False
-	        task.open = True
 	        task.full_clean()
-	        task.save()
 	    except ValidationError, e:
 	        return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+	    else:
+	        task.save()
 	    return HttpResponseRedirect(redirect)
 	else: return HttpResponseForbidden(_('Already open'))
       else: return HttpResponseForbidden(_('Forbidden'))
