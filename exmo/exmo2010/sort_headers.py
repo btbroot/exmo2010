@@ -78,7 +78,7 @@ class SortHeaders:
         self.additional_params = additional_params
 #        self.order_field, self.order_type = default_order_field, default_order_type
         self.order_field, self.order_type = None, default_order_type
-        self.filter_field, self.filter_expr, self.filter_pattern = None, None, None
+        self.filter_field, self.filter_pattern = [],[]
 
         # Determine order field and order type for the current request
         params = dict(request.GET.items())
@@ -97,11 +97,10 @@ class SortHeaders:
             try:
                 new_filter_field = int(string.replace(k, FILTER_PREFIX, ''))
                 if headers[new_filter_field][1] is not None:
-                    self.filter_field = new_filter_field
-                    self.filter_pattern = urllib.unquote(v)
+                    self.filter_field.append(new_filter_field)
+                    self.filter_pattern.append(urllib.unquote(v))
             except (IndexError, ValueError):
                 pass # Use the default
-            break
 
     def headers(self):
         """
@@ -149,20 +148,21 @@ class SortHeaders:
         field and order type, for use with the Django ORM's
         ``order_by`` method.
         """
-	if self.order_type and self.order_field:
+        if self.order_type and self.order_field:
             return '%s%s' % (
                 self.order_type == 'desc' and '-' or '',
                 self.header_defs[self.order_field][1],
             )
 
     def get_filter(self):
-      if (self.filter_field != None) and self.filter_pattern:
-        func = self.header_defs[self.filter_field][3]
+     filter_dict = {}
+     for el in self.filter_field:
+      c = self.filter_field.index(el)
+      if (self.filter_field[c] != None) and self.filter_pattern[c]:
+        func = self.header_defs[self.filter_field[c]][3]
         if func:
-          pattern = func(self.filter_pattern)
+          pattern = func(self.filter_pattern[c])
         else:
-          pattern = self.filter_pattern
-        filter_dict = {self.header_defs[self.filter_field][2] + '__icontains': pattern}
-      else:
-        filter_dict = {}
-      return filter_dict
+          pattern = self.filter_pattern[c]
+        filter_dict[self.header_defs[self.filter_field[c]][2] + '__icontains'] = pattern
+     return filter_dict
