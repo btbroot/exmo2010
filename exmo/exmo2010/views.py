@@ -1068,3 +1068,31 @@ def tasks_by_monitoring(request, id):
             },
         template_name = "exmo2010/task_list.html",
         )
+
+
+
+from exmo2010.forms import ParameterFilterForm
+@login_required
+def monitoring_parameter_filter(request, id):
+    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    title = _('Parameter-criteria filter')
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    form = ParameterFilterForm()
+    form.fields['parameter'].queryset = Parameter.objects.filter(monitoring = monitoring)
+    queryset = None
+    if request.GET.__contains__("parameter"):
+        form = ParameterFilterForm(request.GET)
+        form.fields['parameter'].queryset = Parameter.objects.filter(monitoring = monitoring)
+        if form.is_valid():
+            queryset = Score.objects.filter(
+                task__monitoring = monitoring,
+                parameter = form.cleaned_data['parameter'],
+                found = form.cleaned_data['found'],
+                task__status = Task.TASK_APPROVED
+            )
+    return render_to_response('exmo2010/monitoring_parameter_filter.html', {
+        'form': form,
+        'object_list': queryset,
+        'title': title,
+        'monitoring': monitoring,
+    }, context_instance=RequestContext(request))

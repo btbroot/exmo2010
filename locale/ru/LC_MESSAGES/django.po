@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-12-02 14:45+0300\n"
+"POT-Creation-Date: 2010-12-02 16:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,6 +172,7 @@ msgid "Ambigous organization type."
 msgstr "Несовместимый тип организации."
 
 #: exmo/exmo2010/models.py:327
+#, fuzzy, python-format
 msgid "Ready task must be 100% complete."
 msgstr "Готовая задача должна быть выполнена на 100%."
 
@@ -277,7 +278,7 @@ msgstr "Новая оценка для %(name)s от %(user)s"
 #: exmo/exmo2010/views.py:807 exmo/exmo2010/views.py:822
 #: exmo/exmo2010/views.py:849 exmo/exmo2010/views.py:939
 #: exmo/exmo2010/views.py:977 exmo/exmo2010/views.py:1030
-#: exmo/exmo2010/views.py:1049
+#: exmo/exmo2010/views.py:1049 exmo/exmo2010/views.py:1077
 msgid "Forbidden"
 msgstr "Запрещено"
 
@@ -466,7 +467,7 @@ msgid "Organizations for monitoring %(name)s with type %(type)s"
 msgstr "Организации мониторинга %(name)s для типа %(type)s"
 
 #: exmo/exmo2010/views.py:714 exmo/exmo2010/views.py:719
-#: templates/exmo2010/monitoring_utility.html:9
+#: templates/exmo2010/monitoring_utility.html:23
 msgid "Tasks"
 msgstr "Задачи "
 
@@ -520,6 +521,10 @@ msgstr "Одобренные задачи"
 msgid "All tasks"
 msgstr "Все задачи"
 
+#: exmo/exmo2010/views.py:1078
+msgid "Parameter-criteria filter"
+msgstr "Фильтрация по параметру и критерию"
+
 #: templates/404.html:4 templates/404.html.py:8
 msgid "Page not found"
 msgstr "Страница не найдена"
@@ -562,10 +567,11 @@ msgstr "Сменить пароль"
 msgid "Log out"
 msgstr "Выйти"
 
-#: templates/exmo2010/base.html:42 templates/exmo2010/expert_list.html:23
+#: templates/exmo2010/base.html:42 templates/exmo2010/expert_list.html:22
 #: templates/exmo2010/mass_assign_tasks.html:23
 #: templates/exmo2010/monitoring_confirm_delete.html:23
 #: templates/exmo2010/monitoring_form.html:24
+#: templates/exmo2010/monitoring_parameter_filter.html:24
 #: templates/exmo2010/organization_confirm_delete.html:23
 #: templates/exmo2010/organization_form.html:24
 #: templates/exmo2010/organization_list.html:23
@@ -593,10 +599,11 @@ msgstr "Экспертный мониторинг"
 msgid "Admin"
 msgstr "Администрирование"
 
-#: templates/exmo2010/expert_list.html:24
+#: templates/exmo2010/expert_list.html:23
 #: templates/exmo2010/mass_assign_tasks.html:24
 #: templates/exmo2010/monitoring_confirm_delete.html:24
 #: templates/exmo2010/monitoring_form.html:25
+#: templates/exmo2010/monitoring_parameter_filter.html:25
 #: templates/exmo2010/organization_confirm_delete.html:24
 #: templates/exmo2010/organization_form.html:25
 #: templates/exmo2010/organization_list.html:24
@@ -682,41 +689,54 @@ msgstr "При удалении мониторинга Вы так же удал
 msgid "Delete this monitoring?"
 msgstr "Удалить мониторинг?"
 
-#: templates/exmo2010/monitoring_stats.html:22
+#: templates/exmo2010/monitoring_parameter_filter.html:44
+msgid "Task"
+msgstr "Задача"
+
+#: templates/exmo2010/monitoring_parameter_filter.html:44
+msgid "Score"
+msgstr "Оценка"
+
+#: templates/exmo2010/monitoring_stats.html:21
 msgid "Organizations count"
 msgstr "Всего организаций"
 
-#: templates/exmo2010/monitoring_stats.html:23
+#: templates/exmo2010/monitoring_stats.html:22
 msgid "Organizations with task"
 msgstr "Организации назначенные экспертам"
 
-#: templates/exmo2010/monitoring_stats.html:24
+#: templates/exmo2010/monitoring_stats.html:23
 msgid "Organizations with ready task"
 msgstr "Организации с готовыми задачами"
 
-#: templates/exmo2010/monitoring_stats.html:25
+#: templates/exmo2010/monitoring_stats.html:24
 msgid "Organizations with approved task"
 msgstr "Организации с одобренными задачами"
 
-#: templates/exmo2010/monitoring_utility.html:4
-msgid "Rating"
-msgstr "Рейтинг"
+#: templates/exmo2010/monitoring_utility.html:22
+msgid "Organizations"
+msgstr "Организации"
 
-#: templates/exmo2010/monitoring_utility.html:5
-msgid "Export by criteria"
-msgstr "Экспорт по критерию"
-
-#: templates/exmo2010/monitoring_utility.html:6
-msgid "Mass assign"
-msgstr "Массовое назначение"
-
-#: templates/exmo2010/monitoring_utility.html:7
+#: templates/exmo2010/monitoring_utility.html:24
 msgid "Experts"
 msgstr "Эксперты"
 
-#: templates/exmo2010/monitoring_utility.html:8
-msgid "Organizations"
-msgstr "Организации"
+#: templates/exmo2010/monitoring_utility.html:25
+msgid "Mass assign"
+msgstr "Массовое назначение"
+
+#: templates/exmo2010/monitoring_utility.html:26
+msgid "Export by criteria"
+msgstr "Экспорт по критерию"
+
+#: templates/exmo2010/monitoring_utility.html:27
+#, fuzzy
+msgid "Filter by parameter"
+msgstr "Удалить параметр %s"
+
+#: templates/exmo2010/monitoring_utility.html:28
+msgid "Rating"
+msgstr "Рейтинг"
 
 #: templates/exmo2010/organization_confirm_delete.html:31
 msgid "When you delete organization you also delete this tasks:"
@@ -982,9 +1002,6 @@ msgstr "Задача "
 
 #~ msgid "Task closed"
 #~ msgstr "Задача закрыта"
-
-#~ msgid "score"
-#~ msgstr "оценка"
 
 #~ msgid "date"
 #~ msgstr "дата"

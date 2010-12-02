@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from exmo.exmo2010.models import Score, Task
+from exmo.exmo2010.models import Parameter
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -78,3 +79,9 @@ class UserForm(forms.ModelForm):
             'last_login',
             'date_joined'
         )
+
+
+
+class ParameterFilterForm(forms.Form):
+    parameter = forms.ModelChoiceField(queryset = Parameter.objects.all())
+    found = forms.IntegerField(min_value = 0, max_value = 1)
