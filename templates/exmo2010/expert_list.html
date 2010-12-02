@@ -1,7 +1,6 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010 Al Nikolov
 # Copyright 2010 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n in_group adminmedia monitoring_stats %}
+{% load table_header i18n in_group adminmedia monitoring_stats task_status %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -27,27 +26,28 @@
 {% endblock %}
 {% block content %}
 {% include "exmo2010/monitoring_utility.html" %}
-<div id=organization_list>
+<div id=expert_list>
 <table>
   {% table_header headers %}
   <tbody>
     <tr><td>
-        {%if user.is_superuser%}
-            <a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
-        {%endif%}</td></tr>
     {% for object in object_list %}
       <tr>
       <td>
-      <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
-        {% if user.is_superuser %}
-            &nbsp;<a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
-        {%endif%}
+        <a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.username }}</a>
       </td>
-      {% if user.is_superuser or user|in_group:'experts' %}
       <td>
-        {{ object.task__count }}
+        <a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'open' %}">{{ object.open_tasks }}</a>
       </td>
-      {% endif %}
+      <td>
+        <a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'ready' %}">{{ object.ready_tasks }}</a>
+      </td>
+      <td>
+        <a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
+      </td>
+      <td>
+        <a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
+      </td>
       </tr>
     {% endfor %}
   </tbody>

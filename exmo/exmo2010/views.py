@@ -32,6 +32,8 @@ from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect
+from django.template import RequestContext
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -494,28 +496,42 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
 
 
 
-from django.http import HttpResponseRedirect
-from django.template import RequestContext
 @revision.create_on_success
 @login_required
-def task_manager(request, monitoring_id, organization_id, id, method):
+def task_add(request, monitoring_id, organization_id=None):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
-    redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+    if organization_id:
+        organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
+        redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+        title = _('Add new task for %s') % organization.name
+    else:
+        organization = None
+        redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
+        title = _('Add new task for %s') % monitoring
     redirect = redirect.replace("%","%%")
-    if method == 'add':
-      title = _('Add new task for %s') % organization.name
-      if request.user.is_superuser:
+    if request.user.is_superuser:
         return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
-      else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'delete':
-      task = get_object_or_404(Task, pk = id)
+    else: return HttpResponseForbidden(_('Forbidden'))
+
+
+
+@revision.create_on_success
+@login_required
+def task_manager(request, id, method, monitoring_id=None, organization_id=None):
+    task = get_object_or_404(Task, pk = id)
+    monitoring = task.monitoring
+    organization = task.organization
+    if organization_id:
+        redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+    else:
+        redirect = '%s?%s' % (reverse('exmo.exmo2010.views.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
+    if method == 'delete':
       title = _('Delete task %s') % task
       if request.user.is_superuser:
         return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
-      task = get_object_or_404(Task, pk = id)
       title = _('Close task %s') % task
       if check_permission(request.user, 'TASK_EXPERT', task):
         if task.open:
@@ -543,7 +559,6 @@ def task_manager(request, monitoring_id, organization_id, id, method):
           return HttpResponseForbidden(_('Already closed'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
-      task = get_object_or_404(Task, pk = id)
       title = _('Approve task for %s') % task
       if request.user.is_superuser:
         if not task.open:
@@ -570,7 +585,6 @@ def task_manager(request, monitoring_id, organization_id, id, method):
         else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
-      task = get_object_or_404(Task, pk = id)
       title = _('Open task %s') % task
       if request.user.is_superuser:
         if task.approved:
@@ -597,7 +611,6 @@ def task_manager(request, monitoring_id, organization_id, id, method):
         else: return HttpResponseForbidden(_('Already open'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
-      task = get_object_or_404(Task, pk = id)
       title = _('Edit task %s') % task
       if request.user.is_superuser:
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
@@ -957,3 +970,101 @@ def mass_assign_tasks(request, id):
         'title':_('Mass assign tasks'),
     }, context_instance=RequestContext(request))
 
+
+
+@login_required
+def monitoring_by_experts(request, id):
+    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    experts = Task.objects.filter(monitoring = monitoring).values('user').annotate(cuser=Count('user'))
+    title = _('Experts of monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
+    epk = [e['user'] for e in experts]
+    queryset = User.objects.filter(pk__in = epk).extra(select = {
+        'open_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+            'task_table': Task._meta.db_table,
+            'user_table': User._meta.db_table,
+            'monitoring': monitoring.pk,
+            'status': Task.TASK_OPEN
+            },
+        'ready_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+            'task_table': Task._meta.db_table,
+            'user_table': User._meta.db_table,
+            'monitoring': monitoring.pk,
+            'status': Task.TASK_READY
+            },
+        'approved_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+            'task_table': Task._meta.db_table,
+            'user_table': User._meta.db_table,
+            'monitoring': monitoring.pk,
+            'status': Task.TASK_APPROVED
+            },
+        'all_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and %(task_table)s.monitoring_id = %(monitoring)s' % {
+            'task_table': Task._meta.db_table,
+            'user_table': User._meta.db_table,
+            'monitoring': monitoring.pk,
+            },
+        })
+    headers=(
+          (_('Expert'), 'username', 'username', None),
+          (_('Open tasks'), 'open_tasks', None, None),
+          (_('Ready tasks'), 'ready_tasks', None, None),
+          (_('Approved tasks'), 'approved_tasks', None, None),
+          (_('All tasks'), 'all_tasks', None, None),
+          )
+    return table(
+        request,
+        headers,
+        queryset = queryset,
+        paginate_by = 15,
+        extra_context = {
+            'monitoring': monitoring,
+            'title': title,
+            },
+        template_name = "exmo2010/expert_list.html",
+    )
+
+
+
+@login_required
+def monitoring_info(request, id):
+    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    organization_all_count = Organization.objects.filter(type = monitoring.type).distinct().count()
+    organization_open_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_OPEN).count()
+    organization_ready_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_READY).count()
+    organization_approved_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_APPROVED).count()
+    organization_with_task_count = Organization.objects.filter(type = monitoring.type, task__status__isnull = False).distinct().count()
+    extra_context = {
+            'organization_all_count': organization_all_count,
+            'organization_open_count': organization_open_count,
+            'organization_ready_count': organization_ready_count,
+            'organization_approved_count': organization_approved_count,
+            'organization_with_task_count': organization_with_task_count,
+    }
+
+
+
+@login_required
+def tasks_by_monitoring(request, id):
+    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    title = _('Task list for %s') % monitoring
+    queryset = Task.objects.extra(select = {'complete': Task._complete})
+    queryset = queryset.filter(monitoring = monitoring)
+    headers = (
+                (_('Organization'), 'organization__name', 'organization__name', None),
+                (_('Expert'), 'user__username', 'user__username', None),
+                (_('Status'), 'status', 'status', int),
+                (_('Complete, %'), 'complete', None, None),
+              )
+    return table(
+        request,
+        headers,
+        queryset = queryset,
+        paginate_by = 50,
+        extra_context = {
+            'monitoring': monitoring,
+            'title': title,
+            },
+        template_name = "exmo2010/task_list.html",
+        )

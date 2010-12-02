@@ -23,8 +23,12 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+{% if organization %}
 <a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
+{% else %}
+<a href="{% url exmo.exmo2010.views.tasks_by_monitoring monitoring.pk %}">{% trans 'Task of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
+{% endif %}
 {{title}}
 {% endblock %}
 </div>
@@ -36,7 +40,11 @@
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
   <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
   <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
+  {% if organization %}
   <p><input type="hidden" name="organization" id="id_organization" value="{{organization.pk}}" /></p>
+  {% else %}
+  <p>{{form.organization.label_tag}}{{ form.organization }} {{ form.organization.errors }}</p>
+  {% endif %}
   <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
