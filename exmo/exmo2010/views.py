@@ -1136,6 +1136,18 @@ def monitoring_parameter_found_report(request, id):
         organization_count_subcategory_public = None
         score_per_organization_category = None
         score_per_organization_subcategory = None
+        score_count = Score.objects.filter(
+            task__monitoring = monitoring,
+            task__status = Task.TASK_APPROVED,
+            found = 1,
+            parameter = parameter).count()
+        score_count_total += score_count
+        organization_count_total += parameter.organization_count
+        score_per_organization = float(score_count) / parameter.organization_count * 100
+        score_count_category += score_count
+        score_count_subcategory += score_count
+        organization_count_category += parameter.organization_count
+        organization_count_subcategory += parameter.organization_count
         if next_parameter:
             if next_parameter.group.group != parameter.group.group:
                 score_count_category_public = score_count_category
@@ -1160,12 +1172,6 @@ def monitoring_parameter_found_report(request, id):
             organization_count_subcategory_public = organization_count_subcategory
             organization_count_subcategory = 0
             score_per_organization_subcategory = float(score_count_subcategory_public) / organization_count_subcategory_public * 100
-        score_count = Score.objects.filter(
-            task__monitoring = monitoring,
-            task__status = Task.TASK_APPROVED,
-            found = 1,
-            parameter = parameter).count()
-        score_per_organization = float(score_count) / parameter.organization_count * 100
         obj = {
             'parameter': parameter,
             'organization_count': parameter.organization_count,
@@ -1179,12 +1185,6 @@ def monitoring_parameter_found_report(request, id):
             'score_per_organization_subcategory': score_per_organization_subcategory,
         }
         object_list.append(obj)
-        score_count_total += score_count
-        organization_count_total += parameter.organization_count
-        score_count_category += score_count
-        score_count_subcategory += score_count
-        organization_count_category += parameter.organization_count
-        organization_count_subcategory += parameter.organization_count
     score_per_organization_total = float(score_count) / organization_count_total * 100
     return render_to_response('exmo2010/monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
