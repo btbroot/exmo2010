@@ -1,0 +1,91 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% spaceless %}
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% trans "Parameter found report" %} {% trans " of " %} {{ monitoring.name }}: {{ monitoring.type }}</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+<style>
+.parameter_found_report_total_tr {
+    font-weight: bold
+}
+</style>
+</head>
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<h1>{% trans "Parameter found report" %} {% trans " of " %} {{ monitoring.name }}: {{ monitoring.type }}</h1>
+
+<div id=organization_list>
+<table>
+<thead>
+    <tr>
+        <td>{% trans 'Category' %}</td>
+        <td>{% trans 'Subategory' %}</td>
+        <td>{% trans 'Parameter' %}</td>
+        <td>{% trans 'Organizations' %}</td>
+        <td>{% trans "Organizations with 'found=1'" %}</td>
+        <td>{% trans '%' %}</td>
+    </tr>
+</thead>
+<tbody>
+{% for object in object_list %}
+    <tr>
+        <td>{{ object.parameter.group.group }}</td>
+        <td>{{ object.parameter.group }}</td>
+        <td>{{ object.parameter }}</td>
+        <td>{{ object.organization_count }}</td>
+        <td>{{ object.score_count }}</td>
+        <td>{{ object.score_per_organization|floatformat:3 }}</td>
+    </tr>
+    {% if object.score_count_subcategory %}
+    <tr class='parameter_found_report_total_tr'>
+        <td>{{ object.parameter.group.group }}</td>
+        <td>{{ object.parameter.group }}</td>
+        <td>{% trans 'Total subcategory' %}:</td>
+        <td>{{ object.organization_count_subcategory }}</td>
+        <td>{{ object.score_count_subcategory }}</td>
+        <td>{{ object.score_per_organization_subcategory|floatformat:3 }}</td>
+    </tr>
+    {% endif %}
+    {% if object.score_count_category %}
+    <tr class='parameter_found_report_total_tr'>
+        <td>{{ object.parameter.group.group }}</td>
+        <td colspan=2>{% trans 'Total category' %}:</td>
+        <td>{{ object.organization_count_category }}</td>
+        <td>{{ object.score_count_category }}</td>
+        <td>{{ object.score_per_organization_category|floatformat:3 }}</td>
+    </tr>
+    {% endif %}
+{% endfor %}
+    <tr class='parameter_found_report_total_tr'>
+        <td colspan=3><b>{% trans 'Total' %}:</td>
+        <td>{{ score_count_total }}</td>
+        <td>{{ organization_count_total }}</td>
+        <td>{{ score_per_organization_total|floatformat:3 }}</td>
+    </tr>
+</tbody>
+</table>
+</div>
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
+</body></html>
+{% endspaceless %}

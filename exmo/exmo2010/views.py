@@ -1097,3 +1097,100 @@ def monitoring_parameter_filter(request, id):
         'title': title,
         'monitoring': monitoring,
     }, context_instance=RequestContext(request))
+
+
+
+@login_required
+def monitoring_parameter_found_report(request, id):
+    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    title = _('Report for %(monitoring)s by parameter and found') % { 'monitoring': monitoring }
+    queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
+            'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.type_id = %(monitoring_type)s) -
+                                    (select count(*) from %(parameterexclude_table)s where %(parameterexclude_table)s.parameter_id = %(parameter_table)s.id
+                                        and %(parameterexclude_table)s.organization_id in
+                                                (select id from %(organization_table)s where %(organization_table)s.type_id = %(monitoring_type)s))''' % {
+                'organization_table': Organization._meta.db_table,
+                'monitoring_type': monitoring.type.pk,
+                'parameterexclude_table': ('%s_%s') % ( Parameter._meta.db_table, 'exclude'),
+                'parameter_table': Parameter._meta.db_table,
+                }
+        }
+    )
+    object_list=[]
+    score_count_total = 0
+    organization_count_total = 0
+    score_count_category = 0
+    score_count_subcategory = 0
+    organization_count_category = 0
+    organization_count_subcategory = 0
+    queryset_list = list(queryset)
+    for parameter in queryset_list:
+        try:
+            next_parameter = queryset_list[queryset_list.index(parameter)+1]
+        except:
+            next_parameter = None
+        score_count_category_public = None
+        score_count_subcategory_public = None
+        organization_count_category_public = None
+        organization_count_subcategory_public = None
+        score_per_organization_category = None
+        score_per_organization_subcategory = None
+        if next_parameter:
+            if next_parameter.group.group != parameter.group.group:
+                score_count_category_public = score_count_category
+                score_count_category = 0
+                organization_count_category_public = organization_count_category
+                organization_count_category = 0
+                score_per_organization_category = float(score_count_category_public) / organization_count_category_public * 100
+            if next_parameter.group != parameter.group:
+                score_count_subcategory_public = score_count_subcategory
+                score_count_subcategory = 0
+                organization_count_subcategory_public = organization_count_subcategory
+                organization_count_subcategory = 0
+                score_per_organization_subcategory = float(score_count_subcategory_public) / organization_count_subcategory_public * 100
+        else:
+            score_count_category_public = score_count_category
+            score_count_category = 0
+            organization_count_category_public = organization_count_category
+            organization_count_category = 0
+            score_per_organization_category = float(score_count_category_public) / organization_count_category_public * 100
+            score_count_subcategory_public = score_count_subcategory
+            score_count_subcategory = 0
+            organization_count_subcategory_public = organization_count_subcategory
+            organization_count_subcategory = 0
+            score_per_organization_subcategory = float(score_count_subcategory_public) / organization_count_subcategory_public * 100
+        score_count = Score.objects.filter(
+            task__monitoring = monitoring,
+            task__status = Task.TASK_APPROVED,
+            found = 1,
+            parameter = parameter).count()
+        score_per_organization = float(score_count) / parameter.organization_count * 100
+        obj = {
+            'parameter': parameter,
+            'organization_count': parameter.organization_count,
+            'score_count': score_count,
+            'score_per_organization': score_per_organization,
+            'score_count_category': score_count_category_public,
+            'score_count_subcategory': score_count_subcategory_public,
+            'organization_count_category': organization_count_category_public,
+            'organization_count_subcategory': organization_count_subcategory_public,
+            'score_per_organization_category': score_per_organization_category,
+            'score_per_organization_subcategory': score_per_organization_subcategory,
+        }
+        object_list.append(obj)
+        score_count_total += score_count
+        organization_count_total += parameter.organization_count
+        score_count_category += score_count
+        score_count_subcategory += score_count
+        organization_count_category += parameter.organization_count
+        organization_count_subcategory += parameter.organization_count
+    score_per_organization_total = float(score_count) / organization_count_total * 100
+    return render_to_response('exmo2010/monitoring_parameter_found_report.html', {
+        'monitoring': monitoring,
+        'title': title,
+        'object_list': object_list,
+        'score_count_total': score_count_total,
+        'organization_count_total': organization_count_total,
+        'score_per_organization_total': score_per_organization_total,
+    }, context_instance=RequestContext(request))
