@@ -801,16 +801,17 @@ def parameter_manager(request, task_id, id, method):
 
 
 
+from operator import itemgetter
 @login_required
 def rating(request, id):
-  monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
-  return object_list(
-    request,
-    queryset = Task.approved_tasks.filter(monitoring = monitoring),
-    template_name = 'exmo2010/rating.html',
-    extra_context = { 'monitoring': monitoring }
-  )
+  monitoring = get_object_or_404(Monitoring, pk = id)
+  object_list = [{'task':task, 'openness': task.openness()} for task in Task.approved_tasks.filter(monitoring = monitoring)]
+  object_list = sorted(object_list, key=itemgetter('openness'), reverse=True)
+  return render_to_response('exmo2010/rating.html', {
+        'monitoring': monitoring,
+        'object_list': object_list,
+    }, context_instance=RequestContext(request))
 
 
 
