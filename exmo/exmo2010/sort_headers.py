@@ -107,7 +107,7 @@ class SortHeaders:
         Generates dicts containing header and sort link details for
         all defined headers.
         """
-        for i, (header, order_criterion, filter_criterion, filter_func) in enumerate(self.header_defs):
+        for i, (header, order_criterion, filter_criterion, filter_func, choices) in enumerate(self.header_defs):
             th_classes = []
             new_order_type = 'asc'
             if i == self.order_field:
@@ -122,6 +122,7 @@ class SortHeaders:
                 'sortable': order_criterion is not None,
                 'filterable': filter_criterion is not None,
                 'filter': pattern,
+                'select': choices,
                 'i': i,
                 'o': self.order_field,
                 'ot': self.order_type,

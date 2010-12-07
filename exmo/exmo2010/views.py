@@ -180,16 +180,16 @@ def score_list_by_task(request, task_id, report=None):
       return table(
         request,
         headers=(
-          (_('Code'), None, None, None),
-          (_('Name'), 'name', 'name', None),
-          (_('Found'), None, None, None),
-          (_('Complete'), None, None, None),
-          (_('Topical'), None, None, None),
-          (_('Accessible'), None, None, None),
-          (_('HTML'), None, None, None),
-          (_('Document'), None, None, None),
-          (_('Image'), None, None, None),
-          (_('Action'), None, None, None),
+          (_('Code'), None, None, None, None),
+          (_('Name'), 'name', 'name', None, None),
+          (_('Found'), None, None, None, None),
+          (_('Complete'), None, None, None, None),
+          (_('Topical'), None, None, None, None),
+          (_('Accessible'), None, None, None, None),
+          (_('HTML'), None, None, None, None),
+          (_('Document'), None, None, None, None),
+          (_('Image'), None, None, None, None),
+          (_('Action'), None, None, None, None),
         ),
         queryset=queryset,
         template_name='exmo2010/score_list.html',
@@ -446,29 +446,29 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     # Or, filtered by user
     if request.user.is_superuser:
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Expert'), 'user__username', 'user__username', None),
-                (_('Status'), 'status', 'status', int),
-                (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), None, None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Expert'), 'user__username', 'user__username', None, None),
+                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('Complete, %'), 'complete', None, None, None),
+                (_('Openness, %'), None, None, None, None),
               )
     elif Group.objects.get(name='experts') in groups:
       queryset = queryset.filter(user = request.user)
     # Or, without Expert
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Status'), 'status', 'status', int),
-                (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), None, None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('Complete, %'), 'complete', None, None, None),
+                (_('Openness, %'), None, None, None, None)
               )
     elif Group.objects.get(name='customers') in groups:
       queryset = Task.approved_tasks.all()
       queryset = queryset.extra(select = {'complete': Task._complete})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), None, None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Complete, %'), 'complete', None, None, None),
+                (_('Openness, %'), None, None, None, None)
               )
     elif Group.objects.get(name='organizations') in groups:
       orgs = []
@@ -484,9 +484,9 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
         queryset = queryset.filter(monitoring = monitoring, organization = organization)
         queryset = queryset.filter(eval(query))
         headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Complete, %'), 'complete', None, None),
-                (_('Openness, %'), None, None, None)
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Complete, %'), 'complete', None, None, None),
+                (_('Openness, %'), None, None, None, None)
                 )
       else: #no organization to show
         return HttpResponseForbidden(_('Forbidden'))
@@ -639,8 +639,8 @@ def add_comment(request, score_id):
 def monitoring_list(request):
     queryset = Monitoring.objects.all()
     headers =   (
-                (_('Name'), 'name', 'name', None),
-                (_('Type'), 'type__name', 'type__name', None),
+                (_('Name'), 'name', 'name', None, None),
+                (_('Type'), 'type__name', 'type__name', None, None),
                 )
     return table(
         request,
@@ -710,17 +710,17 @@ def organization_list(request, id):
                 }
             )
         headers = (
-                (_('Name'), 'name', 'name', None),
-                (_('Tasks'), 'task__count', None, None),
+                (_('Name'), 'name', 'name', None, None),
+                (_('Tasks'), 'task__count', None, None, None),
                 )
     if request.user.is_superuser:
         headers = (
-                (_('Name'), 'name', 'name', None),
-                (_('Tasks'), 'task__count', None, None),
+                (_('Name'), 'name', 'name', None, None),
+                (_('Tasks'), 'task__count', None, None, None),
                 )
     else:
         headers = (
-                (_('Name'), 'name', 'name', None),
+                (_('Name'), 'name', 'name', None, None),
                 )
     return table(
         request,
@@ -1006,11 +1006,11 @@ def monitoring_by_experts(request, id):
             },
         })
     headers=(
-          (_('Expert'), 'username', 'username', None),
-          (_('Open tasks'), 'open_tasks', None, None),
-          (_('Ready tasks'), 'ready_tasks', None, None),
-          (_('Approved tasks'), 'approved_tasks', None, None),
-          (_('All tasks'), 'all_tasks', None, None),
+          (_('Expert'), 'username', 'username', None, None),
+          (_('Open tasks'), 'open_tasks', None, None, None),
+          (_('Ready tasks'), 'ready_tasks', None, None, None),
+          (_('Approved tasks'), 'approved_tasks', None, None, None),
+          (_('All tasks'), 'all_tasks', None, None, None),
           )
     return table(
         request,
@@ -1053,10 +1053,10 @@ def tasks_by_monitoring(request, id):
     queryset = Task.objects.extra(select = {'complete': Task._complete})
     queryset = queryset.filter(monitoring = monitoring)
     headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None),
-                (_('Expert'), 'user__username', 'user__username', None),
-                (_('Status'), 'status', 'status', int),
-                (_('Complete, %'), 'complete', None, None),
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Expert'), 'user__username', 'user__username', None, None),
+                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('Complete, %'), 'complete', None, None, None),
               )
     return table(
         request,

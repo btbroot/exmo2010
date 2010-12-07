@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load adminmedia %}
 <thead>
   {% for header in headers %}
     <td{{ header.class_attr|safe }}>
@@ -25,7 +26,16 @@
       {% if header.sortable %}</a>{% endif %}
       {% if header.filterable %}
         <form>{% csrf_token %}
-        <input name="filter{{ header.i }}" value="{{ header.filter }}">
+        {% if header.select %}
+            <select name="filter{{ header.i }}">
+                <option value="">---</option>
+                {% for option in header.select %}
+                <option value="{{option.0}}">{{ option.1 }}</option>
+                {% endfor %}
+            </select>
+            <input type="image" src="{% admin_media_prefix %}img/admin/selector-add.gif">
+        {% else %}<input name="filter{{ header.i }}" value="{{ header.filter }}">
+        {% endif %}
         <input name="o" value="{{ header.o }}" type="hidden">
         <input name="ot" value="{{ header.ot }}" type="hidden">
         </form>
