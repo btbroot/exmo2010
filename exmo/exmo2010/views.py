@@ -561,7 +561,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     elif method == 'approve':
       title = _('Approve task for %s') % task
       if request.user.is_superuser:
-        if not task.open:
+        if not task.approved:
           if request.method == 'GET':
             return render_to_response(
                 'exmo2010/task_confirm_approve.html',
