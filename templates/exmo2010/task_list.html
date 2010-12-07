@@ -57,19 +57,19 @@
       <td>
         {% if object.open %}
         {% trans 'opened' %}
-         : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+         : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
         {% endif %}
         {% if object.ready %}
          {% trans 'closed' %}
          {% if user.is_superuser %}
-          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
+          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% else %}
          {% endif %}
         {% endif %}
         {% if object.approved %}
          {% trans 'approved' %}
          {% if user.is_superuser %}
-          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'open' %}?{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
       </td>
