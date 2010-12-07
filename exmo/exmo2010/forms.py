@@ -83,5 +83,5 @@ class UserForm(forms.ModelForm):
 
 
 class ParameterFilterForm(forms.Form):
-    parameter = forms.ModelChoiceField(queryset = Parameter.objects.all())
-    found = forms.IntegerField(min_value = 0, max_value = 1)
+    parameter = forms.ModelChoiceField(queryset = Parameter.objects.all(), label=_('parameter'))
+    found = forms.IntegerField(min_value = 0, max_value = 1, label=_('found'))
