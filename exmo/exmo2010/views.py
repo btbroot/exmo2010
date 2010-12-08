@@ -1186,7 +1186,7 @@ def monitoring_parameter_found_report(request, id):
             'score_per_organization_subcategory': score_per_organization_subcategory,
         }
         object_list.append(obj)
-    score_per_organization_total = float(score_count) / organization_count_total * 100
+    score_per_organization_total = float(score_count_total) / organization_count_total * 100
     return render_to_response('exmo2010/monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
         'title': title,
