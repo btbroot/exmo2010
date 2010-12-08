@@ -1073,7 +1073,7 @@ def tasks_by_monitoring(request, id):
 
 
 
-from exmo2010.forms import ParameterFilterForm
+from exmo.exmo2010.forms import ParameterFilterForm
 @login_required
 def monitoring_parameter_filter(request, id):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))

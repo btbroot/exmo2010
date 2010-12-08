@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.models import Task
+from exmo.exmo2010.models import Task
 from django import template
 
 register = template.Library()
