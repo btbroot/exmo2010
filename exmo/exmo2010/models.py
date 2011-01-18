@@ -210,7 +210,7 @@ class Task(models.Model):
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-  status       = models.PositiveIntegerField(choices = TASK_STATUS, verbose_name=_('status'))
+  status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
   _scores_invalid = '''
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id

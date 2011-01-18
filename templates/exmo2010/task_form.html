@@ -38,7 +38,11 @@
 
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
+  {% if object %}
   <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
+  {% else %}
+  <p>{{form.status.as_hidden}}</p>
+  {% endif %}
   <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
   {% if organization %}
   <p><input type="hidden" name="organization" id="id_organization" value="{{organization.pk}}" /></p>
