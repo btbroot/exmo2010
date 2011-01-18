@@ -510,7 +510,30 @@ def task_add(request, monitoring_id, organization_id=None):
         title = _('Add new task for %s') % monitoring
     redirect = redirect.replace("%","%%")
     if request.user.is_superuser:
-        return create_object(request, form_class = TaskForm, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+        if request.method == 'GET':
+            form = TaskForm()
+            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = Group.objects.get(name = 'experts')) | Q(is_superuser = True))
+            if not organization:
+                form.fields['organization'].queryset = Organization.objects.filter(type=monitoring.type)
+            return render_to_response(
+                'exmo2010/task_form.html',
+                {
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title,
+                    'form': form
+                },
+                context_instance=RequestContext(request),
+            )
+        if request.method == 'POST':
+            form = TaskForm(request.POST)
+            if form.is_valid():
+                if organization:
+                    task = Task(user = form.cleaned_data['user'], organization = organization, monitoring = monitoring)
+                else:
+                    task = Task(user = form.cleaned_data['user'], organization = form.cleaned_data['organization'], monitoring = monitoring)
+                task.save()
+                return HttpResponseRedirect(redirect)
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
