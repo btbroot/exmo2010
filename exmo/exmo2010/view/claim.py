@@ -38,8 +38,8 @@ def claim_manager(request, score_id, claim_id=None, method=None):
     elif not method: #create new
         if request.method == 'GET':
             form = ClaimForm()
-            form.fields['creator'].initial = request.user
-            form.fields['score'].initial = score
+            form.fields['creator'].initial = request.user.pk
+            form.fields['score'].initial = score.pk
             if not score.task.open:
                 form.fields['open_task'].initial = True
             return render_to_response(
