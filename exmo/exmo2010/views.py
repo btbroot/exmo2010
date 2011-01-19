@@ -24,7 +24,7 @@ from django.views.generic.create_update import update_object, create_object, del
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
-from exmo.exmo2010.models import Monitoring
+from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -112,12 +112,12 @@ def score_detail_direct(request, score_id, method='update'):
             revision.comment = message
             if score.active_claim:
                 if form.changed_data:
-                    #use this veeeery carefully. by default POST dict is read-only -- this is not from good life.
-                    #we replace original post with changed 'claim' value
-                    old = request.POST._mutable
-                    request.POST._mutable = True
-                    request.POST['claim'] = Score.CLAIM_NO
-                    request.POST._mutable = old
+                    #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
+                    import datetime
+                    for claim in Claim.objects.filter(score = score, close_date__isnull = True):
+                        claim.close_date=datetime.datetime.now()
+                        claim.close_user=request.user
+                        claim.save()
                 else:
                     return HttpResponse(_('Have active claim, but no data changed'))
       else:

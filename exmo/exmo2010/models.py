@@ -378,14 +378,6 @@ class Task(models.Model):
 
 
 class Score(models.Model):
-  CLAIM_NEVER = 0
-  CLAIM_NO = 1
-  CLAIM_YES = 2
-  CLAIM_STATUS = (
-    (CLAIM_NEVER, _('never')),
-    (CLAIM_YES, _('yes')),
-    (CLAIM_NO, _('no')),
-  )
   task              = models.ForeignKey(Task, verbose_name=_('task'))
   parameter         = models.ForeignKey(Parameter, verbose_name=_('parameter'))
   found             = models.IntegerField(choices = ((0, 0), (1, 1)), verbose_name=_('found'))
@@ -402,7 +394,6 @@ class Score(models.Model):
   image             = models.IntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('image'))
   imageComment      = models.TextField(null = True, blank = True, verbose_name=_('imageComment'))
   comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
-  claim             = models.IntegerField(choices = CLAIM_STATUS, default = CLAIM_NEVER, verbose_name=_('claim'))
 
   def __unicode__(self):
     return '%s: %s [%d.%d.%d]' % (
@@ -444,15 +435,20 @@ class Score(models.Model):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
   def _get_claim(self):
-    if self.claim == self.CLAIM_YES:
+    claims=Claim.objects.filter(score=self.pk, close_date__isnull = True).count()
+    if claims > 0:
         return True
     else: return False
 
-  def _set_claim(self, val):
+  """def _set_claim(self, val):
     if val:
-        self.claim = self.CLAIM_YES
+        claim = Claim(score = self, comment='autocreated claim')
+        claim.save()
     else:
-        self.claim = self.CLAIM_NO
+        import datetime
+        for claim in Claim.objects.get(score=self.pk):
+            claim.close_date = datetime.datetime.now()
+            claim.save()"""
 
   def openness(self):
     s = Score.objects.filter(pk = self.pk).extra(
@@ -474,7 +470,7 @@ class Score(models.Model):
         )
     return openness_helper(s[0], s[0]['weight'])
 
-  active_claim = property(_get_claim, _set_claim)
+  active_claim = property(_get_claim)
 
   class Meta:
     unique_together = (
@@ -488,6 +484,18 @@ class Score(models.Model):
       'parameter__code'
     )
 
+
+
+class Claim(models.Model):
+  score             = models.ForeignKey(Score, verbose_name=_('score'))
+  open_date         = models.DateTimeField(auto_now = True, verbose_name = _('claim open'))
+  close_date        = models.DateTimeField(null = True, blank = True, verbose_name = _('claim close'))
+  comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
+  close_user        = models.ForeignKey(User, null = True, blank = True, verbose_name=_('user who close'), related_name='close_user')
+  creator           = models.ForeignKey(User, verbose_name=_('creator'), related_name='creator')
+
+  def __unicode__(self):
+    return _('claim for %(score)s from %(creator)s') % { 'score': self.score, 'creator': self.creator }
 
 
 def openness_helper(score, weight=0):

@@ -1,0 +1,51 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010 Al Nikolov
+# Copyright 2010 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n adminmedia in_group %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.organization_list score.task.monitoring.pk %}">{% trans 'Organizations of ' %}{{score.task.monitoring.name}}{% trans ' for type ' %}{{ score.task.monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization score.task.monitoring.pk, score.task.organization.pk %}">{{ score.task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.views.score_list_by_task score.task.pk %}">{% trans 'Score list for' %}&nbsp;{{ score.task.organization.name }}</a>&rsaquo;
+{% if user|in_group:'experts' and score.task.open or user.is_superuser %}
+<a href="{% url exmo.exmo2010.views.score_detail_direct score.pk 'update' %}">{{ score.parameter }}</a>&rsaquo;
+{% else %}
+<a href="{% url exmo.exmo2010.views.score_detail_direct score.pk 'view' %}">{{ score.parameter }}</a>&rsaquo;
+{% endif %}
+{{title}}
+</div>
+{% endblock %}
+{% block content %}
+
+<p>{{ form.non_field_errors }}</p>
+
+<form method="post" action="">{% csrf_token %}
+  <p>{{form.comment.label_tag}}{{ form.comment }} {{ form.comment.errors }}</p>
+  {% if not score.task.open %}
+  <p>{{form.open_task.label_tag}}{{ form.open_task }} {{ form.open_task.errors }}</p>
+  {% endif %}
+  {{ form.creator.as_hidden }}
+  {{ form.score.as_hidden }}
+  <p><input type="submit" /><input class="button" type="reset" /></p>
+</form>
+{% endblock %}
+{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

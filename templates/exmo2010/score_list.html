@@ -63,7 +63,7 @@
 {%if object.status%}
     {%get_object_by_pk exmo2010.Score object.status as score %}
 {% endif %}
-      {% if user|in_group:'experts' and task.open or user.is_superuser %}
+      {% if user|in_group:'experts' or user.is_superuser %}
        {% if object.status %}
        {% if score.active_claim %}<img src="{% admin_media_prefix %}img/admin/icon_alert.gif" alt="{% trans 'claim' %}" />{% endif %}
         <a href="{% url exmo.exmo2010.views.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
