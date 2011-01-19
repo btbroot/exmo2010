@@ -122,6 +122,18 @@ INSTALLED_APPS = (
     'reversion',
 )
 
+try:
+    import django_extensions
+    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
+except ImportError:
+    pass
+
+if DEBUG:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('exmo.middleware.StatsMiddleware',)
+else:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
+
+
 import os
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../static/')
