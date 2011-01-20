@@ -25,6 +25,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidde
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 import exmo.exmo2010.views as exmo_views
+from exmo.exmo2010 import signals
 
 @csrf_protect
 @login_required
@@ -57,9 +58,14 @@ def claim_manager(request, score_id, claim_id=None, method=None):
             form = ClaimForm(request.POST)
             if form.is_valid():
                 if form.cleaned_data['score'] == score and form.cleaned_data['creator'] == request.user:
-                    form.save()
+                    claim = score.add_claim(request.user, form.cleaned_data['comment'])
                     if form.cleaned_data['open_task']:
                         score.task.open = True
+                    signals.claim_was_posted.send(
+                        sender  = Claim.__class__,
+                        claim = claim,
+                        request = request
+                    )
                     return HttpResponseRedirect(redirect)
                 else:
                     return HttpResponse(_('form not valid'))

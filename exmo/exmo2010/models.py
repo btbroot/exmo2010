@@ -461,7 +461,7 @@ class Score(models.Model):
     return openness_helper(s[0], s[0]['weight'])
 
   def add_claim(self, creator, comment):
-    claim = Claim(creator = creator, comment = comment)
+    claim = Claim(score = self, creator = creator, comment = comment)
     claim.full_clean()
     claim.save()
     return claim
