@@ -959,7 +959,7 @@ def mass_assign_tasks(request, id):
     return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
   organizations = Organization.objects.filter(type = monitoring.type)
-  users = User.objects.all() # TODO: filter by group 'experts'
+  users = User.objects.filter(is_active = True).filter(Q(groups = Group.objects.get(name = 'experts')) | Q(is_superuser = True)) # TODO: filter by group 'experts'
   log = []
   if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
     for organization_id in request.POST.getlist('organizations'):
