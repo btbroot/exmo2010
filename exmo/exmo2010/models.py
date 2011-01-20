@@ -435,20 +435,10 @@ class Score(models.Model):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
   def _get_claim(self):
-    claims=Claim.objects.filter(score=self.pk, close_date__isnull = True).count()
+    claims=self.claim_count()
     if claims > 0:
         return True
     else: return False
-
-  """def _set_claim(self, val):
-    if val:
-        claim = Claim(score = self, comment='autocreated claim')
-        claim.save()
-    else:
-        import datetime
-        for claim in Claim.objects.get(score=self.pk):
-            claim.close_date = datetime.datetime.now()
-            claim.save()"""
 
   def openness(self):
     s = Score.objects.filter(pk = self.pk).extra(
@@ -469,6 +459,24 @@ class Score(models.Model):
         'parameter__type__image',
         )
     return openness_helper(s[0], s[0]['weight'])
+
+  def add_claim(self, creator, comment):
+    claim = Claim(creator = creator, comment = comment)
+    claim.full_clean()
+    claim.save()
+    return claim
+
+  def close_claim(self, close_user):
+    import datetime
+    #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
+    for claim in Claim.objects.filter(score = self, close_date__isnull = True):
+        claim.close_date=datetime.datetime.now()
+        claim.close_user=close_user
+        claim.full_clean()
+        claim.save()
+
+  def claim_count(self):
+    return Claim.objects.filter(score=self, close_date__isnull = True).count()
 
   active_claim = property(_get_claim)
 

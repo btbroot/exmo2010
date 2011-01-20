@@ -112,12 +112,7 @@ def score_detail_direct(request, score_id, method='update'):
             revision.comment = message
             if score.active_claim:
                 if form.changed_data:
-                    #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
-                    import datetime
-                    for claim in Claim.objects.filter(score = score, close_date__isnull = True):
-                        claim.close_date=datetime.datetime.now()
-                        claim.close_user=request.user
-                        claim.save()
+                    score.close_claim(request.user)
                 else:
                     return HttpResponse(_('Have active claim, but no data changed'))
       else:
