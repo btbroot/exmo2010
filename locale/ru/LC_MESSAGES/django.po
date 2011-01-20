@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-20 17:24+0300\n"
+"POT-Creation-Date: 2011-01-20 18:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,6 +61,11 @@ msgstr ""
 #: exmo/exmo2010/helpers.py:50
 msgid "No fields changed."
 msgstr ""
+
+#: exmo/exmo2010/helpers.py:166
+#, python-format
+msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
+msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
 
 #: exmo/exmo2010/models.py:26 exmo/exmo2010/models.py:37
 #: exmo/exmo2010/models.py:48 exmo/exmo2010/models.py:70
@@ -278,6 +283,7 @@ msgid "creator"
 msgstr "создатель"
 
 #: exmo/exmo2010/models.py:506
+#, python-format
 msgid "claim for %(score)s from %(creator)s"
 msgstr "претензия для %(score)s от %(creator)s"
 
@@ -553,6 +559,7 @@ msgid "Report for %(monitoring)s by parameter and found"
 msgstr "Отчёт для %(monitoring)s по параметру и наличию"
 
 #: exmo/exmo2010/view/claim.py:36
+#, python-format
 msgid "Add new claim for %s"
 msgstr "Добавить претензию для %s"
 

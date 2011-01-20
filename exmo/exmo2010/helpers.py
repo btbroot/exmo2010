@@ -163,7 +163,7 @@ def claim_notification(sender, **kwargs):
     claim = kwargs['claim']
     request = kwargs['request']
     score = claim.score
-    subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim' % {
+    subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim') % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
             'monitoring': score.task.monitoring,
             'org': score.task.organization.name.split(':')[0],
