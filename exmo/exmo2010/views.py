@@ -523,12 +523,19 @@ def task_add(request, monitoring_id, organization_id=None):
         if request.method == 'POST':
             form = TaskForm(request.POST)
             if form.is_valid():
-                if organization:
-                    task = Task(user = form.cleaned_data['user'], organization = organization, monitoring = monitoring)
-                else:
-                    task = Task(user = form.cleaned_data['user'], organization = form.cleaned_data['organization'], monitoring = monitoring)
-                task.save()
+                form.save()
                 return HttpResponseRedirect(redirect)
+            else:
+              return render_to_response(
+                'exmo2010/task_form.html',
+                {
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title,
+                    'form': form
+                },
+                context_instance=RequestContext(request),
+            )
     else: return HttpResponseForbidden(_('Forbidden'))
 
 

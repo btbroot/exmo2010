@@ -68,6 +68,27 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                     )
                     return HttpResponseRedirect(redirect)
                 else:
-                    return HttpResponse(_('form not valid'))
+                    return render_to_response(
+                        'exmo2010/claim_form.html',
+                        {
+                            'monitoring': score.task.monitoring,
+                            'task': score.task,
+                            'score': score,
+                            'title': title,
+                            'form': form,
+                        },
+                        context_instance=RequestContext(request),
+                    )
+
             else:
-                return HttpResponse(_('form not valid'))
+                return render_to_response(
+                    'exmo2010/claim_form.html',
+                    {
+                        'monitoring': score.task.monitoring,
+                        'task': score.task,
+                        'score': score,
+                        'title': title,
+                        'form': form,
+                    },
+                    context_instance=RequestContext(request),
+                )
