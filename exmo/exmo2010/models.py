@@ -362,14 +362,20 @@ class Task(models.Model):
   def _set_open(self, val):
     if val:
         self.status = self.TASK_OPEN
+        self.full_clean()
+        self.save()
 
   def _set_ready(self ,val):
     if val:
         self.status = self.TASK_READY
+        self.full_clean()
+        self.save()
 
   def _set_approved(self, val):
     if val:
         self.status = self.TASK_APPROVED
+        self.full_clean()
+        self.save()
 
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
