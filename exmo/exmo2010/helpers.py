@@ -173,5 +173,5 @@ def claim_notification(sender, **kwargs):
     t = loader.get_template('exmo2010/claim_email.html')
     c = Context({ 'score': claim.score, 'claim': claim, 'url': url })
     message = t.render(c)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email])
-
+    if score.task.user.email:
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email])
