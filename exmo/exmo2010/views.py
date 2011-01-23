@@ -139,6 +139,7 @@ def score_detail_direct(request, score_id, method='update'):
           'task': score.task,
           'parameter': score.parameter,
           'title': title,
+          'view': True,
         }
       )
     else: return HttpResponseForbidden(_('Forbidden'))

@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n in_group %}
 {% block title %}{{parameter}}{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
@@ -31,6 +31,7 @@
 {% endblock %}
 {% block content %}
 <h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
+{% if view and user.is_superuser or user|in_group:'experts' %}<a href="{% url exmo.exmo2010.views.score_detail_direct object.pk,'update' %}">{% trans 'Edit score' %}</a>{% endif %}
 <div id=parameter_desc>
 {% trans 'Parameter' %}: {{ parameter }}<br>
 </div>
