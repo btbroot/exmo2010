@@ -93,3 +93,26 @@ class ClaimForm(forms.ModelForm):
     open_task = forms.BooleanField(required = False, label=_('Open task'))
     class Meta:
         model = Claim
+
+
+
+from django.contrib.admin import widgets
+from django.conf import settings
+class ClaimReportForm(forms.Form):
+    def _media(self):
+        js_tuple = (
+                settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
+                settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
+                settings.ADMIN_MEDIA_PREFIX + 'js/jquery.min.js',
+                settings.ADMIN_MEDIA_PREFIX + 'js/jquery.init.js',
+                settings.ADMIN_MEDIA_PREFIX + 'js/actions.min.js',
+             )
+        js=base=forms.Media(js=js_tuple)
+        for f in self.fields:
+            js = base + self.fields[f].widget.media
+        return js
+    media = property(_media)
+
+    expert = forms.ModelChoiceField(queryset = User.objects.all(), label=_('expert'))
+    from_date = forms.DateTimeField(label=_('from date'), widget=widgets.AdminSplitDateTime)
+    to_date = forms.DateTimeField(label=_('to date'), widget=widgets.AdminSplitDateTime)

@@ -19,13 +19,17 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Score, Claim
+from exmo.exmo2010.models import Monitoring
 from exmo.exmo2010.forms import ClaimForm
+from exmo.exmo2010.forms import ClaimReportForm
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 import exmo.exmo2010.views as exmo_views
 from exmo.exmo2010 import signals
+from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 
 @csrf_protect
 @login_required
@@ -92,3 +96,37 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                     },
                     context_instance=RequestContext(request),
                 )
+@csrf_protect
+@login_required
+def claim_report(request, monitoring_id):
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+    title = _('Claims report for %(monitoring)s') % { 'monitoring': monitoring }
+    claims = None
+    if request.method == 'GET':
+        form = ClaimReportForm()
+        form.fields['from_date'].initial = datetime.now() - timedelta(days=30)
+        form.fields['to_date'].initial = datetime.now()
+    elif request.method == 'POST':
+        form = ClaimReportForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['expert']
+            from_date = form.cleaned_data['from_date']
+            to_date = form.cleaned_data['to_date']
+            title = title + _(' for expert %s') % user
+            if not request.user.is_superuser and user != request.user: return HttpResponseForbidden('Forbidden')
+            claims = Claim.objects.filter(score__task__monitoring = monitoring, score__task__user = user, open_date__gte = from_date, open_date__lte = to_date)
+    if request.user.is_superuser:
+        form.fields['expert'].queryset = User.objects.filter(task__score__claim__isnull = False).annotate()
+    else:
+        form.fields['expert'].queryset = User.objects.filter(pk = request.user.pk)
+    return render_to_response(
+            'exmo2010/claim_report.html',
+            {
+                'monitoring': monitoring,
+                'title': title,
+                'form': form,
+                'media': form.media,
+                'claims': claims,
+            },
+            context_instance=RequestContext(request),
+     )
