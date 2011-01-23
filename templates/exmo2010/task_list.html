@@ -28,8 +28,10 @@
 {{title}}
 </div>
 {% endblock %}
-{% block content %}
+{% block pretitle %}
 {% include "exmo2010/monitoring_utility.html" %}
+{% endblock %}
+{% block content %}
 <div id=task_list>
 <table>
   {% table_header headers %}

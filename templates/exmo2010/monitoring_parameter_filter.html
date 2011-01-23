@@ -27,10 +27,12 @@
 </div>
 {% endblock %}
 
-<p>{{ form.non_field_errors }}</p>
+{% block pretitle %}
+{% include "exmo2010/monitoring_utility.html" %}
+{% endblock %}
 
 {% block content %}
-{% include "exmo2010/monitoring_utility.html" %}
+<p>{{ form.non_field_errors }}</p>
 <div id=parameter_filter_form>
 <form method="get" action="">{% csrf_token %}
   {{ form.as_p }}

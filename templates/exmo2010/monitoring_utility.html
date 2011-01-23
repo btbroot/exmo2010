@@ -25,6 +25,7 @@
   <a href="{% url exmo.exmo2010.views.mass_assign_tasks monitoring.pk %}">{% trans 'Mass assign' %}</a> /
   <a href="{% url exmo.exmo2010.views.monitoring_by_criteria_mass_export monitoring.pk %}">{% trans 'Export by criteria' %}</a> /
   <a href="{% url exmo.exmo2010.views.monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
+  <a href="{% url exmo.exmo2010.view.claim.claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
   <a href="{% url exmo.exmo2010.views.rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a> /
   <a href="{% url exmo.exmo2010.views.monitoring_parameter_found_report monitoring.pk %}" target="_blank">{% trans 'Parameter found report' %}</a> /
 {% endif %}
