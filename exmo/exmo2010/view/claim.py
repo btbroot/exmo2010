@@ -47,17 +47,6 @@ def claim_manager(request, score_id, claim_id=None, method=None):
             form.fields['score'].initial = score.pk
             if not score.task.open:
                 form.fields['open_task'].initial = True
-            return render_to_response(
-                'exmo2010/claim_form.html',
-                {
-                    'monitoring': score.task.monitoring,
-                    'task': score.task,
-                    'score': score,
-                    'title': title,
-                    'form': form,
-                },
-                context_instance=RequestContext(request),
-            )
         elif request.method == 'POST':
             form = ClaimForm(request.POST)
             if form.is_valid():
@@ -71,31 +60,20 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                         request = request
                     )
                     return HttpResponseRedirect(redirect)
-                else:
-                    return render_to_response(
-                        'exmo2010/claim_form.html',
-                        {
-                            'monitoring': score.task.monitoring,
-                            'task': score.task,
-                            'score': score,
-                            'title': title,
-                            'form': form,
-                        },
-                        context_instance=RequestContext(request),
-                    )
+        return render_to_response(
+            'exmo2010/claim_form.html',
+            {
+                'monitoring': score.task.monitoring,
+                'task': score.task,
+                'score': score,
+                'title': title,
+                'form': form,
+            },
+            context_instance=RequestContext(request),
+        )
 
-            else:
-                return render_to_response(
-                    'exmo2010/claim_form.html',
-                    {
-                        'monitoring': score.task.monitoring,
-                        'task': score.task,
-                        'score': score,
-                        'title': title,
-                        'form': form,
-                    },
-                    context_instance=RequestContext(request),
-                )
+
+
 @csrf_protect
 @login_required
 def claim_report(request, monitoring_id):
