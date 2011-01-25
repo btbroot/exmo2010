@@ -574,13 +574,10 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 context_instance=RequestContext(request),
                 )
           elif request.method == 'POST':
-            task.ready = True
             try:
-                task.full_clean()
+                task.ready = True
             except ValidationError, e:
                 return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-            else:
-                task.save()
             return HttpResponseRedirect(redirect)
         else:
           return HttpResponseForbidden(_('Already closed'))
@@ -601,13 +598,10 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 context_instance=RequestContext(request),
                 )
           elif request.method == 'POST':
-            task.approved = True
             try:
-                task.full_clean()
+                task.approved = True
             except ValidationError, e:
                 return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-            else:
-                task.save()
             return HttpResponseRedirect(redirect)
         else: return HttpResponseForbidden(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
@@ -627,13 +621,10 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 context_instance=RequestContext(request),
                 )
           elif request.method == 'POST':
-            task.open = True
             try:
-                task.full_clean()
+                task.open = True
             except ValidationError, e:
                 return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
-            else:
-                task.save()
             return HttpResponseRedirect(redirect)
         else: return HttpResponseForbidden(_('Already open'))
       else: return HttpResponseForbidden(_('Forbidden'))
