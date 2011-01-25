@@ -36,7 +36,7 @@ from datetime import datetime, timedelta
 def claim_manager(request, score_id, claim_id=None, method=None):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     score = get_object_or_404(Score, pk = score_id)
-    redirect = reverse(exmo_views.score_list_by_task, args=[score.task.pk])
+    redirect = reverse(exmo_views.score_detail_direct, args=[score.pk, 'update'])
     title = _('Add new claim for %s') % score
     if claim_id:
         claim = get_object_or_404(Claim, pk = claim_id)
