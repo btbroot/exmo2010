@@ -484,6 +484,13 @@ class Score(models.Model):
   def claim_count(self):
     return Claim.objects.filter(score=self, close_date__isnull = True).count()
 
+  def claim_color(self):
+    color = None
+    if self.active_claim: color = 'red'
+    if not self.active_claim and Claim.objects.filter(score = self).count() > 0: color = 'green'
+    if not self.active_claim and Claim.objects.filter(score = self).exclude(close_user = self.task.user).count() > 0: color = 'yellow'
+    return color
+
   active_claim = property(_get_claim)
 
   class Meta:
