@@ -21,5 +21,8 @@ from exmo.exmo2010.signals import claim_was_posted
 from exmo.exmo2010.helpers import comment_notification
 from exmo.exmo2010.helpers import claim_notification
 
-comment_will_be_posted.connect(comment_notification)
-claim_was_posted.connect(claim_notification)
+
+from django.conf import settings
+if settings.USE_EMAIL:
+    comment_will_be_posted.connect(comment_notification)
+    claim_was_posted.connect(claim_notification)
