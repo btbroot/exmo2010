@@ -1,6 +1,6 @@
 from django.template import Library, Node
 from django.template import Variable, resolve_variable
-from exmo2010.models import Claim
+from exmo.exmo2010.models import Claim
 
 register = Library()
 
