@@ -72,7 +72,6 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    title = _('New score for %(name)s from %(user)s') %  { 'name': task.organization.name, 'user': request.user }
     if check_permission(request.user, 'TASK_EXPERT', task):
       return create_object(
         request,
@@ -81,7 +80,7 @@ def score_detail(request, task_id, parameter_id):
         extra_context = {
           'task': task,
           'parameter': parameter,
-          'title': title,
+          'title': parameter,
           }
       )
     else:
