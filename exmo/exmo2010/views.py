@@ -825,9 +825,19 @@ def rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   object_list = [{'task':task, 'openness': task.openness()} for task in Task.approved_tasks.filter(monitoring = monitoring)]
   object_list = sorted(object_list, key=itemgetter('openness'), reverse=True)
+  place=1
+  if object_list: max_rating = object_list[0]['openness']
+  rating_list = []
+  for rating_object in object_list:
+    if rating_object['openness'] < max_rating:
+        place+=1
+        max_rating = rating_object['openness']
+    rating = [rating_object, place ]
+    rating_list.append(rating)
+
   return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
-        'object_list': object_list,
+        'object_list': rating_list,
     }, context_instance=RequestContext(request))
 
 
