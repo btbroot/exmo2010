@@ -826,7 +826,10 @@ def rating(request, id):
   object_list = [{'task':task, 'openness': task.openness()} for task in Task.approved_tasks.filter(monitoring = monitoring)]
   object_list = sorted(object_list, key=itemgetter('openness'), reverse=True)
   place=1
-  if object_list: max_rating = object_list[0]['openness']
+  avg=None
+  if object_list:
+    max_rating = object_list[0]['openness']
+    avg = sum([t['openness'] for t in object_list])/len(object_list)
   rating_list = []
   for rating_object in object_list:
     if rating_object['openness'] < max_rating:
@@ -838,6 +841,7 @@ def rating(request, id):
   return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
         'object_list': rating_list,
+        'average': avg,
     }, context_instance=RequestContext(request))
 
 
