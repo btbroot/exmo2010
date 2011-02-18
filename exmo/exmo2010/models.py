@@ -563,3 +563,20 @@ def openness_helper(score, weight=0):
             if score_hypertext == 1: format = 1
     openness = weight * found * complete * topical * accessible * format
     return openness
+
+
+
+from django.contrib.auth.models import Group
+from annoying.fields import AutoOneToOneField
+
+class UserProfile(models.Model):
+    user = AutoOneToOneField(User, primary_key=True)
+
+    def is_expert(self):
+        return Group.objects.get(name='experts') in self.user.groups.all()
+
+    def is_customer(self):
+        return Group.objects.get(name='customers') in self.user.groups.all()
+
+    def is_organization(self):
+        return Group.objects.get(name='organizations') in self.user.groups.all()

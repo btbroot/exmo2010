@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n in_group adminmedia monitoring_stats %}
+{% load table_header i18n adminmedia monitoring_stats %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -45,7 +45,7 @@
             &nbsp;<a href="{% url exmo.exmo2010.views.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
         {%endif%}
       </td>
-      {% if user.is_superuser or user|in_group:'experts' %}
+      {% if user.is_superuser or user.userprofile.is_expert %}
       <td>
         {{ object.task__count }}
       </td>

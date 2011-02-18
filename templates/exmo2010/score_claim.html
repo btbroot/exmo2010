@@ -17,8 +17,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n in_group claim %}
-{% if user|in_group:'experts' or user.is_superuser %}
+{% load i18n claim %}
+{% if user.userprofile.is_expert or user.is_superuser %}
 <p><hr>
 <div id='score_claim'>
 {% get_all_claim object as claim_list %}

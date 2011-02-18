@@ -120,6 +120,7 @@ INSTALLED_APPS = (
 #    'debug_toolbar',
     'exmo.exmo2010',
     'reversion',
+    'annoying',
 )
 
 try:
@@ -133,6 +134,7 @@ if DEBUG:
 else:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
 
+AUTH_PROFILE_MODULE = 'exmo2010.UserProfile'
 
 import os
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))

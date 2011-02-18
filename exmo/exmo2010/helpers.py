@@ -63,17 +63,16 @@ def check_permission(user, priv, context = None):
     if user.is_superuser and user.is_active: return True
     if context == None:
         return False
-
     groups = user.groups.all()
     if context._meta.object_name == 'Task':
         task = context
-        if Group.objects.get(name='experts') in groups and user == task.user and task.open and priv == 'TASK_EXPERT':
+        if user.userprofile.is_expert and user == task.user and task.open and priv == 'TASK_EXPERT':
             return True
-        if Group.objects.get(name='experts') in groups and user == task.user and priv == 'TASK_VIEW':
+        if user.userprofile.is_expert and user == task.user and priv == 'TASK_VIEW':
             return True
-        elif Group.objects.get(name='customers') in groups and task.approved and priv == 'TASK_VIEW':
+        elif user.userprofile.is_customer and task.approved and priv == 'TASK_VIEW':
             return True
-        elif Group.objects.get(name='organizations') in groups and task.approved and priv == 'TASK_VIEW':
+        elif user.userprofile.is_organization and task.approved and priv == 'TASK_VIEW':
             try:
                 g = Group.objects.get(name = task.organization.keyname)
                 if g in groups:
@@ -85,7 +84,7 @@ def check_permission(user, priv, context = None):
 
     if context._meta.object_name == 'Score':
         task = context.task
-        if Group.objects.get(name='organizations') in groups and task.approved and priv == 'SCORE_COMMENT':
+        if user.userprofile.is_organization and task.approved and priv == 'SCORE_COMMENT':
             try:
                 g = Group.objects.get(name = task.organization.keyname)
                 if g in groups:

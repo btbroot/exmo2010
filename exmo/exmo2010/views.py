@@ -437,9 +437,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     title = _('Task list for %s') % organization.name
     queryset = Task.objects.extra(select = {'complete': Task._complete})
     queryset = queryset.filter(monitoring = monitoring, organization = organization)
-    groups = request.user.groups.all()
+    user = request.user
+    groups = user.groups.all()
     # Or, filtered by user
-    if request.user.is_superuser:
+    if user.is_superuser:
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Expert'), 'user__username', 'user__username', None, None),
@@ -447,8 +448,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None),
               )
-    elif Group.objects.get(name='experts') in groups:
-      queryset = queryset.filter(user = request.user)
+    elif user.userprofile.is_expert:
+      queryset = queryset.filter(user = user)
     # Or, without Expert
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
@@ -456,7 +457,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None)
               )
-    elif Group.objects.get(name='customers') in groups:
+    elif user.userprofile.is_customer:
       queryset = Task.approved_tasks.all()
       queryset = queryset.extra(select = {'complete': Task._complete})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
@@ -465,7 +466,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None)
               )
-    elif Group.objects.get(name='organizations') in groups:
+    elif user.userprofile.is_organization:
       orgs = []
       for group in groups:
         org = None
@@ -507,7 +508,8 @@ def task_add(request, monitoring_id, organization_id=None):
     if request.user.is_superuser:
         if request.method == 'GET':
             form = TaskForm()
-            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = Group.objects.get(name = 'experts')) | Q(is_superuser = True))
+            from annoying.functions import get_object_or_None
+            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = get_object_or_None(Group, name = 'experts')) | Q(is_superuser = True))
             if not organization:
                 form.fields['organization'].queryset = Organization.objects.filter(type=monitoring.type)
             return render_to_response(
@@ -709,8 +711,9 @@ def organization_list(request, id):
             'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
             }
         )
-    groups = request.user.groups.all()
-    if Group.objects.get(name='organizations') in groups:
+    user = request.user
+    groups = user.groups.all()
+    if user.userprofile.is_organization:
       orgs = []
       for group in groups:
         org = None
@@ -720,7 +723,7 @@ def organization_list(request, id):
       query = " | ".join(["Q(pk = %d)" % org.pk for org in orgs])
       if query:
         queryset = queryset.filter(eval(query))
-    if Group.objects.get(name='experts') in groups:
+    if user.userprofile.is_expert:
         queryset = Organization.objects.filter(type = monitoring.type).extra(
             select = {
                 'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id and user_id = %s' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table, request.user.pk),
@@ -967,11 +970,12 @@ def monitoring_by_criteria_mass_export(request, id):
 
 @login_required
 def mass_assign_tasks(request, id):
-  if not request.user.is_superuser: # TODO: check_permission
+  if not request.user.is_superuser:
     return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
   organizations = Organization.objects.filter(type = monitoring.type)
-  users = User.objects.filter(is_active = True).filter(Q(groups = Group.objects.get(name = 'experts')) | Q(is_superuser = True)) # TODO: filter by group 'experts'
+  from annoying.functions import get_object_or_None
+  users = User.objects.filter(is_active = True).filter(Q(groups = get_object_or_None(Group, name = 'experts')) | Q(is_superuser = True))
   log = []
   if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
     for organization_id in request.POST.getlist('organizations'):
