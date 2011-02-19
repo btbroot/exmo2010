@@ -81,15 +81,22 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
-MIDDLEWARE_CLASSES = (
+if DEBUG:
+    MIDDLEWARE_CLASSES = (
+        'django.middleware.cache.UpdateCacheMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.cache.FetchFromCacheMiddleware',
+        )
+else:
+    MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',)
+
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-#    'exmo.middleware.StatsMiddleware',
-#    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'exmo.urls'
@@ -133,8 +140,6 @@ if DEBUG:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('exmo.middleware.StatsMiddleware',)
 else:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
-
-AUTH_PROFILE_MODULE = 'exmo2010.UserProfile'
 
 import os
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
