@@ -34,6 +34,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
+from django.views.decorators.cache import cache_page
 
 @login_required
 def parameter_by_organization_list(request, organization_id):
@@ -825,6 +826,8 @@ def parameter_manager(request, task_id, id, method):
 
 
 from operator import itemgetter
+#update rating twice in a day
+@cache_page(60 * 60 * 12)
 @login_required
 def rating(request, id):
   if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
