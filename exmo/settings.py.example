@@ -155,3 +155,13 @@ EMAIL_SUBJECT_PREFIX = '[exmo] '
 FORCE_SCRIPT_NAME = ""
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 USE_EMAIL = True
+CACHE_PATH = os.path.join(SITE_ROOT, '../cache')
+#old variant
+CACHE_BACKEND = 'file://' + CACHE_PATH
+#new variant
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_PATH,
+    }
+}
