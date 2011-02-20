@@ -140,7 +140,7 @@ class Monitoring(models.Model):
   class Meta:
     unique_together = (('name', 'type'))
     ordering = ('type__name', 'name')
-
+    permissions = (("view_monitoring", "Can view monitoring"),)
 
 
 class Parameter(models.Model):
@@ -332,6 +332,7 @@ class Task(models.Model):
       ('user', 'organization', 'monitoring'),
     )
     ordering = ('monitoring__name', 'organization__name', 'user__username')
+    permissions = (("view_task", "Can view task"),)
 
   def clean(self):
     if self.organization.type != self.monitoring.type:
@@ -504,6 +505,7 @@ class Score(models.Model):
       'parameter__group__code',
       'parameter__code'
     )
+    permissions = (("view_score", "Can view score"),)
 
 
 
@@ -517,6 +519,9 @@ class Claim(models.Model):
 
   def __unicode__(self):
     return _('claim for %(score)s from %(creator)s') % { 'score': self.score, 'creator': self.creator }
+
+  class Meta:
+    permissions = (("view_claim", "Can view claim"),)
 
 
 def openness_helper(score, weight=0):

@@ -72,7 +72,7 @@ def score_detail(request, task_id, parameter_id):
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.views.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    if check_permission(request.user, 'TASK_EXPERT', task):
+    if request.user.has_perm('TASK_EXPERT', task):
       return create_object(
         request,
         form_class = ScoreForm,
@@ -99,12 +99,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete score %s') % score.parameter
-      if check_permission(request.user, 'TASK_EXPERT', score.task):
+      if request.user.has_perm('TASK_EXPERT', score.task):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
       title = _('Edit score %s') % score.parameter
-      if check_permission(request.user, 'TASK_EXPERT', score.task):
+      if request.user.has_perm('TASK_EXPERT', score.task):
         if request.method == 'POST':
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)

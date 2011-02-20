@@ -51,7 +51,6 @@ def construct_change_message(request, form, formsets):
 
 
 priv_list = [
-    'TASK_ADMIN',
     'TASK_EXPERT',
     'TASK_VIEW',
     'SCORE_COMMENT',
