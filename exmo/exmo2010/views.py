@@ -654,9 +654,12 @@ def add_comment(request, score_id):
 
 
 
-@login_required
 def monitoring_list(request):
-    queryset = Monitoring.objects.all()
+    monitorings_pk = []
+    for m in Monitoring.objects.all():
+        if request.user.has_perm('Monitoring.view_monitoring', m):
+            monitorings_pk.append(m.pk)
+    queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('Name'), 'name', 'name', None, None),
                 (_('Type'), 'type__name', 'type__name', None, None),
