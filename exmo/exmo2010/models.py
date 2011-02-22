@@ -580,13 +580,28 @@ class UserProfile(models.Model):
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
 
     def _is_expert(self):
-        return Group.objects.get(name='experts') in self.user.groups.all()
+        try:
+            group = Group.objects.get(name='experts')
+        except:
+            return False
+        else:
+            return group in self.user.groups.all()
 
     def _is_customer(self):
-        return Group.objects.get(name='customers') in self.user.groups.all()
+        try:
+            group = Group.objects.get(name='customers')
+        except:
+            return False
+        else:
+            return group in self.user.groups.all()
 
     def _is_organization(self):
-        return Group.objects.get(name='organizations') in self.user.groups.all()
+        try:
+            group = Group.objects.get(name='organizations')
+        except:
+            return False
+        else:
+            return group in self.user.groups.all()
 
     is_expert = property(_is_expert)
     is_customer = property(_is_customer)
