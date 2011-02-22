@@ -55,6 +55,14 @@ class MonitoringAdmin(admin.ModelAdmin):
   list_display = ('type', 'name')
   inlines = ParameterMonitoringPropertyInline,
 
+class UserProfileAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.ManyToManyField: {
+            'widget': admin.widgets.FilteredSelectMultiple('',
+                                                           is_stacked=False)
+        },
+    }
+
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
 admin.site.register(exmo.exmo2010.models.Category)
 admin.site.register(exmo.exmo2010.models.Subcategory)
@@ -67,3 +75,5 @@ admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
 admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
 admin.site.register(exmo.exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo.exmo2010.models.Claim)
+admin.site.register(exmo.exmo2010.models.UserProfile, UserProfileAdmin)
+
