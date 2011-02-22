@@ -28,7 +28,7 @@
 </div>
 {% endblock %}
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.view.task.task._manager object.pk,'open' %}?{{ request.GET.urlencode }}">{% csrf_token %}
+<form method="post" action="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{{ request.GET.urlencode }}">{% csrf_token %}
   <p>{% trans 'Open this task?' %}</p>
   <p><input type="submit" /></p>
 </form>

@@ -45,7 +45,7 @@
             &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
         {%endif%}
       </td>
-      {% if user.is_superuser or user.userprofile.is_expert %}
+      {% if user.is_superuser %}
       <td>
         {{ object.task__count }}
       </td>
