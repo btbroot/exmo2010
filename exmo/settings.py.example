@@ -141,6 +141,11 @@ if DEBUG:
 else:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'exmo.exmo2010.auth.backends.ObjectPermBackend',
+)
+
 import os
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../static/')
