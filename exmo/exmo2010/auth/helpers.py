@@ -60,8 +60,10 @@ def score_permission(user, priv, score):
 
 def organization_permission(user, priv, organization):
     if priv == 'exmo2010.view_organization':
-        if user.userprofile.is_expert and Task.objects.filter(organization = organization, user = user).count() > 0: return True
-        if (user.userprofile.is_organization or user.userprofile.is_customer) and user.userprofile.organization.filter(name = organization.keyname).count() > 0: return True
+        if user.userprofile.is_expert:
+            if Task.objects.filter(organization = organization, user = user).count() > 0: return True
+            else: return False
+        if (user.userprofile.is_organization or user.userprofile.is_customer) and user.userprofile.organization.filter(pk = organization.pk).count() > 0: return True
     return False
 
 
