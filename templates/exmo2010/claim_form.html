@@ -24,7 +24,7 @@
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.organization.organization_list score.task.monitoring.pk %}">{% trans 'Organizations of ' %}{{score.task.monitoring.name}}{% trans ' for type ' %}{{ score.task.monitoring.type }}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.task.task.s_by_monitoring_and_organization score.task.monitoring.pk, score.task.organization.pk %}">{{ score.task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization score.task.monitoring.pk, score.task.organization.pk %}">{{ score.task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.score.score_list_by_task score.task.pk %}">{% trans 'Score list for' %}&nbsp;{{ score.task.organization.name }}</a>&rsaquo;
 {% if user.userprofile.is_expert and score.task.open or user.is_superuser %}
 <a href="{% url exmo.exmo2010.view.score.score_detail_direct score.pk 'update' %}">{{ score.parameter }}</a>&rsaquo;
