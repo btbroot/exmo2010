@@ -26,7 +26,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-import exmo.exmo2010.views as exmo_views
 from exmo.exmo2010 import signals
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
@@ -36,7 +35,7 @@ from datetime import datetime, timedelta
 def claim_manager(request, score_id, claim_id=None, method=None):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     score = get_object_or_404(Score, pk = score_id)
-    redirect = reverse(exmo_views.score_detail_direct, args=[score.pk, 'update'])
+    redirect = reverse('exmo.exmo2010.view.score.score_detail_direct', args=[score.pk, 'update'])
     title = _('Add new claim for %s') % score
     if claim_id:
         claim = get_object_or_404(Claim, pk = claim_id)

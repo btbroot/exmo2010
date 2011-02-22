@@ -24,7 +24,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.views.user_profile object.pk%}">{% csrf_token %}
+<form method="post" action="{% url exmo.exmo2010.view.user.user_profile object.pk%}">{% csrf_token %}
 {{ form.as_p }}
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>

@@ -28,8 +28,8 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
 
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -57,7 +57,7 @@
         <td>{{claim.open_date}}</td>
         <td>{{claim.close_date}}</td>
         <td>{{claim.score.task.organization}}</td>
-        <td><a href="{% url exmo.exmo2010.views.score_detail_direct claim.score.pk,'view' %}">{{claim.score.parameter}}</a></td>
+        <td><a href="{% url exmo.exmo2010.view.score.score_detail_direct claim.score.pk,'view' %}">{{claim.score.parameter}}</a></td>
     {% endfor %}
     </tbody>
     </table>

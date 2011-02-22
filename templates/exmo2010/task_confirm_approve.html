@@ -20,15 +20,15 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.task.task.s_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{{ request.GET.urlencode }}">{% csrf_token %}
+<form method="post" action="{% url exmo.exmo2010.view.task.task._manager object.pk,'approve' %}?{{ request.GET.urlencode }}">{% csrf_token %}
   <p>{% trans 'Approve this task?' %}</p>
   <p><input type="submit" /></p>
 </form>

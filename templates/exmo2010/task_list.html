@@ -20,10 +20,10 @@
 {% endcomment %}
 {% load table_header i18n adminmedia monitoring_stats %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {% if organization %}
-<a href="{% url exmo.exmo2010.views.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations of ' %}{{monitoring.name}}{% trans ' for type ' %}{{ monitoring.type }}</a>&rsaquo;
 {% endif %}
 {{title}}
 </div>
@@ -39,19 +39,19 @@
     <tr><td colspan=5>
         {%if user.is_superuser %}
             {% if organization %}
-                <a href="{% url exmo.exmo2010.views.task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo.exmo2010.view.task.task._add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
             {% else %}
-                <a href="{% url exmo.exmo2010.views.task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo.exmo2010.view.task.task._add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
             {% endif %}
         {%endif%}
     </td></tr>
     {% for object in object_list %}
       <tr>
       <td>
-        <a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
+        <a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {%if user.is_superuser %}
-            &nbsp;<a href="{% url exmo.exmo2010.views.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
-            <a href="{% url exmo.exmo2010.views.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
+            &nbsp;<a href="{% url exmo.exmo2010.view.task.task._manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+            <a href="{% url exmo.exmo2010.view.task.task._manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>
       {%if user.is_superuser%}<td>{{ object.user.username }}</td>{%endif%}
@@ -59,24 +59,24 @@
       <td>
         {% if object.open %}
         {% trans 'opened' %}
-         : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+         : <a href="{% url exmo.exmo2010.view.task.task._manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
         {% endif %}
         {% if object.ready %}
          {% trans 'closed' %}
          {% if user.is_superuser %}
-          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
+          : <a href="{% url exmo.exmo2010.view.task.task._manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% else %}
          {% endif %}
         {% endif %}
         {% if object.approved %}
          {% trans 'approved' %}
          {% if user.is_superuser %}
-          : <a href="{% url exmo.exmo2010.views.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+          : <a href="{% url exmo.exmo2010.view.task.task._manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
       </td>
       {% endif %}
-      <td><a href="{% url exmo.exmo2010.views.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
+      <td><a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
       {% if organization %}<td>{{ object.openness|floatformat:3 }}</td>{% endif %}
       </tr>
     {% endfor %}

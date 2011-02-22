@@ -20,8 +20,8 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.views.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
 {{ title }}
 </div>
 {% endblock %}
@@ -29,10 +29,10 @@
 {% if deleted_objects %}
 {% trans 'When you delete monitoring you also delete this tasks:'%}<br>
 {% for do in deleted_objects %}
-<a href="{% url exmo.exmo2010.views.score_list_by_task do.pk %}">{{ do }}</a><br>
+<a href="{% url exmo.exmo2010.view.score.score_list_by_task do.pk %}">{{ do }}</a><br>
 {% endfor %}
 {% endif %}
-<form method="post" action="{% url exmo.exmo2010.views.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
+<form method="post" action="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{% trans 'Delete this monitoring?' %}</p>
   <p><input type="submit" /></p>
 </form>
