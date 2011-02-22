@@ -133,6 +133,7 @@ class ParameterType(models.Model):
 class Monitoring(models.Model):
   name               = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
   type               = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
+  publish_date          = models.DateField(null = True, blank = True, verbose_name = _('publish date'))
 
   def __unicode__(self):
     return '%s: %s' % (self.type.name, self.name)

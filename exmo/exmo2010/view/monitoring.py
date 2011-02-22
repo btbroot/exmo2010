@@ -34,7 +34,7 @@ from django.http import HttpResponseForbidden
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
-
+from exmo.exmo2010.forms import MonitoringForm
 
 def monitoring_list(request):
     monitorings_pk = []
@@ -83,7 +83,16 @@ def monitoring_manager(request, id, method):
     else: #update
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Edit monitoring %s') % monitoring.type
-        return update_object(request, model = Monitoring, object_id = id, post_save_redirect = redirect, extra_context = {'title': title})
+        return update_object(
+            request,
+            form_class = MonitoringForm,
+            object_id = id,
+            post_save_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'media': MonitoringForm().media,
+                }
+            )
 
 
 
