@@ -30,9 +30,9 @@ from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 
 
-@login_required
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
     queryset = Organization.objects.filter(type = monitoring.type).extra(
         select = {

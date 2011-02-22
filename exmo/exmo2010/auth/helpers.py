@@ -20,7 +20,7 @@ from exmo.exmo2010.models import Task
 
 
 def monitoring_permission(user, priv, monitoring):
-    if priv == 'Monitoring.view_monitoring':
+    if priv == 'exmo2010.view_monitoring':
         #monitoring have one approved task for anonymous
         if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
         if user.is_active and user.userprofile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
@@ -29,7 +29,7 @@ def monitoring_permission(user, priv, monitoring):
 
 
 def task_permission(user, priv, task):
-    if priv == 'Task.view_task':
+    if priv == 'exmo2010.view_task':
         if task.approved: return True
         else:
             if user.userprofile.is_expert and user == task.user: return True

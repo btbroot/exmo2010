@@ -39,7 +39,7 @@ from exmo.exmo2010.forms import MonitoringForm
 def monitoring_list(request):
     monitorings_pk = []
     for m in Monitoring.objects.all():
-        if request.user.has_perm('Monitoring.view_monitoring', m):
+        if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
@@ -99,10 +99,9 @@ def monitoring_manager(request, id, method):
 from operator import itemgetter
 #update rating twice in a day
 @cache_page(60 * 60 * 12)
-@login_required
 def monitoring_rating(request, id):
-  if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
+  if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
   object_list = [{'task':task, 'openness': task.openness()} for task in Task.approved_tasks.filter(monitoring = monitoring)]
   object_list = sorted(object_list, key=itemgetter('openness'), reverse=True)
   place=1
@@ -123,23 +122,6 @@ def monitoring_rating(request, id):
         'object_list': rating_list,
         'average': avg,
     }, context_instance=RequestContext(request))
-
-
-
-@csrf_protect
-@login_required
-def user_profile(request, id):
-    user = get_object_or_404(User, pk = id)
-    if not request.user.is_superuser and request.user != user:
-        return HttpResponseForbidden(_('Forbidden'))
-    return update_object(
-        request,
-        form_class = UserForm,
-        object_id = user.pk,
-        post_save_redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk]),
-        template_name = 'exmo2010/user_form.html',
-    )
-
 
 
 
