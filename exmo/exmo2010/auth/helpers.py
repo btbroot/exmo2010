@@ -21,7 +21,7 @@ from exmo.exmo2010.models import Task
 
 def monitoring_permission(user, priv, monitoring):
     if priv == 'exmo2010.view_monitoring':
-        #monitoring have one approved task for anonymous
+        #monitoring have one approved task for anonymous and have publish_date
         if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
         if user.is_active and user.userprofile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
     return False
@@ -58,6 +58,11 @@ def score_permission(user, priv, score):
         except:
             return False
 
+def organization_permission(user, priv, organization):
+    if priv == 'exmo2010.view_organization':
+        if user.userprofile.is_expert and Task.objects.filter(organization = organization, user = user).count() > 0: return True
+        if (user.userprofile.is_organization or user.userprofile.is_customer) and user.userprofile.organization.filter(name = organization.keyname).count() > 0: return True
+    return False
 
 
 def check_permission(user, priv, context = None):

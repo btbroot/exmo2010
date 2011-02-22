@@ -34,39 +34,22 @@ def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
-    queryset = Organization.objects.filter(type = monitoring.type).extra(
-        select = {
-            'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
-            }
-        )
-    user = request.user
-    groups = user.groups.all()
-    if user.userprofile.is_organization:
-      orgs = []
-      for group in groups:
-        org = None
-        try: org = Organization.objects.get(keyname = group.name)
-        except: continue
-        if org: orgs.append(org)
-      query = " | ".join(["Q(pk = %d)" % org.pk for org in orgs])
-      if query:
-        queryset = queryset.filter(eval(query))
-    if user.userprofile.is_expert:
-        queryset = Organization.objects.filter(type = monitoring.type).extra(
+    org_list = []
+    for org in Organization.objects.filter(type = monitoring.type):
+        if request.user.has_perm('exmo2010.view_organization', org): org_list.append(org.pk)
+
+    if request.user.is_superuser:
+        queryset = Organization.objects.filter(pk__in = org_list).extra(
             select = {
-                'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id and user_id = %s' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table, request.user.pk),
+                'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
                 }
             )
         headers = (
                 (_('Name'), 'name', 'name', None, None),
                 (_('Tasks'), 'task__count', None, None, None),
                 )
-    if request.user.is_superuser:
-        headers = (
-                (_('Name'), 'name', 'name', None, None),
-                (_('Tasks'), 'task__count', None, None, None),
-                )
     else:
+        queryset = Organization.objects.filter(pk__in = org_list)
         headers = (
                 (_('Name'), 'name', 'name', None, None),
                 )
