@@ -577,12 +577,17 @@ from annoying.fields import AutoOneToOneField
 
 class UserProfile(models.Model):
     user = AutoOneToOneField(User, primary_key=True)
+    organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
 
-    def is_expert(self):
+    def _is_expert(self):
         return Group.objects.get(name='experts') in self.user.groups.all()
 
-    def is_customer(self):
+    def _is_customer(self):
         return Group.objects.get(name='customers') in self.user.groups.all()
 
-    def is_organization(self):
+    def _is_organization(self):
         return Group.objects.get(name='organizations') in self.user.groups.all()
+
+    is_expert = property(_is_expert)
+    is_customer = property(_is_customer)
+    is_organization = property(_is_organization)
