@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "exmo2010/base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010 Al Nikolov
@@ -28,6 +28,10 @@
 {% block content_title %}{% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
+
+{% block userlinks %}{% endblock %}
+
+{% block title %}{% trans 'Log in' %} | {% trans 'Exmo' %}{% endblock %}
 
 {% block content %}
 {% if error_message %}

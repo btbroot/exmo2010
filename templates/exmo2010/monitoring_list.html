@@ -21,6 +21,7 @@
 {% load table_header i18n adminmedia %}
 {% block content %}
 <div id=monitoring_list>
+{% if object_list %}
 <table>
   {% table_header headers %}
   <tbody>
@@ -45,6 +46,9 @@
   </tbody>
 </table>
 {% include "exmo2010/paginator.html" %}
+{% else %}
+{% trans 'Empty list' %}
+{% endif %}
 </div>
 {%endblock%}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
