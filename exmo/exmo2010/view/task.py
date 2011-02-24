@@ -470,7 +470,12 @@ def tasks_by_monitoring(request, id):
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %s') % monitoring
     task_list = []
-    for task in Task.objects.filter(monitoring = monitoring):
+    queryset = Task.objects.filter(monitoring = monitoring)
+    if request.user.userprofile.is_expert:
+        queryset = queryset.filter(user = request.user)
+    else:
+        queryset = Task.approved_tasks.filter(monitoring = monitoring)
+    for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
     if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.extra(select = {'complete': Task._complete})
