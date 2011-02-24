@@ -18,13 +18,14 @@
 #
 {% endcomment %}
 <!-- http://www.tummy.com/Community/Articles/django-pagination/ -->
-{% load append_to_get %}
+{% load append_to_get i18n %}
 
+{% if pages != 1 %}
 <div class="pager">
    {% if has_previous %}
       <span class="page">
-      <a href="{% append_to_get page=previous %}">&lt; Prev</a>
-      </span>
+      <a href="{% append_to_get page=previous %}">&lt; {% trans 'Prev' %}</a>
+      </span>&nbsp;
    {% endif %}
 
    {% if not hide_first %}
@@ -44,6 +45,7 @@
       <span class="page"><a href="{% append_to_get page="last" %}">{{ pages }}</a></span>
    {% endif %}
    {% if has_next %}
-      <span class="page"><a href="{% append_to_get page=next %}">Next &gt;</a></span>
+      &nbsp;<span class="page"><a href="{% append_to_get page=next %}">{% trans 'Next' %} &gt;</a></span>
    {% endif %}
 </div>
+{% endif %}
