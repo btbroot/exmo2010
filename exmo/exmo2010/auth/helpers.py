@@ -23,24 +23,24 @@ def monitoring_permission(user, priv, monitoring):
     if priv == 'exmo2010.view_monitoring':
         #monitoring have one approved task for anonymous and have publish_date
         if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
-        if user.is_active and user.userprofile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
+        if user.is_active: #minimaze query
+            if user.userprofile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
     return False
 
 
 
 def task_permission(user, priv, task):
     if priv == 'exmo2010.view_task':
-        if task.approved: return True
-        else:
-            if user.userprofile.is_expert and user == task.user: return True
-            elif user.userprofile.is_organization:
-                try:
-                    g = Group.objects.get(name = task.organization.keyname)
-                    groups = user.groups.all()
-                    if g in groups:
-                        return True
-                except:
-                    return False
+        if task.approved and user.has_perm('exmo2010.view_monitoring', task.monitoring): return True #anonymous user
+        if user.is_active:
+            if user.userprofile.is_expert:
+                if user == task.user: return True
+            elif user.userprofile.is_organization or user.userprofile.is_customer:
+                if task.organization in user.userprofile.organization.all(): return True
+    elif priv == 'exmo2010.close_task':
+        if task.open and task.user == user: return True
+    elif priv == 'exmo2010.fill_task':
+        if task.open and task.user == user: return True
     return False
 
 
@@ -58,7 +58,14 @@ def score_permission(user, priv, score):
         except:
             return False
 
+
+
 def organization_permission(user, priv, organization):
+    '''
+    strange permission.
+    don't know why we need see organization without tasks for this organization.
+    don't use this. generate organization list from tasks list and exmo2010.view_task
+    '''
     if priv == 'exmo2010.view_organization':
         if user.userprofile.is_expert:
             if Task.objects.filter(organization = organization, user = user).count() > 0: return True

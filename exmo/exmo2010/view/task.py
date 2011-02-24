@@ -27,7 +27,6 @@ from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
-from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
@@ -52,7 +51,7 @@ def task_export(request, id):
         return ''
 
     task = get_object_or_404(Task, pk = id)
-    if not check_permission(request.user, 'TASK_EXPERT', task):
+    if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
@@ -169,7 +168,7 @@ def task_import(request, id):
             return None
 
     task = get_object_or_404(Task, pk = id)
-    if not check_permission(request.user, 'TASK_EXPERT', task):
+    if not request.user.has_perm('exmo2010.fill_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_list_by_task', args=[id]))
@@ -390,7 +389,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
       title = _('Close task %s') % task
-      if check_permission(request.user, 'TASK_EXPERT', task):
+      if request.user.has_perm('exmo2010.close_task', task):
         if task.open:
           if request.method == 'GET':
             return render_to_response(
@@ -466,13 +465,16 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
 
 
 
-@login_required
 def tasks_by_monitoring(request, id):
-    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %s') % monitoring
+    task_list = []
+    for task in Task.objects.filter(monitoring = monitoring):
+        if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
+    if not task_list: return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.extra(select = {'complete': Task._complete})
-    queryset = queryset.filter(monitoring = monitoring)
+    queryset = queryset.filter(pk__in = task_list)
     headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Expert'), 'user__username', 'user__username', None, None),

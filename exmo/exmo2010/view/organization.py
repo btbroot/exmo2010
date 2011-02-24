@@ -23,7 +23,6 @@ from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Task
 from exmo.exmo2010.models import Monitoring
 from django.db.models import Q
-from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseForbidden
@@ -35,9 +34,10 @@ def organization_list(request, id):
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
     org_list = []
-    for org in Organization.objects.filter(type = monitoring.type):
-        if request.user.has_perm('exmo2010.view_organization', org): org_list.append(org.pk)
-
+    for task in Task.objects.filter(monitoring = monitoring):
+        if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
+    org_list = list(set(org_list))
+    if not org_list: return HttpResponseForbidden(_('Forbidden'))
     if request.user.is_superuser:
         queryset = Organization.objects.filter(pk__in = org_list).extra(
             select = {

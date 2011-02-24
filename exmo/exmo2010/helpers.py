@@ -50,50 +50,6 @@ def construct_change_message(request, form, formsets):
         return change_message or _('No fields changed.')
 
 
-priv_list = [
-    'TASK_EXPERT',
-    'TASK_VIEW',
-    'SCORE_COMMENT',
-    ]
-
-def check_permission(user, priv, context = None):
-    '''check user permission for context'''
-    if priv not in priv_list: return False
-    if user.is_superuser and user.is_active: return True
-    if context == None:
-        return False
-    groups = user.groups.all()
-    if context._meta.object_name == 'Task':
-        task = context
-        if user.userprofile.is_expert and user == task.user and task.open and priv == 'TASK_EXPERT':
-            return True
-        if user.userprofile.is_expert and user == task.user and priv == 'TASK_VIEW':
-            return True
-        elif user.userprofile.is_customer and task.approved and priv == 'TASK_VIEW':
-            return True
-        elif user.userprofile.is_organization and task.approved and priv == 'TASK_VIEW':
-            try:
-                g = Group.objects.get(name = task.organization.keyname)
-                if g in groups:
-                    return True
-                else:
-                    return False
-            except:
-                return False
-
-    if context._meta.object_name == 'Score':
-        task = context.task
-        if user.userprofile.is_organization and task.approved and priv == 'SCORE_COMMENT':
-            try:
-                g = Group.objects.get(name = task.organization.keyname)
-                if g in groups:
-                    return True
-                else:
-                    return False
-            except:
-                return False
-
-    return False
 
 def get_recipients_admin(comment):
     score = comment.content_object
@@ -107,6 +63,8 @@ def get_recipients_admin(comment):
         if comment.user.email and comment.user.is_active: res.append(comment.user.email)
         if comment.user_email and comment.user.is_active: res.append(comment.user_email)
     return list(set(res))
+
+
 
 def get_recipients_nonadmin(comment):
     score = comment.content_object

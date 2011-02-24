@@ -26,7 +26,6 @@ from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
-from exmo.exmo2010.helpers import check_permission
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
@@ -41,6 +40,7 @@ def monitoring_list(request):
     for m in Monitoring.objects.all():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
+    if not monitorings_pk: return HttpResponseForbidden(_('Forbidden'))
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('Name'), 'name', 'name', None, None),
