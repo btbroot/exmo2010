@@ -480,9 +480,16 @@ def tasks_by_monitoring(request, id):
     if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.extra(select = {'complete': Task._complete})
     queryset = queryset.filter(pk__in = task_list)
-    headers = (
+    if request.user.is_superuser:
+        headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Expert'), 'user__username', 'user__username', None, None),
+                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('Complete, %'), 'complete', None, None, None),
+              )
+    else:
+        headers = (
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
                 (_('Complete, %'), 'complete', None, None, None),
               )
