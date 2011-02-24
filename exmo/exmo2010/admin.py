@@ -56,6 +56,7 @@ class MonitoringAdmin(admin.ModelAdmin):
   inlines = ParameterMonitoringPropertyInline,
 
 class UserProfileAdmin(admin.ModelAdmin):
+    search_fields = ('user__username', )
     formfield_overrides = {
         models.ManyToManyField: {
             'widget': admin.widgets.FilteredSelectMultiple('',
@@ -76,4 +77,3 @@ admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
 admin.site.register(exmo.exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo.exmo2010.models.Claim)
 admin.site.register(exmo.exmo2010.models.UserProfile, UserProfileAdmin)
-

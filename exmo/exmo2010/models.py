@@ -606,3 +606,6 @@ class UserProfile(models.Model):
     is_expert = property(_is_expert)
     is_customer = property(_is_customer)
     is_organization = property(_is_organization)
+
+    def __unicode__(self):
+        return "%s" % self.user
