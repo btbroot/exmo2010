@@ -57,11 +57,10 @@
         <td>{{claim.open_date}}</td>
         <td>{{claim.close_date}}</td>
         <td>{{claim.score.task.organization}}</td>
-        <td><a href="{% url exmo.exmo2010.view.score.score_detail_direct claim.score.pk,'view' %}">{{claim.score.parameter}}</a></td>
+        <td><a href="{% url exmo.exmo2010.view.score.score_view claim.score.pk %}">{{claim.score.parameter}}</a></td>
     {% endfor %}
     </tbody>
     </table>
 </div>
 {% endif %}
 {% endblock %}
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

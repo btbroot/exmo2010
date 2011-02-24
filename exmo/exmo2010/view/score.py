@@ -32,7 +32,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_protect
 
 @login_required
-def score_detail(request, task_id, parameter_id):
+def score_add(request, task_id, parameter_id):
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = parameter_id)
     if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
@@ -55,7 +55,7 @@ from reversion import revision
 from exmo.exmo2010.helpers import construct_change_message
 @revision.create_on_success
 @login_required
-def score_detail_direct(request, score_id, method='update'):
+def score_manager(request, score_id, method='update'):
     score = get_object_or_404(Score, pk = score_id)
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
@@ -65,8 +65,19 @@ def score_detail_direct(request, score_id, method='update'):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
-      title = _('Edit score %s') % score.parameter
-      if request.user.has_perm('exmo2010.edit_score', score):
+        return score_view(request, score.pk)
+    elif method == 'view':
+        return score_view(request, score.pk)
+    else: return HttpResponseForbidden(_('Forbidden'))
+
+
+
+def score_view(request, score_id):
+    score = get_object_or_404(Score, pk = score_id)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
+    redirect = redirect.replace("%","%%")
+    if request.user.has_perm('exmo2010.edit_score', score):
+        title = _('Edit score %s') % score.parameter
         if request.method == 'POST':
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
@@ -76,39 +87,33 @@ def score_detail_direct(request, score_id, method='update'):
                     score.close_claim(request.user)
                 else:
                     return HttpResponse(_('Have active claim, but no data changed'))
-      else:
-        return HttpResponseForbidden(_('Forbidden'))
-      return update_object(
-        request,
-        form_class = ScoreForm,
-        object_id = score.pk,
-        post_save_redirect = redirect,
-        extra_context = {
-          'task': score.task,
-          'parameter': score.parameter,
-          'title': title,
-        }
-      )
+        return update_object(
+            request,
+            form_class = ScoreForm,
+            object_id = score.pk,
+            post_save_redirect = redirect,
+            extra_context = {
+              'task': score.task,
+              'parameter': score.parameter,
+              'title': title,
+              'can_comment': request.user.has_perm('exmo2010.comment_score', score.task)
+            }
+        )
+    elif request.user.has_perm('exmo2010.view_score', score.task):
+        title = _('View score %s') % score.parameter
+        return object_detail(
+            request,
+            queryset = Score.objects.all(),
+            object_id = score.pk,
+            extra_context = {
+              'task': score.task,
+              'parameter': score.parameter,
+              'title': title,
+              'view': True,
+              'can_comment': request.user.has_perm('exmo2010.comment_score', score.task)
+            }
+        )
     else: return HttpResponseForbidden(_('Forbidden'))
-
-
-
-def score_view(request, score_id):
-    score = get_object_or_404(Score, pk = score_id)
-    if not request.user.has_perm('exmo2010.view_score', score.task): return HttpResponseForbidden(_('Forbidden'))
-    title = _('View score %s') % score.parameter
-    return object_detail(
-        request,
-        queryset = Score.objects.all(),
-        object_id = score.pk,
-        extra_context = {
-          'task': score.task,
-          'parameter': score.parameter,
-          'title': title,
-          'view': True,
-        }
-      )
-
 
 
 @login_required

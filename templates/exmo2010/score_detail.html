@@ -31,13 +31,12 @@
 {% endblock %}
 {% block content %}
 <h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
-{% if view and user.is_superuser or user.userprofile.is_expert %}<a href="{% url exmo.exmo2010.view.score.score_detail_direct object.pk,'update' %}">{% trans 'Edit score' %}</a>{% endif %}
 <div id=parameter_desc>
 {% trans 'Parameter' %}: {{ parameter }}<br>
 </div>
 <br>
-<div id=score_detail>
-<table id=score_detail_table>
+<div id=score_add>
+<table id=score_add_table>
     <thead>
     <th>{% trans 'Criteria' %}</th>
     <th>{% trans 'Value' %}</th>
@@ -63,45 +62,45 @@
       {% endif %}
 {% endif %}
 {% if parameter.type.accessible and object.accessible %}
-    <tr id=score_detail_accessible><td>
+    <tr id=score_add_accessible><td>
     {% trans 'Accessible' %}</td><td>{{ object.accessible }}</td></tr>
     {% if object.accessibleComment %}
-      <tr id=score_detail_accessibleComment><td>
+      <tr id=score_add_accessibleComment><td>
         {% trans 'Comment for accessible' %}</td><td>{{ object.accessibleComment }}</td></tr>
     {% endif %}
 {% endif %}
 {% if parameter.type.hypertext and object.hypertext %}
-    <tr id=score_detail_hypertext>
+    <tr id=score_add_hypertext>
     <td>{% trans 'Hypertext' %}</td><td>{{ object.hypertext }}</td>
     </tr>
       {% if object.hypertextComment %}
-      <tr id=score_detail_hypertextComment>
+      <tr id=score_add_hypertextComment>
         <td>{% trans 'Comment for hypertext' %}</td><td>{{ object.hypertextComment }}</td>
       </tr>
       {% endif %}
 {% endif %}
 {% if parameter.type.document and object.document %}
-    <tr id=score_detail_document>
+    <tr id=score_add_document>
     <td>{% trans 'Document' %}</td><td>{{ object.document }}</td>
     </tr>
     {% if object.documentComment %}
-      <tr id=score_detail_documentComment>
+      <tr id=score_add_documentComment>
         <td>{% trans 'Comment for document' %}</td><td>{{ object.documentComment }}</td>
       </tr>
     {% endif %}
 {% endif %}
 {% if parameter.type.image and object.image %}
-    <tr id=score_detail_image>
+    <tr id=score_add_image>
     <td>{% trans 'Image' %}</td><td>{{ object.image }}</td>
     </tr>
     {% if object.imageComment %}
-      <tr id=score_detail_imageComment>
+      <tr id=score_add_imageComment>
         <td>{% trans 'Comment for image' %}</td><td>{{ object.imageComment }}</td>
       </tr>
     {% endif %}
 {% endif %}
 {% if object.comment %}
-    <tr id=score_detail_comment>
+    <tr id=score_add_comment>
     <td>{% trans 'Common parameter comment' %}</td><td>{{ object.comment }}</td>
     </tr>
 {% endif %}
@@ -111,4 +110,3 @@
 {% include "exmo2010/score_claim.html" %}
 {% include "exmo2010/score_comment.html" %}
 {% endblock %}
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

@@ -103,7 +103,7 @@ def comment_notification(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.fullcode(),
             }
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.views.score_detail_direct', args=[score.pk, 'view']))
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.views.score_view', args=[score.pk, 'view']))
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
     message = t.render(c)
@@ -125,7 +125,7 @@ def claim_notification(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.fullcode(),
             }
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.views.score_detail_direct', args=[score.pk, 'update']))
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.views.score_view', args=[score.pk, 'update']))
     t = loader.get_template('exmo2010/claim_email.html')
     c = Context({ 'score': claim.score, 'claim': claim, 'url': url })
     message = t.render(c)

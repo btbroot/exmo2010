@@ -66,20 +66,16 @@
       {% if user.userprofile.is_expert or user.is_superuser %}
        {% if object.status %}
        {% if score.claim_color %}<img src="{{ MEDIA_URL }}exmo2010/icon_{{score.claim_color}}.gif" alt="{% trans 'claim' %}" />{% endif %}
-         {% if user.userprofile.is_expert and task.open or user.is_superuser %}
-            <a href="{% url exmo.exmo2010.view.score.score_detail_direct object.status,'update' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-         {% else %}
-            <a href="{% url exmo.exmo2010.view.score.score_detail_direct object.status,'view' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-         {% endif %}
+            <a href="{% url exmo.exmo2010.view.score.score_view object.status %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% else %}
-        <a href="{% url exmo.exmo2010.view.score.score_detail task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+        <a href="{% url exmo.exmo2010.view.score.score_add task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% endif %}
        {% if user.is_superuser %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.parameter.parameter_manager task.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo.exmo2010.view.parameter.parameter_manager task.pk, object.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
        {% endif %}
       {% else %}
        {% if object.status %}
-         <a href="{% url exmo.exmo2010.view.score.score_detail_direct object.status,'view' %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+         <a href="{% url exmo.exmo2010.view.score.score_view object.status %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% endif %}
       {% endif %}
       </td>
@@ -181,7 +177,7 @@
       {%endif%}
       <td width=6%>
        {% if user.is_superuser or user.userprofile.is_expert %}
-        {%if object.status %}<a href="{% url exmo.exmo2010.view.score.score_detail_direct object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
+        {%if object.status %}<a href="{% url exmo.exmo2010.view.score.score_manager object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
         {% else %}&nbsp;
         {% endif %}
        {% else %}
@@ -193,4 +189,3 @@
     </tbody></table>
 </div><br>
 {% endblock %}
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

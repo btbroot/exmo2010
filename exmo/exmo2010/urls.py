@@ -23,8 +23,8 @@ urlpatterns = patterns('',
   ( r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DOC_ROOT} ),
 
 
-  ( r'^score/(\d+)_(\d+)/$', 'exmo.exmo2010.view.score.score_detail'),
-  ( r'^score/(\d+)_(\w+)/$', 'exmo.exmo2010.view.score.score_detail_direct'),
+  ( r'^score/(\d+)_(\d+)/$', 'exmo.exmo2010.view.score.score_add'),
+  ( r'^score/(\d+)_(\w+)/$', 'exmo.exmo2010.view.score.score_manager'),
   ( r'^score/(\d+)/$', 'exmo.exmo2010.view.score.score_view'),
   ( r'^scores/(\d+)/(print|printfull)?$', 'exmo.exmo2010.view.score.score_list_by_task' ),
   ( r'^score/(\d+)/comment/add$', 'exmo.exmo2010.view.score.score_add_comment' ),
