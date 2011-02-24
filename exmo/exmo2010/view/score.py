@@ -35,10 +35,10 @@ from django.views.decorators.csrf import csrf_protect
 def score_detail(request, task_id, parameter_id):
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = parameter_id)
+    if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
-    if request.user.has_perm('TASK_EXPERT', task):
-      return create_object(
+    return create_object(
         request,
         form_class = ScoreForm,
         post_save_redirect = redirect,
@@ -46,10 +46,8 @@ def score_detail(request, task_id, parameter_id):
           'task': task,
           'parameter': parameter,
           'title': parameter,
-          }
-      )
-    else:
-      return HttpResponseForbidden(_('Forbidden'))
+        }
+    )
 
 
 
@@ -63,12 +61,12 @@ def score_detail_direct(request, score_id, method='update'):
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete score %s') % score.parameter
-      if request.user.has_perm('TASK_EXPERT', score.task):
+      if request.user.has_perm('exmo2010.delete_score', score):
         return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
       title = _('Edit score %s') % score.parameter
-      if request.user.has_perm('TASK_EXPERT', score.task):
+      if request.user.has_perm('exmo2010.edit_score', score):
         if request.method == 'POST':
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
@@ -91,10 +89,15 @@ def score_detail_direct(request, score_id, method='update'):
           'title': title,
         }
       )
-    elif method == 'view':
-      if not check_permission(request.user, 'TASK_VIEW', score.task): return HttpResponseForbidden(_('Forbidden'))
-      title = _('View score %s') % score.parameter
-      return object_detail(
+    else: return HttpResponseForbidden(_('Forbidden'))
+
+
+
+def score_view(request, score_id):
+    score = get_object_or_404(Score, pk = score_id)
+    if not request.user.has_perm('exmo2010.view_score', score.task): return HttpResponseForbidden(_('Forbidden'))
+    title = _('View score %s') % score.parameter
+    return object_detail(
         request,
         queryset = Score.objects.all(),
         object_id = score.pk,
@@ -105,7 +108,7 @@ def score_detail_direct(request, score_id, method='update'):
           'view': True,
         }
       )
-    else: return HttpResponseForbidden(_('Forbidden'))
+
 
 
 @login_required
@@ -113,7 +116,7 @@ def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
     task = Task.objects.extra(select = {'complete': Task._complete}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
-    if check_permission(request.user, 'TASK_VIEW', task):
+    if request.user.has_perm('exmo2010.view_task', task):
       queryset = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
         select={
           'status':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
@@ -166,7 +169,7 @@ def score_list_by_task(request, task_id, report=None):
 @login_required
 def score_add_comment(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    if check_permission(request.user, 'SCORE_COMMENT', score):
+    if request.user.has_perm('exmo2010.comment_score', score):
         return render_to_response(
                 'exmo2010/score_comment_form.html',
                 {
