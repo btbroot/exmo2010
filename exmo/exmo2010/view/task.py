@@ -472,7 +472,7 @@ def tasks_by_monitoring(request, id):
     task_list = []
     for task in Task.objects.filter(monitoring = monitoring):
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
-    if not task_list: return HttpResponseForbidden(_('Forbidden'))
+    if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.extra(select = {'complete': Task._complete})
     queryset = queryset.filter(pk__in = task_list)
     headers = (

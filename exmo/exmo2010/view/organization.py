@@ -37,9 +37,8 @@ def organization_list(request, id):
     for task in Task.objects.filter(monitoring = monitoring):
         if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
     org_list = list(set(org_list))
-    if not org_list: return HttpResponseForbidden(_('Forbidden'))
     if request.user.is_superuser:
-        queryset = Organization.objects.filter(pk__in = org_list).extra(
+        queryset = Organization.objects.filter(type = monitoring.type).extra(
             select = {
                 'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
                 }
@@ -49,6 +48,7 @@ def organization_list(request, id):
                 (_('Tasks'), 'task__count', None, None, None),
                 )
     else:
+        if not org_list: return HttpResponseForbidden(_('Forbidden'))
         queryset = Organization.objects.filter(pk__in = org_list)
         headers = (
                 (_('Name'), 'name', 'name', None, None),
