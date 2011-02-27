@@ -131,3 +131,15 @@ def claim_notification(sender, **kwargs):
     message = t.render(c)
     if score.task.user.email:
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email])
+
+
+
+def post_save_model(sender, instance, created, **kwargs):
+    #update task openness hook
+    from exmo.exmo2010 import models
+    if instance.__class__ == models.Score:
+        instance.task.update_openness()
+    if instance.__class__ == models.Monitoring:
+        for task in instance.task_set.all(): task.update_openness()
+    if instance.__class__ == models.Task():
+        instance.update_openness()

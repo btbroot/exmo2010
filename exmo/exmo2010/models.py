@@ -212,6 +212,8 @@ class Task(models.Model):
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
+  openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
+
   _scores_invalid = '''
     FROM exmo2010_Score
     JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
@@ -290,9 +292,9 @@ class Task(models.Model):
     END
   '''.lower()
   _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
-  _openness = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
+  _openness_sql = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
-  def openness(self):
+  def _openness(self):
     scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.monitoring)).exclude(parameter__exclude = self.organization).extra(
         select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)}).values(
         'weight',
@@ -316,6 +318,15 @@ class Task(models.Model):
     openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
     openness = float(openness_actual * 100) / openness_max
     return openness
+
+  def _get_openness(self):
+    if not self.openness_cache:
+        self.update_openness()
+    return self.openness_cache
+
+  def update_openness(self):
+        self.openness_cache = self._openness()
+        self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
@@ -382,6 +393,7 @@ class Task(models.Model):
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
   approved = property(_get_approved, _set_approved)
+  openness = property(_get_openness)
 
 
 

@@ -20,9 +20,13 @@ from django.contrib.comments.signals import comment_will_be_posted
 from exmo.exmo2010.signals import claim_was_posted
 from exmo.exmo2010.helpers import comment_notification
 from exmo.exmo2010.helpers import claim_notification
+from exmo.exmo2010.helpers import post_save_model
 
 
 from django.conf import settings
 if settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
     claim_was_posted.connect(claim_notification)
+
+from django.db.models.signals import post_save
+post_save.connect(post_save_model)

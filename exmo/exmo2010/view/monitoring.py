@@ -102,7 +102,7 @@ from operator import itemgetter
 def monitoring_rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-  object_list = [{'task':task, 'openness': task.openness()} for task in Task.approved_tasks.filter(monitoring = monitoring)]
+  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(monitoring = monitoring)]
   object_list = sorted(object_list, key=itemgetter('openness'), reverse=True)
   place=1
   avg=None
