@@ -146,6 +146,8 @@ AUTHENTICATION_BACKENDS = (
     'exmo.exmo2010.auth.backends.ObjectPermBackend',
 )
 
+CACHE_MIDDLEWARE_ANONYMOUS_ONLY= True
+
 import os
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../static/')
