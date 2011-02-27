@@ -41,6 +41,9 @@ def task_permission(user, priv, task):
         if task.open and task.user == user: return True
     elif priv == 'exmo2010.fill_task': #create_score
         if task.open and task.user == user: return True
+    elif priv == 'exmo2010.comment_score':
+        if user.is_active:
+            if user.userprofile.is_organization and user.has_perm('exmo2010.view_task', task): return True
     return False
 
 

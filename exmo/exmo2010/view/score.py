@@ -96,10 +96,10 @@ def score_view(request, score_id):
               'task': score.task,
               'parameter': score.parameter,
               'title': title,
-              'can_comment': request.user.has_perm('exmo2010.comment_score', score.task)
+              'can_comment': request.user.has_perm('exmo2010.comment_score', score)
             }
         )
-    elif request.user.has_perm('exmo2010.view_score', score.task):
+    elif request.user.has_perm('exmo2010.view_score', score):
         title = _('View score %s') % score.parameter
         return object_detail(
             request,
@@ -110,13 +110,12 @@ def score_view(request, score_id):
               'parameter': score.parameter,
               'title': title,
               'view': True,
-              'can_comment': request.user.has_perm('exmo2010.comment_score', score.task)
+              'can_comment': request.user.has_perm('exmo2010.comment_score', score)
             }
         )
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
-@login_required
 def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
     task = Task.objects.extra(select = {'complete': Task._complete}).get(pk = task_id)
@@ -165,6 +164,7 @@ def score_list_by_task(request, task_id, report=None):
           'categories': Category.objects.all(),
           'subcategories': Subcategory.objects.all(),
           'title': title,
+          'can_comment': request.user.has_perm('exmo2010.comment_score', task)
           }
       )
 

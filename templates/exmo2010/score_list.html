@@ -34,10 +34,8 @@
 <h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>&nbsp;&mdash;&nbsp;{% trans 'Openness' %}:&nbsp;{{ task.openness|floatformat:3 }}%</h2>
 
 <div id=utility>
-{% if user.is_superuser or user.userprofile.is_expert or user.userprofile.is_organization %}
      <a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
      <a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a>
-{% endif %}
 {% if user.is_superuser or user.userprofile.is_expert %}
    <form action="{% url exmo.exmo2010.view.task.task_import task.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
      <a href="{% url exmo.exmo2010.view.task.task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
@@ -177,10 +175,10 @@
       {%endif%}
       <td width=6%>
        {% if user.is_superuser or user.userprofile.is_expert %}
-        {%if object.status %}<a href="{% url exmo.exmo2010.view.score.score_manager object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a>
-        {% else %}&nbsp;
+        {%if object.status %}<a href="{% url exmo.exmo2010.view.score.score_manager object.status,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a><br />
         {% endif %}
-       {% else %}
+       {% endif %}
+       {% if can_comment %}
         {%if object.status %}<a href="{% url exmo.exmo2010.view.score.score_add_comment object.status %}">{% trans "Comment" %}</a>{% endif %}
        {% endif %}
       </td>

@@ -252,7 +252,6 @@ def tasks(request):
 
 
 
-@login_required
 def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id):
     '''We have 3 generic group: experts, customers, organizations.
     Superusers: all tasks
@@ -262,11 +261,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     Also for every ogranization we can have group'''
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
-    title = _('Task list for %s') % organization.name
-    queryset = Task.objects.extra(select = {'complete': Task._complete})
-    queryset = queryset.filter(monitoring = monitoring, organization = organization)
     user = request.user
-    groups = user.groups.all()
+    if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpresponseForbidden(_('Forbidden'))
+    title = _('Task list for %s') % organization.name
+    queryset = Task.objects.filter(monitoring = monitoring, organization = organization)
     # Or, filtered by user
     if user.is_superuser:
       headers = (
@@ -276,7 +274,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None),
               )
-    elif user.userprofile.is_expert:
+    elif user.is_active and user.userprofile.is_expert:
       queryset = queryset.filter(user = user)
     # Or, without Expert
       headers = (
@@ -285,37 +283,18 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None)
               )
-    elif user.userprofile.is_customer:
+    else:
       queryset = Task.approved_tasks.all()
-      queryset = queryset.extra(select = {'complete': Task._complete})
       queryset = queryset.filter(monitoring = monitoring, organization = organization)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None)
               )
-    elif user.userprofile.is_organization:
-      orgs = []
-      for group in groups:
-        org = None
-        try: org = Organization.objects.get(keyname = group.name)
-        except: continue
-        if org: orgs.append(org)
-      query = " | ".join(["Q(organization__pk = %d)" % org.pk for org in orgs])
-      if query:
-        queryset = Task.approved_tasks.all()
-        queryset = queryset.extra(select = {'complete': Task._complete})
-        queryset = queryset.filter(monitoring = monitoring, organization = organization)
-        queryset = queryset.filter(eval(query))
-        headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Complete, %'), 'complete', None, None, None),
-                (_('Openness, %'), None, None, None, None)
-                )
-      else: #no organization to show
-        return HttpResponseForbidden(_('Forbidden'))
-    else: #we dont know how are you
-        return HttpResponseForbidden(_('Forbidden'))
+    task_list = []
+    for task in queryset:
+        if user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
+    queryset = Task.objects.filter(pk__in = task_list).extra(select = {'complete': Task._complete})
     return table(request, headers, queryset = queryset, paginate_by = 15, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
 
 
@@ -471,15 +450,15 @@ def tasks_by_monitoring(request, id):
     title = _('Task list for %s') % monitoring
     task_list = []
     queryset = Task.objects.filter(monitoring = monitoring)
-    if request.user.userprofile.is_expert:
+    if request.user.is_active and request.user.userprofile.is_expert:
         queryset = queryset.filter(user = request.user)
-    else:
+    elif not request.user.is_superuser:
         queryset = Task.approved_tasks.filter(monitoring = monitoring)
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
     if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
-    queryset = Task.objects.extra(select = {'complete': Task._complete})
-    queryset = queryset.filter(pk__in = task_list)
+    queryset = Task.objects.filter(pk__in = task_list)
+    queryset = queryset.extra(select = {'complete': Task._complete})
     if request.user.is_superuser:
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
@@ -487,12 +466,18 @@ def tasks_by_monitoring(request, id):
                 (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
                 (_('Complete, %'), 'complete', None, None, None),
               )
-    else:
+    elif request.user.is_active and request.user.is_expert:
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
                 (_('Complete, %'), 'complete', None, None, None),
               )
+    else:
+        headers = (
+                (_('Organization'), 'organization__name', 'organization__name', None, None),
+                (_('Complete, %'), 'complete', None, None, None),
+              )
+
     return table(
         request,
         headers,
