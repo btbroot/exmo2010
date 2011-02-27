@@ -27,7 +27,7 @@ from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.template import RequestContext
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_protect
 
@@ -35,6 +35,12 @@ from django.views.decorators.csrf import csrf_protect
 def score_add(request, task_id, parameter_id):
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = parameter_id)
+    try:
+        score = Score.objects.get(parameter = parameter, task = task)
+    except Score.DoesNotExist:
+        pass
+    else:
+        return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
     redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
     redirect = redirect.replace("%","%%")
