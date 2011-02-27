@@ -98,7 +98,7 @@ def monitoring_manager(request, id, method):
 
 from operator import itemgetter
 #update rating twice in a day
-@cache_page(60 * 60 * 12)
+#@cache_page(60 * 60 * 12)
 def monitoring_rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
