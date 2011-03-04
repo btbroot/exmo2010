@@ -1,30 +1,30 @@
 #score_list .score-ok-nonzero{
-	background:green;
+	background: green;
 	text-align: center;
         }
 
 #score_list .score-ok-val1{
-	background: #ff9218;
+	background: red;
 	text-align: center;
         }
 
 #score_list .score-ok-val2{
-	background: #fcff18;
+	background: red;
 	text-align: center;
         }
 
 #score_list .score-ok-val3{
-	background:green;
+	background: green;
 	text-align: center;
         }
 
 #score_list .score-ok-zero{
-	background:red;
+	background: red;
 	text-align: center;
         }
 
 #score_list .score-none {
-	background:gray;
+	background: gray;
 
         }
 

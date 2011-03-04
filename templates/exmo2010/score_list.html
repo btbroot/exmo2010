@@ -18,9 +18,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n get_object_by_pk adminmedia %}
+{% load table_header i18n get_object_by_pk adminmedia criteria_css_class %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />{% endblock %}
+{% if user.is_superuser or user.userprofile.is_expert %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list_expert.css" />
+{% else %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />
+{% endif %}
+{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -76,97 +81,26 @@
       {% endif %}
       </td>
       {%if score %}
-      <td width=55px
-        {%if score.found == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}>
+      <td width=55px class="{{score|criteria_css_class:'found'}}">
       {{score.found}}
       </td>
-      <td width=55px
-      {%if score.complete and object.type.complete %}
-        {%if score.complete == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.complete %}
+      <td width=55px class="{{score|criteria_css_class:'complete'}}">
       {{score.complete|default:"&nbsp;"}}
-      {% endif %}
       </td>
-      <td width=55px
-      {%if score.topical and object.type.topical %}
-        {%if score.topical == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.topical %}
+      <td width=55px class="{{score|criteria_css_class:'topical'}}">
       {{score.topical|default:"&nbsp;"}}
-      {% endif %}
       </td>
-      <td width=55px
-      {%if score.accessible and object.type.accessible %}
-        {%if score.accessible == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.accessible %}
+      <td width=55px class="{{score|criteria_css_class:'accessible'}}">
       {{score.accessible|default:"&nbsp;"}}
-      {% endif %}
       </td>
-      <td width=55px
-      {%if score.hypertext != None and object.type.hypertext %}
-        {%if score.hypertext == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.hypertext %}
+      <td width=55px class="{{score|criteria_css_class:'hypertext'}}">
       {{score.hypertext|default_if_none:"&nbsp;"}}
-      {% endif %}
       </td>
-      <td width=55px
-      {%if score.document != None and object.type.document %}
-        {%if score.document == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.document %}
+      <td width=55px class="{{score|criteria_css_class:'document'}}">
       {{score.document|default_if_none:"&nbsp;"}}
-      {% endif %}
       </td>
-      <td width=55px
-      {%if score.image != None and object.type.image %}
-        {%if score.image == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {% if object.type.image %}
+      <td width=55px class="{{score|criteria_css_class:'image'}}">
       {{score.image|default_if_none:"&nbsp;"}}
-      {% endif %}
       </td>
       {%else%}
         <td colspan=7></td>
