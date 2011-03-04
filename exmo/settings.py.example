@@ -164,6 +164,7 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 USE_EMAIL = True
 CACHE_PATH = os.path.join(SITE_ROOT, '../cache/')
 CACHE_TIMEOUT = '3600'
+AUTH_PROFILE_MODULE = 'exmo2010.UserProfile'
 
 #old variant
 CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + CACHE_TIMEOUT

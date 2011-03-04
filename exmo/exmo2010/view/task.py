@@ -262,6 +262,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
     user = request.user
+    profile = None
+    if user.is_active: profile = user.get_profile()
     if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpresponseForbidden(_('Forbidden'))
     title = _('Task list for %s') % organization.name
     queryset = Task.objects.filter(monitoring = monitoring, organization = organization)
@@ -274,7 +276,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Complete, %'), 'complete', None, None, None),
                 (_('Openness, %'), None, None, None, None),
               )
-    elif user.is_active and user.userprofile.is_expert:
+    elif profile and profile.is_expert:
       queryset = queryset.filter(user = user)
     # Or, without Expert
       headers = (
@@ -446,11 +448,13 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
 
 def tasks_by_monitoring(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
+    profile = None
+    if request.user.is_active: profile = request.user.get_profile()
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %s') % monitoring
     task_list = []
     queryset = Task.objects.filter(monitoring = monitoring)
-    if request.user.is_active and request.user.userprofile.is_expert:
+    if profile and profile.is_expert:
         queryset = queryset.filter(user = request.user)
     elif not request.user.is_superuser:
         queryset = Task.approved_tasks.filter(monitoring = monitoring)
@@ -466,7 +470,7 @@ def tasks_by_monitoring(request, id):
                 (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
                 (_('Complete, %'), 'complete', None, None, None),
               )
-    elif request.user.is_active and request.user.is_expert:
+    elif profile and profile.is_expert:
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Status'), 'status', 'status', int, Task.TASK_STATUS),

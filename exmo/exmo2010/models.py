@@ -588,7 +588,8 @@ from django.contrib.auth.models import Group
 from annoying.fields import AutoOneToOneField
 
 class UserProfile(models.Model):
-    user = AutoOneToOneField(User, primary_key=True)
+    user = models.ForeignKey(User, unique=True)
+
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
 
     def _is_expert(self):
@@ -621,3 +622,6 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return "%s" % self.user
+
+User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

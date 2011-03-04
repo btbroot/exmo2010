@@ -24,7 +24,8 @@ def monitoring_permission(user, priv, monitoring):
         #monitoring have one approved task for anonymous and have publish_date
         if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
         if user.is_active: #minimaze query
-            if user.userprofile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
+            profile = user.get_profile()
+            if profile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
     return False
 
 
@@ -33,17 +34,19 @@ def task_permission(user, priv, task):
     if priv == 'exmo2010.view_task':
         if task.approved and user.has_perm('exmo2010.view_monitoring', task.monitoring): return True #anonymous user
         if user.is_active:
-            if user.userprofile.is_expert:
+            profile = user.get_profile()
+            if profile.is_expert:
                 if user == task.user: return True
-            elif user.userprofile.is_organization or user.userprofile.is_customer:
-                if task.organization in user.userprofile.organization.all(): return True
+            elif profile.is_organization or profile.is_customer:
+                if task.organization in profile.organization.all(): return True
     elif priv == 'exmo2010.close_task':
         if task.open and task.user == user: return True
     elif priv == 'exmo2010.fill_task': #create_score
         if task.open and task.user == user: return True
     elif priv == 'exmo2010.comment_score':
         if user.is_active:
-            if user.userprofile.is_organization and user.has_perm('exmo2010.view_task', task): return True
+            profile = user.get_profile()
+            if profile.is_organization and user.has_perm('exmo2010.view_task', task): return True
     return False
 
 
@@ -57,7 +60,8 @@ def score_permission(user, priv, score):
         return user.has_perm('exmo2010.fill_task', score.task)
     elif priv == 'exmo2010.comment_score':
         if user.is_active:
-            if user.userprofile.is_organization and user.has_perm('exmo2010.view_task', score.task): return True
+            profile = user.get_profile()
+            if profile.is_organization and user.has_perm('exmo2010.view_task', score.task): return True
     return False
 
 
@@ -69,10 +73,11 @@ def organization_permission(user, priv, organization):
     don't use this. generate organization list from tasks list and exmo2010.view_task
     '''
     if priv == 'exmo2010.view_organization':
-        if user.userprofile.is_expert:
-            if Task.objects.filter(organization = organization, user = user).count() > 0: return True
-            else: return False
-        if (user.userprofile.is_organization or user.userprofile.is_customer) and user.userprofile.organization.filter(pk = organization.pk).count() > 0: return True
+        if user.is_active:
+            profile = user.get_profile()
+            if profile.is_expert:
+                if Task.objects.filter(organization = organization, user = user).count() > 0: return True
+            elif (profile.is_organization or profile.is_customer) and profile.organization.filter(pk = organization.pk).count() > 0: return True
     return False
 
 

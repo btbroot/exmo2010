@@ -143,3 +143,11 @@ def post_save_model(sender, instance, created, **kwargs):
         for task in instance.task_set.all(): task.update_openness()
     if instance.__class__ == models.Task():
         instance.update_openness()
+
+
+
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        from exmo.exmo2010 import models
+        profile = models.UserProfile(user = instance)
+        profile.save()
