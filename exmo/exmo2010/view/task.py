@@ -317,8 +317,8 @@ def task_add(request, monitoring_id, organization_id=None):
     if request.user.is_superuser:
         if request.method == 'GET':
             form = TaskForm()
-            from annoying.functions import get_object_or_None
-            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = get_object_or_None(Group, name = 'experts')) | Q(is_superuser = True))
+            group, created = Group.objects.get_or_create(name = 'experts')
+            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
             if not organization:
                 form.fields['organization'].queryset = Organization.objects.filter(type=monitoring.type)
             return render_to_response(
@@ -502,8 +502,8 @@ def task_mass_assign_tasks(request, id):
     return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
   organizations = Organization.objects.filter(type = monitoring.type)
-  from annoying.functions import get_object_or_None
-  users = User.objects.filter(is_active = True).filter(Q(groups = get_object_or_None(Group, name = 'experts')) | Q(is_superuser = True))
+  group, created = Group.objects.get_or_create(name = 'experts')
+  users = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
   log = []
   if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
     for organization_id in request.POST.getlist('organizations'):

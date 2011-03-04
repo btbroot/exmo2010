@@ -585,8 +585,6 @@ def openness_helper(score, weight=0):
 
 
 from django.contrib.auth.models import Group
-from annoying.fields import AutoOneToOneField
-
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
 

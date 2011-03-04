@@ -128,7 +128,6 @@ INSTALLED_APPS = (
 #    'debug_toolbar',
     'exmo.exmo2010',
     'reversion',
-    'annoying',
     'django403',
 )
 
