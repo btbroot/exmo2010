@@ -35,8 +35,12 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-  {{ form.as_p }}
-  <p><input type="submit" /><input class="button" type="reset" /></p>
+<form action="." method="post" class="monitoring_form">{% csrf_token %}
+<table>
+    {{ form.as_table }}
+    {{ formset.as_table }}
+</table>
+<input type="submit" name="submit" class="button">
 </form>
+
 {% endblock %}

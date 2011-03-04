@@ -23,6 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
 from exmo.exmo2010.models import Monitoring, Claim
+from exmo.exmo2010.models import ParameterMonitoringProperty
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -30,10 +31,12 @@ from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
+from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo.exmo2010.forms import MonitoringForm
+from exmo.exmo2010.forms import ParameterMonitoringPropertyForm
 
 def monitoring_list(request):
     monitorings_pk = []
@@ -65,8 +68,7 @@ def monitoring_manager(request, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.monitoring.monitoring_list'), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':
-        title = _('Add new monitoring')
-        return create_object(request, model = Monitoring, post_save_redirect = redirect, extra_context = {'title': title})
+        return monitoring_add(request)
     elif method == 'delete':
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Delete monitoring %s') % monitoring.type
@@ -83,16 +85,70 @@ def monitoring_manager(request, id, method):
     else: #update
         monitoring = get_object_or_404(Monitoring, pk = id)
         title = _('Edit monitoring %s') % monitoring.type
-        return update_object(
-            request,
-            form_class = MonitoringForm,
-            object_id = id,
-            post_save_redirect = redirect,
-            extra_context = {
+        from django.forms.models import inlineformset_factory
+        formset_class = inlineformset_factory(
+            Monitoring,
+            ParameterMonitoringProperty,
+            can_delete=False,
+            extra = 0,
+            form = ParameterMonitoringPropertyForm)
+        if request.method == 'POST':
+            form = MonitoringForm(request.POST, instance = monitoring)
+            if form.is_valid():
+                monitoring_instance = form.save(commit=False)
+                formset = formset_class(request.POST, instance=monitoring_instance)
+                if formset.is_valid():
+                    monitoring_instance.save()
+                    formset.save()
+                    for parameter in form.cleaned_data['parameters']:
+                        ParameterMonitoringProperty_instance, created = ParameterMonitoringProperty.objects.get_or_create(
+                            monitoring = monitoring_instance,
+                            parameter = parameter,
+                            defaults = {'weight': 1})
+                        if created:
+                            redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
+                    return HttpResponseRedirect(redirect)
+        else:
+            form = MonitoringForm(instance = monitoring)
+            formset = formset_class(instance = monitoring)
+        return render_to_response(
+            'exmo2010/monitoring_form.html',
+            {
                 'title': title,
                 'media': MonitoringForm().media,
-                }
-            )
+                'form': form,
+                'formset': formset,
+            },
+            context_instance=RequestContext(request))
+
+@login_required
+def monitoring_add(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    title = _('Add new monitoring')
+    if request.method == 'POST':
+        form = MonitoringForm(request.POST)
+        if form.is_valid:
+            monitoring_instance = form.save()
+            #create ParameterMonitoringProperty
+            for parameter in form.cleaned_data['parameters']:
+                ParameterMonitoringProperty_instance, created = ParameterMonitoringProperty.objects.get_or_create(
+                    monitoring = monitoring_instance,
+                    parameter = parameter,
+                    defaults = {'weight': 1})
+            redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
+            return HttpResponseRedirect(redirect)
+    else:
+        form = MonitoringForm()
+    return render_to_response(
+        'exmo2010/monitoring_form.html',
+        {
+            'title': title,
+            'media': form.media,
+            'form': form,
+            'formset': None,
+        },
+        context_instance=RequestContext(request))
 
 
 

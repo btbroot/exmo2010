@@ -27,7 +27,7 @@
   <tbody>
     <tr><td colspan=2>
         {%if user.is_superuser%}
-            <a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
+            <a href="{% url exmo.exmo2010.view.monitoring.monitoring_add %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
         {%endif%}
     </td></tr>
     {% for object in object_list %}
