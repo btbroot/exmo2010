@@ -49,6 +49,7 @@
 {% table_header headers %}
 <tbody>
 {%for object in object_list%}
+{% with object.score_set.all.0 as score %}
   {% ifchanged object.group.group %}
     <tr id='parameter_{{object.group.group.fullcode}}'><td colspan=10>{{object.group.group}}</td></tr>
   {% endifchanged %}
@@ -58,13 +59,10 @@
       <tr width=100% id='parameter_{{object.fullcode}}'>
       <td width=4%>{{ object.fullcode }}</td>
       <td>
-{%if object.status%}
-    {%get_object_by_pk exmo2010.Score object.status as score %}
-{% endif %}
       {% if user.userprofile.is_expert or user.is_superuser %}
-       {% if object.status %}
+       {% if score %}
        {% if score.claim_color %}<img src="{{ MEDIA_URL }}exmo2010/icon_{{score.claim_color}}.gif" alt="{% trans 'claim' %}" />{% endif %}
-            <a href="{% url exmo.exmo2010.view.score.score_view object.status %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+            <a href="{% url exmo.exmo2010.view.score.score_view score.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% else %}
         <a href="{% url exmo.exmo2010.view.score.score_add task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% endif %}
@@ -72,12 +70,12 @@
             &nbsp;<a href="{% url exmo.exmo2010.view.parameter.parameter_manager task.pk, object.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
        {% endif %}
       {% else %}
-       {% if object.status %}
-         <a href="{% url exmo.exmo2010.view.score.score_view object.status %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+       {% if score %}
+         <a href="{% url exmo.exmo2010.view.score.score_view score.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
        {% endif %}
       {% endif %}
       </td>
-      {%if object.status and score %}
+      {%if score %}
       <td width=55px
         {%if score.found == 0 %}
           class="score-ok-zero"
@@ -183,6 +181,7 @@
        {% endif %}
       </td>
       </tr>
+{% endwith %}
 {% endfor %}
     </tbody></table>
 </div><br>
