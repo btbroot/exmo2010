@@ -151,3 +151,26 @@ def create_profile(sender, instance, created, **kwargs):
         from exmo.exmo2010 import models
         profile = models.UserProfile(user = instance)
         profile.save()
+
+
+
+def score_change_notify(sender, instance, created, **kwargs):
+    if score.task.approved:
+        from exmo.exmo2010 import models
+        rcpt = []
+        for profile in UserProfile.objects.filter(oranization = instance.organization):
+            if profile.user.email and profile.notify_score_change:
+                rcpt.append(user.email)
+        rcpt = list(set(rcpt))
+        subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
+            'prefix': settings.EMAIL_SUBJECT_PREFIX,
+            'monitoring': instance.task.monitoring,
+            'org': instance.task.organization.name.split(':')[0],
+            'code': instance.parameter.fullcode(),
+        }
+        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[instance.pk]))
+        t = loader.get_template('exmo2010/score_email.html')
+        c = Context({ 'score': instance, 'url': url })
+        message = t.render(c)
+        if rcpt:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt])

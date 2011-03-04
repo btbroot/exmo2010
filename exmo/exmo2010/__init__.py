@@ -18,11 +18,13 @@
 
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.auth.models import User
+from exmo.exmo2010.models import Score
 from exmo.exmo2010.signals import claim_was_posted
 from exmo.exmo2010.helpers import comment_notification
 from exmo.exmo2010.helpers import claim_notification
 from exmo.exmo2010.helpers import post_save_model
 from exmo.exmo2010.helpers import create_profile
+from exmo.exmo2010.helpers import score_change_notify
 
 
 
@@ -30,6 +32,7 @@ from django.conf import settings
 if settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
     claim_was_posted.connect(claim_notification)
+    post_save.connect(score_change_notify, sender=Score)
 
 from django.db.models.signals import post_save
 post_save.connect(post_save_model)

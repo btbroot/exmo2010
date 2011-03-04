@@ -591,6 +591,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
 
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
+    notify_score_change = models.BooleanField(blank = True, default = False, verbose_name=_('notify score change'))
 
     def _is_expert(self):
         try:

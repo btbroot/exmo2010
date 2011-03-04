@@ -1,0 +1,42 @@
+{% load i18n %}
+{{ score.task.organization }}: {{ score.parameter }}
+{% trans 'Found' %}: {{ score.found }}
+{% if score.parameter.type.complete and score.complete %}
+    {% trans 'Complete' %}: {{ score.complete }}
+      {%if score.completeComment %}
+        {% trans 'Comment for complete' %}: {{ score.completeComment }}
+      {% endif %}
+{% endif %}
+{% if score.parameter.type.topical and score.topical %}
+    {% trans 'Topical' %}: {{ score.topical }}
+      {% if score.topicalComment %}
+        {% trans 'Comment for topical' %}: {{ score.topicalComment }}
+      {% endif %}
+{% endif %}
+{% if score.parameter.type.accessible and score.accessible %}
+    {% trans 'Accessible' %}: {{ score.accessible }}
+    {% if score.accessibleComment %}
+        {% trans 'Comment for accessible' %}: {{ score.accessibleComment }}
+    {% endif %}
+{% endif %}
+{% if score.parameter.type.hypertext and score.hypertext %}
+    {% trans 'Hypertext' %}: {{ score.hypertext }}
+      {% if score.hypertextComment %}
+        {% trans 'Comment for hypertext' %}: {{ score.hypertextComment }}
+      {% endif %}
+{% endif %}
+{% if score.parameter.type.document and score.document %}
+    {% trans 'Document' %}: {{ score.document }}
+    {% if score.documentComment %}
+        {% trans 'Comment for document' %}: {{ score.documentComment }}
+    {% endif %}
+{% endif %}
+{% if score.parameter.type.image and score.image %}
+    {% trans 'Image' %}: {{ score.image }}
+    {% if score.imageComment %}
+        {% trans 'Comment for image' %}: {{ score.imageComment }}
+    {% endif %}
+{% endif %}
+{% if score.comment %}
+    {% trans 'Common parameter comment' %}: {{ score.comment }}
+URL: {{ url }}

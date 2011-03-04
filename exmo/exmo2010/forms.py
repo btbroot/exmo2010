@@ -69,6 +69,8 @@ class TaskForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
+    notify_score_change = forms.BooleanField(required = False, label=_('notify score change'))
+
     class Meta:
         model = User
         exclude = (

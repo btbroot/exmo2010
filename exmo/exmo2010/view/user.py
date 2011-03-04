@@ -17,26 +17,37 @@
 #
 from exmo.exmo2010.forms import UserForm
 from django.shortcuts import get_object_or_404
-from django.views.generic.create_update import update_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseForbidden
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
-
+from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render_to_response
 
 @csrf_protect
 @login_required
 def user_profile(request, id):
-    user = get_object_or_404(User, pk = id)
-    if not request.user.is_superuser and request.user != user:
+    _user = get_object_or_404(User, pk = id)
+    if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
-    return update_object(
-        request,
-        form_class = UserForm,
-        object_id = user.pk,
-        post_save_redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk]),
-        template_name = 'exmo2010/user_form.html',
-    )
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance = _user)
+        if form.is_valid():
+            user = form.save()
+            profile = user.get_profile()
+            if profile.is_organization:
+                profile.notify_score_change = form.cleaned_data['notify_score_change']
+                profile.save()
+            redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk])
+    else:
+        form = UserForm(instance = _user)
+    return render_to_response(
+        'exmo2010/user_form.html',
+        {
+            'form': form,
+            'object': _user,
+        },
+        context_instance=RequestContext(request))
