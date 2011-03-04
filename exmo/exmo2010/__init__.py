@@ -25,6 +25,7 @@ from exmo.exmo2010.helpers import claim_notification
 from exmo.exmo2010.helpers import post_save_model
 from exmo.exmo2010.helpers import create_profile
 from exmo.exmo2010.helpers import score_change_notify
+from django.db.models.signals import post_save
 
 
 
@@ -34,7 +35,5 @@ if settings.USE_EMAIL:
     claim_was_posted.connect(claim_notification)
     post_save.connect(score_change_notify, sender=Score)
 
-from django.db.models.signals import post_save
 post_save.connect(post_save_model)
-
 post_save.connect(create_profile, sender=User)
