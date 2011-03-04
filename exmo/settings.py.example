@@ -151,6 +151,9 @@ AUTHENTICATION_BACKENDS = (
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY= True
 
 import os
+import sys
+path = "%s/.." % os.path.realpath(os.path.dirname(__file__))
+sys.path.append(os.path.realpath(path))
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../static/')
 STATIC_DOC_ROOT = os.path.join(SITE_ROOT, '../static/exmo2010')
