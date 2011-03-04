@@ -165,3 +165,10 @@ class ParameterMonitoringPropertyForm(forms.ModelForm):
 
     class Meta:
         model = ParameterMonitoringProperty
+
+
+
+class ParameterForm(forms.ModelForm):
+    class Meta:
+        model = Parameter
+        exclude = ('monitoring',)

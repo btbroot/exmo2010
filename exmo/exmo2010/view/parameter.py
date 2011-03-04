@@ -20,6 +20,7 @@ from django.views.generic.create_update import update_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Parameter, Task
+from exmo.exmo2010.forms import ParameterForm
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
@@ -50,7 +51,7 @@ def parameter_manager(request, task_id, id, method):
         title = _('Edit parameter %s') % parameter
         return update_object(
             request,
-            model = Parameter,
+            form_class = ParameterForm,
             object_id = id,
             post_save_redirect = redirect,
             extra_context = {
