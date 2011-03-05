@@ -156,24 +156,30 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 
-@disable_for_loaddata
-def score_change_notify(sender, instance, created, **kwargs):
+def score_change_notify(sender, **kwargs):
+    score = kwargs['score']
+    form = kwargs['score_new']
+    changes = []
+    if form.changed_data:
+        for change in form.changed_data:
+            change_dict = {'field': change, 'was': score.__getattribute__(change), 'now': form.cleaned_data[change]}
+            changes.append(change_dict)
     if score.task.approved:
         from exmo.exmo2010 import models
         rcpt = []
-        for profile in UserProfile.objects.filter(oranization = instance.organization):
+        for profile in UserProfile.objects.filter(oranization = score.organization):
             if profile.user.email and profile.notify_score_change:
                 rcpt.append(user.email)
         rcpt = list(set(rcpt))
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': instance.task.monitoring,
-            'org': instance.task.organization.name.split(':')[0],
-            'code': instance.parameter.fullcode(),
+            'monitoring': score.task.monitoring,
+            'org': score.task.organization.name.split(':')[0],
+            'code': score.parameter.fullcode(),
         }
-        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[instance.pk]))
+        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
         t = loader.get_template('exmo2010/score_email.html')
-        c = Context({ 'score': instance, 'url': url })
+        c = Context({ 'score': score, 'url': url, 'changes': changes, })
         message = t.render(c)
         if rcpt:
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt])

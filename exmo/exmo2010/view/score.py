@@ -88,6 +88,13 @@ def score_view(request, score_id):
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
             revision.comment = message
+            if form.changed_date:
+                from exmo.exmo2010 import signals
+                signals.score_was_changed.send(
+                        sender  = Score.__class__,
+                        score = score,
+                        form = form,
+                    )
             if score.active_claim:
                 if form.changed_data:
                     score.close_claim(request.user)
