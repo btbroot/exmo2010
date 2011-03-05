@@ -88,7 +88,7 @@ def score_view(request, score_id):
             form = ScoreForm(request.POST,instance=score)
             message = construct_change_message(request,form, None)
             revision.comment = message
-            if form.changed_date:
+            if form.is_valid() and form.changed_data:
                 from exmo.exmo2010 import signals
                 signals.score_was_changed.send(
                         sender  = Score.__class__,
@@ -96,7 +96,7 @@ def score_view(request, score_id):
                         form = form,
                     )
             if score.active_claim:
-                if form.changed_data:
+                if form.is_valid() and form.changed_data:
                     score.close_claim(request.user)
                 else:
                     return HttpResponse(_('Have active claim, but no data changed'))

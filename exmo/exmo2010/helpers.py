@@ -158,7 +158,7 @@ def create_profile(sender, instance, created, **kwargs):
 
 def score_change_notify(sender, **kwargs):
     score = kwargs['score']
-    form = kwargs['score_new']
+    form = kwargs['form']
     changes = []
     if form.changed_data:
         for change in form.changed_data:
