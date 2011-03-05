@@ -20,6 +20,7 @@ from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
+from exmo.helpers import disable_for_loaddata
 
 
 
@@ -134,6 +135,7 @@ def claim_notification(sender, **kwargs):
 
 
 
+@disable_for_loaddata
 def post_save_model(sender, instance, created, **kwargs):
     #update task openness hook
     from exmo.exmo2010 import models
@@ -154,6 +156,7 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 
+@disable_for_loaddata
 def score_change_notify(sender, instance, created, **kwargs):
     if score.task.approved:
         from exmo.exmo2010 import models
