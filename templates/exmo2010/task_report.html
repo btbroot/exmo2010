@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n get_object_by_pk break %}
+{% load i18n criteria_css_class %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -45,109 +45,41 @@
   <td>{% trans 'Image' %}</td>
 </thead>
 <tbody>
-        {%for category in categories%}
-
-{%for object in object_list%}{%if object.group.group == category%}
-            <tr id='parameter_{{category.code}}'><td colspan=10>{{category}}</td></tr>
-{{ forloop|break }}
-{%endif%}{%endfor%}
-
-            {%for subcategory in subcategories%}
-            {%if subcategory.group == category%}
-
-{%for object in object_list%}{%if object.group == subcategory%}
-                <tr id='parameter_{{subcategory.fullcode}}'><td colspan=10>{{subcategory}}</td></tr>
-{{ forloop|break }}
-{%endif%}{%endfor%}
-
-                {%for object in object_list%}{%if object.group == subcategory%}
+{%for object in object_list%}
+{% with object.score_set.all.0 as score %}
+  {% ifchanged object.group.group %}
+    <tr id='parameter_{{object.group.group.fullcode}}'><td colspan=10>{{object.group.group}}</td></tr>
+  {% endifchanged %}
+  {% ifchanged object.group %}
+    <tr id='parameter_{{object.group.fullcode}}'><td colspan=10>{{object.group}}</td></tr>
+  {% endifchanged %}
       <tr width=100% id='parameter_{{object.fullcode}}'>
       <td width=4%>{{ object.fullcode }}</td>
       <td>
         {{ object.name }}
       </td>
-      {%if object.status%}
-      {%get_object_by_pk exmo2010.Score object.status as score %}
-      <td>{{ score.openness }}</td
-      <td width=55px
-        {%if score.found == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}>
+      {%if score %}
+      <td>{{ score.openness }}</td>
+      <td width=55px class="{{score|criteria_css_class:'found'}}">
       {{score.found}}
       </td>
-      <td width=55px
-      {%if score.complete %}
-        {%if score.complete == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.complete %}{{score.complete}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'complete'}}">
+      {{score.complete|default:"&nbsp;"}}
       </td>
-      <td width=55px
-      {%if score.topical %}
-        {%if score.topical == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.topical %}{{score.topical}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'topical'}}">
+      {{score.topical|default:"&nbsp;"}}
       </td>
-      <td width=55px
-      {%if score.accessible %}
-        {%if score.accessible == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.accessible %}{{score.accessible}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'accessible'}}">
+      {{score.accessible|default:"&nbsp;"}}
       </td>
-      <td width=55px
-      {%if score.hypertext != None %}
-        {%if score.hypertext == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.hypertext != None %}{{score.hypertext}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'hypertext'}}">
+      {{score.hypertext|default_if_none:"&nbsp;"}}
       </td>
-      <td width=55px
-      {%if score.document != None %}
-        {%if score.document == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.document != None %}{{score.document}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'document'}}">
+      {{score.document|default_if_none:"&nbsp;"}}
       </td>
-      <td width=55px
-      {%if score.image != None %}
-        {%if score.image == 0 %}
-          class="score-ok-zero"
-        {%else%}
-          class="score-ok-nonzero"
-        {%endif%}
-      {% else %}
-      class="score-none"
-      {% endif %}>
-      {%if score.image != None %}{{score.image}}{%else%}&nbsp;{%endif%}
+      <td width=55px class="{{score|criteria_css_class:'image'}}">
+      {{score.image|default_if_none:"&nbsp;"}}
       </td>
       {% if report == 'printfull' %}
         {% if score.completeComment %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}
@@ -157,14 +89,12 @@
         {% if score.documentComment %}</tr><tr><td>{% trans 'documentComment' %}</td><td colspan=7>{{ score.documentComment|linebreaks }}</td>{% endif %}
         {% if score.comment %}</tr><tr><td>{% trans 'comment' %}</td><td colspan=7>{{ score.comment|linebreaks }}</td>{% endif %}
       {% endif %}
-      {%else%}
+      {%else%} {# if score #}
         <td colspan=7></td>
-      {%endif%}
+      {%endif%} {# if score #}
       </tr>
-    {% endif %}
-    {% endfor %}
-    {%endif%}{%endfor%}
-        {%endfor%}
+{% endwith %}
+{% endfor %}
     </tbody></table>
 </div><br>
 {% endspaceless %}
