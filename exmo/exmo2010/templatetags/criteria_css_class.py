@@ -24,7 +24,7 @@ def criteria_css_class(score, criteria):
         Usage::
                 {{ score|criteria_css_class:"complete" }}
         """
-        weight = score.parameter.parametermonitoringproperty_set.filter(monitoring = score.task.monitoring)
+        weight = score.parameter.parametermonitoringproperty_set.get(monitoring = score.task.monitoring).weight
         if weight >= 0:
             score_ok_nonzero = "score-ok-nonzero"
             score_ok_zero = "score-ok-zero"
