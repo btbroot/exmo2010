@@ -92,8 +92,8 @@ def score_view(request, score_id):
                 from exmo.exmo2010 import signals
                 signals.score_was_changed.send(
                         sender  = Score.__class__,
-                        score = score,
                         form = form,
+                        request = request,
                     )
             if score.active_claim:
                 if form.is_valid() and form.changed_data:

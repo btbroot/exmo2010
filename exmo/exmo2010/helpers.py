@@ -157,8 +157,9 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 def score_change_notify(sender, **kwargs):
-    score = kwargs['score']
     form = kwargs['form']
+    score = form.instance
+    request = kwargs['request']
     changes = []
     if form.changed_data:
         for change in form.changed_data:
@@ -167,9 +168,9 @@ def score_change_notify(sender, **kwargs):
     if score.task.approved:
         from exmo.exmo2010 import models
         rcpt = []
-        for profile in UserProfile.objects.filter(oranization = score.organization):
+        for profile in models.UserProfile.objects.filter(organization = score.task.organization):
             if profile.user.email and profile.notify_score_change:
-                rcpt.append(user.email)
+                rcpt.append(profile.user.email)
         rcpt = list(set(rcpt))
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
@@ -182,4 +183,4 @@ def score_change_notify(sender, **kwargs):
         c = Context({ 'score': score, 'url': url, 'changes': changes, })
         message = t.render(c)
         if rcpt:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt])
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)
