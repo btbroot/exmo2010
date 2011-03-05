@@ -25,3 +25,4 @@ for user in users:
         else:
             profile = user.get_profile()
             profile.organization.add(org)
+            profile.save()
