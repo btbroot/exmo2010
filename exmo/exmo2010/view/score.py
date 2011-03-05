@@ -127,8 +127,11 @@ def score_list_by_task(request, task_id, report=None):
     task = Task.objects.extra(select = {'complete': Task._complete}).get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
     if request.user.has_perm('exmo2010.view_task', task):
-      from django.db.models import Q
-      queryset = Parameter.objects.select_related().filter(monitoring = task.monitoring).exclude(exclude = task.organization).filter(Q(score__task = task) | Q(score__isnull = True))
+      queryset = Parameter.objects.select_related().filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
+        select={
+          'score_pk':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
+        }
+      )
     else: return HttpResponseForbidden(_('Forbidden'))
     if report:
       # Print report

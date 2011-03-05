@@ -12,7 +12,10 @@ class ObjectByPk(Node):
 
     def render(self, context):
         pk_id = resolve_variable(self.pk, context)
-        context[self.varname] = self.model._default_manager.get(pk=pk_id)
+        try:
+            context[self.varname] = self.model._default_manager.get(pk=pk_id)
+        except self.model.DoesNotExist:
+            context[self.varname] = None
         return ''
 
 def get_object_by_pk(parser, token):

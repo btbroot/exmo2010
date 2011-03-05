@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n criteria_css_class %}
+{% load i18n criteria_css_class get_object_by_pk %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -46,7 +46,7 @@
 </thead>
 <tbody>
 {%for object in object_list%}
-{% with object.score_set.all.0 as score %}
+{% get_object_by_pk exmo2010.Score object.score_pk as score %}
   {% ifchanged object.group.group %}
     <tr id='parameter_{{object.group.group.fullcode}}'><td colspan=10>{{object.group.group}}</td></tr>
   {% endifchanged %}
@@ -93,7 +93,6 @@
         <td colspan=7></td>
       {%endif%} {# if score #}
       </tr>
-{% endwith %}
 {% endfor %}
     </tbody></table>
 </div><br>
