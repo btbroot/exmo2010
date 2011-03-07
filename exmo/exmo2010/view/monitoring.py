@@ -100,12 +100,18 @@ def monitoring_manager(request, id, method):
                 if formset.is_valid():
                     monitoring_instance.save()
                     formset.save()
+                    #creating new property
                     for parameter in form.cleaned_data['parameters']:
                         ParameterMonitoringProperty_instance, created = ParameterMonitoringProperty.objects.get_or_create(
                             monitoring = monitoring_instance,
                             parameter = parameter,
                             defaults = {'weight': 1})
                         if created:
+                            redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
+                    #remove unneeded property
+                    for prop in ParameterMonitoringProperty.objects.filter(monitoring = monitoring_instance):
+                        if prop.parameter not in form.cleaned_data['parameters']:
+                            prop.delete()
                             redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
                     return HttpResponseRedirect(redirect)
         else:
