@@ -163,7 +163,7 @@ def score_change_notify(sender, **kwargs):
     changes = []
     if form.changed_data:
         for change in form.changed_data:
-            change_dict = {'field': change, 'was': score.__getattribute__(change), 'now': form.cleaned_data[change]}
+            change_dict = {'field': change, 'was': form.initial.get(change, form.fields[change].initial), 'now': form.cleaned_data[change]}
             changes.append(change_dict)
     if score.task.approved:
         from exmo.exmo2010 import models
