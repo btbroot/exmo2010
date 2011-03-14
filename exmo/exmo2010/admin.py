@@ -47,6 +47,7 @@ class OrganizationTypeAdmin(admin.ModelAdmin):
 
 class OrganizationAdmin(admin.ModelAdmin):
   list_display = ('pk', 'name')
+  search_fields = ('name', )
 
 class FederalAdmin(admin.ModelAdmin):
   list_display = ('pk', 'name')
