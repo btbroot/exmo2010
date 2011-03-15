@@ -131,9 +131,12 @@ class ParameterType(models.Model):
 
 
 class Monitoring(models.Model):
-  name               = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
-  type               = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
-  publish_date          = models.DateField(null = True, blank = True, verbose_name = _('publish date'))
+  OPENNESS_EXPR_v1       = 0
+  OPENNESS_EXPR_v2       = 1
+  name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+  type                   = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
+  publish_date           = models.DateField(null = True, blank = True, verbose_name = _('publish date'))
+  openness_expression    = models.PositiveIntegerField(choices = ((OPENNESS_EXPR_v1, _("v1 (till 01-01-2011)")),(OPENNESS_EXPR_v2, _("v2")),), default = 1, verbose_name=_('openness expression'))
 
   def __unicode__(self):
     return '%s: %s' % (self.type.name, self.name)
@@ -295,24 +298,9 @@ class Task(models.Model):
   _openness_sql = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
   def _openness(self):
-    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.monitoring)).exclude(parameter__exclude = self.organization).extra(
-        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)}).values(
-        'weight',
-        'found',
-        'complete',
-        'topical',
-        'accessible',
-        'hypertext',
-        'document',
-        'image',
-        'parameter__type__complete',
-        'parameter__type__topical',
-        'parameter__type__accessible',
-        'parameter__type__hypertext',
-        'parameter__type__document',
-        'parameter__type__image',
-        )
-    openness_actual = sum([openness_helper(s, s['weight']) for s in scores])
+    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.monitoring)).exclude(parameter__exclude = self.organization).select_related().extra(
+        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
+    openness_actual = sum([openness_helper(s, s.weight) for s in scores])
     parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).extra(
         select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
     openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
@@ -461,23 +449,8 @@ class Score(models.Model):
     else: return False
 
   def openness(self):
-    s = Score.objects.filter(pk = self.pk).extra(
-        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.task.monitoring.pk, Parameter._meta.db_table)}).values(
-        'weight',
-        'found',
-        'complete',
-        'topical',
-        'accessible',
-        'hypertext',
-        'document',
-        'image',
-        'parameter__type__complete',
-        'parameter__type__topical',
-        'parameter__type__accessible',
-        'parameter__type__hypertext',
-        'parameter__type__document',
-        'parameter__type__image',
-        )
+    s = Score.objects.filter(pk = self.pk).select_related().extra(
+        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.task.monitoring.pk, Parameter._meta.db_table)})
     return openness_helper(s[0], s[0]['weight'])
 
   def add_claim(self, creator, comment):
@@ -537,49 +510,79 @@ class Claim(models.Model):
     permissions = (("view_claim", "Can view claim"),)
 
 
-def openness_helper(score, weight=0):
-    score_found = score['found']
-    score_complete = score['complete']
-    score_topical = score['topical']
-    score_accessible = score['accessible']
-    score_hypertext = score['hypertext']
-    score_document = score['document']
-    score_image = score['image']
-    score_parameter_complete = score['parameter__type__complete']
-    score_parameter_topical = score['parameter__type__topical']
-    score_parameter_accessible = score['parameter__type__accessible']
-    score_parameter_hypertext = score['parameter__type__hypertext']
-    score_parameter_document = score['parameter__type__document']
-    score_parameter_image = score['parameter__type__image']
-    found = score_found
+
+def openness_helper(score, weight = 0):
+    if score.task.monitoring.openness_expression == Monitoring.OPENNESS_EXPR_v1:
+        return openness_helper_v1(score, weight)
+    elif score.task.monitoring.openness_expression == Monitoring.OPENNESS_EXPR_v2:
+        return openness_helper_v2(score, weight)
+
+
+
+def openness_helper_v1(score, weight = 0):
+    found = score.found
     complete = 1
     topical = 1
     accessible = 1
     format = 1
-    if score_parameter_complete:
-        if score_complete == 1: complete = 0.2
-        if score_complete == 2: complete = 0.5
-        if score_complete == 3: complete = 1
-    if score_parameter_topical:
-        if score_topical == 1: topical = 0.7
-        if score_topical == 2: topical = 0.85
-        if score_topical == 3: topical = 1
-    if score_parameter_accessible:
-        if score_accessible == 1: accessible = 0.9
-        if score_accessible == 2: accessible = 0.95
-        if score_accessible == 3: accessible = 1
-    if score_parameter_hypertext:
-        if score_parameter_document:
-            if score_hypertext == 0:
-                if score_document == 0: format = 0.2
-                if score_document == 1: format = 0.2
-            if score_hypertext == 1:
-                if score_document == 0: format = 0.9
-                if score_document == 1: format = 1
+    if score.parameter.type.complete:
+        if score.complete == 1: complete = 0.2
+        if score.complete == 2: complete = 0.5
+        if score.complete == 3: complete = 1
+    if score.parameter.type.topical:
+        if score.topical == 1: topical = 0.7
+        if score.topical == 2: topical = 0.85
+        if score.topical == 3: topical = 1
+    if score.parameter.type.accessible:
+        if score.accessible == 1: accessible = 0.9
+        if score.accessible == 2: accessible = 0.95
+        if score.accessible == 3: accessible = 1
+    if score.parameter.type.hypertext:
+        if score.parameter.type.document:
+            if score.hypertext == 0:
+                if score.document == 0: format = 0.2
+                if score.document == 1: format = 0.2
+            if score.hypertext == 1:
+                if score.document == 0: format = 0.9
+                if score.document == 1: format = 1
         else:
-            if score_hypertext == 0: format = 0.2
-            if score_hypertext == 1: format = 1
+            if score.hypertext == 0: format = 0.2
+            if score.hypertext == 1: format = 1
     openness = weight * found * complete * topical * accessible * format
+    return openness
+
+
+
+def openness_helper_v2(score, weight = 0):
+    found = score.found
+    complete = 1
+    topical = 1
+    accessible = 1
+    format_html = 1
+    format_doc = 1
+    format_image = 1
+    if score.parameter.type.complete:
+        if score.complete == 1: complete = 0.2
+        if score.complete == 2: complete = 0.5
+        if score.complete == 3: complete = 1
+    if score.parameter.type.topical:
+        if score.topical == 1: topical = 0.7
+        if score.topical == 2: topical = 0.85
+        if score.topical == 3: topical = 1
+    if score.parameter.type.accessible:
+        if score.accessible == 1: accessible = 0.9
+        if score.accessible == 2: accessible = 0.95
+        if score.accessible == 3: accessible = 1
+    if score.parameter.type.hypertext:
+        if score.hypertext == 0: format_html = 0.2
+        if score.hypertext == 1: format_html = 1
+    if score.parameter.type.document:
+        if score.document == 0: format_doc = 0.85
+        if score.document == 1: format_doc = 1
+    if score.parameter.type.image:
+        if score.image == 0: format_image = 0.95
+        if score.image == 1: format_image = 1
+    openness = weight * found * complete * topical * accessible * format_html * format_doc * format_image
     return openness
 
 
