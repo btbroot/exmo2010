@@ -19,6 +19,7 @@
 
 ./manage.py dumpdata --indent=1 \
   exmo2010.monitoring \
+  exmo2010.opennessexpression \
   exmo2010.parametertype \
   exmo2010.category \
   exmo2010.subcategory \

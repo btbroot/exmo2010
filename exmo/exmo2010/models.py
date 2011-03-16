@@ -130,13 +130,24 @@ class ParameterType(models.Model):
 
 
 
+class OpennessExpression(models.Model):
+  code    = models.PositiveIntegerField(primary_key=True)
+  name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+
+  def __unicode__(self):
+    return _('%s (from EXMO2010 v%d)') % ( self.name, self.code )
+
+
+
 class Monitoring(models.Model):
-  OPENNESS_EXPR_v1       = 0
-  OPENNESS_EXPR_v2       = 1
   name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
   type                   = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
   publish_date           = models.DateField(null = True, blank = True, verbose_name = _('publish date'))
-  openness_expression    = models.PositiveIntegerField(choices = ((OPENNESS_EXPR_v1, _("v1 (till 01-01-2011)")),(OPENNESS_EXPR_v2, _("v2")),), default = 1, verbose_name=_('openness expression'))
+  openness_expression    = models.ForeignKey(
+    OpennessExpression,
+    default = 1,
+    verbose_name=_('openness expression'),
+  )
 
   def __unicode__(self):
     return '%s: %s' % (self.type.name, self.name)
@@ -512,10 +523,8 @@ class Claim(models.Model):
 
 
 def openness_helper(score, weight = 0):
-    if score.task.monitoring.openness_expression == Monitoring.OPENNESS_EXPR_v1:
-        return openness_helper_v1(score, weight)
-    elif score.task.monitoring.openness_expression == Monitoring.OPENNESS_EXPR_v2:
-        return openness_helper_v2(score, weight)
+    f = eval("openness_helper_v%d" % score.task.monitoring.openness_expression.code)
+    return f(score, weight)
 
 
 
@@ -553,7 +562,7 @@ def openness_helper_v1(score, weight = 0):
 
 
 
-def openness_helper_v2(score, weight = 0):
+def openness_helper_v8(score, weight = 0):
     found = score.found
     complete = 1
     topical = 1
