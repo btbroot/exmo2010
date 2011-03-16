@@ -1,3 +1,22 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
 {% load i18n %}
 {% block agpl %}
 <div id="footer" style='font-size: 10px;'>
@@ -14,7 +33,7 @@
 <p>A copy of the license should be available <a href="{{ MEDIA_URL }}exmo2010/license.txt">here</a>.
    If not, see <a href="http://www.gnu.org/licenses/">GNU licenses</a>.</p>
 <p>Source code is available from <a href="http://vps.svobodainfo.org/exmo">EXMO site</a>.</p>
-<p><img src="{{ MEDIA_URL }}exmo2010/license.png" alt="License" /></p>
+<p><img src="http://www.gnu.org/graphics/agplv3-88x31.png" alt="License" /></p>
 </div>
 <!-- STATS: Total: %(totTime).2f Python: %(pyTime).2f DB: %(dbTime).2f Queries: %(queries)d -->
 {% endblock %}
