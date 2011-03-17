@@ -31,7 +31,9 @@ def criteria_css_class(score, criteria):
         else:
             score_ok_nonzero = "score-ok-zero"
             score_ok_zero = "score-ok-nonzero"
-        if criteria == 'found' and score.found: return score_ok_nonzero
+        if criteria == 'found':
+            if score.found: return score_ok_nonzero
+            else: return score_ok_zero
         elif score.found:
             if score.parameter.type.__getattribute__(criteria):
                 value = score.__getattribute__(criteria)
@@ -50,6 +52,9 @@ def criteria_css_class(score, criteria):
             else:
                 return "score-none"
         else:
-            return score_ok_zero
+            if score.parameter.type.__getattribute__(criteria):
+                return score_ok_zero
+            else:
+                return "score-none"
 
 criteria_css_class.is_safe = True
