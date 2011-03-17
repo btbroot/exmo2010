@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n criteria_css_class get_object_by_pk %}
+{% load i18n get_object_by_pk %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -60,27 +60,7 @@
       </td>
       {%if score %}
       <td>{{ score.openness }}</td>
-      <td width=55px class="{{score|criteria_css_class:'found'}}">
-      {{score.found}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'complete'}}">
-      {{score.complete|default:"&nbsp;"}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'topical'}}">
-      {{score.topical|default:"&nbsp;"}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'accessible'}}">
-      {{score.accessible|default:"&nbsp;"}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'hypertext'}}">
-      {{score.hypertext|default_if_none:"&nbsp;"}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'document'}}">
-      {{score.document|default_if_none:"&nbsp;"}}
-      </td>
-      <td width=55px class="{{score|criteria_css_class:'image'}}">
-      {{score.image|default_if_none:"&nbsp;"}}
-      </td>
+      {% include "exmo2010/score_criteria_table.html" %}
       {% if report == 'printfull' %}
         {% if score.completeComment %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}
         {% if score.topicalComment %}</tr><tr><td>{% trans 'topicalComment' %}</td><td colspan=7>{{ score.topicalComment|linebreaks }}</td>{% endif %}
