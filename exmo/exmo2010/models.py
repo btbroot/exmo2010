@@ -135,7 +135,7 @@ class OpennessExpression(models.Model):
   name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
 
   def __unicode__(self):
-    return _('%s (from EXMO2010 v%d)') % ( self.name, self.code )
+    return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
 
 
 
