@@ -459,10 +459,10 @@ class Score(models.Model):
         return True
     else: return False
 
-  def openness(self):
+  def _get_openness(self):
     s = Score.objects.filter(pk = self.pk).select_related().extra(
         select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.task.monitoring.pk, Parameter._meta.db_table)})
-    return openness_helper(s[0], s[0]['weight'])
+    return openness_helper(s[0], s[0].weight)
 
   def add_claim(self, creator, comment):
     claim = Claim(score = self, creator = creator, comment = comment)
@@ -490,6 +490,7 @@ class Score(models.Model):
     return color
 
   active_claim = property(_get_claim)
+  openness = property(_get_openness)
 
   class Meta:
     unique_together = (
