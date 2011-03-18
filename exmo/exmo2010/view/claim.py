@@ -35,7 +35,7 @@ from datetime import datetime, timedelta
 def claim_manager(request, score_id, claim_id=None, method=None):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     score = get_object_or_404(Score, pk = score_id)
-    redirect = reverse('exmo.exmo2010.view.score.score_view', args=[score.pk, 'update'])
+    redirect = reverse('exmo.exmo2010.view.score.score_view', args=[score.pk])
     title = _('Add new claim for %s') % score
     if claim_id:
         claim = get_object_or_404(Claim, pk = claim_id)
@@ -93,7 +93,7 @@ def claim_report(request, monitoring_id):
             if not request.user.is_superuser and user != request.user: return HttpResponseForbidden('Forbidden')
             claims = Claim.objects.filter(score__task__monitoring = monitoring, score__task__user = user, open_date__gte = from_date, open_date__lte = to_date)
     if request.user.is_superuser:
-        form.fields['expert'].queryset = User.objects.filter(task__score__claim__isnull = False).annotate()
+        form.fields['expert'].queryset = User.objects.filter(task__score__claim__isnull = False, task__monitoring = monitoring).annotate()
     else:
         form.fields['expert'].queryset = User.objects.filter(pk = request.user.pk)
     return render_to_response(
