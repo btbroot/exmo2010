@@ -17,7 +17,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments %}
+{% load i18n comments check_object_permission %}
+{% check_object_permission exmo2010.comment_score object as can_comment %}
 {% if can_comment %}
 <p><hr>
 <div id='score_comment'>
