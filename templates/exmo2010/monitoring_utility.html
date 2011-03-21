@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n check_object_permission %}
 <div id="utility">
 
   <a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations' %}</a> /
@@ -29,7 +29,10 @@
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
   <a href="{% url exmo.exmo2010.view.claim.claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
 {% endif %}
+{% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
+{% if can_rating %}
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a> /
+{% endif %}
 {% if user.is_superuser %}
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_parameter_found_report monitoring.pk %}" target="_blank">{% trans 'Parameter found report' %}</a> /
 {% endif %}
