@@ -277,7 +277,6 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('Openness, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
-      queryset = queryset.filter(user = user)
     # Or, without Expert
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
@@ -454,9 +453,7 @@ def tasks_by_monitoring(request, id):
     title = _('Task list for %s') % monitoring
     task_list = []
     queryset = Task.objects.filter(monitoring = monitoring)
-    if profile and profile.is_expert:
-        queryset = queryset.filter(user = request.user)
-    elif not request.user.is_superuser:
+    if not request.user.is_superuser:
         queryset = Task.approved_tasks.filter(monitoring = monitoring)
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
