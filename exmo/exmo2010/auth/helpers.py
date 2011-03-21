@@ -28,6 +28,8 @@ def monitoring_permission(user, priv, monitoring):
             if profile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
             elif profile.is_organization and Task.approved_tasks.filter(monitoring = monitoring, organization__in = profile.organization.all()).count() > 0:
                 return True
+    if priv == 'exmo2010.rating_monitoring':
+        if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
     return False
 
 
