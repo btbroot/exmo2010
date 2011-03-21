@@ -18,6 +18,7 @@
 from django.template import Library, Node
 from django.db.models import get_model
 from django.template import Variable, resolve_variable
+from django import template
 
 
 register = Library()
