@@ -264,7 +264,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     user = request.user
     profile = None
     if user.is_active: profile = user.get_profile()
-    if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpresponseForbidden(_('Forbidden'))
+    if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %s') % organization.name
     queryset = Task.objects.filter(monitoring = monitoring, organization = organization)
     # Or, filtered by user
