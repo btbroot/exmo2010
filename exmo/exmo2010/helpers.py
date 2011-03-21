@@ -72,11 +72,10 @@ def get_recipients_nonadmin(comment):
     res = []
     try:
         if score.task.approved:
-            g = Group.objects.get(name = score.task.organization.keyname)
-            users = User.objects.filter(groups = g)
-            for u in users:
-                if u.email and u.is_active:
-                    res.append(u.email)
+            from exmo.exmo2010 import models
+            for profile in models.UserProfile.objects.filter(organization = score.task.organization):
+                if profile.user.email and profile.user.is_active:
+                    res.append(profile.user.email)
     except:
         pass
     if not comment.user.is_superuser and not comment.user == score.task.user:
@@ -169,7 +168,7 @@ def score_change_notify(sender, **kwargs):
         from exmo.exmo2010 import models
         rcpt = []
         for profile in models.UserProfile.objects.filter(organization = score.task.organization):
-            if profile.user.email and profile.notify_score_change:
+            if profile.user.is_active and profile.user.email and profile.notify_score_change:
                 rcpt.append(profile.user.email)
         rcpt = list(set(rcpt))
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
