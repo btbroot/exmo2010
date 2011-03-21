@@ -31,6 +31,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 @login_required
 def user_profile(request, id):
     _user = get_object_or_404(User, pk = id)
+    messages = []
     if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
     if request.method == 'POST':
@@ -42,6 +43,8 @@ def user_profile(request, id):
                 profile.notify_score_change = form.cleaned_data['notify_score_change']
                 profile.save()
             redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk])
+            messages.append(_("The %(verbose_name)s was updated successfully.") %\
+                                    {"verbose_name": user._meta.verbose_name})
     else:
         form = UserForm(instance = _user)
     return render_to_response(
@@ -49,5 +52,6 @@ def user_profile(request, id):
         {
             'form': form,
             'object': _user,
+            'messages': messages,
         },
         context_instance=RequestContext(request))
