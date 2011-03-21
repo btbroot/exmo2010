@@ -52,7 +52,8 @@ def task_permission(user, priv, task):
     elif priv == 'exmo2010.comment_score':
         if user.is_active:
             profile = user.get_profile()
-            if profile.is_organization and user.has_perm('exmo2010.view_task', task): return True
+            if profile.is_organization and user.has_perm('exmo2010.view_task', task) and task.organization in profile.organization.all():
+                return True
     return False
 
 
