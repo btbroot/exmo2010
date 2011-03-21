@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% load i18n comments %}
-{% if user.is_superuser or user.userprofile.is_expert or user.userprofile.is_organization %}
+{% if can_comment %}
 <p><hr>
 <div id='score_comment'>
 {% get_comment_list for object as comment_list %}
@@ -41,8 +41,6 @@
     </tbody>
     </table>
 {% endif %}
-{% if can_comment %}
     <p><a href="{% url exmo.exmo2010.view.score.score_add_comment object.pk %}">{% trans 'Add new comment' %}</a></p>
-{% endif %}
 </div>
 {% endif %}
