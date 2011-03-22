@@ -86,14 +86,16 @@
         <td colspan=7></td>
       {%endif%}
       <td width=6%>
-       {% if user.is_superuser or user.userprofile.is_expert %}
-        {%if object.score_ok %}<a href="{% url exmo.exmo2010.view.score.score_manager object.score_pk,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a><br />
-        {% endif %}
+      {%if score %}
+       {% check_object_permission exmo2010.delete_score score as can_delete %}
+       {% if can_delete %}
+        <a href="{% url exmo.exmo2010.view.score.score_manager score.pk,'delete' %}?{{request.GET.urlencode}}" class="deletelink">{% trans "Delete" %}</a><br />
        {% endif %}
-       {% check_object_permission exmo2010.comment_score task as can_comment %}
+       {% check_object_permission exmo2010.comment_score score as can_comment %}
        {% if can_comment %}
-        {%if object.score_pk %}<a href="{% url exmo.exmo2010.view.score.score_add_comment object.score_pk %}">{% trans "Comment" %}</a>{% endif %}
+        <a href="{% url exmo.exmo2010.view.score.score_add_comment score.pk %}">{% trans "Comment" %}</a>
        {% endif %}
+      {% endif %}
       </td>
       </tr>
 {% endfor %}
