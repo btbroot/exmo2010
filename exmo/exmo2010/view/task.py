@@ -31,6 +31,7 @@ from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponseForbidden
@@ -40,7 +41,6 @@ from reversion import revision
 
 
 import csv
-from django.http import HttpResponse
 @login_required
 def task_export(request, id):
 
@@ -386,10 +386,10 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
             try:
                 task.ready = True
             except ValidationError, e:
-                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             return HttpResponseRedirect(redirect)
         else:
-          return HttpResponseForbidden(_('Already closed'))
+          return HttpResponse(_('Already closed'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
       title = _('Approve task for %s') % task
@@ -410,9 +410,9 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
             try:
                 task.approved = True
             except ValidationError, e:
-                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             return HttpResponseRedirect(redirect)
-        else: return HttpResponseForbidden(_('Already approved'))
+        else: return HttpResponse(_('Already approved'))
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
       title = _('Open task %s') % task
@@ -433,9 +433,9 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
             try:
                 task.open = True
             except ValidationError, e:
-                return HttpResponseForbidden('%s' % e.message_dict.get('__all__')[0])
+                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             return HttpResponseRedirect(redirect)
-        else: return HttpResponseForbidden(_('Already open'))
+        else: return HttpResponse(_('Already open'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       title = _('Edit task %s') % task
