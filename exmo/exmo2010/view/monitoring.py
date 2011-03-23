@@ -375,11 +375,14 @@ def monitoring_parameter_filter(request, id):
         form = ParameterFilterForm(request.GET)
         form.fields['parameter'].queryset = Parameter.objects.filter(monitoring = monitoring)
         if form.is_valid():
+            parameter = form.cleaned_data['parameter']
             queryset = Score.objects.filter(
                 task__monitoring = monitoring,
-                parameter = form.cleaned_data['parameter'],
+                parameter = parameter,
                 found = form.cleaned_data['found'],
                 task__status = Task.TASK_APPROVED
+            ).exclude(
+                task__organization__in = parameter.exclude.all(),
             )
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
