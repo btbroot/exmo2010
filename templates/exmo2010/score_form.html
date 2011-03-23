@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
+{% load i18n adminmedia check_object_permission %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
@@ -102,7 +102,15 @@
     {% endif %}
     </div>
   </div>
-  <p><input type="submit" value={% trans 'Save' %} /><input type="reset" class=button /></p>
+  <p>
+    <input type="submit" value={% trans 'Save' %} /><input type="reset" class=button />
+    {% if object %}
+    {% check_object_permission exmo2010.delete_score object as can_delete %}
+    {% if can_delete %}
+    &nbsp;<INPUT TYPE="BUTTON" STYLE='background: red' VALUE="{% trans 'Delete' %}" ONCLICK="window.location.href='{% url exmo.exmo2010.view.score.score_manager object.pk,'delete' %}?{{request.GET.urlencode}}'" />
+    {% endif %}
+    {% endif %}
+  </p>
 </form>
 </div>
 {% if object %}
