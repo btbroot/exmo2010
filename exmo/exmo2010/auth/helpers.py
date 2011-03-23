@@ -70,6 +70,13 @@ def score_permission(user, priv, score):
             profile = user.get_profile()
             if profile.is_organization and user.has_perm('exmo2010.view_task', score.task) and score.task.organization in profile.organization.all():
                 return True
+    elif priv == 'exmo2010.view_comment_score':
+        if user.is_active:
+            profile = user.get_profile()
+            if profile.is_organization and user.has_perm('exmo2010.view_task', score.task) and score.task.organization in profile.organization.all():
+                return True
+            elif profile.is_expert and user.has_perm('exmo2010.view_task', score.task) and score.task.user == user:
+                return True
     return False
 
 
