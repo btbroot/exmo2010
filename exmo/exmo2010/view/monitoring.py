@@ -430,7 +430,10 @@ def monitoring_parameter_found_report(request, id):
             task__monitoring = monitoring,
             task__status = Task.TASK_APPROVED,
             found = 1,
-            parameter = parameter).count()
+            parameter = parameter,
+        ).exclude(
+            task__organization__in = parameter.exclude.all(),
+        ).count()
         score_count_total += score_count
         organization_count_total += parameter.organization_count
         score_per_organization = float(score_count) / parameter.organization_count * 100
