@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-24 11:26+0300\n"
+"POT-Creation-Date: 2011-03-24 18:12+0300\n"
 "PO-Revision-Date: 2011-03-24 11:25+0300\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
@@ -478,8 +478,8 @@ msgid "Report for %(monitoring)s by parameter and found"
 msgstr "Отчёт для %(monitoring)s по параметру и наличию"
 
 #: exmo/exmo2010/view/organization.py:35
-#, python-format
-msgid "Organizations for monitoring %(name)s with type %(type)s"
+#, fuzzy, python-format
+msgid "Organizations for monitoring %(name)s (%(type)s)"
 msgstr "Органы власти мониторинга %(name)s для типа %(type)s"
 
 #: exmo/exmo2010/view/organization.py:47 exmo/exmo2010/view/organization.py:54
@@ -597,9 +597,9 @@ msgstr "Добавить комментарий"
 msgid "Import CSV for task %s"
 msgstr "Импортировать CVS для задачи %s"
 
-#: exmo/exmo2010/view/task.py:268 exmo/exmo2010/view/task.py:453
-#, python-format
-msgid "Task list for %s"
+#: exmo/exmo2010/view/task.py:268
+#, fuzzy, python-format
+msgid "Task list for %(org)s"
 msgstr "Задачи для %s"
 
 #: exmo/exmo2010/view/task.py:275 exmo/exmo2010/view/task.py:283
@@ -659,6 +659,11 @@ msgstr "Задача уже открыта"
 #, python-format
 msgid "Edit task %s"
 msgstr "Редактировать задачу %s"
+
+#: exmo/exmo2010/view/task.py:453
+#, fuzzy, python-format
+msgid "Task list for %(monitoring)s (%(type)s)"
+msgstr "Удалить задачу %(org)s мониторинга %(type)s"
 
 #: exmo/exmo2010/view/task.py:529
 msgid "Mass assign tasks"
@@ -1279,9 +1284,6 @@ msgstr "Задача "
 
 #~ msgid "Add new task for %(org)s of %(type)s"
 #~ msgstr "Добавить задачу %(org)s мониторинга %(type)s"
-
-#~ msgid "Delete task for %(org)s of %(type)s"
-#~ msgstr "Удалить задачу %(org)s мониторинга %(type)s"
 
 #~ msgid "Documentation"
 #~ msgstr "Документация"

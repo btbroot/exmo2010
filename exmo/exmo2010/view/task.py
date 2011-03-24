@@ -265,7 +265,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     profile = None
     if user.is_active: profile = user.get_profile()
     if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    title = _('Task list for %s') % organization.name
+    title = _('Task list for %(org)s') % { 'org': organization.name }
     queryset = Task.objects.filter(monitoring = monitoring, organization = organization)
     # Or, filtered by user
     if user.is_superuser:
@@ -450,7 +450,7 @@ def tasks_by_monitoring(request, id):
     profile = None
     if request.user.is_active: profile = request.user.get_profile()
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    title = _('Task list for %s') % monitoring
+    title = _('Task list for %(monitoring)s (%(type)s)') %  { 'monitoring': monitoring.name , 'type': monitoring.type }
     task_list = []
     queryset = Task.objects.filter(monitoring = monitoring)
     for task in queryset:
