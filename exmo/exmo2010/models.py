@@ -351,7 +351,7 @@ class Task(models.Model):
     if self.ready or self.approved:
         complete = Task.objects.extra(select = {'complete': Task._complete}).get(pk = self.pk).complete
         if complete != 100:
-            raise ValidationError(_('Ready task must be 100% complete.'))
+            raise ValidationError(_('Ready task must be 100 percent complete.'))
     if self.approved:
         if Task.approved_tasks.filter(monitoring = self.monitoring, organization = self.organization).count() != 0:
             raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
