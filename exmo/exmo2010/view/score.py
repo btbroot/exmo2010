@@ -158,7 +158,7 @@ def score_list_by_task(request, task_id, report=None):
         request,
         headers=(
           (_('Code'), None, None, None, None),
-          (_('Name'), 'name', 'name', None, None),
+          (_('Parameter'), 'name', 'name', None, None),
           (_('Found'), None, None, None, None),
           (_('Complete'), None, None, None, None),
           (_('Topical'), None, None, None, None),
