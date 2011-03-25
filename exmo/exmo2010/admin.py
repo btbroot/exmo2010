@@ -37,7 +37,9 @@ class ParameterMonitoringPropertyInline(admin.StackedInline):
   max_num = 300
 
 class TaskAdmin(VersionAdmin):
-    pass
+    search_fields = ('user__username', 'organization__name')
+    list_display = ('user', 'organization',)
+    list_filter = ('user','status')
 
 class ScoreAdmin(VersionAdmin):
     pass
