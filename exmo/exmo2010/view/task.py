@@ -384,6 +384,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 )
           elif request.method == 'POST':
             try:
+                revision.comment = _('Task ready')
                 task.ready = True
             except ValidationError, e:
                 return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -408,6 +409,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 )
           elif request.method == 'POST':
             try:
+                revision.comment = _('Task approved')
                 task.approved = True
             except ValidationError, e:
                 return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -431,6 +433,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 )
           elif request.method == 'POST':
             try:
+                revision.comment = _('Task openned')
                 task.open = True
             except ValidationError, e:
                 return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -440,6 +443,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     else: #update
       title = _('Edit task %s') % task
       if request.user.is_superuser:
+        revision.comment = _('Task updated')
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
 

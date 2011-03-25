@@ -134,8 +134,13 @@ def claim_notification(sender, **kwargs):
 
 
 
+from reversion import revision
 @disable_for_loaddata
 def post_save_model(sender, instance, created, **kwargs):
+    must_register = False
+    if revision.is_registered(instance.__class__):
+        revision.unregister(instance.__class__)
+        must_register = True
     #update task openness hook
     from exmo.exmo2010 import models
     if instance.__class__ == models.Score:
@@ -144,6 +149,8 @@ def post_save_model(sender, instance, created, **kwargs):
         for task in instance.task_set.all(): task.update_openness()
     if instance.__class__ == models.Task():
         instance.update_openness()
+    if must_register:
+        revision.register(instance.__class__)
 
 
 
