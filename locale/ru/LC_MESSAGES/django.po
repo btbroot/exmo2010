@@ -17,21 +17,22 @@
 #
 #
 # Boris Savelev <b.savelev@drweb.com>, 2011.
+# Boris Savelev <bsavelev@svobodainfo.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-24 18:12+0300\n"
-"PO-Revision-Date: 2011-03-24 11:25+0300\n"
-"Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
+"POT-Creation-Date: 2011-03-26 09:44+0300\n"
+"PO-Revision-Date: 2011-03-26 09:49+0300\n"
+"Last-Translator: Boris Savelev <bsavelev@svobodainfo.org>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Lokalize 1.0\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 1.1\n"
 
 #: django403/views.py:34
 #, python-format
@@ -111,7 +112,7 @@ msgstr ""
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
 
-#: exmo/exmo2010/helpers.py:174
+#: exmo/exmo2010/helpers.py:181
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
@@ -264,8 +265,8 @@ msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
 "%(organization)s already exist."
 msgstr ""
-"Для мониторинга %(monitoring)s и органа/организации %(organization)s уже существует "
-"одобренная задача."
+"Для мониторинга %(monitoring)s и органа/организации %(organization)s уже "
+"существует одобренная задача."
 
 #: exmo/exmo2010/models.py:400
 msgid "task"
@@ -369,10 +370,10 @@ msgstr "органы/организации для просмотра"
 #: exmo/exmo2010/view/score.py:140 exmo/exmo2010/view/score.py:195
 #: exmo/exmo2010/view/task.py:55 exmo/exmo2010/view/task.py:172
 #: exmo/exmo2010/view/task.py:267 exmo/exmo2010/view/task.py:349
-#: exmo/exmo2010/view/task.py:369 exmo/exmo2010/view/task.py:393
-#: exmo/exmo2010/view/task.py:416 exmo/exmo2010/view/task.py:439
-#: exmo/exmo2010/view/task.py:444 exmo/exmo2010/view/task.py:452
-#: exmo/exmo2010/view/task.py:458 exmo/exmo2010/view/task.py:497
+#: exmo/exmo2010/view/task.py:369 exmo/exmo2010/view/task.py:394
+#: exmo/exmo2010/view/task.py:418 exmo/exmo2010/view/task.py:442
+#: exmo/exmo2010/view/task.py:448 exmo/exmo2010/view/task.py:456
+#: exmo/exmo2010/view/task.py:462 exmo/exmo2010/view/task.py:501
 #: exmo/exmo2010/view/user.py:36
 msgid "Forbidden"
 msgstr "Запрещено"
@@ -447,7 +448,7 @@ msgid "Experts of monitoring %(name)s with type %(type)s"
 msgstr "Эксперты мониторинга %(name)s для типа %(type)s"
 
 #: exmo/exmo2010/view/monitoring.py:326 exmo/exmo2010/view/task.py:274
-#: exmo/exmo2010/view/task.py:464
+#: exmo/exmo2010/view/task.py:468
 msgid "Expert"
 msgstr "Эксперт"
 
@@ -478,14 +479,14 @@ msgid "Report for %(monitoring)s by parameter and found"
 msgstr "Отчёт для %(monitoring)s по параметру и наличию"
 
 #: exmo/exmo2010/view/organization.py:35
-#, fuzzy, python-format
+#, python-format
 msgid "Organizations for monitoring %(name)s (%(type)s)"
-msgstr "Органы/организации мониторинга %(name)s для типа %(type)s"
+msgstr "Органы/организации цикла мониторинга %(name)s (%(type)s)"
 
 #: exmo/exmo2010/view/organization.py:47 exmo/exmo2010/view/organization.py:54
 #: exmo/exmo2010/view/task.py:273 exmo/exmo2010/view/task.py:282
-#: exmo/exmo2010/view/task.py:291 exmo/exmo2010/view/task.py:463
-#: exmo/exmo2010/view/task.py:470 exmo/exmo2010/view/task.py:476
+#: exmo/exmo2010/view/task.py:291 exmo/exmo2010/view/task.py:467
+#: exmo/exmo2010/view/task.py:474 exmo/exmo2010/view/task.py:480
 #: templates/exmo2010/claim_report.html:51 templates/exmo2010/rating.html:36
 msgid "Organization"
 msgstr "Наименование органа/организации"
@@ -598,18 +599,18 @@ msgid "Import CSV for task %s"
 msgstr "Импортировать CVS для задачи %s"
 
 #: exmo/exmo2010/view/task.py:268
-#, fuzzy, python-format
+#, python-format
 msgid "Task list for %(org)s"
-msgstr "Задачи для %s"
+msgstr "Задачи для %(org)s"
 
 #: exmo/exmo2010/view/task.py:275 exmo/exmo2010/view/task.py:283
-#: exmo/exmo2010/view/task.py:465 exmo/exmo2010/view/task.py:471
+#: exmo/exmo2010/view/task.py:469 exmo/exmo2010/view/task.py:475
 msgid "Status"
 msgstr "Статус"
 
 #: exmo/exmo2010/view/task.py:276 exmo/exmo2010/view/task.py:284
-#: exmo/exmo2010/view/task.py:292 exmo/exmo2010/view/task.py:466
-#: exmo/exmo2010/view/task.py:472 exmo/exmo2010/view/task.py:477
+#: exmo/exmo2010/view/task.py:292 exmo/exmo2010/view/task.py:470
+#: exmo/exmo2010/view/task.py:476 exmo/exmo2010/view/task.py:481
 msgid "Complete, %"
 msgstr "Выполнено, %"
 
@@ -633,39 +634,55 @@ msgstr "Удалить задачу %s"
 msgid "Close task %s"
 msgstr "Закрыть задачу %s"
 
-#: exmo/exmo2010/view/task.py:392
+#: exmo/exmo2010/view/task.py:387
+msgid "Task ready"
+msgstr "Задача закрыта"
+
+#: exmo/exmo2010/view/task.py:393
 msgid "Already closed"
 msgstr "Задача уже закрыта"
 
-#: exmo/exmo2010/view/task.py:395
+#: exmo/exmo2010/view/task.py:396
 #, python-format
 msgid "Approve task for %s"
 msgstr "Одобрить задачу %s"
 
-#: exmo/exmo2010/view/task.py:415
+#: exmo/exmo2010/view/task.py:412
+msgid "Task approved"
+msgstr "Задача одобрена"
+
+#: exmo/exmo2010/view/task.py:417
 msgid "Already approved"
 msgstr "Задача уже одобрена"
 
-#: exmo/exmo2010/view/task.py:418
+#: exmo/exmo2010/view/task.py:420
 #, python-format
 msgid "Open task %s"
 msgstr "Открыть задачу %s"
 
-#: exmo/exmo2010/view/task.py:438
+#: exmo/exmo2010/view/task.py:436
+msgid "Task openned"
+msgstr "Задача открыта"
+
+#: exmo/exmo2010/view/task.py:441
 msgid "Already open"
 msgstr "Задача уже открыта"
 
-#: exmo/exmo2010/view/task.py:441
+#: exmo/exmo2010/view/task.py:444
 #, python-format
 msgid "Edit task %s"
 msgstr "Редактировать задачу %s"
 
-#: exmo/exmo2010/view/task.py:453
-#, fuzzy, python-format
-msgid "Task list for %(monitoring)s (%(type)s)"
-msgstr "Удалить задачу %(org)s мониторинга %(type)s"
+#: exmo/exmo2010/view/task.py:446
+msgid "Task updated"
+msgstr "Задача  обновлена"
 
-#: exmo/exmo2010/view/task.py:529
+#: exmo/exmo2010/view/task.py:457
+#, python-format
+msgid "Task list for %(monitoring)s (%(type)s)"
+msgstr "Задачи цикла мониторинга %(monitoring)s (%(type)s)"
+
+#: exmo/exmo2010/view/task.py:533
 msgid "Mass assign tasks"
 msgstr "Массовое назначение задач"
 
@@ -1254,9 +1271,6 @@ msgstr "Задача "
 #~ msgstr ""
 #~ "Только закрытая задача может быть одобрена для органа/организации %(org)s "
 #~ "мониторинга %(mon)s."
-
-#~ msgid "Task closed"
-#~ msgstr "Задача закрыта"
 
 #~ msgid "Delete score for %(org)s from %(user)s"
 #~ msgstr "Удалить оценку для %(org)s от %(user)s"
