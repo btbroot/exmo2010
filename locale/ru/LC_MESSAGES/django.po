@@ -134,7 +134,7 @@ msgstr "веб-адрес"
 
 #: exmo/exmo2010/models.py:72 exmo/exmo2010/models.py:144
 msgid "organization type"
-msgstr "тип организации"
+msgstr "тип органа/организации"
 
 #: exmo/exmo2010/models.py:73
 msgid "entity"
@@ -216,7 +216,7 @@ msgstr "цикл мониторинга"
 
 #: exmo/exmo2010/models.py:168
 msgid "excluded organizations"
-msgstr "исключенные организации"
+msgstr "исключенные органы/организации"
 
 #: exmo/exmo2010/models.py:188
 msgid "weight"
@@ -240,7 +240,7 @@ msgstr "пользователь"
 
 #: exmo/exmo2010/models.py:226
 msgid "organization"
-msgstr "орган власти"
+msgstr "Наименование органа/организации"
 
 #: exmo/exmo2010/models.py:228
 msgid "status"
@@ -252,7 +252,7 @@ msgstr "Кид"
 
 #: exmo/exmo2010/models.py:350
 msgid "Ambigous organization type."
-msgstr "Несовместимый тип организации."
+msgstr "Несовместимый тип органа/организации."
 
 #: exmo/exmo2010/models.py:354
 msgid "Ready task must be 100 percent complete."
@@ -264,7 +264,7 @@ msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
 "%(organization)s already exist."
 msgstr ""
-"Для мониторинга %(monitoring)s и организации %(organization)s уже существует "
+"Для мониторинга %(monitoring)s и органа/организации %(organization)s уже существует "
 "одобренная задача."
 
 #: exmo/exmo2010/models.py:400
@@ -355,7 +355,7 @@ msgstr "претензия для %(score)s от %(creator)s"
 
 #: exmo/exmo2010/models.py:604
 msgid "organizations for view"
-msgstr "организации для просмотра"
+msgstr "органы/организации для просмотра"
 
 #: exmo/exmo2010/view/claim.py:36 exmo/exmo2010/view/monitoring.py:47
 #: exmo/exmo2010/view/monitoring.py:68 exmo/exmo2010/view/monitoring.py:134
@@ -424,7 +424,7 @@ msgstr "Тип"
 
 #: exmo/exmo2010/view/monitoring.py:59
 msgid "Monitoring list"
-msgstr "Список циклов мониторингов"
+msgstr "Перечень циклов мониторинга"
 
 #: exmo/exmo2010/view/monitoring.py:75
 #, python-format
@@ -480,7 +480,7 @@ msgstr "Отчёт для %(monitoring)s по параметру и наличи
 #: exmo/exmo2010/view/organization.py:35
 #, fuzzy, python-format
 msgid "Organizations for monitoring %(name)s (%(type)s)"
-msgstr "Органы власти мониторинга %(name)s для типа %(type)s"
+msgstr "Органы/организации мониторинга %(name)s для типа %(type)s"
 
 #: exmo/exmo2010/view/organization.py:47 exmo/exmo2010/view/organization.py:54
 #: exmo/exmo2010/view/task.py:273 exmo/exmo2010/view/task.py:282
@@ -488,7 +488,7 @@ msgstr "Органы власти мониторинга %(name)s для тип�
 #: exmo/exmo2010/view/task.py:470 exmo/exmo2010/view/task.py:476
 #: templates/exmo2010/claim_report.html:51 templates/exmo2010/rating.html:36
 msgid "Organization"
-msgstr "Орган власти"
+msgstr "Наименование органа/организации"
 
 #: exmo/exmo2010/view/organization.py:48
 #: templates/exmo2010/monitoring_utility.html:24
@@ -498,17 +498,17 @@ msgstr "Задачи "
 #: exmo/exmo2010/view/organization.py:77
 #, python-format
 msgid "Add new organization for %s"
-msgstr "Добавить новый орган власти для %s"
+msgstr "Добавить новый орган/организацию для %s"
 
 #: exmo/exmo2010/view/organization.py:81
 #, python-format
 msgid "Delete organization %s"
-msgstr "Удалить орган власти %s"
+msgstr "Удалить орган/организацию %s"
 
 #: exmo/exmo2010/view/organization.py:95
 #, python-format
 msgid "Edit organization %s"
-msgstr "Редактировать орган власти %s"
+msgstr "Редактировать орган/организацию %s"
 
 #: exmo/exmo2010/view/parameter.py:39
 #, python-format
@@ -801,7 +801,7 @@ msgstr "Комментарий"
 #: templates/exmo2010/task_import_log.html:27
 #: templates/exmo2010/task_list.html:26
 msgid "Organizations of "
-msgstr "Органы власти цикла мониторинга "
+msgstr "Органы/организации цикла мониторинга "
 
 #: templates/exmo2010/claim_form.html:26
 #: templates/exmo2010/parameter_confirm_delete.html:27
@@ -901,11 +901,11 @@ msgstr "Подкатегория"
 #: templates/exmo2010/monitoring_parameter_found_report.html:45
 #: templates/exmo2010/monitoring_utility.html:23
 msgid "Organizations"
-msgstr "Органы власти"
+msgstr "Органы/организации"
 
 #: templates/exmo2010/monitoring_parameter_found_report.html:46
 msgid "Organizations with 'found=1'"
-msgstr "Органы власти с найденным параметром"
+msgstr "Органы/организации с найденным параметром"
 
 #: templates/exmo2010/monitoring_parameter_found_report.html:64
 msgid "Total subcategory"
@@ -921,19 +921,19 @@ msgstr "Всего"
 
 #: templates/exmo2010/monitoring_stats.html:22
 msgid "Organizations count"
-msgstr "Всего органов власти"
+msgstr "Всего органов/организаций"
 
 #: templates/exmo2010/monitoring_stats.html:23
 msgid "Organizations with task"
-msgstr "Органы власти назначенные экспертам"
+msgstr "Органы/организации назначенные экспертам"
 
 #: templates/exmo2010/monitoring_stats.html:24
 msgid "Organizations with ready task"
-msgstr "Органы власти с готовыми задачами"
+msgstr "Органы/организации с готовыми задачами"
 
 #: templates/exmo2010/monitoring_stats.html:25
 msgid "Organizations with approved task"
-msgstr "Органы власти с одобренными задачами"
+msgstr "Органы/организации с одобренными задачами"
 
 #: templates/exmo2010/monitoring_utility.html:26
 msgid "Experts"
@@ -957,15 +957,15 @@ msgstr "Рейтинг"
 
 #: templates/exmo2010/organization_confirm_delete.html:31
 msgid "When you delete organization you also delete this tasks:"
-msgstr "При удалении органа власти Вы так же удалите следующие задачи:"
+msgstr "При удалении органа/организации Вы так же удалите следующие задачи:"
 
 #: templates/exmo2010/organization_confirm_delete.html:38
 msgid "Delete this organization?"
-msgstr "Удалить орган власти?"
+msgstr "Удалить орган/организацию?"
 
 #: templates/exmo2010/organization_list.html:38
 msgid "Add new organization"
-msgstr "Добавить орган власти"
+msgstr "Добавить орган/организацию"
 
 #: templates/exmo2010/paginator.html:27
 msgid "Prev"
@@ -1252,7 +1252,7 @@ msgstr "Задача "
 
 #~ msgid "Only closed task can be approved for %(org)s of monitoring %(mon)s."
 #~ msgstr ""
-#~ "Только закрытая задача может быть одобрена для организации %(org)s "
+#~ "Только закрытая задача может быть одобрена для органа/организации %(org)s "
 #~ "мониторинга %(mon)s."
 
 #~ msgid "Task closed"
