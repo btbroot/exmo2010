@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-26 09:44+0300\n"
-"PO-Revision-Date: 2011-03-26 09:49+0300\n"
+"POT-Creation-Date: 2011-03-27 21:34+0400\n"
+"PO-Revision-Date: 2011-03-27 21:35+0400\n"
 "Last-Translator: Boris Savelev <bsavelev@svobodainfo.org>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -817,25 +817,8 @@ msgstr "Комментарий"
 #: templates/exmo2010/task_form.html:27
 #: templates/exmo2010/task_import_log.html:27
 #: templates/exmo2010/task_list.html:26
-msgid "Organizations of "
+msgid "Organizations for monitoring "
 msgstr "Органы/организации цикла мониторинга "
-
-#: templates/exmo2010/claim_form.html:26
-#: templates/exmo2010/parameter_confirm_delete.html:27
-#: templates/exmo2010/parameter_form.html:27
-#: templates/exmo2010/score_comment_form.html:26
-#: templates/exmo2010/score_confirm_delete.html:25
-#: templates/exmo2010/score_detail.html:26
-#: templates/exmo2010/score_form.html:26 templates/exmo2010/score_list.html:32
-#: templates/exmo2010/task_confirm_approve.html:25
-#: templates/exmo2010/task_confirm_close.html:25
-#: templates/exmo2010/task_confirm_delete.html:25
-#: templates/exmo2010/task_confirm_open.html:25
-#: templates/exmo2010/task_form.html:27 templates/exmo2010/task_form.html:30
-#: templates/exmo2010/task_import_log.html:27
-#: templates/exmo2010/task_list.html:26
-msgid " for type "
-msgstr " для типа "
 
 #: templates/exmo2010/claim_form.html:28
 #: templates/exmo2010/parameter_confirm_delete.html:29
@@ -1199,8 +1182,8 @@ msgid "Open this task?"
 msgstr "Открыть задачу?"
 
 #: templates/exmo2010/task_form.html:30
-msgid "Task of "
-msgstr "Задача "
+msgid "Task for monitoring "
+msgstr "Задачи цикла мониторинга "
 
 #: templates/exmo2010/task_import_log.html:22
 msgid "Import results"
@@ -1241,6 +1224,15 @@ msgstr "открыть"
 #: templates/exmo2010/task_report.html:25
 msgid "Task "
 msgstr "Задача "
+
+#~ msgid "Organizations of "
+#~ msgstr "Органы/организации цикла мониторинга "
+
+#~ msgid " for type "
+#~ msgstr " для типа "
+
+#~ msgid "Task of "
+#~ msgstr "Задача "
 
 #~ msgid "Action"
 #~ msgstr "Действие"

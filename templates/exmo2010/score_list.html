@@ -29,7 +29,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.organization.organization_list task.monitoring.pk %}">{% trans 'Organizations of ' %}{{task.monitoring.name}}{% trans ' for type ' %}{{ task.monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list task.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.monitoring.name}}({{ task.monitoring.type }})</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 {{title}}
 </div>
