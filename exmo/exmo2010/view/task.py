@@ -358,7 +358,10 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     organization = task.organization
     organization_from_get = request.GET.get('organization','')
     if organization_id or organization_from_get:
-        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+        q = request.GET.copy()
+        if organization_from_get:
+            q.pop('organization')
+        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
     else:
         redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
