@@ -25,7 +25,7 @@
       {{ header.text }}
       {% if header.sortable %}</a>{% endif %}
       {% if header.filterable %}
-        <form>{% csrf_token %}
+        <form action="." method="GET">
         {% if header.select %}
             <select name="filter{{ header.i }}">
                 <option value="">---</option>
