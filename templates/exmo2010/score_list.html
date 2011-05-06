@@ -20,11 +20,7 @@
 {% endcomment %}
 {% load table_header i18n get_object_by_pk adminmedia %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/changelists.css" />
-{% if user.is_superuser or user.userprofile.is_expert %}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list_expert.css" />
-{% else %}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/score_list.css" />
-{% endif %}
 {% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
