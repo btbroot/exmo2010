@@ -22,20 +22,20 @@
       {{score.found}}
       </td>
       <td width=55px class="{{score|criteria_css_class:'complete'}}">
-      {% if score.parameter.type.complete %}{{score.complete|default:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.complete %}{{score.complete|default:"-"}}{% else %}&nbsp;{% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'topical'}}">
-      {% if score.parameter.type.topical %}{{score.topical|default:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.topical %}{{score.topical|default:"-"}}{% else %}&nbsp;{% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'accessible'}}">
-      {% if score.parameter.type.accessible %}{{score.accessible|default:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.accessible %}{{score.accessible|default:"-"}}{% else %}&nbsp;{% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'hypertext'}}">
-      {% if score.parameter.type.hypertext %}{{score.hypertext|default_if_none:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.hypertext %}{{score.hypertext|default_if_none:"-"}}{% else %}&nbsp;{% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'document'}}">
-      {% if score.parameter.type.document %}{{score.document|default_if_none:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.document %}{{score.document|default_if_none:"-"}}{% else %}&nbsp;{% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'image'}}">
-      {% if score.parameter.type.image %}{{score.image|default_if_none:"&nbsp;"}}{% else %}&nbsp;{% endif %}
+      {% if score.parameter.type.image %}{{score.image|default_if_none:"-"}}{% else %}&nbsp;{% endif %}
       </td>
