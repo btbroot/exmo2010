@@ -53,7 +53,7 @@ def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
-    parameters = Parameter.objects.filter(monitoring = task.monitoring).exclude(exclude = task.organization)
+    parameters = Parameter.objects.filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
     response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id

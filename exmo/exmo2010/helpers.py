@@ -99,7 +99,7 @@ def comment_notification(sender, **kwargs):
     score = comment.content_object
     subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.monitoring,
+            'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.fullcode(),
             }
@@ -121,7 +121,7 @@ def claim_notification(sender, **kwargs):
     score = claim.score
     subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim') % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.monitoring,
+            'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.fullcode(),
             }
@@ -180,7 +180,7 @@ def score_change_notify(sender, **kwargs):
         rcpt = list(set(rcpt))
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.monitoring,
+            'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.fullcode(),
         }

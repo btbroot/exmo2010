@@ -62,7 +62,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
         return render_to_response(
             'exmo2010/claim_form.html',
             {
-                'monitoring': score.task.monitoring,
+                'monitoring': score.task.organization.monitoring,
                 'task': score.task,
                 'score': score,
                 'title': title,

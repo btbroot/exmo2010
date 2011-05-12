@@ -37,13 +37,13 @@ def monitoring_permission(user, priv, monitoring):
 def task_permission(user, priv, task):
     if priv == 'exmo2010.view_task':
         if user.is_active:
-            if task.approved and task.monitoring.publish_date: return True
+            if task.approved and task.organization.monitoring.publish_date: return True
             profile = user.profile
             if profile.is_expert:
                 if user == task.user: return True
             elif profile.is_organization or profile.is_customer:
                 if task.organization in profile.organization.all() and task.approved: return True
-        elif task.approved and user.has_perm('exmo2010.view_monitoring', task.monitoring):
+        elif task.approved and user.has_perm('exmo2010.view_monitoring', task.organization.monitoring):
             return True #anonymous user
     elif priv == 'exmo2010.close_task':
         if task.open and task.user == user: return True
