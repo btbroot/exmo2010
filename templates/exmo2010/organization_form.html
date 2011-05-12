@@ -23,7 +23,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{{ monitoring.type }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{{ monitoring }}</a>&rsaquo;
 {{ title }}
 </div>
 {% endblock %}
@@ -38,7 +38,7 @@
   <p>{{form.keywords.label_tag}}{{ form.keywords }} {{ form.keywords.errors }}</p>
   <p>{{form.comments.label_tag}}{{ form.comments }} {{ form.comments.errors }}</p>
   <p>{{form.keyname.label_tag}}{{ form.keyname }} {{ form.keyname.errors }}</p>
-  <p><input type="hidden" name="type" id="id_type" value="{{monitoring.type.pk}}" /></p>
+  <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
   <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}

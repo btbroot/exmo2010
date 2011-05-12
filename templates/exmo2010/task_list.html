@@ -23,7 +23,7 @@
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {% if organization %}
-<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring.name}} ({{ monitoring.type }})</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
 {% endif %}
 {{title}}
 </div>
@@ -76,7 +76,7 @@
         {% endif %}
       </td>
       {% endif %}
-      <td><a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}">{{ object.complete }}</a></td>
+      <td><a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}">{{ object.complete|floatformat:1 }}</a></td>
       {% if organization %}<td>{{ object.openness|floatformat:3 }}</td>{% endif %}
       </tr>
     {% endfor %}

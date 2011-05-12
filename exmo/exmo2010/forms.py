@@ -20,9 +20,7 @@ from django.utils.safestring import mark_safe
 from exmo.exmo2010.models import Score, Task
 from exmo.exmo2010.models import Parameter
 from exmo.exmo2010.models import Claim
-from exmo.exmo2010.models import OrganizationType
 from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010.models import ParameterMonitoringProperty
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -146,9 +144,9 @@ class MonitoringForm(forms.ModelForm):
         _monitoring = kwargs.get('instance')
         super(MonitoringForm, self).__init__(*args, **kwargs)
         initial = {}
-        if _monitoring:
-            for p in ParameterMonitoringProperty.objects.filter(monitoring = _monitoring):
-                initial[p.parameter.pk] = True
+        #if _monitoring:
+        #    for p in ParameterMonitoringProperty.objects.filter(monitoring = _monitoring):
+        #        initial[p.parameter.pk] = True
         self.fields['parameters'].initial = initial
 
     def _media(self):
@@ -173,17 +171,6 @@ class MonitoringForm(forms.ModelForm):
 
     class Meta:
         model = Monitoring
-
-
-
-class ParameterMonitoringPropertyForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        _parameter = kwargs['instance'].parameter
-        super(ParameterMonitoringPropertyForm, self).__init__(*args, **kwargs)
-        self.fields['parameter'].choices = ((_parameter.pk, _parameter),)
-
-    class Meta:
-        model = ParameterMonitoringProperty
 
 
 

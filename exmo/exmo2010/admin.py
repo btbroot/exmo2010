@@ -32,10 +32,6 @@ class ParameterAdmin(admin.ModelAdmin):
         },
     }
 
-class ParameterMonitoringPropertyInline(admin.StackedInline):
-  model = exmo.exmo2010.models.ParameterMonitoringProperty
-  max_num = 300
-
 class TaskAdmin(VersionAdmin):
     search_fields = ('user__username', 'organization__name')
     list_display = ('user', 'organization',)
@@ -44,19 +40,12 @@ class TaskAdmin(VersionAdmin):
 class ScoreAdmin(VersionAdmin):
     pass
 
-class OrganizationTypeAdmin(admin.ModelAdmin):
-  list_display = ('pk', 'name')
-
 class OrganizationAdmin(admin.ModelAdmin):
   list_display = ('pk', 'name')
   search_fields = ('name', )
 
-class FederalAdmin(admin.ModelAdmin):
-  list_display = ('pk', 'name')
-
 class MonitoringAdmin(admin.ModelAdmin):
-  list_display = ('type', 'name')
-  inlines = ParameterMonitoringPropertyInline,
+  list_display = ('name',)
 
 class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__username', )
@@ -68,16 +57,11 @@ class UserProfileAdmin(admin.ModelAdmin):
     }
 
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
-admin.site.register(exmo.exmo2010.models.Category)
-admin.site.register(exmo.exmo2010.models.Subcategory)
 admin.site.register(exmo.exmo2010.models.Parameter, ParameterAdmin)
-admin.site.register(exmo.exmo2010.models.ParameterType)
-admin.site.register(exmo.exmo2010.models.OrganizationType, OrganizationTypeAdmin)
 admin.site.register(exmo.exmo2010.models.Score, ScoreAdmin)
-admin.site.register(exmo.exmo2010.models.Entity)
-admin.site.register(exmo.exmo2010.models.Federal, FederalAdmin)
 admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
 admin.site.register(exmo.exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo.exmo2010.models.Claim)
+admin.site.register(exmo.exmo2010.models.Keyword)
 admin.site.register(exmo.exmo2010.models.UserProfile, UserProfileAdmin)
 admin.site.register(exmo.exmo2010.models.OpennessExpression)

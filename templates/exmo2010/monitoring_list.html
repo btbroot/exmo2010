@@ -38,9 +38,6 @@
             &nbsp;<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
       </td>
-      <td>
-      <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring object.pk %}">{{ object.type }}</a>
-      </td>
       </tr>
     {% endfor %}
   </tbody>

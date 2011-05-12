@@ -21,9 +21,8 @@ from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
+from exmo.exmo2010.models import Organization, Parameter, Score, Task
 from exmo.exmo2010.models import Monitoring, Claim
-from exmo.exmo2010.models import ParameterMonitoringProperty
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -37,7 +36,6 @@ from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo.exmo2010.forms import MonitoringForm
-from exmo.exmo2010.forms import ParameterMonitoringPropertyForm
 
 def monitoring_list(request):
     monitorings_pk = []
@@ -48,7 +46,6 @@ def monitoring_list(request):
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('Monitoring'), 'name', 'name', None, None),
-                (_('Type'), 'type__name', 'type__name', None, None),
                 )
     return table(
         request,
@@ -72,7 +69,7 @@ def monitoring_manager(request, id, method):
         return monitoring_add(request)
     elif method == 'delete':
         monitoring = get_object_or_404(Monitoring, pk = id)
-        title = _('Delete monitoring %s') % monitoring.type
+        title = _('Delete monitoring %s') % monitoring
         return delete_object(
             request,
             model = Monitoring,
@@ -85,7 +82,7 @@ def monitoring_manager(request, id, method):
             )
     else: #update
         monitoring = get_object_or_404(Monitoring, pk = id)
-        title = _('Edit monitoring %s') % monitoring.type
+        title = _('Edit monitoring %s') % monitoring
         from django.forms.models import inlineformset_factory
         formset_class = inlineformset_factory(
             Monitoring,
@@ -248,27 +245,27 @@ def monitoring_by_criteria_mass_export(request, id):
           row['Image'].append('')
         else:
           row['Found'].append(score.found)
-          if score.parameter.type.complete:
+          if score.parameter.complete:
             row['Complete'].append(score.complete)
           else:
             row['Complete'].append('')
-          if score.parameter.type.complete:
+          if score.parameter.complete:
             row['Topical'].append(score.topical)
           else:
             row['Topical'].append('')
-          if score.parameter.type.accessible:
+          if score.parameter.accessible:
             row['Accessible'].append(score.accessible)
           else:
             row['Accessible'].append('')
-          if score.parameter.type.hypertext:
+          if score.parameter.hypertext:
             row['Hypertext'].append(score.hypertext)
           else:
             row['Hypertext'].append('')
-          if score.parameter.type.document:
+          if score.parameter.document:
             row['Document'].append(score.document)
           else:
             row['Document'].append('')
-          if score.parameter.type.image:
+          if score.parameter.image:
             row['Image'].append(score.image)
           else:
             row['Image'].append('')
@@ -295,7 +292,7 @@ def monitoring_by_experts(request, id):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
     experts = Task.objects.filter(monitoring = monitoring).values('user').annotate(cuser=Count('user'))
-    title = _('Experts of monitoring %(name)s with type %(type)s') % {'name': monitoring.name, 'type': monitoring.type}
+    title = _('Experts of monitoring %(name)s') % {'name': monitoring.name}
     epk = [e['user'] for e in experts]
     queryset = User.objects.filter(pk__in = epk).extra(select = {
         'open_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
@@ -347,11 +344,11 @@ def monitoring_by_experts(request, id):
 def monitoring_info(request, id):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
-    organization_all_count = Organization.objects.filter(type = monitoring.type).distinct().count()
-    organization_open_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_OPEN).count()
-    organization_ready_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_READY).count()
-    organization_approved_count = Organization.objects.filter(type = monitoring.type, task__status = Task.TASK_APPROVED).count()
-    organization_with_task_count = Organization.objects.filter(type = monitoring.type, task__status__isnull = False).distinct().count()
+    organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()
+    organization_open_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_OPEN).count()
+    organization_ready_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_READY).count()
+    organization_approved_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_APPROVED).count()
+    organization_with_task_count = Organization.objects.filter(monitoring = monitoring, task__status__isnull = False).distinct().count()
     extra_context = {
             'organization_all_count': organization_all_count,
             'organization_open_count': organization_open_count,
@@ -399,12 +396,12 @@ def monitoring_parameter_found_report(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     title = _('Report for %(monitoring)s by parameter and found') % { 'monitoring': monitoring }
     queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
-            'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.type_id = %(monitoring_type)s) -
+            'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s) -
                                     (select count(*) from %(parameterexclude_table)s where %(parameterexclude_table)s.parameter_id = %(parameter_table)s.id
                                         and %(parameterexclude_table)s.organization_id in
-                                                (select id from %(organization_table)s where %(organization_table)s.type_id = %(monitoring_type)s))''' % {
+                                                (select id from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s))''' % {
                 'organization_table': Organization._meta.db_table,
-                'monitoring_type': monitoring.type.pk,
+                'monitoring': monitoring.pk,
                 'parameterexclude_table': ('%s_%s') % ( Parameter._meta.db_table, 'exclude'),
                 'parameter_table': Parameter._meta.db_table,
                 }

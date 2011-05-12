@@ -23,8 +23,8 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.organization.organization_list task.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.monitoring.name}} ({{ task.monitoring.type }})</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization task.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.organization.organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
 {{title}}
 </div>
@@ -47,7 +47,7 @@
 <form method="post" action="">{% csrf_token %}
   <div id=score_form_body>
     <div id=score_form_found>{{ form.found.label_tag }}</dt><dd>{{ form.found }} {{ form.found.errors }}</div>
-{% if parameter.type.complete %}
+{% if parameter.complete %}
     <div id=score_form_complete>
     <dt>{{ form.complete.label_tag }}</dt><dd>{{ form.complete }} {{ form.complete.errors }}</dd>
       <div id=score_form_completeComment>
@@ -55,7 +55,7 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.type.topical %}
+{% if parameter.topical %}
     <div id=score_form_topical>
     <dt>{{ form.topical.label_tag }}</dt><dd>{{ form.topical }} {{ form.topical.errors }}</dd>
       <div id=score_form_topicalComment>
@@ -63,26 +63,26 @@
       </div>
     </div>
 {% endif %}
-{% if parameter.type.accessible %}
+{% if parameter.accessible %}
     <div id=score_form_accessible>
     <dt>{{ form.accessible.label_tag }}</dt><dd>{{ form.accessible }} {{ form.accessible.errors }}</dd>
       <div id=score_form_accessibleComment>
 	<dt>{{ form.accessibleComment.label_tag }}</dt><dd>{{ form.accessibleComment }} {{ form.accessibleComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.type.hypertext %}
+{% if parameter.hypertext %}
     <dt>{{ form.hypertext.label_tag }}</dt><dd>{{ form.hypertext }} {{ form.hypertext.errors }}</dd>
       <div id=score_form_hypertextComment>
 	<dt>{{ form.hypertextComment.label_tag }}</dt><dd>{{ form.hypertextComment }} {{ form.hypertextComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.type.document %}
+{% if parameter.document %}
     <dt>{{ form.document.label_tag }}</dt><dd>{{ form.document }} {{ form.document.errors }}</dd>
       <div id=score_form_documentComment>
 	<dt>{{ form.documentComment.label_tag }}</dt><dd>{{ form.documentComment }} {{ form.documentComment.errors }}</dd>
       </div>
 {% endif %}
-{% if parameter.type.image %}
+{% if parameter.image %}
     <dt>{{ form.image.label_tag }}</dt><dd>{{ form.image }} {{ form.image.errors }}</dd>
       <div id=score_form_imageComment>
 	<dt>{{ form.imageComment.label_tag }}</dt><dd>{{ form.imageComment }} {{ form.imageComment.errors }}</dd>

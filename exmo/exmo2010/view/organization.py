@@ -32,15 +32,15 @@ from django.core.urlresolvers import reverse
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    title = _('Organizations for monitoring %(name)s (%(type)s)') % {'name': monitoring.name, 'type': monitoring.type}
+    title = _('Organizations for monitoring %(name)s') % {'name': monitoring}
     org_list = []
-    for task in Task.objects.filter(monitoring = monitoring):
+    for task in Task.objects.filter(organization__monitoring = monitoring):
         if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
     org_list = list(set(org_list))
     if request.user.is_superuser:
-        queryset = Organization.objects.filter(type = monitoring.type).extra(
+        queryset = Organization.objects.filter(monitoring = monitoring).extra(
             select = {
-                'task__count':'SELECT count(*) FROM %s WHERE monitoring_id = %s and organization_id = %s.id' % (Task._meta.db_table, monitoring.pk, Organization._meta.db_table),
+                'task__count':'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (Task._meta.db_table, Organization._meta.db_table),
                 }
             )
         headers = (
@@ -74,11 +74,11 @@ def organization_manager(request, monitoring_id, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.organization.organization_list', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':
-        title = _('Add new organization for %s') % monitoring.type
+        title = _('Add new organization for %s') % monitoring
         return create_object(request, model = Organization, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk = id)
-        title = _('Delete organization %s') % monitoring.type
+        title = _('Delete organization %s') % monitoring
         return delete_object(
             request,
             model = Organization,
@@ -92,5 +92,5 @@ def organization_manager(request, monitoring_id, id, method):
             )
     else: #update
         organization = get_object_or_404(Organization, pk = id)
-        title = _('Edit organization %s') % monitoring.type
+        title = _('Edit organization %s') % monitoring
         return update_object(request, model = Organization, object_id = id, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})

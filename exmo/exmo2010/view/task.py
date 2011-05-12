@@ -22,7 +22,7 @@ from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
+from exmo.exmo2010.models import Organization, Parameter, Score, Task
 from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
@@ -260,13 +260,13 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     organizations: all approved tasks of organizations that belongs to user
     Also for every ogranization we can have group'''
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
+    organization = get_object_or_404(Organization, pk = organization_id)
     user = request.user
     profile = None
     if user.is_active: profile = user.profile
     if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %(org)s') % { 'org': organization.name }
-    queryset = Task.objects.filter(monitoring = monitoring, organization = organization)
+    queryset = Task.objects.filter(organization = organization)
     # Or, filtered by user
     if user.is_superuser:
       headers = (
@@ -286,7 +286,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
               )
     else:
       queryset = Task.approved_tasks.all()
-      queryset = queryset.filter(monitoring = monitoring, organization = organization)
+      queryset = queryset.filter(organization = organization)
       headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
                 (_('Complete, %'), 'complete', None, None, None),
@@ -295,7 +295,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     task_list = []
     for task in queryset:
         if user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
-    queryset = Task.objects.filter(pk__in = task_list).extra(select = {'complete': Task._complete})
+    queryset = Task.objects.filter(pk__in = task_list)
     return table(request, headers, queryset = queryset, paginate_by = 15, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
 
 
@@ -305,7 +305,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
 def task_add(request, monitoring_id, organization_id=None):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     if organization_id:
-        organization = get_object_or_404(Organization, pk = organization_id, type = monitoring.type)
+        organization = get_object_or_404(Organization, pk = organization_id)
         redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
         title = _('Add new task for %s') % organization.name
     else:
@@ -319,7 +319,7 @@ def task_add(request, monitoring_id, organization_id=None):
             group, created = Group.objects.get_or_create(name = 'experts')
             form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
             if not organization:
-                form.fields['organization'].queryset = Organization.objects.filter(type=monitoring.type)
+                form.fields['organization'].queryset = Organization.objects.filter(monitoring=monitoring)
             return render_to_response(
                 'exmo2010/task_form.html',
                 {
@@ -354,8 +354,8 @@ def task_add(request, monitoring_id, organization_id=None):
 @login_required
 def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     task = get_object_or_404(Task, pk = id)
-    monitoring = task.monitoring
     organization = task.organization
+    monitoring = organization.monitoring
     organization_from_get = request.GET.get('organization','')
     if organization_id or organization_from_get:
         q = request.GET.copy()
@@ -455,16 +455,15 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
 def tasks_by_monitoring(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     profile = None
-    if request.user.is_active: profile = request.user.get_profile()
+    if request.user.is_active: profile = request.user.profile
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    title = _('Task list for %(monitoring)s (%(type)s)') %  { 'monitoring': monitoring.name , 'type': monitoring.type }
+    title = _('Task list for %(monitoring)s') %  { 'monitoring': monitoring}
     task_list = []
-    queryset = Task.objects.filter(monitoring = monitoring)
+    queryset = Task.objects.filter(organization__monitoring = monitoring)
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
     if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.filter(pk__in = task_list)
-    queryset = queryset.extra(select = {'complete': Task._complete})
     if request.user.is_superuser:
         headers = (
                 (_('Organization'), 'organization__name', 'organization__name', None, None),
@@ -503,7 +502,7 @@ def task_mass_assign_tasks(request, id):
   if not request.user.is_superuser:
     return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
-  organizations = Organization.objects.filter(type = monitoring.type)
+  organizations = Organization.objects.filter(monitoring = monitoring)
   group, created = Group.objects.get_or_create(name = 'experts')
   users = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
   log = []
@@ -516,7 +515,6 @@ def task_mass_assign_tasks(request, id):
           task = Task(
             user = user,
             organization = organization,
-            monitoring = monitoring,
             status = Task.TASK_OPEN,
           )
           task.full_clean()

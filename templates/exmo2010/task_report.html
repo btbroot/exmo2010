@@ -29,7 +29,7 @@
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 <div>
-<h1>{% if user.is_superuser %}{{ task.user }}: {% endif %}{{ task.organization.name }}: {{ task.monitoring.name }}</h1>
+<h1>{% if user.is_superuser %}{{ task.user }}: {% endif %}{{ task.organization.name }}: {{ task.organization.monitoring.name }}</h1>
 
 <table>
 <thead>
@@ -62,11 +62,11 @@
       <td>{{ score.openness }}</td>
       {% include "exmo2010/score_criteria_table.html" %}
       {% if report == 'printfull' %}
-        {% if score.completeComment and score.parameter.type.complete %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}
-        {% if score.topicalComment and score.parameter.type.topical %}</tr><tr><td>{% trans 'topicalComment' %}</td><td colspan=7>{{ score.topicalComment|linebreaks }}</td>{% endif %}
-        {% if score.accessibleComment and score.parameter.type.accessible %}</tr><tr><td>{% trans 'accessibleComment' %}</td><td colspan=7>{{ score.accessibleComment|linebreaks }}</td>{% endif %}
-        {% if score.hypertextComment and score.parameter.type.hypertext %}</tr><tr><td>{% trans 'hypertextComment' %}</td><td colspan=7>{{ score.hypertextComment|linebreaks }}</td>{% endif %}
-        {% if score.documentComment and score.parameter.type.document %}</tr><tr><td>{% trans 'documentComment' %}</td><td colspan=7>{{ score.documentComment|linebreaks }}</td>{% endif %}
+        {% if score.completeComment and score.parameter.complete %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}
+        {% if score.topicalComment and score.parameter.topical %}</tr><tr><td>{% trans 'topicalComment' %}</td><td colspan=7>{{ score.topicalComment|linebreaks }}</td>{% endif %}
+        {% if score.accessibleComment and score.parameter.accessible %}</tr><tr><td>{% trans 'accessibleComment' %}</td><td colspan=7>{{ score.accessibleComment|linebreaks }}</td>{% endif %}
+        {% if score.hypertextComment and score.parameter.hypertext %}</tr><tr><td>{% trans 'hypertextComment' %}</td><td colspan=7>{{ score.hypertextComment|linebreaks }}</td>{% endif %}
+        {% if score.documentComment and score.parameter.document %}</tr><tr><td>{% trans 'documentComment' %}</td><td colspan=7>{{ score.documentComment|linebreaks }}</td>{% endif %}
         {% if score.comment %}</tr><tr><td>{% trans 'comment' %}</td><td colspan=7>{{ score.comment|linebreaks }}</td>{% endif %}
       {% endif %}
       {%else%} {# if score #}

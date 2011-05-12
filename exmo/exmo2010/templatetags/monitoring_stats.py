@@ -19,11 +19,11 @@ from django import template
 from exmo.exmo2010.models import Organization, Task
 
 def monitoring_stats(context, monitoring):
-    approved_organizations = Organization.objects.filter(type = monitoring.type, task__monitoring = monitoring, task__status = Task.TASK_APPROVED).distinct()
-    organization_all_count = Organization.objects.filter(type = monitoring.type).distinct().count()
-    organization_ready_count = Organization.objects.filter(type = monitoring.type, task__monitoring = monitoring, task__status = Task.TASK_READY).exclude(pk__in = approved_organizations).distinct().count()
+    approved_organizations = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_APPROVED).distinct()
+    organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()
+    organization_ready_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_READY).exclude(pk__in = approved_organizations).distinct().count()
     organization_approved_count = approved_organizations.count()
-    organization_with_task_count = Organization.objects.filter(type = monitoring.type, task__monitoring = monitoring, task__status__isnull = False).distinct().count()
+    organization_with_task_count = Organization.objects.filter(monitoring = monitoring, task__status__isnull = False).distinct().count()
     return {
             'organization_all_count': organization_all_count,
             'organization_ready_count': organization_ready_count,

@@ -22,7 +22,7 @@ from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task, Category, Subcategory
+from exmo.exmo2010.models import Organization, Parameter, Score, Task
 from exmo.exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
@@ -42,7 +42,7 @@ def score_add(request, task_id, parameter_id):
     else:
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.group.fullcode())
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.code)
     redirect = redirect.replace("%","%%")
     return create_object(
         request,
@@ -63,7 +63,7 @@ from exmo.exmo2010.helpers import construct_change_message
 @login_required
 def score_manager(request, score_id, method='update'):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete score %s') % score.parameter
@@ -80,7 +80,7 @@ def score_manager(request, score_id, method='update'):
 
 def score_view(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.group.fullcode())
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.edit_score', score):
         title = _('Edit score %s') % score.parameter
@@ -129,10 +129,10 @@ def score_view(request, score_id):
 
 def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
-    task = Task.objects.extra(select = {'complete': Task._complete}).get(pk = task_id)
+    task = Task.objects.get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
     if request.user.has_perm('exmo2010.view_task', task):
-      queryset = Parameter.objects.select_related().filter(monitoring = task.monitoring).exclude(exclude = task.organization).extra(
+      queryset = Parameter.objects.select_related().filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization).extra(
         select={
           'score_pk':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
         }
@@ -146,8 +146,6 @@ def score_list_by_task(request, task_id, report=None):
         template_name='exmo2010/task_report.html',
         extra_context={
           'task': task,
-          'categories': Category.objects.all(),
-          'subcategories': Subcategory.objects.all(),
           'title': title,
           'report': report
         }
@@ -171,8 +169,6 @@ def score_list_by_task(request, task_id, report=None):
         template_name='exmo2010/score_list.html',
         extra_context={
           'task': task,
-          'categories': Category.objects.all(),
-          'subcategories': Subcategory.objects.all(),
           'title': title,
           }
       )

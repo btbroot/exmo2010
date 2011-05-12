@@ -146,7 +146,7 @@ def post_save_model(sender, instance, created, **kwargs):
     if instance.__class__ == models.Score:
         instance.task.update_openness()
     if instance.__class__ == models.Monitoring:
-        for task in instance.task_set.all(): task.update_openness()
+        for task in models.Task.objects.filter(organization__monitoring = instance).all(): task.update_openness()
     if instance.__class__ == models.Task():
         instance.update_openness()
     if must_register:
