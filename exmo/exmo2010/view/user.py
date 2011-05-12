@@ -38,7 +38,7 @@ def user_profile(request, id):
         form = UserForm(request.POST, instance = _user)
         if form.is_valid():
             user = form.save()
-            profile = user.get_profile()
+            profile = user.profile
             if profile.is_organization:
                 profile.notify_score_change = form.cleaned_data['notify_score_change']
                 profile.save()
