@@ -248,8 +248,7 @@ class Task(models.Model):
 
   def clean(self):
     if self.ready or self.approved:
-        complete = Task.objects.extra(select = {'complete': Task._complete}).get(pk = self.pk).complete
-        if complete != 100:
+        if self.complete != 100:
             raise ValidationError(_('Ready task must be 100 percent complete.'))
     if self.approved:
         if Task.approved_tasks.filter(organization = self.organization).count() != 0:
@@ -289,7 +288,7 @@ class Task(models.Model):
         self.save()
 
   def _complete(self):
-    return float(Score.objects.filter(task = self).count() * 100) \
+    return float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) \
             / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
 
   open = property(_get_open, _set_open)
