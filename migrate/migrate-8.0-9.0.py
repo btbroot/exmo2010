@@ -19,6 +19,10 @@
 #
 
 ###
+# WARNING! Disable DEBUG in settings.py if you have LARGE dump.
+###
+
+###
 # WARNING! This script migrate ONLY exmo2010 models. Auth, django, and other models must be load separately and before this.
 ###
 
@@ -165,7 +169,6 @@ print "Done"
 
 print "Migrate Score and Parameter models"
 #migrate scores and parameters on fly... Parameter exclude and keywords must be filled later (because m2m).
-s=0
 for obj in old_data:
     if obj['model'] == 'exmo2010.score':
         task = em.Task.objects.get(pk=obj['fields']['task'])
@@ -237,8 +240,6 @@ for obj in old_data:
             imageComment = obj['fields']['imageComment'],
             comment = obj['fields']['comment'],
         )
-        s+=1
-        if s % 1000 == 0: gc.collect()
 print "Done"
 
 print "Add keywords to parameters"
