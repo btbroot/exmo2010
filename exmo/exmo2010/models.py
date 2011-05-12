@@ -22,114 +22,6 @@ from django.core.exceptions import ValidationError
 
 
 
-class OrganizationType(models.Model):
-  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-
-  def __unicode__(self):
-    return self.name
-
-  class Meta:
-    ordering = ('name',)
-
-
-
-class Federal(models.Model):
-  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-
-  def __unicode__(self):
-    return self.name
-
-  class Meta:
-    ordering = ('name',)
-
-
-
-class Entity(models.Model):
-  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-  federal      = models.ForeignKey(Federal, verbose_name=_('federal'))
-
-  def __unicode__(self):
-    return self.name
-
-  class Meta:
-    ordering = ('name',)
-
-
-
-class Organization(models.Model):
-  '''
-  name -- Uniq organization name
-  url -- Internet site URL
-  type -- Type of organization (FOIV, ROIV, ROIZ, etc)
-  entity -- Federal district for organization (if organization not federal)
-  keywords -- Keywords for autocomplete and search
-  comments -- Additional comment
-  keyname -- Field identifies the group name from auth.models.Group model. Maxlength for auth.models.Group is 30, so this field also have, max_length = 30
-  '''
-
-  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-  url          = models.URLField(max_length = 255, null = True, blank = True, verbose_name=_('url'))
-  type         = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
-  entity       = models.ForeignKey(Entity, null = True, blank = True, verbose_name=_('entity'))
-  keywords     = models.TextField(null = True, blank = True, verbose_name=_('keywords'))
-  comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
-  keyname      = models.CharField(max_length = 30, unique = True, verbose_name=_('keyname'))
-
-  def __unicode__(self):
-    return '%s' % (self.name)
-
-  class Meta:
-    ordering = ('name',)
-
-
-
-class Category(models.Model):
-  code         = models.PositiveIntegerField(unique = True, verbose_name=_('code'))
-  name         = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-
-  def __unicode__(self):
-    return '%d. %s' % (self.code, self.name)
-
-  class Meta:
-    ordering = ('code',)
-
-
-
-class Subcategory(models.Model):
-  code         = models.PositiveIntegerField(verbose_name=_('code'))
-  name         = models.CharField(max_length = 255, verbose_name=_('name'))
-  group        = models.ForeignKey(Category, verbose_name=_('category'))
-
-  def __unicode__(self):
-    return '%d.%d. %s' % (self.group.code, self.code, self.name)
-
-  def fullcode(self):
-    return '%d.%d' % (self.group.code, self.code)
-
-  class Meta:
-    unique_together = (
-      ('name', 'group'),
-      ('code', 'group'),
-    )
-    ordering = ('group__code', 'code')
-
-
-
-class ParameterType(models.Model):
-  name               = models.CharField(max_length = 255, unique = True, verbose_name=_('name'))
-  description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
-  complete           = models.BooleanField(default = True, verbose_name=_('complete'))
-  topical            = models.BooleanField(default = True, verbose_name=_('topical'))
-  accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
-  hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
-  document           = models.BooleanField(default = True, verbose_name=_('document'))
-  image              = models.BooleanField(default = True, verbose_name=_('image'))
-
-  def __unicode__(self):
-    return self.name
-
-
-
 class OpennessExpression(models.Model):
   code    = models.PositiveIntegerField(primary_key=True)
   name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
@@ -139,10 +31,13 @@ class OpennessExpression(models.Model):
 
 
 
+class Keyword(models.Model):
+  keyword = models.CharField(max_length = 255, unique = True, verbose_name=_('keyword'))
+
+
+
 class Monitoring(models.Model):
   name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
-  type                   = models.ForeignKey(OrganizationType, verbose_name=_('organization type'))
-  publish_date           = models.DateField(null = True, blank = True, verbose_name = _('publish date'))
   openness_expression    = models.ForeignKey(
     OpennessExpression,
     default = 1,
@@ -150,46 +45,56 @@ class Monitoring(models.Model):
   )
 
   def __unicode__(self):
-    return '%s: %s' % (self.type.name, self.name)
+    return '%s' % self.name
+
+
+
+class Organization(models.Model):
+  '''
+  name -- Uniq organization name
+  url -- Internet site URL
+  keywords -- Keywords for autocomplete and search
+  comments -- Additional comment
+  '''
+
+  name         = models.CharField(max_length = 255, verbose_name=_('name'))
+  url          = models.URLField(max_length = 255, null = True, blank = True, verbose_name=_('url'))
+  keywords     = models.ManyToManyField(Keyword, null = True, blank = True, verbose_name=_('keywords'))
+  comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
+  monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+
+  def __unicode__(self):
+    return '%s' % (self.name)
 
   class Meta:
-    unique_together = (('name', 'type'))
-    ordering = ('type__name', 'name')
-    permissions = (("view_monitoring", "Can view monitoring"),)
+    ordering = ('name',)
+    unique_together = (
+        ('name', 'monitoring'),
+    )
 
 
 class Parameter(models.Model):
   code               = models.PositiveIntegerField(verbose_name=_('code'))
   name               = models.CharField(max_length = 255, verbose_name=_('name'))
   description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
-  group              = models.ForeignKey(Subcategory, verbose_name=_('subcategory'))
-  type               = models.ForeignKey(ParameterType, verbose_name=_('parameter type'))
-  monitoring         = models.ManyToManyField(Monitoring, verbose_name=_('monitoring'), through='ParameterMonitoringProperty')
+  monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
+  weight             = models.IntegerField(verbose_name=_('weight'))
+  keywords           = models.ManyToManyField(Keyword, null = True, blank = True, verbose_name=_('keywords'))
+  complete           = models.BooleanField(default = True, verbose_name=_('complete'))
+  topical            = models.BooleanField(default = True, verbose_name=_('topical'))
+  accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
+  hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
+  document           = models.BooleanField(default = True, verbose_name=_('document'))
+  image              = models.BooleanField(default = True, verbose_name=_('image'))
 
   def __unicode__(self):
-    return '%d.%d.%d. %s' % (self.group.group.code, self.group.code, self.code, self.name)
-
-  def fullcode(self):
-    return '%d.%d.%d' % (self.group.group.code, self.group.code, self.code)
+    return '%s' % (self.name)
 
   class Meta:
+    ordering = ('code','name',)
     unique_together = (
-      ('name', 'group'),
-      ('code', 'group'),
-    )
-    ordering = ('group__group__code', 'group__code', 'code')
-
-
-
-class ParameterMonitoringProperty(models.Model):
-  monitoring = models.ForeignKey(Monitoring)
-  parameter  = models.ForeignKey(Parameter)
-  weight     = models.IntegerField(verbose_name=_('weight'))
-
-  class Meta:
-    unique_together = (
-      ('monitoring', 'parameter'),
+        ('code', 'name', 'monitoring'),
     )
 
 
@@ -224,7 +129,6 @@ class Task(models.Model):
   )
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
-  monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
   openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
 
@@ -249,11 +153,10 @@ class Task(models.Model):
     '''.lower()
   _parameters = '''
     FROM exmo2010_Parameter
-    INNER JOIN exmo2010_ParameterMonitoringProperty ON exmo2010_Parameter.id = exmo2010_ParameterMonitoringProperty.parameter_id
-    WHERE exmo2010_ParameterMonitoringProperty.monitoring_id = exmo2010_Task.monitoring_id
+    WHERE exmo2010_Parameter.monitoring_id = exmo2010_Task.monitoring_id
     AND NOT (exmo2010_Parameter.id IN (SELECT exmo2010_Parameter_Exclude.parameter_id %s) AND NOT (exmo2010_Parameter.id IS NULL))
     '''.lower() % _parameters_invalid
-  _complete   = '((SELECT COUNT(*) %s) * 100 / (SELECT COUNT(*) %s))'.lower() % (_scores, _parameters)
+
   _openness_max = 'SELECT SUM(exmo2010_ParameterMonitoringProperty.weight) %s AND exmo2010_ParameterMonitoringProperty.weight > 0'.lower() % _parameters
   _score_value = '''
     exmo2010_ParameterMonitoringProperty.weight *
@@ -309,11 +212,9 @@ class Task(models.Model):
   _openness_sql = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
   def _openness(self):
-    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.monitoring)).exclude(parameter__exclude = self.organization).select_related().extra(
-        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
-    openness_actual = sum([openness_helper(s, s.weight) for s in scores])
-    parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.monitoring, parametermonitoringproperty__weight__gte = 0).extra(
-        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.monitoring.pk, Parameter._meta.db_table)})
+    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.organization.monitoring)).exclude(parameter__exclude = self.organization).select_related()
+    openness_actual = sum([openness_helper(s) for s in scores])
+    parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
     openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
     openness = float(openness_actual * 100) / openness_max
     return openness
@@ -340,22 +241,20 @@ class Task(models.Model):
 
   class Meta:
     unique_together = (
-      ('user', 'organization', 'monitoring'),
+      ('user', 'organization'),
     )
-    ordering = ('monitoring__name', 'organization__name', 'user__username')
+    ordering = ('organization__name', 'user__username')
     permissions = (("view_task", "Can view task"),)
 
   def clean(self):
-    if self.organization.type != self.monitoring.type:
-        raise ValidationError(_('Ambigous organization type.'))
     if self.ready or self.approved:
         complete = Task.objects.extra(select = {'complete': Task._complete}).get(pk = self.pk).complete
         if complete != 100:
             raise ValidationError(_('Ready task must be 100 percent complete.'))
     if self.approved:
-        if Task.approved_tasks.filter(monitoring = self.monitoring, organization = self.organization).count() != 0:
+        if Task.approved_tasks.filter(organization = self.organization).count() != 0:
             raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
-                    'monitoring': self.monitoring,
+                    'monitoring': self.organization.monitoring,
                     'organization': self.organization,
                 })
 
@@ -389,10 +288,15 @@ class Task(models.Model):
         self.full_clean()
         self.save()
 
+  def _complete(self):
+    return float(Score.objects.filter(task = self).count() * 100) \
+            / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
+
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
   approved = property(_get_approved, _set_approved)
   openness = property(_get_openness)
+  complete = property(_complete)
 
 
 
@@ -415,27 +319,25 @@ class Score(models.Model):
   comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
 
   def __unicode__(self):
-    return '%s: %s [%d.%d.%d]' % (
+    return '%s: %s [%d]' % (
       self.task.user.username,
       self.task.organization.name,
-      self.parameter.group.group.code,
-      self.parameter.group.code,
       self.parameter.code
     )
 
   def clean(self):
     if self.found:
-      if self.parameter.type.complete   and self.complete   in ('', None):
+      if self.parameter.complete   and self.complete   in ('', None):
         raise ValidationError(_('Complete must be set'))
-      if self.parameter.type.topical    and self.topical    in ('', None):
+      if self.parameter.topical    and self.topical    in ('', None):
         raise ValidationError(_('Topical must be set'))
-      if self.parameter.type.accessible and self.accessible in ('', None):
+      if self.parametert.accessible and self.accessible in ('', None):
         raise ValidationError(_('Accessible must be set'))
-      if self.parameter.type.hypertext  and self.hypertext  in ('', None):
+      if self.parameter.hypertext  and self.hypertext  in ('', None):
         raise ValidationError(_('Hypertext must be set'))
-      if self.parameter.type.document   and self.document   in ('', None):
+      if self.parameter.document   and self.document   in ('', None):
         raise ValidationError(_('Document must be set'))
-      if self.parameter.type.image      and self.image      in ('', None):
+      if self.parameter.image      and self.image      in ('', None):
         raise ValidationError(_('Image must be set'))
     elif any((
         self.complete!=None,
@@ -460,9 +362,7 @@ class Score(models.Model):
     else: return False
 
   def _get_openness(self):
-    s = Score.objects.filter(pk = self.pk).select_related().extra(
-        select={'weight': 'select weight from %s where monitoring_id=%s and parameter_id=%s.id' % (ParameterMonitoringProperty._meta.db_table, self.task.monitoring.pk, Parameter._meta.db_table)})
-    return openness_helper(s[0], s[0].weight)
+    return openness_helper(self)
 
   def add_claim(self, creator, comment):
     claim = Claim(score = self, creator = creator, comment = comment)
@@ -499,8 +399,6 @@ class Score(models.Model):
     ordering = (
       'task__user__username',
       'task__organization__name',
-      'parameter__group__group__code',
-      'parameter__group__code',
       'parameter__code'
     )
     permissions = (("view_score", "Can view score"),)
@@ -523,32 +421,33 @@ class Claim(models.Model):
 
 
 
-def openness_helper(score, weight = 0):
-    f = eval("openness_helper_v%d" % score.task.monitoring.openness_expression.code)
-    return f(score, weight)
+def openness_helper(score):
+    f = eval("openness_helper_v%d" % score.task.organization.monitoring.openness_expression.code)
+    return f(score)
 
 
 
-def openness_helper_v1(score, weight = 0):
+def openness_helper_v1(score):
     found = score.found
+    weight = score.parameter.weight
     complete = 1
     topical = 1
     accessible = 1
     format = 1
-    if score.parameter.type.complete:
+    if score.parameter.complete:
         if score.complete == 1: complete = 0.2
         if score.complete == 2: complete = 0.5
         if score.complete == 3: complete = 1
-    if score.parameter.type.topical:
+    if score.parameter.topical:
         if score.topical == 1: topical = 0.7
         if score.topical == 2: topical = 0.85
         if score.topical == 3: topical = 1
-    if score.parameter.type.accessible:
+    if score.parameter.accessible:
         if score.accessible == 1: accessible = 0.9
         if score.accessible == 2: accessible = 0.95
         if score.accessible == 3: accessible = 1
-    if score.parameter.type.hypertext:
-        if score.parameter.type.document:
+    if score.parameter.hypertext:
+        if score.parameter.document:
             if score.hypertext == 0:
                 if score.document == 0: format = 0.2
                 if score.document == 1: format = 0.2
@@ -563,33 +462,34 @@ def openness_helper_v1(score, weight = 0):
 
 
 
-def openness_helper_v8(score, weight = 0):
+def openness_helper_v8(score):
     found = score.found
+    weight = score.parameter.weight
     complete = 1
     topical = 1
     accessible = 1
     format_html = 1
     format_doc = 1
     format_image = 1
-    if score.parameter.type.complete:
+    if score.parameter.complete:
         if score.complete == 1: complete = 0.2
         if score.complete == 2: complete = 0.5
         if score.complete == 3: complete = 1
-    if score.parameter.type.topical:
+    if score.parameter.topical:
         if score.topical == 1: topical = 0.7
         if score.topical == 2: topical = 0.85
         if score.topical == 3: topical = 1
-    if score.parameter.type.accessible:
+    if score.parameter.accessible:
         if score.accessible == 1: accessible = 0.9
         if score.accessible == 2: accessible = 0.95
         if score.accessible == 3: accessible = 1
-    if score.parameter.type.hypertext:
+    if score.parameter.hypertext:
         if score.hypertext == 0: format_html = 0.2
         if score.hypertext == 1: format_html = 1
-    if score.parameter.type.document:
+    if score.parameter.document:
         if score.document == 0: format_doc = 0.85
         if score.document == 1: format_doc = 1
-    if score.parameter.type.image:
+    if score.parameter.image:
         if score.image == 0: format_image = 0.95
         if score.image == 1: format_image = 1
     openness = weight * found * complete * topical * accessible * format_html * format_doc * format_image
