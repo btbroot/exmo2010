@@ -555,7 +555,7 @@ class MonitoringStatus(models.Model):
     )
     monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
     status       = models.PositiveIntegerField(choices = MONITORING_STATUS, default = MONITORING_PREPARE, verbose_name=_('status'))
-    timestamp    = models.DateTimeField(auto_now = True, verbose_name=_('date'))
+    start        = models.DateTimeField(auto_now = True, verbose_name=_('start at'))
 
     def __unicode__(self):
         return "%s" % self.monitoring
