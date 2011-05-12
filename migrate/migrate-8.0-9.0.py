@@ -278,7 +278,7 @@ print "Done"
 print "Mirgate UserProfile model"
 for obj in old_data:
     if obj['model'] == 'exmo2010.userprofile':
-        profile, created = em.UserProfile.objects.get_ot_create(
+        profile, created = em.UserProfile.objects.get_or_create(
             user = auth.User.objects.get(pk=obj['fields']['user']),
             notify_score_change = obj['fields']['notify_score_change'],
         )
