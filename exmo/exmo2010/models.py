@@ -537,3 +537,25 @@ class UserProfile(models.Model):
 
 User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+
+class MonitoringStatus(models.Model):
+    MONITORING_PREPARE   = 0
+    MONITORING_RATE      = 1
+    MONITORING_REVISION  = 2
+    MONITORING_INTERACT  = 3
+    MONITORING_RESULT    = 4
+    MONITORING_PUBLISH   = 5
+    MONITORING_STATUS    = (
+        (MONITORING_PREPARE, _('prepare')),
+        (MONITORING_RATE, _('rate')),
+        (MONITORING_REVISION, _('revision')),
+        (MONITORING_INTERACT, _('interact')),
+        (MONITORING_RESULT, _('result')),
+        (MONITORING_PUBLISH, _('publish')),
+    )
+    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    status       = models.PositiveIntegerField(choices = MONITORING_STATUS, default = MONITORING_PREPARE, verbose_name=_('status'))
+    timestamp    = models.DateTimeField(auto_now = True, verbose_name=_('date'))
+
+    def __unicode__(self):
+        return "%s" % self.monitoring
