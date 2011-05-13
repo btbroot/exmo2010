@@ -271,32 +271,33 @@ def monitoring_by_criteria_mass_export(request, id):
 def monitoring_by_experts(request, id):
     if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
-    experts = Task.objects.filter(monitoring = monitoring).values('user').annotate(cuser=Count('user'))
+    experts = Task.objects.filter(organization__monitoring = monitoring).values('user').annotate(cuser=Count('user'))
     title = _('Experts of monitoring %(name)s') % {'name': monitoring.name}
     epk = [e['user'] for e in experts]
+    org_list = "( %s )" % " ,".join([str(o.pk) for o in Organization.objects.filter(monitoring = monitoring)])
     queryset = User.objects.filter(pk__in = epk).extra(select = {
-        'open_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+        'open_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.organization_id in %(org_list)s' % {
             'task_table': Task._meta.db_table,
             'user_table': User._meta.db_table,
-            'monitoring': monitoring.pk,
+            'org_list': org_list,
             'status': Task.TASK_OPEN
             },
-        'ready_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+        'ready_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.organization_id in %(org_list)s' % {
             'task_table': Task._meta.db_table,
             'user_table': User._meta.db_table,
-            'monitoring': monitoring.pk,
+            'org_list': org_list,
             'status': Task.TASK_READY
             },
-        'approved_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.monitoring_id = %(monitoring)s' % {
+        'approved_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.organization_id in %(org_list)s' % {
             'task_table': Task._meta.db_table,
             'user_table': User._meta.db_table,
-            'monitoring': monitoring.pk,
+            'org_list': org_list,
             'status': Task.TASK_APPROVED
             },
-        'all_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and %(task_table)s.monitoring_id = %(monitoring)s' % {
+        'all_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and %(task_table)s.organization_id in %(org_list)s' % {
             'task_table': Task._meta.db_table,
             'user_table': User._meta.db_table,
-            'monitoring': monitoring.pk,
+            'org_list': org_list,
             },
         })
     headers=(
