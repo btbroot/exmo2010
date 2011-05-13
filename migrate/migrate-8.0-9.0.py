@@ -115,6 +115,7 @@ for obj in old_data:
             name=obj['fields']['name'],
             openness_expression=em.OpennessExpression.objects.get(pk=obj['fields']['openness_expression'])
         )
+        monitoring.create_calendar()
 print "Done"
 
 

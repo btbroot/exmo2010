@@ -34,10 +34,31 @@ class OpennessExpression(models.Model):
 class Keyword(models.Model):
   keyword = models.CharField(max_length = 255, unique = True, verbose_name=_('keyword'))
 
+  def __unicode__(self):
+    return self.keyword
+
 
 
 class Monitoring(models.Model):
+  MONITORING_PREPARE   = 0
+  MONITORING_RATE      = 1
+  MONITORING_REVISION  = 2
+  MONITORING_INTERACT  = 3
+  MONITORING_RESULT    = 4
+  MONITORING_PUBLISH   = 5
+  MONITORING_PLANNED   = 6
+  MONITORING_STATUS    = (
+        (MONITORING_PREPARE, _('prepare')),
+        (MONITORING_RATE, _('rate')),
+        (MONITORING_REVISION, _('revision')),
+        (MONITORING_INTERACT, _('interact')),
+        (MONITORING_RESULT, _('result')),
+        (MONITORING_PUBLISH, _('publish')),
+  )
+  MONITORING_STATUS_FULL = MONITORING_STATUS + ((MONITORING_PLANNED, _('planned')),)
+
   name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+  status                 = models.PositiveIntegerField(choices = MONITORING_STATUS_FULL, default = MONITORING_PLANNED, verbose_name=_('status'))
   openness_expression    = models.ForeignKey(
     OpennessExpression,
     default = 1,
@@ -46,6 +67,29 @@ class Monitoring(models.Model):
 
   def __unicode__(self):
     return '%s' % self.name
+
+  def create_calendar(self):
+    for status in self.MONITORING_STATUS:
+        s = MonitoringStatus(status = status[0], monitoring = self)
+        s.full_clean()
+        s.save()
+
+
+
+class MonitoringStatus(models.Model):
+    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    status       = models.PositiveIntegerField(choices = Monitoring.MONITORING_STATUS, default = Monitoring.MONITORING_PREPARE, verbose_name=_('status'))
+    start        = models.DateTimeField(null = True, blank=True, verbose_name=_('start at'))
+
+    def __unicode__(self):
+        return "%s: %s" % (self.monitoring, self.status)
+    class Meta:
+        unique_together = (
+            ('status', 'monitoring'),
+        )
+        ordering = (
+            '-start',
+        )
 
 
 
@@ -536,25 +580,3 @@ class UserProfile(models.Model):
 
 User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
-
-class MonitoringStatus(models.Model):
-    MONITORING_PREPARE   = 0
-    MONITORING_RATE      = 1
-    MONITORING_REVISION  = 2
-    MONITORING_INTERACT  = 3
-    MONITORING_RESULT    = 4
-    MONITORING_PUBLISH   = 5
-    MONITORING_STATUS    = (
-        (MONITORING_PREPARE, _('prepare')),
-        (MONITORING_RATE, _('rate')),
-        (MONITORING_REVISION, _('revision')),
-        (MONITORING_INTERACT, _('interact')),
-        (MONITORING_RESULT, _('result')),
-        (MONITORING_PUBLISH, _('publish')),
-    )
-    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    status       = models.PositiveIntegerField(choices = MONITORING_STATUS, default = MONITORING_PREPARE, verbose_name=_('status'))
-    start        = models.DateTimeField(auto_now = True, verbose_name=_('start at'))
-
-    def __unicode__(self):
-        return "%s" % self.monitoring
