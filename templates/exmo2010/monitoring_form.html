@@ -39,8 +39,10 @@
 <table>
     <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
     {{ form.as_table }}
+    {% if formset %}
     <tr><td><h2>{% trans 'Calendar' %}</h2></td></tr>
     {{ formset.as_table }}
+    {% endif %}
 </table>
 <input type="submit" name="submit" class="button">
 </form>

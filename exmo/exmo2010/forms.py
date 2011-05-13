@@ -38,21 +38,6 @@ CORE_JS = (
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
 
-def decorate_bound_field():
-  from django.forms.forms import BoundField
-  BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
-decorate_bound_field()
-
-
-
-class HorizRadioRenderer(forms.RadioSelect.renderer):
-    """ this overrides widget method to put radio buttons horizontally
-        instead of vertically.
-    """
-    def render(self):
-            """Outputs radios"""
-            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
-
 
 
 from django.utils.html import escape
@@ -67,6 +52,23 @@ def add_required_label_tag(original_function):
       attrs = {'class': 'required'}
     return original_function(self, contents, attrs)
   return required_label_tag
+
+
+
+def decorate_bound_field():
+  from django.forms.forms import BoundField
+  BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
+decorate_bound_field()
+
+
+
+class HorizRadioRenderer(forms.RadioSelect.renderer):
+    """ this overrides widget method to put radio buttons horizontally
+        instead of vertically.
+    """
+    def render(self):
+            """Outputs radios"""
+            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
 

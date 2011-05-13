@@ -78,7 +78,7 @@ def monitoring_manager(request, id, method):
             post_delete_redirect = redirect,
             extra_context = {
                 'title': title,
-                'deleted_objects': Task.objects.filter(monitoring = monitoring),
+                'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
                 }
             )
     else: #update
@@ -118,16 +118,12 @@ def monitoring_add(request):
         form = MonitoringForm(request.POST)
         if form.is_valid:
             monitoring_instance = form.save()
-            #create ParameterMonitoringProperty
-            for parameter in form.cleaned_data['parameters']:
-                ParameterMonitoringProperty_instance, created = ParameterMonitoringProperty.objects.get_or_create(
-                    monitoring = monitoring_instance,
-                    parameter = parameter,
-                    defaults = {'weight': 1})
+            monitoring_instance.create_calendar()
             redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
     else:
         form = MonitoringForm()
+        form.fields['status'].choices = Monitoring.MONITORING_STATUS_NEW
     return render_to_response(
         'exmo2010/monitoring_form.html',
         {

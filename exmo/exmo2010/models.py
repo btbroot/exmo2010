@@ -56,6 +56,7 @@ class Monitoring(models.Model):
         (MONITORING_PUBLISH, _('publish')),
   )
   MONITORING_STATUS_FULL = MONITORING_STATUS + ((MONITORING_PLANNED, _('planned')),)
+  MONITORING_STATUS_NEW  = (MONITORING_STATUS_FULL[0],) + (MONITORING_STATUS_FULL[6],)
 
   name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
   status                 = models.PositiveIntegerField(choices = MONITORING_STATUS_FULL, default = MONITORING_PLANNED, verbose_name=_('status'))
@@ -70,9 +71,7 @@ class Monitoring(models.Model):
 
   def create_calendar(self):
     for status in self.MONITORING_STATUS:
-        s = MonitoringStatus(status = status[0], monitoring = self)
-        s.full_clean()
-        s.save()
+        MonitoringStatus.objects.get_or_create(status = status[0], monitoring = self)
 
 
 
