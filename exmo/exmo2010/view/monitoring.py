@@ -107,6 +107,7 @@ def monitoring_manager(request, id, method):
                 'form': form,
                 'formset': formset,
                 'media': CORE_MEDIA+formset.media,
+                'object': monitoring,
             },
             context_instance=RequestContext(request))
 
@@ -469,3 +470,88 @@ def monitoring_parameter_found_report(request, id):
         'organization_count_total': organization_count_total,
         'score_per_organization_total': score_per_organization_total,
     }, context_instance=RequestContext(request))
+
+
+
+import csv
+@login_required
+def monitoring_parameter_export(request, id):
+
+    def safeConvert(string):
+      if string:
+        return string.encode("utf-8")
+      else:
+        return ''
+
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    parameters = Parameter.objects.filter(monitoring = monitoring)
+    response = HttpResponse(mimetype = 'text/csv')
+    response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % id
+    writer = csv.writer(response)
+    writer.writerow([
+        'Code',
+        'Name',
+        'Description',
+        'Complete',
+        'Topical',
+        'Accessible',
+        'Hypertext',
+        'Document',
+        'Image',
+        'Weight',
+        'Keywords',
+    ])
+    for p in parameters:
+        out = (
+            p.code,
+            p.name.encode("utf-8"),
+            safeConvert(p.description),
+            int(p.complete),
+            int(p.topical),
+            int(p.accessible),
+            int(p.hypertext),
+            int(p.document),
+            int(p.image),
+            p.weight
+        )
+        keywords = ", ".join([k.keyword for k in p.keywords.all()])
+        out += (safeConvert(keywords),)
+        writer.writerow(out)
+    return response
+
+
+
+@login_required
+def monitoring_organization_export(request, id):
+
+    def safeConvert(string):
+      if string:
+        return string.encode("utf-8")
+      else:
+        return ''
+
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    organizations = Organization.objects.filter(monitoring = monitoring)
+    response = HttpResponse(mimetype = 'text/csv')
+    response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
+    writer = csv.writer(response)
+    writer.writerow([
+        'Name',
+        'Url',
+        'Comments',
+        'Keywords',
+    ])
+    for o in organizations:
+        out = (
+            o.name.encode("utf-8"),
+            o.url.encode("utf-8"),
+            safeConvert(o.comments),
+        )
+        keywords = ", ".join([k.keyword for k in o.keywords.all()])
+        out += (safeConvert(keywords),)
+        writer.writerow(out)
+    return response

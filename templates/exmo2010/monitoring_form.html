@@ -35,6 +35,13 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
+{% if object %}
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_parameter_export object.pk %}">{% trans 'Export parameters' %}</a> /
+
+<br />
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_organization_export object.pk %}">{% trans 'Export organizations' %}</a> /
+
+{% endif %}
 <form action="." method="post" class="monitoring_form">{% csrf_token %}
 <table>
     <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
