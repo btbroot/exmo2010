@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Score, Claim
 from exmo.exmo2010.models import Monitoring
 from exmo.exmo2010.forms import ClaimForm
-from exmo.exmo2010.forms import ClaimReportForm
+from exmo.exmo2010.forms import ClaimReportForm, CORE_MEDIA
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.template import RequestContext
@@ -91,9 +91,9 @@ def claim_report(request, monitoring_id):
             to_date = form.cleaned_data['to_date']
             title = title + _(' for expert %s') % user
             if not request.user.is_superuser and user != request.user: return HttpResponseForbidden('Forbidden')
-            claims = Claim.objects.filter(score__task__monitoring = monitoring, score__task__user = user, open_date__gte = from_date, open_date__lte = to_date)
+            claims = Claim.objects.filter(score__task__organization__monitoring = monitoring, score__task__user = user, open_date__gte = from_date, open_date__lte = to_date)
     if request.user.is_superuser:
-        form.fields['expert'].queryset = User.objects.filter(task__score__claim__isnull = False, task__monitoring = monitoring).annotate()
+        form.fields['expert'].queryset = User.objects.filter(task__score__claim__isnull = False, task__organization__monitoring = monitoring).annotate()
     else:
         form.fields['expert'].queryset = User.objects.filter(pk = request.user.pk)
     return render_to_response(
@@ -102,7 +102,7 @@ def claim_report(request, monitoring_id):
                 'monitoring': monitoring,
                 'title': title,
                 'form': form,
-                'media': form.media,
+                'media': CORE_MEDIA+form.media,
                 'claims': claims,
             },
             context_instance=RequestContext(request),

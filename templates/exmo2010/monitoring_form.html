@@ -37,7 +37,9 @@
 {% block content %}
 <form action="." method="post" class="monitoring_form">{% csrf_token %}
 <table>
+    <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
     {{ form.as_table }}
+    <tr><td><h2>{% trans 'Calendar' %}</h2></td></tr>
     {{ formset.as_table }}
 </table>
 <input type="submit" name="submit" class="button">
