@@ -62,7 +62,7 @@ class Monitoring(models.Model):
   status                 = models.PositiveIntegerField(choices = MONITORING_STATUS_FULL, default = MONITORING_PLANNED, verbose_name=_('status'))
   openness_expression    = models.ForeignKey(
     OpennessExpression,
-    default = 1,
+    default = 8,
     verbose_name=_('openness expression'),
   )
 
