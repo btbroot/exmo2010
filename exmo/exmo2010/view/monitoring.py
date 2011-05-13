@@ -47,6 +47,7 @@ def monitoring_list(request):
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('Monitoring'), 'name', 'name', None, None),
+                (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS_FULL),
                 )
     return table(
         request,
