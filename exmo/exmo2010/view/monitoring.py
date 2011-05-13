@@ -46,7 +46,7 @@ def monitoring_list(request):
     if not monitorings_pk: return HttpResponseForbidden(_('Forbidden'))
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
-                (_('Monitoring'), 'name', 'name', None, None),
+                (_('monitoring'), 'name', 'name', None, None),
                 (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS_FULL),
                 )
     return table(

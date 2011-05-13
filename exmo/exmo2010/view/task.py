@@ -270,27 +270,27 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     # Or, filtered by user
     if user.is_superuser:
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Expert'), 'user__username', 'user__username', None, None),
-                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('Complete, %'), 'complete', None, None, None),
-                (_('Openness, %'), None, None, None, None),
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('expert'), 'user__username', 'user__username', None, None),
+                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('complete, %'), 'complete', None, None, None),
+                (_('openness, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
     # Or, without Expert
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('Complete, %'), 'complete', None, None, None),
-                (_('Openness, %'), None, None, None, None)
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('complete, %'), 'complete', None, None, None),
+                (_('openness, %'), None, None, None, None)
               )
     else:
       queryset = Task.approved_tasks.all()
       queryset = queryset.filter(organization = organization)
       headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Complete, %'), 'complete', None, None, None),
-                (_('Openness, %'), None, None, None, None)
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('complete, %'), 'complete', None, None, None),
+                (_('openness, %'), None, None, None, None)
               )
     task_list = []
     for task in queryset:
@@ -466,21 +466,21 @@ def tasks_by_monitoring(request, id):
     queryset = Task.objects.filter(pk__in = task_list)
     if request.user.is_superuser:
         headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Expert'), 'user__username', 'user__username', None, None),
-                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('Complete, %'), 'complete', None, None, None),
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('expert'), 'user__username', 'user__username', None, None),
+                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('complete, %'), 'complete', None, None, None),
               )
     elif profile and profile.is_expert:
         headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('Complete, %'), 'complete', None, None, None),
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+                (_('complete, %'), 'complete', None, None, None),
               )
     else:
         headers = (
-                (_('Organization'), 'organization__name', 'organization__name', None, None),
-                (_('Complete, %'), 'complete', None, None, None),
+                (_('organization'), 'organization__name', 'organization__name', None, None),
+                (_('complete, %'), 'complete', None, None, None),
               )
 
     return table(

@@ -44,14 +44,14 @@ def organization_list(request, id):
                 }
             )
         headers = (
-                (_('Organization'), 'name', 'name', None, None),
-                (_('Tasks'), 'task__count', None, None, None),
+                (_('organization'), 'name', 'name', None, None),
+                (_('tasks'), 'task__count', None, None, None),
                 )
     else:
         if not org_list: return HttpResponseForbidden(_('Forbidden'))
         queryset = Organization.objects.filter(pk__in = org_list)
         headers = (
-                (_('Organization'), 'name', 'name', None, None),
+                (_('organization'), 'name', 'name', None, None),
                 )
     return table(
         request,
