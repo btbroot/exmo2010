@@ -17,6 +17,21 @@
 #
 # Django settings for exmo project.
 
+import os
+import sys
+SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+PLUGINS_DIR = os.path.realpath(os.path.join(SITE_ROOT,'../plugins'))
+
+sys.path.append(PLUGINS_DIR)
+
+try:
+    from pkg_resources import working_set, Environment
+except ImportError:
+    Environment = None
+
+distributions, errors = working_set.find_plugins(Environment([PLUGINS_DIR]))
+map(working_set.add, distributions)
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 #TEMPLATE_STRING_IF_INVALID = 'INVALID TEMPLATE STRING %s'
@@ -78,7 +93,7 @@ SECRET_KEY = 'zou(k9*+vc69ji$xlpy+e-poi1s6_*q3#0+)=(pgv(wxb&94dd'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.eggs.load_template_source',
 )
 
 if not DEBUG:
@@ -129,6 +144,7 @@ INSTALLED_APPS = (
     'exmo.exmo2010',
     'reversion',
     'django403',
+    'django_tools'
 )
 
 try:

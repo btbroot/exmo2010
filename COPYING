@@ -23,8 +23,8 @@ Some particular portions of EXMO2010 are third-party works.
 
 ---
 
-django403/middleware.py
-django403/views.py
+plugins/django403/middleware.py
+plugins/django403/views.py
 
 Copyright (C) 2009 Wesley Tanaka <http://wtanaka.com/>
 
