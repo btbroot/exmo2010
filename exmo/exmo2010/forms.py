@@ -28,7 +28,7 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
-from tagging_autocomplete.widgets import TagAutocomplete
+from exmo.exmo2010.widgets import TagAutocomplete
 
 CORE_JS = (
                 settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
