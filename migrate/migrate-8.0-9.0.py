@@ -76,6 +76,9 @@ for obj in old_data:
             openness_expression=em.OpennessExpression.objects.get(pk=obj['fields']['openness_expression'])
         )
         monitoring.create_calendar()
+        if obj['fields']['publish_date']:
+            monitoring.status = em.Monitoring.MONITORING_PUBLISH
+            monitoring.save()
 print "Done"
 
 
