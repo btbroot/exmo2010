@@ -34,7 +34,7 @@
 {% block content %}
 <p>{{ form.non_field_errors }}</p>
 <div id=parameter_filter_form>
-<form method="get" action="">{% csrf_token %}
+<form method="get" action="">
   {{ form.as_p }}
   <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>

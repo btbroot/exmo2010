@@ -203,11 +203,11 @@ def monitoring_by_criteria_mass_export(request, id):
       writer[criteria] = csv.writer(handle[criteria])
     header_row = True
     parameters = Parameter.objects.filter(monitoring = monitoring)
-    for task in Task.approved_tasks.filter(monitoring = monitoring):
+    for task in Task.approved_tasks.filter(organization__monitoring = monitoring):
       row = copy.deepcopy(row_template)
       if header_row:
         for criteria in row.keys():
-          row[criteria] = [''] + [ p.fullcode() for p in parameters ]
+          row[criteria] = [''] + [ p.code for p in parameters ]
           writer[criteria].writerow(row[criteria])
         header_row = False
         row = copy.deepcopy(row_template)
@@ -358,7 +358,7 @@ def monitoring_parameter_filter(request, id):
         if form.is_valid():
             parameter = form.cleaned_data['parameter']
             queryset = Score.objects.filter(
-                task__monitoring = monitoring,
+                task__organization__monitoring = monitoring,
                 parameter = parameter,
                 found = form.cleaned_data['found'],
                 task__status = Task.TASK_APPROVED
@@ -394,24 +394,10 @@ def monitoring_parameter_found_report(request, id):
     object_list=[]
     score_count_total = 0
     organization_count_total = 0
-    score_count_category = 0
-    score_count_subcategory = 0
-    organization_count_category = 0
-    organization_count_subcategory = 0
     queryset_list = list(queryset)
     for parameter in queryset_list:
-        try:
-            next_parameter = queryset_list[queryset_list.index(parameter)+1]
-        except:
-            next_parameter = None
-        score_count_category_public = None
-        score_count_subcategory_public = None
-        organization_count_category_public = None
-        organization_count_subcategory_public = None
-        score_per_organization_category = None
-        score_per_organization_subcategory = None
         score_count = Score.objects.filter(
-            task__monitoring = monitoring,
+            task__organization__monitoring = monitoring,
             task__status = Task.TASK_APPROVED,
             found = 1,
             parameter = parameter,
@@ -421,45 +407,11 @@ def monitoring_parameter_found_report(request, id):
         score_count_total += score_count
         organization_count_total += parameter.organization_count
         score_per_organization = float(score_count) / parameter.organization_count * 100
-        score_count_category += score_count
-        score_count_subcategory += score_count
-        organization_count_category += parameter.organization_count
-        organization_count_subcategory += parameter.organization_count
-        if next_parameter:
-            if next_parameter.group.group != parameter.group.group:
-                score_count_category_public = score_count_category
-                score_count_category = 0
-                organization_count_category_public = organization_count_category
-                organization_count_category = 0
-                score_per_organization_category = float(score_count_category_public) / organization_count_category_public * 100
-            if next_parameter.group != parameter.group:
-                score_count_subcategory_public = score_count_subcategory
-                score_count_subcategory = 0
-                organization_count_subcategory_public = organization_count_subcategory
-                organization_count_subcategory = 0
-                score_per_organization_subcategory = float(score_count_subcategory_public) / organization_count_subcategory_public * 100
-        else:
-            score_count_category_public = score_count_category
-            score_count_category = 0
-            organization_count_category_public = organization_count_category
-            organization_count_category = 0
-            score_per_organization_category = float(score_count_category_public) / organization_count_category_public * 100
-            score_count_subcategory_public = score_count_subcategory
-            score_count_subcategory = 0
-            organization_count_subcategory_public = organization_count_subcategory
-            organization_count_subcategory = 0
-            score_per_organization_subcategory = float(score_count_subcategory_public) / organization_count_subcategory_public * 100
         obj = {
             'parameter': parameter,
             'organization_count': parameter.organization_count,
             'score_count': score_count,
             'score_per_organization': score_per_organization,
-            'score_count_category': score_count_category_public,
-            'score_count_subcategory': score_count_subcategory_public,
-            'organization_count_category': organization_count_category_public,
-            'organization_count_subcategory': organization_count_subcategory_public,
-            'score_per_organization_category': score_per_organization_category,
-            'score_per_organization_subcategory': score_per_organization_subcategory,
         }
         object_list.append(obj)
     score_per_organization_total = float(score_count_total) / organization_count_total * 100
