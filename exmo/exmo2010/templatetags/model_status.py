@@ -15,13 +15,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from exmo.exmo2010.models import Task
 from exmo.exmo2010.models import Monitoring
 from django import template
 
 register = template.Library()
 
-def monitoring_status(status):
-    for s in Monitoring.MONITORING_STATUS_FULL:
+def model_status(choices, status):
+    for s in choices:
         if status == s[0]:
             return s[1]
         elif status == s[1]:
@@ -29,4 +30,11 @@ def monitoring_status(status):
     else:
         return None
 
+def monitoring_status(status):
+    return model_status(Monitoring.MONITORING_STATUS_FULL, status)
+
+def task_status(status):
+    return model_status(Task.TASK_STATUS, status)
+
+register.simple_tag(task_status)
 register.simple_tag(monitoring_status)

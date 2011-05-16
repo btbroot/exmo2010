@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n task_status %}
+{% load i18n model_status %}
 <div id=monitoring_stats>
     {% trans 'Organizations count' %}: <a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{{ organization_all_count }}</a><br />
     {% trans 'Organizations with task' %}: <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}">{{ organization_with_task_count }}</a><br />

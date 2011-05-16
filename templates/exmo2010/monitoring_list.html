@@ -18,10 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_status %}
+{% load table_header i18n adminmedia model_status %}
 {% block content %}
 <div id=monitoring_list>
-{% if object_list %}
 <table>
   {% table_header headers %}
   <tbody>
@@ -46,8 +45,5 @@
   </tbody>
 </table>
 {% include "exmo2010/paginator.html" %}
-{% else %}
-{% trans 'Empty list' %}
-{% endif %}
 </div>
 {%endblock%}
