@@ -43,7 +43,7 @@ def monitoring_list(request):
     for m in Monitoring.objects.all():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    if not monitorings_pk: return HttpResponseForbidden(_('Forbidden'))
+    if not monitorings_pk and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('monitoring'), 'name', 'name', None, None),
