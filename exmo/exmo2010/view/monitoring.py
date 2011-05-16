@@ -37,6 +37,7 @@ from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo.exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
+from reversion import revision
 
 def monitoring_list(request):
     monitorings_pk = []
@@ -555,3 +556,128 @@ def monitoring_organization_export(request, id):
         out += (safeConvert(keywords),)
         writer.writerow(out)
     return response
+
+
+
+@revision.create_on_success
+@login_required
+@csrf_protect
+def monitoring_organization_import(request, id):
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    if not request.FILES.has_key('orgfile'):
+        return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
+    reader = csv.reader(request.FILES['orgfile'])
+    errLog = []
+    rowOKCount = 0
+    rowALLCount = 0
+    try:
+        for row in reader:
+            rowALLCount += 1
+            if row[0].startswith('#'):
+                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                continue
+            if row[0] == '':
+                errLog.append("row %d (csv). Empty organization name")
+                continue
+            if row[1]  == '':
+                errLog.append("row %d (csv). Empty organization url")
+                continue
+            try:
+                organization = Organization.objects.get(monitoring = monitoring, name = str(row[0]).strip())
+            except Organization.DoesNotExist:
+                organization = Organization()
+                organization.monitoring = monitoring
+            try:
+                organization.name = str(row[0]).strip()
+                organization.url = str(row[1]).strip()
+                organization.comments = str(row[2]).strip()
+                organization.keywords = str(row[3]).strip()
+                organization.full_clean()
+                organization.save()
+            except ValidationError, e:
+                errLog.append("row %d (validation). %s" % (
+                    reader.line_num,
+                    '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
+            except Exception, e:
+                errLog.append("row %d. %s" % (reader.line_num, e))
+            else:
+                rowOKCount += 1
+    except csv.Error, e:
+           errLog.append("row %d (csv). %s" % (reader.line_num, e))
+    title = _('Import organizatino from CSV for monitoring %s') % monitoring
+    return render_to_response('exmo2010/monitoring_import_log.html', {
+      'monitoring': monitoring,
+      'file': request.FILES['orgfile'],
+      'errLog': errLog,
+      'rowOKCount': rowOKCount,
+      'rowALLCount': rowALLCount,
+      'title': title
+    })
+
+
+
+@revision.create_on_success
+@login_required
+@csrf_protect
+def monitoring_parameter_import(request, id):
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.is_superuser:
+        return HttpResponseForbidden(_('Forbidden'))
+    if not request.FILES.has_key('paramfile'):
+        return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
+    reader = csv.reader(request.FILES['paramfile'])
+    errLog = []
+    rowOKCount = 0
+    rowALLCount = 0
+    try:
+        for row in reader:
+            rowALLCount += 1
+            if row[0].startswith('#'):
+                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                continue
+            if row[0] == '':
+                errLog.append("row %d (csv). Empty code")
+                continue
+            if row[1]  == '':
+                errLog.append("row %d (csv). Empty name")
+                continue
+            try:
+                parameter = Parameter.objects.get(monitoring = monitoring, code = row[0], name = row[1])
+            except Parameter.DoesNotExist:
+                parameter = Parameter()
+            try:
+                parameter.monitoring = monitoring
+                parameter.code = int(row[0])
+                parameter.name = str(row[1]).strip().decode('utf-8')
+                parameter.description = str(row[2]).strip().decode('utf-8')
+                parameter.complete = bool(row[3])
+                parameter.topical = bool(row[4])
+                parameter.accessible = bool(row[5])
+                parameter.hypertext = bool(row[6])
+                parameter.document = bool(row[7])
+                parameter.image = bool(row[8])
+                parameter.weight = int(row[9])
+                parameter.keywords = str(row[10]).strip().decode('utf-8')
+                parameter.full_clean()
+                parameter.save()
+            except ValidationError, e:
+                errLog.append("row %d (validation). %s" % (
+                    reader.line_num,
+                    '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
+            except Exception, e:
+                errLog.append("row %d. %s" % (reader.line_num, e))
+            else:
+                rowOKCount += 1
+    except csv.Error, e:
+           errLog.append("row %d (csv). %s" % (reader.line_num, e))
+    title = _('Import organizatino from CSV for monitoring %s') % monitoring
+    return render_to_response('exmo2010/monitoring_import_log.html', {
+      'monitoring': monitoring,
+      'file': request.FILES['paramfile'],
+      'errLog': errLog,
+      'rowOKCount': rowOKCount,
+      'rowALLCount': rowALLCount,
+      'title': title
+    })
