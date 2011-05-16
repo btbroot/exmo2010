@@ -157,96 +157,19 @@ class ApprovedTaskManager(models.Manager):
 from django.db.models import Count
 class Task(models.Model):
   TASK_OPEN       = 0
-  TASK_READY      = 1
-  TASK_APPROVED   = 2
+  TASK_READY      = TASK_CLOSE = 1
+  TASK_APPROVED   = TASK_APPROVE = 2
+  TASK_CHECK      = 3
   TASK_STATUS     = (
     (TASK_OPEN, _('opened')),
-    (TASK_READY, _('ready')),
-    (TASK_APPROVED, _('approved'))
+    (TASK_CLOSE, _('closed')),
+    (TASK_CHECK, _('checked')),
+    (TASK_APPROVE, _('approved'))
   )
   user         = models.ForeignKey(User, verbose_name=_('user'))
   organization = models.ForeignKey(Organization, verbose_name=_('organization'))
   status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
   openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
-
-  _scores_invalid = '''
-    FROM exmo2010_Score
-    JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
-    JOIN exmo2010_Parameter_Exclude ON exmo2010_Parameter.id = exmo2010_Parameter_Exclude.parameter_id
-    WHERE exmo2010_Parameter_Exclude.organization_id = exmo2010_Task.Organization_id
-    '''.lower()
-  _scores = '''
-    FROM exmo2010_Score
-    JOIN exmo2010_Parameter ON exmo2010_Score.parameter_id = exmo2010_Parameter.id
-    JOIN exmo2010_ParameterType ON exmo2010_Parameter.type_id = exmo2010_ParameterType.id
-    JOIN exmo2010_ParameterMonitoringProperty ON exmo2010_Parameter.id = exmo2010_ParameterMonitoringProperty.parameter_id
-    WHERE exmo2010_ParameterMonitoringProperty.monitoring_id = exmo2010_Task.monitoring_id
-    AND exmo2010_Score.Task_id = exmo2010_Task.id
-    AND exmo2010_Score.id NOT IN (SELECT exmo2010_Score.id %s)
-    '''.lower() % _scores_invalid
-  _parameters_invalid = '''
-    FROM exmo2010_Parameter_Exclude
-    WHERE exmo2010_Parameter_Exclude.Organization_id = exmo2010_Task.Organization_id
-    '''.lower()
-  _parameters = '''
-    FROM exmo2010_Parameter
-    WHERE exmo2010_Parameter.monitoring_id = exmo2010_Task.monitoring_id
-    AND NOT (exmo2010_Parameter.id IN (SELECT exmo2010_Parameter_Exclude.parameter_id %s) AND NOT (exmo2010_Parameter.id IS NULL))
-    '''.lower() % _parameters_invalid
-
-  _openness_max = 'SELECT SUM(exmo2010_ParameterMonitoringProperty.weight) %s AND exmo2010_ParameterMonitoringProperty.weight > 0'.lower() % _parameters
-  _score_value = '''
-    exmo2010_ParameterMonitoringProperty.weight *
-    exmo2010_Score.found *
-    CASE exmo2010_ParameterType.complete
-      WHEN 0 THEN 1 ELSE
-      CASE exmo2010_Score.complete
-        WHEN 1 THEN 0.2
-        WHEN 2 THEN 0.5
-        WHEN 3 THEN 1
-      END
-    END *
-    CASE exmo2010_ParameterType.topical
-      WHEN 0 THEN 1 ELSE
-      CASE exmo2010_Score.topical
-        WHEN 1 THEN 0.7
-        WHEN 2 THEN 0.85
-        WHEN 3 THEN 1
-      END
-    END *
-    CASE exmo2010_ParameterType.accessible
-      WHEN 0 THEN 1 ELSE
-      CASE exmo2010_Score.accessible
-        WHEN 1 THEN 0.9
-        WHEN 2 THEN 0.95
-        WHEN 3 THEN 1
-      END
-    END *
-    CASE exmo2010_ParameterType.hypertext
-      WHEN 0 THEN 1 ELSE
-      CASE exmo2010_ParameterType.document
-        WHEN 0 THEN
-          CASE exmo2010_Score.hypertext
-            WHEN 0 THEN 0.2
-            WHEN 1 THEN 1
-          END ELSE
-          CASE exmo2010_Score.hypertext
-            WHEN 0 THEN
-              CASE exmo2010_Score.document
-                WHEN 0 THEN 0.2
-                WHEN 1 THEN 0.2
-              END
-            WHEN 1 THEN
-              CASE exmo2010_Score.document
-                WHEN 0 THEN 0.9
-                WHEN 1 THEN 1
-              END
-          END
-      END
-    END
-  '''.lower()
-  _openness_actual = 'SELECT SUM(%s) %s' % (_score_value, _scores)
-  _openness_sql = '((%s) * 100 / (%s))' % (_openness_actual, _openness_max)
 
   def _openness(self):
     scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.organization.monitoring)).exclude(parameter__exclude = self.organization).select_related()
@@ -306,6 +229,10 @@ class Task(models.Model):
     if self.status == self.TASK_APPROVED: return True
     else: return False
 
+  def _get_checked(self):
+    if self.status == self.TASK_CHECK: return True
+    else: return False
+
   def _set_open(self, val):
     if val:
         self.status = self.TASK_OPEN
@@ -324,12 +251,19 @@ class Task(models.Model):
         self.full_clean()
         self.save()
 
+  def _set_checked(self, val):
+    if val:
+        self.status = self.TASK_CHECKED
+        self.full_clean()
+        self.save()
+
   def _complete(self):
     return float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) \
             / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
 
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
+  checked = property(_get_checked, _set_checked)
   approved = property(_get_approved, _set_approved)
   openness = property(_get_openness)
   complete = property(_complete)
