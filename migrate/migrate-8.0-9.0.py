@@ -121,7 +121,7 @@ for obj in old_data:
                         break
                 break
         for org in org_list:
-            org.keywords = ', '.join(kwd)
+            org.keywords = ', '.join([k[:255] for k in kwd])
             org.save()
 print "Done"
 
@@ -219,7 +219,7 @@ for obj_param in old_data:
                         break
                 break
         for param in param_list:
-            param.keywords = ", ".join(kwd)
+            param.keywords = ", ".join([k[:255] for k in kwd])
             param.save()
         #fill exclude for parameters
         for org_pk in obj_param['fields']['exclude']:
