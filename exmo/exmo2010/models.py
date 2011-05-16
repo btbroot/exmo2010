@@ -122,7 +122,7 @@ class Organization(models.Model):
   '''
 
   name         = models.CharField(max_length = 255, verbose_name=_('name'))
-  url          = models.URLField(max_length = 255, null = True, blank = True, verbose_name=_('url'))
+  url          = models.URLField(max_length = 255, null = True, blank = True, verify_exists = False, verbose_name=_('url'))
   keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
   comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
