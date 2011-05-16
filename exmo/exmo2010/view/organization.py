@@ -27,6 +27,7 @@ from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
+from exmo.exmo2010.forms import OrganizationForm, CORE_MEDIA
 
 
 def organization_list(request, id):
@@ -93,4 +94,13 @@ def organization_manager(request, monitoring_id, id, method):
     else: #update
         organization = get_object_or_404(Organization, pk = id)
         title = _('Edit organization %s') % monitoring
-        return update_object(request, model = Organization, object_id = id, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+        return update_object(
+            request,
+            form_class = OrganizationForm,
+            object_id = id,
+            post_save_redirect = redirect,
+            extra_context = {
+                'title': title,
+                'monitoring': monitoring,
+                }
+            )

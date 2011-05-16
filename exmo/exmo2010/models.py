@@ -19,6 +19,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
+from exmo.exmo2010.fields import TagField
 
 
 
@@ -28,14 +29,6 @@ class OpennessExpression(models.Model):
 
   def __unicode__(self):
     return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
-
-
-
-class Keyword(models.Model):
-  keyword = models.CharField(max_length = 255, unique = True, verbose_name=_('keyword'))
-
-  def __unicode__(self):
-    return self.keyword
 
 
 
@@ -102,7 +95,7 @@ class Organization(models.Model):
 
   name         = models.CharField(max_length = 255, verbose_name=_('name'))
   url          = models.URLField(max_length = 255, null = True, blank = True, verbose_name=_('url'))
-  keywords     = models.ManyToManyField(Keyword, null = True, blank = True, verbose_name=_('keywords'))
+  keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
   comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
 
@@ -116,6 +109,7 @@ class Organization(models.Model):
     )
 
 
+
 class Parameter(models.Model):
   code               = models.PositiveIntegerField(verbose_name=_('code'))
   name               = models.CharField(max_length = 255, verbose_name=_('name'))
@@ -123,7 +117,7 @@ class Parameter(models.Model):
   monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
   weight             = models.IntegerField(verbose_name=_('weight'))
-  keywords           = models.ManyToManyField(Keyword, null = True, blank = True, verbose_name=_('keywords'))
+  keywords           = TagField(null = True, blank = True, verbose_name = _('keywords'))
   complete           = models.BooleanField(default = True, verbose_name=_('complete'))
   topical            = models.BooleanField(default = True, verbose_name=_('topical'))
   accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))

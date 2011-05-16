@@ -56,46 +56,6 @@ from django.db.models.signals import post_save
 from exmo.exmo2010.helpers import post_save_model
 post_save.disconnect(post_save_model)
 
-# deleted models from 8.0. migrate this data to keywords. see below.
-keyword_models=['OrganizationType',
-                'Federal',
-                'Entity',
-                'Category',
-                'Subcategory',
-                'ParameterType',
-                ]
-
-
-'''
-get data for Keyword model from:
-    OrganizationType.name
-    Federal.name
-    Entity.name
-    Category.name
-    Subсategory.name
-    ParameterType.name
-'''
-
-print "Creating keywords from %s models" % ", ".join(keyword_models)
-for obj in old_data:
-    if obj['model'] in ["exmo2010.%s" % name.lower() for name in keyword_models]:
-        keyword, created = em.Keyword.objects.get_or_create(keyword=obj['fields']['name'])
-print "Done"
-
-print "Creating keywords from organization keywords and keyname"
-#put keywords and keyname from organizations to Keyword model
-for obj in old_data:
-    if obj['model'] == "exmo2010.organization":
-        kwd=[]
-        if obj['fields']['keywords']:
-            kwd=obj['fields']['keywords'].split(' ')
-        if obj['fields']['keyname']:
-            kwd+=obj['fields']['keyname'].split(' ')
-        for keyword in kwd:
-            oobject, created = em.Keyword.objects.get_or_create(keyword=keyword)
-print "Done"
-
-
 print "Migrate OpennessExpression model"
 #migrate Monitoring and OpennessExpression without changes.
 #we save all pks. It's important for organization and task migration.
@@ -161,9 +121,8 @@ for obj in old_data:
                         break
                 break
         for org in org_list:
-            for keyword in kwd:
-                #all keywords added early
-                org.keywords.add(em.Keyword.objects.get(keyword = keyword))
+            org.keywords = ', '.join(kwd)
+            org.save()
 print "Done"
 
 
@@ -260,9 +219,8 @@ for obj_param in old_data:
                         break
                 break
         for param in param_list:
-            for keyword in kwd:
-                #all keywords added early
-                param.keywords.add(em.Keyword.objects.get(keyword = keyword))
+            param.keywords = ", ".join(kwd)
+            param.save()
         #fill exclude for parameters
         for org_pk in obj_param['fields']['exclude']:
             for obj_org in old_data:

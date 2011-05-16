@@ -35,4 +35,5 @@ urlpatterns = patterns('',
   (r'^accounts/profile/(\d+)$','exmo.exmo2010.view.user.user_profile'),
   (r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))),
   (r'^exmo2010/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))),
+  (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
 )

@@ -144,7 +144,8 @@ INSTALLED_APPS = (
     'exmo.exmo2010',
     'reversion',
     'django403',
-    'django_tools'
+    'tagging',
+    'tagging_autocomplete',
 )
 
 try:
@@ -185,6 +186,12 @@ USE_EMAIL = True
 CACHE_PATH = os.path.join(SITE_ROOT, '../cache/')
 CACHE_TIMEOUT = '3600'
 AUTH_PROFILE_MODULE = 'exmo2010.UserProfile'
+
+#tag length
+MAX_TAG_LENGTH = 255
+
+#tag autocomlete
+TAGGING_AUTOCOMPLETE_JS_BASE_URL = SITE_PREFIX + 'exmo2010/static'
 
 #old variant
 CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + CACHE_TIMEOUT

@@ -22,11 +22,13 @@ from exmo.exmo2010.models import Parameter
 from exmo.exmo2010.models import Claim
 from exmo.exmo2010.models import Monitoring
 from exmo.exmo2010.models import MonitoringStatus
+from exmo.exmo2010.models import Organization
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
+from tagging_autocomplete.widgets import TagAutocomplete
 
 CORE_JS = (
                 settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
@@ -157,5 +159,23 @@ class MonitoringStatusForm(forms.ModelForm):
 
 
 class ParameterForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        _parameter = kwargs.get('instance')
+        super(ParameterForm, self).__init__(*args, **kwargs)
+        self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _parameter.monitoring)
+
     class Meta:
         model = Parameter
+        widgets = {
+            'keywords': TagAutocomplete,
+            'exclude': widgets.FilteredSelectMultiple('',is_stacked=False),
+        }
+
+
+
+class OrganizationForm(forms.ModelForm):
+    class Meta:
+        model = Organization
+        widgets = {
+            'keywords': TagAutocomplete,
+        }
