@@ -67,35 +67,34 @@ class Monitoring(models.Model):
     for status in self.MONITORING_STATUS:
         MonitoringStatus.objects.get_or_create(status = status[0], monitoring = self)
 
-  @property
-  def prepare(self):
-    return self.status == MONITORING_PREPARE
+  def _get_prepare(self):
+    return self.status == self.MONITORING_PREPARE
 
-  @property
-  def rate(self):
-    return self.status == MONITORING_RATE
+  def _get_rate(self):
+    return self.status == self.MONITORING_RATE
 
-  @property
-  def revision(self):
-    return self.status == MONITORING_REVISION
+  def _get_revision(self):
+    return self.status == self.MONITORING_REVISION
 
-  @property
-  def interact(self):
-    return self.status == MONITORING_INTERACT
+  def _get_interact(self):
+    return self.status == self.MONITORING_INTERACT
 
-  @property
-  def result(self):
-    return self.status == MONITORING_RESULT
+  def _get_result(self):
+    return self.status == self.MONITORING_RESULT
 
-  @property
-  def publish(self):
-    return self.status == MONITORING_PUBLISH
+  def _get_publish(self):
+    return self.status == self.MONITORING_PUBLISH
 
-  @property
-  def planned(self):
-    return self.status == MONITORING_PLANNED
+  def _get_planned(self):
+    return self.status == self.MONITORING_PLANNED
 
-
+  is_prepare = property(_get_prepare)
+  is_rate = property(_get_rate)
+  is_revision = property(_get_revision)
+  is_interact = property(_get_interact)
+  is_result = property(_get_result)
+  is_publish = property(_get_publish)
+  is_planned = property(_get_planned)
 
 class MonitoringStatus(models.Model):
     monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
