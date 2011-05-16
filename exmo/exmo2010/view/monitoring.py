@@ -491,7 +491,7 @@ def monitoring_parameter_export(request, id):
     response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % id
     writer = csv.writer(response)
     writer.writerow([
-        'Code',
+        '#Code',
         'Name',
         'Description',
         'Complete',
@@ -516,7 +516,7 @@ def monitoring_parameter_export(request, id):
             int(p.image),
             p.weight
         )
-        keywords = ", ".join([k.keyword for k in p.keywords.all()])
+        keywords = ", ".join([k.name for k in p.tags])
         out += (safeConvert(keywords),)
         writer.writerow(out)
     return response
@@ -540,7 +540,7 @@ def monitoring_organization_export(request, id):
     response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
     writer = csv.writer(response)
     writer.writerow([
-        'Name',
+        '#Name',
         'Url',
         'Comments',
         'Keywords',
@@ -551,7 +551,7 @@ def monitoring_organization_export(request, id):
             o.url.encode("utf-8"),
             safeConvert(o.comments),
         )
-        keywords = ", ".join([k.keyword for k in o.keywords.all()])
+        keywords = ", ".join([k.name for k in o.tags])
         out += (safeConvert(keywords),)
         writer.writerow(out)
     return response
