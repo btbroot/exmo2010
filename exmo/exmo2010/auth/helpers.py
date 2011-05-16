@@ -16,20 +16,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib.auth.models import Group, User
-from exmo.exmo2010.models import Task
+from exmo.exmo2010 import models as em
 
 
 def monitoring_permission(user, priv, monitoring):
     if priv == 'exmo2010.view_monitoring':
-        #monitoring have one approved task for anonymous and have publish_date
-        if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
+        #monitoring have one approved task for anonymous and publish
+        if em.Task.approved_tasks.filter(organization__monitoring = monitoring).count() > 0 and monitoring.publish: return True
         if user.is_active: #minimaze query
             profile = user.profile
-            if profile.is_expert and Task.objects.filter(monitoring = monitoring, user = user).count() > 0: return True
-            elif profile.is_organization and Task.approved_tasks.filter(monitoring = monitoring, organization__in = profile.organization.all()).count() > 0:
+            if profile.is_expert and em.Task.objects.filter(organization__monitoring = monitoring, user = user).count() > 0: return True
+            elif profile.is_organization and em.Task.approved_tasks.filter(organization__in = profile.organization.all()).count() > 0:
                 return True
     if priv == 'exmo2010.rating_monitoring':
-        if Task.approved_tasks.filter(monitoring = monitoring).count() > 0 and monitoring.publish_date : return True
+        if em.Task.approved_tasks.filter(organization__monitoring = monitoring).count() > 0 and monitoring.publish: return True
     return False
 
 
@@ -37,7 +37,7 @@ def monitoring_permission(user, priv, monitoring):
 def task_permission(user, priv, task):
     if priv == 'exmo2010.view_task':
         if user.is_active:
-            if task.approved and task.organization.monitoring.publish_date: return True
+            if task.approved and task.organization.monitoring.publish: return True
             profile = user.profile
             if profile.is_expert:
                 if user == task.user: return True
@@ -47,6 +47,8 @@ def task_permission(user, priv, task):
             return True #anonymous user
     elif priv == 'exmo2010.close_task':
         if task.open and task.user == user: return True
+    elif priv == 'exmo2010.open_task':
+        if task.ready and task.user == user: return True
     elif priv == 'exmo2010.fill_task': #create_score
         if task.open and task.user == user: return True
     elif priv == 'exmo2010.comment_score':
@@ -91,7 +93,7 @@ def organization_permission(user, priv, organization):
         if user.is_active:
             profile = user.profile
             if profile.is_expert:
-                if Task.objects.filter(organization = organization, user = user).count() > 0: return True
+                if em.Task.objects.filter(organization = organization, user = user).count() > 0: return True
             elif (profile.is_organization or profile.is_customer) and profile.organization.filter(pk = organization.pk).count() > 0: return True
     return False
 
