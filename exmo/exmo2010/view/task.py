@@ -374,18 +374,6 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       title = _('Close task %s') % task
       if request.user.has_perm('exmo2010.close_task', task):
         if task.open:
-          if request.method == 'GET':
-            return render_to_response(
-                'exmo2010/task_confirm_close.html',
-                {
-                    'object': task,
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'title': title,
-                },
-                context_instance=RequestContext(request),
-                )
-          elif request.method == 'POST':
             try:
                 revision.comment = _('Task ready')
                 task.ready = True
@@ -399,18 +387,6 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       title = _('Approve task for %s') % task
       if request.user.has_perm('exmo2010.approve_task', task):
         if not task.approved:
-          if request.method == 'GET':
-            return render_to_response(
-                'exmo2010/task_confirm_approve.html',
-                {
-                    'object': task,
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'title': title
-                },
-                context_instance=RequestContext(request),
-                )
-          elif request.method == 'POST':
             try:
                 revision.comment = _('Task approved')
                 task.approved = True
@@ -423,18 +399,6 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       title = _('Open task %s') % task
       if request.user.has_perm('exmo2010.open_task', task):
         if not task.open:
-          if request.method == 'GET':
-            return render_to_response(
-                'exmo2010/task_confirm_open.html',
-                {
-                    'object': task,
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'title': title
-                },
-                context_instance=RequestContext(request),
-                )
-          elif request.method == 'POST':
             try:
                 revision.comment = _('Task openned')
                 task.open = True
@@ -442,6 +406,18 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
                 return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             return HttpResponseRedirect(redirect)
         else: return HttpResponse(_('Already open'))
+      else: return HttpResponseForbidden(_('Forbidden'))
+    elif method == 'check':
+      title = _('Check task %s') % task
+      if request.user.has_perm('exmo2010.check_task', task):
+        if task.ready:
+            try:
+                revision.comment = _('Task checked')
+                task.checked = True
+            except ValidationError, e:
+                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+            return HttpResponseRedirect(redirect)
+        else: return HttpResponse(_('Already checked'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       title = _('Edit task %s') % task
