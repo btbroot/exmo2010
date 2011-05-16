@@ -20,6 +20,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from exmo.exmo2010.fields import TagField
+from tagging.models import Tag
 
 
 
@@ -130,6 +131,14 @@ class Organization(models.Model):
   def __unicode__(self):
     return '%s' % (self.name)
 
+  def _get_tags(self):
+    return Tag.objects.get_for_object(self)
+
+  def _set_tags(self, tag_list):
+    Tag.objects.update_tags(self, tag_list)
+
+  tags = property(_get_tags, _set_tags)
+
   class Meta:
     ordering = ('name',)
     unique_together = (
@@ -155,6 +164,14 @@ class Parameter(models.Model):
 
   def __unicode__(self):
     return '%s' % (self.name)
+
+  def _get_tags(self):
+    return Tag.objects.get_for_object(self)
+
+  def _set_tags(self, tag_list):
+    Tag.objects.update_tags(self, tag_list)
+
+  tags = property(_get_tags, _set_tags)
 
   class Meta:
     ordering = ('code','name',)
