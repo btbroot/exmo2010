@@ -66,6 +66,34 @@ class Monitoring(models.Model):
     for status in self.MONITORING_STATUS:
         MonitoringStatus.objects.get_or_create(status = status[0], monitoring = self)
 
+  @property
+  def prepare(self):
+    return self.status == MONITORING_PREPARE
+
+  @property
+  def rate(self):
+    return self.status == MONITORING_RATE
+
+  @property
+  def revision(self):
+    return self.status == MONITORING_REVISION
+
+  @property
+  def interact(self):
+    return self.status == MONITORING_INTERACT
+
+  @property
+  def result(self):
+    return self.status == MONITORING_RESULT
+
+  @property
+  def publish(self):
+    return self.status == MONITORING_PUBLISH
+
+  @property
+  def planned(self):
+    return self.status == MONITORING_PLANNED
+
 
 
 class MonitoringStatus(models.Model):
