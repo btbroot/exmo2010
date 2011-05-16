@@ -201,9 +201,9 @@ class ApprovedTaskManager(models.Manager):
 from django.db.models import Count
 class Task(models.Model):
   TASK_OPEN       = 0
-  TASK_READY      = TASK_CLOSE = 1
+  TASK_READY      = TASK_CLOSE = TASK_CLOSED = 1
   TASK_APPROVED   = TASK_APPROVE = 2
-  TASK_CHECK      = 3
+  TASK_CHECK      = TASK_CHECKED = 3
   TASK_STATUS     = (
     (TASK_OPEN, _('opened')),
     (TASK_CLOSE, _('closed')),
