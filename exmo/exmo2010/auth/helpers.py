@@ -42,7 +42,7 @@ def monitoring_permission(user, priv, monitoring):
     if priv == 'exmo2010.rating_monitoring':
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-        if em.Task.approved_tasks.filter(organization__monitoring = monitoring).count() > 0 and monitoring.publish: return True
+        if em.Task.approved_tasks.filter(organization__monitoring = monitoring).count() > 0 and monitoring.is_publish: return True
     return False
 
 
