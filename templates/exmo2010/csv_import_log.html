@@ -1,0 +1,11 @@
+{% load i18n %}
+<div id="success">{% trans "Rows ok/all" %}: {{rowOKCount}}/{{rowALLCount}}</div>
+{% if errLog %}
+  <div id="failure">{% trans "Errors encountered" %}:
+  <ul>
+  {% for error in errLog %}
+    <li>{{error}}</li>
+  {% endfor %}
+  </ul>
+  </div>
+{% endif %}
