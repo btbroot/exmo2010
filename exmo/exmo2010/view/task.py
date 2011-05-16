@@ -397,7 +397,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
       title = _('Approve task for %s') % task
-      if request.user.is_superuser:
+      if request.user.has_perm('exmo2010.approve_task', task):
         if not task.approved:
           if request.method == 'GET':
             return render_to_response(
@@ -421,8 +421,8 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
       title = _('Open task %s') % task
-      if request.user.is_superuser:
-        if task.approved:
+      if request.user.has_perm('exmo2010.open_task', task):
+        if not task.open:
           if request.method == 'GET':
             return render_to_response(
                 'exmo2010/task_confirm_open.html',

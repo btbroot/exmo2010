@@ -44,7 +44,7 @@ def monitoring_list(request):
     for m in Monitoring.objects.all():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    if not monitorings_pk and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    if not monitorings_pk and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()): return HttpResponseForbidden(_('Forbidden'))
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
     headers =   (
                 (_('monitoring'), 'name', 'name', None, None),
@@ -64,14 +64,12 @@ def monitoring_list(request):
 
 @login_required
 def monitoring_manager(request, id, method):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.monitoring.monitoring_list'), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
-    if method == 'add':
-        return monitoring_add(request)
-    elif method == 'delete':
+    if method == 'delete':
         monitoring = get_object_or_404(Monitoring, pk = id)
+        if not request.user.has_perm('exmo2010.delete_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         title = _('Delete monitoring %s') % monitoring
         return delete_object(
             request,
@@ -85,6 +83,8 @@ def monitoring_manager(request, id, method):
             )
     else: #update
         monitoring = get_object_or_404(Monitoring, pk = id)
+        if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit monitoring %s') % monitoring
         from django.forms.models import inlineformset_factory
         MonitoringStatusFormset = inlineformset_factory(
@@ -114,7 +114,7 @@ def monitoring_manager(request, id, method):
 
 @login_required
 def monitoring_add(request):
-    if not request.user.is_superuser:
+    if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Add new monitoring')
     if request.method == 'POST':
@@ -182,9 +182,9 @@ def monitoring_by_criteria_mass_export(request, id):
       else:
         return ''
 
-    if not request.user.is_superuser: # TODO: check_permission
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     row_template = {
         'Found':      [],
         'Complete':   [],
@@ -272,8 +272,9 @@ def monitoring_by_criteria_mass_export(request, id):
 
 @login_required
 def monitoring_by_experts(request, id):
-    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     experts = Task.objects.filter(organization__monitoring = monitoring).values('user').annotate(cuser=Count('user'))
     title = _('Experts of monitoring %(name)s') % {'name': monitoring.name}
     epk = [e['user'] for e in experts]
@@ -326,8 +327,9 @@ def monitoring_by_experts(request, id):
 
 @login_required
 def monitoring_info(request, id):
-    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()
     organization_open_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_OPEN).count()
     organization_ready_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_READY).count()
@@ -346,7 +348,9 @@ def monitoring_info(request, id):
 from exmo.exmo2010.forms import ParameterFilterForm
 @login_required
 def monitoring_parameter_filter(request, id):
-    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     title = _('Parameter-criteria filter')
     monitoring = get_object_or_404(Monitoring, pk = id)
     form = ParameterFilterForm()
@@ -376,8 +380,9 @@ def monitoring_parameter_filter(request, id):
 
 @login_required
 def monitoring_parameter_found_report(request, id):
-    if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     title = _('Report for %(monitoring)s by parameter and found') % { 'monitoring': monitoring }
     queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
             'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s) -
@@ -436,9 +441,9 @@ def monitoring_parameter_export(request, id):
       else:
         return ''
 
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = monitoring)
     response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % id
@@ -485,9 +490,9 @@ def monitoring_organization_export(request, id):
       else:
         return ''
 
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring = monitoring)
     response = HttpResponse(mimetype = 'text/csv')
     response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
@@ -516,7 +521,7 @@ def monitoring_organization_export(request, id):
 @csrf_protect
 def monitoring_organization_import(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.is_superuser:
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('orgfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
@@ -575,7 +580,7 @@ def monitoring_organization_import(request, id):
 @csrf_protect
 def monitoring_parameter_import(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.is_superuser:
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('paramfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))

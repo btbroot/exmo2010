@@ -520,8 +520,27 @@ class UserProfile(models.Model):
     notify_score_change = models.BooleanField(blank = True, default = False, verbose_name=_('notify score change'))
 
     def _is_expert(self):
+        return self._is_expertB() or self._is_expertA() or self._is_manager_expertB()
+
+    def _is_expertB(self):
         try:
-            group = Group.objects.get(name='experts')
+            group, created = Group.objects.get_or_create(name='experts')
+        except:
+            return False
+        else:
+            return group in self.user.groups.all()
+
+    def _is_expertA(self):
+        try:
+            group, created = Group.objects.get_or_create(name='expertsA')
+        except:
+            return False
+        else:
+            return group in self.user.groups.all()
+
+    def _is_manager_expertB(self):
+        try:
+            group, created = Group.objects.get_or_create(name='expertsB_manager')
         except:
             return False
         else:
@@ -529,7 +548,7 @@ class UserProfile(models.Model):
 
     def _is_customer(self):
         try:
-            group = Group.objects.get(name='customers')
+            group, created = Group.objects.get_or_create(name='customers')
         except:
             return False
         else:
@@ -537,13 +556,18 @@ class UserProfile(models.Model):
 
     def _is_organization(self):
         try:
-            group = Group.objects.get(name='organizations')
+            group, creater = Group.objects.get_or_create(name='organizations')
         except:
             return False
         else:
             return group in self.user.groups.all()
 
+
+
     is_expert = property(_is_expert)
+    is_expertB = property(_is_expertB)
+    is_expertA = property(_is_expertA)
+    is_manager_expertB = property(_is_manager_expertB)
     is_customer = property(_is_customer)
     is_organization = property(_is_organization)
 

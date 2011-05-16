@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats %}
+{% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -58,19 +58,33 @@
       {% if user.is_superuser or user.userprofile.is_expert %}
       <td>
         {% if object.open %}
-        {% trans 'opened' %}
-         : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+         {% check_object_permission exmo2010.close_task monitoring as perm %}
+         {% task_status object.status %}
+         {% if perm %} : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+         {% endif %}
         {% endif %}
         {% if object.ready %}
-         {% trans 'closed' %}
-         {% if user.is_superuser %}
+         {% check_object_permission exmo2010.check_task monitoring as perm %}
+         {% task_status object.status %}
+         {% if perm %}
+          : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'check' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'check' %}</a>
+         {% endif %}
+         {% check_object_permission exmo2010.open_task monitoring as perm %}
+         {% if perm %}
+          / <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+         {% endif %}
+        {% endif %}
+        {% if object.checked %}
+         {% check_object_permission exmo2010.approve_task monitoring as perm %}
+         {% task_status object.status %}
+         {% if perm %}
           : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
-         {% else %}
          {% endif %}
         {% endif %}
         {% if object.approved %}
-         {% trans 'approved' %}
-         {% if user.is_superuser %}
+         {% task_status object.status %}
+         {% check_object_permission exmo2010.open_task monitoring as perm %}
+         {% if perm %}
           : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
