@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Parameter, Task
 from exmo.exmo2010.forms import ParameterForm
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 
