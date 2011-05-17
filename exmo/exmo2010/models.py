@@ -216,11 +216,13 @@ class Task(models.Model):
   openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
 
   def _openness(self):
+    openness = 0
     scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.organization.monitoring)).exclude(parameter__exclude = self.organization).select_related()
     openness_actual = sum([openness_helper(s) for s in scores])
     parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
     openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
-    openness = float(openness_actual * 100) / openness_max
+    if openness_max:
+        openness = float(openness_actual * 100) / openness_max
     return openness
 
   def _get_openness(self):
@@ -302,11 +304,10 @@ class Task(models.Model):
         self.save()
 
   def _complete(self):
-    try:
-        complete = float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) \
-                    / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
-    except:
-        complete = 0
+    complete = 0
+    parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
+    if parameters:
+        complete = float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) / parameters
     return complete
 
   open = property(_get_open, _set_open)
