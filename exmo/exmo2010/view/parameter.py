@@ -73,8 +73,8 @@ def parameter_add(request, task_id):
     if request.method == 'GET':
         form = ParameterForm(monitoring = task.organization.monitoring)
     elif request.method == 'POST':
-        form = ParameterForm(requets.POST)
-        if form.is_valid:
+        form = ParameterForm(request.POST)
+        if form.is_valid():
             parameter = form.save()
             return HttpResponseRedirect(redirect)
     return render_to_response(

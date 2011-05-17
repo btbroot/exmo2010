@@ -169,12 +169,14 @@ class ParameterForm(forms.ModelForm):
             self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _parameter.monitoring)
         if _monitoring:
             self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _monitoring)
+            self.fields['monitoring'].initial = _monitoring
 
     class Meta:
         model = Parameter
         widgets = {
             'keywords': TagAutocomplete,
             'exclude': widgets.FilteredSelectMultiple('',is_stacked=False),
+            'monitoring': forms.widgets.HiddenInput,
         }
 
 
