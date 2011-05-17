@@ -268,7 +268,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     title = _('Task list for %(org)s') % { 'org': organization.name }
     queryset = Task.objects.filter(organization = organization)
     # Or, filtered by user
-    if user.is_superuser:
+    if user.has_perm('exmo2010.admin_monitoring', monitoring):
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
@@ -313,11 +313,14 @@ def task_add(request, monitoring_id, organization_id=None):
         redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
         title = _('Add new task for %s') % monitoring
     redirect = redirect.replace("%","%%")
-    if request.user.is_superuser:
+    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         if request.method == 'GET':
             form = TaskForm()
-            group, created = Group.objects.get_or_create(name = 'experts')
-            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
+            groups = []
+            for group_name in ['expertsA','expertsB','expertsB_manager']:
+                group, created = Group.objects.get_or_create(name = group_name)
+                groups.append(group)
+            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(groups__in = groups)
             if not organization:
                 form.fields['organization'].queryset = Organization.objects.filter(monitoring=monitoring)
             return render_to_response(
@@ -367,7 +370,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete task %s') % task
-      if request.user.is_superuser:
+      if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
@@ -421,7 +424,7 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       title = _('Edit task %s') % task
-      if request.user.is_superuser:
+      if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         revision.comment = _('Task updated')
         return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
       else: return HttpResponseForbidden(_('Forbidden'))
@@ -438,9 +441,10 @@ def tasks_by_monitoring(request, id):
     queryset = Task.objects.filter(organization__monitoring = monitoring)
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
-    if not task_list and not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+    if not task_list and not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.filter(pk__in = task_list)
-    if request.user.is_superuser:
+    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
@@ -475,12 +479,15 @@ def tasks_by_monitoring(request, id):
 
 @login_required
 def task_mass_assign_tasks(request, id):
-  if not request.user.is_superuser:
-    return HttpResponseForbidden(_('Forbidden'))
   monitoring = get_object_or_404(Monitoring, pk = id)
+  if not request.user.has_perm('exmo2010.admin_monitoring'):
+    return HttpResponseForbidden(_('Forbidden'))
   organizations = Organization.objects.filter(monitoring = monitoring)
-  group, created = Group.objects.get_or_create(name = 'experts')
-  users = User.objects.filter(is_active = True).filter(Q(groups = group) | Q(is_superuser = True))
+  groups = []
+  for group_name in ['expertsA','expertsB','expertsB_manager']:
+    group, created = Group.objects.get_or_create(name = group_name)
+    groups.append(group)
+  users = User.objects.filter(is_active = True).filter(groups__in = groups)
   log = []
   if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
     for organization_id in request.POST.getlist('organizations'):

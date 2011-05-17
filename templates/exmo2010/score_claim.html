@@ -17,8 +17,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n claim %}
-{% if user.userprofile.is_expert or user.is_superuser %}
+{% load i18n claim check_object_permission %}
+{% check_object_permission exmo2010.view_claim object as perm %}
+{% if perm %}
 <p><hr>
 <div id='score_claim'>
 {% get_all_claim object as claim_list %}
@@ -44,7 +45,8 @@
     </tbody>
     </table>
 {% endif %}
-{% if user.is_superuser %}
+{% check_object_permission exmo2010.add_claim object as perm %}
+{% if perm %}
     <p><a href="{% url exmo.exmo2010.view.claim.claim_manager object.pk %}">{% trans 'Add new claim' %}</a></p>
 {% endif %}
 </div>

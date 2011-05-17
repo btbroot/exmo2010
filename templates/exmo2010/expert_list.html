@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats model_status %}
+{% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -57,7 +57,8 @@
 </table>
 {% include "exmo2010/paginator.html" %}
 </div>
-{% if user.is_superuser %}
+{% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+{% if perm %}
     <br />
     {% monitoring_stats monitoring %}
 {% endif %}

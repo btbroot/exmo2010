@@ -29,10 +29,10 @@ from django.core.urlresolvers import reverse
 
 @login_required
 def parameter_manager(request, task_id, id, method):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(_('Forbidden'))
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':

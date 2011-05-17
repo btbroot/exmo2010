@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n get_object_by_pk %}
+{% load i18n get_object_by_pk check_object_permission %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -29,7 +29,8 @@
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 <div>
-<h1>{% if user.is_superuser %}{{ task.user }}: {% endif %}{{ task.organization.name }}: {{ task.organization.monitoring.name }}</h1>
+{% check_object_permission exmo2010.admin_monitoring task.organization.monitoring as perm %}
+<h1>{% if perm %}{{ task.user }}: {% endif %}{{ task.organization.name }}: {{ task.organization.monitoring.name }}</h1>
 
 <table>
 <thead>

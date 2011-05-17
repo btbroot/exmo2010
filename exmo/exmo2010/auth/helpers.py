@@ -100,6 +100,13 @@ def score_permission(user, priv, score):
                 return True
             elif profile.is_expert and user.has_perm('exmo2010.view_task', score.task) and score.task.user == user:
                 return True
+    elif priv == 'exmo2010.add_claim':
+        if user.is_active:
+            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
+    elif priv == 'exmo2010.view_claim':
+        if user.is_active:
+            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
+            if user == score.task.user: return True
     return False
 
 
@@ -118,6 +125,7 @@ def organization_permission(user, priv, organization):
                 if em.Task.objects.filter(organization = organization, user = user).count() > 0: return True
             elif (profile.is_organization or profile.is_customer) and profile.organization.filter(pk = organization.pk).count() > 0: return True
     return False
+
 
 
 def check_permission(user, priv, context = None):

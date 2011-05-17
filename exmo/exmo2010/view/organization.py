@@ -38,7 +38,7 @@ def organization_list(request, id):
     for task in Task.objects.filter(organization__monitoring = monitoring):
         if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
     org_list = list(set(org_list))
-    if request.user.is_superuser:
+    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring = monitoring).extra(
             select = {
                 'task__count':'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (Task._meta.db_table, Organization._meta.db_table),
@@ -69,9 +69,9 @@ def organization_list(request, id):
 
 @login_required
 def organization_manager(request, monitoring_id, id, method):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+    if not request.user.has_perm('exmo2010.admin_monitoring'):
+        return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.organization.organization_list', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'add':

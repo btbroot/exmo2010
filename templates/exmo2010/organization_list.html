@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats %}
+{% load table_header i18n adminmedia monitoring_stats check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -34,18 +34,19 @@
   {% table_header headers %}
   <tbody>
     <tr><td>
-        {%if user.is_superuser%}
+        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+        {%if perm%}
             <a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
         {%endif%}</td></tr>
     {% for object in object_list %}
       <tr>
       <td>
       <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
-        {% if user.is_superuser %}
+        {% if perm %}
             &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
         {%endif%}
       </td>
-      {% if user.is_superuser %}
+      {% if perm %}
       <td>
         {{ object.task__count }}
       </td>
@@ -56,7 +57,7 @@
 </table>
 {% include "exmo2010/paginator.html" %}
 </div>
-{% if user.is_superuser %}
+{% if perm %}
     <br />
     {% monitoring_stats monitoring %}
 {% endif %}
