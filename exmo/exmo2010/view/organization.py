@@ -76,7 +76,7 @@ def organization_manager(request, monitoring_id, id, method):
     redirect = redirect.replace("%","%%")
     if method == 'add':
         title = _('Add new organization for %s') % monitoring
-        return create_object(request, model = Organization, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+        return create_object(request, form_class = OrganizationForm, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk = id)
         title = _('Delete organization %s') % monitoring

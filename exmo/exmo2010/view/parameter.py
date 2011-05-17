@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.create_update import update_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -24,6 +24,7 @@ from exmo.exmo2010.forms import ParameterForm
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
+from django.template import RequestContext
 
 
 
@@ -59,3 +60,29 @@ def parameter_manager(request, task_id, id, method):
                 'task': task,
                 }
             )
+
+@login_required
+def parameter_add(request, task_id):
+    task = get_object_or_404(Task, pk = task_id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+    redirect = '%s?%s' % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode())
+    redirect = redirect.replace("%","%%")
+    title = _('Add parameter for %s') % task
+    form = None
+    if request.method == 'GET':
+        form = ParameterForm(monitoring = task.organization.monitoring)
+    elif request.method == 'POST':
+        form = ParameterForm(requets.POST)
+        if form.is_valid:
+            parameter = form.save()
+            return HttpResponseRedirect(redirect)
+    return render_to_response(
+        'exmo2010/parameter_form.html',
+        {
+            'form': form,
+            'title': title,
+            'task': task,
+        },
+        context_instance=RequestContext(request),
+    )

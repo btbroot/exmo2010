@@ -55,6 +55,14 @@
 <table>
 {% table_header headers %}
 <tbody>
+    <tr><td colspan=2>
+        {% with task.monitoring as monitoring %}
+        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+        {%if perm%}
+            <a href="{% url exmo.exmo2010.view.parameter.parameter_add task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>&nbsp;
+        {%endif%}
+        {% endwith %}
+    </td></tr>
 {%for object in object_list%}
 {%get_object_by_pk exmo2010.Score object.score_pk as score %}
       <tr width=100% id='parameter_{{object.code}}'>

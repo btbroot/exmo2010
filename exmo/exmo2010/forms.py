@@ -161,8 +161,14 @@ class MonitoringStatusForm(forms.ModelForm):
 class ParameterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         _parameter = kwargs.get('instance')
+        _monitoring = kwargs.get('monitoring')
+        if _monitoring:
+            kwargs.pop('monitoring')
         super(ParameterForm, self).__init__(*args, **kwargs)
-        self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _parameter.monitoring)
+        if _parameter:
+            self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _parameter.monitoring)
+        if _monitoring:
+            self.fields['exclude'].queryset = Organization.objects.filter(monitoring = _monitoring)
 
     class Meta:
         model = Parameter
