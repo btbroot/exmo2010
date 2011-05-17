@@ -523,7 +523,7 @@ class UserProfile(models.Model):
 
     def _is_expertB(self):
         try:
-            group, created = Group.objects.get_or_create(name='experts')
+            group, created = Group.objects.get_or_create(name='expertsB')
         except:
             return False
         else:

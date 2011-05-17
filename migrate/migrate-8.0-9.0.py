@@ -251,3 +251,12 @@ for obj in old_data:
                     for o in org:
                         profile.organization.add(o)
 print "Done"
+
+
+
+print "Mirgate Group model"
+groups = auth.Group.objects.filter(name = 'experts')
+for g in groups:
+    g.name = 'expertsB'
+    g.save()
+print "Done"
