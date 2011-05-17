@@ -302,8 +302,12 @@ class Task(models.Model):
         self.save()
 
   def _complete(self):
-    return float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) \
-            / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
+    try:
+        complete = float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) \
+                    / Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
+    except:
+        complete = 0
+    return complete
 
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
