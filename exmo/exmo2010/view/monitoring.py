@@ -350,7 +350,7 @@ from exmo.exmo2010.forms import ParameterFilterForm
 @login_required
 def monitoring_parameter_filter(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Parameter-criteria filter')
     monitoring = get_object_or_404(Monitoring, pk = id)
@@ -366,10 +366,13 @@ def monitoring_parameter_filter(request, id):
                 task__organization__monitoring = monitoring,
                 parameter = parameter,
                 found = form.cleaned_data['found'],
-                task__status = Task.TASK_APPROVED
             ).exclude(
                 task__organization__in = parameter.exclude.all(),
             )
+            if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+                queryset = queryset.filter(task__status = Task.TASK_APPROVED)
+            elif request.user.profile.is_expertB:
+                queryset = queryset.filter(task__status = Task.TASK_CLOSED)
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
