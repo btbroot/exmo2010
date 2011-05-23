@@ -175,7 +175,8 @@ class Parameter(models.Model):
   class Meta:
     ordering = ('code','name',)
     unique_together = (
-        ('code', 'name', 'monitoring'),
+        ('code', 'monitoring'),
+        ('name', 'monitoring'),
     )
 
 
