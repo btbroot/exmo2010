@@ -233,7 +233,7 @@ def monitoring_by_criteria_mass_export(request, id):
             row['Complete'].append(score.complete)
           else:
             row['Complete'].append('')
-          if score.parameter.complete:
+          if score.parameter.topical:
             row['Topical'].append(score.topical)
           else:
             row['Topical'].append('')
