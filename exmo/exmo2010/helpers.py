@@ -101,7 +101,7 @@ def comment_notification(sender, **kwargs):
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
             'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.fullcode(),
+            'code': score.parameter.code,
             }
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/score_comment_email.html')
@@ -123,7 +123,7 @@ def claim_notification(sender, **kwargs):
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
             'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.fullcode(),
+            'code': score.parameter.code,
             }
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
@@ -182,7 +182,7 @@ def score_change_notify(sender, **kwargs):
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
             'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.fullcode(),
+            'code': score.parameter.code,
         }
         url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
         t = loader.get_template('exmo2010/score_email.html')

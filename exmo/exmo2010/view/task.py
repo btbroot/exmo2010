@@ -59,9 +59,8 @@ def task_export(request, id):
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
     writer = csv.writer(response)
     writer.writerow([
-        'Code',
+        '#Code',
         'Name',
-        'Type',
         'Found',
         'Complete',
         'CompleteComment',
@@ -80,18 +79,9 @@ def task_export(request, id):
     category = None
     subcategory = None
     for p in parameters:
-        if p.group.group.code != category:
-          category = p.group.group.code
-          out = (p.group.group.code, p.group.group.name.encode("utf-8"))
-          writer.writerow(out)
-        if p.group.code != subcategory:
-          subcategory = p.group.code
-          out = (p.group.fullcode(), p.group.name.encode("utf-8"))
-          writer.writerow(out)
         out = (
-            p.fullcode(),
+            p.code,
             p.name.encode("utf-8"),
-            p.type.name.encode("utf-8")
         )
         try:
             s = scores.get(parameter = p)
@@ -114,37 +104,37 @@ def task_export(request, id):
             )
         else:
             out += (s.found,)
-            if p.type.complete:
+            if p.complete:
                 out += (
                     s.complete,
                     safeConvert(s.completeComment))
             else:
                 out += ('','')
-            if p.type.topical:
+            if p.topical:
                 out += (
                     s.topical,
                     safeConvert(s.topicalComment))
             else:
                 out += ('','')
-            if p.type.accessible:
+            if p.accessible:
                 out += (
                     s.accessible,
                     safeConvert(s.accessibleComment))
             else:
                 out += ('','')
-            if p.type.hypertext:
+            if p.hypertext:
                 out += (
                     s.hypertext,
                     safeConvert(s.hypertextComment))
             else:
                 out += ('','')
-            if p.type.document:
+            if p.document:
                 out += (
                     s.document,
                     safeConvert(s.documentComment))
             else:
                 out += ('','')
-            if p.type.image:
+            if p.image:
                 out += (
                 s.image,
                 safeConvert(s.imageComment))

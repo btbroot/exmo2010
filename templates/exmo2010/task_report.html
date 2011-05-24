@@ -48,14 +48,8 @@
 <tbody>
 {%for object in object_list%}
 {% get_object_by_pk exmo2010.Score object.score_pk as score %}
-  {% ifchanged object.group.group %}
-    <tr id='parameter_{{object.group.group.fullcode}}'><td colspan=10>{{object.group.group}}</td></tr>
-  {% endifchanged %}
-  {% ifchanged object.group %}
-    <tr id='parameter_{{object.group.fullcode}}'><td colspan=10>{{object.group}}</td></tr>
-  {% endifchanged %}
-      <tr width=100% id='parameter_{{object.fullcode}}'>
-      <td width=4%>{{ object.fullcode }}</td>
+      <tr width=100% id='parameter_{{object.code}}'>
+      <td width=4%>{{ object.code }}</td>
       <td>
         {{ object.name }}
       </td>
