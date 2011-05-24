@@ -52,7 +52,7 @@ def task_permission(user, priv, task):
         if user.profile.is_expertA or user.profile.is_manager_expertB: return True
     if priv == 'exmo2010.view_task':
         if user.is_active:
-            if task.approved and task.organization.monitoring.publish: return True
+            if task.approved and task.organization.monitoring.is_publish: return True
             profile = user.profile
             if profile.is_expert:
                 if user == task.user: return True
