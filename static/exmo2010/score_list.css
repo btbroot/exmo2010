@@ -17,32 +17,32 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-#score_list .score-ok-nonzero{
+.score-ok-nonzero{
 	background:green;
 	text-align: center;
         }
 
-#score_list .score-ok-val1{
+.score-ok-val1{
 	background: #ff9218;
 	text-align: center;
         }
 
-#score_list .score-ok-val2{
+.score-ok-val2{
 	background: #fcff18;
 	text-align: center;
         }
 
-#score_list .score-ok-val3{
+.score-ok-val3{
 	background:green;
 	text-align: center;
         }
 
-#score_list .score-ok-zero{
+.score-ok-zero{
 	background:red;
 	text-align: center;
         }
 
-#score_list .score-none {
+.score-none {
 	background:gray;
 
         }
@@ -54,4 +54,9 @@
 
 #score_list table {
         width: 100%
+        }
+
+#legend td {
+        border-collapse: collapse;
+        border: 1px solid;
         }
