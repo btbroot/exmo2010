@@ -149,11 +149,15 @@ class MonitoringForm(forms.ModelForm):
 
 
 class MonitoringStatusForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        ms = kwargs.get('instance')
+        super(MonitoringStatusForm, self).__init__(*args, **kwargs)
+        self.fields['status'].choices = ((ms.status, ms),)
+
     class Meta:
         model = MonitoringStatus
         widgets = {
             'start':widgets.AdminSplitDateTime,
-            'status': forms.widgets.Select(attrs={'disabled':'disabled'}),
         }
 
 

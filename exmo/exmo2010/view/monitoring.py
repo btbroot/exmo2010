@@ -95,13 +95,20 @@ def monitoring_manager(request, id, method):
             extra = 0,
             form = MonitoringStatusForm,
             )
+
+        form = MonitoringForm(instance = monitoring)
+        formset = MonitoringStatusFormset(instance = monitoring)
+
         if request.method == 'POST':
             form = MonitoringForm(request.POST, instance = monitoring)
             if form.is_valid():
-                m = form.save()
-                return HttpResponseRedirect(redirect)
-        form = MonitoringForm(instance = monitoring)
-        formset = MonitoringStatusFormset(instance = monitoring)
+                m = form.save(commit = False)
+                formset = MonitoringStatusFormset(request.POST, instance = m)
+                if formset.is_valid():
+                    m.save()
+                    formset.save()
+                    return HttpResponseRedirect(redirect)
+
         return render_to_response(
             'exmo2010/monitoring_form.html',
             {
