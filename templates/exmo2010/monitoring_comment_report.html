@@ -51,26 +51,32 @@
 <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
 </ul>
 
+{% if fail_comments_without_reply %}
 <h3>{% trans 'Comments list from organizations without reply and date out of limit' %}</h3>
 <ul>
 {% for c in fail_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+{% endif %}
 
+{% if fail_soon_comments_without_reply %}
 <h3>{% trans 'Comments list from organization that needs to reply today (exclude list above)' %}</h3>
 <ul>
 {% for c in fail_soon_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+{% endif %}
 
+{% if comments_without_reply %}
 <h3>{% trans 'Comments list from organization that needs to reply (exclude list above)' %}</h3>
 <ul>
 {% for c in comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+{% endif %}
 </div>
 {% endif %}
 {% endblock %}

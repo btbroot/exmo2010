@@ -663,7 +663,7 @@ def monitoring_parameter_import(request, id):
 @csrf_protect
 def monitoring_comment_report(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
 
     from django.contrib.comments import models as commentModel
@@ -690,11 +690,16 @@ def monitoring_comment_report(request, id):
     fail_comments_with_reply = []
     org_comments = []
 
+    if request.user.has_perm('exmo2010.admin_monitoring') or request.user.profile.is_expertA:
+        scores = Score.objects.filter(task__organization__monitoring = monitoring)
+    elif request.user.profile.is_expertB:
+        scores = Score.objects.filter(task__organization__monitoring = monitoring, task__user = request.user)
+
     if start_date:
         org_comments = commentModel.Comment.objects.filter(
             content_type__model = 'score',
             submit_date__gte = start_date,
-            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring),
+            object_pk__in = scores,
             user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
 
     for org_comment in org_comments:
