@@ -49,6 +49,7 @@ org_comments = commentModel.Comment.objects.filter(
 comments_without_reply = []
 fail_comments_without_reply = []
 comments_with_reply = []
+fail_soon_comments_with_reply = []
 fail_comments_with_reply = []
 
 for org_comment in org_comments:
@@ -60,6 +61,8 @@ for org_comment in org_comments:
     )
     if (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
         fail_comments_without_reply.append(org_comment)
+    elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit-1:
+        fail_soon_comments_without_reply.append(org_comment)
     elif not iifd_comments.count() > 0:
         comments_without_reply.append(org_comment)
     if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
@@ -78,6 +81,7 @@ c = Context({
     'comments_without_reply': comments_without_reply,
     'fail_comments_without_reply': fail_comments_without_reply,
     'fail_comments_with_reply': fail_comments_with_reply,
+    'fail_soon_comments_with_reply': fail_soon_comments_with_reply,
     'comments_with_reply': comments_with_reply,
     'org_comments_count': org_comments.count(),
     'limit': limit,
@@ -90,6 +94,5 @@ from django.core.mail import send_mail
 subject = "Comment report from %(start_date)s to %(end_date)s" % { 'start_date': start_date, 'end_date': end_date }
 
 rcpt = [ x[1] for x in settings.ADMINS]
-rcpt.append('ipavlov@svobodainfo.org')
-rcpt.append('vgolubev@svobodainfo.org')
+rcpt.append('monitoring-list@svobodainfo.org')
 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)
