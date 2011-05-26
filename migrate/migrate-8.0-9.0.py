@@ -70,11 +70,13 @@ print "Done"
 print "Migrate Monitoring model"
 for obj in old_data:
     if obj['model'] == 'exmo2010.monitoring':
-        monitoring, created = em.Monitoring.objects.get_or_create(
-            pk = obj['pk'],
-            name=obj['fields']['name'],
-            openness_expression=em.OpennessExpression.objects.get(pk=obj['fields']['openness_expression'])
-        )
+        for obj_type in old_data:
+            if obj_type['model'] == 'exmo2010.organizationtype' and obj_type['pk'] == obj['fields']['type']:
+                name_type = obj_type['fields']['name']
+        monitoring, created = em.Monitoring.objects.get_or_create(pk = obj['pk'])
+        monitoring.name="%s: %s" % (obj['fields']['name'], name_type)
+        monitoring.openness_expression=em.OpennessExpression.objects.get(pk=obj['fields']['openness_expression'])
+        monitoring.save()
         monitoring.create_calendar()
         if obj['fields']['publish_date']:
             monitoring.status = em.Monitoring.MONITORING_PUBLISH
@@ -115,6 +117,9 @@ for obj in old_data:
             kwd=obj['fields']['keywords'].split(' ')
         if obj['fields']['keyname']:
             kwd+=obj['fields']['keyname'].split(' ')
+        for obj_type in old_data:
+            if obj_type['model'] == 'exmo2010.organizationtype' and obj_type['pk'] == obj['fields']['type']:
+                kwd.append(obj_type['fields']['name'])
         for obj_entity in old_data:
             if obj_entity['model'] == 'exmo2010.entity' and obj_entity['pk'] == obj['fields']['entity']:
                 kwd.append(obj_entity['fields']['name'])
