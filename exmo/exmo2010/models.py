@@ -102,7 +102,9 @@ class MonitoringStatus(models.Model):
     start        = models.DateTimeField(null = True, blank=True, verbose_name=_('start at'))
 
     def __unicode__(self):
-        return "%s: %s" % (self.monitoring, self.status)
+        for status in Monitoring.MONITORING_STATUS_FULL:
+            if status[0] == self.status: return "%s: %s" % (self.monitoring.name, status[1])
+
     class Meta:
         unique_together = (
             ('status', 'monitoring'),
