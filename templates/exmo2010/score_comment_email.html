@@ -22,5 +22,5 @@
 {% trans 'Date' %}: {{ comment.submit_date }}
 {% if admin %}{% trans 'User' %}: {{ comment.user }}{% endif %}
 {% trans 'Comment' %}:
-{{ comment.comment }}
+{{ comment.comment|safe }}
 URL: {{ url }}
