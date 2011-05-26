@@ -107,12 +107,18 @@ def comment_notification(sender, **kwargs):
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
     message = t.render(c)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_nonadmin(comment))
+    headers = {
+        'X-iifd-exmo': 'comment_notification'
+    }
+    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_nonadmin(comment), [], headers = headers,)
+    email.send()
 
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment, 'url': url })
     message = t.render(c)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_admin(comment))
+    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_admin(comment), [], headers = headers)
+    email.send()
+
 
 
 def claim_notification(sender, **kwargs):
