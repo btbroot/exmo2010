@@ -191,3 +191,20 @@ class OrganizationForm(forms.ModelForm):
         widgets = {
             'keywords': TagAutocomplete,
         }
+
+
+
+class MonitoringCommentStatForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.monitoring = kwargs.get('monitoring')
+        if self.monitoring:
+            kwargs.pop('monitoring')
+        super(MonitoringCommentStatForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if not MonitoringStatus.objects.get(monitoring = self.monitoring, status = Monitoring.MONITORING_INTERACT).start:
+            raise forms.ValidationError(_('Monitoring interact start date is missing. Check your monitoring calendar'))
+        return cleaned_data
+
+    limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)

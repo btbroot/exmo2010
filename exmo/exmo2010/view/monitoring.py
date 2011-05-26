@@ -658,3 +658,73 @@ def monitoring_parameter_import(request, id):
       'rowALLCount': rowALLCount,
       'title': title
     })
+
+@login_required
+@csrf_protect
+def monitoring_comment_report(request, id):
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+
+    from django.contrib.comments import models as commentModel
+    from django.contrib.sites import models as sitesModel
+    from datetime import datetime, timedelta
+    from django.db.models import Q
+    from exmo.exmo2010.forms import MonitoringCommentStatForm
+
+    form = MonitoringCommentStatForm(monitoring = monitoring)
+
+    start_date = MonitoringStatus.objects.get(monitoring = monitoring, status = Monitoring.MONITORING_INTERACT).start
+    end_date = datetime.now()
+
+    limit = 2
+    if request.method == "GET" and request.GET.__contains__('limit'):
+        form = MonitoringCommentStatForm(request.GET, monitoring = monitoring)
+        if form.is_valid():
+            limit = form.cleaned_data['limit']
+
+    comments_without_reply = []
+    fail_comments_without_reply = []
+    comments_with_reply = []
+    fail_soon_comments_without_reply = []
+    fail_comments_with_reply = []
+    org_comments = []
+
+    if start_date:
+        org_comments = commentModel.Comment.objects.filter(
+            content_type__model = 'score',
+            submit_date__gte = start_date,
+            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring),
+            user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
+
+    for org_comment in org_comments:
+        iifd_comments = commentModel.Comment.objects.filter(
+            content_type__model = 'score',
+            submit_date__gte = org_comment.submit_date,
+            object_pk = org_comment.object_pk,
+            user__in = User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
+        )
+        if (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
+            fail_comments_without_reply.append(org_comment)
+        elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit-1:
+            fail_soon_comments_without_reply.append(org_comment)
+        elif not iifd_comments.count() > 0:
+            comments_without_reply.append(org_comment)
+        if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
+            fail_comments_with_reply.append(org_comment)
+        if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days <= limit:
+            comments_with_reply.append(org_comment)
+
+    return render_to_response('exmo2010/monitoring_comment_report.html', {
+        'form': form,
+        'start_date': start_date,
+        'end_date': end_date,
+        'comments_without_reply': comments_without_reply,
+        'fail_comments_without_reply': fail_comments_without_reply,
+        'fail_comments_with_reply': fail_comments_with_reply,
+        'comments_with_reply': comments_with_reply,
+        'org_comments': org_comments,
+        'limit': limit,
+        'monitoring': monitoring,
+        'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, } ,
+        }, context_instance=RequestContext(request))

@@ -1,0 +1,76 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n adminmedia check_object_permission %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+{{ title }}
+</div>
+{% endblock %}
+
+{% block pretitle %}
+{% include "exmo2010/monitoring_utility.html" %}
+{% endblock %}
+
+{% block content %}
+<div id=monitoring_comment_stat_form>
+<form method="get" action="">
+  {{ form.as_p }}
+  <p><input type="submit" /><input class="button" type="reset" /></p>
+</form>
+</div>
+{% if org_comments %}
+<div id="monitoring_comment_stat">
+<h2>{% trans 'Report from' %} {{ start_date }} -- {{ end_date }}</h2>
+<h3>{% trans 'Statistics' %}</h3>
+<ul>
+<li>{% trans 'Comments count from organizations' %}: {{ org_comments.count }}</li>
+<li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ comments_with_reply|length }}</li>
+<li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ fail_comments_with_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and date in limit' %}: {{ comments_without_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and should be answered today' %}: {{ fail_soon_comments_without_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
+</ul>
+
+<h3>{% trans 'Comments list from organizations without reply and date out of limit' %}</h3>
+<ul>
+{% for c in fail_comments_without_reply %}
+<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+{% endfor %}
+</ul>
+
+<h3>{% trans 'Comments list from organization that needs to reply today (exclude list above)' %}</h3>
+<ul>
+{% for c in fail_soon_comments_without_reply %}
+<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+{% endfor %}
+</ul>
+
+<h3>{% trans 'Comments list from organization that needs to reply (exclude list above)' %}</h3>
+<ul>
+{% for c in comments_without_reply %}
+<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+{% endblock %}
