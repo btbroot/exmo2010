@@ -540,21 +540,25 @@ def monitoring_organization_import(request, id):
                 errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
                 continue
             if row[0] == '':
-                errLog.append("row %d (csv). Empty organization name")
+                errLog.append("row %d (csv). Empty organization name" % reader.line_num)
                 continue
             if row[1]  == '':
-                errLog.append("row %d (csv). Empty organization url")
+                errLog.append("row %d (csv). Empty organization url" % reader.line_num)
                 continue
             try:
-                organization = Organization.objects.get(monitoring = monitoring, name = str(row[0]).strip())
+                name = str(row[0]).strip().decode('utf-8')
+                organization = Organization.objects.get(monitoring = monitoring, name = name)
             except Organization.DoesNotExist:
                 organization = Organization()
                 organization.monitoring = monitoring
+            except Exception, e:
+                errLog.append("row %d. %s" % (reader.line_num, e))
+                continue
             try:
-                organization.name = str(row[0]).strip()
+                organization.name = name
                 organization.url = str(row[1]).strip()
-                organization.comments = str(row[2]).strip()
-                organization.keywords = str(row[3]).strip()
+                organization.comments = str(row[2]).strip().decode('utf-8')
+                organization.keywords = str(row[3]).strip().decode('utf-8')
                 organization.full_clean()
                 organization.save()
             except ValidationError, e:
@@ -599,19 +603,24 @@ def monitoring_parameter_import(request, id):
                 errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
                 continue
             if row[0] == '':
-                errLog.append("row %d (csv). Empty code")
+                errLog.append("row %d (csv). Empty code" % reader.line_num)
                 continue
             if row[1]  == '':
-                errLog.append("row %d (csv). Empty name")
+                errLog.append("row %d (csv). Empty name" % reader.line_num)
                 continue
             try:
-                parameter = Parameter.objects.get(monitoring = monitoring, code = row[0], name = row[1])
+                code = int(row[0])
+                name = str(row[1]).strip().decode('utf-8')
+                parameter = Parameter.objects.get(monitoring = monitoring, code = code, name = name)
             except Parameter.DoesNotExist:
                 parameter = Parameter()
+            except Exception, e:
+                errLog.append("row %d. %s" % (reader.line_num, e))
+                continue
             try:
                 parameter.monitoring = monitoring
-                parameter.code = int(row[0])
-                parameter.name = str(row[1]).strip().decode('utf-8')
+                parameter.code = code
+                parameter.name = name
                 parameter.description = str(row[2]).strip().decode('utf-8')
                 parameter.complete = bool(int(row[3]))
                 parameter.topical = bool(int(row[4]))
