@@ -48,9 +48,11 @@
 <form action="." method="post" class="monitoring_form">{% csrf_token %}
 <table>
     <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
+    {{ form.non_field_errors }}
     {{ form.as_table }}
     {% if formset %}
     <tr><td><h2>{% trans 'Calendar' %}</h2></td></tr>
+    {{ formset.non_field_errors }}
     {{ formset.as_table }}
     {% endif %}
 </table>
