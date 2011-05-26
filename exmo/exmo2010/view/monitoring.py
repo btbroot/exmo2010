@@ -586,7 +586,7 @@ def monitoring_organization_import(request, id):
       'rowOKCount': rowOKCount,
       'rowALLCount': rowALLCount,
       'title': title
-    })
+    }, context_instance=RequestContext(request))
 
 
 
@@ -657,7 +657,7 @@ def monitoring_parameter_import(request, id):
       'rowOKCount': rowOKCount,
       'rowALLCount': rowALLCount,
       'title': title
-    })
+    }, context_instance=RequestContext(request))
 
 @login_required
 @csrf_protect
