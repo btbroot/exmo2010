@@ -1,6 +1,6 @@
 *.pyc
 *~
-settings.py
+exmo/settings.py
 *.mo
 *.egg
 cache
