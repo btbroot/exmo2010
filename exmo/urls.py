@@ -36,4 +36,5 @@ urlpatterns = patterns('',
   (r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))),
   (r'^exmo2010/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))),
   (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
+  (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
 )

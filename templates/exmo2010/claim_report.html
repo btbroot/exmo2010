@@ -20,8 +20,8 @@
 {% endcomment %}
 {% load i18n adminmedia %}
 {% block extrahead %}{{ block.super }}
-{% url admin:jsi18n as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{% url django.views.i18n.javascript_catalog as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
 {{ media }}
 {% endblock %}
 
