@@ -578,7 +578,7 @@ def monitoring_organization_import(request, id):
                 rowOKCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
-    title = _('Import organizatino from CSV for monitoring %s') % monitoring
+    title = _('Import organization from CSV for monitoring %s') % monitoring
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
       'file': request.FILES['orgfile'],
@@ -649,7 +649,7 @@ def monitoring_parameter_import(request, id):
                 rowOKCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
-    title = _('Import organizatino from CSV for monitoring %s') % monitoring
+    title = _('Import parameter from CSV for monitoring %s') % monitoring
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
       'file': request.FILES['paramfile'],

@@ -22,17 +22,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-27 09:34+0400\n"
-"PO-Revision-Date: 2011-03-27 21:35+0400\n"
-"Last-Translator: Boris Savelev <bsavelev@svobodainfo.org>\n"
+"POT-Creation-Date: 2011-05-27 09:38+0400\n"
+"PO-Revision-Date: 2011-05-27 09:51+0400\n"
+"Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Lokalize 1.1\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Lokalize 1.0\n"
 
 #: exmo/exmo2010/forms.py:97
 msgid "This user account is inactive"
@@ -79,10 +79,12 @@ msgstr "статус"
 msgid ""
 "Monitoring interact start date is missing. Check your monitoring calendar"
 msgstr ""
+"Не указана дата начала периода взаимодействия. Проверьте календарь "
+"мониторинга"
 
 #: exmo/exmo2010/forms.py:210
 msgid "time limit (in days)"
-msgstr ""
+msgstr "Сроки (в днях)"
 
 #: exmo/exmo2010/helpers.py:33
 #, python-format
@@ -135,33 +137,31 @@ msgstr "%(name)s (из EXMO2010 v%(code)d)"
 
 #: exmo/exmo2010/models.py:45
 msgid "prepare"
-msgstr ""
+msgstr "подготовка"
 
 #: exmo/exmo2010/models.py:46
 msgid "rate"
-msgstr ""
+msgstr "оценка"
 
 #: exmo/exmo2010/models.py:47
 msgid "revision"
-msgstr ""
+msgstr "проверка"
 
 #: exmo/exmo2010/models.py:48
 msgid "interact"
-msgstr ""
+msgstr "взаимодействие"
 
 #: exmo/exmo2010/models.py:49
-#, fuzzy
 msgid "result"
-msgstr "Результаты импорта"
+msgstr "результаты"
 
 #: exmo/exmo2010/models.py:50
-#, fuzzy
 msgid "publish"
-msgstr "дата опубликования"
+msgstr "опубликован"
 
 #: exmo/exmo2010/models.py:52
 msgid "planned"
-msgstr ""
+msgstr "запланирован"
 
 #: exmo/exmo2010/models.py:60
 msgid "openness expression"
@@ -174,7 +174,7 @@ msgstr "цикл мониторинга"
 
 #: exmo/exmo2010/models.py:102
 msgid "start at"
-msgstr ""
+msgstr "Начало в"
 
 #: exmo/exmo2010/models.py:127
 msgid "url"
@@ -238,7 +238,7 @@ msgstr "закрыта"
 
 #: exmo/exmo2010/models.py:213
 msgid "checked"
-msgstr ""
+msgstr "проверен"
 
 #: exmo/exmo2010/models.py:214
 msgid "approved"
@@ -422,9 +422,9 @@ msgid "Add new monitoring"
 msgstr "Добавить цикл мониторинга"
 
 #: exmo/exmo2010/view/monitoring.py:287
-#, fuzzy, python-format
+#, python-format
 msgid "Experts of monitoring %(name)s"
-msgstr "Эксперты мониторинга %(name)s для типа %(type)s"
+msgstr "Эксперты мониторинга %(name)s"
 
 #: exmo/exmo2010/view/monitoring.py:316
 msgid "Expert"
@@ -456,25 +456,29 @@ msgstr "Фильтрация по параметру и критерию"
 msgid "Report for %(monitoring)s by parameter and found"
 msgstr "Отчёт для %(monitoring)s по параметру и наличию"
 
-#: exmo/exmo2010/view/monitoring.py:581 exmo/exmo2010/view/monitoring.py:652
-#, fuzzy, python-format
-msgid "Import organizatino from CSV for monitoring %s"
-msgstr "Органы/организации цикла мониторинга "
+#: exmo/exmo2010/view/monitoring.py:581
+#, python-format
+msgid "Import organization from CSV for monitoring %s"
+msgstr "Импортировать органы/организации из CSV для цикла мониторинга %s"
+
+#: exmo/exmo2010/view/monitoring.py:652
+#, python-format
+msgid "Import parameter from CSV for monitoring %s"
+msgstr "Импортировать параметры из CSV для цикла мониторинга %s"
 
 #: exmo/exmo2010/view/monitoring.py:735
-#, fuzzy, python-format
+#, python-format
 msgid "Comment report for %(monitoring)s"
-msgstr "Отчёт претензий для %(monitoring)s"
+msgstr "Отчёт по комментариями для %(monitoring)s"
 
 #: exmo/exmo2010/view/organization.py:36
-#, fuzzy, python-format
+#, python-format
 msgid "Organizations for monitoring %(name)s"
-msgstr "Органы/организации цикла мониторинга "
+msgstr "Органы/организации цикла мониторинга %(name)s"
 
 #: exmo/exmo2010/view/organization.py:49
-#, fuzzy
 msgid "tasks"
-msgstr "задача"
+msgstr "задачи"
 
 #: exmo/exmo2010/view/organization.py:78
 #, python-format
@@ -502,9 +506,9 @@ msgid "Edit parameter %s"
 msgstr "Редактировать параметр %s"
 
 #: exmo/exmo2010/view/parameter.py:71
-#, fuzzy, python-format
+#, python-format
 msgid "Add parameter for %s"
-msgstr "Редактировать параметр %s"
+msgstr "Добавить параметр для %s"
 
 #: exmo/exmo2010/view/score.py:69
 #, python-format
@@ -581,7 +585,7 @@ msgstr "Добавить комментарий"
 #: exmo/exmo2010/view/task.py:228
 #, python-format
 msgid "Import CSV for task %s"
-msgstr "Импортировать CVS для задачи %s"
+msgstr "Импортировать CSV для задачи %s"
 
 #: exmo/exmo2010/view/task.py:258
 #, python-format
@@ -591,15 +595,13 @@ msgstr "Задачи для %(org)s"
 #: exmo/exmo2010/view/task.py:266 exmo/exmo2010/view/task.py:274
 #: exmo/exmo2010/view/task.py:282 exmo/exmo2010/view/task.py:442
 #: exmo/exmo2010/view/task.py:448 exmo/exmo2010/view/task.py:453
-#, fuzzy
 msgid "complete, %"
-msgstr "Выполнено, %"
+msgstr "выполнено, %"
 
 #: exmo/exmo2010/view/task.py:267 exmo/exmo2010/view/task.py:275
 #: exmo/exmo2010/view/task.py:283
-#, fuzzy
 msgid "openness, %"
-msgstr "Кид, %"
+msgstr "кид, %"
 
 #: exmo/exmo2010/view/task.py:300 exmo/exmo2010/view/task.py:304
 #, python-format
@@ -651,19 +653,17 @@ msgid "Already open"
 msgstr "Задача уже открыта"
 
 #: exmo/exmo2010/view/task.py:404
-#, fuzzy, python-format
+#, python-format
 msgid "Check task %s"
-msgstr "Закрыть задачу %s"
+msgstr "Проверить задачу %s"
 
 #: exmo/exmo2010/view/task.py:408
-#, fuzzy
 msgid "Task checked"
-msgstr "Задача открыта"
+msgstr "Задача проверена"
 
 #: exmo/exmo2010/view/task.py:413
-#, fuzzy
 msgid "Already checked"
-msgstr "Задача уже закрыта"
+msgstr "Задача уже проверена"
 
 #: exmo/exmo2010/view/task.py:416
 #, python-format
@@ -675,9 +675,9 @@ msgid "Task updated"
 msgstr "Задача  обновлена"
 
 #: exmo/exmo2010/view/task.py:429
-#, fuzzy, python-format
+#, python-format
 msgid "Task list for %(monitoring)s"
-msgstr "Задачи для %(org)s"
+msgstr "Задачи для %(monitoring)s"
 
 #: exmo/exmo2010/view/task.py:507
 msgid "Mass assign tasks"
@@ -739,9 +739,8 @@ msgid "tags"
 msgstr ""
 
 #: plugins/tagging/models.py:477
-#, fuzzy
 msgid "content type"
-msgstr "тип органа/организации"
+msgstr ""
 
 #: plugins/tagging/models.py:478
 msgid "object id"
@@ -1068,55 +1067,57 @@ msgid "Process log:"
 msgstr "Журнал обработки:"
 
 #: templates/exmo2010/monitoring_comment_report.html:53
-#, fuzzy
 msgid "Report from"
-msgstr "Комментарий от"
+msgstr "Отчёт с"
 
 #: templates/exmo2010/monitoring_comment_report.html:54
-#, fuzzy
 msgid "Statistics"
-msgstr "Статус"
+msgstr "Статистика"
 
 #: templates/exmo2010/monitoring_comment_report.html:56
-#, fuzzy
 msgid "Comments count from organizations"
-msgstr "исключенные органы/организации"
+msgstr "Кол-во комментариев от органа/организации"
 
 #: templates/exmo2010/monitoring_comment_report.html:57
 msgid "Comments count from organizations with reply date in limit"
-msgstr ""
+msgstr "Кол-во комментариев от организаций с ответами в срок"
 
 #: templates/exmo2010/monitoring_comment_report.html:58
 msgid "Comments count from organizations with reply date out of limit"
-msgstr ""
+msgstr "Кол-во комментариев от организаций с ответами не в срок"
 
 #: templates/exmo2010/monitoring_comment_report.html:59
 msgid "Comments count from organizations without reply and date in limit"
-msgstr ""
+msgstr "Кол-во комментариев от организаций без ответов"
 
 #: templates/exmo2010/monitoring_comment_report.html:60
 msgid ""
 "Comments count from organizations without reply and should be answered today"
 msgstr ""
+"Кол-во комментариев от организаций на которые необходимо ответить сегодня"
 
 #: templates/exmo2010/monitoring_comment_report.html:61
 msgid "Comments count from organizations without reply and date out of limit"
-msgstr ""
+msgstr "Кол-во комментариев от организаций без ответов в срок"
 
 #: templates/exmo2010/monitoring_comment_report.html:65
 msgid "Comments list from organizations without reply and date out of limit"
-msgstr ""
+msgstr "Комментарии от организаций без ответов в срок"
 
 #: templates/exmo2010/monitoring_comment_report.html:76
 msgid ""
 "Comments list from organization that needs to reply today (exclude list "
 "above)"
 msgstr ""
+"Комментарии от организаций на которые необходимо ответить сегодня (за "
+"исключением списка выше)"
 
 #: templates/exmo2010/monitoring_comment_report.html:87
 msgid ""
 "Comments list from organization that needs to reply (exclude list above)"
 msgstr ""
+"Комментарии от организаций на которые необходимо ответить (за исключением "
+"списка выше)"
 
 #: templates/exmo2010/monitoring_confirm_delete.html:30
 msgid "When you delete monitoring you also delete this tasks:"
@@ -1127,14 +1128,12 @@ msgid "Delete this monitoring?"
 msgstr "Удалить цикл мониторинга?"
 
 #: templates/exmo2010/monitoring_form.html:40
-#, fuzzy
 msgid "Export organizations"
-msgstr "Редактировать орган/организацию %s"
+msgstr "Экспортировать органы/организации"
 
 #: templates/exmo2010/monitoring_form.html:41
-#, fuzzy
 msgid "Import organizations from CSV"
-msgstr "Импортировать задачу из CVS"
+msgstr "Импортировать органы/организации из CSV"
 
 #: templates/exmo2010/monitoring_form.html:41
 #: templates/exmo2010/monitoring_form.html:45
@@ -1143,18 +1142,16 @@ msgid "Import"
 msgstr "Импорт"
 
 #: templates/exmo2010/monitoring_form.html:44
-#, fuzzy
 msgid "Export parameters"
-msgstr "Редактировать параметр %s"
+msgstr "Экспортировать параметры %s"
 
 #: templates/exmo2010/monitoring_form.html:45
-#, fuzzy
 msgid "Import parameters from CSV"
-msgstr "Импортировать задачу из CVS"
+msgstr "Импортировать параметры из CSV"
 
 #: templates/exmo2010/monitoring_form.html:54
 msgid "Calendar"
-msgstr ""
+msgstr "Календарь"
 
 #: templates/exmo2010/monitoring_import_log.html:22
 #: templates/exmo2010/task_import_log.html:22
@@ -1162,14 +1159,12 @@ msgid "Import results"
 msgstr "Результаты импорта"
 
 #: templates/exmo2010/monitoring_import_log.html:26
-#, fuzzy
 msgid "Edit monitoring"
-msgstr "Редактировать цикл мониторинга %s"
+msgstr "Редактировать цикл мониторинга"
 
 #: templates/exmo2010/monitoring_import_log.html:34
-#, fuzzy
 msgid "Back to the monitoring"
-msgstr "Задачи цикла мониторинга "
+msgstr "Вернуться в цикл мониторинга "
 
 #: templates/exmo2010/monitoring_parameter_filter.html:46
 msgid "Task"
@@ -1224,9 +1219,8 @@ msgid "Tasks"
 msgstr "Задачи "
 
 #: templates/exmo2010/monitoring_utility.html:28
-#, fuzzy
 msgid "Comment report"
-msgstr "Комментарий от"
+msgstr "Отчёт по комментариям"
 
 #: templates/exmo2010/monitoring_utility.html:32
 msgid "Experts"
@@ -1448,16 +1442,15 @@ msgstr "Версия для печати с комментариями"
 
 #: templates/exmo2010/score_list.html:46
 msgid "Export task to CSV"
-msgstr "Экспортировать задачу в CVS"
+msgstr "Экспортировать задачу в CSV"
 
 #: templates/exmo2010/score_list.html:49
 msgid "Import task from CSV"
-msgstr "Импортировать задачу из CVS"
+msgstr "Импортировать задачу из CSV"
 
 #: templates/exmo2010/score_list.html:62
-#, fuzzy
 msgid "Add new parameter"
-msgstr "Параметр"
+msgstr "Добавить новый параметр"
 
 #: templates/exmo2010/score_list.html:73
 msgid "claim"
@@ -1485,7 +1478,7 @@ msgstr "закрыть"
 
 #: templates/exmo2010/task_list.html:71
 msgid "check"
-msgstr ""
+msgstr "проверка"
 
 #: templates/exmo2010/task_list.html:75 templates/exmo2010/task_list.html:89
 msgid "open"
