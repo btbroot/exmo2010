@@ -732,5 +732,6 @@ def monitoring_comment_report(request, id):
         'org_comments': org_comments,
         'limit': limit,
         'monitoring': monitoring,
-        'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, } ,
+        'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, },
+        'media': CORE_MEDIA,
         }, context_instance=RequestContext(request))

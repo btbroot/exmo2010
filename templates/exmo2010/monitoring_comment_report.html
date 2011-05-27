@@ -19,6 +19,16 @@
 #
 {% endcomment %}
 {% load i18n adminmedia check_object_permission %}
+{% block extrahead %}{{ block.super }}
+{% url django.views.i18n.javascript_catalog as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+<script type="text/javascript">
+function toggle(el) {
+    django.jQuery('#' + el).toggle();
+}
+</script>
+{{ media }}
+{% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
@@ -52,30 +62,36 @@
 </ul>
 
 {% if fail_comments_without_reply %}
-<h3>{% trans 'Comments list from organizations without reply and date out of limit' %}</h3>
+<h3 style="color:red" onClick="toggle('fail_comments_without_reply');">{% trans 'Comments list from organizations without reply and date out of limit' %}</h3>
+<div id="fail_comments_without_reply" style="color:red; display: none;">
 <ul>
 {% for c in fail_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+</div>
 {% endif %}
 
 {% if fail_soon_comments_without_reply %}
-<h3>{% trans 'Comments list from organization that needs to reply today (exclude list above)' %}</h3>
+<h3 style="color:#ff9218" onClick="toggle('fail_soon_comments_without_reply');">{% trans 'Comments list from organization that needs to reply today (exclude list above)' %}</h3>
+<div id="fail_soon_comments_without_reply" style="color:#ff9218; display: none;" >
 <ul>
 {% for c in fail_soon_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+</div>
 {% endif %}
 
 {% if comments_without_reply %}
-<h3>{% trans 'Comments list from organization that needs to reply (exclude list above)' %}</h3>
+<h3 style="color:green" onClick="toggle('comments_without_reply');">{% trans 'Comments list from organization that needs to reply (exclude list above)' %}</h3>
+<div id="comments_without_reply" style="color:green; display: none;">
 <ul>
 {% for c in comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
+</div>
 {% endif %}
 </div>
 {% endif %}
