@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-27 09:38+0400\n"
-"PO-Revision-Date: 2011-05-27 09:51+0400\n"
+"POT-Creation-Date: 2011-05-27 09:56+0400\n"
+"PO-Revision-Date: 2011-05-27 09:56+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -1118,6 +1118,10 @@ msgid ""
 msgstr ""
 "Комментарии от организаций на которые необходимо ответить (за исключением "
 "списка выше)"
+
+#: templates/exmo2010/monitoring_comment_report.html:98
+msgid "Haven't comments from organizations"
+msgstr "Нет комментариев от органа/организации"
 
 #: templates/exmo2010/monitoring_confirm_delete.html:30
 msgid "When you delete monitoring you also delete this tasks:"
