@@ -59,10 +59,10 @@ for org_comment in org_comments:
         object_pk = org_comment.object_pk,
         user__in = authModel.User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
     )
-    if (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
-        fail_comments_without_reply.append(org_comment)
-    elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit-1:
+    if (not iifd_comments.count() > 0) and limit-1 <= (end_date - org_comment.submit_date).days < limit:
         fail_soon_comments_without_reply.append(org_comment)
+    elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days >= limit:
+        fail_comments_without_reply.append(org_comment)
     elif not iifd_comments.count() > 0:
         comments_without_reply.append(org_comment)
     if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:

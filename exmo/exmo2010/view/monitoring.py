@@ -709,10 +709,10 @@ def monitoring_comment_report(request, id):
             object_pk = org_comment.object_pk,
             user__in = User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
         )
-        if (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
-            fail_comments_without_reply.append(org_comment)
-        elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit-1:
+        if (not iifd_comments.count() > 0) and (limit-1 <= (end_date - org_comment.submit_date).days < limit):
             fail_soon_comments_without_reply.append(org_comment)
+        elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days >= limit:
+            fail_comments_without_reply.append(org_comment)
         elif not iifd_comments.count() > 0:
             comments_without_reply.append(org_comment)
         if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
@@ -726,6 +726,7 @@ def monitoring_comment_report(request, id):
         'end_date': end_date,
         'comments_without_reply': comments_without_reply,
         'fail_comments_without_reply': fail_comments_without_reply,
+        'fail_soon_comments_without_reply': fail_soon_comments_without_reply,
         'fail_comments_with_reply': fail_comments_with_reply,
         'comments_with_reply': comments_with_reply,
         'org_comments': org_comments,
