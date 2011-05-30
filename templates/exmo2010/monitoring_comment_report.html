@@ -61,38 +61,42 @@ function toggle(el) {
 <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
 </ul>
 
-{% if fail_comments_without_reply %}
-<h3 style="color:red" onClick="toggle('fail_comments_without_reply');">{% trans 'Comments list from organizations without reply and date out of limit' %}</h3>
+<h3 style="color:red" onClick="toggle('fail_comments_without_reply');">
+{% trans 'Comments list from organizations without reply and date out of limit' %} ({{ comments_without_reply|length }})</h3>
 <div id="fail_comments_without_reply" style="color:red; display: none;">
+{% if fail_comments_without_reply %}
 <ul>
 {% for c in fail_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
-</div>
 {% endif %}
+</div>
 
-{% if fail_soon_comments_without_reply %}
-<h3 style="color:#ff9218" onClick="toggle('fail_soon_comments_without_reply');">{% trans 'Comments list from organization that needs to reply today (exclude list above)' %}</h3>
+<h3 style="color:#ff9218" onClick="toggle('fail_soon_comments_without_reply');">
+{% trans 'Comments list from organization that needs to reply today (exclude list above)' %} ({{ fail_soon_comments_without_reply|length }})</h3>
 <div id="fail_soon_comments_without_reply" style="color:#ff9218; display: none;" >
+{% if fail_soon_comments_without_reply %}
 <ul>
 {% for c in fail_soon_comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
-</div>
 {% endif %}
+</div>
 
-{% if comments_without_reply %}
-<h3 style="color:green" onClick="toggle('comments_without_reply');">{% trans 'Comments list from organization that needs to reply (exclude list above)' %}</h3>
+<h3 style="color:green" onClick="toggle('comments_without_reply');">
+{% trans 'Comments list from organization that needs to reply (exclude list above)' %} ({{ comments_without_reply|length }})</h3>
 <div id="comments_without_reply" style="color:green; display: none;">
+{% if comments_without_reply %}
 <ul>
 {% for c in comments_without_reply %}
 <li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
-</div>
 {% endif %}
+</div>
+
 </div>
 {% else %}
 {% trans "Haven't comments from organizations" %}.
