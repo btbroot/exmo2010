@@ -703,21 +703,22 @@ def monitoring_comment_report(request, id):
             user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
 
     for org_comment in org_comments:
+        from exmo.helpers import workday_count
         iifd_comments = commentModel.Comment.objects.filter(
             content_type__model = 'score',
             submit_date__gte = org_comment.submit_date,
             object_pk = org_comment.object_pk,
             user__in = User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
         )
-        if (not iifd_comments.count() > 0) and (limit-1 <= (end_date - org_comment.submit_date).days < limit):
+        if (not iifd_comments.count() > 0) and (limit-1 <= workday_count(org_comment.submit_date, end_date) < limit):
             fail_soon_comments_without_reply.append(org_comment)
-        elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days >= limit:
+        elif (not iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) >= limit:
             fail_comments_without_reply.append(org_comment)
         elif not iifd_comments.count() > 0:
             comments_without_reply.append(org_comment)
-        if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
+        if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) > limit:
             fail_comments_with_reply.append(org_comment)
-        if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days <= limit:
+        if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) <= limit:
             comments_with_reply.append(org_comment)
 
     return render_to_response('exmo2010/monitoring_comment_report.html', {
