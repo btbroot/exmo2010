@@ -220,7 +220,12 @@ class Task(models.Model):
 
   def _openness(self):
     openness = 0
-    scores = Score.objects.filter(task = self, parameter__in = Parameter.objects.filter(monitoring = self.organization.monitoring)).exclude(parameter__exclude = self.organization).select_related()
+    scores = Score.objects.filter(
+        task = self,
+        parameter__in = Parameter.objects.filter(
+            monitoring = self.organization.monitoring
+        ).exclude(exclude = self.organization)
+    ).select_related()
     openness_actual = sum([openness_helper(s) for s in scores])
     parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
     openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
