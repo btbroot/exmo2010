@@ -34,6 +34,7 @@ from django.contrib.sites import models as sitesModel
 from exmo.exmo2010 import models as exmoModel
 from datetime import datetime, timedelta
 from django.db.models import Q
+from exmo.helpers import workday_count
 
 start_date = datetime(2011,05,19)
 end_date = datetime.now()
@@ -43,13 +44,13 @@ limit = 4
 org_comments = commentModel.Comment.objects.filter(
     content_type__model = 'score',
     submit_date__gte = start_date,
-    object_pk__in = exmoModel.Score.objects.filter(task__monitoring__pk__in = [11,]),
+    object_pk__in = exmoModel.Score.objects.filter(task__organization__monitoring__pk__in = [11,]),
     user__in = authModel.User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
 
 comments_without_reply = []
 fail_comments_without_reply = []
 comments_with_reply = []
-fail_soon_comments_with_reply = []
+fail_soon_comments_without_reply = []
 fail_comments_with_reply = []
 
 for org_comment in org_comments:
@@ -59,15 +60,15 @@ for org_comment in org_comments:
         object_pk = org_comment.object_pk,
         user__in = authModel.User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
     )
-    if (not iifd_comments.count() > 0) and limit-1 <= (end_date - org_comment.submit_date).days < limit:
+    if (not iifd_comments.count() > 0) and limit-1 <= workday_count(org_comment.submit_date, end_date) < limit:
         fail_soon_comments_without_reply.append(org_comment)
-    elif (not iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days >= limit:
+    elif (not iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) >= limit:
         fail_comments_without_reply.append(org_comment)
     elif not iifd_comments.count() > 0:
         comments_without_reply.append(org_comment)
-    if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days > limit:
+    if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) > limit:
         fail_comments_with_reply.append(org_comment)
-    if (iifd_comments.count() > 0) and (end_date - org_comment.submit_date).days <= limit:
+    if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) <= limit:
         comments_with_reply.append(org_comment)
 
 
@@ -81,7 +82,7 @@ c = Context({
     'comments_without_reply': comments_without_reply,
     'fail_comments_without_reply': fail_comments_without_reply,
     'fail_comments_with_reply': fail_comments_with_reply,
-    'fail_soon_comments_with_reply': fail_soon_comments_with_reply,
+    'fail_soon_comments_without_reply': fail_soon_comments_without_reply,
     'comments_with_reply': comments_with_reply,
     'org_comments_count': org_comments.count(),
     'limit': limit,
@@ -94,5 +95,5 @@ from django.core.mail import send_mail
 subject = "Comment report from %(start_date)s to %(end_date)s" % { 'start_date': start_date, 'end_date': end_date }
 
 rcpt = [ x[1] for x in settings.ADMINS]
-rcpt.append('monitoring-list@svobodainfo.org')
+#rcpt.append('monitoring-list@svobodainfo.org')
 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)

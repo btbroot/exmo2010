@@ -33,3 +33,16 @@ def disable_for_loaddata(signal_handler):
                 return
         signal_handler(*args, **kwargs)
     return wrapper
+
+
+
+from dateutil import rrule
+from dateutil.rrule import DAILY
+def workday_count(alpha, omega):
+    dates=rrule.rruleset() # create an rrule.rruleset instance
+    dates.rrule(rrule.rrule(DAILY, dtstart=alpha, until=omega)) # this set is INCLUSIVE of alpha and omega
+    dates.exrule(rrule.rrule(DAILY,
+                        byweekday=(rrule.SA, rrule.SU),
+                        dtstart=alpha))# here's where we exclude the weekend dates
+    return len(list(dates)) # there's probably a faster way to handle this 
+
