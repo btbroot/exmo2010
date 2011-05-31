@@ -358,7 +358,7 @@ class Score(models.Model):
         raise ValidationError(_('Complete must be set'))
       if self.parameter.topical    and self.topical    in ('', None):
         raise ValidationError(_('Topical must be set'))
-      if self.parametert.accessible and self.accessible in ('', None):
+      if self.parameter.accessible and self.accessible in ('', None):
         raise ValidationError(_('Accessible must be set'))
       if self.parameter.hypertext  and self.hypertext  in ('', None):
         raise ValidationError(_('Hypertext must be set'))
