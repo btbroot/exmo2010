@@ -724,10 +724,25 @@ def monitoring_comment_report(request, id):
             fail_comments_without_reply.append(org_comment)
         elif not iifd_comments.count() > 0:
             comments_without_reply.append(org_comment)
-        if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) > limit:
-            fail_comments_with_reply.append(org_comment)
-        if (iifd_comments.count() > 0) and workday_count(org_comment.submit_date, end_date) <= limit:
-            comments_with_reply.append(org_comment)
+        if iifd_comments.count() > 0:
+            #append comment or not
+            flag = False
+            for iifd_comment in iifd_comments:
+                #check that comment from iifd comes after organization
+                if iifd_comment.submit_date > org_comment.submit_date:
+                    #iifd comment comes in limit
+                    if workday_count(org_comment.submit_date, iifd_commnet.submit_date) <= limit:
+                        #pass that this org_comment is with reply
+                        flag = True
+                        comments_with_reply.append(org_comment)
+                        break
+            #org comment is without comment from iifd
+            if not flag:
+                #check limit
+                if workday_count(org_comment.submit_date, iifd_comment.reverse()[0].submit_date) > limit:
+                    fail_comments_with_reply.append(org_comment)
+                else:
+                    fail_comments_without_reply.append(org_comment)
 
     return render_to_response('exmo2010/monitoring_comment_report.html', {
         'form': form,
