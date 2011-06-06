@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-27 09:56+0400\n"
-"PO-Revision-Date: 2011-05-27 09:58+0400\n"
+"POT-Creation-Date: 2011-06-06 12:56+0400\n"
+"PO-Revision-Date: 2011-06-06 12:56+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -38,15 +38,15 @@ msgstr ""
 msgid "This user account is inactive"
 msgstr "Пользователь не активен"
 
-#: exmo/exmo2010/forms.py:106 exmo/exmo2010/models.py:527
+#: exmo/exmo2010/forms.py:106 exmo/exmo2010/models.py:532
 msgid "notify score change"
 msgstr "Присылать уведомления об изменении оценок"
 
-#: exmo/exmo2010/forms.py:125 exmo/exmo2010/models.py:327
+#: exmo/exmo2010/forms.py:125 exmo/exmo2010/models.py:332
 msgid "parameter"
 msgstr "Параметр"
 
-#: exmo/exmo2010/forms.py:126 exmo/exmo2010/models.py:328
+#: exmo/exmo2010/forms.py:126 exmo/exmo2010/models.py:333
 msgid "found"
 msgstr "Наличие"
 
@@ -204,27 +204,27 @@ msgstr "исключенные органы/организации"
 msgid "weight"
 msgstr "Ксз"
 
-#: exmo/exmo2010/models.py:159 exmo/exmo2010/models.py:329
+#: exmo/exmo2010/models.py:159 exmo/exmo2010/models.py:334
 msgid "complete"
 msgstr "полнота"
 
-#: exmo/exmo2010/models.py:160 exmo/exmo2010/models.py:331
+#: exmo/exmo2010/models.py:160 exmo/exmo2010/models.py:336
 msgid "topical"
 msgstr "актуальность"
 
-#: exmo/exmo2010/models.py:161 exmo/exmo2010/models.py:333
+#: exmo/exmo2010/models.py:161 exmo/exmo2010/models.py:338
 msgid "accessible"
 msgstr "навигационная доступность"
 
-#: exmo/exmo2010/models.py:162 exmo/exmo2010/models.py:335
+#: exmo/exmo2010/models.py:162 exmo/exmo2010/models.py:340
 msgid "hypertext"
 msgstr "HTML доступность"
 
-#: exmo/exmo2010/models.py:163 exmo/exmo2010/models.py:337
+#: exmo/exmo2010/models.py:163 exmo/exmo2010/models.py:342
 msgid "document"
 msgstr "файловая доступность"
 
-#: exmo/exmo2010/models.py:164 exmo/exmo2010/models.py:339
+#: exmo/exmo2010/models.py:164 exmo/exmo2010/models.py:344
 msgid "image"
 msgstr "графическая доступность"
 
@@ -260,11 +260,11 @@ msgstr "Наименование органа/организации"
 msgid "openness"
 msgstr "Кид"
 
-#: exmo/exmo2010/models.py:261
+#: exmo/exmo2010/models.py:266
 msgid "Ready task must be 100 percent complete."
 msgstr "Готовая задача должна быть выполнена на 100 процентов."
 
-#: exmo/exmo2010/models.py:264
+#: exmo/exmo2010/models.py:269
 #, python-format
 msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
@@ -273,93 +273,93 @@ msgstr ""
 "Для мониторинга %(monitoring)s и органа/организации %(organization)s уже "
 "существует одобренная задача."
 
-#: exmo/exmo2010/models.py:326
+#: exmo/exmo2010/models.py:331
 msgid "task"
 msgstr "задача"
 
-#: exmo/exmo2010/models.py:330 templates/exmo2010/task_report.html:60
+#: exmo/exmo2010/models.py:335 templates/exmo2010/task_report.html:60
 msgid "completeComment"
 msgstr "комментарий к критерию 'Полнота'"
 
-#: exmo/exmo2010/models.py:332 templates/exmo2010/task_report.html:61
+#: exmo/exmo2010/models.py:337 templates/exmo2010/task_report.html:61
 msgid "topicalComment"
 msgstr "комментарий к критерию 'Актуальность'"
 
-#: exmo/exmo2010/models.py:334 templates/exmo2010/task_report.html:62
+#: exmo/exmo2010/models.py:339 templates/exmo2010/task_report.html:62
 msgid "accessibleComment"
 msgstr "комментарий к критерию 'Навигационная доступность'"
 
-#: exmo/exmo2010/models.py:336 templates/exmo2010/task_report.html:63
+#: exmo/exmo2010/models.py:341 templates/exmo2010/task_report.html:63
 msgid "hypertextComment"
 msgstr "комментарий к критерию 'HTML доступность'"
 
-#: exmo/exmo2010/models.py:338 templates/exmo2010/task_report.html:64
+#: exmo/exmo2010/models.py:343 templates/exmo2010/task_report.html:64
 msgid "documentComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
-#: exmo/exmo2010/models.py:340
+#: exmo/exmo2010/models.py:345
 msgid "imageComment"
 msgstr "комментарий к критерию 'Графическая доступность'"
 
-#: exmo/exmo2010/models.py:341 exmo/exmo2010/models.py:434
+#: exmo/exmo2010/models.py:346 exmo/exmo2010/models.py:439
 #: templates/exmo2010/task_report.html:65
 msgid "comment"
 msgstr "комментарий"
 
-#: exmo/exmo2010/models.py:353
+#: exmo/exmo2010/models.py:358
 msgid "Complete must be set"
 msgstr "Критерий Полнота не оценен"
 
-#: exmo/exmo2010/models.py:355
+#: exmo/exmo2010/models.py:360
 msgid "Topical must be set"
 msgstr "Критерий Актуальность не оценен"
 
-#: exmo/exmo2010/models.py:357
+#: exmo/exmo2010/models.py:362
 msgid "Accessible must be set"
 msgstr "Критерий Навигационная доступность не оценен"
 
-#: exmo/exmo2010/models.py:359
+#: exmo/exmo2010/models.py:364
 msgid "Hypertext must be set"
 msgstr "Критерий 'Html доступность' не оценен"
 
-#: exmo/exmo2010/models.py:361
+#: exmo/exmo2010/models.py:366
 msgid "Document must be set"
 msgstr "Критерий 'Файловая доступность' не оценен"
 
-#: exmo/exmo2010/models.py:363
+#: exmo/exmo2010/models.py:368
 msgid "Image must be set"
 msgstr "Критерий 'Графическая доступность' не оценен"
 
-#: exmo/exmo2010/models.py:378
+#: exmo/exmo2010/models.py:383
 msgid "Not found, but some excessive data persists"
 msgstr "Критерий Наличие не найден, но присутствуют оценки по другим критериям"
 
-#: exmo/exmo2010/models.py:431
+#: exmo/exmo2010/models.py:436
 msgid "score"
 msgstr "оценка"
 
-#: exmo/exmo2010/models.py:432
+#: exmo/exmo2010/models.py:437
 msgid "claim open"
 msgstr "претензия создана"
 
-#: exmo/exmo2010/models.py:433
+#: exmo/exmo2010/models.py:438
 msgid "claim close"
 msgstr "претензия закрыта"
 
-#: exmo/exmo2010/models.py:435
+#: exmo/exmo2010/models.py:440
 msgid "user who close"
 msgstr "пользователь закрывший претензию"
 
-#: exmo/exmo2010/models.py:436
+#: exmo/exmo2010/models.py:441
 msgid "creator"
 msgstr "создатель"
 
-#: exmo/exmo2010/models.py:439
+#: exmo/exmo2010/models.py:444
 #, python-format
 msgid "claim for %(score)s from %(creator)s"
 msgstr "претензия для %(score)s от %(creator)s"
 
-#: exmo/exmo2010/models.py:526
+#: exmo/exmo2010/models.py:531
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
 
@@ -466,7 +466,7 @@ msgstr "Импортировать органы/организации из CSV 
 msgid "Import parameter from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для цикла мониторинга %s"
 
-#: exmo/exmo2010/view/monitoring.py:735
+#: exmo/exmo2010/view/monitoring.py:745
 #, python-format
 msgid "Comment report for %(monitoring)s"
 msgstr "Отчёт по комментариями для %(monitoring)s"
@@ -1075,36 +1075,40 @@ msgid "Statistics"
 msgstr "Статистика"
 
 #: templates/exmo2010/monitoring_comment_report.html:56
+msgid "Organizations with comments from organization"
+msgstr "Органы/организации с комментариями от представителей"
+
+#: templates/exmo2010/monitoring_comment_report.html:57
 msgid "Comments count from organizations"
 msgstr "Кол-во комментариев от органа/организации"
 
-#: templates/exmo2010/monitoring_comment_report.html:57
+#: templates/exmo2010/monitoring_comment_report.html:58
 msgid "Comments count from organizations with reply date in limit"
 msgstr "Кол-во комментариев от организаций с ответами в срок"
 
-#: templates/exmo2010/monitoring_comment_report.html:58
+#: templates/exmo2010/monitoring_comment_report.html:59
 msgid "Comments count from organizations with reply date out of limit"
 msgstr "Кол-во комментариев от организаций с ответами не в срок"
 
-#: templates/exmo2010/monitoring_comment_report.html:59
+#: templates/exmo2010/monitoring_comment_report.html:60
 msgid "Comments count from organizations without reply and date in limit"
 msgstr "Кол-во комментариев от организаций без ответов"
 
-#: templates/exmo2010/monitoring_comment_report.html:60
+#: templates/exmo2010/monitoring_comment_report.html:61
 msgid ""
 "Comments count from organizations without reply and should be answered today"
 msgstr ""
 "Кол-во комментариев от организаций на которые необходимо ответить сегодня"
 
-#: templates/exmo2010/monitoring_comment_report.html:61
+#: templates/exmo2010/monitoring_comment_report.html:62
 msgid "Comments count from organizations without reply and date out of limit"
 msgstr "Кол-во комментариев от организаций без ответов в срок"
 
-#: templates/exmo2010/monitoring_comment_report.html:65
+#: templates/exmo2010/monitoring_comment_report.html:66
 msgid "Comments list from organizations without reply and date out of limit"
 msgstr "Комментарии от организаций без ответов в срок"
 
-#: templates/exmo2010/monitoring_comment_report.html:76
+#: templates/exmo2010/monitoring_comment_report.html:78
 msgid ""
 "Comments list from organization that needs to reply today (exclude list "
 "above)"
@@ -1112,14 +1116,14 @@ msgstr ""
 "Комментарии от организаций на которые необходимо ответить сегодня (за "
 "исключением списка выше)"
 
-#: templates/exmo2010/monitoring_comment_report.html:87
+#: templates/exmo2010/monitoring_comment_report.html:90
 msgid ""
 "Comments list from organization that needs to reply (exclude list above)"
 msgstr ""
 "Комментарии от организаций на которые необходимо ответить (за исключением "
 "списка выше)"
 
-#: templates/exmo2010/monitoring_comment_report.html:98
+#: templates/exmo2010/monitoring_comment_report.html:103
 msgid "Haven't comments from organizations"
 msgstr "Нет комментариев от органов/организаций"
 

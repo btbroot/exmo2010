@@ -53,6 +53,7 @@ function toggle(el) {
 <h2>{% trans 'Report from' %} {{ start_date }} -- {{ end_date }}</h2>
 <h3>{% trans 'Statistics' %}</h3>
 <ul>
+<li>{% trans 'Organizations with comments from organization' %}: {{ org_comments_org }}</li>
 <li>{% trans 'Comments count from organizations' %}: {{ org_comments.count }}</li>
 <li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ comments_with_reply|length }}</li>
 <li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ fail_comments_with_reply|length }}</li>
@@ -62,7 +63,7 @@ function toggle(el) {
 </ul>
 
 <h3 style="color:red" onClick="toggle('fail_comments_without_reply');">
-{% trans 'Comments list from organizations without reply and date out of limit' %} ({{ comments_without_reply|length }})</h3>
+{% trans 'Comments list from organizations without reply and date out of limit' %} ({{ fail_comments_without_reply|length }})</h3>
 <div id="fail_comments_without_reply" style="color:red; display: none;">
 {% if fail_comments_without_reply %}
 <ul>

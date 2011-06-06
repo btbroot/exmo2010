@@ -702,6 +702,14 @@ def monitoring_comment_report(request, id):
             object_pk__in = scores,
             user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
 
+        org_comments_org = commentModel.Comment.objects.filter(
+            content_type__model = 'score',
+            submit_date__gte = start_date,
+            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring),
+            user__in = User.objects.filter(groups__name = 'organizations'))
+
+        active_organizations = set([Score.objects.get(pk = oco.object_pk).task.organization for oco in org_comments_org])
+
     for org_comment in org_comments:
         from exmo.helpers import workday_count
         iifd_comments = commentModel.Comment.objects.filter(
@@ -731,6 +739,7 @@ def monitoring_comment_report(request, id):
         'fail_comments_with_reply': fail_comments_with_reply,
         'comments_with_reply': comments_with_reply,
         'org_comments': org_comments,
+        'org_comments_org': len(active_organizations),
         'limit': limit,
         'monitoring': monitoring,
         'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, },
