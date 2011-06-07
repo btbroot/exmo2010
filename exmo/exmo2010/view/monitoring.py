@@ -717,7 +717,7 @@ def monitoring_comment_report(request, id):
             submit_date__gte = org_comment.submit_date,
             object_pk = org_comment.object_pk,
             user__in = User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
-        )
+        ).order_by('submit_date')
         #append comment or not
         flag = False
         for iifd_comment in iifd_comments:
