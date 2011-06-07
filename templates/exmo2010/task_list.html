@@ -59,24 +59,24 @@
       {% if user.is_superuser or user.userprofile.is_expert %}
       <td>
         {% if object.open %}
-         {% check_object_permission exmo2010.close_task monitoring as perm %}
+         {% check_object_permission exmo2010.close_task object as perm %}
          {% task_status object.status %}
          {% if perm %} : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
          {% endif %}
         {% endif %}
         {% if object.ready %}
-         {% check_object_permission exmo2010.check_task monitoring as perm %}
+         {% check_object_permission exmo2010.check_task object as perm %}
          {% task_status object.status %}
          {% if perm %}
           : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'check' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'check' %}</a>
          {% endif %}
-         {% check_object_permission exmo2010.open_task monitoring as perm %}
+         {% check_object_permission exmo2010.open_task object as perm %}
          {% if perm %}
           / <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
         {% if object.checked %}
-         {% check_object_permission exmo2010.approve_task monitoring as perm %}
+         {% check_object_permission exmo2010.approve_task object as perm %}
          {% task_status object.status %}
          {% if perm %}
           : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
@@ -84,7 +84,7 @@
         {% endif %}
         {% if object.approved %}
          {% task_status object.status %}
-         {% check_object_permission exmo2010.open_task monitoring as perm %}
+         {% check_object_permission exmo2010.open_task object as perm %}
          {% if perm %}
           : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
