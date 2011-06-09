@@ -738,7 +738,7 @@ def monitoring_comment_report(request, id):
         #org comment is without comment from iifd
         if not flag:
             #check limit
-            if limit-1 <= workday_count(org_comment.submit_date, end_date) <= limit:
+            if limit-1 < workday_count(org_comment.submit_date, end_date) <= limit:
                 fail_soon_comments_without_reply.append(org_comment)
             elif workday_count(org_comment.submit_date, end_date) > limit:
                 fail_comments_without_reply.append(org_comment)
