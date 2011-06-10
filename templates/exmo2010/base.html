@@ -54,7 +54,7 @@
             {% endblock %}
             {% block userlinks %}
             {% if user.is_active %}
-            <a href="{% url exmo.exmo2010.view.user.user_profile user.pk %}">{% trans 'Profile' %}</a> /
+            <a href="{% url exmo.exmo2010.view.user.user_profile %}">{% trans 'Profile' %}</a> /
             <a href="{% url django.contrib.auth.views.password_change %}">{% trans 'Change password' %}</a> /
             <a href="{% url django.contrib.auth.views.logout %}">{% trans 'Log out' %}</a>
             {% else %}

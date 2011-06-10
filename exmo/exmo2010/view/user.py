@@ -29,8 +29,11 @@ from django.shortcuts import get_object_or_404, render_to_response
 
 @csrf_protect
 @login_required
-def user_profile(request, id):
-    _user = get_object_or_404(User, pk = id)
+def user_profile(request, id=None):
+    if id:
+        _user = get_object_or_404(User, pk = id)
+    else:
+        _user = request.user
     messages = []
     if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
