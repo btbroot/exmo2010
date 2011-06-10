@@ -62,7 +62,6 @@ def get_recipients_admin(comment):
         res.append(score.task.user.email)
     if comment.user.is_superuser or comment.user == score.task.user:
         if comment.user.email and comment.user.is_active: res.append(comment.user.email)
-        if comment.user_email and comment.user.is_active: res.append(comment.user_email)
     return list(set(res))
 
 
@@ -80,7 +79,6 @@ def get_recipients_nonadmin(comment):
         pass
     if not comment.user.is_superuser and not comment.user == score.task.user:
         if comment.user.email and comment.user.is_active: res.append(comment.user.email)
-        if comment.user_email and comment.user.is_active: res.append(comment.user_email)
     for r in get_recipients_admin(comment):
         try:
             res.remove(r)
