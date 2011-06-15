@@ -410,6 +410,7 @@ def monitoring_parameter_found_report(request, id):
     object_list=[]
     score_count_total = 0
     organization_count_total = 0
+    score_per_organization_total = 0
     queryset_list = list(queryset)
     for parameter in queryset_list:
         score_count = Score.objects.filter(
@@ -422,7 +423,9 @@ def monitoring_parameter_found_report(request, id):
         ).count()
         score_count_total += score_count
         organization_count_total += parameter.organization_count
-        score_per_organization = float(score_count) / parameter.organization_count * 100
+        score_per_organization = 0
+        if parameter.organization_count:
+            score_per_organization = float(score_count) / parameter.organization_count * 100
         obj = {
             'parameter': parameter,
             'organization_count': parameter.organization_count,
@@ -430,7 +433,8 @@ def monitoring_parameter_found_report(request, id):
             'score_per_organization': score_per_organization,
         }
         object_list.append(obj)
-    score_per_organization_total = float(score_count_total) / organization_count_total * 100
+    if organization_count_total:
+        score_per_organization_total = float(score_count_total) / organization_count_total * 100
     return render_to_response('exmo2010/monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
         'title': title,
