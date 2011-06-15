@@ -53,14 +53,43 @@ function toggle(el) {
 <h2>{% trans 'Report from' %} {{ start_date }} -- {{ end_date }}</h2>
 <h3>{% trans 'Statistics' %}</h3>
 <ul>
-<li>{% trans 'Organizations with comments from organization' %}: {{ org_comments_org }}</li>
-<li>{% trans 'Comments count from organizations' %}: {{ org_comments.count }}</li>
+<li>{% trans 'Organizations with comments from organization' %}: {{ active_organization_stats|length }}</li>
+<li>{% trans 'Comments count from organizations' %}: {{ org_comments|length }}</li>
 <li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ comments_with_reply|length }}</li>
 <li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ fail_comments_with_reply|length }}</li>
 <li>{% trans 'Comments count from organizations without reply and date in limit' %}: {{ comments_without_reply|length }}</li>
 <li>{% trans 'Comments count from organizations without reply and should be answered today' %}: {{ fail_soon_comments_without_reply|length }}</li>
 <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
 </ul>
+
+<h3 onClick="toggle('org_stat');">
+{% trans 'Statistics by organization' %} ({{ active_organization_stats|length }})</h3>
+<div id="org_stat" style="display: none;">
+{% if active_organization_stats %}
+<ul>
+{% for active_organization in active_organization_stats %}
+<li>
+{{ active_organization.org }}: {{ active_organization.comments_count }}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
+
+<h3 onClick="toggle('emp_stat');">
+{% trans 'Statistics by iifd employers' %} ({{active_iifd_person_stats|length}})</h3>
+<div id="emp_stat" style="display: none;">
+{% if active_iifd_person_stats %}
+<ul>
+{% for active_iifd_person in active_iifd_person_stats %}
+<li>
+{{ active_iifd_person }}: {{ active_iifd_person.comments_count }}
+</li>
+{% endfor %}
+</ul>
+Total: {{ iifd_comments|length }}
+</div>
+{% endif %}
 
 <h3 style="color:red" onClick="toggle('fail_comments_without_reply');">
 {% trans 'Comments list from organizations without reply and date out of limit' %} ({{ fail_comments_without_reply|length }})</h3>

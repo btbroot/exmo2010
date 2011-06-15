@@ -693,6 +693,10 @@ def monitoring_comment_report(request, id):
     fail_soon_comments_without_reply = []
     fail_comments_with_reply = []
     org_comments = []
+    active_organizations = []
+    active_organization_stats = []
+    active_iifd_person_stats = []
+    iifd_all_comments = []
 
     if request.user.has_perm('exmo2010.admin_monitoring') or request.user.profile.is_expertA:
         scores = Score.objects.filter(task__organization__monitoring = monitoring)
@@ -700,27 +704,38 @@ def monitoring_comment_report(request, id):
         scores = Score.objects.filter(task__organization__monitoring = monitoring, task__user = request.user)
 
     if start_date:
+        iifd_all_comments = commentModel.Comment.objects.filter(
+            content_type__model = 'score',
+            submit_date__gte = start_date,
+            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring ),
+            user__in = User.objects.exclude(groups__name = 'organizations')).order_by('submit_date')
+
         org_comments = commentModel.Comment.objects.filter(
             content_type__model = 'score',
             submit_date__gte = start_date,
             object_pk__in = scores,
             user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
-
-        org_comments_org = commentModel.Comment.objects.filter(
+        org_all_comments = commentModel.Comment.objects.filter(
             content_type__model = 'score',
             submit_date__gte = start_date,
             object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring),
-            user__in = User.objects.filter(groups__name = 'organizations'))
+            user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
 
-        active_organizations = set([Score.objects.get(pk = oco.object_pk).task.organization for oco in org_comments_org])
+        active_organizations = set([Score.objects.get(pk = oco.object_pk).task.organization for oco in org_all_comments])
+        for active_organization in active_organizations:
+            active_org_comments_count = org_comments.filter(
+                object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring, task__organization = active_organization)
+            ).count()
+            active_organization_stats.append({ 'org': active_organization, 'comments_count': active_org_comments_count})
+
+        active_iifd_person_stats = User.objects.filter(comment_comments__pk__in = iifd_all_comments).annotate(comments_count = Count('comment_comments'))
+
 
     for org_comment in org_comments:
         from exmo.helpers import workday_count
-        iifd_comments = commentModel.Comment.objects.filter(
-            content_type__model = 'score',
+        iifd_comments = iifd_all_comments.filter(
             submit_date__gte = org_comment.submit_date,
             object_pk = org_comment.object_pk,
-            user__in = User.objects.filter(Q(groups__name__in = ['experts','expertsA','expertsB']) | Q(is_superuser = True))
         ).order_by('submit_date')
         #append comment or not
         flag = False
@@ -759,7 +774,9 @@ def monitoring_comment_report(request, id):
         'fail_comments_with_reply': fail_comments_with_reply,
         'comments_with_reply': comments_with_reply,
         'org_comments': org_comments,
-        'org_comments_org': len(active_organizations),
+        'iifd_comments': iifd_all_comments,
+        'active_organization_stats': active_organization_stats,
+        'active_iifd_person_stats': active_iifd_person_stats,
         'limit': limit,
         'monitoring': monitoring,
         'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, },
