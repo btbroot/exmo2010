@@ -69,13 +69,14 @@ def task_permission(user, priv, task):
     elif priv == 'exmo2010.fill_task': #create_score
         if task.open and task.user == user: return True
     elif priv == 'exmo2010.comment_score':
-        if not task.organization.monitoring.is_interact: return False
         if user.is_active:
             profile = user.profile
-            if user.profile.is_expert: return True
+            if profile.is_expertB and task.user == user: return True
+            if profile.is_expertA or profile.is_manager_expertB: return True
             if  profile.is_organization and \
                 user.has_perm('exmo2010.view_task', task) and \
-                task.organization in profile.organization.all():
+                task.organization in profile.organization.all() and \
+                task.organization.monitoring.is_interact:
                     return True
     return False
 
@@ -89,15 +90,7 @@ def score_permission(user, priv, score):
     elif priv == 'exmo2010.delete_score':
         return user.has_perm('exmo2010.fill_task', score.task)
     elif priv == 'exmo2010.comment_score':
-        if not score.task.organization.monitoring.is_interact: return False
-        if user.is_active:
-            profile = user.profile
-            if user.profile.is_expertB and score.task.user == user: return True
-            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-            if  profile.is_organization and \
-                user.has_perm('exmo2010.view_task', score.task) and \
-                score.task.organization in profile.organization.all():
-                    return True
+        return user.has_perm('exmo2010.comment_score', score.task)
     elif priv == 'exmo2010.view_comment_score':
         if user.is_active:
             profile = user.profile
