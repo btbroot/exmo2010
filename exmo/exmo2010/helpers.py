@@ -192,5 +192,5 @@ def score_change_notify(sender, **kwargs):
         t = loader.get_template('exmo2010/score_email.html')
         c = Context({ 'score': score, 'url': url, 'changes': changes, })
         message = t.render(c)
-        if rcpt:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)
+        for rcpt_ in rcpt:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_])
