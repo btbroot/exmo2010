@@ -192,7 +192,7 @@ def task_import(request, id):
                   ):
                     errLog.append("row %d (csv). Empty score: %s" % (reader.line_num, row[0]))
                     continue
-                parameter = Parameter.objects.filter(group__group__code=code.group(1)).filter(group__code=code.group(2)).get(code=code.group(3))
+                parameter = Parameter.objects.get(code=code.group(1))
                 try:
                     score = Score.objects.get(task = task, parameter = parameter)
                 except Score.DoesNotExist:
