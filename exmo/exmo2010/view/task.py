@@ -170,7 +170,7 @@ def task_import(request, id):
         for row in reader:
             rowALLCount += 1
             try:
-                code = re.match('^(\d+)\.(\d+)\.(\d+)$', row[0])
+                code = re.match('^(\d+)$', row[0])
                 if not code:
                   errLog.append("row %d (csv). Not a code: %s" % (reader.line_num, row[0]))
                   continue
