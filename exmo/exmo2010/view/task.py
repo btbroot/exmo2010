@@ -178,6 +178,7 @@ def task_import(request, id):
                   errLog.append("row %d (csv). Not a code: %s" % (reader.line_num, row[0]))
                   continue
                 if (
+                    row[2]  == '' and
                     row[3]  == '' and
                     row[4]  == '' and
                     row[5]  == '' and
@@ -190,8 +191,7 @@ def task_import(request, id):
                     row[12] == '' and
                     row[13] == '' and
                     row[14] == '' and
-                    row[15] == '' and
-                    row[16] == ''
+                    row[15] == ''
                   ):
                     errLog.append("row %d (csv). Empty score: %s" % (reader.line_num, row[0]))
                     continue
