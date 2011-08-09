@@ -29,19 +29,8 @@
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 <h1>{% trans "Rating " %} {{ monitoring }}</h1>
-
 <div id=organization_list>
-{% if object_list %}
-<table>
-  <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
-  <tbody>{% for object, place in object_list %}
-    <tr><td>{{ place }}</td><td>{{ object.task.organization.name }}</td><td>{{ object.task.organization.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
-  {% endfor %}</tbody>
-  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
-</table>
-{% else %}
-{% trans 'Empty list' %}
-{% endif %}
+{% include "exmo2010/rating_common.html" %}
 </div>
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
 </body></html>

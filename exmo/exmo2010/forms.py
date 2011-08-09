@@ -208,3 +208,12 @@ class MonitoringCommentStatForm(forms.Form):
         return cleaned_data
 
     limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)
+
+
+
+class MonitoringRatingMultiple(forms.Form):
+    monitoring = forms.ModelMultipleChoiceField(
+                    queryset = Monitoring.objects.all(),
+                    label =_('monitorings'),
+                    widget = widgets.FilteredSelectMultiple('',is_stacked=False),
+                )

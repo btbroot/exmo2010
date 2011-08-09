@@ -37,6 +37,7 @@ from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo.exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
+from exmo.exmo2010 import forms as exmoForms
 from reversion import revision
 
 def monitoring_list(request):
@@ -147,13 +148,44 @@ def monitoring_add(request):
 
 
 
-from operator import itemgetter
-#update rating twice in a day
-#@cache_page(60 * 60 * 12)
 def monitoring_rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring = monitoring).order_by('-openness_cache')]
+  rating = monitoring_rating_helper([monitoring,])
+  return render_to_response('exmo2010/rating.html', {
+        'monitoring': monitoring,
+        'object_list': rating['object_list'],
+        'average': rating['average'],
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def monitoring_rating_multiple(request):
+  if not request.user.is_superuser: return HttpResponseForbidden(_('Forbidden'))
+  form = exmoForms.MonitoringRatingMultiple()
+  rating = {'object_list': [], 'average': 0}
+  monitorings = []
+  if request.GET.has_key('monitoring'):
+    form = exmoForms.MonitoringRatingMultiple(request.GET)
+    ids = None
+    if form.is_valid():
+        ids = form.cleaned_data['monitoring']
+    if ids:
+        monitorings = Monitoring.objects.filter(pk__in = ids)
+        rating = monitoring_rating_helper(monitorings)
+  return render_to_response('exmo2010/rating_multiple.html', {
+        'monitorings': monitorings,
+        'object_list': rating['object_list'],
+        'average': rating['average'],
+        'form': form,
+        'media': CORE_MEDIA+form.media,
+        'title': _("Rating ") + ", ".join([m.name for m in monitorings]),
+    }, context_instance=RequestContext(request))
+
+
+
+def monitoring_rating_helper(monitorings):
+  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring__in = monitorings).order_by('-openness_cache')]
   place=1
   avg=None
   if object_list:
@@ -166,12 +198,10 @@ def monitoring_rating(request, id):
         max_rating = rating_object['openness']
     rating = [rating_object, place ]
     rating_list.append(rating)
-
-  return render_to_response('exmo2010/rating.html', {
-        'monitoring': monitoring,
-        'object_list': rating_list,
-        'average': avg,
-    }, context_instance=RequestContext(request))
+  return {
+    'object_list': rating_list,
+    'average': avg,
+  }
 
 
 
