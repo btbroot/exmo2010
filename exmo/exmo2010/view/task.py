@@ -169,6 +169,9 @@ def task_import(request, id):
     try:
         for row in reader:
             rowALLCount += 1
+            if row[0].startswith('#'):
+                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                continue
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
@@ -199,20 +202,20 @@ def task_import(request, id):
                     score = Score()
                 score.task              = task
                 score.parameter         = parameter
-                score.found             = safeConvert(row[3], int)
-                score.complete          = safeConvert(row[4], int)
-                score.completeComment   = safeConvert(row[5], str)
-                score.topical           = safeConvert(row[6], int)
-                score.topicalComment    = safeConvert(row[7], str)
-                score.accessible        = safeConvert(row[8], int)
-                score.accessibleComment = safeConvert(row[9], str)
-                score.hypertext         = safeConvert(row[10], int)
-                score.hypertextComment  = safeConvert(row[11], str)
-                score.document          = safeConvert(row[12], int)
-                score.documentComment   = safeConvert(row[13], str)
-                score.image             = safeConvert(row[14], int)
-                score.imageComment      = safeConvert(row[15], str)
-                score.comment           = safeConvert(row[16], str)
+                score.found             = safeConvert(row[2], int)
+                score.complete          = safeConvert(row[3], int)
+                score.completeComment   = safeConvert(row[4], str)
+                score.topical           = safeConvert(row[5], int)
+                score.topicalComment    = safeConvert(row[6], str)
+                score.accessible        = safeConvert(row[7], int)
+                score.accessibleComment = safeConvert(row[8], str)
+                score.hypertext         = safeConvert(row[9], int)
+                score.hypertextComment  = safeConvert(row[10], str)
+                score.document          = safeConvert(row[11], int)
+                score.documentComment   = safeConvert(row[12], str)
+                score.image             = safeConvert(row[13], int)
+                score.imageComment      = safeConvert(row[14], str)
+                score.comment           = safeConvert(row[15], str)
                 score.full_clean()
                 score.save()
             except ValidationError, e:
