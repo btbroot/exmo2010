@@ -84,9 +84,11 @@ def task_permission(user, priv, task):
 
 def score_permission(user, priv, score):
     if priv == 'exmo2010.view_score':
-        return user.has_perm('exmo2010.view_task', score.task)
+        if score.task.organization not in score.parameter.exclude.all():
+            return user.has_perm('exmo2010.view_task', score.task)
     elif priv == 'exmo2010.edit_score':
-        return user.has_perm('exmo2010.fill_task', score.task)
+        if score.task.organization not in score.parameter.exclude.all():
+            return user.has_perm('exmo2010.fill_task', score.task)
     elif priv == 'exmo2010.delete_score':
         return user.has_perm('exmo2010.fill_task', score.task)
     elif priv == 'exmo2010.comment_score':
