@@ -704,6 +704,8 @@ def monitoring_comment_report(request, id):
         scores = Score.objects.filter(task__organization__monitoring = monitoring, task__user = request.user)
 
     if start_date:
+        total_org = Organization.objects.filter(monitoring = monitoring)
+        reg_org = total_org.filter(userprofile__isnull = False)
         iifd_all_comments = commentModel.Comment.objects.filter(
             content_type__model = 'score',
             submit_date__gte = start_date,
@@ -776,6 +778,8 @@ def monitoring_comment_report(request, id):
         'org_comments': org_comments,
         'iifd_comments': iifd_all_comments,
         'active_organization_stats': active_organization_stats,
+        'total_org': total_org.count(),
+        'reg_org': reg_org.count(),
         'active_iifd_person_stats': active_iifd_person_stats,
         'limit': limit,
         'monitoring': monitoring,
