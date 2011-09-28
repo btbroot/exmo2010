@@ -133,8 +133,18 @@ def claim_notification(sender, **kwargs):
     t = loader.get_template('exmo2010/claim_email.html')
     c = Context({ 'score': claim.score, 'claim': claim, 'url': url })
     message = t.render(c)
+    headers = {
+        'X-iifd-exmo': 'claim_notification'
+    }
+    rcpt = []
+    for user in User.objects.filter(is_superuser = True):
+        if user.email and user.is_active:
+            rcpt.append(user.email)
     if score.task.user.email:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email])
+        rcpt.append(score.task.user.email)
+    rcpt=list(set(rcpt))
+    if rcpt:
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email], [], headers = headers)
 
 
 
