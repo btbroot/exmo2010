@@ -39,13 +39,12 @@
      <a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a>
 {% check_object_permission exmo2010.view_task task as export_perm %}
 {% check_object_permission exmo2010.fill_task task as import_perm %}
-{% if import_perm %}
-   <form action="{% url exmo.exmo2010.view.task.task_import task.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-{% endif %}
 {% if export_perm %}
+     <br />
      <a href="{% url exmo.exmo2010.view.task.task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
 {% endif %}
 {% if import_perm %}
+   <form action="{% url exmo.exmo2010.view.task.task_import task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
      <label>{% trans "Import task from CSV" %}: <input type="file" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    {% if importLog %}<div>{{importLog}}</div>{% endif %}
