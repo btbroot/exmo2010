@@ -266,7 +266,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
