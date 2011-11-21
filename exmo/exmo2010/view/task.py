@@ -170,12 +170,12 @@ def task_import(request, id):
         for row in reader:
             rowALLCount += 1
             if row[0].startswith('#'):
-                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                errLog.append(_("row %d. Starts with '#'. Skipped") % reader.line_num)
                 continue
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                  errLog.append("row %d (csv). Not a code: %s" % (reader.line_num, row[0]))
+                  errLog.append(_("row %d (csv). Not a code: %s") % (reader.line_num, row[0]))
                   continue
                 if (
                     row[2]  == '' and
@@ -193,7 +193,7 @@ def task_import(request, id):
                     row[14] == '' and
                     row[15] == ''
                   ):
-                    errLog.append("row %d (csv). Empty score: %s" % (reader.line_num, row[0]))
+                    errLog.append(_("row %d (csv). Empty score: %s") % (reader.line_num, row[0]))
                     continue
                 parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
                 try:
@@ -219,15 +219,15 @@ def task_import(request, id):
                 score.full_clean()
                 score.save()
             except ValidationError, e:
-                errLog.append("row %d (validation). %s" % (
+                errLog.append(_("row %d (validation). %s") % (
                     reader.line_num,
                     '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errLog.append(_("row %d. %s") % (reader.line_num, e))
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append("row %d (csv). %s" % (reader.line_num, e))
+           errLog.append(_("row %d (csv). %s") % (reader.line_num, e))
     title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html', {
       'task': task,
