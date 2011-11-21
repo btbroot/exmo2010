@@ -679,6 +679,8 @@ def monitoring_comment_report(request, id):
     form = MonitoringCommentStatForm(monitoring = monitoring)
 
     start_date = MonitoringStatus.objects.get(monitoring = monitoring, status = Monitoring.MONITORING_INTERACT).start
+    if not start_date:
+        return monitoring_manager(request, id, 'update')
     end_date = datetime.now()
 
     limit = 2
