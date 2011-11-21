@@ -188,6 +188,11 @@ class ParameterForm(forms.ModelForm):
             'monitoring': forms.widgets.HiddenInput,
         }
 
+    class Media:
+        css = {
+            "all": ("exmo2010/selector.css",)
+        }
+
 
 
 class OrganizationForm(forms.ModelForm):

@@ -32,6 +32,10 @@ class ParameterAdmin(admin.ModelAdmin):
                                                            is_stacked=False)
         },
     }
+    class Media:
+        css = {
+            "all": ("exmo2010/selector.css",)
+        }
 
 class TaskAdmin(VersionAdmin):
     search_fields = ('user__username', 'organization__name')
@@ -56,6 +60,10 @@ class UserProfileAdmin(admin.ModelAdmin):
                                                            is_stacked=False)
         },
     }
+    class Media:
+        css = {
+            "all": ("exmo2010/selector.css",)
+        }
 
 admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
 admin.site.register(exmo.exmo2010.models.Parameter, ParameterAdmin)
