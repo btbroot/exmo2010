@@ -680,7 +680,10 @@ def monitoring_comment_report(request, id):
 
     start_date = MonitoringStatus.objects.get(monitoring = monitoring, status = Monitoring.MONITORING_INTERACT).start
     if not start_date:
-        return monitoring_manager(request, id, 'update')
+        return render_to_response(
+            "msg.html", {
+                'msg': _('Start date for interact not defined.')
+                }, context_instance=RequestContext(request))
     end_date = datetime.now()
 
     limit = 2
