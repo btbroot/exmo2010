@@ -536,7 +536,7 @@ class UserProfile(models.Model):
 
     def _is_expertB(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsB')
+            group, created = Group.objects.get_or_create(name=self.expertB_group)
         except:
             return False
         else:
@@ -544,7 +544,7 @@ class UserProfile(models.Model):
 
     def _is_expertA(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsA')
+            group, created = Group.objects.get_or_create(name=self.expertA_group)
         except:
             return False
         else:
@@ -552,7 +552,7 @@ class UserProfile(models.Model):
 
     def _is_manager_expertB(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsB_manager')
+            group, created = Group.objects.get_or_create(name=self.expertsB_manager_group)
         except:
             return False
         else:
@@ -560,7 +560,7 @@ class UserProfile(models.Model):
 
     def _is_customer(self):
         try:
-            group, created = Group.objects.get_or_create(name='customers')
+            group, created = Group.objects.get_or_create(name=self.customer_group)
         except:
             return False
         else:
@@ -568,7 +568,7 @@ class UserProfile(models.Model):
 
     def _is_organization(self):
         try:
-            group, creater = Group.objects.get_or_create(name='organizations')
+            group, creater = Group.objects.get_or_create(name=self.organization_group)
         except:
             return False
         else:
@@ -582,6 +582,14 @@ class UserProfile(models.Model):
     is_manager_expertB = property(_is_manager_expertB)
     is_customer = property(_is_customer)
     is_organization = property(_is_organization)
+
+    expertA_group = 'expertsA'
+    expertB_group = 'expertsB'
+    expertB_manager_group = 'expertsB_manager'
+    organization_group = 'organizations'
+    customer_group = 'customers'
+
+    expert_groups = [expertA_group, expertB_group, expertB_manager_group]
 
     def __unicode__(self):
         return "%s" % self.user
