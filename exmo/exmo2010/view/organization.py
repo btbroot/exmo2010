@@ -70,7 +70,7 @@ def organization_list(request, id):
 @login_required
 def organization_manager(request, monitoring_id, id, method):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    if not request.user.has_perm('exmo2010.admin_monitoring'):
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.organization.organization_list', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
