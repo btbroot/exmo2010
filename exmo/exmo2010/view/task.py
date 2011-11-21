@@ -221,13 +221,13 @@ def task_import(request, id):
             except ValidationError, e:
                 errLog.append(_("row %d (validation). %s") % (
                     reader.line_num,
-                    '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
+                    '; '.join(['%s: %s' % (i[0], ', '.join(_(i[1]))) for i in e.message_dict.items()])))
             except Exception, e:
-                errLog.append(_("row %d. %s") % (reader.line_num, e))
+                errLog.append(_("row %d. %s") % (reader.line_num, _(e)))
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append(_("row %d (csv). %s") % (reader.line_num, e))
+           errLog.append(_("row %d (csv). %s") % (reader.line_num, _(e)))
     title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html', {
       'task': task,
