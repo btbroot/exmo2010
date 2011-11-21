@@ -18,17 +18,18 @@
 from exmo.exmo2010.models import Task
 from exmo.exmo2010.models import Monitoring
 from django import template
+from django.utils.translation import ugettext as _
 
 register = template.Library()
 
 def model_status(choices, status):
-    for s in choices:
-        if status == s[0]:
-            return s[1]
-        elif status == s[1]:
-            return s[0]
+    for code, text in choices:
+        if status == code:
+            return text
+        elif type(status) != type(long()) and  _(status) == text:
+            return code
     else:
-        return None
+        return ""
 
 def monitoring_status(status):
     return model_status(Monitoring.MONITORING_STATUS_FULL, status)

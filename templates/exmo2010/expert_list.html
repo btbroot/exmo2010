@@ -40,10 +40,10 @@
         <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.username }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'open' %}">{{ object.open_tasks }}</a>
+        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'ready' %}">{{ object.ready_tasks }}</a>
+        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
       </td>
       <td>
         <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
