@@ -25,6 +25,7 @@ UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
 class ParameterAdmin(admin.ModelAdmin):
     search_fields = ('name', )
+    list_filter = ('monitoring',)
     formfield_overrides = {
         models.ManyToManyField: {
             'widget': admin.widgets.FilteredSelectMultiple('',
