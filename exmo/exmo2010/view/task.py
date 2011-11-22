@@ -175,7 +175,7 @@ def task_import(request, id):
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                  errLog.append(_("row %d (csv). Not a code: %s") % (reader.line_num, row[0]))
+                  errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
                   continue
                 if (
                     row[2]  == '' and
@@ -193,7 +193,7 @@ def task_import(request, id):
                     row[14] == '' and
                     row[15] == ''
                   ):
-                    errLog.append(_("row %d (csv). Empty score: %s") % (reader.line_num, row[0]))
+                    errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
                     continue
                 parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
                 try:
@@ -219,15 +219,15 @@ def task_import(request, id):
                 score.full_clean()
                 score.save()
             except ValidationError, e:
-                errLog.append(_("row %d (validation). %s") % (
-                    reader.line_num,
-                    '; '.join(['%s: %s' % (i[0], ', '.join(_(i[1]))) for i in e.message_dict.items()])))
+                errLog.append(_("row %(row)d (validation). %(raw)s") % {
+                    'row': reader.line_num,
+                    'raw':'; '.join(['%s: %s' % (i[0], ', '.join(_(i[1]))) for i in e.message_dict.items()]}))
             except Exception, e:
-                errLog.append(_("row %d. %s") % (reader.line_num, _(e)))
+                errLog.append(_("row %(row)d. %(raw)s") % {'row':reader.line_num, 'raw':_(e)})
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append(_("row %d (csv). %s") % (reader.line_num, _(e)))
+           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':_(e)})
     title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html', {
       'task': task,
