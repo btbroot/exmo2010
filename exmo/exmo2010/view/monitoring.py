@@ -703,7 +703,7 @@ def monitoring_comment_report(request, id):
     active_iifd_person_stats = []
     iifd_all_comments = []
 
-    if request.user.has_perm('exmo2010.admin_monitoring') or request.user.profile.is_expertA:
+    if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA:
         scores = Score.objects.filter(task__organization__monitoring = monitoring)
     elif request.user.profile.is_expertB:
         scores = Score.objects.filter(task__organization__monitoring = monitoring, task__user = request.user)
