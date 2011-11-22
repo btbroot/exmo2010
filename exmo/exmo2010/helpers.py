@@ -78,8 +78,6 @@ def get_recipients_nonadmin(comment):
                     res.append(profile.user.email)
     except:
         pass
-    if not comment.user.is_superuser and not comment.user == score.task.user:
-        if comment.user.email and comment.user.is_active: res.append(comment.user.email)
     for r in get_recipients_admin(comment):
         try:
             res.remove(r)
@@ -106,17 +104,31 @@ def comment_notification(sender, **kwargs):
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
     message = t.render(c)
+
     headers = {
-        'X-iifd-exmo': 'comment_notification'
+        'X-iifd-exmo': 'comment_notification',
+        'X-iifd-exmo-comment-organization-url': score.task.organization.url,
     }
-    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_nonadmin(comment), [], headers = headers,)
-    email.send()
+
+    for rcpt_ in get_recipients_nonadmin(comment):
+        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers,)
+        email.send()
 
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment, 'url': url })
-    message = t.render(c)
-    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, get_recipients_admin(comment), [], headers = headers)
-    email.send()
+    message_admin = t.render(c)
+    for rcpt_ in get_recipients_admin(comment):
+        email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
+        email.send()
+
+    if comment.user.email and comment.user.is_active:
+        header_self = headers
+        header_self['X-iifd-exmo-comment'] = 'self'
+        if comment.user.is_superuser or comment.user == score.task.user:
+            email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers_self)
+        else:
+            email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers_self)
+            email.send()
 
 
 
@@ -200,9 +212,13 @@ def score_change_notify(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.code,
         }
+        headers = {
+            'X-iifd-exmo': 'score_changed_notification'
+        }
         url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
         t = loader.get_template('exmo2010/score_email.html')
         c = Context({ 'score': score, 'url': url, 'changes': changes, })
         message = t.render(c)
         for rcpt_ in rcpt:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_])
+            email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
+            email.send()
