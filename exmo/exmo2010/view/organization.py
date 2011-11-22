@@ -35,7 +35,7 @@ def organization_list(request, id):
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %(name)s') % {'name': monitoring}
     org_list = []
-    for task in Task.objects.filter(organization__monitoring = monitoring):
+    for task in Task.objects.filter(organization__monitoring = monitoring).select_related():
         if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
     org_list = list(set(org_list))
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):

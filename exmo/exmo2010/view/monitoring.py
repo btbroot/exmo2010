@@ -41,7 +41,7 @@ from reversion import revision
 
 def monitoring_list(request):
     monitorings_pk = []
-    for m in Monitoring.objects.all():
+    for m in Monitoring.objects.all().select_related():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
     if not monitorings_pk and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()): return HttpResponseForbidden(_('Forbidden'))
