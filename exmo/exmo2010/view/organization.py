@@ -34,10 +34,6 @@ def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %(name)s') % {'name': monitoring}
-    org_list = []
-    for task in Task.objects.filter(organization__monitoring = monitoring).select_related():
-        if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
-    org_list = list(set(org_list))
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring = monitoring).extra(
             select = {
@@ -49,6 +45,10 @@ def organization_list(request, id):
                 (_('tasks'), 'task__count', None, None, None),
                 )
     else:
+        org_list = []
+        for task in Task.objects.filter(organization__monitoring = monitoring).select_related():
+            if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
+        org_list = list(set(org_list))
         if not org_list: return HttpResponseForbidden(_('Forbidden'))
         queryset = Organization.objects.filter(pk__in = org_list)
         headers = (
