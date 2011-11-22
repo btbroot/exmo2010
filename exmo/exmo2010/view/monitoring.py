@@ -173,7 +173,7 @@ def monitoring_rating(request, id):
   for rating_object, place in rating_list:
     div_result = rating_object['openness'] // rating_piece
     category = 4
-    for i in range(1,num_catogories):
+    for i in range(1,num_categories):
         if div_result > num_categories - i:
             category = i
             break
