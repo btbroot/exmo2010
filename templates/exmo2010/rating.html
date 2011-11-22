@@ -24,6 +24,7 @@
 <head>
 <title>{% trans "Rating " %} {{ monitoring }}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/rating.css" />
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
@@ -34,10 +35,15 @@
 {% if object_list %}
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
-  <tbody>{% for object, place in object_list %}
-    <tr><td>{{ place }}</td><td>{{ object.task.organization.name }}</td><td>{{ object.task.organization.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
+  <tbody>{% for object, place, category in object_list %}
+    {% if not forloop.first %}{% ifchanged place %}
+      <tr><td colspan=4><hr style="background-color:black"></td></tr>
+    {% endifchanged %}{% endif %}
+    <tr class="group{{category}}"><td>{{ place }}</td><td>{{ object.task.organization.name }}</td><td>{{ object.task.organization.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
+
   {% endfor %}</tbody>
   <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
+  <tr style="font-weight: bold"><td colspan=3>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
 </table>
 {% else %}
 {% trans 'Empty list' %}

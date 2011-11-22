@@ -167,9 +167,24 @@ def monitoring_rating(request, id):
     rating = [rating_object, place ]
     rating_list.append(rating)
 
+  rating_list_with_categories = []
+  num_categories = 4 #number for division
+  rating_piece = rating_list[0][0]['openness'] // num_categories
+  for rating_object, place in rating_list:
+    div_result = rating_object['openness'] // rating_piece
+    if div_result == 4:
+        category = 1
+    elif div_result == 3:
+        category = 2
+    elif div_result == 2:
+        category = 3
+    else:
+        category = 4
+    rating = [rating_object, place, category]
+    rating_list_with_categories.append(rating)
   return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
-        'object_list': rating_list,
+        'object_list': rating_list_with_categories,
         'average': avg,
     }, context_instance=RequestContext(request))
 
