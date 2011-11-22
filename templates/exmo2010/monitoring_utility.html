@@ -25,9 +25,7 @@
   <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}">{% trans 'Tasks' %}</a> /
 {% if user.is_expert or user.is_superuser %}
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
-  {% if monitoring.status >= monitoring.MONITORING_INTERACT %}
     <a href="{% url exmo.exmo2010.view.monitoring.monitoring_comment_report monitoring.pk %}">{% trans 'Comment report' %}</a> /
-  {% endif %}
 {% endif %}
 {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
 {% if perm %}
