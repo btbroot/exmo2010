@@ -172,14 +172,12 @@ def monitoring_rating(request, id):
   rating_piece = rating_list[0][0]['openness'] // num_categories
   for rating_object, place in rating_list:
     div_result = rating_object['openness'] // rating_piece
-    if div_result == 4:
-        category = 1
-    elif div_result == 3:
-        category = 2
-    elif div_result == 2:
-        category = 3
-    else:
-        category = 4
+    category = 4
+    for i in range(1,num_catogories):
+        if div_result > num_categories - i:
+            category = i
+            break
+
     rating = [rating_object, place, category]
     rating_list_with_categories.append(rating)
   return render_to_response('exmo2010/rating.html', {
