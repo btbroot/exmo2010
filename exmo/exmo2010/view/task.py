@@ -274,7 +274,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None)
               )
     else:
@@ -282,7 +282,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       queryset = queryset.filter(organization = organization)
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None)
               )
     task_list = []
@@ -442,18 +442,18 @@ def tasks_by_monitoring(request, id):
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
         headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
     else:
         headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
 
     return table(
