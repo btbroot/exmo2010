@@ -479,7 +479,7 @@ def tasks_by_monitoring(request, id):
 @login_required
 def task_mass_assign_tasks(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
-  if not request.user.has_perm('exmo2010.admin_monitoring'):
+  if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
     return HttpResponseForbidden(_('Forbidden'))
   organizations = Organization.objects.filter(monitoring = monitoring)
   groups = []
