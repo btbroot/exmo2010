@@ -20,7 +20,7 @@ from django.views.generic.create_update import update_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo.exmo2010.models import Parameter, Task
-from exmo.exmo2010.forms import ParameterForm
+from exmo.exmo2010.forms import ParameterForm, CORE_MEDIA
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -58,6 +58,7 @@ def parameter_manager(request, task_id, id, method):
             extra_context = {
                 'title': title,
                 'task': task,
+                'media': CORE_MEDIA + ParameterForm().media,
                 }
             )
 
@@ -83,6 +84,7 @@ def parameter_add(request, task_id):
             'form': form,
             'title': title,
             'task': task,
+            'media': CORE_MEDIA + form.media,
         },
         context_instance=RequestContext(request),
     )
