@@ -37,7 +37,7 @@ def monitoring_permission(user, priv, monitoring):
         if user.is_active: #minimaze query
             profile = user.profile
             if profile.is_expert and em.Task.objects.filter(organization__monitoring = monitoring, user = user).count() > 0: return True
-            elif profile.is_organization and em.Task.approved_tasks.filter(organization__in = profile.organization.all()).count() > 0:
+            elif profile.is_organization and em.Task.approved_tasks.filter(organization__in = profile.organization.all()).count() > 0 and monitoring.is_interact:
                 return True
     if priv == 'exmo2010.rating_monitoring':
         if user.is_active:
