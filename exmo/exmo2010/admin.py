@@ -23,7 +23,7 @@ from django.contrib.auth.admin import UserAdmin
 
 UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
-class ParameterAdmin(admin.ModelAdmin):
+class ParameterAdmin(VersionAdmin):
     search_fields = ('name', )
     list_filter = ('monitoring',)
     formfield_overrides = {
