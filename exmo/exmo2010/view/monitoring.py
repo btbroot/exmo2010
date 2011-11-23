@@ -67,8 +67,8 @@ def monitoring_list(request):
 def monitoring_manager(request, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.monitoring.monitoring_list'), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
+    monitoring = get_object_or_404(Monitoring, pk = id)
     if method == 'delete':
-        monitoring = get_object_or_404(Monitoring, pk = id)
         if not request.user.has_perm('exmo2010.delete_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         title = _('Delete monitoring %s') % monitoring
@@ -82,8 +82,15 @@ def monitoring_manager(request, id, method):
                 'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
                 }
             )
+    elif method == 'calculate':
+        if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
+        if request.method != 'POST':
+            return HttpResponse(_('Only POST allowed'))
+        else:
+            for task in Task.objects.filter(organization__monitoring = monitoring).select_related(): task.update_openness()
+            return HttpResponseRedirect(redirect)
     else: #update
-        monitoring = get_object_or_404(Monitoring, pk = id)
         if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit monitoring %s') % monitoring
