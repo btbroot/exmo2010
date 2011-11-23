@@ -222,12 +222,18 @@ def task_import(request, id):
                 errLog.append(_("row %(row)d (validation). %(raw)s") % {
                     'row': reader.line_num,
                     'raw': '; '.join(['%s: %s' % (i[0], ', '.join(_(i[1]))) for i in e.message_dict.items()])})
+            except Parameter.DoesNotExist:
+                errLog.append(_("row %(row)d. %(raw)s") % {
+                    'row':reader.line_num,
+                    'raw': _('Parameter matching query does not exist')})
             except Exception, e:
-                errLog.append(_("row %(row)d. %(raw)s") % {'row':reader.line_num, 'raw':_(e)})
+                errLog.append(_("row %(row)d. %(raw)s") % {
+                    'row':reader.line_num,
+                    'raw': _(e)})
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':_(e)})
+           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
     title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html', {
       'task': task,
