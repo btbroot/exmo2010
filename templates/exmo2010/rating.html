@@ -24,36 +24,41 @@
 <head>
 <title>{% trans "Rating " %} {{ monitoring }}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}exmo2010/rating.css" />
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<div id=content>
 <h1>{% trans "Rating " %} {{ monitoring }}</h1>
-
 <div id=organization_list>
 {% if object_list %}
 <table>
-  <!--<thead><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>-->
+  <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>
   {% for place, objects in object_list.items %}
-    <tr><td colspan=3 align='center'>{{ place }}&nbsp;{% trans 'place' %}</td></tr>
     {% for object in objects %}
-    <tr>
+        {% if forloop.first %}
+            <tr style="border-top:solid; border-color:#5B80B2;">
+        {% else %}
+            <tr>
+        {% endif %}
+        {% if forloop.first %}
+            <td rowspan={{objects|length}} align='center' style="vertical-align:middle">{{ place }}</td>
+        {% endif %}
         <td>{{ object.task.organization.name }}</td>
         <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
         <td>{{ object.openness|floatformat:3 }}</td>
     </tr>
     {% endfor %}
-    {% if not forloop.last %}
-        <tr><td colspan=3><hr style="background-color:#5B80B2; height:15px;"></td></tr>
-    {% endif %}
   {% endfor %}</tbody>
-  <tr style="font-weight: bold"><td colspan=2>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
-  <tr style="font-weight: bold"><td colspan=2>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
+  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
+  <tr style="font-weight: bold"><td colspan=3>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
 </table>
 {% else %}
 {% trans 'Empty list' %}
 {% endif %}
+</div>
 </div>
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
 </body></html>
