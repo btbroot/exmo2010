@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from exmo.exmo2010.view.helpers import table
+from exmo.exmo2010.view.helpers import rating
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
@@ -157,39 +158,47 @@ def monitoring_add(request):
 from operator import itemgetter
 #update rating twice in a day
 #@cache_page(60 * 60 * 12)
-def monitoring_rating(request, id):
+def monitoring_rating_color(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring = monitoring).order_by('-openness_cache')]
-  place=1
-  avg=None
-  if object_list:
-    max_rating = object_list[0]['openness']
-    avg = sum([t['openness'] for t in object_list])/len(object_list)
-  rating_list = []
-  for rating_object in object_list:
-    if rating_object['openness'] < max_rating:
-        place+=1
-        max_rating = rating_object['openness']
-    rating = [rating_object, place ]
-    rating_list.append(rating)
 
-  rating_list_with_categories = []
+  rating_list, avg = rating(monitoring)
+
+  rating_list_with_categories = {}
   num_categories = 4 #number for division
-  rating_piece = rating_list[0][0]['openness'] // num_categories
-  for rating_object, place in rating_list:
-    div_result = rating_object['openness'] // rating_piece
+  rating_piece = rating_list[1][0]['openness'] // num_categories
+  for place, rating_objects in rating_list.items():
+    div_result = rating_objects[0]['openness'] // rating_piece
     category = 4
     for i in range(1,num_categories):
         if div_result > num_categories - i:
             category = i
             break
 
-    rating = [rating_object, place, category]
-    rating_list_with_categories.append(rating)
-  return render_to_response('exmo2010/rating.html', {
+    rating_objects_new = []
+    for rating_object in rating_objects:
+        rating_object['category'] = category
+        rating_objects_new.append(rating_object)
+
+    rating_list_with_categories[place] = rating_objects_new
+
+  return render_to_response('exmo2010/rating_color.html', {
         'monitoring': monitoring,
         'object_list': rating_list_with_categories,
+        'average': avg,
+    }, context_instance=RequestContext(request))
+
+
+
+def monitoring_rating(request, id):
+  monitoring = get_object_or_404(Monitoring, pk = id)
+  if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
+
+  rating_list, avg = rating(monitoring)
+
+  return render_to_response('exmo2010/rating.html', {
+        'monitoring': monitoring,
+        'object_list': rating_list,
         'average': avg,
     }, context_instance=RequestContext(request))
 

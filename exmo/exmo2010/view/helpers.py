@@ -35,3 +35,24 @@ def table(request, headers, **kwargs):
     }
   )
   return object_list(request, **kwargs)
+
+
+
+def rating(monitoring):
+  from exmo.exmo2010.models import Task
+  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring = monitoring).order_by('-openness_cache')]
+  place=1
+  avg=None
+  if object_list:
+    max_rating = object_list[0]['openness']
+    avg = sum([t['openness'] for t in object_list])/len(object_list)
+  rating_list = {}
+  for rating_object in object_list:
+    if rating_object['openness'] < max_rating:
+        place+=1
+        max_rating = rating_object['openness']
+    if not rating_list.has_key(place):
+        rating_list[place]= [rating_object,]
+    else:
+        rating_list[place].extend(rating_object)
+  return rating_list, avg
