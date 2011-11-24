@@ -29,18 +29,26 @@
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-<h1>{% trans "Rating " %} {{ monitoring }}</h1>
 
+<div id=content>
+<h1>{% trans "Rating " %} {{ monitoring }}</h1>
 <div id=organization_list>
 {% if object_list %}
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
-  <tbody>{% for place, objects_list in object_list.items %}
-    {% for object in objects_list %}
-    <tr class="group{{object.category}}">
-        <td>{{ place }}</td><td>{{ object.task.organization.name }}</td>
-        <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
-        <td>{{ object.openness|floatformat:3 }}</td>
+  <tbody>{% for place, objects in object_list.items %}
+    {% for object in objects %}
+        {% if forloop.first %}
+            <tr style="border-top:solid; border-color:#333333;" class="group{{object.category}}">
+        {% else %}
+            <tr class="group{{object.category}}">
+        {% endif %}
+        {% if forloop.first %}
+            <td rowspan={{objects|length}} align='center' style="vertical-align:middle">{{ place }}</td>
+        {% endif %}
+        <td class="rating_color">{{ object.task.organization.name }}</td>
+        <td class="rating_color"><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
+        <td class="rating_color">{{ object.openness|floatformat:3 }}</td>
     </tr>
     {% endfor %}
   {% endfor %}</tbody>
@@ -50,6 +58,7 @@
 {% else %}
 {% trans 'Empty list' %}
 {% endif %}
+</div>
 </div>
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
 </body></html>

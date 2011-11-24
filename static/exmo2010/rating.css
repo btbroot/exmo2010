@@ -20,18 +20,30 @@
 
 /* red */
 .group4{
-	background: #ff0000;
+	background: #FF6262;
         }
 
 .group3{
-	background: #ff9218;
+	background: #FFB76F;
         }
 
+/* yellow */
 .group2{
-	background: #fcff18;
+	background: #FFFF77;
         }
 
 /* green */
 .group1{
-	background: #00B050;
+	background: #54A754;
         }
+a:link, a:visited {
+        color: #333333;
+}
+
+td, th .rating_color{
+        border-bottom: None;
+}
+
+.row2{
+        opacity: 0.85;
+}
