@@ -54,5 +54,5 @@ def rating(monitoring):
     if not rating_list.has_key(place):
         rating_list[place]= [rating_object,]
     else:
-        rating_list[place].extend(rating_object)
+        rating_list[place].append(rating_object)
   return rating_list, avg
