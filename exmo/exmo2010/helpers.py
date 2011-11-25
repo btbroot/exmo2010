@@ -122,8 +122,8 @@ def comment_notification(sender, **kwargs):
         email.send()
 
     if comment.user.email and comment.user.is_active:
-        header_self = headers
-        header_self['X-iifd-exmo-comment'] = 'self'
+        headers_self = headers
+        headers_self['X-iifd-exmo-comment'] = 'self'
         if comment.user.is_superuser or comment.user == score.task.user:
             email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers_self)
         else:
