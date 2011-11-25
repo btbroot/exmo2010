@@ -164,23 +164,19 @@ def monitoring_rating_color(request, id):
 
   rating_list, avg = rating(monitoring)
 
-  rating_list_with_categories = {}
+  rating_list_with_categories = []
   num_categories = 4 #number for division
-  rating_piece = rating_list[1][0]['openness'] // num_categories
-  for place, rating_objects in rating_list.items():
-    div_result = rating_objects[0]['openness'] // rating_piece
+  rating_piece = rating_list[0]['openness'] // num_categories
+  for rating_object in rating_list:
+    div_result = rating_object['openness'] // rating_piece
     category = 4
     for i in range(1,num_categories):
         if div_result > num_categories - i:
             category = i
             break
+    rating_object['category'] = category
 
-    rating_objects_new = []
-    for rating_object in rating_objects:
-        rating_object['category'] = category
-        rating_objects_new.append(rating_object)
-
-    rating_list_with_categories[place] = rating_objects_new
+    rating_list_with_categories.append(rating_object)
 
   return render_to_response('exmo2010/rating_color.html', {
         'monitoring': monitoring,

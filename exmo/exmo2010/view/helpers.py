@@ -46,13 +46,21 @@ def rating(monitoring):
   if object_list:
     max_rating = object_list[0]['openness']
     avg = sum([t['openness'] for t in object_list])/len(object_list)
-  rating_list = {}
+  rating_list = []
+  place_count={}
   for rating_object in object_list:
     if rating_object['openness'] < max_rating:
         place+=1
         max_rating = rating_object['openness']
-    if not rating_list.has_key(place):
-        rating_list[place]= [rating_object,]
-    else:
-        rating_list[place].append(rating_object)
-  return rating_list, avg
+    try:
+        place_count[place] += 1
+    except KeyError:
+        place_count[place] = 1
+    rating_object['place'] = place
+    rating_list.append(rating_object)
+
+  rating_list_final = []
+  for rating_object in rating_list:
+    rating_object['place_count'] = place_count[rating_object['place']]
+    rating_list_final.append(rating_object)
+  return rating_list_final, avg

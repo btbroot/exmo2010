@@ -44,6 +44,7 @@ td, th .rating_color{
         border-bottom: None;
 }
 
-.row2{
-        opacity: 0.85;
+.rating-top-border {
+        border-top: solid;
+        border-color: #5B80B2;
 }

@@ -36,21 +36,15 @@
 <table>
   <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>
-  {% for place, objects in object_list.items %}
-    {% for object in objects %}
-        {% if forloop.first %}
-            <tr style="border-top:solid; border-color:#5B80B2;">
-        {% else %}
-            <tr>
-        {% endif %}
-        {% if forloop.first %}
-            <td rowspan={{objects|length}} align='center' style="vertical-align:middle">{{ place }}</td>
-        {% endif %}
+  {% for object in object_list %}
+        <tr class="{%if forloop.counter|divisibleby:'2'%}row2{%else%}row1{%endif%} {%ifchanged object.place%}rating-top-border{%endifchanged%}">
+        {% ifchanged object.place %}
+            <td rowspan={{object.place_count}} align='center' style="vertical-align:middle; background: none repeat scroll 0 0 white;">{{ object.place }}</td>
+        {% endifchanged %}
         <td>{{ object.task.organization.name }}</td>
         <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
         <td>{{ object.openness|floatformat:3 }}</td>
     </tr>
-    {% endfor %}
   {% endfor %}</tbody>
   <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
   <tr style="font-weight: bold"><td colspan=3>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
