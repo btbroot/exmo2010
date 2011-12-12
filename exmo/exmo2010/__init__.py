@@ -36,4 +36,4 @@ if settings.USE_EMAIL:
     signals.score_was_changed.connect(score_change_notify)
 
 post_save.connect(post_save_model)
-post_save.connect(create_profile, sender=User)
+#post_save.connect(create_profile, sender=User)
