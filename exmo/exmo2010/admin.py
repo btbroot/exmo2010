@@ -87,6 +87,9 @@ class UserProfileInline(admin.StackedInline):
 
 
 class UserAdmin(admin.ModelAdmin):
+    search_fields = ('username', 'first_name', 'last_name', 'email')
+    list_display = ('username', 'first_name', 'last_name', 'email')
+    list_filter = ('is_active','is_superuser','is_staff')
     formfield_overrides = {
         models.ManyToManyField: {
             'widget': admin.widgets.FilteredSelectMultiple('',
