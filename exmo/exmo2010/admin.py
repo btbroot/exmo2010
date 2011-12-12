@@ -74,6 +74,8 @@ from exmo.exmo2010.models import UserProfile
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    fk_name = 'user'
+    max_num = 1
     formfield_overrides = {
         models.ManyToManyField: {
             'widget': admin.widgets.FilteredSelectMultiple('',
@@ -86,17 +88,9 @@ class UserProfileInline(admin.StackedInline):
         }
 
 
-class UserAdmin(admin.ModelAdmin):
-    search_fields = ('username', 'first_name', 'last_name', 'email')
-    list_display = ('username', 'first_name', 'last_name', 'email')
-    list_filter = ('is_active','is_superuser','is_staff')
-    formfield_overrides = {
-        models.ManyToManyField: {
-            'widget': admin.widgets.FilteredSelectMultiple('',
-                                                           is_stacked=False)
-        },
-    }
-    inlines = [UserProfileInline]
+from django.contrib.auth.admin import UserAdmin
+class UserAdmin(UserAdmin):
+    inlines = [UserProfileInline,]
 
 
 admin.site.unregister(User)
