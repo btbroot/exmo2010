@@ -221,7 +221,7 @@ def task_import(request, id):
             except ValidationError, e:
                 errLog.append(_("row %(row)d (validation). %(raw)s") % {
                     'row': reader.line_num,
-                    'raw': '; '.join(['%s: %s' % (i[0], ', '.join(_(i[1]))) for i in e.message_dict.items()])})
+                    'raw': '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])})
             except Parameter.DoesNotExist:
                 errLog.append(_("row %(row)d. %(raw)s") % {
                     'row':reader.line_num,
@@ -229,7 +229,7 @@ def task_import(request, id):
             except Exception, e:
                 errLog.append(_("row %(row)d. %(raw)s") % {
                     'row':reader.line_num,
-                    'raw': _(e)})
+                    'raw': e})
             else:
                 rowOKCount += 1
     except csv.Error, e:
