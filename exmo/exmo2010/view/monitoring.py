@@ -482,7 +482,7 @@ def monitoring_parameter_export(request, id):
         return ''
 
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = monitoring)
     response = HttpResponse(mimetype = 'text/csv')
@@ -531,7 +531,7 @@ def monitoring_organization_export(request, id):
         return ''
 
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring = monitoring)
     response = HttpResponse(mimetype = 'text/csv')
@@ -561,7 +561,7 @@ def monitoring_organization_export(request, id):
 @csrf_protect
 def monitoring_organization_import(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('orgfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
@@ -624,7 +624,7 @@ def monitoring_organization_import(request, id):
 @csrf_protect
 def monitoring_parameter_import(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('paramfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
