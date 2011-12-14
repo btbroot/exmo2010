@@ -32,7 +32,7 @@
 {% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}
 {% block content %}
-{% check_object_permission exmo2010.edit_monitoring monitoring as perm %}
+{% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
 <div id=task_list>
 <table>
   {% table_header headers %}
@@ -55,7 +55,7 @@
             <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>
-      {%if perm%}<td>{{ object.user.username }}</td>{%endif%}
+      {% if perm or user.userprofile.is_expertA %}<td>{{ object.user.username }}</td>{%endif%}
       {% if user.is_superuser or user.userprofile.is_expert %}
       <td>
         {% if object.open %}
