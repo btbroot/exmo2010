@@ -32,13 +32,13 @@
 {% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}
 {% block content %}
-{% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+{% check_object_permission exmo2010.admin_monitoring monitoring as perm_admin %}
 <div id=task_list>
 <table>
   {% table_header headers %}
   <tbody>
     <tr><td colspan=5>
-        {%if perm%}
+        {% if perm_admin %}
             {% if organization %}
                 <a href="{% url exmo.exmo2010.view.task.task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{% admin_media_prefix %}img/admin/icon_addlink.gif"></a>
             {% else %}
@@ -50,12 +50,12 @@
       <tr>
       <td>
         <a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
-        {%if perm %}
+        {%if perm_admin %}
             &nbsp;<a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
             <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>
-      {% if perm or user.userprofile.is_expertA %}<td>{{ object.user.username }}</td>{%endif%}
+      {% if perm_admin or user.userprofile.is_expertA %}<td>{{ object.user.username }}</td>{%endif%}
       {% if user.is_superuser or user.userprofile.is_expert %}
       <td>
         {% if object.open %}
