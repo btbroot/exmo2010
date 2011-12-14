@@ -137,7 +137,6 @@ def monitoring_add(request):
         form = MonitoringForm(request.POST)
         if form.is_valid:
             monitoring_instance = form.save()
-            monitoring_instance.create_calendar()
             redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
     else:

@@ -190,6 +190,12 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 
+def create_calendar(sender, instance, created, **kwargs):
+    if created:
+        instance.create_calendar()
+
+
+
 def score_change_notify(sender, **kwargs):
     form = kwargs['form']
     score = form.instance
