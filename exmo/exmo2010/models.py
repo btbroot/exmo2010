@@ -88,6 +88,9 @@ class Monitoring(models.Model):
   def _get_planned(self):
     return self.status == self.MONITORING_PLANNED
 
+  def _get_active(self):
+    return not (self.is_prepare or self.is_planned)
+
   is_prepare = property(_get_prepare)
   is_rate = property(_get_rate)
   is_revision = property(_get_revision)
@@ -95,6 +98,10 @@ class Monitoring(models.Model):
   is_result = property(_get_result)
   is_publish = property(_get_publish)
   is_planned = property(_get_planned)
+
+  is_active = property(_get_active)
+
+
 
 class MonitoringStatus(models.Model):
     monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
