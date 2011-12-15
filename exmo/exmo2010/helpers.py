@@ -61,8 +61,6 @@ def get_recipients_admin(comment):
             res.append(user.email)
     if score.task.user.email and score.task.user.is_active:
         res.append(score.task.user.email)
-    if comment.user.is_superuser or comment.user == score.task.user:
-        if comment.user.email and comment.user.is_active: res.append(comment.user.email)
     return list(set(res))
 
 
@@ -108,6 +106,7 @@ def comment_notification(sender, **kwargs):
     headers = {
         'X-iifd-exmo': 'comment_notification',
         'X-iifd-exmo-comment-organization-url': score.task.organization.url,
+        'X-iifd-exmo-comment': 'notification',
     }
 
     for rcpt_ in get_recipients_nonadmin(comment):
