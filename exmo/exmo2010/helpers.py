@@ -102,6 +102,12 @@ def comment_notification(sender, **kwargs):
     comment = kwargs['comment']
     request = kwargs['request']
     score = comment.content_object
+
+    #update user.email
+    if not comment.user.email and comment.user_email:
+        comment.user.email = comment.user_email
+        comment.user.save()
+
     subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
             'prefix': settings.EMAIL_SUBJECT_PREFIX,
             'monitoring': score.task.organization.monitoring,
@@ -141,10 +147,7 @@ def claim_notification(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.code,
             }
-    #update user.email
-    if not comment.user.email and comment.user_email:
-        comment.user.email = comment.user_email
-        comment.user.save()
+
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
@@ -161,7 +164,7 @@ def claim_notification(sender, **kwargs):
         rcpt.append(score.task.user.email)
     rcpt=list(set(rcpt))
     if rcpt:
-        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [score.task.user.email], [], headers = headers)
+        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt], [], headers = headers)
         email.send()
 
 
