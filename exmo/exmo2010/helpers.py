@@ -61,6 +61,11 @@ def get_recipients_admin(comment):
             res.append(user.email)
     if score.task.user.email and score.task.user.is_active:
         res.append(score.task.user.email)
+    try:
+        res.remove(comment.user.email)
+        res.remove(comment.user_email)
+    except:
+        pass
     return list(set(res))
 
 
@@ -81,6 +86,11 @@ def get_recipients_nonadmin(comment):
             res.remove(r)
         except:
             pass
+    try:
+        res.remove(comment.user.email)
+        res.remove(comment.user_email)
+    except:
+        pass
     return list(set(res))
 
 
@@ -106,7 +116,6 @@ def comment_notification(sender, **kwargs):
     headers = {
         'X-iifd-exmo': 'comment_notification',
         'X-iifd-exmo-comment-organization-url': score.task.organization.url,
-        'X-iifd-exmo-comment': 'notification',
     }
 
     for rcpt_ in get_recipients_nonadmin(comment):
@@ -120,15 +129,6 @@ def comment_notification(sender, **kwargs):
         email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
         email.send()
 
-    if comment.user.email and comment.user.is_active:
-        headers_self = headers
-        headers_self['X-iifd-exmo-comment'] = 'self'
-        if comment.user.is_superuser or comment.user == score.task.user:
-            email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers_self)
-        else:
-            email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers_self)
-            email.send()
-
 
 
 def claim_notification(sender, **kwargs):
@@ -141,6 +141,11 @@ def claim_notification(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.code,
             }
+    #update user.email
+    if not comment.user.email and comment.user_email:
+        comment.user.email = comment.user_email
+        comment.user.save()
+
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
     c = Context({ 'score': claim.score, 'claim': claim, 'url': url })
