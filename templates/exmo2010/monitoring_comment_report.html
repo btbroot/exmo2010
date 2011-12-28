@@ -64,7 +64,7 @@ function toggle(el) {
 <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
 </ul>
 
-<h3 onClick="toggle('org_stat');" style="cursor: hand;">
+<h3 onClick="toggle('org_stat');" style="cursor: pointer;">
 {% trans 'Statistics by organization' %} ({{ active_organization_stats|length }})</h3>
 <div id="org_stat" style="display: none;">
 {% if active_organization_stats %}
@@ -78,7 +78,7 @@ function toggle(el) {
 {% endif %}
 </div>
 
-<h3 onClick="toggle('emp_stat');" style="cursor: hand;">
+<h3 onClick="toggle('emp_stat');" style="cursor: pointer;">
 {% trans 'Statistics by iifd employers' %} ({{active_iifd_person_stats|length}})</h3>
 <div id="emp_stat" style="display: none;">
 {% if active_iifd_person_stats %}
@@ -93,7 +93,7 @@ Total: {{ iifd_comments|length }}
 </div>
 {% endif %}
 
-<h3 style="color:red; cursor: hand;" onClick="toggle('fail_comments_without_reply');">
+<h3 style="color:red; cursor: pointer;" onClick="toggle('fail_comments_without_reply');">
 {% trans 'Comments list from organizations without reply and date out of limit' %} ({{ fail_comments_without_reply|length }})</h3>
 <div id="fail_comments_without_reply" style="color:red; display: none;">
 {% if fail_comments_without_reply %}
@@ -105,7 +105,7 @@ Total: {{ iifd_comments|length }}
 {% endif %}
 </div>
 
-<h3 style="color:#ff9218; cursor: hand;" onClick="toggle('fail_soon_comments_without_reply');">
+<h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('fail_soon_comments_without_reply');">
 {% trans 'Comments list from organization that needs to reply today (exclude list above)' %} ({{ fail_soon_comments_without_reply|length }})</h3>
 <div id="fail_soon_comments_without_reply" style="color:#ff9218; display: none;" >
 {% if fail_soon_comments_without_reply %}
@@ -117,7 +117,7 @@ Total: {{ iifd_comments|length }}
 {% endif %}
 </div>
 
-<h3 style="color:green; cursor: hand;" onClick="toggle('comments_without_reply');">
+<h3 style="color:green; cursor: pointer;" onClick="toggle('comments_without_reply');">
 {% trans 'Comments list from organization that needs to reply (exclude list above)' %} ({{ comments_without_reply|length }})</h3>
 <div id="comments_without_reply" style="color:green; display: none;">
 {% if comments_without_reply %}
