@@ -23,7 +23,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-01-11 12:14+0400\n"
-"PO-Revision-Date: 2012-01-11 12:23+0400\n"
+"PO-Revision-Date: 2012-01-11 12:45+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -481,7 +481,7 @@ msgstr "Импортировать параметры из CSV для цикла
 
 #: exmo/exmo2010/view/monitoring.py:709
 msgid "Start date for interact not defined."
-msgstr ""
+msgstr "Дата взаимодействия не указана"
 
 #: exmo/exmo2010/view/monitoring.py:815
 #, python-format
