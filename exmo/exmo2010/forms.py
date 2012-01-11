@@ -109,6 +109,8 @@ class TaskForm(forms.ModelForm):
 
 class UserForm(forms.ModelForm):
     notify_score_change = forms.BooleanField(required = False, label=_('notify score change'))
+    notify_self_comment = forms.BooleanField(required = False, label=_('notify on self comment'))
+    notify_comment = forms.BooleanField(required = False, label=_('notify on comment, except self'))
 
     class Meta:
         model = User

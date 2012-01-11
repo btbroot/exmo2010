@@ -538,6 +538,8 @@ class UserProfile(models.Model):
 
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
     notify_score_change = models.BooleanField(blank = True, default = False, verbose_name=_('notify score change'))
+    notify_self_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on self comment'))
+    notify_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on comment, except self'))
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB()

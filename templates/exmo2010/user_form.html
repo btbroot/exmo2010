@@ -25,12 +25,7 @@
 
 {% block content %}
 <form method="post" action="{% url exmo.exmo2010.view.user.user_profile object.pk%}">{% csrf_token %}
-<p>{{form.first_name.label_tag}}{{ form.first_name }}</p>
-<p>{{form.last_name.label_tag}}{{ form.last_name }}</p>
-<p>{{form.email.label_tag}}{{ form.email }}</p>
-{% if user.profile.is_organization %}
-{{ form.notify_score_change.label_tag }}{{ form.notify_score_change }}</p>
-{% endif %}
+{{form.as_p}}
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
