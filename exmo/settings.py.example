@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'django403',
     'tagging',
     'tagging_autocomplete',
+    'south',
 )
 
 try:
