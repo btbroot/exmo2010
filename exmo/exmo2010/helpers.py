@@ -106,9 +106,9 @@ def comment_notification(sender, **kwargs):
     #non-admin comment user list
     nonadmin_users = []
     #organization
-    nonadmin_users = UserProfile.objects.filter(organization = score.task.organization, user__is_active = True)
+    nonadmin_users = User.objects.filter(userprofile__organization = score.task.organization, is_active = True)
     for user in nonadmin_users:
-        if user.is_active and user.email and user.email not in admin_rcpt:
+        if user.email and user.email not in admin_rcpt:
             if user == comment.user:
                 if user.profile.notify_self_comment:
                     #self comment
