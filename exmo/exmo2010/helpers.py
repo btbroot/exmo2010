@@ -84,9 +84,11 @@ def comment_notification(sender, **kwargs):
     #admin comment user list
     admin_users = []
     #A-expert + B-expert-manager
-    admin_users.extend(User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group]), is_active = True)
+    experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group], is_active = True)
+    if experts: admin_users.extend(experts)
     #superusers
-    admin_users.extend(User.objects.filter(is_superuser = True, is_active = True))
+    superusers=User.objects.filter(is_superuser = True, is_active = True)
+    if superusers: admin_users.extend(superusers)
     #B-expert
     if score.task.user.is_active: admin_users.extend(score.task.user)
     for user.is_active in admin_users:
@@ -104,7 +106,7 @@ def comment_notification(sender, **kwargs):
     #non-admin comment user list
     nonadmin_users = []
     #organization
-    nonadmin_users.extend(UserProfile.objects.filter(organization = score.task.organization, is_active = True))
+    nonadmin_users = UserProfile.objects.filter(organization = score.task.organization, is_active = True)
     for user in nonadmin_users:
         if user.is_active and user.email and user.email not in admin_rcpt:
             if user == comment.user:
