@@ -91,14 +91,14 @@ def comment_notification(sender, **kwargs):
     if superusers: admin_users.extend(superusers)
     #B-expert
     if score.task.user.is_active: admin_users.extend([score.task.user,])
-    for user.is_active in admin_users:
-        if user.email:
+    for user in admin_users:
+        if user.is_active and user.email:
             if user == comment.user:
-                if user.notify_self_comment:
+                if user.profile.notify_self_comment:
                     #self comment
                     admin_rcpt.append(user.email)
             else:
-                if user.notify_comment:
+                if user.profile.notify_comment:
                     admin_rcpt.append(user.email)
     #get only uniq emails
     admin_rcpt=list(set(admin_rcpt))
@@ -106,15 +106,15 @@ def comment_notification(sender, **kwargs):
     #non-admin comment user list
     nonadmin_users = []
     #organization
-    nonadmin_users = UserProfile.objects.filter(organization = score.task.organization, is_active = True)
+    nonadmin_users = UserProfile.objects.filter(organization = score.task.organization, user__is_active = True)
     for user in nonadmin_users:
         if user.is_active and user.email and user.email not in admin_rcpt:
             if user == comment.user:
-                if user.notify_self_comment:
+                if user.profile.notify_self_comment:
                     #self comment
                     nonadmin_rcpt.append(user.email)
             else:
-                if user.notify_comment:
+                if user.profile.notify_comment:
                     nonadmin_rcpt.append(user.email)
     #get only uniq emails
     nonadmin_rcpt=list(set(nonadmin_rcpt))
