@@ -25,7 +25,9 @@
 
 {% block content %}
 <form method="post" action="{% url exmo.exmo2010.view.user.user_profile object.pk%}">{% csrf_token %}
-{{form.as_p}}
+<table>
+{{form.as_table}}
+</table>
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}
