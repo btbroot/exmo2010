@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-11 12:14+0400\n"
-"PO-Revision-Date: 2012-01-11 12:45+0400\n"
+"POT-Creation-Date: 2012-01-12 12:43+0400\n"
+"PO-Revision-Date: 2012-01-12 12:43+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -38,44 +38,32 @@ msgstr ""
 msgid "This user account is inactive"
 msgstr "Пользователь не активен"
 
-#: exmo/exmo2010/forms.py:111 exmo/exmo2010/models.py:540
-msgid "notify score change"
-msgstr "Присылать уведомления об изменении оценок"
-
-#: exmo/exmo2010/forms.py:112 exmo/exmo2010/models.py:541
-msgid "notify on self comment"
-msgstr "Уведомлять о своих комментариях"
-
-#: exmo/exmo2010/forms.py:113 exmo/exmo2010/models.py:542
-msgid "notify on comment, except self"
-msgstr "Уведомлять о комментариях, за исключением своих"
-
-#: exmo/exmo2010/forms.py:132 exmo/exmo2010/models.py:340
+#: exmo/exmo2010/forms.py:125 exmo/exmo2010/models.py:340
 msgid "parameter"
 msgstr "Параметр"
 
-#: exmo/exmo2010/forms.py:133 exmo/exmo2010/models.py:341
+#: exmo/exmo2010/forms.py:126 exmo/exmo2010/models.py:341
 msgid "found"
 msgstr "Наличие"
 
-#: exmo/exmo2010/forms.py:138
+#: exmo/exmo2010/forms.py:131
 msgid "Open task"
 msgstr "Открыть задачу"
 
-#: exmo/exmo2010/forms.py:145 exmo/exmo2010/view/task.py:273
+#: exmo/exmo2010/forms.py:138 exmo/exmo2010/view/task.py:273
 #: exmo/exmo2010/view/task.py:449
 msgid "expert"
 msgstr "эксперт"
 
-#: exmo/exmo2010/forms.py:146
+#: exmo/exmo2010/forms.py:139
 msgid "from date"
 msgstr "с"
 
-#: exmo/exmo2010/forms.py:147
+#: exmo/exmo2010/forms.py:140
 msgid "to date"
 msgstr "по"
 
-#: exmo/exmo2010/forms.py:152 exmo/exmo2010/models.py:56
+#: exmo/exmo2010/forms.py:145 exmo/exmo2010/models.py:56
 #: exmo/exmo2010/models.py:108 exmo/exmo2010/models.py:225
 #: exmo/exmo2010/view/monitoring.py:52 exmo/exmo2010/view/task.py:274
 #: exmo/exmo2010/view/task.py:282 exmo/exmo2010/view/task.py:450
@@ -83,51 +71,51 @@ msgstr "по"
 msgid "status"
 msgstr "статус"
 
-#: exmo/exmo2010/forms.py:219
+#: exmo/exmo2010/forms.py:212
 msgid ""
 "Monitoring interact start date is missing. Check your monitoring calendar"
 msgstr ""
 "Не указана дата начала периода взаимодействия. Проверьте календарь "
 "мониторинга"
 
-#: exmo/exmo2010/forms.py:222
+#: exmo/exmo2010/forms.py:215
 msgid "time limit (in days)"
 msgstr "Сроки (в днях)"
 
-#: exmo/exmo2010/helpers.py:34
+#: exmo/exmo2010/helpers.py:35
 #, python-format
 msgid "Changed %s."
 msgstr ""
 
-#: exmo/exmo2010/helpers.py:34 exmo/exmo2010/helpers.py:44
+#: exmo/exmo2010/helpers.py:35 exmo/exmo2010/helpers.py:45
 msgid "and"
 msgstr "и"
 
-#: exmo/exmo2010/helpers.py:39
+#: exmo/exmo2010/helpers.py:40
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
 msgstr ""
 
-#: exmo/exmo2010/helpers.py:43
+#: exmo/exmo2010/helpers.py:44
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
 msgstr ""
 
-#: exmo/exmo2010/helpers.py:48
+#: exmo/exmo2010/helpers.py:49
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
 msgstr ""
 
-#: exmo/exmo2010/helpers.py:52
+#: exmo/exmo2010/helpers.py:53
 msgid "No fields changed."
 msgstr ""
 
-#: exmo/exmo2010/helpers.py:148
+#: exmo/exmo2010/helpers.py:151
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
 
-#: exmo/exmo2010/helpers.py:226
+#: exmo/exmo2010/helpers.py:229
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
@@ -370,6 +358,22 @@ msgstr "претензия для %(score)s от %(creator)s"
 #: exmo/exmo2010/models.py:539
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
+
+#: exmo/exmo2010/models.py:540
+msgid "notify score change"
+msgstr "Присылать уведомления об изменении оценок"
+
+#: exmo/exmo2010/models.py:541
+msgid "notify on self comment"
+msgstr "Уведомлять о своих комментариях"
+
+#: exmo/exmo2010/models.py:542
+msgid "notify on comment, except self"
+msgstr "Уведомлять о комментариях, за исключением своих"
+
+#: exmo/exmo2010/models.py:608
+msgid "user profile"
+msgstr "Профиль пользователя"
 
 #: exmo/exmo2010/view/claim.py:38
 #, python-format
@@ -734,7 +738,7 @@ msgstr "Задачи для %(monitoring)s"
 msgid "Mass assign tasks"
 msgstr "Массовое назначение задач"
 
-#: exmo/exmo2010/view/user.py:49
+#: exmo/exmo2010/view/user.py:47
 #, python-format
 msgid "The %(verbose_name)s was updated successfully."
 msgstr "%(verbose_name)s успешно обновлено."

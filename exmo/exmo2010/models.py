@@ -604,5 +604,8 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return "%s" % self.user
 
+    class Meta:
+        verbose_name = _('user profile')
+
 User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
