@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.forms import UserForm
+from exmo.exmo2010.forms import UserForm, UserProfileForm
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -38,22 +38,22 @@ def user_profile(request, id=None):
     if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
     if request.method == 'POST':
-        form = UserForm(request.POST, instance = _user)
-        if form.is_valid():
-            user = form.save()
-            profile = user.profile
-            if profile.is_organization:
-                profile.notify_score_change = form.cleaned_data['notify_score_change']
-                profile.save()
+        uform = UserForm(request.POST, instance = _user)
+        pform = UserProfileForm(request.POST, instance = _user.profile)
+        if uform.is_valid() and pform.is_valid():
+            user = uform.save()
+            profile = pform.save()
             redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk])
             messages.append(_("The %(verbose_name)s was updated successfully.") %\
                                     {"verbose_name": user._meta.verbose_name})
     else:
-        form = UserForm(instance = _user)
+        uform = UserForm(instance = _user)
+        pform = UserProfileForm(instance = _user.profile)
     return render_to_response(
         'exmo2010/user_form.html',
         {
-            'form': form,
+            'uform': uform,
+            'pform': pform,
             'object': _user,
             'messages': messages,
         },
