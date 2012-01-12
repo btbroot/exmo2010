@@ -90,7 +90,7 @@ def comment_notification(sender, **kwargs):
     superusers=User.objects.filter(is_superuser = True, is_active = True)
     if superusers: admin_users.extend(superusers)
     #B-expert
-    if score.task.user.is_active: admin_users.extend(score.task.user)
+    if score.task.user.is_active: admin_users.extend([score.task.user,])
     for user.is_active in admin_users:
         if user.email:
             if user == comment.user:
