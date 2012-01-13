@@ -73,7 +73,8 @@ def comment_notification(sender, **kwargs):
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.code,
             }
-    admin_rcpt = nonadmin_rcpt = []
+    admin_rcpt = []
+    nonadmin_rcpt = []
 
     headers = {
         'X-iifd-exmo': 'comment_notification',
