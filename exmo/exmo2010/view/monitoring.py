@@ -39,6 +39,8 @@ from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo.exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from reversion import revision
+from exmo.helpers import UnicodeReader, UnicodeWriter
+import csv
 
 def monitoring_list(request):
     monitorings_pk = []
@@ -203,16 +205,8 @@ import tempfile
 import copy
 import zipfile
 import os
-import csv
-from cStringIO import StringIO
 @login_required
 def monitoring_by_criteria_mass_export(request, id):
-
-    def safeConvert(string):
-      if string:
-        return string.encode("utf-8")
-      else:
-        return ''
 
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
@@ -232,7 +226,7 @@ def monitoring_by_criteria_mass_export(request, id):
     for criteria in row_template.keys():
       spool[criteria] = tempfile.mkstemp()
       handle[criteria] = os.fdopen(spool[criteria][0], 'w')
-      writer[criteria] = csv.writer(handle[criteria])
+      writer[criteria] = UnicodeWriter(handle[criteria])
     header_row = True
     parameters = Parameter.objects.filter(monitoring = monitoring)
     for task in Task.approved_tasks.filter(organization__monitoring = monitoring):
@@ -244,7 +238,7 @@ def monitoring_by_criteria_mass_export(request, id):
         header_row = False
         row = copy.deepcopy(row_template)
       for criteria in row.keys():
-        row[criteria] = [safeConvert(task.organization.name)]
+        row[criteria] = [task.organization.name]
       for parameter in parameters:
         try:
           score = Score.objects.filter(task = task).filter(parameter = parameter)[0]
@@ -470,23 +464,16 @@ def monitoring_parameter_found_report(request, id):
 
 
 
-import csv
 @login_required
 def monitoring_parameter_export(request, id):
-
-    def safeConvert(string):
-      if string:
-        return string.encode("utf-8")
-      else:
-        return ''
-
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = monitoring)
-    response = HttpResponse(mimetype = 'text/csv')
+    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % id
-    writer = csv.writer(response)
+    response.encoding = 'UTF-16'
+    writer = UnicodeWriter(response)
     writer.writerow([
         '#Code',
         'Name',
@@ -503,18 +490,18 @@ def monitoring_parameter_export(request, id):
     for p in parameters:
         out = (
             p.code,
-            p.name.encode("utf-8"),
-            safeConvert(p.description),
-            int(p.complete),
-            int(p.topical),
-            int(p.accessible),
-            int(p.hypertext),
-            int(p.document),
-            int(p.image),
+            p.name,
+            p.description,
+            p.complete,
+            p.topical,
+            p.accessible,
+            p.hypertext,
+            p.document,
+            p.image,
             p.weight
         )
         keywords = ", ".join([k.name for k in p.tags])
-        out += (safeConvert(keywords),)
+        out += (keywords,)
         writer.writerow(out)
     return response
 
@@ -522,20 +509,14 @@ def monitoring_parameter_export(request, id):
 
 @login_required
 def monitoring_organization_export(request, id):
-
-    def safeConvert(string):
-      if string:
-        return string.encode("utf-8")
-      else:
-        return ''
-
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring = monitoring)
-    response = HttpResponse(mimetype = 'text/csv')
+    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
-    writer = csv.writer(response)
+    response.encoding = 'UTF-16'
+    writer = UnicodeWriter(response)
     writer.writerow([
         '#Name',
         'Url',
@@ -544,12 +525,12 @@ def monitoring_organization_export(request, id):
     ])
     for o in organizations:
         out = (
-            o.name.encode("utf-8"),
-            o.url.encode("utf-8"),
-            safeConvert(o.comments),
+            o.name,
+            o.url,
+            o.comments,
         )
         keywords = ", ".join([k.name for k in o.tags])
-        out += (safeConvert(keywords),)
+        out += (keywords,)
         writer.writerow(out)
     return response
 
@@ -564,7 +545,7 @@ def monitoring_organization_import(request, id):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('orgfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
-    reader = csv.reader(request.FILES['orgfile'])
+    reader = UnicodeReader(request.FILES['orgfile'])
     errLog = []
     rowOKCount = 0
     rowALLCount = 0
@@ -581,7 +562,7 @@ def monitoring_organization_import(request, id):
                 errLog.append("row %d (csv). Empty organization url" % reader.line_num)
                 continue
             try:
-                name = str(row[0]).strip().decode('utf-8')
+                name = row[0]
                 organization = Organization.objects.get(monitoring = monitoring, name = name)
             except Organization.DoesNotExist:
                 organization = Organization()
@@ -591,9 +572,9 @@ def monitoring_organization_import(request, id):
                 continue
             try:
                 organization.name = name
-                organization.url = str(row[1]).strip()
-                organization.comments = str(row[2]).strip().decode('utf-8')
-                organization.keywords = str(row[3]).strip().decode('utf-8')
+                organization.url = row[1]
+                organization.comments = row[2]
+                organization.keywords = row[3]
                 organization.full_clean()
                 organization.save()
             except ValidationError, e:
@@ -627,7 +608,7 @@ def monitoring_parameter_import(request, id):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('paramfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
-    reader = csv.reader(request.FILES['paramfile'])
+    reader = UnicodeReader(request.FILES['paramfile'])
     errLog = []
     rowOKCount = 0
     rowALLCount = 0
@@ -644,8 +625,8 @@ def monitoring_parameter_import(request, id):
                 errLog.append("row %d (csv). Empty name" % reader.line_num)
                 continue
             try:
-                code = int(row[0])
-                name = str(row[1]).strip().decode('utf-8')
+                code = row[0]
+                name = row[1]
                 parameter = Parameter.objects.get(monitoring = monitoring, code = code, name = name)
             except Parameter.DoesNotExist:
                 parameter = Parameter()
@@ -656,15 +637,15 @@ def monitoring_parameter_import(request, id):
                 parameter.monitoring = monitoring
                 parameter.code = code
                 parameter.name = name
-                parameter.description = str(row[2]).strip().decode('utf-8')
-                parameter.complete = bool(int(row[3]))
-                parameter.topical = bool(int(row[4]))
-                parameter.accessible = bool(int(row[5]))
-                parameter.hypertext = bool(int(row[6]))
-                parameter.document = bool(int(row[7]))
-                parameter.image = bool(int(row[8]))
-                parameter.weight = int(row[9])
-                parameter.keywords = str(row[10]).strip().decode('utf-8')
+                parameter.description = row[2]
+                parameter.complete = bool(row[3])
+                parameter.topical = bool(row[4])
+                parameter.accessible = bool(row[5])
+                parameter.hypertext = bool(row[6])
+                parameter.document = bool(row[7])
+                parameter.image = bool(row[8])
+                parameter.weight = row[9]
+                parameter.keywords = row[10]
                 parameter.full_clean()
                 parameter.save()
             except ValidationError, e:
