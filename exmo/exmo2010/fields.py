@@ -18,3 +18,11 @@ class TagField(TagField_orig):
 
     def get_internal_type(self):
         return 'TextField'
+
+
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^exmo\.exmo2010\.fields\.TagField"])
+except ImportError:
+    pass

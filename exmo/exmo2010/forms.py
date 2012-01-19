@@ -23,6 +23,7 @@ from exmo.exmo2010.models import Claim
 from exmo.exmo2010.models import Monitoring
 from exmo.exmo2010.models import MonitoringStatus
 from exmo.exmo2010.models import Organization
+from exmo.exmo2010.models import UserProfile
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
@@ -90,6 +91,10 @@ class ScoreForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['user'].queryset = User.objects.filter(groups__name__in = UserProfile.expert_groups, is_active = True)
+
     def clean_user(self):
         user = self.cleaned_data['user']
         user_obj=User.objects.filter(username=user, is_active=True)
@@ -103,21 +108,16 @@ class TaskForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
-    notify_score_change = forms.BooleanField(required = False, label=_('notify score change'))
-
     class Meta:
         model = User
-        exclude = (
-            'username',
-            'password',
-            'groups',
-            'user_permissions',
-            'is_staff',
-            'is_active',
-            'is_superuser',
-            'last_login',
-            'date_joined'
-        )
+        fields = ["first_name", "last_name", "email"]
+
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        exclude = ["user", "organization"]
 
 
 
@@ -181,6 +181,11 @@ class ParameterForm(forms.ModelForm):
             'keywords': TagAutocomplete,
             'exclude': widgets.FilteredSelectMultiple('',is_stacked=False),
             'monitoring': forms.widgets.HiddenInput,
+        }
+
+    class Media:
+        css = {
+            "all": ("exmo2010/selector.css",)
         }
 
 

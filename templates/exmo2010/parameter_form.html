@@ -18,13 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n adminmedia %}
 {% block extrahead %}{{ block.super }}
 {% url django.views.i18n.javascript_catalog as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
-{{ form.media }}
+{{ media }}
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -41,7 +43,7 @@
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
 <table>
 {{ form.as_table }}
-<tr><td><input type="submit" /><input class="button" type="reset" /></td></tr>
 </table>
+<input type="submit" /><input class="button" type="reset" />
 </form>
 {% endblock %}

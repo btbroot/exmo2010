@@ -20,10 +20,9 @@
 {% load i18n check_object_permission %}
 {% if monitoring %}
 <div id="utility">
-
   <a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations' %}</a> /
   <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}">{% trans 'Tasks' %}</a> /
-{% if user.is_expert or user.is_superuser %}
+{% if user.userprofile.is_expert or user.is_superuser %}
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_comment_report monitoring.pk %}">{% trans 'Comment report' %}</a> /
   <a href="{% url exmo.exmo2010.view.monitoring.monitoring_rating_multiple %}">{% trans 'Common rating' %}</a> /

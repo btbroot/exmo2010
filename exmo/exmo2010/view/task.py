@@ -37,27 +37,23 @@ from django.views.decorators.cache import cache_page
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from reversion import revision
-
-
-
 import csv
+
+
+
 @login_required
 def task_export(request, id):
-
-    def safeConvert(string):
-      if string:
-        return string.encode("utf-8")
-      else:
-        return ''
+    from exmo.helpers import UnicodeWriter
 
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization)
     scores     = Score.objects.filter(task = id)
-    response = HttpResponse(mimetype = 'text/csv')
+    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
-    writer = csv.writer(response)
+    response.encoding = 'UTF-16'
+    writer = UnicodeWriter(response)
     writer.writerow([
         '#Code',
         'Name',
@@ -81,7 +77,7 @@ def task_export(request, id):
     for p in parameters:
         out = (
             p.code,
-            p.name.encode("utf-8"),
+            p.name,
         )
         try:
             s = scores.get(parameter = p)
@@ -107,40 +103,46 @@ def task_export(request, id):
             if p.complete:
                 out += (
                     s.complete,
-                    safeConvert(s.completeComment))
+                    s.completeComment
+                    )
             else:
                 out += ('','')
             if p.topical:
                 out += (
                     s.topical,
-                    safeConvert(s.topicalComment))
+                    s.topicalComment
+                    )
             else:
                 out += ('','')
             if p.accessible:
                 out += (
                     s.accessible,
-                    safeConvert(s.accessibleComment))
+                    s.accessibleComment
+                    )
             else:
                 out += ('','')
             if p.hypertext:
                 out += (
                     s.hypertext,
-                    safeConvert(s.hypertextComment))
+                    s.hypertextComment
+                    )
             else:
                 out += ('','')
             if p.document:
                 out += (
                     s.document,
-                    safeConvert(s.documentComment))
+                    s.documentComment
+                    )
             else:
                 out += ('','')
             if p.image:
                 out += (
-                s.image,
-                safeConvert(s.imageComment))
+                    s.image,
+                    s.imageComment
+                    )
             else:
                 out += ('','')
-            out += (safeConvert(s.comment),)
+            out += (s.comment,)
         writer.writerow(out)
     return response
 
@@ -150,19 +152,14 @@ import re
 @revision.create_on_success
 @login_required
 def task_import(request, id):
-
-    def safeConvert(string, toType):
-        if string:
-            return toType(string)
-        else:
-            return None
+    from exmo.helpers import UnicodeReader
 
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.fill_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_list_by_task', args=[id]))
-    reader = csv.reader(request.FILES['taskfile'])
+    reader = UnicodeReader(request.FILES['taskfile'])
     errLog = []
     rowOKCount = 0
     rowALLCount = 0
@@ -170,12 +167,12 @@ def task_import(request, id):
         for row in reader:
             rowALLCount += 1
             if row[0].startswith('#'):
-                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                errLog.append(_("row %d. Starts with '#'. Skipped") % reader.line_num)
                 continue
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                  errLog.append("row %d (csv). Not a code: %s" % (reader.line_num, row[0]))
+                  errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
                   continue
                 if (
                     row[2]  == '' and
@@ -193,7 +190,7 @@ def task_import(request, id):
                     row[14] == '' and
                     row[15] == ''
                   ):
-                    errLog.append("row %d (csv). Empty score: %s" % (reader.line_num, row[0]))
+                    errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
                     continue
                 parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
                 try:
@@ -202,32 +199,38 @@ def task_import(request, id):
                     score = Score()
                 score.task              = task
                 score.parameter         = parameter
-                score.found             = safeConvert(row[2], int)
-                score.complete          = safeConvert(row[3], int)
-                score.completeComment   = safeConvert(row[4], str)
-                score.topical           = safeConvert(row[5], int)
-                score.topicalComment    = safeConvert(row[6], str)
-                score.accessible        = safeConvert(row[7], int)
-                score.accessibleComment = safeConvert(row[8], str)
-                score.hypertext         = safeConvert(row[9], int)
-                score.hypertextComment  = safeConvert(row[10], str)
-                score.document          = safeConvert(row[11], int)
-                score.documentComment   = safeConvert(row[12], str)
-                score.image             = safeConvert(row[13], int)
-                score.imageComment      = safeConvert(row[14], str)
-                score.comment           = safeConvert(row[15], str)
+                score.found             = row[2]
+                score.complete          = row[3]
+                score.completeComment   = row[4]
+                score.topical           = row[5]
+                score.topicalComment    = row[6]
+                score.accessible        = row[7]
+                score.accessibleComment = row[8]
+                score.hypertext         = row[9]
+                score.hypertextComment  = row[10]
+                score.document          = row[11]
+                score.documentComment   = row[12]
+                score.image             = row[13]
+                score.imageComment      = row[14]
+                score.comment           = row[15]
                 score.full_clean()
                 score.save()
             except ValidationError, e:
-                errLog.append("row %d (validation). %s" % (
-                    reader.line_num,
-                    '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
+                errLog.append(_("row %(row)d (validation). %(raw)s") % {
+                    'row': reader.line_num,
+                    'raw': '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])})
+            except Parameter.DoesNotExist:
+                errLog.append(_("row %(row)d. %(raw)s") % {
+                    'row':reader.line_num,
+                    'raw': _('Parameter matching query does not exist')})
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errLog.append(_("row %(row)d. %(raw)s") % {
+                    'row':reader.line_num,
+                    'raw': e})
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append("row %d (csv). %s" % (reader.line_num, e))
+           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
     title = _('Import CSV for task %s') % task
     return render_to_response('exmo2010/task_import_log.html', {
       'task': task,
@@ -266,7 +269,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
@@ -274,7 +277,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None)
               )
     else:
@@ -282,7 +285,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       queryset = queryset.filter(organization = organization)
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None)
               )
     task_list = []
@@ -431,7 +434,7 @@ def tasks_by_monitoring(request, id):
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %(monitoring)s') %  { 'monitoring': monitoring}
     task_list = []
-    queryset = Task.objects.filter(organization__monitoring = monitoring)
+    queryset = Task.objects.filter(organization__monitoring = monitoring).select_related()
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
     if not task_list and not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
@@ -442,18 +445,18 @@ def tasks_by_monitoring(request, id):
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('expert'), 'user__username', 'user__username', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
     elif profile and profile.is_expert:
         headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
                 (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
     else:
         headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), 'complete', None, None, None),
+                (_('complete, %'), None, None, None, None),
               )
 
     return table(
@@ -473,7 +476,7 @@ def tasks_by_monitoring(request, id):
 @login_required
 def task_mass_assign_tasks(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
-  if not request.user.has_perm('exmo2010.admin_monitoring'):
+  if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
     return HttpResponseForbidden(_('Forbidden'))
   organizations = Organization.objects.filter(monitoring = monitoring)
   groups = []

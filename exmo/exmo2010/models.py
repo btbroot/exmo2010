@@ -88,6 +88,9 @@ class Monitoring(models.Model):
   def _get_planned(self):
     return self.status == self.MONITORING_PLANNED
 
+  def _get_active(self):
+    return not (self.is_prepare or self.is_planned)
+
   is_prepare = property(_get_prepare)
   is_rate = property(_get_rate)
   is_revision = property(_get_revision)
@@ -95,6 +98,10 @@ class Monitoring(models.Model):
   is_result = property(_get_result)
   is_publish = property(_get_publish)
   is_planned = property(_get_planned)
+
+  is_active = property(_get_active)
+
+
 
 class MonitoringStatus(models.Model):
     monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
@@ -265,7 +272,8 @@ class Task(models.Model):
         if self.complete != 100:
             raise ValidationError(_('Ready task must be 100 percent complete.'))
     if self.approved:
-        if Task.approved_tasks.filter(organization = self.organization).count() != 0:
+        if Task.approved_tasks.filter(organization = self.organization).count() != 0 and \
+          self not in Task.approved_tasks.filter(organization = self.organization):
             raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
                     'monitoring': self.organization.monitoring,
                     'organization': self.organization,
@@ -530,13 +538,15 @@ class UserProfile(models.Model):
 
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
     notify_score_change = models.BooleanField(blank = True, default = False, verbose_name=_('notify score change'))
+    notify_self_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on self comment'))
+    notify_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on comment, except self'))
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB()
 
     def _is_expertB(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsB')
+            group, created = Group.objects.get_or_create(name=self.expertB_group)
         except:
             return False
         else:
@@ -544,7 +554,7 @@ class UserProfile(models.Model):
 
     def _is_expertA(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsA')
+            group, created = Group.objects.get_or_create(name=self.expertA_group)
         except:
             return False
         else:
@@ -552,7 +562,7 @@ class UserProfile(models.Model):
 
     def _is_manager_expertB(self):
         try:
-            group, created = Group.objects.get_or_create(name='expertsB_manager')
+            group, created = Group.objects.get_or_create(name=self.expertB_manager_group)
         except:
             return False
         else:
@@ -560,7 +570,7 @@ class UserProfile(models.Model):
 
     def _is_customer(self):
         try:
-            group, created = Group.objects.get_or_create(name='customers')
+            group, created = Group.objects.get_or_create(name=self.customer_group)
         except:
             return False
         else:
@@ -568,7 +578,7 @@ class UserProfile(models.Model):
 
     def _is_organization(self):
         try:
-            group, creater = Group.objects.get_or_create(name='organizations')
+            group, creater = Group.objects.get_or_create(name=self.organization_group)
         except:
             return False
         else:
@@ -583,8 +593,19 @@ class UserProfile(models.Model):
     is_customer = property(_is_customer)
     is_organization = property(_is_organization)
 
+    expertA_group = 'expertsA'
+    expertB_group = 'expertsB'
+    expertB_manager_group = 'expertsB_manager'
+    organization_group = 'organizations'
+    customer_group = 'customers'
+
+    expert_groups = [expertA_group, expertB_group, expertB_manager_group]
+
     def __unicode__(self):
         return "%s" % self.user
+
+    class Meta:
+        verbose_name = _('user profile')
 
 User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

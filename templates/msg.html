@@ -18,17 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
-
-<p>{{ form.non_field_errors }}</p>
-
+{% load i18n %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
+{{ title }}
+</div>
+{% endblock %}
 {% block content %}
-<form method="post" action="{% url exmo.exmo2010.view.user.user_profile object.pk%}">{% csrf_token %}
-<table>
-{{uform.as_table}}
-{{pform.as_table}}
-</table>
-<p><input type="submit" /><input class="button" type="reset" /></p>
-</form>
+{% if msg %}
+{{ msg }}
+{% endif %}
 {% endblock %}

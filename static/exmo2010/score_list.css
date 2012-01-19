@@ -18,7 +18,7 @@
 #
 */
 .score-ok-nonzero{
-	background:green;
+	background: #00B050;
 	text-align: center;
         }
 
@@ -33,12 +33,12 @@
         }
 
 .score-ok-val3{
-	background:green;
+	background: #00B050;
 	text-align: center;
         }
 
 .score-ok-zero{
-	background:red;
+	background: #ff0000;
 	text-align: center;
         }
 

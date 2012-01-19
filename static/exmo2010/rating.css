@@ -1,5 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
-{% comment %}
+/*
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 Institute for Information Freedom Development
@@ -17,18 +16,35 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
-{% load i18n adminmedia %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/forms.css" />{% endblock %}
+*/
 
-<p>{{ form.non_field_errors }}</p>
+/* red */
+.group4{
+	background: #FF6262;
+        }
 
-{% block content %}
-<form method="post" action="{% url exmo.exmo2010.view.user.user_profile object.pk%}">{% csrf_token %}
-<table>
-{{uform.as_table}}
-{{pform.as_table}}
-</table>
-<p><input type="submit" /><input class="button" type="reset" /></p>
-</form>
-{% endblock %}
+.group3{
+	background: #FFB76F;
+        }
+
+/* yellow */
+.group2{
+	background: #FFFF77;
+        }
+
+/* green */
+.group1{
+	background: #54A754;
+        }
+a:link, a:visited {
+        color: #333333;
+}
+
+td, th .rating_color{
+        border-bottom: None;
+}
+
+.rating-top-border {
+        border-top: solid;
+        border-color: #5B80B2;
+}
