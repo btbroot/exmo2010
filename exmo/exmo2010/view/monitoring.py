@@ -205,6 +205,7 @@ import tempfile
 import copy
 import zipfile
 import os
+from cStringIO import StringIO
 @login_required
 def monitoring_by_criteria_mass_export(request, id):
 
