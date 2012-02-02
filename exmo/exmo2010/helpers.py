@@ -172,7 +172,7 @@ def claim_notification(sender, **kwargs):
         rcpt.append(score.task.user.email)
     rcpt=list(set(rcpt))
     if rcpt:
-        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt], [], headers = headers)
+        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt, [], headers = headers)
         email.send()
 
 
