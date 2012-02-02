@@ -24,7 +24,7 @@ from django.contrib.auth.admin import UserAdmin
 UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
 class ParameterAdmin(VersionAdmin):
-    search_fields = ('name', )
+    list_display = search_fields = ('code','name',)
     list_filter = ('monitoring',)
     formfield_overrides = {
         models.ManyToManyField: {
@@ -45,11 +45,11 @@ class TaskAdmin(VersionAdmin):
 class ScoreAdmin(VersionAdmin):
     pass
 
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganizationAdmin(VersionAdmin):
   list_display = ('pk', 'name')
   search_fields = ('name', )
 
-class MonitoringAdmin(admin.ModelAdmin):
+class MonitoringAdmin(VersionAdmin):
   list_display = ('name',)
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -89,7 +89,7 @@ class UserProfileInline(admin.StackedInline):
 
 
 from django.contrib.auth.admin import UserAdmin
-class UserAdmin(UserAdmin):
+class UserAdmin(VersionAdmin):
     inlines = [UserProfileInline,]
 
 
