@@ -493,12 +493,12 @@ def monitoring_parameter_export(request, id):
             p.code,
             p.name,
             p.description,
-            p.complete,
-            p.topical,
-            p.accessible,
-            p.hypertext,
-            p.document,
-            p.image,
+            int(p.complete),
+            int(p.topical),
+            int(p.accessible),
+            int(p.hypertext),
+            int(p.document),
+            int(p.image),
             p.weight
         )
         keywords = ", ".join([k.name for k in p.tags])
@@ -639,12 +639,12 @@ def monitoring_parameter_import(request, id):
                 parameter.code = code
                 parameter.name = name
                 parameter.description = row[2]
-                parameter.complete = bool(row[3])
-                parameter.topical = bool(row[4])
-                parameter.accessible = bool(row[5])
-                parameter.hypertext = bool(row[6])
-                parameter.document = bool(row[7])
-                parameter.image = bool(row[8])
+                parameter.complete = bool(int(row[3]))
+                parameter.topical = bool(int(row[4]))
+                parameter.accessible = bool(int(row[5]))
+                parameter.hypertext = bool(int(row[6]))
+                parameter.document = bool(int(row[7]))
+                parameter.image = bool(int(row[8]))
                 parameter.weight = row[9]
                 parameter.keywords = row[10]
                 parameter.full_clean()
