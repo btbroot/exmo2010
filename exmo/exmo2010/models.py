@@ -157,7 +157,8 @@ class Organization(models.Model):
 
 class Parameter(models.Model):
   code               = models.PositiveIntegerField(verbose_name=_('code'))
-  name               = models.CharField(max_length = 255, verbose_name=_('name'))
+  #db_index=False -- MySQL get error: "Specified key was too long; max key length is 1000 bytes" for long varchar field
+  name               = models.CharField(max_length = 1000, verbose_name=_('name'), db_index=False)
   description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
   monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
