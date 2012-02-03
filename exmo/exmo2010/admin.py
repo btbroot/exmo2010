@@ -89,7 +89,7 @@ class UserProfileInline(admin.StackedInline):
 
 
 from django.contrib.auth.admin import UserAdmin
-class UserAdmin(VersionAdmin):
+class UserAdmin(UserAdmin):
     inlines = [UserProfileInline,]
 
 
