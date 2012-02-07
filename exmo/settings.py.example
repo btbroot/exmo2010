@@ -1,6 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -93,7 +93,7 @@ SECRET_KEY = 'zou(k9*+vc69ji$xlpy+e-poi1s6_*q3#0+)=(pgv(wxb&94dd'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
+    'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.load_template_source',
     'django.template.loaders.eggs.load_template_source',
 )

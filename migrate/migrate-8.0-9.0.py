@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -158,13 +158,14 @@ for obj in old_data:
                         param_w = obj_param_w['fields']['weight']
                         break
                 #get code. code = 10000*category.code+100*subcat.code+param.code
-                code = obj_param['fields']['code']
+                code_raw = obj_param['fields']['code']
                 #get subcat code
                 cat_code = subcat_code = 1
                 for obj_param_subcat in old_data:
                     if obj_param_subcat['model'] == 'exmo2010.subcategory' and \
                       obj_param_subcat['pk'] == obj_param['fields']['group']:
                         subcat_code = obj_param_subcat['fields']['code']
+                        subcat_name = obj_param_subcat['fields']['name']
                         #get cat code
                         for obj_param_cat in old_data:
                             if obj_param_cat['model'] == 'exmo2010.category' and \
@@ -172,11 +173,18 @@ for obj in old_data:
                                 cat_code = obj_param_cat['fields']['code']
                                 break
                         break
-                code = code + (cat_code * 10000) + (subcat_code * 100)
+                code = code_raw + (cat_code * 10000) + (subcat_code * 100)
+                name = obj_param['fields']['name']
+                #check parameters with same name in same monitoring
+                if em.Parameter.objects.filter(name = name, monitoring = task.organization.monitoring).exclude(code = code).count() > 0:
+                    #append subcat_name to parameter name
+                    print "WARNING! Add subcat name for", name, "new code is", code
+                    name = "%(parameter)s (%(subcat)s)" % {'parameter': name, 'subcat': subcat_name}
+
                 #create parameter
                 parameter, created = em.Parameter.objects.get_or_create(
                     code = code,
-                    name = obj_param['fields']['name'],
+                    name = name,
                     description = obj_param['fields']['description'],
                     monitoring = task.organization.monitoring,
                     weight = param_w,

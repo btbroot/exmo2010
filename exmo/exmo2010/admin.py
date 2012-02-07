@@ -1,6 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@ from django.contrib.auth.admin import UserAdmin
 UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
 class ParameterAdmin(VersionAdmin):
-    search_fields = ('name', )
+    list_display = search_fields = ('code','name',)
     list_filter = ('monitoring',)
     formfield_overrides = {
         models.ManyToManyField: {
@@ -45,11 +45,11 @@ class TaskAdmin(VersionAdmin):
 class ScoreAdmin(VersionAdmin):
     pass
 
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganizationAdmin(VersionAdmin):
   list_display = ('pk', 'name')
   search_fields = ('name', )
 
-class MonitoringAdmin(admin.ModelAdmin):
+class MonitoringAdmin(VersionAdmin):
   list_display = ('name',)
 
 class UserProfileAdmin(admin.ModelAdmin):

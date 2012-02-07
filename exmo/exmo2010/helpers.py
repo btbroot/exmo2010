@@ -1,6 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -172,7 +172,7 @@ def claim_notification(sender, **kwargs):
         rcpt.append(score.task.user.email)
     rcpt=list(set(rcpt))
     if rcpt:
-        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt], [], headers = headers)
+        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt, [], headers = headers)
         email.send()
 
 

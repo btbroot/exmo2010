@@ -1,6 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -68,6 +68,7 @@ def task_permission(user, priv, task):
         if task.ready and task.user == user and task.organization.monitoring.is_rate: return True
     elif priv == 'exmo2010.fill_task': #create_score
         if task.open and task.user == user and task.organization.monitoring.is_rate: return True
+        if task.user == user and task.organization.monitoring.is_interact: return True
     elif priv == 'exmo2010.comment_score':
         if user.is_active and task.organization.monitoring.is_interact:
             profile = user.profile

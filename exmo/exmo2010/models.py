@@ -1,6 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -157,7 +157,8 @@ class Organization(models.Model):
 
 class Parameter(models.Model):
   code               = models.PositiveIntegerField(verbose_name=_('code'))
-  name               = models.CharField(max_length = 255, verbose_name=_('name'))
+  #db_index=False -- MySQL get error: "Specified key was too long; max key length is 1000 bytes" for long varchar field
+  name               = models.CharField(max_length = 1000, verbose_name=_('name'), db_index=False)
   description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
   monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
   exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
@@ -170,8 +171,9 @@ class Parameter(models.Model):
   document           = models.BooleanField(default = True, verbose_name=_('document'))
   image              = models.BooleanField(default = True, verbose_name=_('image'))
 
-  def __unicode__(self):
-    return '%s' % (self.name)
+#I dont know why, but this breaks reversion-(
+#  def __unicode__(self):
+#    return "%s" % self.name
 
   def _get_tags(self):
     return Tag.objects.get_for_object(self)
