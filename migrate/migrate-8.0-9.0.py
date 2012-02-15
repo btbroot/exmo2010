@@ -139,6 +139,7 @@ print "Migrate Score and Parameter models"
 #migrate scores and parameters on fly... Parameter exclude and keywords must be filled later (because m2m).
 for obj in old_data:
     if obj['model'] == 'exmo2010.score':
+        parameter = None
         task = em.Task.objects.get(pk=obj['fields']['task'])
         #get parameter
         for obj_param in old_data:
@@ -203,7 +204,8 @@ for obj in old_data:
                 )
                 break
         #create score with created parameter
-        em.Score.objects.get_or_create(
+        if parameter:
+          em.Score.objects.get_or_create(
             pk = obj['pk'],
             task = task,
             parameter = parameter,
@@ -221,7 +223,7 @@ for obj in old_data:
             image = obj['fields']['image'],
             imageComment = obj['fields']['imageComment'],
             comment = obj['fields']['comment'],
-        )
+          )
 print "Done"
 
 print "Add keywords to parameters"
