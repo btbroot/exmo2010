@@ -206,3 +206,5 @@ CACHES = {
         'TIMEOUT': CACHE_TIMEOUT,
     }
 }
+
+DATETIME_FORMAT = "Y-m-d, H:i"
