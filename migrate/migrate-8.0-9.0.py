@@ -149,14 +149,20 @@ for obj in old_data:
                     if obj_param_type['model'] == 'exmo2010.parametertype' and obj_param_type['pk'] == obj_param['fields']['type']:
                         param_type = obj_param_type
                         break
+
                 #get parameter weight
-                param_w = 0
+                param_w = None
                 for obj_param_w in old_data:
                     if obj_param_w['model'] == 'exmo2010.parametermonitoringproperty' and \
                       obj_param_w['fields']['parameter'] == obj_param['pk'] and \
                       obj_param_w['fields']['monitoring'] == task.organization.monitoring.pk:
                         param_w = obj_param_w['fields']['weight']
                         break
+
+                #check weight. if None so this parameter is not in our monitoring, but score exist. it's posible, but not migratetible
+                if param_w == None:
+                    break
+
                 #get code. code = 10000*category.code+100*subcat.code+param.code
                 code_raw = obj_param['fields']['code']
                 #get subcat code
