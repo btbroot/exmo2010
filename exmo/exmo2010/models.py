@@ -101,6 +101,9 @@ class Monitoring(models.Model):
 
   is_active = property(_get_active)
 
+  class Meta:
+    ordering = ('name',)
+
 
 
 class MonitoringStatus(models.Model):
