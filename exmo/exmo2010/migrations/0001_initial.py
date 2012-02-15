@@ -71,9 +71,6 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'Parameter', fields ['code', 'monitoring']
         db.create_unique('exmo2010_parameter', ['code', 'monitoring_id'])
 
-        # Adding unique constraint on 'Parameter', fields ['name', 'monitoring']
-        db.create_unique('exmo2010_parameter', ['name', 'monitoring_id'])
-
         # Adding M2M table for field exclude on 'Parameter'
         db.create_table('exmo2010_parameter_exclude', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
