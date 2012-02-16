@@ -175,8 +175,8 @@ class Parameter(models.Model):
   image              = models.BooleanField(default = True, verbose_name=_('image'))
 
 #I dont know why, but this breaks reversion-(
-#  def __unicode__(self):
-#    return "%s" % self.name
+  def __unicode__(self):
+    return "%s" % self.name
 
   def _get_tags(self):
     return Tag.objects.get_for_object(self)
