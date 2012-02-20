@@ -537,10 +537,15 @@ def monitoring_organization_export(request, id):
 
 
 
-@revision.create_on_success
 @login_required
 @csrf_protect
 def monitoring_organization_import(request, id):
+    from reversion import revision
+    must_register = False
+    if revision.is_registered(Organization):
+        revision.unregister(Organization)
+        must_register = True
+
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -589,6 +594,10 @@ def monitoring_organization_import(request, id):
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
     title = _('Import organization from CSV for monitoring %s') % monitoring
+
+    if must_register:
+        revision.register(Organization)
+
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
       'file': request.FILES['orgfile'],
@@ -600,10 +609,15 @@ def monitoring_organization_import(request, id):
 
 
 
-@revision.create_on_success
 @login_required
 @csrf_protect
 def monitoring_parameter_import(request, id):
+    from reversion import revision
+    must_register = False
+    if revision.is_registered(Parameter):
+        revision.unregister(Parameter)
+        must_register = True
+
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -660,6 +674,10 @@ def monitoring_parameter_import(request, id):
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
     title = _('Import parameter from CSV for monitoring %s') % monitoring
+
+    if must_register:
+        revision.register(Parameter)
+
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
       'file': request.FILES['paramfile'],
@@ -668,6 +686,8 @@ def monitoring_parameter_import(request, id):
       'rowALLCount': rowALLCount,
       'title': title
     }, context_instance=RequestContext(request))
+
+
 
 @login_required
 @csrf_protect
