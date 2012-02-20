@@ -139,8 +139,9 @@ class Organization(models.Model):
   comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
   monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
 
-  def __unicode__(self):
-    return '%s' % (self.name)
+#I dont know why, but this breaks reversion while import-(
+#  def __unicode__(self):
+#    return '%s' % (self.name)
 
   def _get_tags(self):
     return Tag.objects.get_for_object(self)
@@ -174,9 +175,9 @@ class Parameter(models.Model):
   document           = models.BooleanField(default = True, verbose_name=_('document'))
   image              = models.BooleanField(default = True, verbose_name=_('image'))
 
-#I dont know why, but this breaks reversion-(
-  def __unicode__(self):
-    return "%s" % self.name
+#I dont know why, but this breaks reversion while import-(
+#  def __unicode__(self):
+#    return "%s" % self.name
 
   def _get_tags(self):
     return Tag.objects.get_for_object(self)
