@@ -48,6 +48,7 @@ class ScoreAdmin(VersionAdmin):
 class OrganizationAdmin(VersionAdmin):
   list_display = ('pk', 'name')
   search_fields = ('name', )
+  list_filter = ('monitoring',)
 
 class MonitoringAdmin(VersionAdmin):
   list_display = ('name',)
