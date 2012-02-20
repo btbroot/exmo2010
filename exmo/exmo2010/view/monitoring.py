@@ -572,8 +572,8 @@ def monitoring_organization_import(request, id):
                 errLog.append("row %d. %s" % (reader.line_num, e))
                 continue
             try:
-                organization.name = name
-                organization.url = row[1]
+                organization.name = name.strip()
+                organization.url = row[1].strip()
                 organization.comments = row[2]
                 organization.keywords = row[3]
                 organization.full_clean()
