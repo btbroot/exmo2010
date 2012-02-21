@@ -44,6 +44,8 @@
       <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
         {% if perm %}
             &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>
+        {%endif%}
+        {% if perm and not monitoring.is_publish %}
             &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif" ></a>
         {%endif%}
       </td>

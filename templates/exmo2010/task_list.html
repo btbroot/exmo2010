@@ -52,6 +52,8 @@
         <a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {%if perm_admin %}
             &nbsp;<a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
+        {%endif%}
+        {% if perm_admin and not monitoring.is_publish %}
             <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>

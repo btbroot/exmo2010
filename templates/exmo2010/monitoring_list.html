@@ -39,7 +39,7 @@
             &nbsp;<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
         {% check_object_permission exmo2010.admin_monitoring object as perm %}
-        {% if perm %}
+        {% if perm and not object.is_publish %}
             &nbsp;<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif" ></a>&nbsp;
         {%endif%}
       </td>
