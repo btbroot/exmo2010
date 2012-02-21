@@ -57,7 +57,7 @@ def monitoring_list(request):
         request,
         headers,
         queryset = queryset,
-        paginate_by = 15,
+        paginate_by = 25,
         extra_context = {
             'title': _('Monitoring list'),
             'fakeobject': Monitoring(),
