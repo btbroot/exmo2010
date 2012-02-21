@@ -32,6 +32,12 @@
 {% endblock %}
 
 {% block content %}
+{% if deleted_objects %}
+{% trans 'When you delete parameter you also delete this scores:'%}<br>
+{% for do in deleted_objects %}
+<a href="{% url exmo.exmo2010.view.score.score_view do.pk %}">{{ do }}</a><br>
+{% endfor %}
+{% endif %}
 <form method="post" action="{% url exmo.exmo2010.view.parameter.parameter_manager task.pk,object.pk,'delete' %}">{% csrf_token %}
   <p>{% trans 'Delete this parameter?' %}</p>
   <p><input type="submit" /></p>

@@ -367,7 +367,18 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
     if method == 'delete':
       title = _('Delete task %s') % task
       if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return delete_object(request, model = Task, object_id = id, post_delete_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+        return delete_object(
+            request,
+            model = Task,
+            object_id = id,
+            post_delete_redirect = redirect,
+            extra_context = {
+                'monitoring': monitoring,
+                'organization': organization,
+                'title': title,
+                'deleted_objects': Score.objects.filter(task = task),
+                }
+            )
       else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
       title = _('Close task %s') % task
