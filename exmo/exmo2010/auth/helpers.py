@@ -20,15 +20,9 @@ from exmo.exmo2010 import models as em
 
 
 def monitoring_permission(user, priv, monitoring):
-    if priv == 'exmo2010.admin_monitoring':
+    if priv in ('exmo2010.admin_monitoring', 'exmo2010.create_monitoring', 'exmo2010.edit_monitoring', 'exmo2010.delete_monitoring'):
         if user.is_active:
             if user.profile.is_manager_expertB: return True
-    if priv == 'exmo2010.create_monitoring':
-        if user.is_active:
-            if user.profile.is_manager_expertB: return True
-    if priv == 'exmo2010.edit_monitoring':
-        if user.is_active:
-            if user.profile.is_manager_expertB or user.profile.is_expertA: return True
     if priv == 'exmo2010.view_monitoring':
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB: return True
