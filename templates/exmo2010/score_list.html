@@ -71,6 +71,7 @@
          {% check_object_permission exmo2010.view_claim score as perm %}
          {% if score.claim_color and perm %}<img src="{{ MEDIA_URL }}exmo2010/icon_{{score.claim_color}}.gif" alt="{% trans 'claim' %}" />{% endif %}
             <a href="{% url exmo.exmo2010.view.score.score_view score.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+
        {% else %}
          {% check_object_permission exmo2010.fill_task task as perm %}
          {% if perm %}
@@ -86,6 +87,11 @@
             &nbsp;<a href="{% url exmo.exmo2010.view.parameter.parameter_manager task.pk, object.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif" ></a>&nbsp;
        {% endif %}
        {% endwith %}
+       {% if score %}
+         {% if score.have_comment_without_reply and user.profile.is_expert %}
+            <span style="float:right;"><a href="{%url exmo.exmo2010.view.score.score_view score.pk%}#c{{score.have_comment_without_reply}}"><img src="{{ MEDIA_URL }}exmo2010/icon_newcomment.png"></a></span>
+         {% endif %}
+       {% endif %}
       </td>
       {%if score %}
       {% include "exmo2010/score_criteria_table.html" %}

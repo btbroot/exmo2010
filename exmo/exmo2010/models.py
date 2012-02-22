@@ -17,6 +17,8 @@
 #
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.comments.models import Comment
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
 from exmo.exmo2010.fields import TagField
@@ -440,6 +442,15 @@ class Score(models.Model):
     if not self.active_claim and Claim.objects.filter(score = self).exclude(close_user = self.task.user).count() > 0: color = 'yellow'
     return color
 
+  @property
+  def have_comment_without_reply(self):
+    self_comments_qs = Comment.objects.filter(object_pk = self.pk, content_type = ContentType.objects.get_for_model(self.__class__)).order_by('-submit_date')
+    if self_comments_qs.count() > 0:
+        #check first comment is from organization
+        if self_comments_qs[0].user.groups.filter(name = UserProfile.organization_group).count() > 0:
+            return self_comments_qs[0].pk
+    return False
+
   active_claim = property(_get_claim)
   openness = property(_get_openness)
 
@@ -452,7 +463,6 @@ class Score(models.Model):
       'task__organization__name',
       'parameter__code'
     )
-    permissions = (("view_score", "Can view score"),)
 
 
 
@@ -558,7 +568,7 @@ class UserProfile(models.Model):
     notify_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on comment, except self'))
 
     def _is_expert(self):
-        return self._is_expertB() or self._is_expertA() or self._is_manager_expertB()
+        return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser
 
     def _is_expertB(self):
         try:
