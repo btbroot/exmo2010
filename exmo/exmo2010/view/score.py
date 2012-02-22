@@ -164,6 +164,7 @@ def score_list_by_task(request, task_id, report=None):
           (_('HTML'), None, None, None, None),
           (_('Document'), None, None, None, None),
           (_('Image'), None, None, None, None),
+          (_('Weight'), None, None, None, None),
         ),
         queryset=queryset,
         template_name='exmo2010/score_list.html',

@@ -54,7 +54,7 @@
 <table>
 {% table_header headers %}
 <tbody>
-    <tr><td colspan=2>
+    <tr><td colspan=10>
         {% with task.organization.monitoring as monitoring %}
         {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
         {%if perm%}
@@ -92,6 +92,9 @@
       {%else%}
         <td colspan=7></td>
       {%endif%}
+      <td>
+        {{ object.weight }}
+      </td>
       </tr>
 {% endfor %}
     </tbody></table>
