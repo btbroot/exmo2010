@@ -171,6 +171,7 @@ def score_list_by_task(request, task_id, report=None):
         extra_context={
           'task': task,
           'title': title,
+          'place': task.rating_place,
           }
       )
 

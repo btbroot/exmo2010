@@ -325,19 +325,29 @@ class Task(models.Model):
         self.full_clean()
         self.save()
 
-  def _complete(self):
+  @property
+  def complete(self):
     complete = 0
     parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
     if parameters:
         complete = float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) / parameters
     return complete
 
+  @property
+  def rating_place(self):
+    from exmo.exmo2010.view.helpers import rating
+    place = None
+    rating_list, avg = rating(self.organization.monitoring)
+    for rating_object in rating_list:
+          if rating_object['task'] == self:
+            place = rating_object['place']
+    return place
+
   open = property(_get_open, _set_open)
   ready = property(_get_ready, _set_ready)
   checked = property(_get_checked, _set_checked)
   approved = property(_get_approved, _set_approved)
   openness = property(_get_openness)
-  complete = property(_complete)
 
 
 

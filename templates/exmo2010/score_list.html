@@ -32,7 +32,7 @@
 {% endblock %}
 {% block content %}
 <div id=score_list>
-<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>&nbsp;&mdash;&nbsp;{% trans 'Openness' %}:&nbsp;{{ task.openness|floatformat:3 }}%</h2>
+<h2><a href="{{task.organization.url}}">{{task.organization.name}}</a>&nbsp;&mdash;&nbsp;{% trans 'Openness' %}:&nbsp;{{ task.openness|floatformat:3 }}%&nbsp;{%if place%}(<span id='rating_place' style='color:red;'>{{place}}</span>){%endif%}</h2>
 
 <div id=utility>
      <a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
