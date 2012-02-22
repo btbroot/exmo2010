@@ -38,6 +38,8 @@ def parameter_manager(request, task_id, id, method):
     redirect = '%s?%s' % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
+        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         title = _('Delete parameter %s') % parameter
         return delete_object(
             request,
@@ -51,10 +53,14 @@ def parameter_manager(request, task_id, id, method):
                 }
             )
     elif method == 'exclude':
+        if not request.user.has_perm('exmo2010.exclude_parameter', parameter):
+            return HttpResponseForbidden(_('Forbidden'))
         if task.organization not in parameter.exclude.all():
             parameter.exclude.add(task.organization)
         return HttpResponseRedirect(redirect)
     else: #update
+        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit parameter %s') % parameter
         return update_object(
             request,
