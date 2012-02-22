@@ -398,7 +398,7 @@ def monitoring_parameter_filter(request, id):
             if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA:
                 queryset = queryset.filter(task__status = Task.TASK_APPROVED)
             elif request.user.profile.is_expertB:
-                queryset = queryset.filter(task__status = Task.TASK_CLOSED, user = request.user)
+                queryset = queryset.filter(task__status = Task.TASK_CLOSED, task__user = request.user)
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
