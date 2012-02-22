@@ -39,6 +39,7 @@
   <td>{% trans 'Code' %}</td>
   <td>{% trans 'Name' %}</td>
   <td>{% trans 'Openness' %}</td>
+  <td>{% trans 'Weight' %}</td>
   <td>{% trans 'Found' %}</td>
   <td>{% trans 'Complete' %}</td>
   <td>{% trans 'Topical' %}</td>
@@ -57,6 +58,7 @@
       </td>
       {%if score %}
       <td>{{ score.openness }}</td>
+      <td>{{ score.parameter.weight }}</td>
       {% include "exmo2010/score_criteria_table.html" %}
       {% if report == 'printfull' %}
         {% if score.completeComment and score.parameter.complete %}</tr><tr><td>{% trans 'completeComment' %}</td><td colspan=7>{{ score.completeComment|linebreaks }}</td>{% endif %}

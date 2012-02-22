@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-22 12:08+0400\n"
-"PO-Revision-Date: 2012-02-22 12:08+0400\n"
+"POT-Creation-Date: 2012-02-22 13:35+0400\n"
+"PO-Revision-Date: 2012-02-22 13:35+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -278,23 +278,23 @@ msgstr ""
 msgid "task"
 msgstr "задача"
 
-#: exmo/exmo2010/models.py:349 templates/exmo2010/task_report.html:62
+#: exmo/exmo2010/models.py:349 templates/exmo2010/task_report.html:64
 msgid "completeComment"
 msgstr "комментарий к критерию 'Полнота'"
 
-#: exmo/exmo2010/models.py:351 templates/exmo2010/task_report.html:63
+#: exmo/exmo2010/models.py:351 templates/exmo2010/task_report.html:65
 msgid "topicalComment"
 msgstr "комментарий к критерию 'Актуальность'"
 
-#: exmo/exmo2010/models.py:353 templates/exmo2010/task_report.html:64
+#: exmo/exmo2010/models.py:353 templates/exmo2010/task_report.html:66
 msgid "accessibleComment"
 msgstr "комментарий к критерию 'Навигационная доступность'"
 
-#: exmo/exmo2010/models.py:355 templates/exmo2010/task_report.html:65
+#: exmo/exmo2010/models.py:355 templates/exmo2010/task_report.html:67
 msgid "hypertextComment"
 msgstr "комментарий к критерию 'HTML доступность'"
 
-#: exmo/exmo2010/models.py:357 templates/exmo2010/task_report.html:66
+#: exmo/exmo2010/models.py:357 templates/exmo2010/task_report.html:68
 msgid "documentComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
@@ -303,7 +303,7 @@ msgid "imageComment"
 msgstr "комментарий к критерию 'Графическая доступность'"
 
 #: exmo/exmo2010/models.py:360 exmo/exmo2010/models.py:453
-#: templates/exmo2010/task_report.html:67
+#: templates/exmo2010/task_report.html:69
 msgid "comment"
 msgstr "комментарий"
 
@@ -396,7 +396,8 @@ msgstr "Добавить претензию для %s"
 #: exmo/exmo2010/view/monitoring.py:551 exmo/exmo2010/view/monitoring.py:623
 #: exmo/exmo2010/view/monitoring.py:697 exmo/exmo2010/view/organization.py:35
 #: exmo/exmo2010/view/organization.py:52 exmo/exmo2010/view/organization.py:74
-#: exmo/exmo2010/view/parameter.py:37 exmo/exmo2010/view/parameter.py:75
+#: exmo/exmo2010/view/parameter.py:40 exmo/exmo2010/view/parameter.py:55
+#: exmo/exmo2010/view/parameter.py:61 exmo/exmo2010/view/parameter.py:79
 #: exmo/exmo2010/view/score.py:44 exmo/exmo2010/view/score.py:72
 #: exmo/exmo2010/view/score.py:77 exmo/exmo2010/view/score.py:127
 #: exmo/exmo2010/view/score.py:140 exmo/exmo2010/view/score.py:191
@@ -526,12 +527,12 @@ msgstr "Редактировать орган/организацию %s"
 msgid "Delete parameter %s"
 msgstr "Удалить параметр %s"
 
-#: exmo/exmo2010/view/parameter.py:58
+#: exmo/exmo2010/view/parameter.py:62
 #, python-format
 msgid "Edit parameter %s"
 msgstr "Редактировать параметр %s"
 
-#: exmo/exmo2010/view/parameter.py:78
+#: exmo/exmo2010/view/parameter.py:82
 #, python-format
 msgid "Add parameter for %s"
 msgstr "Добавить параметр для %s"
@@ -571,40 +572,40 @@ msgid "Parameter"
 msgstr "Параметр"
 
 #: exmo/exmo2010/view/score.py:160 templates/exmo2010/score_detail.html:45
-#: templates/exmo2010/task_report.html:42
+#: templates/exmo2010/task_report.html:43
 msgid "Found"
 msgstr "Наличие"
 
 #: exmo/exmo2010/view/score.py:161 templates/exmo2010/score_detail.html:48
-#: templates/exmo2010/task_report.html:43
+#: templates/exmo2010/task_report.html:44
 msgid "Complete"
 msgstr "Полнота"
 
 #: exmo/exmo2010/view/score.py:162 templates/exmo2010/score_detail.html:57
-#: templates/exmo2010/task_report.html:44
+#: templates/exmo2010/task_report.html:45
 msgid "Topical"
 msgstr "Актуальность"
 
 #: exmo/exmo2010/view/score.py:163 templates/exmo2010/score_detail.html:66
-#: templates/exmo2010/task_report.html:45
+#: templates/exmo2010/task_report.html:46
 msgid "Accessible"
 msgstr "Навигационная доступность"
 
-#: exmo/exmo2010/view/score.py:164 templates/exmo2010/task_report.html:46
+#: exmo/exmo2010/view/score.py:164 templates/exmo2010/task_report.html:47
 msgid "HTML"
 msgstr "Html доступность"
 
 #: exmo/exmo2010/view/score.py:165 templates/exmo2010/score_detail.html:84
-#: templates/exmo2010/task_report.html:47
+#: templates/exmo2010/task_report.html:48
 msgid "Document"
 msgstr "Файловая доступность"
 
 #: exmo/exmo2010/view/score.py:166 templates/exmo2010/score_detail.html:94
-#: templates/exmo2010/task_report.html:48
+#: templates/exmo2010/task_report.html:49
 msgid "Image"
 msgstr "Графическая доступность"
 
-#: exmo/exmo2010/view/score.py:187 templates/exmo2010/score_comment.html:47
+#: exmo/exmo2010/view/score.py:187 templates/exmo2010/score_comment.html:53
 msgid "Add new comment"
 msgstr "Добавить комментарий"
 
@@ -1270,7 +1271,7 @@ msgstr "Оценка"
 
 #: templates/exmo2010/monitoring_parameter_found_report.html:25
 #: templates/exmo2010/monitoring_parameter_found_report.html:36
-#: templates/exmo2010/monitoring_utility.html:42
+#: templates/exmo2010/monitoring_utility.html:41
 msgid "Parameter found report"
 msgstr "Отчёт по наличию параметра"
 
@@ -1316,28 +1317,23 @@ msgstr "Задачи "
 msgid "Comment report"
 msgstr "Отчёт по комментариям"
 
-#: templates/exmo2010/monitoring_utility.html:28
-#, fuzzy
-msgid "Common rating"
-msgstr "Комментарий"
-
-#: templates/exmo2010/monitoring_utility.html:32
+#: templates/exmo2010/monitoring_utility.html:31
 msgid "Experts"
 msgstr "Эксперты"
 
-#: templates/exmo2010/monitoring_utility.html:33
+#: templates/exmo2010/monitoring_utility.html:32
 msgid "Mass assign"
 msgstr "Массовое назначение"
 
-#: templates/exmo2010/monitoring_utility.html:34
+#: templates/exmo2010/monitoring_utility.html:33
 msgid "Export by criteria"
 msgstr "Экспорт по критерию"
 
-#: templates/exmo2010/monitoring_utility.html:35
+#: templates/exmo2010/monitoring_utility.html:34
 msgid "Claim report"
 msgstr "Отчёт по претензиям"
 
-#: templates/exmo2010/monitoring_utility.html:39
+#: templates/exmo2010/monitoring_utility.html:38
 msgid "Rating"
 msgstr "Рейтинг"
 
@@ -1544,7 +1540,7 @@ msgstr "Сохранить"
 msgid "Delete"
 msgstr "Удалить"
 
-#: templates/exmo2010/score_form.html:116
+#: templates/exmo2010/score_form.html:115
 msgid "Set non-relevant"
 msgstr "Признать нерелевантным"
 
@@ -1612,6 +1608,14 @@ msgstr "одобрить"
 #: templates/exmo2010/task_report.html:25
 msgid "Task "
 msgstr "Задача "
+
+#: templates/exmo2010/task_report.html:42
+msgid "Weight"
+msgstr "Ксз"
+
+#, fuzzy
+#~ msgid "Common rating"
+#~ msgstr "Комментарий"
 
 #~ msgid "place"
 #~ msgstr "место"
