@@ -110,7 +110,7 @@
     &nbsp;<INPUT TYPE="BUTTON" STYLE='background: red' VALUE="{% trans 'Delete' %}" ONCLICK="window.location.href='{% url exmo.exmo2010.view.score.score_manager object.pk,'delete' %}?{{request.GET.urlencode}}'" />
     {% endif %}
     {% endif %}
-    {% check_object_permission exmo2010.exclude_perameter parameter as perm %}
+    {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
     {% if perm %}
         &nbsp;<INPUT TYPE="BUTTON" STYLE='background: #CC3333' VALUE="{% trans 'Set non-relevant' %}" ONCLICK="window.location.href='{% url exmo.exmo2010.view.parameter.parameter_manager task.pk,parameter.pk,'exclude' %}?{{request.GET.urlencode}}'" />
     {% endif %}
