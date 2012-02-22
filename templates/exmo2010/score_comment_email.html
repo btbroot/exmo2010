@@ -20,7 +20,7 @@
 {% load i18n %}
 {{ score.task.organization }}: {{ score.parameter }}
 {% trans 'Date' %}: {{ comment.submit_date }}
-{% if admin %}{% trans 'User' %}: {{ comment.user }}{% endif %}
+{% trans 'User' %}: {% if admin %}{{ comment.user }}{% else %}svobodainfo{% endif %}
 {% trans 'Comment' %}:
 {{ comment.comment|safe }}
 URL: {{ url }}

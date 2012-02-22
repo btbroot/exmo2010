@@ -29,14 +29,20 @@
     <table width=100%>
     <thead>
     <th>{% trans 'Date' %}</th>
-    {% if user.userprofile.is_expert or user.is_superuser %}<th>{% trans 'User' %}</th>{% endif %}
+    <th>{% trans 'User' %}</th>
     <th>{% trans 'Comment' %}</th>
     </thead>
     <tbody>
 {% for comment in comment_list %}
     <tr id="c{{ comment.id }}">
     <td>{{ comment.submit_date }}</td>
-    {% if user.userprofile.is_expert or user.is_superuser %}<td>{{ comment.user }}</td>{% endif %}
+    <td>
+    {% if user.userprofile.is_expert or user.is_superuser %}
+        {{ comment.user }}
+    {% else %}
+        svobodainfo
+    {% endif %}
+    </td>
     <td>{{ comment.comment }}</td>
     </tr>
 {% endfor %}
