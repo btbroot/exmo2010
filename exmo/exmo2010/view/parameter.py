@@ -50,6 +50,10 @@ def parameter_manager(request, task_id, id, method):
                 'deleted_objects': Score.objects.filter(parameter = parameter),
                 }
             )
+    elif method == 'exclude':
+        if task.organization not in parameter.exclude.all():
+            parameter.exclude.add(task.organization)
+        return HttpResponseRedirect(redirect)
     else: #update
         title = _('Edit parameter %s') % parameter
         return update_object(
