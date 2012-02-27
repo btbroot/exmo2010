@@ -343,6 +343,7 @@ class Task(models.Model):
     for rating_object in rating_list:
           if rating_object['task'] == self:
             place = rating_object['place']
+            break
     return place
 
   open = property(_get_open, _set_open)
