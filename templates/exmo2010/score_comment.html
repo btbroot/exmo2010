@@ -37,10 +37,14 @@
     <tr id="c{{ comment.id }}">
     <td>{{ comment.submit_date }}</td>
     <td>
-    {% if user.userprofile.is_expert or user.is_superuser %}
+    {% if comment.user.is_expert or comment.user.is_superuser %}
+      {% if user.userprofile.is_expert or user.is_superuser %}
         {{ comment.user }}
-    {% else %}
+      {% else %}
         svobodainfo
+      {% endif %}
+    {% else %}
+      {{ comment.user }}
     {% endif %}
     </td>
     <td>{{ comment.comment }}</td>
