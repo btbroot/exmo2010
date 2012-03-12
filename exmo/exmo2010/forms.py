@@ -92,8 +92,12 @@ class ScoreForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        self._monitoring = kwargs.get('monitoring')
+        if self._monitoring:
+            kwargs.pop('monitoring')
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.filter(groups__name__in = UserProfile.expert_groups, is_active = True)
+        self.fields['user'].queryset = User.objects.filter(groups__name__in = UserProfile.expert_groups, is_active = True).distinct()
+        self.fields['organization'].queryset = Organization.objects.filter(monitoring = self._monitoring)
 
     def clean_user(self):
         user = self.cleaned_data['user']
@@ -101,6 +105,12 @@ class TaskForm(forms.ModelForm):
         if not user_obj:
             raise forms.ValidationError(_("This user account is inactive"));
         return user
+
+    def clean_organization(self):
+        organization = self.cleaned_data['organization']
+        if Organization.objects.filter(pk=organization.pk, monitoring = self._monitoring).count() < 1:
+            raise forms.ValidationError(_("Illegal monitoring"));
+        return organization
 
     class Meta:
         model = Task

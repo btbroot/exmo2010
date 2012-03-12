@@ -311,14 +311,7 @@ def task_add(request, monitoring_id, organization_id=None):
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         if request.method == 'GET':
-            form = TaskForm()
-            groups = []
-            for group_name in ['expertsA','expertsB','expertsB_manager']:
-                group, created = Group.objects.get_or_create(name = group_name)
-                groups.append(group)
-            form.fields['user'].queryset = User.objects.filter(is_active = True).filter(groups__in = groups)
-            if not organization:
-                form.fields['organization'].queryset = Organization.objects.filter(monitoring=monitoring)
+            form = TaskForm(monitoring=monitoring)
             return render_to_response(
                 'exmo2010/task_form.html',
                 {
@@ -330,7 +323,7 @@ def task_add(request, monitoring_id, organization_id=None):
                 context_instance=RequestContext(request),
             )
         if request.method == 'POST':
-            form = TaskForm(request.POST)
+            form = TaskForm(request.POST, monitoring=monitoring)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(redirect)
