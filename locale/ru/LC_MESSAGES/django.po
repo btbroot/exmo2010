@@ -23,7 +23,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-02-22 13:35+0400\n"
-"PO-Revision-Date: 2012-02-22 13:35+0400\n"
+"PO-Revision-Date: 2012-03-12 14:10+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -83,7 +83,6 @@ msgid "time limit (in days)"
 msgstr "Сроки (в днях)"
 
 #: exmo/exmo2010/forms.py:222
-#, fuzzy
 msgid "monitorings"
 msgstr "цикл мониторинга"
 
@@ -1358,9 +1357,8 @@ msgid "Next"
 msgstr "След."
 
 #: templates/exmo2010/parameter_confirm_delete.html:36
-#, fuzzy
 msgid "When you delete parameter you also delete this scores:"
-msgstr "При удалении цикла мониторинга Вы так же удалите следующие задачи:"
+msgstr "При удалении параметра Вы так же удалите следующие оценки:"
 
 #: templates/exmo2010/parameter_confirm_delete.html:42
 msgid "Delete this parameter?"
@@ -1569,9 +1567,8 @@ msgid "claim"
 msgstr "претензия"
 
 #: templates/exmo2010/task_confirm_delete.html:32
-#, fuzzy
 msgid "When you delete task you also delete this scores:"
-msgstr "При удалении цикла мониторинга Вы так же удалите следующие задачи:"
+msgstr "При удалении задачи Вы так же удалите следующие оценки:"
 
 #: templates/exmo2010/task_confirm_delete.html:38
 msgid "Delete this task?"
