@@ -426,7 +426,17 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       title = _('Edit task %s') % task
       if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         revision.comment = _('Task updated')
-        return update_object(request, form_class = TaskForm, object_id = id, post_save_redirect = redirect, extra_context = {'monitoring': monitoring, 'organization': organization, 'title': title })
+        return update_object(
+            request,
+            form_class = TaskForm,
+            object_id = task.pk,
+            post_save_redirect = redirect,
+            extra_context = {
+                'monitoring': monitoring,
+                'organization': organization,
+                'title': title
+                }
+            )
       else: return HttpResponseForbidden(_('Forbidden'))
 
 

@@ -97,7 +97,8 @@ class TaskForm(forms.ModelForm):
             kwargs.pop('monitoring')
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['user'].queryset = User.objects.filter(groups__name__in = UserProfile.expert_groups, is_active = True).distinct()
-        self.fields['organization'].queryset = Organization.objects.filter(monitoring = self._monitoring)
+        if self._monitoring:
+            self.fields['organization'].queryset = Organization.objects.filter(monitoring = self._monitoring)
 
     def clean_user(self):
         user = self.cleaned_data['user']
@@ -108,8 +109,9 @@ class TaskForm(forms.ModelForm):
 
     def clean_organization(self):
         organization = self.cleaned_data['organization']
-        if Organization.objects.filter(pk=organization.pk, monitoring = self._monitoring).count() < 1:
-            raise forms.ValidationError(_("Illegal monitoring"));
+        if self._monitoring:
+            if Organization.objects.filter(pk=organization.pk, monitoring = self._monitoring).count() < 1:
+                raise forms.ValidationError(_("Illegal monitoring"));
         return organization
 
     class Meta:

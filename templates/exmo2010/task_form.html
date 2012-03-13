@@ -43,9 +43,8 @@
   {% else %}
   <p>{{form.status.as_hidden}}</p>
   {% endif %}
-  <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
   {% if organization %}
-  <p><input type="hidden" name="organization" id="id_organization" value="{{organization.pk}}" /></p>
+  <p>{{form.organization.as_hidden}}</p>
   {% else %}
   <p>{{form.organization.label_tag}}{{ form.organization }} {{ form.organization.errors }}</p>
   {% endif %}
