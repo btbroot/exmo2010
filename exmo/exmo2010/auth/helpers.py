@@ -101,10 +101,9 @@ def score_permission(user, priv, score):
     elif priv == 'exmo2010.add_claim':
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB: return True
+            if user.profile.is_expert and score.task.organization.monitoring.is_revision and score.task.approved: return True
     elif priv == 'exmo2010.view_claim':
-        if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-            if user == score.task.user: return True
+        return user.has_perm('exmo2010.add_claim', score) or user == score.task.user
     return False
 
 
