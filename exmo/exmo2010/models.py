@@ -225,7 +225,7 @@ class Task(models.Model):
   TASK_STATUS     = (
     (TASK_OPEN, _('opened')),
     (TASK_CLOSE, _('closed')),
-    (TASK_CHECK, _('checked')),
+    (TASK_CHECK, _('check')),
     (TASK_APPROVE, _('approved'))
   )
   user         = models.ForeignKey(User, verbose_name=_('user'))

@@ -415,12 +415,12 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
       if request.user.has_perm('exmo2010.check_task', task):
         if task.ready:
             try:
-                revision.comment = _('Task checked')
+                revision.comment = _('Task on check')
                 task.checked = True
             except ValidationError, e:
                 return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             return HttpResponseRedirect(redirect)
-        else: return HttpResponse(_('Already checked'))
+        else: return HttpResponse(_('Already on check'))
       else: return HttpResponseForbidden(_('Forbidden'))
     else: #update
       title = _('Edit task %s') % task
