@@ -50,8 +50,9 @@ def task_permission(user, priv, task):
         if task.approved and task.organization.monitoring.is_publish: return True
         if user.is_active:
             profile = user.profile
+            if profile.is_expert and task.user == user: return True
             if profile.is_expert:
-                if task.organization.monitoring.is_revision and task.approved:
+                if task.organization.monitoring.is_revision and task.checked:
                     return True
                 return user.has_perm('exmo2010.fill_task', task)
             elif profile.is_organization or profile.is_customer:
