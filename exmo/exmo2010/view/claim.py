@@ -45,15 +45,11 @@ def claim_manager(request, score_id, claim_id=None, method=None):
             form = ClaimForm()
             form.fields['creator'].initial = request.user.pk
             form.fields['score'].initial = score.pk
-            if not score.task.open:
-                form.fields['open_task'].initial = True
         elif request.method == 'POST':
             form = ClaimForm(request.POST)
             if form.is_valid():
                 if form.cleaned_data['score'] == score and form.cleaned_data['creator'] == request.user:
                     claim = score.add_claim(request.user, form.cleaned_data['comment'])
-                    if form.cleaned_data['open_task']:
-                        score.task.open = True
                     signals.claim_was_posted.send(
                         sender  = Claim.__class__,
                         claim = claim,

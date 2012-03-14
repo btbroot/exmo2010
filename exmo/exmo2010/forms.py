@@ -140,7 +140,6 @@ class ParameterFilterForm(forms.Form):
 
 
 class ClaimForm(forms.ModelForm):
-    open_task = forms.BooleanField(required = False, label=_('Open task'))
     class Meta:
         model = Claim
 

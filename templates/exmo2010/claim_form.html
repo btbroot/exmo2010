@@ -36,9 +36,6 @@
 
 <form method="post" action="">{% csrf_token %}
   <p>{{form.comment.label_tag}}{{ form.comment }} {{ form.comment.errors }}</p>
-  {% if not score.task.open %}
-  <p>{{form.open_task.label_tag}}{{ form.open_task }} {{ form.open_task.errors }}</p>
-  {% endif %}
   {{ form.creator.as_hidden }}
   {{ form.score.as_hidden }}
   <p><input type="submit" /><input class="button" type="reset" /></p>
