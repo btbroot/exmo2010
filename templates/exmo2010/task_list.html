@@ -49,7 +49,11 @@
     {% for object in object_list %}
       <tr>
       <td>
-        <a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
+        <a 
+        {% if object.organization.monitoring.is_revision and object.user != user and user.profile.is_expertB and not user.profile.is_expertA %}
+        style="color:red"
+        {% endif %}
+         href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {%if perm_admin %}
             &nbsp;<a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{% admin_media_prefix %}img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
