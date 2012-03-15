@@ -159,20 +159,27 @@ def claim_notification(sender, **kwargs):
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
-    c = Context({ 'score': claim.score, 'claim': claim, 'url': url })
-    message = t.render(c)
+    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': False })
+    message_nonadmin=t.render(c)
+    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': True })
+    message_admin=t.render(c)
+
     headers = {
         'X-iifd-exmo': 'claim_notification'
     }
-    rcpt = []
+    rcpt_admin = []
+    rcpt_nonadmin = []
     for user in User.objects.filter(is_superuser = True):
         if user.email and user.is_active:
-            rcpt.append(user.email)
-    if score.task.user.email:
-        rcpt.append(score.task.user.email)
-    rcpt=list(set(rcpt))
-    if rcpt:
-        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt, [], headers = headers)
+            rcpt_admin.append(user.email)
+    if score.task.user.email and score.task.user.email not in rcpt_admin:
+        rcpt_nonadmin.append(score.task.user.email)
+    rcpt_admin=list(set(rcpt_admin))
+    if rcpt_admin:
+        email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
+        email.send()
+    if rcpt_nonadmin:
+        email = EmailMessage(subject, message_noadmin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
         email.send()
 
 

@@ -577,7 +577,7 @@ class UserProfile(models.Model):
         except:
             return False
         else:
-            return group in self.user.groups.all()
+            return group in self.user.groups.all() or self.user.is_superuser
 
     def _is_expertA(self):
         try:
@@ -585,7 +585,7 @@ class UserProfile(models.Model):
         except:
             return False
         else:
-            return group in self.user.groups.all()
+            return group in self.user.groups.all() or self.user.is_superuser
 
     def _is_manager_expertB(self):
         try:
@@ -593,7 +593,7 @@ class UserProfile(models.Model):
         except:
             return False
         else:
-            return group in self.user.groups.all()
+            return group in self.user.groups.all() or self.user.is_superuser
 
     def _is_customer(self):
         try:
@@ -601,7 +601,7 @@ class UserProfile(models.Model):
         except:
             return False
         else:
-            return group in self.user.groups.all()
+            return group in self.user.groups.all() or self.user.is_superuser
 
     def _is_organization(self):
         try:
@@ -609,7 +609,7 @@ class UserProfile(models.Model):
         except:
             return False
         else:
-            return group in self.user.groups.all()
+            return group in self.user.groups.all() or self.user.is_superuser
 
 
 

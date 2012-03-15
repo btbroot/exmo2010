@@ -20,7 +20,9 @@
 {% load i18n %}
 {{ score.task.organization }}: {{ score.parameter }}
 {% trans 'Date' %}: {{ claim.open_date }}
+{% if admin %}
 {% trans 'Creator' %}: {{ claim.creator }}
+{% endif %}
 {% trans 'Comment' %}:
 {{ claim.comment }}
 URL: {{ url }}

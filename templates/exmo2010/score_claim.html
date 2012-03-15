@@ -35,11 +35,11 @@
     <tr id="claim{{ claim.pk }}" {% if claim.close_date %} bgcolor='#75FF6E' {% else %} bgcolor='#DB5E5E' {% endif %}>
     <td>
         {% trans 'Open date: ' %}{{ claim.open_date }}
-        {% if claim.close_date %}
+        {% if claim.close_date and user.profile.is_expertA %}
             <br />{% trans 'Closed by ' %}{{ claim.close_user }} {{ claim.close_date }}
         {% endif %}
     </td>
-    <td>{% trans 'Comment from' %} {{claim.creator}}:<br />{{ claim.comment }}</td>
+    <td>{% if user.profile.is_expertA %}{% trans 'Comment from' %} {{claim.creator}}:<br />{% endif %}{{ claim.comment }}</td>
     </tr>
 {% endfor %}
     </tbody>
