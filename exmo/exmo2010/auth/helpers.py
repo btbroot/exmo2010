@@ -131,7 +131,7 @@ def parameter_permission(user, priv, parameter):
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB: return True
             if user.profile.is_expertB \
-              and (parameter.monitoring.is_rate or parameter.monitoring.is_interact):
+              and (parameter.monitoring.is_rate or parameter.monitoring.is_interact parameter.monitoring.is_revision):
                 return True
     return False
 
