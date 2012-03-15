@@ -179,7 +179,7 @@ def claim_notification(sender, **kwargs):
         email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
         email.send()
     if rcpt_nonadmin:
-        email = EmailMessage(subject, message_noadmin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
+        email = EmailMessage(subject, message_nonadmin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
         email.send()
 
 
