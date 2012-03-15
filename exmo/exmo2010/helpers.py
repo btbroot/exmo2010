@@ -167,19 +167,31 @@ def claim_notification(sender, **kwargs):
     headers = {
         'X-iifd-exmo': 'claim_notification'
     }
+    #admin comment user list
+    admin_users = []
+    #A-expert + B-expert-manager
+    experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group], is_active = True, email__isnull = False)
+    if experts: admin_users.extend(experts)
+    #superusers
+    superusers=User.objects.filter(is_superuser = True, is_active = True, email__isnull = False)
+    if superusers: admin_users.extend(superusers)
+
     rcpt_admin = []
     rcpt_nonadmin = []
-    for user in User.objects.filter(is_superuser = True):
+    for user in admin_users:
         if user.email and user.is_active:
             rcpt_admin.append(user.email)
+
+    rcpt_admin=list(set(rcpt_admin))
+
     if score.task.user.email and score.task.user.email not in rcpt_admin:
         rcpt_nonadmin.append(score.task.user.email)
-    rcpt_admin=list(set(rcpt_admin))
-    if rcpt_admin:
-        email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
+
+    for _rcpt in rcpt_admin:
+        email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [_rcpt], [], headers = headers)
         email.send()
-    if rcpt_nonadmin:
-        email = EmailMessage(subject, message_nonadmin, settings.DEFAULT_FROM_EMAIL, rcpt_admin, [], headers = headers)
+    for _rcpt in rcpt_nonadmin:
+        email = EmailMessage(subject, message_nonadmin, settings.DEFAULT_FROM_EMAIL, [_rcpt], [], headers = headers)
         email.send()
 
 
