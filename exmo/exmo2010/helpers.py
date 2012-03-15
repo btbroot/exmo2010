@@ -170,10 +170,10 @@ def claim_notification(sender, **kwargs):
     #admin comment user list
     admin_users = []
     #A-expert + B-expert-manager
-    experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group], is_active = True, email__isnull = False)
+    experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group, UserProfile.expertB_manager_group], is_active = True, email__isnull = False).distinct()
     if experts: admin_users.extend(experts)
     #superusers
-    superusers=User.objects.filter(is_superuser = True, is_active = True, email__isnull = False)
+    superusers=User.objects.filter(is_superuser = True, is_active = True, email__isnull = False).distinct()
     if superusers: admin_users.extend(superusers)
 
     rcpt_admin = []
