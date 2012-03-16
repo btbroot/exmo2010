@@ -69,7 +69,7 @@
         {% trans 'Comment for accessible' %}</td><td>{{ object.accessibleComment }}</td></tr>
     {% endif %}
 {% endif %}
-{% if parameter.hypertext and object.hypertext %}
+{% if parameter.hypertext and object.hypertext != "" %}
     <tr id=score_add_hypertext>
     <td>{% trans 'Hypertext' %}</td><td>{{ object.hypertext }}</td>
     </tr>
@@ -79,7 +79,7 @@
       </tr>
       {% endif %}
 {% endif %}
-{% if parameter.document and object.document %}
+{% if parameter.document and object.document != "" %}
     <tr id=score_add_document>
     <td>{% trans 'Document' %}</td><td>{{ object.document }}</td>
     </tr>
@@ -89,7 +89,7 @@
       </tr>
     {% endif %}
 {% endif %}
-{% if parameter.image and object.image %}
+{% if parameter.image and object.image != "" %}
     <tr id=score_add_image>
     <td>{% trans 'Image' %}</td><td>{{ object.image }}</td>
     </tr>
