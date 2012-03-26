@@ -395,10 +395,10 @@ def monitoring_parameter_filter(request, id):
             ).exclude(
                 task__organization__in = parameter.exclude.all(),
             )
-            if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA:
+            if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA or monitoring.is_publish:
                 queryset = queryset.filter(task__status = Task.TASK_APPROVED)
             elif request.user.profile.is_expertB:
-                queryset = queryset.filter(task__status = Task.TASK_CLOSED, task__user = request.user)
+                queryset = queryset.filter(task__user = request.user)
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
