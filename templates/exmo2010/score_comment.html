@@ -47,7 +47,7 @@
       {{ comment.user }}
     {% endif %}
     </td>
-    <td>{{ comment.comment }}</td>
+    <td>{{ comment.comment|linebreaksbr }}</td>
     </tr>
 {% endfor %}
     </tbody>
