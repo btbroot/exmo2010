@@ -20,6 +20,19 @@
 {% endcomment %}
 {% load table_header i18n adminmedia model_status check_object_permission %}
 {% block content %}
+{% if active_tasks %}
+<div id=active_tasks>
+<table>
+{% for task in active_tasks %}
+<tr><td>
+<a href="{% url exmo.exmo2010.view.task.score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:{{ task.organization.name|truncatewords:10 }}</a>
+</td></tr>
+{% endfor %}
+</table>
+</div>
+{% endif %}
+
+
 <div id=monitoring_list>
 <table>
   {% table_header headers %}

@@ -53,6 +53,15 @@ def monitoring_list(request):
                 (_('monitoring'), 'name', 'name', None, None),
                 (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS_FULL),
                 )
+
+    active_tasks = None
+    if request.user.is_active and request.user.profile.is_organization:
+        active_tasks = Task.objects.filter(
+            organization__monitoring = Monitoring.MONITORING_INTERACT,
+            organization__in = request.user.profile.organization.all(),
+            status = Task.TASK_APPROVED,
+            )
+
     return table(
         request,
         headers,
@@ -61,6 +70,7 @@ def monitoring_list(request):
         extra_context = {
             'title': _('Monitoring list'),
             'fakeobject': Monitoring(),
+            'active_tasks': active_tasks,
         },
     )
 
