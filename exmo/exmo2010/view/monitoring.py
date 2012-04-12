@@ -55,9 +55,9 @@ def monitoring_list(request):
                 )
 
     active_tasks = None
-    if request.user.is_active and request.user.profile.is_organization:
+    if request.user.is_active and request.user.userprofile.is_organization:
         active_tasks = Task.objects.filter(
-            organization__monitoring = Monitoring.MONITORING_INTERACT,
+            organization__monitoring__status = Monitoring.MONITORING_INTERACT,
             organization__in = request.user.profile.organization.all(),
             status = Task.TASK_APPROVED,
             )

@@ -21,11 +21,12 @@
 {% load table_header i18n adminmedia model_status check_object_permission %}
 {% block content %}
 {% if active_tasks %}
+<h2>{% trans 'Active tasks' %}</h2>
 <div id=active_tasks>
 <table>
 {% for task in active_tasks %}
 <tr><td>
-<a href="{% url exmo.exmo2010.view.task.score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:{{ task.organization.name|truncatewords:10 }}</a>
+<a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:&nbsp;{{ task.organization.name|truncatewords:10 }}</a>
 </td></tr>
 {% endfor %}
 </table>
@@ -33,6 +34,7 @@
 {% endif %}
 
 
+<h2>{% trans 'Monitoring list' %}</h2>
 <div id=monitoring_list>
 <table>
   {% table_header headers %}
