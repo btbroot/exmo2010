@@ -21,8 +21,8 @@
 {% load table_header i18n adminmedia model_status check_object_permission %}
 {% block content %}
 {% if active_tasks %}
-<h2>{% trans 'Active tasks' %}</h2>
 <div id=active_tasks>
+<h2>{% trans 'Active tasks' %}</h2>
 <table>
 {% for task in active_tasks %}
 <tr><td>
@@ -33,9 +33,8 @@
 </div>
 {% endif %}
 
-
-<h2>{% trans 'Monitoring list' %}</h2>
 <div id=monitoring_list>
+<h2>{% trans 'Monitoring list' %}</h2>
 <table>
   {% table_header headers %}
   <tbody>
