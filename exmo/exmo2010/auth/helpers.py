@@ -69,12 +69,15 @@ def task_permission(user, priv, task):
         if (task.open or task.checked) and task.user == user and (task.organization.monitoring.is_rate or task.organization.monitoring.is_revision): return True
         if task.user == user and task.organization.monitoring.is_interact: return True
     elif priv == 'exmo2010.comment_score':
-        if user.is_active and task.organization.monitoring.is_interact:
+        if user.is_active:
             profile = user.profile
-            if profile.is_expertB and task.user == user: return True
+            if profile.is_expertB and task.user == user and \
+                (task.organization.monitoring.is_interact or task.organization.monitoring.is_result):
+                    return True
             if profile.is_organization and \
                 user.has_perm('exmo2010.view_task', task) and \
-                task.organization in profile.organization.all():
+                task.organization in profile.organization.all() and \
+                task.organization.monitoring.is_interact:
                     return True
     return False
 
