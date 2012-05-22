@@ -469,7 +469,7 @@ class Score(models.Model):
 
 class Claim(models.Model):
   score             = models.ForeignKey(Score, verbose_name=_('score'))
-  open_date         = models.DateTimeField(auto_now = True, verbose_name = _('claim open'))
+  open_date         = models.DateTimeField(auto_now_add = True, verbose_name = _('claim open'))
   close_date        = models.DateTimeField(null = True, blank = True, verbose_name = _('claim close'))
   comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
   close_user        = models.ForeignKey(User, null = True, blank = True, verbose_name=_('user who close'), related_name='close_user')
