@@ -16,11 +16,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-reversion
-tagging
-#http://code.google.com/p/django-tagging/
-tagging-autocomplete
-#http://code.google.com/p/django-tagging-autocomplete/
-south
-hg+https://bitbucket.org/izi/django-admin-tools
-django-debug-toolbar
+class DashboardSite(object):
+    def __init__(self, name = None, app_name = 'user_dashboard'):
+        if name:
+            self.name = name
+        else:
+            self.name = 'user_dashboard'
+
+site = DashboardSite()

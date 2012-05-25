@@ -15,12 +15,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.conf.urls.defaults import *
 
-reversion
-tagging
-#http://code.google.com/p/django-tagging/
-tagging-autocomplete
-#http://code.google.com/p/django-tagging-autocomplete/
-south
-hg+https://bitbucket.org/izi/django-admin-tools
-django-debug-toolbar
+urlpatterns = patterns('',
+    url(r'^$', 'exmo.user_dashboard.views.index', name='index'),
+)

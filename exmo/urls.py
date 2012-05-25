@@ -23,13 +23,11 @@ from django.core.urlresolvers import reverse
 admin.autodiscover()
 
 urlpatterns = patterns('',
-  #(r'^admin/(.*)', admin.site.root),
   (r'^admin/', include(admin.site.urls)),
   (r'^comments/', include('django.contrib.comments.urls')),
   (r'^exmo2010/', include('exmo.exmo2010.urls')),
   (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}),
   (r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}),
-  (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT} ),
   (r'^accounts/password_change$', 'django.contrib.auth.views.password_change', {'template_name':'exmo2010/password_change_form.html' }),
   (r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }),
   (r'^accounts/profile','exmo.exmo2010.view.user.user_profile'),
@@ -38,5 +36,6 @@ urlpatterns = patterns('',
   (r'^exmo2010/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))),
   (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
   (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
-  (r'^grappelli/', include('grappelli.urls')),
+  (r'^admin_tools/', include('admin_tools.urls')),
+  (r'^dashboard/', include('exmo.user_dashboard.urls', namespace='user_dashboard', app_name='user_dashboard')),
 )
