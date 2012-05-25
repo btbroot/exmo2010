@@ -24,31 +24,21 @@ PLUGINS_DIR = os.path.realpath(os.path.join(SITE_ROOT,'../plugins'))
 
 sys.path.append(PLUGINS_DIR)
 
-try:
-    from pkg_resources import working_set, Environment
-except ImportError:
-    Environment = None
-
-distributions, errors = working_set.find_plugins(Environment([PLUGINS_DIR]))
-map(working_set.add, distributions)
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-#TEMPLATE_STRING_IF_INVALID = 'INVALID TEMPLATE STRING %s'
 TEMPLATE_STRING_IF_INVALID = ''
-#INTERNAL_IPS = ('127.0.0.1',)
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Your Name', ''),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/al/exmo.sqlite3',
-        'USER': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'exmo2010',
+        'USER': 'root',
         'PASSWORD': '',
     }
 }
@@ -81,14 +71,14 @@ MEDIA_URL = SITE_PREFIX+'media/'
 
 STATIC_URL = SITE_PREFIX+'static/'
 
-ADMIN_MEDIA_PREFIX = STATIC_URL + "grappelli/"
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'zou(k9*+vc69ji$xlpy+e-poi1s6_*q3#0+)=(pgv(wxb&94dd'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
     'django.template.loaders.eggs.load_template_source',
 )
@@ -133,20 +123,23 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.comments',
+    'django.contrib.staticfiles',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.staticfiles',
     'django.contrib.sites',
-    'grappelli',
+    'admin_tools',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
     'django.contrib.admin',
     'django.contrib.admindocs',
-#    'debug_toolbar',
     'exmo.exmo2010',
     'reversion',
+    'south',
     'django403',
     'tagging',
     'tagging_autocomplete',
-    'south',
+    'exmo.user_dashboard',
 )
 
 try:
@@ -156,7 +149,9 @@ except ImportError:
     pass
 
 if DEBUG:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('exmo.middleware.StatsMiddleware',)
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
+    INTERNAL_IPS = ('127.0.0.1',)
 else:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
 
@@ -195,6 +190,7 @@ MAX_TAG_LENGTH = 255
 #tag autocomlete
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = SITE_PREFIX + 'exmo2010/static'
 
+
 #old variant
 CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + CACHE_TIMEOUT
 #new variant
@@ -208,4 +204,7 @@ CACHES = {
 
 DATETIME_FORMAT = "Y-m-d, H:i"
 
-GRAPPELLI_ADMIN_TITLE = "EXMO"
+ADMIN_TOOLS_INDEX_DASHBOARD = {
+    'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
+    'exmo.user_dashboard.site': 'exmo.user_dashboard.dashboard.CustomIndexDashboard',
+}
