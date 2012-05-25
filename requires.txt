@@ -22,3 +22,4 @@ tagging
 tagging-autocomplete
 #http://code.google.com/p/django-tagging-autocomplete/
 south
+grappelli

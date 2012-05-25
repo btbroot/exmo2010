@@ -18,6 +18,7 @@
 #
 {% endcomment %}
 {% load adminmedia %}
+{% load static %}
 <thead>
   {% for header in headers %}
     <td{{ header.class_attr|safe }}>
@@ -33,7 +34,7 @@
                 <option value="{{option.0}}">{{ option.1 }}</option>
                 {% endfor %}
             </select>
-            <input type="image" src="{% admin_media_prefix %}img/admin/selector-add.gif">
+            <input type="image" src="{% get_static_prefix %}admin/img/admin/selector-add.gif">
         {% else %}<input name="filter{{ header.i }}" value="{{ header.filter }}">
         {% endif %}
         <input name="o" value="{{ header.o }}" type="hidden">
