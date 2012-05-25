@@ -4,3 +4,4 @@ exmo/settings.py
 *.mo
 *.egg
 cache
+/static
