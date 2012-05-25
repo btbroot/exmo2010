@@ -39,3 +39,6 @@ urlpatterns = patterns('',
   (r'^admin_tools/', include('admin_tools.urls')),
   (r'^dashboard/', include('exmo.user_dashboard.urls', namespace='user_dashboard', app_name='user_dashboard')),
 )
+
+if settings.DEBUG:
+    urlpatterns += (url(r'', include('debug_toolbar_user_panel.urls')),)
