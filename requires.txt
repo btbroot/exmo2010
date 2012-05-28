@@ -22,6 +22,6 @@ tagging
 tagging-autocomplete
 #http://code.google.com/p/django-tagging-autocomplete/
 south
-hg+https://bitbucket.org/izi/django-admin-tools
+hg+https://bitbucket.org/bsavelev/django-admin-tools
 git+https://github.com/django-debug-toolbar/django-debug-toolbar.git
 git+https://github.com/playfire/django-debug-toolbar-user-panel.git
