@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponsePermanentRedirect
 from django.core.urlresolvers import reverse
+from exmo.user_dashboard import site as dashboard
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -37,7 +38,7 @@ urlpatterns = patterns('',
   (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
   (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
   (r'^admin_tools/', include('admin_tools.urls')),
-  (r'^dashboard/', include('exmo.user_dashboard.urls', namespace='user_dashboard', app_name='user_dashboard')),
+  (r'^dashboard/', include(dashboard.urls)),
 )
 
 if settings.DEBUG:

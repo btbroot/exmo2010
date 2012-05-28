@@ -16,8 +16,11 @@ from django.core.urlresolvers import reverse
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
 
+class UserDashboard(Dashboard):
+    # we want a 3 columns layout
+    columns = 3
 
-class CustomIndexDashboard(Dashboard):
+class CustomIndexDashboard(UserDashboard):
     """
     Custom index dashboard for exmo.
     """
@@ -33,25 +36,10 @@ class CustomIndexDashboard(Dashboard):
             children=[
                 [_('Return to site'), '/'],
                 [_('Change password'),
-                 reverse('%s:password_change' % site_name)],
-                [_('Log out'), reverse('%s:logout' % site_name)],
+                 reverse('django.contrib.auth.views.password_change')],
+                [_('Log out'), reverse('django.contrib.auth.views.logout')],
             ]
         ))
-
-        # append an app list module for "Applications"
-        self.children.append(modules.AppList(
-            _('Applications'),
-            exclude=('django.contrib.*',),
-        ))
-
-        # append an app list module for "Administration"
-        self.children.append(modules.AppList(
-            _('Administration'),
-            models=('django.contrib.*',),
-        ))
-
-        # append a recent actions module
-        self.children.append(modules.RecentActions(_('Recent Actions'), 5))
 
         # append a feed module
         self.children.append(modules.Feed(
@@ -81,31 +69,3 @@ class CustomIndexDashboard(Dashboard):
                 },
             ]
         ))
-
-
-class CustomAppIndexDashboard(AppIndexDashboard):
-    """
-    Custom app index dashboard for exmo.
-    """
-
-    # we disable title because its redundant with the model list module
-    title = ''
-
-    def __init__(self, *args, **kwargs):
-        AppIndexDashboard.__init__(self, *args, **kwargs)
-
-        # append a model list module and a recent actions module
-        self.children += [
-            modules.ModelList(self.app_title, self.models),
-            modules.RecentActions(
-                _('Recent Actions'),
-                include_list=self.get_app_content_types(),
-                limit=5
-            )
-        ]
-
-    def init_with_context(self, context):
-        """
-        Use this method if you need to access the request context.
-        """
-        return super(CustomAppIndexDashboard, self).init_with_context(context)

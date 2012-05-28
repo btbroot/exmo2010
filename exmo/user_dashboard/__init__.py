@@ -16,11 +16,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class DashboardSite(object):
-    def __init__(self, name = None, app_name = 'user_dashboard'):
-        if name:
-            self.name = name
-        else:
-            self.name = 'user_dashboard'
-
-site = DashboardSite()
+from exmo.user_dashboard.sites import site
