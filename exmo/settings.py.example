@@ -209,6 +209,11 @@ ADMIN_TOOLS_INDEX_DASHBOARD = {
     'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
 }
 
+ADMIN_TOOLS_MENU = {
+    'exmo.user_dashboard.site': 'exmo.user_dashboard.menu.CustomMenu',
+    'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
+}
+
 ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
 
 DEBUG_TOOLBAR_PANELS = (
