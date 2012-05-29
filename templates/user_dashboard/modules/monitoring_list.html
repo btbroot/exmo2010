@@ -16,7 +16,7 @@
 
         {% for object in child.object_list %}
             <li class="{% cycle 'odd' 'even' %}">
-                <a href="{{ object.get_absolute_link }}">{{ object }}</a>
+                <a href="{{ object.get_absolute_url }}">{{ object }}</a>
                 {% check_object_permission exmo2010.edit_monitoring object as perm %}
                 {% if perm %}
                     &nbsp;

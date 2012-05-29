@@ -6,7 +6,7 @@
         <ul class="{{ module.layout }}">
         {% for object in child.object_list %}
             <li class="{% cycle 'odd' 'even' %}">
-                <a href="{{ object.get_absolute_link }}">{{ object }}</a>
+                <a href="{{ object.get_absolute_url }}">{{ object }}</a>
             </li>
         {% endfor %}
         </ul>
