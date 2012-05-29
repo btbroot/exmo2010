@@ -16,10 +16,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-reversion
-tagging
+django-reversion
+#tagging
 #http://code.google.com/p/django-tagging/
-tagging-autocomplete
+#tagging-autocomplete
 #http://code.google.com/p/django-tagging-autocomplete/
 south
 hg+https://bitbucket.org/bsavelev/django-admin-tools
