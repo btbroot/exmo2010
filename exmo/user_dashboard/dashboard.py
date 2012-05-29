@@ -37,19 +37,9 @@ class CustomIndexDashboard(UserDashboard):
             deletable=False,
             collapsible=False,
             children=[
-                [_('Return to site'), '/'],
-                [_('Change password'),
-                 reverse('django.contrib.auth.views.password_change')],
-                 [_('Profile'), reverse('exmo.exmo2010.view.user.user_profile')],
-                [_('Log out'), reverse('django.contrib.auth.views.logout')],
-            ]
-        ))
-
-        # append a feed module
-        self.children.append(modules.Feed(
-            _('Svobodainfo news'),
-            feed_url='http://www.svobodainfo.org/rss.xml',
-            limit=10
+                ['holder','holder'],
+            ],
+            template = "user_dashboard/modules/quicklinks.html",
         ))
 
         # append another link list module for "support".
@@ -62,4 +52,11 @@ class CustomIndexDashboard(UserDashboard):
                 },
             ],
             template="user_dashboard/modules/monitoring_list.html",
+        ))
+
+        # append a feed module
+        self.children.append(modules.Feed(
+            _('Svobodainfo news'),
+            feed_url='http://www.svobodainfo.org/rss.xml',
+            limit=10
         ))
