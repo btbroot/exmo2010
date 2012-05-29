@@ -1,0 +1,15 @@
+{% extends "admin_tools/dashboard/module.html" %}
+{% block module_content %}
+    {% spaceless %}
+    {% for child in module.children %}
+        {% if child.title %}<h2>child.title</h2>{% endif %}
+        <ul class="{{ module.layout }}">
+        {% for object in child.object_list %}
+            <li class="{% cycle 'odd' 'even' %}">
+                <a href="{{ object.get_absolute_link }}">{{ object }}</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endfor %}
+    {% endspaceless %}
+{% endblock %}

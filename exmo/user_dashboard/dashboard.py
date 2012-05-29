@@ -15,6 +15,9 @@ from django.core.urlresolvers import reverse
 
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
+from exmo.user_dashboard import modules as custom_modules
+from exmo.exmo2010.view.monitoring import _get_monitoring_list
+from exmo.exmo2010 import models as exmo_models
 
 class UserDashboard(Dashboard):
     # we want a 3 columns layout
@@ -49,23 +52,13 @@ class CustomIndexDashboard(UserDashboard):
         ))
 
         # append another link list module for "support".
-        self.children.append(modules.LinkList(
-            _('Support'),
+        self.children.append(custom_modules.ObjectList(
+            _('Monitoring list'),
             children=[
                 {
-                    'title': _('Django documentation'),
-                    'url': 'http://docs.djangoproject.com/',
-                    'external': True,
+                    'title': None,
+                    'object_list': _get_monitoring_list(context['request']),
                 },
-                {
-                    'title': _('Django "django-users" mailing list'),
-                    'url': 'http://groups.google.com/group/django-users',
-                    'external': True,
-                },
-                {
-                    'title': _('Django irc channel'),
-                    'url': 'irc://irc.freenode.net/django',
-                    'external': True,
-                },
-            ]
+            ],
+            template="user_dashboard/modules/monitoring_list.html",
         ))

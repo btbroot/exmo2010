@@ -1,0 +1,34 @@
+{% extends "admin_tools/dashboard/module.html" %}
+{% load check_object_permission i18n %}
+{% block module_content %}
+    {% spaceless %}
+    {% for child in module.children %}
+        {% if child.title %}<h2>child.title</h2>{% endif %}
+        <ul class="{{ module.layout }}">
+        {% if child.object_list %}
+        {% with obj=child.object_list|first %}
+            {% check_object_permission exmo2010.create_monitoring obj as perm %}
+        {% if perm %}
+            <li><a href="{% url exmo.exmo2010.view.monitoring.monitoring_add %}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a></li>
+        {% endif %}
+        {% endwith %}
+        {% endif %}
+
+        {% for object in child.object_list %}
+            <li class="{% cycle 'odd' 'even' %}">
+                <a href="{{ object.get_absolute_link }}">{{ object }}</a>
+                {% check_object_permission exmo2010.edit_monitoring object as perm %}
+                {% if perm %}
+                    &nbsp;
+                    <a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'update' %}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
+                {% endif %}
+                {% check_object_permission exmo2010.admin_monitoring object as perm %}
+                {% if perm and not object.is_publish %}
+                    &nbsp;
+                    <a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'delete' %}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    {% endfor %}
+    {% endspaceless %}
+{% endblock %}
