@@ -58,5 +58,6 @@ class CustomIndexDashboard(UserDashboard):
         self.children.append(modules.Feed(
             _('Svobodainfo news'),
             feed_url='http://www.svobodainfo.org/rss.xml',
-            limit=10
+            limit=10,
+            template = "user_dashboard/modules/feed.html",
         ))
