@@ -20,7 +20,7 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Home' %}</a>&rsaquo;
+<div class="breadcrumbs"><a href="/">{% trans "Home' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.organization.organization_list object.task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{object.task.organization.monitoring}}</a>&rsaquo;
 <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization object.task.organization.monitoring.pk, object.task.organization.pk %}">{{ object.task.organization.name }}</a>&rsaquo;
