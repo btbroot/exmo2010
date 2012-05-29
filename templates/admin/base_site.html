@@ -1,7 +1,13 @@
 {% extends "admin/base.html" %}
 {% load i18n admin_tools_menu_tags %}
 
-{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+{% block title %}
+{% if user_dashboard %}
+{% if title %}{{ title }} | {% endif %}{% trans 'Exmo' %}
+{% else %}
+{{ title }} | {% trans 'Django site admin' %}
+{% endif %}
+{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
