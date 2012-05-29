@@ -65,6 +65,10 @@ class Monitoring(models.Model):
   def __unicode__(self):
     return '%s' % self.name
 
+  @models.permalink
+  def get_absolute_url(self):
+    return ('exmo.exmo2010.view.task.tasks_by_monitoring', [str(self.id)])
+
   def create_calendar(self):
     for status in self.MONITORING_STATUS:
         MonitoringStatus.objects.get_or_create(status = status[0], monitoring = self)
