@@ -47,9 +47,9 @@ class CustomIndexDashboard(UserDashboard):
 
         # append a feed module
         self.children.append(modules.Feed(
-            _('Latest Django News'),
-            feed_url='http://www.djangoproject.com/rss/weblog/',
-            limit=5
+            _('Svobodainfo news'),
+            feed_url='http://www.svobodainfo.org/rss.xml',
+            limit=10
         ))
 
         # append another link list module for "support".
