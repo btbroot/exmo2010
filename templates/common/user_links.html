@@ -1,0 +1,8 @@
+{% load i18n %}
+            {% if user.is_active %}
+            <a href="{% url exmo.exmo2010.view.user.user_profile %}">{% trans 'Profile' %}</a> /
+            <a href="{% url django.contrib.auth.views.password_change %}">{% trans 'Change password' %}</a> /
+            <a href="{% url django.contrib.auth.views.logout %}">{% trans 'Log out' %}</a>
+            {% else %}
+            <a href="{% url django.contrib.auth.views.login %}">{% trans 'Log in' %}</a>
+            {% endif %}
