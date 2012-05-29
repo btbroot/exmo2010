@@ -40,6 +40,7 @@ class CustomIndexDashboard(UserDashboard):
                 [_('Return to site'), '/'],
                 [_('Change password'),
                  reverse('django.contrib.auth.views.password_change')],
+                 [_('Profile'), reverse('exmo.exmo2010.view.user.user_profile')],
                 [_('Log out'), reverse('django.contrib.auth.views.logout')],
             ]
         ))
