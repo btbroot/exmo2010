@@ -42,13 +42,17 @@ from reversion import revision
 from exmo.helpers import UnicodeReader, UnicodeWriter
 import csv
 
-def monitoring_list(request):
+def _get_monitoring_list(request):
     monitorings_pk = []
     for m in Monitoring.objects.all().select_related():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    if not monitorings_pk and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()): return HttpResponseForbidden(_('Forbidden'))
     queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
+    return queryset
+
+def monitoring_list(request):
+    queryset = _get_monitoring_list(request)
+
     headers =   (
                 (_('monitoring'), 'name', 'name', None, None),
                 (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS_FULL),
@@ -62,6 +66,7 @@ def monitoring_list(request):
             status = Task.TASK_APPROVED,
             )
 
+    if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()): return HttpResponseForbidden(_('Forbidden'))
     return table(
         request,
         headers,
