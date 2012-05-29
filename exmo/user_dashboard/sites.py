@@ -42,7 +42,8 @@ class DashboardSite(object):
         context = {
             'title': _('Dashboard'),
             'app_list': None,
-            'root_path': None
+            'root_path': None,
+            'user_dashboard': True,
         }
         return render_to_response('admin/index.html', context,
             context_instance=RequestContext(request)
