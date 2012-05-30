@@ -50,15 +50,8 @@
         </div>
         <div id="user-tools">
             {% block userwelcome %}
-            {% trans 'Welcome,' %}
-            {% if user.is_active %}
-            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
-            {% else %}
-            <strong>Anonymous</strong>.
-            {% endif %}
             {% endblock %}
             {% block userlinks %}
-            {% include "common/user_links.html" %}
             {% endblock %}
         </div>
         {% block nav-global %}{% endblock %}
