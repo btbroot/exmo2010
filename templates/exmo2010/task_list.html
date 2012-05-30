@@ -37,15 +37,16 @@
 <table>
   {% table_header headers %}
   <tbody>
-    <tr><td colspan=5>
-        {% if perm_admin %}
+    {% if perm_admin %}
+        <tr><td colspan=5>
             {% if organization %}
                 <a href="{% url exmo2010:task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
             {% else %}
                 <a href="{% url exmo2010:task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
             {% endif %}
-        {%endif%}
-    </td></tr>
+
+        </td></tr>
+    {%endif%}
     {% for object in object_list %}
       <tr>
       <td>
