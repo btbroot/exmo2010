@@ -17,6 +17,7 @@
 #
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 urlpatterns = patterns('',
   url( r'^score/(\d+)_(\d+)/$', 'exmo.exmo2010.view.score.score_add', name='score_add'),
@@ -63,4 +64,14 @@ urlpatterns = patterns('',
   url( r'^monitoring/(\d+)/parameter_found_report/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_found_report', name='monitoring_parameter_found_report'),
   url( r'^monitoring/(\d+)/rating/$', 'exmo.exmo2010.view.monitoring.monitoring_rating', name='monitoring_rating'),
   url( r'^monitoring/(\d+)/by_criteria_mass_export/$', 'exmo.exmo2010.view.monitoring.monitoring_by_criteria_mass_export', name='monitoring_by_criteria_mass_export'),
+)
+
+
+urlpatterns += patterns('',
+  url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}, name='login'),
+  url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}, name='logout'),
+  url(r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }, name='password_change_done'),
+  url(r'^accounts/password_change$','exmo.exmo2010.view.user.exmo_password_change', name='password_change'),
+  url(r'^accounts/profile','exmo.exmo2010.view.user.user_profile', name='user_profile'),
+  url(r'^accounts/profile/(\d+)$','exmo.exmo2010.view.user.user_profile', name='user_profile'),
 )
