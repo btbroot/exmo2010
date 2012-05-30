@@ -16,14 +16,25 @@ class CustomMenu(Menu):
     """
     Custom Menu for exmo admin site.
     """
-    def __init__(self, **kwargs):
-        Menu.__init__(self, **kwargs)
-        self.children += [
+    def init_with_context(self, context):
+        self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
         ]
-
-    def init_with_context(self, context):
-        """
-        Use this method if you need to access the request context.
-        """
-        return super(CustomMenu, self).init_with_context(context)
+        request = context['request']
+        if request.user.is_active:
+            children = [
+                items.MenuItem(_('Profile'), reverse('exmo2010:user_profile')),
+                items.MenuItem(_('Change password'), reverse('exmo2010:password_change')),
+                items.MenuItem(_('Log out'), reverse('exmo2010:logout')),
+            ]
+            if request.user.get_full_name():
+                welcome_msg = request.user.get_full_name()
+            else:
+                welcome_msg = request.user.username
+        else:
+            children = [
+                items.MenuItem(_('Log in'), reverse('exmo2010:login')),
+            ]
+            welcome_msg = "Anonymous"
+        msg = _('Welcome,') + ' ' + welcome_msg
+        self.children.append(items.MenuItem(msg, children = children))
