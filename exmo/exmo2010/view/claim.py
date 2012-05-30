@@ -34,7 +34,7 @@ from datetime import datetime, timedelta
 @login_required
 def claim_manager(request, score_id, claim_id=None, method=None):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = reverse('exmo.exmo2010.view.score.score_view', args=[score.pk])
+    redirect = reverse('exmo2010:score_view', args=[score.pk])
     title = _('Add new claim for %s') % score
     if claim_id:
         claim = get_object_or_404(Claim, pk = claim_id)

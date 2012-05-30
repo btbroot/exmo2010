@@ -21,21 +21,21 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 class DashboardSite(object):
-    def __init__(self, name = None, app_name = 'user_dashboard'):
+    def __init__(self, name = None, app_name = 'exmo2010'):
         self._registry = {}
         if name:
             self.name = name
         else:
-            self.name = 'user_dashboard'
+            self.name = 'exmo2010'
         self.app_name = app_name
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url, include
+        from exmo.exmo2010.urls import urlpatterns as exmourls
         urlpatterns = patterns('',
-            url(r'^$',
-                self.index,
-                name='index'),
+            url(r'^$', self.index, name='index'),
         )
+        urlpatterns += exmourls
         return urlpatterns
 
     def index(self, request, extra_context=None):
@@ -45,7 +45,7 @@ class DashboardSite(object):
             'root_path': None,
             'user_dashboard': True,
         }
-        return render_to_response('admin/index.html', context,
+        return render_to_response('exmo2010/index.html', context,
             context_instance=RequestContext(request)
         )
 

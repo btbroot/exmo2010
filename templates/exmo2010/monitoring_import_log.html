@@ -22,8 +22,8 @@
 {% block title %}{% trans "Import results" %} {{monitoring}}/{{file}} {% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager monitoring.pk 'update' %}">{% trans 'Edit monitoring' %} {{monitoring}}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_manager monitoring.pk 'update' %}">{% trans 'Edit monitoring' %} {{monitoring}}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -31,6 +31,6 @@
 
 {% include "exmo2010/csv_import_log.html" %}
 
-<div id=back><a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager monitoring.pk 'update' %}">{% trans "Back to the monitoring" %}</a></div>
+<div id=back><a href="{% url exmo2010:monitoring_manager monitoring.pk 'update' %}">{% trans "Back to the monitoring" %}</a></div>
 
 {% endblock %}

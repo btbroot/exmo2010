@@ -21,9 +21,9 @@
 {% load i18n %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
+<a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, organization.pk %}">{{ organization.name }}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -31,10 +31,10 @@
 {% if deleted_objects %}
 {% trans 'When you delete task you also delete this scores:'%}<br>
 {% for do in deleted_objects %}
-<a href="{% url exmo.exmo2010.view.score.score_view do.pk %}">{{ do }}</a><br>
+<a href="{% url exmo2010:score_view do.pk %}">{{ do }}</a><br>
 {% endfor %}
 {% endif %}
-<form method="post" action="{% url exmo.exmo2010.view.task.task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">{% csrf_token %}
+<form method="post" action="{% url exmo2010:task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">{% csrf_token %}
   <p>{% trans 'Delete this task?' %}</p>
   <p><input type="submit" /></p>
 </form>

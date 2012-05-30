@@ -21,8 +21,8 @@
 {% load i18n %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
-<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{{ monitoring }}</a>&rsaquo;&nbsp;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;&nbsp;
+<a href="{% url exmo2010:organization_list monitoring.pk %}">{{ monitoring }}</a>&rsaquo;&nbsp;
 {{ title }}
 </div>
 {% endblock %}
@@ -30,11 +30,11 @@
 {% if deleted_objects %}
 {% trans 'When you delete organization you also delete this tasks:'%}<br>
 {% for do in deleted_objects %}
-<a href="{% url exmo.exmo2010.view.score.score_list_by_task do.pk %}">{{ do }}</a><br>
+<a href="{% url exmo2010:score_list_by_task do.pk %}">{{ do }}</a><br>
 {% endfor %}
 {% endif %}
 
-<form method="post" action="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk,object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
+<form method="post" action="{% url exmo2010:organization_manager monitoring.pk,object.pk,'delete' %}?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{% trans 'Delete this organization?' %}</p>
   <p><input type="submit" /></p>
 </form>

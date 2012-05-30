@@ -29,7 +29,7 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -57,7 +57,7 @@
         <td>{{claim.open_date}}</td>
         <td>{{claim.close_date}}</td>
         <td>{{claim.score.task.organization}}</td>
-        <td><a href="{% url exmo.exmo2010.view.score.score_view claim.score.pk %}">{{claim.score.parameter}}</a></td>
+        <td><a href="{% url exmo2010:score_view claim.score.pk %}">{{claim.score.parameter}}</a></td>
     {% endfor %}
     </tbody>
     </table>

@@ -19,53 +19,48 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 urlpatterns = patterns('',
-  ( r'^admin/doc/', include('django.contrib.admindocs.urls')),
-  ( r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_DOC_ROOT} ),
+  url( r'^score/(\d+)_(\d+)/$', 'exmo.exmo2010.view.score.score_add', name='score_add'),
+  url( r'^score/(\d+)_(\w+)/$', 'exmo.exmo2010.view.score.score_manager', name='score_manager'),
+  url( r'^score/(\d+)/$', 'exmo.exmo2010.view.score.score_view', name='score_view'),
+  url( r'^scores/(\d+)/(print|printfull)?$', 'exmo.exmo2010.view.score.score_list_by_task', name='score_list_by_task'),
+  url( r'^score/(\d+)/comment/add$', 'exmo.exmo2010.view.score.score_add_comment', name='score_add_comment'),
 
 
-  ( r'^score/(\d+)_(\d+)/$', 'exmo.exmo2010.view.score.score_add'),
-  ( r'^score/(\d+)_(\w+)/$', 'exmo.exmo2010.view.score.score_manager'),
-  ( r'^score/(\d+)/$', 'exmo.exmo2010.view.score.score_view'),
-  ( r'^scores/(\d+)/(print|printfull)?$', 'exmo.exmo2010.view.score.score_list_by_task' ),
-  ( r'^score/(\d+)/comment/add$', 'exmo.exmo2010.view.score.score_add_comment' ),
+  url( r'^score/(\d+)/claim/add$', 'exmo.exmo2010.view.claim.claim_manager', name='claim_manager'),
+  url( r'^monitoring/(\d+)/claims/$', 'exmo.exmo2010.view.claim.claim_report', name='claim_report'),
 
 
-  ( r'^score/(\d+)/claim/add$', 'exmo.exmo2010.view.claim.claim_manager' ),
-  ( r'^monitoring/(\d+)/claims/$', 'exmo.exmo2010.view.claim.claim_report' ),
+  url( r'^tasks/$', 'exmo.exmo2010.view.task.tasks' ),
+  url( r'^tasks/task/(\d+)_(\w+)/$', 'exmo.exmo2010.view.task.task_manager', name='task_manager'),
+  url( r'^monitoring/(\d+)/organization/(\d+)/task/(\d+)_(\w+)/$', 'exmo.exmo2010.view.task.task_manager', name='task_manager'),
+  url( r'^tasks/taskimport/(\d+)/$', 'exmo.exmo2010.view.task.task_import', name='task_import'),
+  url( r'^tasks/taskexport/(\d+)/$', 'exmo.exmo2010.view.task.task_export', name='task_export'),
+  url( r'^monitoring/(\d+)/task/add/$', 'exmo.exmo2010.view.task.task_add', name='task_add'),
+  url( r'^monitoring/(\d+)/organization/(\d+)/task/add/$', 'exmo.exmo2010.view.task.task_add', name='task_add'),
+  url( r'^monitoring/(\d+)/tasks/$', 'exmo.exmo2010.view.task.tasks_by_monitoring', name='tasks_by_monitoring'),
+  url( r'^monitoring/(\d+)/organization/(\d+)/tasks/$', 'exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', name='tasks_by_monitoring_and_organization'),
+  url( r'^monitoring/(\d+)/mass_assign_tasks/$', 'exmo.exmo2010.view.task.task_mass_assign_tasks', name='task_mass_assign_tasks'),
 
 
-  ( r'^tasks/$', 'exmo.exmo2010.view.task.tasks' ),
-  ( r'^tasks/task/(\d+)_(\w+)/$', 'exmo.exmo2010.view.task.task_manager' ),
-  ( r'^monitoring/(\d+)/organization/(\d+)/task/(\d+)_(\w+)/$', 'exmo.exmo2010.view.task.task_manager' ),
-  ( r'^tasks/taskimport/(\d+)/$', 'exmo.exmo2010.view.task.task_import' ),
-  ( r'^tasks/taskexport/(\d+)/$', 'exmo.exmo2010.view.task.task_export' ),
-  ( r'^monitoring/(\d+)/task/add/$', 'exmo.exmo2010.view.task.task_add' ),
-  ( r'^monitoring/(\d+)/organization/(\d+)/task/add/$', 'exmo.exmo2010.view.task.task_add' ),
-  ( r'^monitoring/(\d+)/tasks/$', 'exmo.exmo2010.view.task.tasks_by_monitoring' ),
-  ( r'^monitoring/(\d+)/organization/(\d+)/tasks/$', 'exmo.exmo2010.view.task.tasks_by_monitoring_and_organization' ),
-  ( r'^monitoring/(\d+)/mass_assign_tasks/$', 'exmo.exmo2010.view.task.task_mass_assign_tasks' ),
+  url( r'^monitoring/(\d+)/organizations/$', 'exmo.exmo2010.view.organization.organization_list', name='organization_list'),
+  url( r'^monitoring/(\d+)/organization/(\d+)_(\w+)/$', 'exmo.exmo2010.view.organization.organization_manager', name='organization_manager'),
 
 
-  ( r'^monitoring/(\d+)/organizations/$', 'exmo.exmo2010.view.organization.organization_list' ),
-  ( r'^monitoring/(\d+)/organization/(\d+)_(\w+)/$', 'exmo.exmo2010.view.organization.organization_manager' ),
+  url( r'^tasks/task/(\d+)/parameter/(\d+)_(\w+)/$', 'exmo.exmo2010.view.parameter.parameter_manager', name='parameter_manager'),
+  url( r'^tasks/task/(\d+)/parameter/add/$', 'exmo.exmo2010.view.parameter.parameter_add',name='parameter_add'),
 
 
-  ( r'^tasks/task/(\d+)/parameter/(\d+)_(\w+)/$', 'exmo.exmo2010.view.parameter.parameter_manager' ),
-  ( r'^tasks/task/(\d+)/parameter/add/$', 'exmo.exmo2010.view.parameter.parameter_add' ),
-
-
-  ( r'^monitorings/$', 'exmo.exmo2010.view.monitoring.monitoring_list' ),
-  ( r'^monitoring/add/$', 'exmo.exmo2010.view.monitoring.monitoring_add' ),
-  ( r'^monitoring/(\d+)_(\w+)/$', 'exmo.exmo2010.view.monitoring.monitoring_manager' ),
-  ( r'^monitoring/(\d+)/experts/$', 'exmo.exmo2010.view.monitoring.monitoring_by_experts' ),
-  ( r'^monitoring/(\d+)/comment_report/$', 'exmo.exmo2010.view.monitoring.monitoring_comment_report' ),
-  ( r'^monitoring/(\d+)/parameter_export/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_export' ),
-  ( r'^monitoring/(\d+)/parameter_import/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_import' ),
-  ( r'^monitoring/(\d+)/organization_export/$', 'exmo.exmo2010.view.monitoring.monitoring_organization_export' ),
-  ( r'^monitoring/(\d+)/organization_import/$', 'exmo.exmo2010.view.monitoring.monitoring_organization_import' ),
-  ( r'^monitoring/(\d+)/parameter_filter/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_filter' ),
-  ( r'^monitoring/(\d+)/parameter_found_report/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_found_report' ),
-  ( r'^monitoring/(\d+)/rating/$', 'exmo.exmo2010.view.monitoring.monitoring_rating' ),
-  ( r'^monitoring/(\d+)/by_criteria_mass_export/$', 'exmo.exmo2010.view.monitoring.monitoring_by_criteria_mass_export' ),
-  
+  url( r'^monitorings/$', 'exmo.exmo2010.view.monitoring.monitoring_list', name='monitoring_list'),
+  url( r'^monitoring/add/$', 'exmo.exmo2010.view.monitoring.monitoring_add', name='monitoring_add'),
+  url( r'^monitoring/(\d+)_(\w+)/$', 'exmo.exmo2010.view.monitoring.monitoring_manager', name='monitoring_manager'),
+  url( r'^monitoring/(\d+)/experts/$', 'exmo.exmo2010.view.monitoring.monitoring_by_experts', name='monitoring_by_experts'),
+  url( r'^monitoring/(\d+)/comment_report/$', 'exmo.exmo2010.view.monitoring.monitoring_comment_report',name='monitoring_comment_report'),
+  url( r'^monitoring/(\d+)/parameter_export/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_export', name='monitoring_parameter_export'),
+  url( r'^monitoring/(\d+)/parameter_import/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_import', name='monitoring_parameter_import'),
+  url( r'^monitoring/(\d+)/organization_export/$', 'exmo.exmo2010.view.monitoring.monitoring_organization_export', name='monitoring_organization_export'),
+  url( r'^monitoring/(\d+)/organization_import/$', 'exmo.exmo2010.view.monitoring.monitoring_organization_import', name='monitoring_organization_import'),
+  url( r'^monitoring/(\d+)/parameter_filter/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_filter', name='monitoring_parameter_filter'),
+  url( r'^monitoring/(\d+)/parameter_found_report/$', 'exmo.exmo2010.view.monitoring.monitoring_parameter_found_report', name='monitoring_parameter_found_report'),
+  url( r'^monitoring/(\d+)/rating/$', 'exmo.exmo2010.view.monitoring.monitoring_rating', name='monitoring_rating'),
+  url( r'^monitoring/(\d+)/by_criteria_mass_export/$', 'exmo.exmo2010.view.monitoring.monitoring_by_criteria_mass_export', name='monitoring_by_criteria_mass_export'),
 )

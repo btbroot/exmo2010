@@ -22,10 +22,10 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.organization.organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a>&rsaquo;
+<a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo2010:score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -107,12 +107,12 @@
     {% if object %}
     {% check_object_permission exmo2010.delete_score object as can_delete %}
     {% if can_delete %}
-    &nbsp;<INPUT TYPE="BUTTON" STYLE='background: red' VALUE="{% trans 'Delete' %}" ONCLICK="window.location.href='{% url exmo.exmo2010.view.score.score_manager object.pk,'delete' %}?{{request.GET.urlencode}}'" />
+    &nbsp;<INPUT TYPE="BUTTON" STYLE='background: red' VALUE="{% trans 'Delete' %}" ONCLICK="window.location.href='{% url exmo2010:score_manager object.pk,'delete' %}?{{request.GET.urlencode}}'" />
     {% endif %}
     {% endif %}
     {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
     {% if perm %}
-        &nbsp;<INPUT TYPE="BUTTON" STYLE='background: #CC3333' VALUE="{% trans 'Set non-relevant' %}" ONCLICK="window.location.href='{% url exmo.exmo2010.view.parameter.parameter_manager task.pk,parameter.pk,'exclude' %}?{{request.GET.urlencode}}'" />
+        &nbsp;<INPUT TYPE="BUTTON" STYLE='background: #CC3333' VALUE="{% trans 'Set non-relevant' %}" ONCLICK="window.location.href='{% url exmo2010:parameter_manager task.pk,parameter.pk,'exclude' %}?{{request.GET.urlencode}}'" />
     {% endif %}
   </p>
 </form>

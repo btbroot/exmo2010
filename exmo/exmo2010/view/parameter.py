@@ -33,7 +33,7 @@ from django.template import RequestContext
 def parameter_manager(request, task_id, id, method):
     task = get_object_or_404(Task, pk = task_id)
     parameter = get_object_or_404(Parameter, pk = id)
-    redirect = '%s?%s' % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode())
+    redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
@@ -77,7 +77,7 @@ def parameter_add(request, task_id):
     task = get_object_or_404(Task, pk = task_id)
     if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    redirect = '%s?%s' % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode())
+    redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     title = _('Add parameter for %s') % task
     form = None

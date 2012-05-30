@@ -158,7 +158,7 @@ def task_import(request, id):
     if not request.user.has_perm('exmo2010.fill_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
-        return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_list_by_task', args=[id]))
+        return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[id]))
     reader = UnicodeReader(request.FILES['taskfile'])
     errLog = []
     rowOKCount = 0
@@ -244,7 +244,7 @@ def task_import(request, id):
 
 
 def tasks(request):
-    return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
+    return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
 
 
 
@@ -302,11 +302,11 @@ def task_add(request, monitoring_id, organization_id=None):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     if organization_id:
         organization = get_object_or_404(Organization, pk = organization_id)
-        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
         title = _('Add new task for %s') % organization.name
     else:
         organization = None
-        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
+        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
         title = _('Add new task for %s') % monitoring
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
@@ -353,9 +353,9 @@ def task_manager(request, id, method, monitoring_id=None, organization_id=None):
         q = request.GET.copy()
         if organization_from_get:
             q.pop('organization')
-        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
+        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
     else:
-        redirect = '%s?%s' % (reverse('exmo.exmo2010.view.task.tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
+        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete task %s') % task

@@ -26,7 +26,7 @@
 <table>
 {% for task in active_tasks %}
 <tr><td>
-<a href="{% url exmo.exmo2010.view.score.score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:&nbsp;{{ task.organization.name|truncatewords:10 }}</a>
+<a href="{% url exmo2010:score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:&nbsp;{{ task.organization.name|truncatewords:10 }}</a>
 </td></tr>
 {% endfor %}
 </table>
@@ -41,20 +41,20 @@
     <tr><td colspan=2>
         {% check_object_permission exmo2010.create_monitoring fakeobject as perm %}
         {%if perm%}
-            <a href="{% url exmo.exmo2010.view.monitoring.monitoring_add %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
+            <a href="{% url exmo2010:monitoring_add %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
         {%endif%}
     </td></tr>
     {% for object in object_list %}
       <tr>
       <td>
-      <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring object.pk %}">{{ object.name }}</a>
+      <a href="{% url exmo2010:tasks_by_monitoring object.pk %}">{{ object.name }}</a>
         {% check_object_permission exmo2010.edit_monitoring object as perm %}
         {% if perm %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
         {% check_object_permission exmo2010.admin_monitoring object as perm %}
         {% if perm and not object.is_publish %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.monitoring.monitoring_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
         {%endif%}
       </td>
       <td>

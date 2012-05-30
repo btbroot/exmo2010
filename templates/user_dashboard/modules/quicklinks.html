@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block module_content %}
 <ul>
-            <li><a href="{% url user_dashboard:index %}">{% trans 'Dashboard' %}</a></li>
+            <li><a href="{% url exmo2010:index %}">{% trans 'Dashboard' %}</a></li>
             {% if user.is_active %}
             <li><a href="{% url exmo.exmo2010.view.user.user_profile %}">{% trans 'Profile' %}</a></li>
             <li><a href="{% url django.contrib.auth.views.password_change %}">{% trans 'Change password' %}</a></li>

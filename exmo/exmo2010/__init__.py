@@ -29,6 +29,7 @@ from exmo.exmo2010.helpers import create_calendar
 from exmo.exmo2010.helpers import score_change_notify
 from django.db.models.signals import post_save
 
+from exmo.exmo2010.sites import site
 
 
 from django.conf import settings

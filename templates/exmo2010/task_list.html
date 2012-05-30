@@ -21,9 +21,9 @@
 {% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {% if organization %}
-<a href="{% url exmo.exmo2010.view.organization.organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
+<a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
 {% endif %}
 {{title}}
 </div>
@@ -40,9 +40,9 @@
     <tr><td colspan=5>
         {% if perm_admin %}
             {% if organization %}
-                <a href="{% url exmo.exmo2010.view.task.task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo2010:task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
             {% else %}
-                <a href="{% url exmo.exmo2010.view.task.task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo2010:task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
             {% endif %}
         {%endif%}
     </td></tr>
@@ -53,12 +53,12 @@
         {% if object.organization.monitoring.is_revision and object.user != user and user.profile.is_expertB and not user.profile.is_expertA %}
         style="color:red"
         {% endif %}
-         href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
+         href="{% url exmo2010:score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {%if perm_admin %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:task_manager object.pk,'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
         {% if perm_admin and not monitoring.is_publish %}
-            <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif"></a>
+            <a href="{% url exmo2010:task_manager object.pk,'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif"></a>
         {%endif%}
       </td>
       {% if perm_admin or user.userprofile.is_expertA %}<td>{{ object.user.username }}</td>{%endif%}
@@ -67,37 +67,37 @@
         {% if object.open %}
          {% check_object_permission exmo2010.close_task object as perm %}
          {% task_status object.status %}
-         {% if perm %} : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
+         {% if perm %} : <a href="{% url exmo2010:task_manager object.pk,'close' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'close' %}</a>
          {% endif %}
         {% endif %}
         {% if object.ready %}
          {% check_object_permission exmo2010.check_task object as perm %}
          {% task_status object.status %}
          {% if perm %}
-          : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'check' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'check' %}</a>
+          : <a href="{% url exmo2010:task_manager object.pk,'check' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'check' %}</a>
          {% endif %}
          {% check_object_permission exmo2010.open_task object as perm %}
          {% if perm %}
-          / <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+          / <a href="{% url exmo2010:task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
         {% if object.checked %}
          {% check_object_permission exmo2010.approve_task object as perm %}
          {% task_status object.status %}
          {% if perm %}
-          : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
+          : <a href="{% url exmo2010:task_manager object.pk,'approve' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'approve' %}</a>
          {% endif %}
         {% endif %}
         {% if object.approved %}
          {% task_status object.status %}
          {% check_object_permission exmo2010.open_task object as perm %}
          {% if perm %}
-          : <a href="{% url exmo.exmo2010.view.task.task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
+          : <a href="{% url exmo2010:task_manager object.pk,'open' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}">{% trans 'open' %}</a>
          {% endif %}
         {% endif %}
       </td>
       {% endif %}
-      <td><a href="{% url exmo.exmo2010.view.score.score_list_by_task object.pk %}">{{ object.complete|floatformat:1 }}</a></td>
+      <td><a href="{% url exmo2010:score_list_by_task object.pk %}">{{ object.complete|floatformat:1 }}</a></td>
       {% if organization %}<td>{{ object.openness|floatformat:3 }}</td>{% endif %}
       </tr>
     {% endfor %}

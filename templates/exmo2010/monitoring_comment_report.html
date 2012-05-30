@@ -32,7 +32,7 @@ function toggle(el) {
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {{ title }}
 </div>
 {% endblock %}
@@ -99,7 +99,7 @@ Total: {{ iifd_comments|length }}
 {% if fail_comments_without_reply %}
 <ul>
 {% for c in fail_comments_without_reply %}
-<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -111,7 +111,7 @@ Total: {{ iifd_comments|length }}
 {% if fail_soon_comments_without_reply %}
 <ul>
 {% for c in fail_soon_comments_without_reply %}
-<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -123,7 +123,7 @@ Total: {{ iifd_comments|length }}
 {% if comments_without_reply %}
 <ul>
 {% for c in comments_without_reply %}
-<li><a href="{% url exmo.exmo2010.view.score.score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.user }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}

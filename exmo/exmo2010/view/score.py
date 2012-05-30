@@ -40,9 +40,9 @@ def score_add(request, task_id, parameter_id):
     except Score.DoesNotExist:
         pass
     else:
-        return HttpResponseRedirect(reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
+        return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
     if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.code)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.code)
     redirect = redirect.replace("%","%%")
     return create_object(
         request,
@@ -63,7 +63,7 @@ from exmo.exmo2010.helpers import construct_change_message
 @login_required
 def score_manager(request, score_id, method='update'):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if method == 'delete':
       title = _('Delete score %s') % score.parameter
@@ -80,7 +80,7 @@ def score_manager(request, score_id, method='update'):
 
 def score_view(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo.exmo2010.view.score.score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.edit_score', score):
         title = _('Edit score %s') % score.parameter

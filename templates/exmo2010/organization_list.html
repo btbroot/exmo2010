@@ -21,7 +21,7 @@
 {% load table_header i18n adminmedia monitoring_stats check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -36,17 +36,17 @@
     <tr><td>
         {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
         {%if perm%}
-            <a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
+            <a href="{% url exmo2010:organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
         {%endif%}</td></tr>
     {% for object in object_list %}
       <tr>
       <td>
-      <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
+      <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
         {% if perm %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
+            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
         {%endif%}
         {% if perm and not monitoring.is_publish %}
-            &nbsp;<a href="{% url exmo.exmo2010.view.organization.organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
+            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
         {%endif%}
       </td>
       {% if perm %}

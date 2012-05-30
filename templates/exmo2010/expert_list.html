@@ -21,7 +21,7 @@
 {% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo.exmo2010.view.monitoring.monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 {{title}}
 </div>
 {% endblock %}
@@ -37,19 +37,19 @@
     {% for object in object_list %}
       <tr>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.username }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.username }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo.exmo2010.view.task.tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
       </td>
       </tr>
     {% endfor %}

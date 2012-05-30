@@ -50,19 +50,19 @@ Total: {{ iifd_comments_count }}
 Comments list from organizations without reply and date out of limit:
 {% for c in fail_comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo.exmo2010.view.score.score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
 Comments list from organization that needs to reply today (exclude list above):
 {% for c in fail_soon_comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo.exmo2010.view.score.score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
 Comments list from organization that needs to reply (exclude list above):
 {% for c in comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo.exmo2010.view.score.score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
 {% endfor %}
 {% endwith %}
 {% endspaceless %}

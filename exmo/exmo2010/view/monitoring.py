@@ -83,7 +83,7 @@ def monitoring_list(request):
 
 @login_required
 def monitoring_manager(request, id, method):
-    redirect = '%s?%s' % (reverse('exmo.exmo2010.view.monitoring.monitoring_list'), request.GET.urlencode())
+    redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     monitoring = get_object_or_404(Monitoring, pk = id)
     if method == 'delete':
@@ -154,7 +154,7 @@ def monitoring_add(request):
         form = MonitoringForm(request.POST)
         if form.is_valid:
             monitoring_instance = form.save()
-            redirect = reverse('exmo.exmo2010.view.monitoring.monitoring_manager', args=[monitoring_instance.pk, 'update'])
+            redirect = reverse('exmo2010:monitoring_manager', args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
     else:
         form = MonitoringForm()
@@ -565,7 +565,7 @@ def monitoring_organization_import(request, id):
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('orgfile'):
-        return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
+        return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
     reader = UnicodeReader(request.FILES['orgfile'])
     errLog = []
     rowOKCount = 0
@@ -637,7 +637,7 @@ def monitoring_parameter_import(request, id):
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('paramfile'):
-        return HttpResponseRedirect(reverse('exmo.exmo2010.view.monitoring.monitoring_list'))
+        return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
     reader = UnicodeReader(request.FILES['paramfile'])
     errLog = []
     rowOKCount = 0

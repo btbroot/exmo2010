@@ -43,7 +43,7 @@ def user_profile(request, id=None):
         if uform.is_valid() and pform.is_valid():
             user = uform.save()
             profile = pform.save()
-            redirect = reverse('exmo.exmo2010.view.user.user_profile', args=[user.pk])
+            redirect = reverse('exmo2010:user_profile', args=[user.pk])
             messages.append(_("The %(verbose_name)s was updated successfully.") %\
                                     {"verbose_name": user.profile._meta.verbose_name})
     else:

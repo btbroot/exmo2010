@@ -47,7 +47,7 @@
 {% endif %}
 {% check_object_permission exmo2010.add_claim object as perm %}
 {% if perm %}
-    <p><a href="{% url exmo.exmo2010.view.claim.claim_manager object.pk %}">{% trans 'Add new claim' %}</a></p>
+    <p><a href="{% url exmo2010:claim_manager object.pk %}">{% trans 'Add new claim' %}</a></p>
 {% endif %}
 </div>
 {% endif %}

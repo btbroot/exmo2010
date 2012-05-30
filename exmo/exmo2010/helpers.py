@@ -121,7 +121,7 @@ def comment_notification(sender, **kwargs):
     nonadmin_rcpt=list(set(nonadmin_rcpt))
 
 
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
     message = t.render(c)
@@ -157,7 +157,7 @@ def claim_notification(sender, **kwargs):
             }
 
 
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
     c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': False })
     message_nonadmin=t.render(c)
@@ -255,7 +255,7 @@ def score_change_notify(sender, **kwargs):
         headers = {
             'X-iifd-exmo': 'score_changed_notification'
         }
-        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo.exmo2010.view.score.score_view', args=[score.pk]))
+        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
         t = loader.get_template('exmo2010/score_email.html')
         c = Context({ 'score': score, 'url': url, 'changes': changes, })
         message = t.render(c)
