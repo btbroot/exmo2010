@@ -26,6 +26,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response
+from django.contrib import messages
 
 @csrf_protect
 @login_required
@@ -34,7 +35,6 @@ def user_profile(request, id=None):
         _user = get_object_or_404(User, pk = id)
     else:
         _user = request.user
-    messages = []
     if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
     if request.method == 'POST':
@@ -43,8 +43,11 @@ def user_profile(request, id=None):
         if uform.is_valid() and pform.is_valid():
             user = uform.save()
             profile = pform.save()
-            redirect = reverse('exmo2010:user_profile', args=[user.pk])
-            messages.append(_("The %(verbose_name)s was updated successfully.") %\
+            if id:
+                redirect = reverse('exmo2010:user_profile', args=[user.pk])
+            else:
+                redirect = reverse('exmo2010:user_profile')
+            messages.add_message(request, messages.INFO, _("The %(verbose_name)s was updated successfully.") %\
                                     {"verbose_name": user.profile._meta.verbose_name})
     else:
         uform = UserForm(instance = _user)
@@ -55,7 +58,7 @@ def user_profile(request, id=None):
             'uform': uform,
             'pform': pform,
             'object': _user,
-            'messages': messages,
+            'id': id,
         },
         context_instance=RequestContext(request))
 
@@ -66,3 +69,18 @@ def exmo_password_change(request, **kwargs):
     kwargs['post_change_redirect'] = reverse('exmo2010:password_change_done')
     return password_change(request, **kwargs)
 
+from admin_tools.dashboard.models import DashboardPreferences
+@csrf_protect
+@login_required
+def user_reset_dashboard(request):
+    if request.method == 'POST':
+        try:
+            pref = DashboardPreferences.objects.get(dashboard_id = 'exmo2010', user = request.user)
+            pref.data = '{}'
+            pref.save()
+        except DashboardPreferences.DoesNotExist:
+            pass
+        messages.add_message(request, messages.INFO, _('Dashboard preferences was reset.'))
+        return HttpResponseRedirect(reverse('exmo2010:user_profile'))
+    else:
+        return HttpResponseForbidden(_('Forbidden'))

@@ -26,6 +26,9 @@ class UserDashboard(Dashboard):
         js = ('dashboard/js/jquery.dashboard.js',)
         css = ()
 
+    def get_id(self):
+        return 'exmo2010'
+
 class CustomIndexDashboard(UserDashboard):
     """
     Custom index dashboard for exmo.

@@ -24,11 +24,20 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="{% url exmo2010:user_profile object.pk%}">{% csrf_token %}
+{% if id %}
+<form method="post" action="{% url exmo2010:user_profile id %}">{% csrf_token %}
+{% else %}
+<form method="post" action="{% url exmo2010:user_profile %}">{% csrf_token %}
+{% endif %}
 <table>
 {{uform.as_table}}
 {{pform.as_table}}
 </table>
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
+<p>
+<form method="post" action="{% url exmo2010:user_reset_dashboard %}">{% csrf_token %}
+<INPUT TYPE="submit" VALUE="{% trans 'Reset dashboard preferences' %}">
+</form>
+</p>
 {% endblock %}

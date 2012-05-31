@@ -74,4 +74,5 @@ urlpatterns += patterns('',
   url(r'^accounts/password_change$','exmo.exmo2010.view.user.exmo_password_change', name='password_change'),
   url(r'^accounts/profile','exmo.exmo2010.view.user.user_profile', name='user_profile'),
   url(r'^accounts/profile/(\d+)$','exmo.exmo2010.view.user.user_profile', name='user_profile'),
+  url(r'^accounts/dashboard_reset$','exmo.exmo2010.view.user.user_reset_dashboard', name='user_reset_dashboard'),
 )
