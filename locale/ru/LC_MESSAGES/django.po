@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-30 18:20+0400\n"
-"PO-Revision-Date: 2012-05-30 18:51+0400\n"
+"POT-Creation-Date: 2012-05-31 11:07+0400\n"
+"PO-Revision-Date: 2012-05-31 11:08+0400\n"
 "Last-Translator: Boris Savelev <b.savelev@drweb.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: \n"
@@ -236,7 +236,7 @@ msgstr "открыта"
 msgid "closed"
 msgstr "закрыта"
 
-#: exmo/exmo2010/models.py:232 templates/exmo2010/task_list.html:77
+#: exmo/exmo2010/models.py:232 templates/exmo2010/task_list.html:78
 msgid "check"
 msgstr "проверка"
 
@@ -384,16 +384,16 @@ msgstr "Профиль пользователя"
 msgid "Dashboard"
 msgstr "Приборная доска"
 
-#: exmo/exmo2010/dashboard/dashboard.py:37
+#: exmo/exmo2010/dashboard/dashboard.py:40
 msgid "Quick links"
 msgstr ""
 
-#: exmo/exmo2010/dashboard/dashboard.py:50
+#: exmo/exmo2010/dashboard/dashboard.py:53
 #: templates/exmo2010/monitoring_list.html:37
 msgid "Monitoring list"
 msgstr "Перечень циклов мониторинга"
 
-#: exmo/exmo2010/dashboard/dashboard.py:62
+#: exmo/exmo2010/dashboard/dashboard.py:65
 msgid "Svobodainfo news"
 msgstr "Новости svobodainfo"
 
@@ -454,6 +454,7 @@ msgstr "Добавить претензию для %s"
 #: exmo/exmo2010/view/task.py:424 exmo/exmo2010/view/task.py:440
 #: exmo/exmo2010/view/task.py:448 exmo/exmo2010/view/task.py:455
 #: exmo/exmo2010/view/task.py:494 exmo/exmo2010/view/user.py:39
+#: exmo/exmo2010/view/user.py:86
 msgid "Forbidden"
 msgstr "Запрещено"
 
@@ -791,10 +792,14 @@ msgstr "Задачи для %(monitoring)s"
 msgid "Mass assign tasks"
 msgstr "Массовое назначение задач"
 
-#: exmo/exmo2010/view/user.py:47
+#: exmo/exmo2010/view/user.py:50
 #, python-format
 msgid "The %(verbose_name)s was updated successfully."
 msgstr "%(verbose_name)s успешно обновлен."
+
+#: exmo/exmo2010/view/user.py:83
+msgid "Dashboard preferences was reset."
+msgstr "Настройки приборной панели были сброшены."
 
 #: plugins/django403/views.py:34
 #, python-format
@@ -1617,21 +1622,25 @@ msgstr "Вернуться к задаче"
 msgid "Add new task"
 msgstr "Добавить задачу"
 
-#: templates/exmo2010/task_list.html:70
+#: templates/exmo2010/task_list.html:71
 msgid "close"
 msgstr "закрыть"
 
-#: templates/exmo2010/task_list.html:81 templates/exmo2010/task_list.html:95
+#: templates/exmo2010/task_list.html:82 templates/exmo2010/task_list.html:96
 msgid "open"
 msgstr "открыть"
 
-#: templates/exmo2010/task_list.html:88
+#: templates/exmo2010/task_list.html:89
 msgid "approve"
 msgstr "одобрить"
 
 #: templates/exmo2010/task_report.html:25
 msgid "Task "
 msgstr "Задача "
+
+#: templates/exmo2010/user_form.html:40
+msgid "Reset dashboard preferences"
+msgstr "Сбросить настройки приборной панели"
 
 #~ msgid "Open task"
 #~ msgstr "Открыть задачу"
