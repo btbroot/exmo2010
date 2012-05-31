@@ -99,6 +99,7 @@ MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django403.middleware.Django403Middleware',
 )
 
@@ -227,3 +228,7 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.logger.LoggingPanel',
     'debug_toolbar_user_panel.panels.UserPanel',
 )
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
