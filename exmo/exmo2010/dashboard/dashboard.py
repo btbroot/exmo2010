@@ -22,6 +22,7 @@ from exmo.exmo2010 import models as exmo_models
 class UserDashboard(Dashboard):
     # we want a 3 columns layout
     columns = 3
+    template = 'user_dashboard/dashboard.html'
     class Media:
         js = ('dashboard/js/jquery.dashboard.js',)
         css = ()
