@@ -16,14 +16,24 @@ class CustomMenu(Menu):
     """
     Custom Menu for exmo admin site.
     """
+    class Media:
+        js = (
+            'admin_tools/js/jquery/jquery.cookie.min.js',
+            'dashboard/js/dashboard-cookie.js',
+            )
+        css = ()
+
     def init_with_context(self, context):
         self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
+
         ]
         request = context['request']
+        children = [
+            items.MenuItem(_('Profile'), reverse('exmo2010:user_profile')),
+        ]
         if request.user.is_active:
-            children = [
-                items.MenuItem(_('Profile'), reverse('exmo2010:user_profile')),
+            children += [
                 items.MenuItem(_('Change password'), reverse('exmo2010:password_change')),
                 items.MenuItem(_('Log out'), reverse('exmo2010:logout')),
             ]
@@ -32,7 +42,7 @@ class CustomMenu(Menu):
             else:
                 welcome_msg = request.user.username
         else:
-            children = [
+            children += [
                 items.MenuItem(_('Log in'), reverse('exmo2010:login')),
             ]
             welcome_msg = "Anonymous"

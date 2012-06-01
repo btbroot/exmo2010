@@ -29,7 +29,6 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib import messages
 
 @csrf_protect
-@login_required
 def user_profile(request, id=None):
     if id:
         _user = get_object_or_404(User, pk = id)
@@ -37,21 +36,26 @@ def user_profile(request, id=None):
         _user = request.user
     if not request.user.is_superuser and request.user != _user:
         return HttpResponseForbidden(_('Forbidden'))
-    if request.method == 'POST':
-        uform = UserForm(request.POST, instance = _user)
-        pform = UserProfileForm(request.POST, instance = _user.profile)
-        if uform.is_valid() and pform.is_valid():
-            user = uform.save()
-            profile = pform.save()
-            if id:
-                redirect = reverse('exmo2010:user_profile', args=[user.pk])
-            else:
-                redirect = reverse('exmo2010:user_profile')
-            messages.add_message(request, messages.INFO, _("The %(verbose_name)s was updated successfully.") %\
+
+    uform = pform = None
+
+    if request.user.is_active:
+        if request.method == 'POST':
+            uform = UserForm(request.POST, instance = _user)
+            pform = UserProfileForm(request.POST, instance = _user.profile)
+            if uform.is_valid() and pform.is_valid():
+                user = uform.save()
+                profile = pform.save()
+                if id:
+                    redirect = reverse('exmo2010:user_profile', args=[user.pk])
+                else:
+                    redirect = reverse('exmo2010:user_profile')
+                messages.add_message(request, messages.INFO, _("The %(verbose_name)s was updated successfully.") %\
                                     {"verbose_name": user.profile._meta.verbose_name})
-    else:
-        uform = UserForm(instance = _user)
-        pform = UserProfileForm(instance = _user.profile)
+        else:
+            uform = UserForm(instance = _user)
+            pform = UserProfileForm(instance = _user.profile)
+
     return render_to_response(
         'exmo2010/user_form.html',
         {
@@ -71,15 +75,15 @@ def exmo_password_change(request, **kwargs):
 
 from admin_tools.dashboard.models import DashboardPreferences
 @csrf_protect
-@login_required
 def user_reset_dashboard(request):
     if request.method == 'POST':
-        try:
-            pref = DashboardPreferences.objects.get(dashboard_id = 'exmo2010', user = request.user)
-            pref.data = '{}'
-            pref.save()
-        except DashboardPreferences.DoesNotExist:
-            pass
+        if request.user.is_active:
+            try:
+                pref = DashboardPreferences.objects.get(dashboard_id = 'exmo2010', user = request.user)
+                pref.data = '{}'
+                pref.save()
+            except DashboardPreferences.DoesNotExist:
+                pass
         messages.add_message(request, messages.INFO, _('Dashboard preferences was reset.'))
         return HttpResponseRedirect(reverse('exmo2010:user_profile'))
     else:

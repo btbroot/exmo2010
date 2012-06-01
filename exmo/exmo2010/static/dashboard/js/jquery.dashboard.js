@@ -310,7 +310,7 @@
             if (options.save_preferences_function) {
                 options.save_preferences_function(options, preferences);
             } else {
-                $.cookie('admin-tools.' + options.dashboard_id, JSON.stringify(preferences), {expires: 1825});
+                $.cookie('admin-tools.' + options.dashboard_id, JSON.stringify(preferences), {expires: 1825, path: '/'});
             }
             last_saved_preferences = JSON.stringify(preferences);
         }

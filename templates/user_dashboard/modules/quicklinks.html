@@ -3,8 +3,8 @@
 {% block module_content %}
 <ul>
             <li><a href="{% url exmo2010:index %}">{% trans 'Dashboard' %}</a></li>
-            {% if user.is_active %}
             <li><a href="{% url exmo2010:user_profile %}">{% trans 'Profile' %}</a></li>
+            {% if user.is_active %}
             <li><a href="{% url exmo2010:password_change %}">{% trans 'Change password' %}</a></li>
             <li><a href="{% url exmo2010:logout %}">{% trans 'Log out' %}</a></li>
             {% else %}

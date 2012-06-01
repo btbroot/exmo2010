@@ -24,6 +24,7 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
+{% if user.is_active %}
 {% if id %}
 <form method="post" action="{% url exmo2010:user_profile id %}">{% csrf_token %}
 {% else %}
@@ -35,9 +36,11 @@
 </table>
 <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
+{% endif %}
 <p>
-<form method="post" action="{% url exmo2010:user_reset_dashboard %}">{% csrf_token %}
-<INPUT TYPE="submit" VALUE="{% trans 'Reset dashboard preferences' %}">
+<form method="post" action="{% url exmo2010:user_reset_dashboard %}" id="dashboard_reset">{% csrf_token %}
+<INPUT TYPE="button" VALUE="{% trans 'Reset dashboard preferences' %}" onclick="javascript:dashboard_reset()">
 </form>
 </p>
+<script src="{{ STATIC_URL }}dashboard/js/dashboard-cookie-reset.js" type="text/javascript">
 {% endblock %}
