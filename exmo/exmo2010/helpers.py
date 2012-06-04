@@ -87,9 +87,6 @@ def comment_notification(sender, **kwargs):
     #A-expert + B-expert-manager
     experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group], is_active = True)
     if experts: admin_users.extend(experts)
-    #superusers
-    superusers=User.objects.filter(is_superuser = True, is_active = True)
-    if superusers: admin_users.extend(superusers)
     #B-expert
     if score.task.user.is_active: admin_users.extend([score.task.user,])
     for user in admin_users:
@@ -172,9 +169,6 @@ def claim_notification(sender, **kwargs):
     #A-expert + B-expert-manager
     experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group, UserProfile.expertB_manager_group], is_active = True, email__isnull = False).distinct()
     if experts: admin_users.extend(experts)
-    #superusers
-    superusers=User.objects.filter(is_superuser = True, is_active = True, email__isnull = False).distinct()
-    if superusers: admin_users.extend(superusers)
 
     rcpt_admin = []
     rcpt_nonadmin = []
