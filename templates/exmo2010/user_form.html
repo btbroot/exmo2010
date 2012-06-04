@@ -20,7 +20,6 @@
 {% endcomment %}
 {% load i18n adminmedia %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
-
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
@@ -38,9 +37,9 @@
 </form>
 {% endif %}
 <p>
+<script type="text/javascript" src="{{ STATIC_URL }}dashboard/js/dashboard-cookie-reset.js"></script>
 <form method="post" action="{% url exmo2010:user_reset_dashboard %}" id="dashboard_reset">{% csrf_token %}
 <INPUT TYPE="button" VALUE="{% trans 'Reset dashboard preferences' %}" onclick="javascript:dashboard_reset()">
 </form>
 </p>
-<script src="{{ STATIC_URL }}dashboard/js/dashboard-cookie-reset.js" type="text/javascript">
 {% endblock %}
