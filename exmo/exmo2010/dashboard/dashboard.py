@@ -22,6 +22,7 @@ from exmo.exmo2010 import models as exmo_models
 class UserDashboard(Dashboard):
     # we want a 3 columns layout
     columns = 3
+    template = 'user_dashboard/dashboard.html'
     class Media:
         js = ('dashboard/js/jquery.dashboard.js',)
         css = ()
@@ -34,12 +35,6 @@ class CustomIndexDashboard(UserDashboard):
     Custom index dashboard for exmo.
     """
     def init_with_context(self, context):
-        request = context['request']
-        if not request.user.is_active:
-            anonymous_js = 'dashboard/js/dashboard-cookie.js'
-            if anonymous_js not in self.Media.js:
-                self.Media.js += (anonymous_js, )
-    
         site_name = get_admin_site_name(context)
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
