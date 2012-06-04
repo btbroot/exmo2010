@@ -19,7 +19,6 @@ class CustomMenu(Menu):
     class Media:
         js = (
             'admin_tools/js/jquery/jquery.cookie.min.js',
-            'dashboard/js/dashboard-cookie.js',
             )
         css = ()
 
