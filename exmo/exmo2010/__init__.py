@@ -33,7 +33,7 @@ from exmo.exmo2010.sites import site
 
 
 from django.conf import settings
-if settings.USE_EMAIL:
+if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
     signals.claim_was_posted.connect(claim_notification)
     signals.score_was_changed.connect(score_change_notify)

@@ -5,3 +5,4 @@ exmo/settings.py
 *.egg
 cache
 /static
+_build
