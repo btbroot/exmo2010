@@ -20,9 +20,6 @@
 import os
 import sys
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-PLUGINS_DIR = os.path.realpath(os.path.join(SITE_ROOT,'../plugins'))
-
-sys.path.append(PLUGINS_DIR)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
