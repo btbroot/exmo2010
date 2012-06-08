@@ -43,7 +43,7 @@ import csv
 
 @login_required
 def task_export(request, id):
-    from exmo.helpers import UnicodeWriter
+    from exmo2010.utils import UnicodeWriter
 
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.view_task', task):
@@ -152,7 +152,7 @@ import re
 @revision.create_on_success
 @login_required
 def task_import(request, id):
-    from exmo.helpers import UnicodeReader
+    from exmo2010.utils import UnicodeReader
 
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.fill_task', task):

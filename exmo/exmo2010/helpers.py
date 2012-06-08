@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
-from exmo.helpers import disable_for_loaddata
+from exmo2010.utils import disable_for_loaddata
 from django.core.mail import EmailMessage
 from exmo2010.models import UserProfile
 

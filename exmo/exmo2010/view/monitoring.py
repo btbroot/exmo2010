@@ -39,7 +39,7 @@ from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from reversion import revision
-from exmo.helpers import UnicodeReader, UnicodeWriter
+from exmo2010.utils import UnicodeReader, UnicodeWriter
 import csv
 
 def _get_monitoring_list(request):
@@ -780,7 +780,7 @@ def monitoring_comment_report(request, id):
 
 
     for org_comment in org_comments:
-        from exmo.helpers import workday_count
+        from exmo2010.utils import workday_count
         iifd_comments = iifd_all_comments.filter(
             submit_date__gte = org_comment.submit_date,
             object_pk = org_comment.object_pk,

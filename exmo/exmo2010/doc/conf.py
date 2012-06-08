@@ -13,7 +13,7 @@
 
 import sys, os
 
-sys.path.extend([os.path.realpath(os.path.dirname(__file__ + '../../../../')),os.path.realpath(os.path.dirname(__file__ + '../../../../../'))])
+sys.path.extend([os.path.realpath(os.path.dirname(__file__ + '../../../../')),])
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'exmo2010.settings'
 
