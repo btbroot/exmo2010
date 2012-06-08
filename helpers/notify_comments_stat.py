@@ -31,10 +31,10 @@ sys.path.append(os.path.realpath(path))
 from django.contrib.comments import models as commentModel
 from django.contrib.auth import models as authModel
 from django.contrib.sites import models as sitesModel
-from exmo.exmo2010 import models as exmoModel
+from exmo2010 import models as exmoModel
 from datetime import datetime, timedelta, date
 from django.db.models import Q
-from exmo.helpers import workday_count
+from exmo2010.utils import workday_count
 from django.db.models import Avg, Max, Min, Count
 
 end_date = date.today()

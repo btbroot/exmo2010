@@ -203,12 +203,12 @@ CACHES = {
 DATETIME_FORMAT = "Y-m-d, H:i"
 
 ADMIN_TOOLS_INDEX_DASHBOARD = {
-    'exmo2010.site': 'exmo.exmo2010.dashboard.dashboard.CustomIndexDashboard',
+    'exmo2010.site': 'exmo2010.dashboard.dashboard.CustomIndexDashboard',
     'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
 }
 
 ADMIN_TOOLS_MENU = {
-    'exmo2010.site': 'exmo.exmo2010.dashboard.menu.CustomMenu',
+    'exmo2010.site': 'exmo2010.dashboard.menu.CustomMenu',
     'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
 }
 

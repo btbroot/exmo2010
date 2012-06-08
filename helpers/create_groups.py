@@ -31,7 +31,7 @@ sys.path.append(os.path.realpath(path))
 
 generic_group = ['experts', 'organizations', 'customers']
 
-from exmo.exmo2010.models import Organization, OrganizationType
+from exmo2010.models import Organization, OrganizationType
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 

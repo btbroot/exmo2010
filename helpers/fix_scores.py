@@ -27,7 +27,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = "exmo.settings"
 path = "%s/.." % os.path.realpath(os.path.dirname(__file__))
 sys.path.append(os.path.realpath(path))
 
-from exmo.exmo2010.models import Score
+from exmo2010.models import Score
 for s in Score.objects.all():
     if not s.found:
         s.complete=None

@@ -28,7 +28,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = "exmo.settings"
 path = "%s/.." % os.path.realpath(os.path.dirname(__file__))
 sys.path.append(os.path.realpath(path))
 
-import exmo.exmo2010.models as em
+import exmo2010.models as em
 def copy_monitoring(monitoring_pk):
     m_src = em.Monitoring.objects.get(pk = monitoring_pk)
     #create monitoring
