@@ -235,7 +235,7 @@ def score_change_notify(sender, **kwargs):
         from exmo2010 import models
         rcpt = []
         for profile in models.UserProfile.objects.filter(organization = score.task.organization):
-            if profile.user.is_active and profile.user.email and profile.notify_score_change:
+            if profile.user.is_active and profile.user.email and profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
                 rcpt.append(profile.user.email)
         rcpt = list(set(rcpt))
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
