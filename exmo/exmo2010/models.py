@@ -573,10 +573,17 @@ import json
 class UserProfile(models.Model):
     "UserProfile model"
 
+    NOTIFICATION_TYPE_DISABLE   = 0
+    "Оповещение отключено"
+    NOTIFICATION_TYPE_ONEBYONE  = 1
+    "Оповещение включено. По одному письму на событие"
+    NOTIFICATION_TYPE_DIGEST    = 2
+    "Оповещение включено. По одному письму в период времени. Оповещение дайджестами"
+
     NOTIFICATION_TYPE_CHOICES = (
-        (0, _('disabled')),
-        (1, _('one email per one comment/change')),
-        (2, _('digest notification')),
+        (NOTIFICATION_TYPE_DISABLE, _('disabled')),
+        (NOTIFICATION_TYPE_ONEBYONE, _('one email per one comment/change')),
+        (NOTIFICATION_TYPE_DIGEST, _('digest notification')),
     )
     """Notification types can be:
 
@@ -622,7 +629,7 @@ class UserProfile(models.Model):
             pref = prefs[preference]
         else:
             pref = {}
-        if not pref.has_key('type'): pref['type'] = 0
+        if not pref.has_key('type'): pref['type'] = self.NOTIFICATION_TYPE_DISABLE
         if not pref.has_key('self'): pref['self'] = False
         if not pref.has_key('digest_duratation'): pref['digest_duratation'] = 5
         return pref

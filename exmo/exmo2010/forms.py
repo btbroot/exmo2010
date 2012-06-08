@@ -127,9 +127,63 @@ class UserForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
+    comment_notification_type = forms.ChoiceField(
+        choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
+        label = _('comment notification type'),
+        required = False,
+        widget = forms.RadioSelect(),
+    )
+
+    comment_notification_digest = forms.IntegerField(label = _('digest interval'), required = False)
+
+    comment_notification_self = forms.BooleanField(
+        label = _('send to me my comments'),
+        required = False,
+    )
+
+    score_notification_type = forms.ChoiceField(
+        choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
+        label = _('score notification type'),
+        required = False,
+        widget = forms.RadioSelect(),
+    )
+
+    score_notification_digest = forms.IntegerField(label = _('digest interval'), required = False)
+
     class Meta:
         model = UserProfile
-        exclude = ["user", "organization"]
+        exclude = ["user", "organization", "preference"]
+
+    def __init__(self, *args, **kwargs):
+        profile = kwargs.get('instance')
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        score_pref = profile.notify_score_preference
+        comment_pref = profile.notify_comment_preference
+
+        self.fields['comment_notification_type'].initial = comment_pref['type']
+        self.fields['comment_notification_self'].initial = comment_pref['self']
+        self.fields['comment_notification_digest'].initial = comment_pref['digest_duratation']
+
+        self.fields['score_notification_type'].initial = score_pref['type']
+        self.fields['score_notification_digest'].initial = score_pref['digest_duratation']
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        profile = super(UserProfileForm, self).save(commit=False)
+        comment_pref = {
+            'type': self.cleaned_data['comment_notification_type'],
+            'self': self.cleaned_data['comment_notification_self'],
+            'digest_duratation': self.cleaned_data['comment_notification_digest'],
+        }
+        score_pref = {
+            'type': self.cleaned_data['score_notification_type'],
+            'digest_duratation': self.cleaned_data['score_notification_digest'],
+        }
+
+        profile.notify_comment_preference = comment_pref
+        profile.notify_score_preference = score_pref
+
+        if commit:
+            profile.save()
 
 
 
