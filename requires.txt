@@ -25,3 +25,4 @@ git+https://github.com/playfire/django-debug-toolbar-user-panel.git
 git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
+django-extensions
