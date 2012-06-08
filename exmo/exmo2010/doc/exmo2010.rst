@@ -1,9 +1,0 @@
-EXMO2010 models
-======================
-
-.. automodule:: exmo2010.models
-    :members:
-    :show-inheritance:
-
-.. autoclass:: UserProfile
-    :members:

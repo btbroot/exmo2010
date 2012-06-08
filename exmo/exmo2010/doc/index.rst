@@ -11,7 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   exmo2010
+   models
+   auth
+   dashboard
+   forms
 
 Indices and tables
 ==================

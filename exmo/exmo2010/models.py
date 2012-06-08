@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -137,12 +138,12 @@ class MonitoringStatus(models.Model):
 
 
 class Organization(models.Model):
-  '''
+  """ Fields:
   name -- Uniq organization name
   url -- Internet site URL
   keywords -- Keywords for autocomplete and search
   comments -- Additional comment
-  '''
+  """
 
   name         = models.CharField(max_length = 255, verbose_name=_('name'))
   url          = models.URLField(max_length = 255, null = True, blank = True, verify_exists = False, verbose_name=_('url'))
@@ -477,12 +478,19 @@ class Score(models.Model):
 
 
 class Claim(models.Model):
+  "Модель претензий/замечаний"
   score             = models.ForeignKey(Score, verbose_name=_('score'))
+  "Оценка"
   open_date         = models.DateTimeField(auto_now_add = True, verbose_name = _('claim open'))
+  "Дата создания"
   close_date        = models.DateTimeField(null = True, blank = True, verbose_name = _('claim close'))
+  "Дата закрытия. По её наличию определяется закрыта претензия или нет"
   comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
+  "Комментарий"
   close_user        = models.ForeignKey(User, null = True, blank = True, verbose_name=_('user who close'), related_name='close_user')
+  "Кто закрыл претензию"
   creator           = models.ForeignKey(User, verbose_name=_('creator'), related_name='creator')
+  "Кто создал претензию"
 
   def __unicode__(self):
     return _('claim for %(score)s from %(creator)s') % { 'score': self.score, 'creator': self.creator }
@@ -493,12 +501,17 @@ class Claim(models.Model):
 
 
 def openness_helper(score):
+    "Враппер для расчета КО"
     f = eval("openness_helper_v%d" % score.task.organization.monitoring.openness_expression.code)
     return f(score)
 
 
 
 def openness_helper_v1(score):
+    """Превая версия формулы расчета КО
+
+    Не учитывает доступность в граф. формате
+    """
     found = score.found
     weight = score.parameter.weight
     complete = 1
@@ -534,6 +547,7 @@ def openness_helper_v1(score):
 
 
 def openness_helper_v8(score):
+    "Вторая версия расчета КО"
     found = score.found
     weight = score.parameter.weight
     complete = 1
@@ -596,15 +610,19 @@ class UserProfile(models.Model):
     preference = models.TextField(null = True, blank = True, verbose_name=_('preference'))
     """Preference field
 
-    this is like:
+    this is like::
 
-    {
-
-    'notify_comment': {'self': False,'digest_duratation': 5,'type': 0},
-
-    'notify_score': {'digest_duratation': 5,'type': 0},
-
-    }
+        {
+            'notify_comment': {
+                'self': False,
+                'digest_duratation': 5,
+                'type': 0
+            },
+            'notify_score': {
+                'digest_duratation': 5,
+                'type': 0
+            },
+        }
 
     type is one of notification types
 
