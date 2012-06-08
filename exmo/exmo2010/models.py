@@ -15,6 +15,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+EXMO2010 Models module
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
@@ -564,13 +569,83 @@ def openness_helper_v8(score):
 
 
 from django.contrib.auth.models import Group
+import json
 class UserProfile(models.Model):
+    "UserProfile model"
+
+    NOTIFICATION_TYPE_CHOICES = (
+        (0, _('disabled')),
+        (1, _('one email per one comment/change')),
+        (2, _('digest notification')),
+    )
+    """Notification types can be:
+
+    0 - disable
+
+    1 - one mail per one comment/change
+
+    2 - digest
+    """
+
     user = models.ForeignKey(User, unique=True)
+    "User field"
 
     organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
-    notify_score_change = models.BooleanField(blank = True, default = False, verbose_name=_('notify score change'))
-    notify_self_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on self comment'))
-    notify_comment = models.BooleanField(blank = True, default = True, verbose_name=_('notify on comment, except self'))
+    "Organization m2m field"
+
+    preference = models.TextField(null = True, blank = True, verbose_name=_('preference'))
+    """Preference field
+
+    this is like:
+
+    {
+
+    'notify_comment': {'self': False,'digest_duratation': 5,'type': 0},
+
+    'notify_score': {'digest_duratation': 5,'type': 0},
+
+    }
+
+    type is one of notification types
+
+    """
+
+
+
+    @property
+    def get_preference(self):
+        return json.loads(self.preference)
+
+    def _get_notify_preference(self, preference):
+        prefs = self.get_preference
+        if prefs.has_key(preference):
+            pref = prefs[preference]
+        else:
+            pref = {}
+        if not pref.has_key('type'): pref['type'] = 0
+        if not pref.has_key('self'): pref['self'] = False
+        if not pref.has_key('digest_duratation'): pref['digest_duratation'] = 5
+        return pref
+
+    @property
+    def notify_comment_preference(self):
+        return self._get_notify_preference('notify_comment')
+
+    @notify_comment_preference.setter
+    def notify_comment_preference(self, pref):
+        prefs = self.get_preference
+        prefs['notify_comment'] = pref
+        self.preference = json.dumps(prefs)
+
+    @property
+    def notify_score_preference(self):
+        return self._get_notify_preference('notify_score')
+
+    @notify_score_preference.setter
+    def notify_score_preference(self, pref):
+        prefs = self.get_preference
+        prefs['notify_score'] = pref
+        self.preference = json.dumps(prefs)
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser
