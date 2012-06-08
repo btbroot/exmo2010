@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import template
-from exmo.exmo2010.models import Organization, Task
+from exmo2010.models import Organization, Task
 
 def monitoring_stats(context, monitoring):
     approved_organizations = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_APPROVED).distinct()

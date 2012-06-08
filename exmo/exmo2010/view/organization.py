@@ -15,19 +15,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.view.helpers import table
+from exmo2010.view.helpers import table
 from django.shortcuts import get_object_or_404
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Task
-from exmo.exmo2010.models import Monitoring
+from exmo2010.models import Organization, Task
+from exmo2010.models import Monitoring
 from django.db.models import Q
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from exmo.exmo2010.forms import OrganizationForm, CORE_MEDIA
+from exmo2010.forms import OrganizationForm, CORE_MEDIA
 
 
 def organization_list(request, id):

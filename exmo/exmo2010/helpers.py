@@ -22,7 +22,7 @@ from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
 from exmo.helpers import disable_for_loaddata
 from django.core.mail import EmailMessage
-from exmo.exmo2010.models import UserProfile
+from exmo2010.models import UserProfile
 
 
 
@@ -198,7 +198,7 @@ def post_save_model(sender, instance, created, **kwargs):
         revision.unregister(instance.__class__)
         must_register = True
     #update task openness hook
-    from exmo.exmo2010 import models
+    from exmo2010 import models
     if instance.__class__ == models.Score:
         instance.task.update_openness()
     if instance.__class__ == models.Monitoring:
@@ -212,7 +212,7 @@ def post_save_model(sender, instance, created, **kwargs):
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        from exmo.exmo2010 import models
+        from exmo2010 import models
         profile = models.UserProfile(user = instance)
         profile.save()
 
@@ -234,7 +234,7 @@ def score_change_notify(sender, **kwargs):
             change_dict = {'field': change, 'was': form.initial.get(change, form.fields[change].initial), 'now': form.cleaned_data[change]}
             changes.append(change_dict)
     if score.task.approved:
-        from exmo.exmo2010 import models
+        from exmo2010 import models
         rcpt = []
         for profile in models.UserProfile.objects.filter(organization = score.task.organization):
             if profile.user.is_active and profile.user.email and profile.notify_score_change:

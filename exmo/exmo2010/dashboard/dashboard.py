@@ -15,9 +15,9 @@ from django.core.urlresolvers import reverse
 
 from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
-from exmo.exmo2010.dashboard import modules as custom_modules
-from exmo.exmo2010.view.monitoring import _get_monitoring_list
-from exmo.exmo2010 import models as exmo_models
+from exmo2010.dashboard import modules as custom_modules
+from exmo2010.view.monitoring import _get_monitoring_list
+from exmo2010 import models as exmo_models
 
 class UserDashboard(Dashboard):
     # we want a 3 columns layout

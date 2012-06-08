@@ -94,7 +94,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('name', 'monitoring'),)", 'object_name': 'Organization'},
             'comments': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'keywords': ('exmo.exmo2010.fields.TagField', [], {'null': 'True'}),
+            'keywords': ('exmo2010.fields.TagField', [], {'null': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
@@ -110,7 +110,7 @@ class Migration(SchemaMigration):
             'hypertext': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'keywords': ('exmo.exmo2010.fields.TagField', [], {'null': 'True'}),
+            'keywords': ('exmo2010.fields.TagField', [], {'null': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'topical': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),

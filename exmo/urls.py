@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponsePermanentRedirect
 from django.core.urlresolvers import reverse
-from exmo.exmo2010 import site as exmo
+from exmo2010 import site as exmo
 admin.autodiscover()
 
 urlpatterns = patterns('',

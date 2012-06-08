@@ -15,8 +15,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.models import Task
-from exmo.exmo2010.models import Monitoring
+from exmo2010.models import Task
+from exmo2010.models import Monitoring
 from django import template
 from django.utils.translation import ugettext as _
 

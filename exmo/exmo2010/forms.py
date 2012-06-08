@@ -17,19 +17,19 @@
 #
 from django import forms
 from django.utils.safestring import mark_safe
-from exmo.exmo2010.models import Score, Task
-from exmo.exmo2010.models import Parameter
-from exmo.exmo2010.models import Claim
-from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010.models import MonitoringStatus
-from exmo.exmo2010.models import Organization
-from exmo.exmo2010.models import UserProfile
+from exmo2010.models import Score, Task
+from exmo2010.models import Parameter
+from exmo2010.models import Claim
+from exmo2010.models import Monitoring
+from exmo2010.models import MonitoringStatus
+from exmo2010.models import Organization
+from exmo2010.models import UserProfile
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
-from exmo.exmo2010.widgets import TagAutocomplete
+from exmo2010.widgets import TagAutocomplete
 
 CORE_JS = (
                 settings.ADMIN_MEDIA_PREFIX + 'js/core.js',

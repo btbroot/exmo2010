@@ -15,15 +15,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.view.helpers import table
-from exmo.exmo2010.forms import ScoreForm
+from exmo2010.view.helpers import table
+from exmo2010.forms import ScoreForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task
-from exmo.exmo2010.models import Monitoring, Claim
+from exmo2010.models import Organization, Parameter, Score, Task
+from exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.template import RequestContext
@@ -58,7 +58,7 @@ def score_add(request, task_id, parameter_id):
 
 
 from reversion import revision
-from exmo.exmo2010.helpers import construct_change_message
+from exmo2010.helpers import construct_change_message
 @revision.create_on_success
 @login_required
 def score_manager(request, score_id, method='update'):
@@ -89,7 +89,7 @@ def score_view(request, score_id):
             message = construct_change_message(request,form, None)
             revision.comment = message
             if form.is_valid() and form.changed_data:
-                from exmo.exmo2010 import signals
+                from exmo2010 import signals
                 signals.score_was_changed.send(
                         sender  = Score.__class__,
                         form = form,

@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import exmo.exmo2010.models
+import exmo2010.models
 from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.db import models
@@ -71,7 +71,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 
-from exmo.exmo2010.models import UserProfile
+from exmo2010.models import UserProfile
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
@@ -97,11 +97,11 @@ class UserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
-admin.site.register(exmo.exmo2010.models.Organization, OrganizationAdmin)
-admin.site.register(exmo.exmo2010.models.Parameter, ParameterAdmin)
-admin.site.register(exmo.exmo2010.models.Score, ScoreAdmin)
-admin.site.register(exmo.exmo2010.models.Task, TaskAdmin)
-admin.site.register(exmo.exmo2010.models.Monitoring, MonitoringAdmin)
-admin.site.register(exmo.exmo2010.models.MonitoringStatus)
-admin.site.register(exmo.exmo2010.models.Claim)
-admin.site.register(exmo.exmo2010.models.OpennessExpression)
+admin.site.register(exmo2010.models.Organization, OrganizationAdmin)
+admin.site.register(exmo2010.models.Parameter, ParameterAdmin)
+admin.site.register(exmo2010.models.Score, ScoreAdmin)
+admin.site.register(exmo2010.models.Task, TaskAdmin)
+admin.site.register(exmo2010.models.Monitoring, MonitoringAdmin)
+admin.site.register(exmo2010.models.MonitoringStatus)
+admin.site.register(exmo2010.models.Claim)
+admin.site.register(exmo2010.models.OpennessExpression)

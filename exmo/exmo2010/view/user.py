@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.forms import UserForm, UserProfileForm
+from exmo2010.forms import UserForm, UserProfileForm
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _

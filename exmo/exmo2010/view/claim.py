@@ -18,15 +18,15 @@
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Score, Claim
-from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010.forms import ClaimForm
-from exmo.exmo2010.forms import ClaimReportForm, CORE_MEDIA
+from exmo2010.models import Score, Claim
+from exmo2010.models import Monitoring
+from exmo2010.forms import ClaimForm
+from exmo2010.forms import ClaimReportForm, CORE_MEDIA
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from exmo.exmo2010 import signals
+from exmo2010 import signals
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 

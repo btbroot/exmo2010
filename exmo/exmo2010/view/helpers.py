@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.sort_headers import SortHeaders
+from exmo2010.sort_headers import SortHeaders
 from django.views.generic.list_detail import object_list
 
 def table(request, headers, **kwargs):
@@ -39,7 +39,7 @@ def table(request, headers, **kwargs):
 
 
 def rating(monitoring):
-  from exmo.exmo2010.models import Task
+  from exmo2010.models import Task
   object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring = monitoring).order_by('-openness_cache')]
   place=1
   avg=None

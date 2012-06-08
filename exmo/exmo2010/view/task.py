@@ -15,15 +15,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.view.helpers import table
-from exmo.exmo2010.forms import TaskForm
+from exmo2010.view.helpers import table
+from exmo2010.forms import TaskForm
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task
-from exmo.exmo2010.models import Monitoring, Claim
+from exmo2010.models import Organization, Parameter, Score, Task
+from exmo2010.models import Monitoring, Claim
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q

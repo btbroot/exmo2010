@@ -17,7 +17,7 @@
 #
 from django.utils import simplejson
 from django.http import HttpResponse
-from exmo.exmo2010.models import Organization
+from exmo2010.models import Organization
 from django.db.models import Q
 
 

@@ -17,7 +17,7 @@
 #
 from django.conf import settings
 from django.contrib.auth.models import User
-from exmo.exmo2010.auth.helpers import check_permission
+from exmo2010.auth.helpers import check_permission
 
 class ObjectPermBackend(object):
     supports_object_permissions = True

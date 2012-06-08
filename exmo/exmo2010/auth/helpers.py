@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib.auth.models import Group, User
-from exmo.exmo2010 import models as em
+from exmo2010 import models as em
 
 
 def monitoring_permission(user, priv, monitoring):

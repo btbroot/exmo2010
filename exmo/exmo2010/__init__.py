@@ -18,18 +18,18 @@
 
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.auth.models import User
-from exmo.exmo2010.models import Score
-from exmo.exmo2010.models import Monitoring
-from exmo.exmo2010 import signals
-from exmo.exmo2010.helpers import comment_notification
-from exmo.exmo2010.helpers import claim_notification
-from exmo.exmo2010.helpers import post_save_model
-from exmo.exmo2010.helpers import create_profile
-from exmo.exmo2010.helpers import create_calendar
-from exmo.exmo2010.helpers import score_change_notify
+from exmo2010.models import Score
+from exmo2010.models import Monitoring
+from exmo2010 import signals
+from exmo2010.helpers import comment_notification
+from exmo2010.helpers import claim_notification
+from exmo2010.helpers import post_save_model
+from exmo2010.helpers import create_profile
+from exmo2010.helpers import create_calendar
+from exmo2010.helpers import score_change_notify
 from django.db.models.signals import post_save
 
-from exmo.exmo2010.sites import site
+from exmo2010.sites import site
 
 
 from django.conf import settings

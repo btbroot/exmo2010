@@ -131,12 +131,13 @@ INSTALLED_APPS = (
     'admin_tools.dashboard',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'exmo.exmo2010',
+    'exmo2010',
     'reversion',
     'south',
     'django403',
     'tagging',
     'tagging_autocomplete',
+    'digest_email'
 )
 
 try:
@@ -154,7 +155,7 @@ else:
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'exmo.exmo2010.auth.backends.ObjectPermBackend',
+    'exmo2010.auth.backends.ObjectPermBackend',
 )
 
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY= True
@@ -202,12 +203,12 @@ CACHES = {
 DATETIME_FORMAT = "Y-m-d, H:i"
 
 ADMIN_TOOLS_INDEX_DASHBOARD = {
-    'exmo.exmo2010.site': 'exmo.exmo2010.dashboard.dashboard.CustomIndexDashboard',
+    'exmo2010.site': 'exmo.exmo2010.dashboard.dashboard.CustomIndexDashboard',
     'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
 }
 
 ADMIN_TOOLS_MENU = {
-    'exmo.exmo2010.site': 'exmo.exmo2010.dashboard.menu.CustomMenu',
+    'exmo2010.site': 'exmo.exmo2010.dashboard.menu.CustomMenu',
     'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
 }
 

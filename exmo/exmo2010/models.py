@@ -27,7 +27,7 @@ from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError
-from exmo.exmo2010.fields import TagField
+from exmo2010.fields import TagField
 from tagging.models import Tag
 
 
@@ -347,7 +347,7 @@ class Task(models.Model):
 
   @property
   def rating_place(self):
-    from exmo.exmo2010.view.helpers import rating
+    from exmo2010.view.helpers import rating
     place = None
     rating_list, avg = rating(self.organization.monitoring)
     for rating_object in rating_list:

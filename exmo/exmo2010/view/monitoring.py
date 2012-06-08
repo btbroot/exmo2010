@@ -15,16 +15,16 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo.exmo2010.view.helpers import table
-from exmo.exmo2010.view.helpers import rating
+from exmo2010.view.helpers import table
+from exmo2010.view.helpers import rating
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Organization, Parameter, Score, Task
-from exmo.exmo2010.models import Monitoring, Claim
-from exmo.exmo2010.models import MonitoringStatus
+from exmo2010.models import Organization, Parameter, Score, Task
+from exmo2010.models import Monitoring, Claim
+from exmo2010.models import MonitoringStatus
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -37,7 +37,7 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
-from exmo.exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
+from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from reversion import revision
 from exmo.helpers import UnicodeReader, UnicodeWriter
 import csv
@@ -387,7 +387,7 @@ def monitoring_info(request, id):
 
 
 
-from exmo.exmo2010.forms import ParameterFilterForm
+from exmo2010.forms import ParameterFilterForm
 @login_required
 def monitoring_parameter_filter(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
@@ -715,7 +715,7 @@ def monitoring_comment_report(request, id):
     from django.contrib.sites import models as sitesModel
     from datetime import datetime, timedelta
     from django.db.models import Q
-    from exmo.exmo2010.forms import MonitoringCommentStatForm
+    from exmo2010.forms import MonitoringCommentStatForm
 
     form = MonitoringCommentStatForm(monitoring = monitoring)
 

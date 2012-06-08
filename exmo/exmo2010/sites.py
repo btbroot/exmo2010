@@ -31,7 +31,7 @@ class DashboardSite(object):
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url, include
-        from exmo.exmo2010.urls import urlpatterns as exmourls
+        from exmo2010.urls import urlpatterns as exmourls
         urlpatterns = patterns('',
             url(r'^$', self.index, name='index'),
         )

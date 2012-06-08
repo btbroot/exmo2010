@@ -19,9 +19,9 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.create_update import update_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo.exmo2010.models import Parameter, Task
-from exmo.exmo2010.models import Score
-from exmo.exmo2010.forms import ParameterForm, CORE_MEDIA
+from exmo2010.models import Parameter, Task
+from exmo2010.models import Score
+from exmo2010.forms import ParameterForm, CORE_MEDIA
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse

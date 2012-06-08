@@ -42,7 +42,7 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('url', self.gf('django.db.models.fields.URLField')(max_length=255, null=True, blank=True)),
             ('comments', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('keywords', self.gf('exmo.exmo2010.fields.TagField')(null=True)),
+            ('keywords', self.gf('exmo2010.fields.TagField')(null=True)),
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
         ))
         db.send_create_signal('exmo2010', ['Organization'])
@@ -60,7 +60,7 @@ class Migration(SchemaMigration):
             ('hypertext', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
             ('topical', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
             ('complete', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('keywords', self.gf('exmo.exmo2010.fields.TagField')(null=True)),
+            ('keywords', self.gf('exmo2010.fields.TagField')(null=True)),
             ('document', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
             ('image', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -270,7 +270,7 @@ class Migration(SchemaMigration):
             'Meta': {'unique_together': "(('name', 'monitoring'),)", 'object_name': 'Organization'},
             'comments': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'keywords': ('exmo.exmo2010.fields.TagField', [], {'null': 'True'}),
+            'keywords': ('exmo2010.fields.TagField', [], {'null': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
@@ -286,7 +286,7 @@ class Migration(SchemaMigration):
             'hypertext': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'keywords': ('exmo.exmo2010.fields.TagField', [], {'null': 'True'}),
+            'keywords': ('exmo2010.fields.TagField', [], {'null': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'topical': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
