@@ -24,6 +24,7 @@ Digest email models module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+from datetime import datetime, timedelta
 
 
 
@@ -35,6 +36,20 @@ class Digest(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_last(self, user):
+        journal = DigestJournal.objects.filter(user = user, digest = self)
+        if journal:
+            return journal[0].date
+        else:
+            try:
+                pref = DigestPreference.objects.get(user = user, digest = self)
+                interval = pref.interval
+            except DigestPreference.DoesNotExist:
+                interval = 30
+            #FIXME!
+            interval = 300
+            return datetime.now() - timedelta(days = interval)
 
 
 
