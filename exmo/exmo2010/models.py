@@ -419,6 +419,10 @@ class Score(models.Model):
         )):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
+  @models.permalink
+  def get_absolute_url(self):
+    return ('exmo2010:score_view', [str(self.id)])
+
   def _get_claim(self):
     claims=self.claim_count()
     if claims > 0:
