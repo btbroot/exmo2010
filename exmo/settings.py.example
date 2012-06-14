@@ -37,6 +37,9 @@ DATABASES = {
         'NAME': 'exmo2010',
         'USER': 'root',
         'PASSWORD': '',
+        'OPTIONS': {
+            'init_command': 'SET storage_engine=INNODB',
+        },
     }
 }
 
