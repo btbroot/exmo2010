@@ -419,6 +419,10 @@ class Score(models.Model):
         )):
       raise ValidationError(_('Not found, but some excessive data persists'))
 
+  @models.permalink
+  def get_absolute_url(self):
+    return ('exmo2010:score_view', [str(self.id)])
+
   def _get_claim(self):
     claims=self.claim_count()
     if claims > 0:
@@ -582,6 +586,7 @@ def openness_helper_v8(score):
 
 
 
+from digest_email.models import Digest, DigestPreference
 from django.contrib.auth.models import Group
 import json
 class UserProfile(models.Model):
@@ -636,7 +641,6 @@ class UserProfile(models.Model):
     """
 
 
-
     @property
     def get_preference(self):
         return json.loads(self.preference)
@@ -648,8 +652,10 @@ class UserProfile(models.Model):
         else:
             pref = {}
         if not pref.has_key('type'): pref['type'] = self.NOTIFICATION_TYPE_DISABLE
+        else:                        pref['type'] = int(pref['type'])
         if not pref.has_key('self'): pref['self'] = False
         if not pref.has_key('digest_duratation'): pref['digest_duratation'] = 5
+        else:                                     pref['digest_duratation'] = int(pref['digest_duratation'])
         return pref
 
     @property
@@ -671,6 +677,17 @@ class UserProfile(models.Model):
         prefs = self.get_preference
         prefs['notify_score'] = pref
         self.preference = json.dumps(prefs)
+
+    def save(self,*args,**kwargs):
+        "Переопределение метода для сохранения настроек дайджеста"
+        super(UserProfile,self).save(*args,**kwargs)
+        for notify in ['notify_score','notify_comment']:
+            if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
+                #create DigestPreference
+                digest, created = Digest.objects.get_or_create(name = notify)
+                dpref, created = DigestPreference.objects.get_or_create(user = self.user, digest = digest)
+                dpref.interval = self._get_notify_preference(notify)['digest_duratation']
+                dpref.save()
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser
