@@ -4,10 +4,10 @@ Daily cleanup job.
 Can be run as a cronjob to send comment digest
 """
 
-from django_extensions.management.jobs import DailyJob
+from django_extensions.management.jobs import HourlyJob
 
 
-class Job(DailyJob):
+class Job(HourlyJob):
     help = "Comment daily digest notification"
 
     def execute(self):
