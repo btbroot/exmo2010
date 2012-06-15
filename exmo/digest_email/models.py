@@ -64,7 +64,7 @@ class DigestJournal(models.Model):
     "Что за дайджест отправили"
 
     def __unicode__(self):
-        return _("%s for %s") % (self.digest, self.user)
+        return _("%(date)s: %(digest)s for %(user)s") % {'digest': self.digest, 'user': self.user, 'date': self.date}
 
     class Meta:
         ordering = (
@@ -86,7 +86,7 @@ class DigestPreference(models.Model):
     "Периодичность дайджестов в днях"
 
     def __unicode__(self):
-        return _("%s for %s") % (self.digest, self.user)
+        return _("%(digest)s for %(user)s") % {'digest': self.digest, 'user': self.user}
 
     class Meta:
         unique_together = (
