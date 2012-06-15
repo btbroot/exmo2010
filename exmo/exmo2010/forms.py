@@ -140,12 +140,12 @@ class UserForm(forms.ModelForm, StackedForm):
 class UserProfileForm(forms.ModelForm, StackedForm):
     comment_notification_type = forms.ChoiceField(
         choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
-        label = _('comment notification type'),
+        label = _('notification type'),
         required = False,
         widget = forms.RadioSelect(),
     )
 
-    comment_notification_digest = forms.IntegerField(label = _('digest interval'), required = False)
+    comment_notification_digest = forms.IntegerField(label = _('digest interval'), required = False, min_value = 1, max_value = 24)
 
     comment_notification_self = forms.BooleanField(
         label = _('send to me my comments'),
@@ -154,12 +154,12 @@ class UserProfileForm(forms.ModelForm, StackedForm):
 
     score_notification_type = forms.ChoiceField(
         choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
-        label = _('score notification type'),
+        label = _('notification type'),
         required = False,
         widget = forms.RadioSelect(),
     )
 
-    score_notification_digest = forms.IntegerField(label = _('digest interval'), required = False)
+    score_notification_digest = forms.IntegerField(label = _('digest interval'), required = False, min_value = 1, max_value = 24)
 
     form_template  = 'exmo2010/forms/stacked_form.html'
     field_template = 'exmo2010/forms/stack_field.html'
