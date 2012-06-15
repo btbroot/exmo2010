@@ -678,6 +678,13 @@ class UserProfile(models.Model):
         prefs['notify_score'] = pref
         self.preference = json.dumps(prefs)
 
+    def clean(self,*args,**kwargs):
+        super(UserProfile,self).clean(*args,**kwargs)
+        for notify in ['notify_score','notify_comment']:
+            if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
+                if self._get_notify_preference(notify)['digest_duratation'] < 1:
+                    raise ValidationError(_('Digest duratation must be greater or equal than 1.'))
+
     def save(self,*args,**kwargs):
         "Переопределение метода для сохранения настроек дайджеста"
         super(UserProfile,self).save(*args,**kwargs)
