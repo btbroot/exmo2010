@@ -1,5 +1,5 @@
         <p{% if field.errors %} class="error"{% endif %}>
-            <label for="{{ field.auto_id }}">{{ field.label.title }}</label>
+            <label for="{{ field.auto_id }}">{{ field.label }}</label>
             {{field.errors}}{{ field }}
             <span class="tooltip-help">{{ field.help_text }}</span>
         </p>
