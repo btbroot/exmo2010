@@ -193,6 +193,16 @@ class UserProfileForm(forms.ModelForm, StackedForm):
         self.fields['score_notification_type'].initial = score_pref['type']
         self.fields['score_notification_digest'].initial = score_pref['digest_duratation']
 
+    def clean_comment_notification_digest(self):
+        if self.cleaned_data['comment_notification_type'] == str(UserProfile.NOTIFICATION_TYPE_DIGEST) \
+          and not self.cleaned_data['comment_notification_digest']:
+            raise forms.ValidationError(_("Must be filled if you select digest notification"))
+
+    def clean_score_notification_digest(self):
+        if self.cleaned_data['score_notification_type'] == str(UserProfile.NOTIFICATION_TYPE_DIGEST) \
+          and not self.cleaned_data['score_notification_digest']:
+            raise forms.ValidationError(_("Must be filled if you select digest notification"))
+
     def save(self, force_insert=False, force_update=False, commit=True):
         profile = super(UserProfileForm, self).save(commit=False)
         comment_pref = {

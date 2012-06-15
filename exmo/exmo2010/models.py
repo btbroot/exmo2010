@@ -654,8 +654,13 @@ class UserProfile(models.Model):
         if not pref.has_key('type'): pref['type'] = self.NOTIFICATION_TYPE_DISABLE
         else:                        pref['type'] = int(pref['type'])
         if not pref.has_key('self'): pref['self'] = False
-        if not pref.has_key('digest_duratation'): pref['digest_duratation'] = 5
-        else:                                     pref['digest_duratation'] = int(pref['digest_duratation'])
+        if pref.has_key('digest_duratation'):
+            if pref['digest_duratation']:
+                pref['digest_duratation'] = int(pref['digest_duratation'])
+            else:
+                pref['digest_duratation'] = 0
+        else:
+            pref['digest_duratation'] = 5
         return pref
 
     @property
