@@ -49,7 +49,7 @@ class DigestSend(object):
         """
         for user in self.users:
             digest_pref = user.digestpreference_set.get(digest = self.digest)
-            if timestamp - self.digest.get_last(user) < timedelta(days=digest_pref.interval):
+            if timestamp - self.digest.get_last(user) < timedelta(hours=digest_pref.interval):
                 continue
             qs = self.get_content(user, timestamp)
             subject = _("%(prefix)sEmail digest for %(digest)s") % {

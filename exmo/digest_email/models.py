@@ -82,8 +82,8 @@ class DigestPreference(models.Model):
     digest = models.ForeignKey(Digest, verbose_name = _('digest'))
     "Дайджест"
 
-    interval = models.PositiveIntegerField(default = 5, verbose_name = _('interval'))
-    "Периодичность дайджестов в днях"
+    interval = models.PositiveIntegerField(default = 5, verbose_name = _('interval (hours)'))
+    "Периодичность дайджестов в часах"
 
     def __unicode__(self):
         return _("%(digest)s for %(user)s") % {'digest': self.digest, 'user': self.user}
