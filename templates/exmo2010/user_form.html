@@ -24,7 +24,7 @@
 
 {% block content %}
 {% if user.is_active %}
-<form method="post" action={% if id %}"{% url exmo2010:user_profile id %}{% else %}{% url exmo2010:user_profile %}{% endif %}" id="userprofile_form">{% csrf_token %}
+<form method="post" action="{% if id %}{% url exmo2010:user_profile id %}{% else %}{% url exmo2010:user_profile %}{% endif %}" id="userprofile_form">{% csrf_token %}
 {{uform.as_stack}}
 {{pform.as_stack}}
 <p><input type="submit" /><input class="button" type="reset" /></p>
