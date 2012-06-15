@@ -699,7 +699,11 @@ class UserProfile(models.Model):
                 digest, created = Digest.objects.get_or_create(name = notify)
                 dpref, created = DigestPreference.objects.get_or_create(user = self.user, digest = digest)
                 dpref.interval = self._get_notify_preference(notify)['digest_duratation']
+                dpref.full_clean()
                 dpref.save()
+            else:
+                digest, created = Digest.objects.get_or_create(name = notify)
+                DigestPreference.objects.filter(user = self.user, digest = digest).delete()
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser
