@@ -47,8 +47,6 @@ class Digest(models.Model):
                 interval = pref.interval
             except DigestPreference.DoesNotExist:
                 interval = 30
-            #FIXME!
-            interval = 300
             return datetime.now() - timedelta(days = interval)
 
 
