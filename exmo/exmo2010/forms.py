@@ -145,7 +145,7 @@ class UserProfileForm(forms.ModelForm, StackedForm):
         widget = forms.RadioSelect(),
     )
 
-    comment_notification_digest = forms.IntegerField(label = _('digest interval'), required = False, min_value = 1, max_value = 24)
+    comment_notification_digest = forms.IntegerField(label = _('digest interval (in hours)'), required = False, min_value = 1, max_value = 24)
 
     comment_notification_self = forms.BooleanField(
         label = _('send to me my comments'),
@@ -159,7 +159,7 @@ class UserProfileForm(forms.ModelForm, StackedForm):
         widget = forms.RadioSelect(),
     )
 
-    score_notification_digest = forms.IntegerField(label = _('digest interval'), required = False, min_value = 1, max_value = 24)
+    score_notification_digest = forms.IntegerField(label = _('digest interval (in hours)'), required = False, min_value = 1, max_value = 24)
 
     form_template  = 'exmo2010/forms/stacked_form.html'
     field_template = 'exmo2010/forms/stack_field.html'
