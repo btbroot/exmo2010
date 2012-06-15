@@ -92,3 +92,7 @@ class DigestPreference(models.Model):
         unique_together = (
             ('user','digest'),
         )
+
+    def clean(self):
+        if self.interval < 1:
+            raise ValidationError(_('Digest interval must be more than 1'))
