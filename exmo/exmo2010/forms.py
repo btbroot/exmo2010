@@ -119,14 +119,25 @@ class TaskForm(forms.ModelForm):
 
 
 
-class UserForm(forms.ModelForm):
+from exmo2010.stackedform import StackedForm
+class UserForm(forms.ModelForm, StackedForm):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email"]
 
+    form_template  = 'exmo2010/forms/stacked_form.html'
+    field_template = 'exmo2010/forms/stack_field.html'
+
+    class Stack:
+        stack = (
+            {
+                'label': _('User information'),
+                'fields': ('first_name', 'last_name', 'email'),
+            },
+        )
 
 
-class UserProfileForm(forms.ModelForm):
+class UserProfileForm(forms.ModelForm, StackedForm):
     comment_notification_type = forms.ChoiceField(
         choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
         label = _('comment notification type'),
@@ -149,6 +160,21 @@ class UserProfileForm(forms.ModelForm):
     )
 
     score_notification_digest = forms.IntegerField(label = _('digest interval'), required = False)
+
+    form_template  = 'exmo2010/forms/stacked_form.html'
+    field_template = 'exmo2010/forms/stack_field.html'
+
+    class Stack:
+      stack = (
+        {
+            'label': _('Comment notification'),
+            'fields': ('comment_notification_type','comment_notification_digest','comment_notification_self'),
+        },
+        {
+            'label': _('Score change notification'),
+            'fields': ('score_notification_type','score_notification_digest'),
+        }
+      )
 
     class Meta:
         model = UserProfile

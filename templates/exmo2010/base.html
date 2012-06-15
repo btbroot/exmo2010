@@ -24,6 +24,7 @@
 <head>
 <title>{% block title %}{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/patch.css" />
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
