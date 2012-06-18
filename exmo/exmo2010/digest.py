@@ -7,7 +7,7 @@ from exmo2010.models import Score
 
 class ScoreCommentDigest(DigestSend):
 
-    def get_content(self, user, timestampt = datetime.now()):
+    def get_content(self, user, timestamp = datetime.now()):
         "Собираем комментарии для отправления с момента последней отправки дайджеста по timestamp"
 
         if user.userprofile.is_expertA or user.userprofile.is_manager_expertB:
@@ -16,6 +16,8 @@ class ScoreCommentDigest(DigestSend):
             score_pk = Score.objects.filter(task__user = user)
         elif user.userprofile.is_organization:
             score_pk = Score.objects.filter(task__orgazation__in = user.userprofile.organization)
+        else:
+            score_pk = Score.objects.none()
 
         last_digest_date = self.digest.get_last(user)
         qs = Comment.objects.filter(
@@ -25,12 +27,6 @@ class ScoreCommentDigest(DigestSend):
 
         if last_digest_date:
             qs = qs.filter(submit_date__gte = last_digest_date)
-        if not user.userprofile.notify_score_preference['self']:
+        if not user.userprofile.notify_comment_preference['self']:
             qs = qs.exclude(user = user)
         return qs
-
-
-class ScoreCommentDigest(DigestSend):
-
-    def get_content(self, user, timestampt = datetime.now()):
-        "Собираем комментарии для отправления с момента последней отправки дайджеста по timestamp"
