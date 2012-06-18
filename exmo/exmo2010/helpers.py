@@ -82,38 +82,36 @@ def comment_notification(sender, **kwargs):
     }
 
 
-    #admin comment user list
-    admin_users = []
+    if comment.user.profile.notify_comment_preference['self']:
+        admin_users = [comment.user,]
+        nonadmin_users = [comment.user,]
+    else:
+        admin_users = []
+        nonadmin_users = []
+
+
     #A-expert + B-expert-manager
-    experts=User.objects.filter(groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group], is_active = True)
+    experts=User.objects.filter(
+        groups__name__in = [UserProfile.expertA_group,UserProfile.expertB_manager_group],
+        is_active = True,
+        email__isnull = False,
+    ).exclude(email__exact='').distinct('email')
     if experts: admin_users.extend(experts)
     #B-expert
     if score.task.user.is_active: admin_users.extend([score.task.user,])
     for user in admin_users:
         if user.is_active and user.email and user.profile.notify_comment_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            if user == comment.user and user.profile.notify_comment_preference['self']:
-                #self comment
-                admin_rcpt.append(user.email)
-            else:
-                admin_rcpt.append(user.email)
-    #get only uniq emails
-    admin_rcpt=list(set(admin_rcpt))
+            admin_rcpt.append(user.email)
 
-    #non-admin comment user list
-    nonadmin_users = []
+
     #organization
-    nonadmin_users = User.objects.filter(userprofile__organization = score.task.organization, is_active = True)
+    nonadmin_users = User.objects.filter(
+        userprofile__organization = score.task.organization,
+        email__isnull = False,
+    ).exclude(email__exact='').distinct('email')
     for user in nonadmin_users:
         if user.email and user.email not in admin_rcpt and user.profile.notify_comment_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            if user == comment.user and user.profile.notify_comment_preference['self']:
-                if user.profile.notify_self_comment:
-                    #self comment
-                    nonadmin_rcpt.append(user.email)
-            else:
-                if user.profile.notify_comment:
-                    nonadmin_rcpt.append(user.email)
-    #get only uniq emails
-    nonadmin_rcpt=list(set(nonadmin_rcpt))
+            nonadmin_rcpt.append(user.email)
 
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
