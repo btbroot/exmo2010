@@ -643,10 +643,12 @@ class UserProfile(models.Model):
 
     @property
     def get_preference(self):
-        if self.preference:
+        try:
             return json.loads(self.preference)
-        else:
-            return json.loads('{}')
+        except ValueError:
+            return dict()
+        except TypeError:
+            return dict()
 
     def _get_notify_preference(self, preference):
         prefs = self.get_preference
