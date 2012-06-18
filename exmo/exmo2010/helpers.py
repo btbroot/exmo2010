@@ -103,6 +103,9 @@ def comment_notification(sender, **kwargs):
         if user.is_active and user.email and user.profile.notify_comment_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
             admin_rcpt.append(user.email)
 
+    #get only uniq emails
+    admin_rcpt=list(set(admin_rcpt))
+
 
     #organization
     nonadmin_users = User.objects.filter(
@@ -112,6 +115,9 @@ def comment_notification(sender, **kwargs):
     for user in nonadmin_users:
         if user.email and user.email not in admin_rcpt and user.profile.notify_comment_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
             nonadmin_rcpt.append(user.email)
+
+    #get only uniq emails
+    nonadmin_rcpt=list(set(nonadmin_rcpt))
 
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
