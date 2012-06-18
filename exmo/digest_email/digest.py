@@ -52,6 +52,8 @@ class DigestSend(object):
             if timestamp - self.digest.get_last(user) < timedelta(hours=digest_pref.interval):
                 continue
             qs = self.get_content(user, timestamp)
+            if not qs:
+                continue
             subject = _("%(prefix)sEmail digest for %(digest)s") % {
                 'prefix': settings.EMAIL_SUBJECT_PREFIX,
                 'digest': self.digest,
