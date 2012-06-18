@@ -758,7 +758,7 @@ class UserProfile(models.Model):
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)
     is_expertA = property(_is_expertA)
-    is_manager_expertB = property(_is_manager_expertB)
+    is_manager_expertB = property(_is_expertA)
     is_customer = property(_is_customer)
     is_organization = property(_is_organization)
 
