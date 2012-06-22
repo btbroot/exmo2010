@@ -68,10 +68,6 @@ urlpatterns = patterns('',
 
 
 urlpatterns += patterns('',
-  url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'exmo2010/login.html'}, name='login'),
-  url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'template_name': 'exmo2010/logged_out.html'}, name='logout'),
-  url(r'^accounts/password_change/done$', 'django.contrib.auth.views.password_change_done', {'template_name':'exmo2010/password_change_done.html' }, name='password_change_done'),
-  url(r'^accounts/password_change$','exmo2010.view.user.exmo_password_change', name='password_change'),
   url(r'^accounts/profile','exmo2010.view.user.user_profile', name='user_profile'),
   url(r'^accounts/profile/(\d+)$','exmo2010.view.user.user_profile', name='user_profile'),
   url(r'^accounts/dashboard_reset$','exmo2010.view.user.user_reset_dashboard', name='user_reset_dashboard'),

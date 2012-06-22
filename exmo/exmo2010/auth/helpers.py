@@ -142,7 +142,7 @@ def parameter_permission(user, priv, parameter):
 
 def check_permission(user, priv, context = None):
     '''check user permission for context'''
-    if context == None:
+    if context is None:
         return False
     func = eval(context._meta.object_name.lower() + '_permission')
     return func(user, priv, context)

@@ -71,6 +71,11 @@ msgstr "период (в часах)"
 msgid "%(digest)s for %(user)s"
 msgstr "%(digest)s для %(user)s"
 
+#: exmo/digest_email/models.py:98
+#, fuzzy
+msgid "Digest interval must be more than 1"
+msgstr "Период дайджеста должен быть больше или равен единице"
+
 #: exmo/exmo2010/forms.py:107
 msgid "This user account is inactive"
 msgstr "Пользователь не активен"
@@ -154,7 +159,7 @@ msgstr "цикл мониторинга"
 #: exmo/exmo2010/helpers.py:35
 #, python-format
 msgid "Changed %s."
-msgstr ""
+msgstr "Изменен %s."
 
 #: exmo/exmo2010/helpers.py:35 exmo/exmo2010/helpers.py:45
 msgid "and"
@@ -163,21 +168,21 @@ msgstr "и"
 #: exmo/exmo2010/helpers.py:40
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
-msgstr ""
+msgstr "Добавлен %(name)s \"%(object)s\"."
 
 #: exmo/exmo2010/helpers.py:44
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
-msgstr ""
+msgstr "Изменен %(list)s для %(name)s \"%(object)s\"."
 
 #: exmo/exmo2010/helpers.py:49
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
-msgstr ""
+msgstr "Удален %(name)s \"%(object)s\"."
 
 #: exmo/exmo2010/helpers.py:53
 msgid "No fields changed."
-msgstr ""
+msgstr "Нет измененных полей."
 
 #: exmo/exmo2010/helpers.py:147
 #, python-format
@@ -449,7 +454,7 @@ msgstr "Приборная доска"
 
 #: exmo/exmo2010/dashboard/dashboard.py:41
 msgid "Quick links"
-msgstr ""
+msgstr "Быстрый доступ"
 
 #: exmo/exmo2010/dashboard/dashboard.py:54
 #: templates/exmo2010/monitoring_list.html:37
@@ -487,7 +492,7 @@ msgstr "Добро пожаловать,"
 
 #: exmo/exmo2010/dashboard/modules.py:46
 msgid "List"
-msgstr ""
+msgstr "Список"
 
 #: exmo/exmo2010/view/claim.py:38
 #, python-format
@@ -538,7 +543,7 @@ msgstr "Удалить цикл мониторинга %s"
 
 #: exmo/exmo2010/view/monitoring.py:107
 msgid "Only POST allowed"
-msgstr ""
+msgstr "Разрешен только POST"
 
 #: exmo/exmo2010/view/monitoring.py:114
 #, python-format
@@ -728,7 +733,7 @@ msgstr "строка %d. Начинается с '#'. Пропуск"
 #: exmo/exmo2010/view/task.py:175
 #, python-format
 msgid "row %(row)d (csv). Not a code: %(raw)s"
-msgstr ""
+msgstr "строка %(row)d (csv). Не код: %(raw)s"
 
 #: exmo/exmo2010/view/task.py:193
 #, python-format
@@ -738,7 +743,7 @@ msgstr "строка %(row)d (csv). Пустая оценка: %(raw)s"
 #: exmo/exmo2010/view/task.py:219
 #, python-format
 msgid "row %(row)d (validation). %(raw)s"
-msgstr ""
+msgstr "строка %(row)d (валидация). %(raw)s"
 
 #: exmo/exmo2010/view/task.py:223 exmo/exmo2010/view/task.py:227
 #, python-format
@@ -1323,15 +1328,17 @@ msgstr "Изменение пароля"
 #: templates/exmo2010/password_change_form.html:32
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Пожалуйста, исправьте найденную ошибку"
+msgstr[1] "Пожалуйста, исправьте найденные ошибки"
+msgstr[2] "Пожалуйста, исправьте найденные ошибки"
 
 #: templates/exmo2010/password_change_form.html:38
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
 "password twice so we can verify you typed it in correctly."
 msgstr ""
+"Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, "
+"чтобы быть уверенным, что вы не ошиблись при вводе."
 
 #: templates/exmo2010/password_change_form.html:44
 msgid "Old password"
@@ -1543,9 +1550,267 @@ msgstr "Задача "
 msgid "Reset dashboard preferences"
 msgstr "Сбросить настройки приборной доски"
 
+#: exmo/templates/registration/activate.html:38
+#: exmo/templates/registration/activate.html:41
+msgid "Account activation error"
+msgstr "Ошибка активации аккаунта"
+
+#: exmo/templates/registration/activate.html:42
+msgid ""
+"\n"
+"        <p>Please make sure you properly copied activation link from our "
+"email.</p>\n"
+"        <p>Also note that the link is alive only for 3 days.</p>\n"
+"    "
+msgstr ""
+"\n"
+"        <p>Пожалуйста, убедитесь, что вы правильно открыли ссылку из "
+"полученного от нас письма.</p>\n"
+"        <p>Также, имейте ввиду, что эта ссылка действительна только в "
+"течение 3 дней.</p>\n"
+"    "
+
+#: exmo/templates/registration/activate.html:46
+msgid "You also can"
+msgstr "Также вы можете"
+
+#: exmo/templates/registration/activate.html:46
+msgid "try to register again"
+msgstr "пройти регистрацию еще раз"
+
+#: exmo/templates/registration/activation_complete.html:38
+#: exmo/templates/registration/activation_complete.html:41
+#, fuzzy
+msgid "Registration confirmed"
+msgstr "Регистрация подтверждена"
+
+#: exmo/templates/registration/activation_complete.html:44
+#, python-format
+msgid ""
+"\n"
+"            <p>Now you can <a href=\"%(login_url)s\">log in</a> with "
+"credentials provided during registration.</p>\n"
+"        "
+msgstr ""
+"\n"
+"            <p>Теперь вы можете <a href=\"%(login_url)s\">войти</a>, "
+"используя email и пароль, указанные при регистрации.</p>\n"
+"        "
+
+#: exmo/templates/registration/activation_email.txt:21
+#: exmo/templates/registration/activation_email_subject.txt:21
+msgid "Registration on"
+msgstr "Регистрация на"
+
+#: exmo/templates/registration/activation_email.txt:23
+msgid "In order to activate your account you should follow the link"
+msgstr "Для активации вашего аккаунта необходимо перейти по ссылке"
+
+#: exmo/templates/registration/activation_email.txt:26
+msgid "Thank you"
+msgstr "Спасибо"
+
+#: exmo/templates/registration/login.html:47
+msgid "Recover forgotten password"
+msgstr "Восстановить забытый пароль"
+
+#: exmo/templates/registration/logout.html:41
+#: templates/exmo2010/logged_out.html:23
+msgid "Thanks for spending some quality time with the Web site today"
+msgstr "Спасибо за проведенное время с нами"
+
+#: exmo/templates/registration/logout.html:42
+#: templates/exmo2010/logged_out.html:25
+msgid "Log in again"
+msgstr "Войти снова"
+
+#: exmo/templates/registration/password_change_done.html:38
+#: exmo/templates/registration/password_change_done.html:41
+#: templates/exmo2010/password_change_done.html:24
+#: templates/exmo2010/password_change_done.html:28
+msgid "Password change successful"
+msgstr "Пароль успешно изменён"
+
+#: exmo/templates/registration/password_change_done.html:42
+#: templates/exmo2010/password_change_done.html:30
+msgid "Your password was changed."
+msgstr "Ваш пароль был изменён."
+
+#: exmo/templates/registration/password_change_form.html:38
+#: exmo/templates/registration/password_change_form.html:53
+#: templates/exmo2010/password_change_form.html:24
+#: templates/exmo2010/password_change_form.html:36
+msgid "Password change"
+msgstr "Изменение пароля"
+
+#: exmo/templates/registration/password_change_form.html:47
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Пожалуйста, исправьте найденную ошибку"
+msgstr[1] "Пожалуйста, исправьте найденные ошибки"
+msgstr[2] "Пожалуйста, исправьте найденные ошибки"
+
+#: exmo/templates/registration/password_change_form.html:55
+#: templates/exmo2010/password_change_form.html:38
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+"Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, "
+"чтобы быть уверенным, что вы не ошиблись при вводе."
+
+#: exmo/templates/registration/password_change_form.html:62
+#: templates/exmo2010/password_change_form.html:44
+msgid "Old password"
+msgstr "Старый пароль"
+
+#: exmo/templates/registration/password_change_form.html:68
+#: templates/exmo2010/password_change_form.html:49
+msgid "New password"
+msgstr "Новый пароль"
+
+#: exmo/templates/registration/password_change_form.html:74
+#: templates/exmo2010/password_change_form.html:54
+msgid "Password (again)"
+msgstr "Пароль (повтор)"
+
+#: exmo/templates/registration/password_change_form.html:81
+#: exmo/templates/registration/password_reset_confirm.html:57
+#: templates/exmo2010/password_change_form.html:60
+msgid "Change my password"
+msgstr "Сменить пароль"
+
+#: exmo/templates/registration/password_reset_complete.html:38
+#: exmo/templates/registration/password_reset_complete.html:41
+msgid "Password reset complete"
+msgstr "Смена пароля завершена"
+
+#: exmo/templates/registration/password_reset_complete.html:42
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "Установлен новый пароль. Теперь можете войти в систему используя его."
+
+#: exmo/templates/registration/password_reset_confirm.html:38
+#: exmo/templates/registration/password_reset_form.html:38
+#: exmo/templates/registration/password_reset_form.html:41
+#, fuzzy
+msgid "Password reset"
+msgstr "Восстановление забытого пароля"
+
+#: exmo/templates/registration/password_reset_confirm.html:43
+#, fuzzy
+msgid "Enter new password"
+msgstr "Новый пароль"
+
+#: exmo/templates/registration/password_reset_confirm.html:45
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Пожалуйста, введите новый пароль дважды, чтобы быть уверенным, "
+"что он введен верно."
+
+#: exmo/templates/registration/password_reset_confirm.html:50
+#, fuzzy
+msgid "New password:"
+msgstr "Новый пароль"
+
+#: exmo/templates/registration/password_reset_confirm.html:54
+#, fuzzy
+msgid "Confirm password:"
+msgstr "Подтвердить пароль"
+
+#: exmo/templates/registration/password_reset_confirm.html:63
+#, fuzzy
+msgid "Password reset unsuccessful"
+msgstr "Не удалось изменить пароль"
+
+#: exmo/templates/registration/password_reset_confirm.html:65
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Неправильная ссылка для восстановление пароля. Возможно, потому, что "
+"она уже была использована. Пожулуйста, пройдите процедуру восстановления еще раз."
+
+#: exmo/templates/registration/password_reset_done.html:38
+#: exmo/templates/registration/password_reset_done.html:41
+#, fuzzy
+msgid "Password reset successful"
+msgstr "Пароль успешно изменён"
+
+#: exmo/templates/registration/password_reset_done.html:42
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+"Мы отправили вам e-mail с интрукциями по смене пароля. "
+"Проверьте вашу электронную почту."
+
+#: exmo/templates/registration/password_reset_form.html:43
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one."
+msgstr ""
+"Забыли пароль? Введите ваш адрес электронной почты и мы вышлем вам на него "
+"инструкции по восстановлению пароля."
+
+#: exmo/templates/registration/password_reset_form.html:48
+msgid "E-mail address:"
+msgstr "Адрес e-mail"
+
+#: exmo/templates/registration/password_reset_form.html:49
+#, fuzzy
+msgid "Reset my password"
+msgstr "Сменить пароль"
+
+#: exmo/templates/registration/registration_closed.html:38
+#, fuzzy
+msgid "Registration disallowed"
+msgstr "Регистрация приостановлена"
+
+#: exmo/templates/registration/registration_closed.html:41
+msgid ""
+"\n"
+"        <p>Registration is temporary disallowed.</p>\n"
+"        <p>Please try to register a bit later.</p>\n"
+"    "
+msgstr ""
+"\n"
+"        <p>Регистрация на нашем сайте временно приостановлена.</p>\n"
+"        <p>Пожалуйста, попробуйте зарегистрироваться немного позже.</p>\n"
+"    "
+
+#: exmo/templates/registration/registration_complete.html:38
+#: exmo/templates/registration/registration_complete.html:41
+msgid "Registration complete"
+msgstr "Завершение регистрации"
+
+#: exmo/templates/registration/registration_complete.html:43
+msgid ""
+"\n"
+"            <p>Thank you for your time.</p>\n"
+"            <p>Special email was sant to your email address.</p>\n"
+"            <p>You can confirm your registration by simply following a link "
+"from the email.</p>\n"
+"        "
+msgstr ""
+"\n"
+"            <p>Спасибо за уделенное время.</p>\n"
+"            <p>Мы послали письмо на адрес email, указанный при регистрации.</"
+"p>\n"
+"            <p>Вы можете подтвердить регистрацию, просто перейдя по ссылке "
+"из этого письма.</p>\n"
+"        "
+
+#: exmo/templates/registration/registration_form.html:38
+#: exmo/templates/registration/registration_form.html:41
+msgid "Register new user"
+msgstr "Регистрация нового пользователя"
+
+#: exmo/templates/user_dashboard/dashboard.html:59
 #: templates/user_dashboard/dashboard.html:59
 msgid "Modules"
-msgstr ""
+msgstr "Модули"
 
 #~ msgid "digest interval"
 #~ msgstr "период дайджеста"

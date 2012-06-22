@@ -66,12 +66,6 @@ def user_profile(request, id=None):
         },
         context_instance=RequestContext(request))
 
-from django.contrib.auth.views import password_change
-
-def exmo_password_change(request, **kwargs):
-    kwargs['template_name'] = 'exmo2010/password_change_form.html'
-    kwargs['post_change_redirect'] = reverse('exmo2010:password_change_done')
-    return password_change(request, **kwargs)
 
 from admin_tools.dashboard.models import DashboardPreferences
 @csrf_protect

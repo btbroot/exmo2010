@@ -31,6 +31,7 @@ urlpatterns = patterns('',
   (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
   (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
   (r'^admin_tools/', include('admin_tools.urls')),
+  (r'^accounts/', include('registration.backends.default.urls')),
 )
 
 if settings.DEBUG:

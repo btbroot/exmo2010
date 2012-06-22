@@ -15,8 +15,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf import settings
-from django.contrib.auth.models import User
 from exmo2010.auth.helpers import check_permission
 
 class ObjectPermBackend(object):
@@ -27,6 +25,4 @@ class ObjectPermBackend(object):
         return None
 
     def has_perm(self, user_obj, perm, obj=None):
-        if obj is None:
-            return False
         return check_permission(user_obj, perm, obj)

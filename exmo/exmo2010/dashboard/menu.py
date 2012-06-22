@@ -33,8 +33,8 @@ class CustomMenu(Menu):
         ]
         if request.user.is_active:
             children += [
-                items.MenuItem(_('Change password'), reverse('exmo2010:password_change')),
-                items.MenuItem(_('Log out'), reverse('exmo2010:logout')),
+                items.MenuItem(_('Change password'), reverse('auth_password_change')),
+                items.MenuItem(_('Log out'), reverse('auth_logout')),
             ]
             if request.user.get_full_name():
                 welcome_msg = request.user.get_full_name()
@@ -42,7 +42,8 @@ class CustomMenu(Menu):
                 welcome_msg = request.user.username
         else:
             children += [
-                items.MenuItem(_('Log in'), reverse('exmo2010:login')),
+                items.MenuItem(_('Register'), reverse('registration_register')),
+                items.MenuItem(_('Log in'), reverse('auth_login')),
             ]
             welcome_msg = "Anonymous"
         msg = _('Welcome,') + ' ' + welcome_msg

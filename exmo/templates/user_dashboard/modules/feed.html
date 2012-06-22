@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "admin_tools/dashboard/module.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,15 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n %}
-
-{% block title %}{% trans 'Password change successful' %}{% endblock %}
-
-{% block content %}
-
-<h1>{% trans 'Password change successful' %}</h1>
-
-<p>{% trans 'Your password was changed.' %}</p>
-
+{% block module_content %}
+<ul>
+    {% spaceless %}
+    {% for child in module.children %}
+    <li class="{% cycle 'odd' 'even' %}">
+        {% if child.date %}<span class="float-right">{{ child.date|date }}&nbsp;</span>{% endif %}
+        {% if child.warning %}<span class="warning">{{ child.title }}</span>{% else %}<a target="_blank" class="external-link" href="{{ child.url }}">{{ child.title }}</a>{% endif %}
+    </li>
+    {% endfor %}
+    {% endspaceless %}
+</ul>
 {% endblock %}
