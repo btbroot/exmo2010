@@ -18,25 +18,25 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
-<p>{{ form.non_field_errors }}</p>
-
+{% load i18n %}
+{% block title %}{% trans 'External users gender distribution' %} | {% trans 'Exmo' %}{% endblock %}
 {% block content %}
-{% if user.is_active %}
-<form method="post" action="{% if id %}{% url exmo2010:user_profile id %}{% else %}{% url exmo2010:user_profile %}{% endif %}" id="userprofile_form">{% csrf_token %}
-{{uform.as_stack}}
-{{pform.as_stack}}
-<p>
-    <input type="submit" value="{% trans 'Save' %}" />
-    <input class="button" type="reset" value="{% trans 'Reset' %}" />
-</p>
-</form>
-{% endif %}
-<p>
-<script type="text/javascript" src="{{ STATIC_URL }}dashboard/js/dashboard-cookie-reset.js"></script>
-<form method="post" action="{% url exmo2010:user_reset_dashboard %}" id="dashboard_reset">{% csrf_token %}
-<INPUT TYPE="button" VALUE="{% trans 'Reset dashboard preferences' %}" onclick="javascript:dashboard_reset()">
-</form>
-</p>
+    <h1>{% trans 'External users gender distribution' %}:</h1>
+        <table border="1">
+            <tr>
+                <th>{% trans 'Sex' %}</th>
+                <th>{% trans 'Number of users' %}</th>
+            </tr>
+            {% for r in results %}
+            <tr>
+                {% if forloop.last %}
+                <th>{{ r.0 }}</th>
+                <th>{{ r.1 }}</th>
+                {% else %}
+                <td>{{ r.0 }}</td>
+                <td>{{ r.1 }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
 {% endblock %}

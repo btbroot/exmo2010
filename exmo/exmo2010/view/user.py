@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -17,7 +18,6 @@
 #
 from exmo2010.forms import UserForm, UserProfileForm
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
@@ -25,36 +25,31 @@ from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import render_to_response
 from django.contrib import messages
+
 
 @csrf_protect
 def user_profile(request, id=None):
-    if id:
-        _user = get_object_or_404(User, pk = id)
+    if id is not None:
+        _user = get_object_or_404(User, pk=id)
     else:
         _user = request.user
-    if not request.user.is_superuser and request.user != _user:
+    if (not request.user.is_active or
+        (not request.user.is_superuser and request.user!=_user)):
         return HttpResponseForbidden(_('Forbidden'))
 
-    uform = pform = None
-
-    if request.user.is_active:
-        if request.method == 'POST':
-            uform = UserForm(request.POST, instance = _user)
-            pform = UserProfileForm(request.POST, instance = _user.profile)
-            if uform.is_valid() and pform.is_valid():
-                user = uform.save()
-                profile = pform.save()
-                if id:
-                    redirect = reverse('exmo2010:user_profile', args=[user.pk])
-                else:
-                    redirect = reverse('exmo2010:user_profile')
-                messages.add_message(request, messages.INFO, _("The %(verbose_name)s was updated successfully.") %\
-                                    {"verbose_name": user.profile._meta.verbose_name})
-        else:
-            uform = UserForm(instance = _user)
-            pform = UserProfileForm(instance = _user.profile)
+    if request.method == 'POST':
+        uform = UserForm(request.POST, instance=_user)
+        pform = UserProfileForm(request.POST, instance=_user.profile)
+        if uform.is_valid() and pform.is_valid():
+            user = uform.save()
+            pform.save()
+            messages.add_message(request, messages.INFO, _("The %(verbose_name)s was updated successfully.") %\
+                                {"verbose_name": user.profile._meta.verbose_name})
+    else:
+        uform = UserForm(instance = _user)
+        pform = UserProfileForm(instance = _user.profile)
 
     return render_to_response(
         'exmo2010/user_form.html',

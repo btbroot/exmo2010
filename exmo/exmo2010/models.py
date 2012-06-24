@@ -22,11 +22,12 @@ EXMO2010 Models module
 """
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from exmo2010.fields import TagField
 from tagging.models import Tag
 
@@ -589,41 +590,46 @@ def openness_helper_v8(score):
 from digest_email.models import Digest, DigestPreference
 from django.contrib.auth.models import Group
 import json
-class UserProfile(models.Model):
-    "UserProfile model"
 
-    NOTIFICATION_TYPE_DISABLE   = 0
-    "Оповещение отключено"
-    NOTIFICATION_TYPE_ONEBYONE  = 1
-    "Оповещение включено. По одному письму на событие"
-    NOTIFICATION_TYPE_DIGEST    = 2
-    "Оповещение включено. По одному письму в период времени. Оповещение дайджестами"
+SEX_CHOICES = (
+    (0, _("not set")),
+    (1, _("male")),
+    (2, _("female")),
+    (3, _("other")),
+)
 
-    NOTIFICATION_TYPE_CHOICES = (
-        (NOTIFICATION_TYPE_DISABLE, _('disabled')),
-        (NOTIFICATION_TYPE_ONEBYONE, _('one email per one comment/change')),
-        (NOTIFICATION_TYPE_DIGEST, _('digest notification')),
-    )
-    """Notification types can be:
 
-    0 - disable
-
-    1 - one mail per one comment/change
-
-    2 - digest
+class ExtUPManager(models.Manager):
     """
+    Выдает только внешних пользователей.
+    """
+    def get_query_set(self):
+        return super(ExtUPManager, self).get_query_set().exclude\
+            (user__is_superuser=True).exclude(user__is_staff=True).exclude\
+            (user__groups__name__in=UserProfile.expert_groups)
 
-    user = models.ForeignKey(User, unique=True)
-    "User field"
 
-    organization = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('organizations for view'))
-    "Organization m2m field"
+class IntUPManager(models.Manager):
+    """
+    Выдает только внутренних пользователей.
+    """
+    def get_query_set(self):
+        return super(IntUPManager, self).get_query_set().filter\
+            (Q(user__is_superuser=True) | Q(user__is_staff=True) | Q\
+            (user__groups__name__in=UserProfile.expert_groups))
 
-    preference = models.TextField(null = True, blank = True, verbose_name=_('preference'))
-    """Preference field
 
+class UserProfile(models.Model):
+    """
+    Наша кастомная модель профиля пользователя.
+
+    Notification types can be:
+    0 - disable
+    1 - one mail per one comment/change
+    2 - digest
+
+    Preference field
     this is like::
-
         {
             'notify_comment': {
                 'self': False,
@@ -635,20 +641,39 @@ class UserProfile(models.Model):
                 'type': 0
             },
         }
-
     type is one of notification types
-
     """
+    # Оповещение отключено.
+    NOTIFICATION_TYPE_DISABLE = 0
+    # Оповещение включено. По одному письму на событие.
+    NOTIFICATION_TYPE_ONEBYONE = 1
+    # Оповещение включено. По одному письму в период времени. Оповещение дайджестами.
+    NOTIFICATION_TYPE_DIGEST = 2
 
+    NOTIFICATION_TYPE_CHOICES = (
+        (NOTIFICATION_TYPE_DISABLE, _('disabled')),
+        (NOTIFICATION_TYPE_ONEBYONE, _('one email per one comment/change')),
+        (NOTIFICATION_TYPE_DIGEST, _('digest notification')),
+    )
+
+    objects = models.Manager()  # Все пользователи.
+    externals = ExtUPManager()  # Только внешние.
+    internals = IntUPManager()  # Только внутренние.
+
+    user = models.ForeignKey(User, unique=True)
+    organization = models.ManyToManyField(Organization, null=True, blank=True,
+        verbose_name=_('organizations for view'))
+    preference = models.TextField(null=True, blank=True,
+        verbose_name=_('preference'))
+    sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"),
+        choices=SEX_CHOICES, default=0, db_index=True)
 
     @property
     def get_preference(self):
         try:
             return json.loads(self.preference)
-        except ValueError:
-            return dict()
-        except TypeError:
-            return dict()
+        except (ValueError, TypeError):
+            return {}
 
     def _get_notify_preference(self, preference):
         prefs = self.get_preference
@@ -656,9 +681,12 @@ class UserProfile(models.Model):
             pref = prefs[preference]
         else:
             pref = {}
-        if not pref.has_key('type'): pref['type'] = self.NOTIFICATION_TYPE_DISABLE
-        else:                        pref['type'] = int(pref['type'])
-        if not pref.has_key('self'): pref['self'] = False
+        if not pref.has_key('type'):
+            pref['type'] = self.NOTIFICATION_TYPE_DISABLE
+        else:
+            pref['type'] = int(pref['type'])
+        if not pref.has_key('self'):
+            pref['self'] = False
         if pref.has_key('digest_duratation'):
             if pref['digest_duratation']:
                 pref['digest_duratation'] = int(pref['digest_duratation'])
@@ -688,20 +716,22 @@ class UserProfile(models.Model):
         prefs['notify_score'] = pref
         self.preference = json.dumps(prefs)
 
-    def clean(self,*args,**kwargs):
-        super(UserProfile,self).clean(*args,**kwargs)
+    def clean(self):
+        super(UserProfile, self).clean()
         for notify in ['notify_score','notify_comment']:
             if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
                 if self._get_notify_preference(notify)['digest_duratation'] < 1:
                     raise ValidationError(_('Digest duratation must be greater or equal than 1.'))
 
     def save(self,*args,**kwargs):
-        "Переопределение метода для сохранения настроек дайджеста"
-        super(UserProfile,self).save(*args,**kwargs)
+        """
+        Переопределение метода для сохранения настроек дайджеста.
+        """
+        super(UserProfile, self).save(*args, **kwargs)
         for notify in ['notify_score','notify_comment']:
             if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
-                #create DigestPreference
-                digest, created = Digest.objects.get_or_create(name = notify)
+                # create DigestPreference.
+                digest, created = Digest.objects.get_or_create(name=notify)
                 dpref, created = DigestPreference.objects.get_or_create(user = self.user, digest = digest)
                 dpref.interval = self._get_notify_preference(notify)['digest_duratation']
                 dpref.full_clean()
@@ -709,6 +739,15 @@ class UserProfile(models.Model):
             else:
                 digest, created = Digest.objects.get_or_create(name = notify)
                 DigestPreference.objects.filter(user = self.user, digest = digest).delete()
+
+    def is_internal(self):
+        """Внутренний пользователь или внешний."""
+        try:
+            UserProfile.externals.get(pk=self.pk)
+        except ObjectDoesNotExist:
+            return True
+        else:
+            return False
 
     def _is_expert(self):
         return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser

@@ -167,6 +167,10 @@ class UserProfileForm(forms.ModelForm, StackedForm):
     class Stack:
       stack = (
         {
+            'label': _('Sex'),
+            'fields': ('sex',),
+        },
+        {
             'label': _('Comment notification'),
             'fields': ('comment_notification_type','comment_notification_digest','comment_notification_self'),
         },

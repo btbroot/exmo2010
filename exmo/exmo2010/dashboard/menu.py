@@ -48,3 +48,8 @@ class CustomMenu(Menu):
             welcome_msg = "Anonymous"
         msg = _('Welcome,') + ' ' + welcome_msg
         self.children.append(items.MenuItem(msg, children = children))
+
+        rep_children = [
+            items.MenuItem(_('Gender stats'), reverse('exmo2010:gender_stats')),
+            ]
+        self.children.append(items.MenuItem(_('Reports'), children=rep_children))
