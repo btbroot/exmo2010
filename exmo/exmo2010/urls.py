@@ -76,11 +76,3 @@ urlpatterns += patterns('',
   url(r'^accounts/profile/(\d+)$','exmo2010.view.user.user_profile', name='user_profile'),
   url(r'^accounts/dashboard_reset$','exmo2010.view.user.user_reset_dashboard', name='user_reset_dashboard'),
 )
-
-urlpatterns += patterns('',
-  url( r'^comment_report/$', 'exmo2010.view.comment_report.comment_report',{'comment_type': 'comments'},name='comments'),
-  url( r'^comment_report/all_comments/(\d+)/$', 'exmo2010.view.comment_report.comment_report',{'comment_type': 'all_comments'},name='all_comments'),
-  url( r'^comment_report/claim_comments/(\d+)/$', 'exmo2010.view.comment_report.comment_report',{'comment_type': 'claim_comments'},name='claim_comments'),
-  url( r'^comment_report/respond_comments/(\d+)/$', 'exmo2010.view.comment_report.comment_report',{'comment_type': 'respond_comments'},name='respond_comments'),
-  url( r'^comment_report/unrequited_comments/(\d+)/$', 'exmo2010.view.comment_report.comment_report',{'comment_type': 'unrequited_comments'},name='unrequited_comments'),
-)
