@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'tagging',
     'tagging_autocomplete',
     'registration',  # django-registration.
+    'social_auth',
     # Our own apps.
     'exmo2010',
     'digest_email',
@@ -156,6 +157,10 @@ else:
     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
 
 AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+    'social_auth.backends.contrib.livejournal.LiveJournalBackend',
+    'social_auth.backends.contrib.vkontakte.VKontakteOAuth2Backend',
+    'social_auth.backends.OpenIDBackend',
     'django.contrib.auth.backends.ModelBackend',
     'exmo2010.auth.backends.ObjectPermBackend',
 )
@@ -170,6 +175,7 @@ SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(SITE_ROOT, '../media/')
 STATIC_ROOT = os.path.join(SITE_ROOT, '../static/')
 STATIC_DOC_ROOT = os.path.join(SITE_ROOT, '../static/exmo2010')
+LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = SITE_PREFIX+'exmo2010/'
 LOCALE_PATHS = ( os.path.join(SITE_ROOT, '../locale/'),)
 SERVER_EMAIL = 'www-data@svobodainfo.org'
@@ -231,3 +237,19 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 ACCOUNT_ACTIVATION_DAYS = 3  # For django-registration.
+
+
+# social_auth settings.
+FACEBOOK_APP_ID = ''
+FACEBOOK_API_SECRET = ''
+FACEBOOK_EXTENDED_PERMISSIONS = ['email']
+VK_APP_ID = ''
+VK_API_SECRET = ''
+
+LOGIN_ERROR_URL = LOGIN_URL
+SOCIAL_AUTH_BACKEND_ERROR_URL = LOGIN_ERROR_URL
+
+SOCIAL_AUTH_COMPLETE_URL_NAME  = 'socialauth_complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
+SOCIAL_AUTH_EXPIRATION = 'expires'

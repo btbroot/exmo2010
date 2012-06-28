@@ -810,7 +810,7 @@ class UserProfile(models.Model):
     expert_groups = [expertA_group, expertB_group, expertB_manager_group]
 
     def __unicode__(self):
-        return "%s" % self.user
+        return self.user.username
 
     class Meta:
         verbose_name = _('user profile')

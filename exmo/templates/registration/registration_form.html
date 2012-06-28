@@ -39,6 +39,27 @@
 
 {% block content %}
     <h1>{% trans 'Register new user' %}</h1>
+    {% if request.user.is_authenticated %}
+    <p>{% trans 'You are already logged in' %}.</p>
+    {% url auth_logout as auth_logout_url %}
+    <p>{% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
+    {% else %}
+    <a href="{% url socialauth_begin 'vkontakte-oauth2' %}"><img src="{{STATIC_URL}}exmo2010/socialauth/VK.png" width="32" /></a>&nbsp;
+    <a href="{% url socialauth_begin 'facebook' %}"><img src="{{STATIC_URL}}exmo2010/socialauth/f_logo.png" width="32" /></a>
+    <br />
+    <form action="{% url socialauth_begin 'livejournal' %}" method="post">
+        {% csrf_token %}
+        <label for="openid_lj_user">{% trans 'LiveJournal user' %}:</label>
+        <input id="openid_lj_user" type="text" value="" name="openid_lj_user" />
+        <input type="submit" value="{% trans 'Log in' %}"/>
+    </form>
+    <form action="{% url socialauth_begin 'openid' %}" method="post">
+        {% csrf_token %}
+        <label for="openid_identifier">OpenID:</label>
+        <input id="openid_identifier" type="text" value="" name="openid_identifier" />
+        <input type="submit" value="{% trans 'Log in' %}" />
+    </form>
+    <h2>{% trans 'or with your local login and password' %}:</h2>
     <div id="content-main">
         <form action="" method="post">
             {% csrf_token %}
@@ -49,4 +70,5 @@
     <script type="text/javascript">
         document.getElementById('id_username').focus()
     </script>
+    {% endif %}
 {% endblock %}

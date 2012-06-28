@@ -28,3 +28,6 @@ git+https://github.com/bsavelev/django-tagging-autocomplete.git
 django-extensions
 feedparser==5.1.2
 django-registration==0.8
+python-openid
+git+https://github.com/simplegeo/python-oauth2.git
+git+https://github.com/bsavelev/django-social-auth.git

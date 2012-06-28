@@ -32,6 +32,7 @@ urlpatterns = patterns('',
   (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
   (r'^admin_tools/', include('admin_tools.urls')),
   (r'^accounts/', include('registration.backends.default.urls')),
+  (r'^accounts/socialauth/', include('social_auth.urls')),
 )
 
 if settings.DEBUG:
