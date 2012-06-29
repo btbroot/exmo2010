@@ -23,6 +23,6 @@ class TagField(TagField_orig):
 
 try:
     from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^exmo\.exmo2010\.fields\.TagField"])
+    add_introspection_rules([], ["^exmo2010\.fields\.TagField"])
 except ImportError:
     pass
