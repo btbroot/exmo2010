@@ -604,9 +604,12 @@ class ExtUPManager(models.Manager):
     Выдает только внешних пользователей.
     """
     def get_query_set(self):
-        return super(ExtUPManager, self).get_query_set().exclude\
-            (user__is_superuser=True).exclude(user__is_staff=True).exclude\
-            (user__groups__name__in=UserProfile.expert_groups)
+        return super(ExtUPManager, self).\
+        get_query_set().\
+        exclude(user__is_superuser=True).\
+        exclude(user__is_staff=True).\
+        exclude(user__groups__name__in=UserProfile.expert_groups).\
+        distinct()
 
 
 class IntUPManager(models.Manager):
@@ -614,9 +617,12 @@ class IntUPManager(models.Manager):
     Выдает только внутренних пользователей.
     """
     def get_query_set(self):
-        return super(IntUPManager, self).get_query_set().filter\
-            (Q(user__is_superuser=True) | Q(user__is_staff=True) | Q\
-            (user__groups__name__in=UserProfile.expert_groups))
+        return super(IntUPManager, self).\
+        get_query_set().\
+        filter(Q(user__is_superuser=True) |
+               Q(user__is_staff=True) |
+               Q(user__groups__name__in=UserProfile.expert_groups)).\
+        distinct()
 
 
 class UserProfile(models.Model):
