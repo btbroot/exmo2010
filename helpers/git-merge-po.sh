@@ -48,5 +48,4 @@ msgcat --use-first -o $A $header $temp
 rm -f $header $temp
 
 # Check for conflicts
-grep -vq "#-#-#-#-#" $A
-
+grep -q "#-#-#-#-#" $A && exit 1
