@@ -27,9 +27,8 @@
 #     name = Gettext merge driver
 #     driver = helpers/git-merge-po.sh %O %A %B
 #
-# When merging branches, conflicts in PO files will be marked with "#-#-#-#".
-# You can use tools like lokalize(1) or gtranslator(1) to resolve them.
-
+# When merging branches, conflicts in PO files will be marked with "#-#-#-#-#".
+# You can then use tools like lokalize(1) or gtranslator(1) to resolve them.
 
 O=$1
 A=$2
@@ -49,5 +48,5 @@ msgcat --use-first -o $A $header $temp
 rm -f $header $temp
 
 # Check for conflicts
-conflicts=$(grep -c "#-#" $A)
-test $conflicts -gt 0 && exit 1
+grep -vq "#-#-#-#-#" $A
+
