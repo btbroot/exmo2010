@@ -15,21 +15,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.view.helpers import table
-from exmo2010.forms import ScoreForm
+
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import update_object, create_object, delete_object
-from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
+from reversion import revision
+from exmo2010.forms import ScoreForm
+from exmo2010.helpers import construct_change_message
+from exmo2010.view.helpers import table, table_prepare_queryset
 from exmo2010.models import Organization, Parameter, Score, Task
 from exmo2010.models import Monitoring, Claim
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import User
-from django.template import RequestContext
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
-from django.views.decorators.csrf import csrf_protect
+
+
 
 @login_required
 def score_add(request, task_id, parameter_id):
@@ -57,8 +61,6 @@ def score_add(request, task_id, parameter_id):
 
 
 
-from reversion import revision
-from exmo2010.helpers import construct_change_message
 @revision.create_on_success
 @login_required
 def score_manager(request, score_id, method='update'):
@@ -131,50 +133,79 @@ def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk = task_id)
     task = Task.objects.get(pk = task_id)
     title = _('Score list for %s') % ( task.organization.name )
-    if request.user.has_perm('exmo2010.view_task', task):
-      queryset = Parameter.objects.select_related().filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization).extra(
-        select={
-          'score_pk':'SELECT id FROM %s WHERE task_id = %s and parameter_id = %s.id' % (Score._meta.db_table, task.pk, Parameter._meta.db_table),
-        }
-      )
-    else: return HttpResponseForbidden(_('Forbidden'))
-    if report:
-      # Print report
-      return object_list(
-        request,
-        queryset = queryset,
-        template_name='exmo2010/task_report.html',
-        extra_context={
-          'task': task,
-          'title': title,
-          'report': report
-        }
-      )
-    else:
-      # Regular application page
-      return table(
-        request,
-        headers=(
-          (_('Code'), None, None, None, None),
-          (_('Parameter'), 'name', 'name', None, None),
-          (_('Found'), None, None, None, None),
-          (_('Complete'), None, None, None, None),
-          (_('Topical'), None, None, None, None),
-          (_('Accessible'), None, None, None, None),
-          (_('HTML'), None, None, None, None),
-          (_('Document'), None, None, None, None),
-          (_('Image'), None, None, None, None),
-          (_('Weight'), None, None, None, None),
-        ),
-        queryset=queryset,
-        template_name='exmo2010/score_list.html',
-        extra_context={
-          'task': task,
-          'title': title,
-          'place': task.rating_place,
-          }
-      )
+    if not request.user.has_perm('exmo2010.view_task', task):
+        return HttpResponseForbidden(_('Forbidden'))
+    parameters = Parameter.objects.filter(
+        monitoring=task.organization.monitoring
+    ).exclude(exclude=task.organization)
 
+    headers=(
+        (_('Code'), None, None, None, None),
+        (_('Parameter'), 'name', 'name', None, None),
+        (_('Found'), None, None, None, None),
+        (_('Complete'), None, None, None, None),
+        (_('Topical'), None, None, None, None),
+        (_('Accessible'), None, None, None, None),
+        (_('HTML'), None, None, None, None),
+        (_('Document'), None, None, None, None),
+        (_('Image'), None, None, None, None),
+        (_('Weight'), None, None, None, None),
+    )
+    parameters, extra_context = table_prepare_queryset(request, headers, queryset=parameters)
+
+    scores_default = Score.objects.select_related().filter(
+        parameter__in=parameters,
+        revision=Score.REVISION_DEFAULT,
+        task=task,
+    )
+
+    scores_interact = Score.objects.select_related().filter(
+        parameter__in=parameters,
+        revision=Score.REVISION_INTERACT,
+        task=task,
+    )
+
+    score_dict = {}
+    score_interact_dict = {}
+
+    for score in scores_default:
+        score_dict[score.parameter.pk] = score
+
+    for score in scores_interact:
+        score_interact_dict[score.parameter.pk] = score
+
+    if report:
+        # Print report
+        extra_context.update(
+            {
+                'score_dict': score_dict,
+                'parameters': parameters,
+                'task': task,
+                'title': title,
+                'report': report
+            }
+        )
+        return render_to_response(
+            'exmo2010/task_report.html',
+            extra_context,
+            context_instance=RequestContext(request),
+        )
+    else:
+        extra_context.update(
+            {
+                'score_dict': score_dict,
+                'score_interact_dict': score_interact_dict,
+                'parameters': parameters,
+                'task': task,
+                'title': title,
+                'place': task.rating_place,
+            }
+        )
+        return render_to_response(
+            'exmo2010/score_list.html',
+            extra_context,
+            context_instance=RequestContext(request),
+        )
 
 
 @csrf_protect

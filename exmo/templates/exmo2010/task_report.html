@@ -18,7 +18,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n get_object_by_pk check_object_permission %}
+{% load i18n hash check_object_permission %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -49,14 +49,14 @@
   <td>{% trans 'Image' %}</td>
 </thead>
 <tbody>
-{%for object in object_list%}
-{% get_object_by_pk exmo2010.Score object.score_pk as score %}
-      <tr width=100% id='parameter_{{object.code}}'>
-      <td width=4%>{{ object.code }}</td>
+{% for parameter in parameters %}
+{% with score_dict|hash:parameter.pk as score %}
+      <tr width=100% id='parameter_{{ parameter.code }}'>
+      <td width=4%>{{ parameter.code }}</td>
       <td>
-        {{ object.name }}
+        {{ parameter.name }}
       </td>
-      {%if score %}
+      {% if score %}
       <td>{{ score.openness }}</td>
       <td>{{ score.parameter.weight }}</td>
       {% include "exmo2010/score_criteria_table.html" %}
@@ -72,6 +72,7 @@
         <td colspan=7></td>
       {%endif%} {# if score #}
       </tr>
+{% endwith %}
 {% endfor %}
     </tbody></table>
 </div><br>

@@ -43,7 +43,7 @@ class TaskAdmin(VersionAdmin):
     list_filter = ('user','status')
 
 class ScoreAdmin(VersionAdmin):
-    pass
+    list_filter = ('revision',)
 
 class OrganizationAdmin(VersionAdmin):
   list_display = ('pk', 'name')

@@ -1,4 +1,3 @@
-/*
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -16,52 +15,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-*/
-.score-ok-nonzero{
-	background: #00B050;
-	text-align: center;
-        }
+from django import template
 
-.score-ok-val1{
-	background: #ff9218;
-	text-align: center;
-        }
+register = template.Library()
 
-.score-ok-val2{
-	background: #fcff18;
-	text-align: center;
-        }
-
-.score-ok-val3{
-	background: #00B050;
-	text-align: center;
-        }
-
-.score-ok-zero{
-	background: #ff0000;
-	text-align: center;
-        }
-
-.score-none {
-	background:gray;
-
-        }
-
-#score_list td {
-        border-collapse: collapse;
-        border: 1px solid;
-        }
-
-#score_list table {
-        width: 100%
-        }
-
-#legend td {
-        border-collapse: collapse;
-        border: 1px solid;
-        }
-
-.score_interact {
-        font-size: 9px;
-        opacity: 0.5;
-}
+@register.filter
+def hash(h, key):
+    return h.get(key, None)

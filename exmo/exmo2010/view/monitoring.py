@@ -257,7 +257,7 @@ def monitoring_by_criteria_mass_export(request, id):
         row[criteria] = [task.organization.name]
       for parameter in parameters:
         try:
-          score = Score.objects.filter(task = task).filter(parameter = parameter)[0]
+          score = Score.objects.filter(task=task, parameter=parameter, revision=Score.REVISION_DEFAULT)[0]
           if task.organization in parameter.exclude.all():
             raise IndexError
         except IndexError:
@@ -406,6 +406,7 @@ def monitoring_parameter_filter(request, id):
             queryset = Score.objects.filter(
                 task__organization__monitoring = monitoring,
                 parameter = parameter,
+                revision = Score.REVISION_DEFAULT,
                 found = form.cleaned_data['found'],
             ).exclude(
                 task__organization__in = parameter.exclude.all(),
@@ -452,6 +453,7 @@ def monitoring_parameter_found_report(request, id):
             task__status = Task.TASK_APPROVED,
             found = 1,
             parameter = parameter,
+            revision = Score.REVISION_DEFAULT,
         ).exclude(
             task__organization__in = parameter.exclude.all(),
         ).count()

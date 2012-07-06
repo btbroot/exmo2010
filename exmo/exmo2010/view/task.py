@@ -49,7 +49,7 @@ def task_export(request, id):
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization)
-    scores     = Score.objects.filter(task = id)
+    scores = Score.objects.filter(task=id, revision=Score.REVISION_DEFAULT)
     response = HttpResponse(mimetype = 'application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
     response.encoding = 'UTF-16'

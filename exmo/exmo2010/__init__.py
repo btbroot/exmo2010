@@ -16,23 +16,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.contrib.comments.signals import comment_will_be_posted
+from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
+from django.conf import settings
 from django.contrib.auth.models import User
-from exmo2010.models import Score
-from exmo2010.models import Monitoring
+from django.contrib.comments.signals import comment_will_be_posted
 from exmo2010 import signals
 from exmo2010.helpers import comment_notification
 from exmo2010.helpers import claim_notification
 from exmo2010.helpers import post_save_model
 from exmo2010.helpers import create_profile
 from exmo2010.helpers import create_calendar
+from exmo2010.helpers import create_revision
 from exmo2010.helpers import score_change_notify
-from django.db.models.signals import post_save
-
+from exmo2010.models import Score
+from exmo2010.models import Monitoring
 from exmo2010.sites import site
 
-
-from django.conf import settings
 if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
     signals.claim_was_posted.connect(claim_notification)
@@ -41,3 +41,4 @@ if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
 post_save.connect(post_save_model)
 #post_save.connect(create_profile, sender=User)
 post_save.connect(create_calendar, sender=Monitoring)
+pre_save.connect(create_revision, sender=Score)

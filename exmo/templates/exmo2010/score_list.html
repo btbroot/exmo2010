@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n get_object_by_pk adminmedia check_object_permission %}
+{% load table_header i18n adminmedia check_object_permission hash %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/changelists.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/score_list.css" />
 {% endblock %}
@@ -62,46 +62,46 @@
         {%endif%}
         {% endwith %}
     </td></tr>
-{%for object in object_list%}
-{%get_object_by_pk exmo2010.Score object.score_pk as score %}
-      <tr width=100% id='parameter_{{object.code}}'>
-      <td width=4%>{{ object.code }}</td>
+{% for parameter in parameters %}
+      <tr width=100% id='parameter_{{ parameter.code }}'>
+      <td width=4%>{{ parameter.code }}</td>
       <td>
+      {% with score_dict|hash:parameter.pk as score %}
        {% if score %}
          {% check_object_permission exmo2010.view_claim score as perm %}
          {% if score.claim_color and perm %}<img src="{{ STATIC_URL }}exmo2010/icon_{{score.claim_color}}.gif" alt="{% trans 'claim' %}" />{% endif %}
-            <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
-
+            <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
        {% else %}
          {% check_object_permission exmo2010.fill_task task as perm %}
          {% if perm %}
-          <a href="{% url exmo2010:score_add task.pk object.pk %}?{{request.GET.urlencode}}">{{ object.name }}</a>
+          <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
          {% endif %}
        {% endif %}
-       {% with object.monitoring as monitoring %}
+       {% with parameter.monitoring as monitoring %}
        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
        {% if perm %}
-            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, object.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
         {%endif%}
         {% if perm and not monitoring.is_publish %}
-            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, object.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
        {% endif %}
        {% endwith %}
        {% if score %}
          {% if score.have_comment_without_reply and user.profile.is_expert %}
-            <span style="float:right;"><a href="{%url exmo2010:score_view score.pk%}#c{{score.have_comment_without_reply}}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png"></a></span>
+            <span style="float:right;"><a href="{%url exmo2010:score_view score.pk%}#c{{ score.have_comment_without_reply }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png"></a></span>
          {% endif %}
        {% endif %}
       </td>
       {%if score %}
-      {% include "exmo2010/score_criteria_table.html" %}
+      {% include "exmo2010/score_criteria_table.html" with score_interact=score_interact_dict|hash:parameter.pk %}
       {%else%}
         <td colspan=7></td>
       {%endif%}
       <td>
-        {{ object.weight }}
+        {{ parameter.weight }}
       </td>
       </tr>
+      {% endwith %}
 {% endfor %}
     </tbody></table>
 </div><br>

@@ -15,14 +15,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#from contrib.admin
+
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import Group, User
+from django.template import loader, Context
 from django.utils.translation import ugettext_lazy, ugettext as _
 from django.utils.text import capfirst, get_text_list
-from django.contrib.auth.models import Group, User
-from django.core.urlresolvers import reverse
-from exmo2010.utils import disable_for_loaddata
-from django.core.mail import EmailMessage
+from reversion import revision
 from exmo2010.models import UserProfile
+from exmo2010.models import Score
+from exmo2010.utils import disable_for_loaddata
 
 
 
@@ -54,9 +58,6 @@ def construct_change_message(request, form, formsets):
 
 
 
-from django.core.mail import send_mail
-from django.template import loader, Context
-from django.conf import settings
 def comment_notification(sender, **kwargs):
     comment = kwargs['comment']
     request = kwargs['request']
@@ -192,7 +193,6 @@ def claim_notification(sender, **kwargs):
 
 
 
-from reversion import revision
 @disable_for_loaddata
 def post_save_model(sender, instance, created, **kwargs):
     must_register = False
@@ -223,6 +223,12 @@ def create_profile(sender, instance, created, **kwargs):
 def create_calendar(sender, instance, created, **kwargs):
     if created:
         instance.create_calendar()
+
+
+
+def create_revision(sender, instance, using, **kwargs):
+    if instance.revision != Score.REVISION_INTERACT:
+        instance.create_revision(Score.REVISION_INTERACT)
 
 
 

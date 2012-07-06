@@ -87,6 +87,7 @@ class ScoreForm(forms.ModelForm):
             'hypertext': forms.RadioSelect(renderer=HorizRadioRenderer),
             'image': forms.RadioSelect(renderer=HorizRadioRenderer),
         }
+        exclude = ('revision',)
 
 
 

@@ -104,6 +104,8 @@ class Monitoring(models.Model):
   def _get_active(self):
     return not (self.is_prepare or self.is_planned)
 
+  after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT, MONITORING_PUBLISH]
+
   is_prepare = property(_get_prepare)
   is_rate = property(_get_rate)
   is_revision = property(_get_revision)
@@ -247,6 +249,7 @@ class Task(models.Model):
   def _openness(self):
     openness = 0
     scores = Score.objects.filter(
+        revision = Score.REVISION_DEFAULT,
         task = self,
         parameter__in = Parameter.objects.filter(
             monitoring = self.organization.monitoring
@@ -343,7 +346,13 @@ class Task(models.Model):
     complete = 0
     parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
     if parameters:
-        complete = float(Score.objects.filter(task = self).exclude(parameter__exclude = self.organization).count() * 100) / parameters
+        scores_count = Score.objects.filter(
+            task=self,
+            revision=Score.REVISION_DEFAULT,
+        ).exclude(
+            parameter__exclude=self.organization
+        ).count()
+        complete = scores_count * 100.0 / parameters
     return complete
 
   @property
@@ -366,119 +375,231 @@ class Task(models.Model):
 
 
 class Score(models.Model):
-  task              = models.ForeignKey(Task, verbose_name=_('task'))
-  parameter         = models.ForeignKey(Parameter, verbose_name=_('parameter'))
-  found             = models.IntegerField(choices = ((0, 0), (1, 1)), verbose_name=_('found'))
-  complete          = models.IntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('complete'))
-  completeComment   = models.TextField(null = True, blank = True, verbose_name=_('completeComment'))
-  topical           = models.IntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('topical'))
-  topicalComment    = models.TextField(null = True, blank = True, verbose_name=_('topicalComment'))
-  accessible        = models.IntegerField(null = True, blank = True, choices = ((1, 1), (2, 2), (3, 3)), verbose_name=_('accessible'))
-  accessibleComment = models.TextField(null = True, blank = True, verbose_name=_('accessibleComment'))
-  hypertext         = models.IntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('hypertext'))
-  hypertextComment  = models.TextField(null = True, blank = True, verbose_name=_('hypertextComment'))
-  document          = models.IntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('document'))
-  documentComment   = models.TextField(null = True, blank = True, verbose_name=_('documentComment'))
-  image             = models.IntegerField(null = True, blank = True, choices = ((0, 0), (1, 1)), verbose_name=_('image'))
-  imageComment      = models.TextField(null = True, blank = True, verbose_name=_('imageComment'))
-  comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
 
-  def __unicode__(self):
-    return '%s: %s [%d]' % (
-      self.task.user.username,
-      self.task.organization.name,
-      self.parameter.code
+    REVISION_DEFAULT = 0
+    REVISION_INTERACT = 1
+
+    REVISION_CHOICE = (
+        (REVISION_DEFAULT, _('default revision')),
+        (REVISION_INTERACT, _('interact revision')),
     )
 
-  def clean(self):
-    if self.found:
-      if self.parameter.complete   and self.complete   in ('', None):
-        raise ValidationError(_('Complete must be set'))
-      if self.parameter.topical    and self.topical    in ('', None):
-        raise ValidationError(_('Topical must be set'))
-      if self.parameter.accessible and self.accessible in ('', None):
-        raise ValidationError(_('Accessible must be set'))
-      if self.parameter.hypertext  and self.hypertext  in ('', None):
-        raise ValidationError(_('Hypertext must be set'))
-      if self.parameter.document   and self.document   in ('', None):
-        raise ValidationError(_('Document must be set'))
-      if self.parameter.image      and self.image      in ('', None):
-        raise ValidationError(_('Image must be set'))
-    elif any((
-        self.complete!=None,
-        self.topical!=None,
-        self.accessible!=None,
-        self.hypertext!=None,
-        self.document!=None,
-        self.image!=None,
-        self.completeComment,
-        self.topicalComment,
-        self.accessibleComment,
-        self.hypertextComment,
-        self.documentComment,
-        self.imageComment,
-        )):
-      raise ValidationError(_('Not found, but some excessive data persists'))
+    task = models.ForeignKey(
+        Task,
+        verbose_name=_('task'),
+    )
+    parameter = models.ForeignKey(
+        Parameter,
+        verbose_name=_('parameter'),
+    )
+    found = models.IntegerField(
+        choices=((0, 0), (1, 1)),
+        verbose_name=_('found'),
+    )
+    complete = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((1, 1), (2, 2), (3, 3)),
+        verbose_name=_('complete'),
+    )
+    completeComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('completeComment'),
+    )
+    topical = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((1, 1), (2, 2), (3, 3)),
+        verbose_name=_('topical'),
+    )
+    topicalComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('topicalComment'),
+    )
+    accessible = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((1, 1), (2, 2), (3, 3)),
+        verbose_name=_('accessible'),
+    )
+    accessibleComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('accessibleComment'),
+    )
+    hypertext = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((0, 0), (1, 1)),
+        verbose_name=_('hypertext'),
+    )
+    hypertextComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('hypertextComment'),
+    )
+    document = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((0, 0), (1, 1)),
+        verbose_name=_('document'),
+    )
+    documentComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('documentComment'),
+    )
+    image = models.IntegerField(
+        null=True,
+        blank=True,
+        choices=((0, 0), (1, 1)),
+        verbose_name=_('image'),
+    )
+    imageComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('imageComment'),
+    )
+    comment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('comment'),
+    )
+    created = models.DateTimeField(
+        null=True,
+        blank=True,
+        auto_now_add=True,
+    )
+    edited = models.DateTimeField(
+        null=True,
+        blank=True,
+        auto_now=True,
+    )
+    revision = models.PositiveIntegerField(
+        default=REVISION_DEFAULT,
+        choices=REVISION_CHOICE,
+    )
 
-  @models.permalink
-  def get_absolute_url(self):
-    return ('exmo2010:score_view', [str(self.id)])
+    def __unicode__(self):
+        return '%s: %s [%d]' % (
+            self.task.user.username,
+            self.task.organization.name,
+            self.parameter.code
+        )
 
-  def _get_claim(self):
-    claims=self.claim_count()
-    if claims > 0:
-        return True
-    else: return False
+    def clean(self):
+        if self.found:
+            if self.parameter.complete and self.complete in ('', None):
+                raise ValidationError(_('Complete must be set'))
+            if self.parameter.topical and self.topical in ('', None):
+                raise ValidationError(_('Topical must be set'))
+            if self.parameter.accessible and self.accessible in ('', None):
+                raise ValidationError(_('Accessible must be set'))
+            if self.parameter.hypertext  and self.hypertext  in ('', None):
+                raise ValidationError(_('Hypertext must be set'))
+            if self.parameter.document   and self.document   in ('', None):
+                raise ValidationError(_('Document must be set'))
+            if self.parameter.image      and self.image      in ('', None):
+                raise ValidationError(_('Image must be set'))
+        elif any((
+            self.complete != None,
+            self.topical != None,
+            self.accessible != None,
+            self.hypertext != None,
+            self.document != None,
+            self.image != None,
+            self.completeComment,
+            self.topicalComment,
+            self.accessibleComment,
+            self.hypertextComment,
+            self.documentComment,
+            self.imageComment,
+            )):
+            raise ValidationError(_('Not found, but some excessive data persists'))
 
-  def _get_openness(self):
-    return openness_helper(self)
+    @models.permalink
+    def get_absolute_url(self):
+        return ('exmo2010:score_view', [str(self.id)])
 
-  def add_claim(self, creator, comment):
-    claim = Claim(score = self, creator = creator, comment = comment)
-    claim.full_clean()
-    claim.save()
-    return claim
+    def _get_claim(self):
+        claims=self.claim_count()
+        if claims > 0:
+            return True
+        else:
+            return False
 
-  def close_claim(self, close_user):
-    import datetime
-    #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
-    for claim in Claim.objects.filter(score = self, close_date__isnull = True):
-        claim.close_date=datetime.datetime.now()
-        claim.close_user=close_user
+    def _get_openness(self):
+        return openness_helper(self)
+
+    def add_claim(self, creator, comment):
+        claim = Claim(score=self, creator=creator, comment=comment)
         claim.full_clean()
         claim.save()
+        return claim
 
-  def claim_count(self):
-    return Claim.objects.filter(score=self, close_date__isnull = True).count()
+    def close_claim(self, close_user):
+        import datetime
+        #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
+        for claim in Claim.objects.filter(score=self, close_date__isnull=True):
+            claim.close_date = datetime.datetime.now()
+            claim.close_user = close_user
+            claim.full_clean()
+            claim.save()
 
-  def claim_color(self):
-    color = None
-    if self.active_claim: color = 'red'
-    if not self.active_claim and Claim.objects.filter(score = self).count() > 0: color = 'green'
-    if not self.active_claim and Claim.objects.filter(score = self).exclude(close_user = self.task.user).count() > 0: color = 'yellow'
-    return color
+    def claim_count(self):
+        return Claim.objects.filter(score=self, close_date__isnull=True).count()
 
-  @property
-  def have_comment_without_reply(self):
-    self_comments_qs = Comment.objects.filter(object_pk = self.pk, content_type = ContentType.objects.get_for_model(self.__class__)).order_by('-submit_date')
-    if self_comments_qs.count() > 0:
-        #check first comment is from organization
-        if self_comments_qs[0].user.groups.filter(name = UserProfile.organization_group).count() > 0:
-            return self_comments_qs[0].pk
-    return False
+    def claim_color(self):
+        color = None
+        if self.active_claim:
+            color = 'red'
+        elif not self.active_claim and Claim.objects.filter(score=self).count() > 0:
+            color = 'green'
+        elif not self.active_claim and Claim.objects.filter(score=self).exclude(close_user=self.task.user).count() > 0:
+            color = 'yellow'
+        return color
 
-  active_claim = property(_get_claim)
-  openness = property(_get_openness)
+    def create_revision(self, revision):
+        if self.task.organization.monitoring.status in Monitoring.after_interaction_status \
+          and revision == Score.REVISION_INTERACT:
+            revision_score = Score.objects.filter(
+                task=self.task,
+                parameter=self.parameter,
+                revision=revision,
+            )
+            if not revision_score:
+                revision_score = Score.objects.get(pk=self.pk)
+                revision_score.pk = None
+                revision_score.revision = revision
+                revision_score.full_clean()
+                revision_score.save()
 
-  class Meta:
-    unique_together = (
-      ('task', 'parameter'),
-    )
-    ordering = (
-      'task__user__username',
-      'task__organization__name',
-      'parameter__code'
-    )
+    @property
+    def have_comment_without_reply(self):
+        self_comments_qs = Comment.objects.select_related().filter(
+            object_pk = self.pk,
+            content_type = ContentType.objects.get_for_model(self.__class__)
+        ).order_by('-submit_date')
+        if self_comments_qs.count() > 0:
+            #check first comment is from organization
+            if self_comments_qs[0].user.groups.filter(name=UserProfile.organization_group).count() > 0:
+                return self_comments_qs[0].pk
+        return False
+
+    active_claim = property(_get_claim)
+    openness = property(_get_openness)
+
+    class Meta:
+        unique_together = (
+            ('task','parameter','revision'),
+        )
+        ordering = (
+            'task__user__username',
+            'task__organization__name',
+            'parameter__code'
+        )
 
 
 
