@@ -21,15 +21,16 @@
 EXMO2010 Models module
 """
 
-from django.db import models
-from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext as _
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from exmo2010.fields import TagField
+from django.db import models
+from django.db.models import Q
+from django.utils.translation import ugettext as _
 from tagging.models import Tag
+from exmo2010.fields import TagField
+from exmo2010.utils import get_stat_answered_comments, get_org_comments
 
 
 
@@ -919,7 +920,30 @@ class UserProfile(models.Model):
         else:
             return group in self.user.groups.all() or self.user.is_superuser
 
+    def _get_my_scores(self):
+        return Score.objects.filter(task__user=self.user)
 
+    def get_answered_comments(self):
+        """
+        Возвращает queryset из коментов на которые был дан ответ пользователем
+        """
+        org_comments = get_org_comments()
+        stat = get_stat_answered_comments()
+        return org_comments.filter(
+            object_pk__in=self._get_my_scores(),
+            pk__in=stat['answered'],
+        )
+
+    def get_not_answered_comments(self):
+        """
+        Возвращает queryset из коментов на которые еще не был дан ответ
+        """
+        org_comments = get_org_comments()
+        stat = get_stat_answered_comments()
+        return org_comments.filter(
+            object_pk__in=self._get_my_scores(),
+            pk__in=stat['not_answered'],
+        )
 
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)

@@ -31,7 +31,7 @@ class ObjectByPk(Node):
     def render(self, context):
         pk_id = resolve_variable(self.pk, context)
         try:
-            context[self.varname] = self.model._default_manager.get(pk=pk_id)
+            context[self.varname] = self.model._default_manager.select_related().get(pk=pk_id)
         except self.model.DoesNotExist:
             context[self.varname] = None
         return ''

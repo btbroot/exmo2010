@@ -20,8 +20,13 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.db.models import Count
+from django.conf import settings
 from django.contrib.auth.models import User
-from exmo2010.models import UserProfile, SEX_CHOICES
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.http import HttpResponseForbidden, Http404
+from exmo2010.models import UserProfile, SEX_CHOICES, Score, Monitoring
+
+
 
 SEX_CHOICES_DICT = dict(SEX_CHOICES)
 
@@ -38,3 +43,49 @@ def gender_stats(request):
     result_list.append((_("Total"), external_users.count()))
     return render_to_response('exmo2010/gender_stats.html',
             {"results": result_list,}, RequestContext(request))
+
+
+
+def comment_list(request, report_type='1'):
+    """
+    Страница сводного списка комментариев
+    report_type:
+        1 -- неотвеченные комментарии
+        2 -- отвеченные комментарии
+    """
+
+    report_dict = {
+        '1': _('Comments without answer'),
+        '2': _('Comments with answer'),
+    }
+    if not request.user.profile.is_expert:
+        return HttpResponseForbidden(_('Forbidden'))
+    if report_type not in report_dict.keys():
+        raise Http404
+
+    if report_type == '1':
+        queryset = request.user.profile.get_not_answered_comments()
+    elif report_type == '2':
+        queryset = request.user.profile.get_answered_comments()
+
+    paginator = Paginator(queryset, settings.EXMO_PAGINATEBY)
+
+    try:
+        page = int(request.GET.get('page', '1'))
+    except ValueError:
+        page = 1
+
+    try:
+        comments = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        comments = paginator.page(paginator.num_pages)
+
+    return render_to_response('exmo2010/comment_list.html',
+        {
+            'comments': comments,
+            'title': report_dict[report_type],
+            'report_dict': report_dict,
+            'current_report': report_type,
+        },
+        RequestContext(request),
+    )

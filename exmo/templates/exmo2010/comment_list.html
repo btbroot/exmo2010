@@ -1,0 +1,72 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n get_object_by_pk %}
+{% block pretitle %}
+<div class="pretitle">
+<p>
+{% for key, value in report_dict.iteritems %}
+<input name="report_type" type="radio" value="{{ value }}" id="report_type_{{ key }}"
+    {% if current_report == key %} checked {% endif %}
+    onclick="window.location.href='{% url exmo2010:comment_list key %}'"><label for="report_type_{{ key }}">{{ value }}</label>&nbsp;
+{% endfor %}
+</p>
+</div>
+{% endblock %}
+{% block content %}
+{% if comments.object_list %}
+<table>
+<thead>
+<th>{% trans 'Date' %}</th>
+<th>{% trans 'Organization' %}</th>
+<th>{% trans 'User' %}</th>
+<th>{% trans 'Link' %}</th>
+</thead>
+<tbody>
+{% for comment in comments.object_list %}
+    {% get_object_by_pk exmo2010.Score comment.object_pk as score %}
+    <tr>
+        <td>{{ comment.submit_date }}</td>
+        <td>{{ score.task.organization }}</td>
+        <td>{{ comment.user }}</td>
+        <td><a href="{{ score.get_absolute_url }}">{% trans 'Link' %}</a></td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="pagination">
+    <span class="step-links">
+        {% if comments.has_previous %}
+            <a href="?page={{ comments.previous_page_number }}">&laquo;</a>
+        {% endif %}
+
+        <span class="current">
+            {% trans 'Page' %} {{ comments.number }} {% trans 'of' %} {{ comments.paginator.num_pages }}
+        </span>
+
+        {% if comments.has_next %}
+            <a href="?page={{ comments.next_page_number }}">&raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% else %}
+{% trans 'Empty list' %}
+{% endif %}
+{% endblock %}

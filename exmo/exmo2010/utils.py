@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -22,6 +23,8 @@ except ImportError:
     from django.utils.functional import wraps
 
 import inspect
+from django.contrib.comments.models import Comment
+from django.contrib.auth.models import User
 
 
 
@@ -132,3 +135,39 @@ class UnicodeWriter(object):
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
+
+
+
+def get_org_comments():
+    return Comment.objects.filter(
+        content_type__model='score',
+        user__in=User.objects.filter(groups__name='organizations'),
+    ).order_by('-submit_date')
+
+
+
+def get_stat_answered_comments():
+    """
+    Возвращает {'answered': [], 'not_answered': []} за весь период, для всех мониторингов
+    """
+    org_comments = get_org_comments()
+
+    operator_all_comments = Comment.objects.filter(
+        content_type__model='score',
+        user__in=User.objects.exclude(groups__name='organizations'),
+    ).order_by('-submit_date')
+
+    operator_all_comments_dict = {}
+
+    for operator_comment in operator_all_comments:
+        operator_all_comments_dict.setdefault(operator_comment.object_pk,[]).append(operator_comment)
+
+    result = {'answered': [], 'not_answered': []}
+
+    for org_comment in org_comments:
+        if operator_all_comments_dict.has_key(org_comment.object_pk) and \
+          operator_all_comments_dict[org_comment.object_pk][0].submit_date > org_comment.submit_date:
+            result['answered'].append(org_comment.pk)
+        else:
+            result['not_answered'].append(org_comment.pk)
+    return result
