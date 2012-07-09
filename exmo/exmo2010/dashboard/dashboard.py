@@ -35,6 +35,8 @@ class CustomIndexDashboard(UserDashboard):
     Custom index dashboard for exmo.
     """
     def init_with_context(self, context):
+        request = context['request']
+
         site_name = get_admin_site_name(context)
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
@@ -55,7 +57,7 @@ class CustomIndexDashboard(UserDashboard):
             children=[
                 {
                     'title': None,
-                    'object_list': _get_monitoring_list(context['request']),
+                    'object_list': _get_monitoring_list(request),
                 },
             ],
             template="user_dashboard/modules/monitoring_list.html",
@@ -68,3 +70,18 @@ class CustomIndexDashboard(UserDashboard):
             limit=10,
             template = "user_dashboard/modules/feed.html",
         ))
+
+        if request.user.is_active and request.user.profile.is_expert:
+            self.children.append(modules.LinkList(
+                _('Communication'),
+                children=(
+                    (
+                        _('Comments without answer') + ': ' + str(request.user.profile.get_not_answered_comments().count()),
+                        reverse('exmo2010:comment_list', args=[1,])
+                    ),
+                    (
+                        _('Comments with answer') + ': ' + str(request.user.profile.get_answered_comments().count()),
+                        reverse('exmo2010:comment_list', args=[2,])
+                    ),
+                ),
+            ))

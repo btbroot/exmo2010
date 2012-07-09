@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 13:33+0400\n"
-"PO-Revision-Date: 2012-07-09 13:39+0400\n"
+"POT-Creation-Date: 2012-07-09 15:19+0400\n"
+"PO-Revision-Date: 2012-07-09 15:20+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
 "Language: \n"
@@ -471,18 +471,32 @@ msgstr "Профиль пользователя"
 msgid "Dashboard"
 msgstr "Приборная доска"
 
-#: exmo/exmo2010/dashboard/dashboard.py:41
+#: exmo/exmo2010/dashboard/dashboard.py:43
 msgid "Quick links"
 msgstr "Быстрый доступ"
 
-#: exmo/exmo2010/dashboard/dashboard.py:54
+#: exmo/exmo2010/dashboard/dashboard.py:56
 #: exmo/templates/exmo2010/monitoring_list.html:37
 msgid "Monitoring list"
 msgstr "Перечень циклов мониторинга"
 
-#: exmo/exmo2010/dashboard/dashboard.py:66
+#: exmo/exmo2010/dashboard/dashboard.py:68
 msgid "Svobodainfo news"
 msgstr "Новости svobodainfo"
+
+#: exmo/exmo2010/dashboard/dashboard.py:76 exmo/exmo2010/dashboard/menu.py:62
+msgid "Communication"
+msgstr "Коммуникации"
+
+#: exmo/exmo2010/dashboard/dashboard.py:79 exmo/exmo2010/dashboard/menu.py:58
+#: exmo/exmo2010/view/reports.py:58
+msgid "Comments without answer"
+msgstr "Комментарии без ответа"
+
+#: exmo/exmo2010/dashboard/dashboard.py:83 exmo/exmo2010/dashboard/menu.py:59
+#: exmo/exmo2010/view/reports.py:59
+msgid "Comments with answer"
+msgstr "Комментарии с ответом"
 
 #: exmo/exmo2010/dashboard/menu.py:32
 #: exmo/templates/user_dashboard/modules/quicklinks.html:25
@@ -694,14 +708,6 @@ msgstr "Добавить параметр для %s"
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:58
 msgid "Total"
 msgstr "Всего"
-
-#: exmo/exmo2010/view/reports.py:58
-msgid "Comments without answer"
-msgstr "Комментарии без ответа"
-
-#: exmo/exmo2010/view/reports.py:59
-msgid "Comments with answer"
-msgstr "Комментарии с ответом"
 
 #: exmo/exmo2010/view/score.py:71
 #, python-format
