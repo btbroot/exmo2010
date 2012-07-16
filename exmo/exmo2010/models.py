@@ -945,6 +945,16 @@ class UserProfile(models.Model):
             pk__in=stat['not_answered'],
         )
 
+    def get_opened_claims(self):
+        """
+        Возвращает queryset из открытых претензий
+        """
+        claims = Claim.objects.filter(
+            score__task__user=self,
+            close_date__isnull=True,
+        ).order_by('-open_date')
+        return claims
+
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)
     is_expertA = property(_is_expertA)

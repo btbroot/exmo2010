@@ -21,8 +21,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 15:19+0400\n"
-"PO-Revision-Date: 2012-07-09 15:20+0400\n"
+"POT-Creation-Date: 2012-07-16 10:58+0400\n"
+"PO-Revision-Date: 2012-07-16 10:59+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
 "Language: \n"
@@ -462,11 +462,11 @@ msgstr "настройки"
 msgid "Digest duratation must be greater or equal than 1."
 msgstr "Период дайджеста должен быть больше или равен единице"
 
-#: exmo/exmo2010/models.py:967
+#: exmo/exmo2010/models.py:977
 msgid "user profile"
 msgstr "Профиль пользователя"
 
-#: exmo/exmo2010/sites.py:43 exmo/exmo2010/dashboard/menu.py:27
+#: exmo/exmo2010/sites.py:43 exmo/exmo2010/dashboard/menu.py:28
 #: exmo/templates/user_dashboard/modules/quicklinks.html:24
 msgid "Dashboard"
 msgstr "Приборная доска"
@@ -484,43 +484,45 @@ msgstr "Перечень циклов мониторинга"
 msgid "Svobodainfo news"
 msgstr "Новости svobodainfo"
 
-#: exmo/exmo2010/dashboard/dashboard.py:76 exmo/exmo2010/dashboard/menu.py:62
+#: exmo/exmo2010/dashboard/dashboard.py:76 exmo/exmo2010/dashboard/menu.py:68
 msgid "Communication"
 msgstr "Коммуникации"
 
-#: exmo/exmo2010/dashboard/dashboard.py:79 exmo/exmo2010/dashboard/menu.py:58
-#: exmo/exmo2010/view/reports.py:58
+#: exmo/exmo2010/dashboard/dashboard.py:79 exmo/exmo2010/view/reports.py:34
 msgid "Comments without answer"
 msgstr "Комментарии без ответа"
 
-#: exmo/exmo2010/dashboard/dashboard.py:83 exmo/exmo2010/dashboard/menu.py:59
-#: exmo/exmo2010/view/reports.py:59
+#: exmo/exmo2010/dashboard/dashboard.py:83 exmo/exmo2010/view/reports.py:35
 msgid "Comments with answer"
 msgstr "Комментарии с ответом"
 
-#: exmo/exmo2010/dashboard/menu.py:32
+#: exmo/exmo2010/dashboard/dashboard.py:87 exmo/exmo2010/view/reports.py:36
+msgid "Opened claims"
+msgstr "Открытые претензии"
+
+#: exmo/exmo2010/dashboard/menu.py:33
 #: exmo/templates/user_dashboard/modules/quicklinks.html:25
 msgid "Profile"
 msgstr "Профиль"
 
-#: exmo/exmo2010/dashboard/menu.py:36
+#: exmo/exmo2010/dashboard/menu.py:37
 #: exmo/templates/user_dashboard/modules/quicklinks.html:27
 msgid "Change password"
 msgstr "Сменить пароль"
 
-#: exmo/exmo2010/dashboard/menu.py:37
+#: exmo/exmo2010/dashboard/menu.py:38
 #: exmo/templates/registration/logout.html:38
 #: exmo/templates/user_dashboard/modules/quicklinks.html:28
 msgid "Log out"
 msgstr "Выйти"
 
-#: exmo/exmo2010/dashboard/menu.py:45
+#: exmo/exmo2010/dashboard/menu.py:46
 #: exmo/templates/registration/registration_form.html:67
 #: exmo/templates/user_dashboard/modules/quicklinks.html:30
 msgid "Register"
 msgstr "Зарегистрироваться"
 
-#: exmo/exmo2010/dashboard/menu.py:46
+#: exmo/exmo2010/dashboard/menu.py:47
 #: exmo/templates/registration/login.html:38
 #: exmo/templates/registration/login.html:41
 #: exmo/templates/registration/login.html:54
@@ -533,15 +535,15 @@ msgstr "Зарегистрироваться"
 msgid "Log in"
 msgstr "Войти"
 
-#: exmo/exmo2010/dashboard/menu.py:49
+#: exmo/exmo2010/dashboard/menu.py:50
 msgid "Welcome,"
 msgstr "Добро пожаловать,"
 
-#: exmo/exmo2010/dashboard/menu.py:53
+#: exmo/exmo2010/dashboard/menu.py:54
 msgid "Gender stats"
 msgstr "Гендерная статистика"
 
-#: exmo/exmo2010/dashboard/menu.py:55
+#: exmo/exmo2010/dashboard/menu.py:56
 msgid "Reports"
 msgstr "Отчёты"
 
@@ -567,7 +569,7 @@ msgstr "Добавить претензию для %s"
 #: exmo/exmo2010/view/organization.py:52 exmo/exmo2010/view/organization.py:74
 #: exmo/exmo2010/view/parameter.py:40 exmo/exmo2010/view/parameter.py:55
 #: exmo/exmo2010/view/parameter.py:61 exmo/exmo2010/view/parameter.py:79
-#: exmo/exmo2010/view/reports.py:62 exmo/exmo2010/view/score.py:48
+#: exmo/exmo2010/view/reports.py:72 exmo/exmo2010/view/score.py:48
 #: exmo/exmo2010/view/score.py:74 exmo/exmo2010/view/score.py:79
 #: exmo/exmo2010/view/score.py:129 exmo/exmo2010/view/score.py:137
 #: exmo/exmo2010/view/score.py:224 exmo/exmo2010/view/task.py:50
@@ -704,7 +706,7 @@ msgstr "Редактировать параметр %s"
 msgid "Add parameter for %s"
 msgstr "Добавить параметр для %s"
 
-#: exmo/exmo2010/view/reports.py:43
+#: exmo/exmo2010/view/reports.py:51
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:58
 msgid "Total"
 msgstr "Всего"
@@ -1047,6 +1049,7 @@ msgid "Date"
 msgstr "Дата"
 
 #: exmo/templates/digest_email/notify_comment.html:25
+#: exmo/templates/exmo2010/claim_list.html:39
 #: exmo/templates/exmo2010/comment_list.html:39
 #: exmo/templates/exmo2010/score_comment.html:32
 #: exmo/templates/exmo2010/score_comment_email.html:23
@@ -1113,14 +1116,12 @@ msgstr "Органы/организации цикла мониторинга "
 msgid "Score list for"
 msgstr "Оценки для"
 
+#: exmo/templates/exmo2010/claim_list.html:37
 #: exmo/templates/exmo2010/claim_report.html:49
 msgid "Open date"
 msgstr "Дата открытия"
 
-#: exmo/templates/exmo2010/claim_report.html:50
-msgid "Close date"
-msgstr "Закрыта"
-
+#: exmo/templates/exmo2010/claim_list.html:38
 #: exmo/templates/exmo2010/claim_report.html:51
 #: exmo/templates/exmo2010/comment_list.html:38
 #: exmo/templates/exmo2010/rating.html:37
@@ -1129,25 +1130,24 @@ msgstr "Закрыта"
 msgid "Organization"
 msgstr "Наименование органа/организации"
 
+#: exmo/templates/exmo2010/claim_list.html:40
+#: exmo/templates/exmo2010/claim_list.html:48
 #: exmo/templates/exmo2010/comment_list.html:40
 #: exmo/templates/exmo2010/comment_list.html:49
 msgid "Link"
 msgstr "Ссылка"
 
-#: exmo/templates/exmo2010/comment_list.html:61
-msgid "Page"
-msgstr "Страница"
-
-#: exmo/templates/exmo2010/comment_list.html:61
-msgid "of"
-msgstr "из"
-
-#: exmo/templates/exmo2010/comment_list.html:70
+#: exmo/templates/exmo2010/claim_list.html:55
+#: exmo/templates/exmo2010/comment_list.html:56
 #: exmo/templates/exmo2010/rating.html:53
 #: exmo/templates/exmo2010/rating_color.html:53
 #: exmo/templates/exmo2010/rating_common.html:30
 msgid "Empty list"
 msgstr "Список пуст"
+
+#: exmo/templates/exmo2010/claim_report.html:50
+msgid "Close date"
+msgstr "Закрыта"
 
 #: exmo/templates/exmo2010/csv_import_log.html:21
 msgid "Rows ok/all"
@@ -1386,6 +1386,14 @@ msgstr "Пред."
 #: exmo/templates/exmo2010/paginator.html:48
 msgid "Next"
 msgstr "След."
+
+#: exmo/templates/exmo2010/paginator_paginator.html:28
+msgid "Page"
+msgstr "Страница"
+
+#: exmo/templates/exmo2010/paginator_paginator.html:28
+msgid "of"
+msgstr "из"
 
 #: exmo/templates/exmo2010/parameter_confirm_delete.html:36
 msgid "When you delete parameter you also delete this scores:"

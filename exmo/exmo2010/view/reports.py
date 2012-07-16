@@ -30,6 +30,14 @@ from exmo2010.models import UserProfile, SEX_CHOICES, Score, Monitoring
 
 SEX_CHOICES_DICT = dict(SEX_CHOICES)
 
+COMMUNICATION_REPORT_TYPE_DICT = {
+    1: _('Comments without answer'),
+    2: _('Comments with answer'),
+    3: _('Opened claims')
+}
+
+
+
 def gender_stats(request):
     """
     Страница гендерной статистики.
@@ -52,21 +60,29 @@ def comment_list(request, report_type='1'):
     report_type:
         1 -- неотвеченные комментарии
         2 -- отвеченные комментарии
+        3 -- открытые претензии
     """
 
-    report_dict = {
-        '1': _('Comments without answer'),
-        '2': _('Comments with answer'),
-    }
-    if not request.user.profile.is_expert:
-        return HttpResponseForbidden(_('Forbidden'))
-    if report_type not in report_dict.keys():
+    try:
+        report_type = int(report_type)
+    except ValueError:
         raise Http404
 
-    if report_type == '1':
+    if not request.user.profile.is_expert:
+        return HttpResponseForbidden(_('Forbidden'))
+    if report_type not in COMMUNICATION_REPORT_TYPE_DICT.keys():
+        raise Http404
+
+    template = 'exmo2010/comment_list.html'
+
+    if report_type == 1:
         queryset = request.user.profile.get_not_answered_comments()
-    elif report_type == '2':
+    elif report_type == 2:
         queryset = request.user.profile.get_answered_comments()
+    elif report_type == 3:
+        queryset = request.user.profile.get_opened_claims()
+        template = 'exmo2010/claim_list.html'
+
 
     paginator = Paginator(queryset, settings.EXMO_PAGINATEBY)
 
@@ -76,15 +92,15 @@ def comment_list(request, report_type='1'):
         page = 1
 
     try:
-        comments = paginator.page(page)
+        paginator_list = paginator.page(page)
     except (EmptyPage, InvalidPage):
-        comments = paginator.page(paginator.num_pages)
+        paginator_list = paginator.page(paginator.num_pages)
 
-    return render_to_response('exmo2010/comment_list.html',
+    return render_to_response(template,
         {
-            'comments': comments,
-            'title': report_dict[report_type],
-            'report_dict': report_dict,
+            'paginator': paginator_list,
+            'title': COMMUNICATION_REPORT_TYPE_DICT[report_type],
+            'report_dict': COMMUNICATION_REPORT_TYPE_DICT,
             'current_report': report_type,
         },
         RequestContext(request),

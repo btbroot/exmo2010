@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from admin_tools.menu import items, Menu
 
+from exmo2010.view.reports import COMMUNICATION_REPORT_TYPE_DICT
 
 class CustomMenu(Menu):
     """
@@ -54,9 +55,14 @@ class CustomMenu(Menu):
             ]
         self.children.append(items.MenuItem(_('Reports'), children=rep_children))
 
-        communication_children = [
-            items.MenuItem(_('Comments without answer'), reverse('exmo2010:comment_list', args=[1,])),
-            items.MenuItem(_('Comments with answer'), reverse('exmo2010:comment_list', args=[2,])),
-        ]
+        communication_children = []
+
+        for key, value in COMMUNICATION_REPORT_TYPE_DICT.iteritems():
+            communication_children.append(
+                items.MenuItem(
+                    value, reverse('exmo2010:comment_list', args=[key,])
+                )
+            )
+
         if request.user.is_active and request.user.profile.is_expert:
             self.children.append(items.MenuItem(_('Communication'), children=communication_children))

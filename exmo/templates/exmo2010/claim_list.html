@@ -34,19 +34,18 @@
 {% if paginator.object_list %}
 <table>
 <thead>
-<th>{% trans 'Date' %}</th>
+<th>{% trans 'Open date' %}</th>
 <th>{% trans 'Organization' %}</th>
 <th>{% trans 'User' %}</th>
 <th>{% trans 'Link' %}</th>
 </thead>
 <tbody>
-{% for comment in paginator.object_list %}
-    {% get_object_by_pk exmo2010.Score comment.object_pk as score %}
+{% for claim in paginator.object_list %}
     <tr>
-        <td>{{ comment.submit_date }}</td>
-        <td>{{ score.task.organization }}</td>
-        <td>{{ comment.user }}</td>
-        <td><a href="{{ score.get_absolute_url }}">{% trans 'Link' %}</a></td>
+        <td>{{ claim.open_date }}</td>
+        <td>{{ claim.score.task.organization }}</td>
+        <td>{{ claim.creator }}</td>
+        <td><a href="{{ claim.score.get_absolute_url }}">{% trans 'Link' %}</a></td>
     </tr>
 {% endfor %}
 </tbody>

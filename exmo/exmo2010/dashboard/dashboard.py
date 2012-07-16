@@ -83,5 +83,9 @@ class CustomIndexDashboard(UserDashboard):
                         _('Comments with answer') + ': ' + str(request.user.profile.get_answered_comments().count()),
                         reverse('exmo2010:comment_list', args=[2,])
                     ),
+                    (
+                        _('Opened claims') + ': ' + str(request.user.profile.get_opened_claims().count()),
+                        reverse('exmo2010:comment_list', args=[3,])
+                    ),
                 ),
             ))
