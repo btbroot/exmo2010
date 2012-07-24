@@ -36,7 +36,7 @@
 <th>{% trans 'Parameter description' %}</th>
 <tr><td>
 {% trans 'Name' %}: {{ parameter }}<br>
-{% trans 'Description' %}: {{ parameter.description }}
+{% trans 'Description' %}: {{ parameter.description|safe }}
 </td></tr>
 </table>
 </div>

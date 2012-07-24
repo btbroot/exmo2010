@@ -24,6 +24,8 @@
 {% url django.views.i18n.javascript_catalog as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
 {{ media }}
+{% load wysiwyg %}
+{% wysiwyg_setup %}
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
 
@@ -46,4 +48,5 @@
 </table>
 <input type="submit" /><input class="button" type="reset" />
 </form>
+{% wysiwyg_editor "id_description" %}
 {% endblock %}
