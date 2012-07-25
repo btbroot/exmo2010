@@ -469,7 +469,7 @@ msgstr "Профиль пользователя"
 #: exmo/exmo2010/sites.py:43 exmo/exmo2010/dashboard/menu.py:28
 #: exmo/templates/user_dashboard/modules/quicklinks.html:24
 msgid "Dashboard"
-msgstr "Приборная доска"
+msgstr "Главная"
 
 #: exmo/exmo2010/dashboard/dashboard.py:43
 msgid "Quick links"
@@ -486,7 +486,7 @@ msgstr "Новости svobodainfo"
 
 #: exmo/exmo2010/dashboard/dashboard.py:76 exmo/exmo2010/dashboard/menu.py:68
 msgid "Communication"
-msgstr "Коммуникации"
+msgstr "Взаимодействие"
 
 #: exmo/exmo2010/dashboard/dashboard.py:79 exmo/exmo2010/view/reports.py:34
 msgid "Comments without answer"
@@ -498,7 +498,7 @@ msgstr "Комментарии с ответом"
 
 #: exmo/exmo2010/dashboard/dashboard.py:87 exmo/exmo2010/view/reports.py:36
 msgid "Opened claims"
-msgstr "Открытые претензии"
+msgstr "Претензии"
 
 #: exmo/exmo2010/dashboard/menu.py:33
 #: exmo/templates/user_dashboard/modules/quicklinks.html:25
@@ -937,7 +937,7 @@ msgstr "%(verbose_name)s успешно обновлен."
 
 #: exmo/exmo2010/view/user.py:76
 msgid "Dashboard preferences was reset."
-msgstr "Настройки приборной доски были сброшены."
+msgstr "Настройки главной страницы были сброшены."
 
 #: exmo/templates/403.html:23
 msgid "Permission denied"
@@ -1602,7 +1602,7 @@ msgstr "Отмена изменений"
 
 #: exmo/templates/exmo2010/user_form.html:39
 msgid "Reset dashboard preferences"
-msgstr "Сбросить настройки приборной доски"
+msgstr "Сбросить настройки главной страницы"
 
 #: exmo/templates/registration/activate.html:38
 #: exmo/templates/registration/activate.html:41
