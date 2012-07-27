@@ -143,9 +143,9 @@
             elts.slice(start, stop).wrapAll(
                 '<div class="dashboard-column" style="float:left;width:'+percent[i]+'%;"/>'
             );
-            if (elts.slice(start, stop).length == 0) {
-                elt.append('<div class="dashboard-column" style="float:left;width:'+percent[i]+'%;"/>');
-            }
+//            if (elts.slice(start, stop).length == 0) {
+//                elt.append('<div class="dashboard-column" style="float:left;width:'+percent[i]+'%;"/>');
+//            }
         }
     };
 

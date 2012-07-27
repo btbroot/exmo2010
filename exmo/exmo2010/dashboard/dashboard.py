@@ -63,13 +63,13 @@ class CustomIndexDashboard(UserDashboard):
             template="user_dashboard/modules/monitoring_list.html",
         ))
 
-        # append a feed module
-        self.children.append(modules.Feed(
-            _('Svobodainfo news'),
-            feed_url='http://www.svobodainfo.org/rss.xml',
-            limit=10,
-            template = "user_dashboard/modules/feed.html",
-        ))
+#        # append a feed module
+#        self.children.append(modules.Feed(
+#            _('Svobodainfo news'),
+#            feed_url='http://www.svobodainfo.org/rss.xml',
+#            limit=10,
+#            template = "user_dashboard/modules/feed.html",
+#        ))
 
         if request.user.is_active and request.user.profile.is_expert:
             self.children.append(modules.LinkList(
