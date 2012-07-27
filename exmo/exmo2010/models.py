@@ -929,10 +929,8 @@ class UserProfile(models.Model):
         """
         org_comments = get_org_comments()
         stat = get_stat_answered_comments()
-        return org_comments.filter(
-            object_pk__in=self._get_my_scores(),
-            pk__in=stat['answered'],
-        )
+        return org_comments.filter(object_pk__in=self._get_my_scores(),
+            pk__in=stat['answered']).order_by('-submit_date')
 
     def get_not_answered_comments(self):
         """
@@ -940,10 +938,8 @@ class UserProfile(models.Model):
         """
         org_comments = get_org_comments()
         stat = get_stat_answered_comments()
-        return org_comments.filter(
-            object_pk__in=self._get_my_scores(),
-            pk__in=stat['not_answered'],
-        )
+        return org_comments.filter(object_pk__in=self._get_my_scores(),
+            pk__in=stat['not_answered']).order_by('submit_date')
 
     def get_opened_claims(self):
         """

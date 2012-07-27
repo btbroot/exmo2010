@@ -139,10 +139,8 @@ class UnicodeWriter(object):
 
 
 def get_org_comments():
-    return Comment.objects.filter(
-        content_type__model='score',
-        user__in=User.objects.filter(groups__name='organizations'),
-    ).order_by('-submit_date')
+    return Comment.objects.filter(content_type__model='score',
+        user__in=User.objects.filter(groups__name='organizations'))
 
 
 
@@ -150,7 +148,7 @@ def get_stat_answered_comments():
     """
     Возвращает {'answered': [], 'not_answered': []} за весь период, для всех мониторингов
     """
-    org_comments = get_org_comments()
+    org_comments = get_org_comments().order_by('-submit_date')
 
     operator_all_comments = Comment.objects.filter(
         content_type__model='score',
