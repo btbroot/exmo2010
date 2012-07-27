@@ -434,10 +434,6 @@ msgstr "мужской"
 msgid "female"
 msgstr "женский"
 
-#: exmo/exmo2010/models.py:720
-msgid "other"
-msgstr "прочее"
-
 #: exmo/exmo2010/models.py:782
 msgid "disabled"
 msgstr "отключено"

@@ -717,7 +717,6 @@ SEX_CHOICES = (
     (0, _("not set")),
     (1, _("male")),
     (2, _("female")),
-    (3, _("other")),
 )
 
 
