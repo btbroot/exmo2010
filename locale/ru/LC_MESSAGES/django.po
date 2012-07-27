@@ -1751,6 +1751,9 @@ msgstr "Восстановление забытого пароля"
 msgid "Enter new password"
 msgstr "Новый пароль"
 
+msgid "Go to main page"
+msgstr "Перейти на главную"
+
 #: exmo/templates/registration/password_reset_confirm.html:45
 msgid "Please enter your new password twice so we can verify you typed it in correctly."
 msgstr "Пожалуйста, введите новый пароль дважды, чтобы быть уверенным, что он введен верно."

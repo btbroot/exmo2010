@@ -65,7 +65,8 @@
             {% csrf_token %}
             <table>{{ form }}</table>
             <input type="submit" value="{% trans 'Log in' %}"/><br/>
-            <a href="{% url auth_password_reset %}">{% trans 'Recover forgotten password' %}</a>
+            <a href="{% url auth_password_reset %}">{% trans 'Recover forgotten password' %}</a><br/>
+            <a href="{% url exmo2010:index %}">{% trans 'Go to main page' %}</a>
         </form>
     </div>
     <script type="text/javascript">
