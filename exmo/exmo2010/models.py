@@ -605,22 +605,26 @@ class Score(models.Model):
 
 
 class Claim(models.Model):
-  "Модель претензий/замечаний"
-  score             = models.ForeignKey(Score, verbose_name=_('score'))
-  "Оценка"
-  open_date         = models.DateTimeField(auto_now_add = True, verbose_name = _('claim open'))
-  "Дата создания"
-  close_date        = models.DateTimeField(null = True, blank = True, verbose_name = _('claim close'))
-  "Дата закрытия. По её наличию определяется закрыта претензия или нет"
-  comment           = models.TextField(null = True, blank = True, verbose_name=_('comment'))
-  "Комментарий"
-  close_user        = models.ForeignKey(User, null = True, blank = True, verbose_name=_('user who close'), related_name='close_user')
-  "Кто закрыл претензию"
-  creator           = models.ForeignKey(User, verbose_name=_('creator'), related_name='creator')
-  "Кто создал претензию"
+  """Модель претензий/замечаний"""
+  score = models.ForeignKey(Score, verbose_name=_('score'))  # Оценка.
+  # Дата создания.
+  open_date = models.DateTimeField(auto_now_add=True,
+      verbose_name=_('claim open'))
+  # Дата закрытия. По её наличию определяется закрыта претензия или нет.
+  close_date = models.DateTimeField(null=True, blank=True,
+      verbose_name=_('claim close'))
+  # Комментарий.
+  comment = models.TextField(blank=True, verbose_name=_('comment'))
+  # Кто закрыл претензию.
+  close_user = models.ForeignKey(User, null=True, blank=True,
+      verbose_name=_('user who close'), related_name='close_user')
+  # Кто создал претензию.
+  creator = models.ForeignKey(User, verbose_name=_('creator'),
+      related_name='creator')
 
   def __unicode__(self):
-    return _('claim for %(score)s from %(creator)s') % { 'score': self.score, 'creator': self.creator }
+    return _('claim for %(score)s from %(creator)s') %\
+           {'score': self.score, 'creator': self.creator}
 
   class Meta:
     permissions = (("view_claim", "Can view claim"),)
@@ -944,10 +948,8 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из открытых претензий
         """
-        claims = Claim.objects.filter(
-            score__task__user=self,
-            close_date__isnull=True,
-        ).order_by('-open_date')
+        claims = Claim.objects.filter(score__task__user=self.user,
+            close_date__isnull=True).order_by('open_date')
         return claims
 
     is_expert = property(_is_expert)
