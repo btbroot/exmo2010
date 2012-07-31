@@ -31,8 +31,10 @@ urlpatterns = patterns('',
   (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
   (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
   (r'^admin_tools/', include('admin_tools.urls')),
+  # TEMP!!!
+  (r'^accounts/password/reset/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
   (r'^accounts/', include('registration.backends.default.urls')),
-  (r'^accounts/socialauth/', include('social_auth.urls')),
+#  (r'^accounts/socialauth/', include('social_auth.urls')),
 )
 
 if settings.DEBUG:

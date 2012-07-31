@@ -138,7 +138,7 @@ INSTALLED_APPS = (
     'tagging',
     'tagging_autocomplete',
     'registration',  # django-registration.
-    'social_auth',
+    #'social_auth',
     'django_wysiwyg',
     # Our own apps.
     'exmo2010',
@@ -237,7 +237,7 @@ DEBUG_TOOLBAR_PANELS = (
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
-
+REGISTRATION_OPEN = False
 ACCOUNT_ACTIVATION_DAYS = 3  # For django-registration.
 
 
