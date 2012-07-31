@@ -1674,6 +1674,9 @@ msgstr "Пользователь LiveJournal"
 msgid "or with your local login and password"
 msgstr "или используя логин и пароль"
 
+msgid "with your local login and password"
+msgstr "используя логин и пароль"
+
 #: exmo/templates/registration/login.html:68
 msgid "Recover forgotten password"
 msgstr "Восстановить забытый пароль"

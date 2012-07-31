@@ -44,7 +44,7 @@
     {% url auth_logout as auth_logout_url %}
     <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
-    <h2>{% trans 'or with your local login and password' %}:</h2>
+    <h2>{% trans 'with your local login and password' %}:</h2>
     <div id="content-main">
         <form action="" method="post">
             {% csrf_token %}

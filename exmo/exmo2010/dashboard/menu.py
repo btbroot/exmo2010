@@ -43,7 +43,7 @@ class CustomMenu(Menu):
                 welcome_msg = request.user.username
         else:
             children += [
-                items.MenuItem(_('Register'), reverse('registration_register')),
+#                items.MenuItem(_('Register'), reverse('registration_register')),
                 items.MenuItem(_('Log in'), reverse('auth_login')),
             ]
             welcome_msg = "Anonymous"
