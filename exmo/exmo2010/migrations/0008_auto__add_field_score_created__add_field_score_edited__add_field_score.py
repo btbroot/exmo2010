@@ -26,10 +26,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Removing unique constraint on 'Score', fields ['task', 'parameter']
-        try:
-            db.delete_unique('exmo2010_score', ['task_id', 'parameter_id'])
-        except ValueError:
-            pass  # Workaround due to production DB inconsistency.
+        db.delete_unique('exmo2010_score', ['task_id', 'parameter_id'])
 
         # Adding field 'Score.created'
         db.add_column('exmo2010_score', 'created',
