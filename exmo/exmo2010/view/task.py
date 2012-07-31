@@ -232,14 +232,18 @@ def task_import(request, id):
     except csv.Error, e:
            errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
     title = _('Import CSV for task %s') % task
-    return render_to_response('exmo2010/task_import_log.html', {
-      'task': task,
-      'file': request.FILES['taskfile'],
-      'errLog': errLog,
-      'rowOKCount': rowOKCount,
-      'rowALLCount': rowALLCount,
-      'title': title
-    })
+    return render_to_response(
+        'exmo2010/task_import_log.html',
+        {
+            'task': task,
+            'file': request.FILES['taskfile'],
+            'errLog': errLog,
+            'rowOKCount': rowOKCount,
+            'rowALLCount': rowALLCount,
+            'title': title
+        },
+        context_instance=RequestContext(request),
+    )
 
 
 
