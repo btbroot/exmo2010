@@ -135,37 +135,3 @@ class UnicodeWriter(object):
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
-
-
-
-def get_org_comments():
-    return Comment.objects.filter(content_type__model='score',
-        user__in=User.objects.filter(groups__name='organizations'))
-
-
-
-def get_stat_answered_comments():
-    """
-    Возвращает {'answered': [], 'not_answered': []} за весь период, для всех мониторингов
-    """
-    org_comments = get_org_comments().order_by('-submit_date')
-
-    operator_all_comments = Comment.objects.filter(
-        content_type__model='score',
-        user__in=User.objects.exclude(groups__name='organizations'),
-    ).order_by('-submit_date')
-
-    operator_all_comments_dict = {}
-
-    for operator_comment in operator_all_comments:
-        operator_all_comments_dict.setdefault(operator_comment.object_pk,[]).append(operator_comment)
-
-    result = {'answered': [], 'not_answered': []}
-
-    for org_comment in org_comments:
-        if operator_all_comments_dict.has_key(org_comment.object_pk) and \
-          operator_all_comments_dict[org_comment.object_pk][0].submit_date > org_comment.submit_date:
-            result['answered'].append(org_comment.pk)
-        else:
-            result['not_answered'].append(org_comment.pk)
-    return result

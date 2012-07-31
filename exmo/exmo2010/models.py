@@ -30,8 +30,6 @@ from django.db.models import Q
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
 from exmo2010.fields import TagField
-from exmo2010.utils import get_stat_answered_comments, get_org_comments
-
 
 
 class OpennessExpression(models.Model):
@@ -579,15 +577,10 @@ class Score(models.Model):
 
     @property
     def have_comment_without_reply(self):
-        self_comments_qs = Comment.objects.select_related().filter(
-            object_pk = self.pk,
-            content_type = ContentType.objects.get_for_model(self.__class__)
-        ).order_by('-submit_date')
-        if self_comments_qs.count() > 0:
-            #check first comment is from organization
-            if self_comments_qs[0].user.groups.filter(name=UserProfile.organization_group).count() > 0:
-                return self_comments_qs[0].pk
-        return False
+        return Comment.objects.filter(object_pk=self.pk,
+            content_type=ContentType.objects.get_for_model(self.__class__)).\
+               order_by('-submit_date')[0].user.groups.filter(
+            name="organizations").exists()
 
     active_claim = property(_get_claim)
     openness = property(_get_openness)
@@ -928,21 +921,43 @@ class UserProfile(models.Model):
 
     def get_answered_comments(self):
         """
-        Возвращает queryset из коментов на которые был дан ответ пользователем
+        Возвращает queryset из коментов на которые был дан ответ пользователем.
         """
-        org_comments = get_org_comments()
-        stat = get_stat_answered_comments()
-        return org_comments.filter(object_pk__in=self._get_my_scores(),
-            pk__in=stat['answered']).order_by('-submit_date')
+        all_my_comments = Comment.objects.filter(
+            object_pk__in=self._get_my_scores(),
+            content_type__model='score').order_by('object_pk', '-submit_date')
+        rez_dict = {}
+        rez_list = []
+        for c in all_my_comments:
+            if c.object_pk in rez_dict:
+                continue
+            else:
+                rez_dict[c.object_pk] = True
+                if not c.user.groups.filter(name="organizations").exists():
+                    rez_list.append(c.pk)
+        rezult = Comment.objects.filter(pk__in=rez_list).order_by(
+            '-submit_date')
+        return rezult
 
     def get_not_answered_comments(self):
         """
-        Возвращает queryset из коментов на которые еще не был дан ответ
+        Возвращает queryset из коментов на которые еще не был дан ответ.
         """
-        org_comments = get_org_comments()
-        stat = get_stat_answered_comments()
-        return org_comments.filter(object_pk__in=self._get_my_scores(),
-            pk__in=stat['not_answered']).order_by('submit_date')
+        all_my_comments = Comment.objects.filter(
+            object_pk__in=self._get_my_scores(),
+            content_type__model='score').order_by('object_pk', '-submit_date')
+        rez_dict = {}
+        rez_list = []
+        for c in all_my_comments:
+            if c.object_pk in rez_dict:
+                continue
+            else:
+                rez_dict[c.object_pk] = True
+                if c.user.groups.filter(name="organizations").exists():
+                    rez_list.append(c.pk)
+        rezult = Comment.objects.filter(pk__in=rez_list).order_by(
+            'submit_date')
+        return rezult
 
     def get_opened_claims(self):
         """
