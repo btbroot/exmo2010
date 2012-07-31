@@ -15,7 +15,7 @@ class ScoreCommentDigest(DigestSend):
         elif user.userprofile.is_expertB:
             score_pk = Score.objects.filter(task__user = user)
         elif user.userprofile.is_organization:
-            score_pk = Score.objects.filter(task__orgazation__in = user.userprofile.organization)
+            score_pk = Score.objects.filter(task__organization__in = user.userprofile.organization)
         else:
             score_pk = Score.objects.none()
 
