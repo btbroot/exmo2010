@@ -138,6 +138,10 @@ class Questionnaire(models.Model):
     monitoring = models.ForeignKey(Monitoring, verbose_name="Мониторинг",
                                    unique=True)
 
+    def __unicode__(self):
+        return '%s' % self.monitoring.__unicode__()
+
+
 
 class QQuestion(models.Model):
     """Вопрос анкеты, привязанной к мониторингу"""
@@ -147,12 +151,18 @@ class QQuestion(models.Model):
     question = models.CharField("Вопрос", max_length=300)
     comment = models.CharField("Пояснение к вопросу", max_length=600)
 
+    def __unicode__(self):
+        return '%s: %s' % (self.questionnaire.__unicode__(), self.question)
+
+
 
 class AnswerVariant(models.Model):
     """Вариант ответа на вопрос анкеты, предполагающий варианты"""
     qquestion = models.ForeignKey(QQuestion, verbose_name="Вопрос")
     answer = models.CharField("Ответ", max_length=300)
 
+    def __unicode__(self):
+        return '%s: %s' % (self.question.__unicode__(), self.answer)
 
 
 
@@ -430,6 +440,10 @@ class QAnswer(models.Model):
             return self.variance_answer.answer
     class Meta:
         unique_together = ('task','question')
+
+    def __unicode__(self):
+        return '%s: %s' % (self.task.__unicode__(), self.question.__unicode__())
+
 
 
 class Score(models.Model):

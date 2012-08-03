@@ -23,6 +23,7 @@ from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 DEBUG = True
+DEBUG_EXPORT = False
 TEMPLATE_DEBUG = DEBUG
 TEMPLATE_STRING_IF_INVALID = ''
 
