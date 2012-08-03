@@ -145,7 +145,8 @@ class QQuestion(models.Model):
     qtype = models.PositiveSmallIntegerField(choices=QUESTION_TYPE_CHOICES,
                                              verbose_name="Тип вопроса")
     question = models.CharField("Вопрос", max_length=300)
-    comment = models.CharField("Пояснение к вопросу", max_length=600)
+    comment = models.CharField("Пояснение к вопросу", max_length=600,
+        blank=True)
 
 
 class AnswerVariant(models.Model):
