@@ -65,6 +65,8 @@ urlpatterns = patterns('',
   url( r'^monitoring/(\d+)/rating/$', 'exmo2010.view.monitoring.monitoring_rating', name='monitoring_rating'),
   url( r'^monitoring/(\d+)/by_criteria_mass_export/$', 'exmo2010.view.monitoring.monitoring_by_criteria_mass_export', name='monitoring_by_criteria_mass_export'),
 
+  url( r'^monitoring/(\d+)/answers_export/$', 'exmo2010.view.answers.answers_export', name='monitoring_answers_export'),
+
   url(r'^reports/gender/$', 'exmo2010.view.reports.gender_stats',
       name='gender_stats'),
 
