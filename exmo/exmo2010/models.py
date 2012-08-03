@@ -32,91 +32,127 @@ from tagging.models import Tag
 from exmo2010.fields import TagField
 
 
+# Типы вопросов анкеты. Добавить переводы!
+QUESTION_TYPE_CHOICES = (
+    (0, "Текст"),
+    (1, "Число"),
+    (2, "Один из списка"),
+)
+
+
 class OpennessExpression(models.Model):
-  code    = models.PositiveIntegerField(primary_key=True)
-  name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+    code    = models.PositiveIntegerField(primary_key=True)
+    name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
 
-  def __unicode__(self):
-    return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
-
+    def __unicode__(self):
+        return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
 
 
 class Monitoring(models.Model):
-  MONITORING_PREPARE   = 0
-  MONITORING_RATE      = 1
-  MONITORING_REVISION  = 2
-  MONITORING_INTERACT  = 3
-  MONITORING_RESULT    = 4
-  MONITORING_PUBLISH   = 5
-  MONITORING_PLANNED   = 6
-  MONITORING_STATUS    = (
+    MONITORING_PREPARE = 0
+    MONITORING_RATE = 1
+    MONITORING_REVISION = 2
+    MONITORING_INTERACT = 3
+    MONITORING_RESULT = 4
+    MONITORING_PUBLISH = 5
+    MONITORING_PLANNED = 6
+    MONITORING_STATUS = (
         (MONITORING_PREPARE, _('prepare')),
         (MONITORING_RATE, _('rate')),
         (MONITORING_REVISION, _('revision')),
         (MONITORING_INTERACT, _('interact')),
         (MONITORING_RESULT, _('result')),
         (MONITORING_PUBLISH, _('publish')),
-  )
-  MONITORING_STATUS_FULL = MONITORING_STATUS + ((MONITORING_PLANNED, _('planned')),)
-  MONITORING_STATUS_NEW  = (MONITORING_STATUS_FULL[0],) + (MONITORING_STATUS_FULL[6],)
+    )
+    MONITORING_STATUS_FULL = MONITORING_STATUS +\
+        ((MONITORING_PLANNED, _('planned')),)
+    MONITORING_STATUS_NEW = (MONITORING_STATUS_FULL[0],) +\
+        (MONITORING_STATUS_FULL[6],)
 
-  name                   = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
-  status                 = models.PositiveIntegerField(choices = MONITORING_STATUS_FULL, default = MONITORING_PLANNED, verbose_name=_('status'))
-  openness_expression    = models.ForeignKey(
-    OpennessExpression,
-    default = 8,
-    verbose_name=_('openness expression'),
-  )
+    name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
+    status = models.PositiveIntegerField(choices=MONITORING_STATUS_FULL,
+                                         default=MONITORING_PLANNED, verbose_name=_('status'))
+    openness_expression = models.ForeignKey(OpennessExpression, default=8,
+                                            verbose_name=_('openness expression'))
 
-  def __unicode__(self):
-    return '%s' % self.name
+    def __unicode__(self):
+        return '%s' % self.name
 
-  @models.permalink
-  def get_absolute_url(self):
-    return ('exmo2010:tasks_by_monitoring', [str(self.id)])
+    @models.permalink
+    def get_absolute_url(self):
+        return ('exmo2010:tasks_by_monitoring', [str(self.id)])
 
-  def create_calendar(self):
-    for status in self.MONITORING_STATUS:
-        MonitoringStatus.objects.get_or_create(status = status[0], monitoring = self)
+    def create_calendar(self):
+        for status in self.MONITORING_STATUS:
+            MonitoringStatus.objects.get_or_create(status=status[0],
+                                                   monitoring=self)
 
-  def _get_prepare(self):
-    return self.status == self.MONITORING_PREPARE
+    def _get_prepare(self):
+        return self.status == self.MONITORING_PREPARE
 
-  def _get_rate(self):
-    return self.status == self.MONITORING_RATE
+    def _get_rate(self):
+        return self.status == self.MONITORING_RATE
 
-  def _get_revision(self):
-    return self.status == self.MONITORING_REVISION
+    def _get_revision(self):
+        return self.status == self.MONITORING_REVISION
 
-  def _get_interact(self):
-    return self.status == self.MONITORING_INTERACT
+    def _get_interact(self):
+        return self.status == self.MONITORING_INTERACT
 
-  def _get_result(self):
-    return self.status == self.MONITORING_RESULT
+    def _get_result(self):
+        return self.status == self.MONITORING_RESULT
 
-  def _get_publish(self):
-    return self.status == self.MONITORING_PUBLISH
+    def _get_publish(self):
+        return self.status == self.MONITORING_PUBLISH
 
-  def _get_planned(self):
-    return self.status == self.MONITORING_PLANNED
+    def _get_planned(self):
+        return self.status == self.MONITORING_PLANNED
 
-  def _get_active(self):
-    return not (self.is_prepare or self.is_planned)
+    def _get_active(self):
+        return not (self.is_prepare or self.is_planned)
 
-  after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT, MONITORING_PUBLISH]
+    def has_questionnaire(self):
+        pass
 
-  is_prepare = property(_get_prepare)
-  is_rate = property(_get_rate)
-  is_revision = property(_get_revision)
-  is_interact = property(_get_interact)
-  is_result = property(_get_result)
-  is_publish = property(_get_publish)
-  is_planned = property(_get_planned)
+    def get_questionnaire(self):
+        pass
 
-  is_active = property(_get_active)
+    after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT,
+                                MONITORING_PUBLISH]
 
-  class Meta:
-    ordering = ('name',)
+    is_prepare = property(_get_prepare)
+    is_rate = property(_get_rate)
+    is_revision = property(_get_revision)
+    is_interact = property(_get_interact)
+    is_result = property(_get_result)
+    is_publish = property(_get_publish)
+    is_planned = property(_get_planned)
+    is_active = property(_get_active)
+
+    class Meta:
+        ordering = ('name',)
+
+
+class Questionnaire(models.Model):
+    """Анкета, привязанная к мониторингу"""
+    monitoring = models.ForeignKey(Monitoring, verbose_name="Мониторинг",
+                                   unique=True)
+
+
+class QQuestion(models.Model):
+    """Вопрос анкеты, привязанной к мониторингу"""
+    questionnaire = models.ForeignKey(Questionnaire, verbose_name="Анкета")
+    qtype = models.PositiveSmallIntegerField(choices=QUESTION_TYPE_CHOICES,
+                                             verbose_name="Тип вопроса")
+    question = models.CharField("Вопрос", max_length=300)
+    comment = models.CharField("Пояснение к вопросу", max_length=600)
+
+
+class AnswerVariant(models.Model):
+    """Вариант ответа на вопрос анкеты, предполагающий варианты"""
+    qquestion = models.ForeignKey(QQuestion, verbose_name="Вопрос")
+    answer = models.CharField("Ответ", max_length=300)
+
 
 
 
@@ -140,237 +176,260 @@ class MonitoringStatus(models.Model):
 
 
 class Organization(models.Model):
-  """ Fields:
-  name -- Uniq organization name
-  url -- Internet site URL
-  keywords -- Keywords for autocomplete and search
-  comments -- Additional comment
-  """
+    """ Fields:
+    name -- Uniq organization name
+    url -- Internet site URL
+    keywords -- Keywords for autocomplete and search
+    comments -- Additional comment
+    """
 
-  name         = models.CharField(max_length = 255, verbose_name=_('name'))
-  url          = models.URLField(max_length = 255, null = True, blank = True, verify_exists = False, verbose_name=_('url'))
-  keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
-  comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
-  monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    name         = models.CharField(max_length = 255, verbose_name=_('name'))
+    url          = models.URLField(max_length = 255, null = True, blank = True, verify_exists = False, verbose_name=_('url'))
+    keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
+    comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
+    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
 
 #I dont know why, but this breaks reversion while import-(
-  def __unicode__(self):
-    return '%s' % (self.name)
+    def __unicode__(self):
+        return '%s' % (self.name)
 
-  def _get_tags(self):
-    return Tag.objects.get_for_object(self)
+    def _get_tags(self):
+        return Tag.objects.get_for_object(self)
 
-  def _set_tags(self, tag_list):
-    Tag.objects.update_tags(self, tag_list)
+    def _set_tags(self, tag_list):
+        Tag.objects.update_tags(self, tag_list)
 
-  tags = property(_get_tags, _set_tags)
+    tags = property(_get_tags, _set_tags)
 
-  class Meta:
-    ordering = ('name',)
-    unique_together = (
-        ('name', 'monitoring'),
-    )
+    class Meta:
+        ordering = ('name',)
+        unique_together = (
+            ('name', 'monitoring'),
+        )
 
 
 
 class Parameter(models.Model):
-  code               = models.PositiveIntegerField(verbose_name=_('code'))
-  #db_index=False -- MySQL get error: "Specified key was too long; max key length is 1000 bytes" for long varchar field
-  name               = models.CharField(max_length = 1000, verbose_name=_('name'), db_index=False)
-  description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
-  monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-  exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
-  weight             = models.IntegerField(verbose_name=_('weight'))
-  keywords           = TagField(null = True, blank = True, verbose_name = _('keywords'))
-  complete           = models.BooleanField(default = True, verbose_name=_('complete'))
-  topical            = models.BooleanField(default = True, verbose_name=_('topical'))
-  accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
-  hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
-  document           = models.BooleanField(default = True, verbose_name=_('document'))
-  image              = models.BooleanField(default = True, verbose_name=_('image'))
+    code               = models.PositiveIntegerField(verbose_name=_('code'))
+    #db_index=False -- MySQL get error: "Specified key was too long; max key length is 1000 bytes" for long varchar field
+    name               = models.CharField(max_length = 1000, verbose_name=_('name'), db_index=False)
+    description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
+    monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
+    weight             = models.IntegerField(verbose_name=_('weight'))
+    keywords           = TagField(null = True, blank = True, verbose_name = _('keywords'))
+    complete           = models.BooleanField(default = True, verbose_name=_('complete'))
+    topical            = models.BooleanField(default = True, verbose_name=_('topical'))
+    accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
+    hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
+    document           = models.BooleanField(default = True, verbose_name=_('document'))
+    image              = models.BooleanField(default = True, verbose_name=_('image'))
 
 #I dont know why, but this breaks reversion while import-(
-  def __unicode__(self):
-    return "%s" % self.name
+    def __unicode__(self):
+        return "%s" % self.name
 
-  def _get_tags(self):
-    return Tag.objects.get_for_object(self)
+    def _get_tags(self):
+        return Tag.objects.get_for_object(self)
 
-  def _set_tags(self, tag_list):
-    Tag.objects.update_tags(self, tag_list)
+    def _set_tags(self, tag_list):
+        Tag.objects.update_tags(self, tag_list)
 
-  tags = property(_get_tags, _set_tags)
+    tags = property(_get_tags, _set_tags)
 
-  class Meta:
-    ordering = ('code','name',)
-    unique_together = (
-        ('code', 'monitoring'),
-        ('name', 'monitoring'),
-    )
+    class Meta:
+        ordering = ('code','name',)
+        unique_together = (
+            ('code', 'monitoring'),
+            ('name', 'monitoring'),
+        )
 
 
 
 class OpenTaskManager(models.Manager):
-  def get_query_set(self):
+    def get_query_set(self):
         return super(OpenTaskManager, self).get_query_set().filter(status = Task.TASK_OPEN)
 
 
 
 class ReadyTaskManager(models.Manager):
-  def get_query_set(self):
+    def get_query_set(self):
         return super(ReadyTaskManager, self).get_query_set().filter(status = Task.TASK_READY)
 
 
-
 class ApprovedTaskManager(models.Manager):
-  def get_query_set(self):
+    def get_query_set(self):
         return super(ApprovedTaskManager, self).get_query_set().filter(status = Task.TASK_APPROVED)
 
 
-
-from django.db.models import Count
 class Task(models.Model):
-  TASK_OPEN       = 0
-  TASK_READY      = TASK_CLOSE = TASK_CLOSED = 1
-  TASK_APPROVED   = TASK_APPROVE = 2
-  TASK_CHECK      = TASK_CHECKED = 3
-  TASK_STATUS     = (
-    (TASK_OPEN, _('opened')),
-    (TASK_CLOSE, _('closed')),
-    (TASK_CHECK, _('check')),
-    (TASK_APPROVE, _('approved'))
-  )
-  user         = models.ForeignKey(User, verbose_name=_('user'))
-  organization = models.ForeignKey(Organization, verbose_name=_('organization'))
-  status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
-  openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
+    TASK_OPEN       = 0
+    TASK_READY      = TASK_CLOSE = TASK_CLOSED = 1
+    TASK_APPROVED   = TASK_APPROVE = 2
+    TASK_CHECK      = TASK_CHECKED = 3
+    TASK_STATUS     = (
+        (TASK_OPEN, _('opened')),
+        (TASK_CLOSE, _('closed')),
+        (TASK_CHECK, _('check')),
+        (TASK_APPROVE, _('approved'))
+    )
+    user         = models.ForeignKey(User, verbose_name=_('user'))
+    organization = models.ForeignKey(Organization, verbose_name=_('organization'))
+    status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
+    openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
 
-  def _openness(self):
-    openness = 0
-    scores = Score.objects.filter(
-        revision = Score.REVISION_DEFAULT,
-        task = self,
-        parameter__in = Parameter.objects.filter(
-            monitoring = self.organization.monitoring
-        ).exclude(exclude = self.organization)
-    ).select_related()
-    openness_actual = sum([openness_helper(s) for s in scores])
-    parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
-    openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
-    if openness_max:
-        openness = float(openness_actual * 100) / openness_max
-    return openness
+    def _openness(self):
+        openness = 0
+        scores = Score.objects.filter(
+            revision = Score.REVISION_DEFAULT,
+            task = self,
+            parameter__in = Parameter.objects.filter(
+                monitoring = self.organization.monitoring
+                ).exclude(exclude = self.organization)
+            ).select_related()
+        openness_actual = sum([openness_helper(s) for s in scores])
+        parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
+        openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
+        if openness_max:
+            openness = float(openness_actual * 100) / openness_max
+        return openness
 
-  def _get_openness(self):
-    if not self.openness_cache:
-        self.update_openness()
-    return self.openness_cache
+    def _get_openness(self):
+        if not self.openness_cache:
+            self.update_openness()
+        return self.openness_cache
 
-  def update_openness(self):
+    def update_openness(self):
         self.openness_cache = self._openness()
         self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
 
-  objects = models.Manager() # The default manager.
-  open_tasks = OpenTaskManager()
-  ready_tasks = ReadyTaskManager()
-  approved_tasks = ApprovedTaskManager()
+    objects = models.Manager() # The default manager.
+    open_tasks = OpenTaskManager()
+    ready_tasks = ReadyTaskManager()
+    approved_tasks = ApprovedTaskManager()
 
-  def __unicode__(self):
-    return '%s: %s' % (self.user.username, self.organization.name)
+    def __unicode__(self):
+        return '%s: %s' % (self.user.username, self.organization.name)
 
-  class Meta:
-    unique_together = (
-      ('user', 'organization'),
-    )
-    ordering = ('organization__name', 'user__username')
-    permissions = (("view_task", "Can view task"),)
+    class Meta:
+        unique_together = (
+            ('user', 'organization'),
+        )
+        ordering = ('organization__name', 'user__username')
+        permissions = (("view_task", "Can view task"),)
 
-  def clean(self):
-    if self.ready or self.approved:
-        if self.complete != 100:
-            raise ValidationError(_('Ready task must be 100 percent complete.'))
-    if self.approved:
-        if Task.approved_tasks.filter(organization = self.organization).count() != 0 and \
-          self not in Task.approved_tasks.filter(organization = self.organization):
-            raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
+    def clean(self):
+        if self.ready or self.approved:
+            if self.complete != 100:
+                raise ValidationError(_('Ready task must be 100 percent complete.'))
+        if self.approved:
+            if Task.approved_tasks.filter(organization = self.organization).count() != 0 and \
+               self not in Task.approved_tasks.filter(organization = self.organization):
+                raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
                     'monitoring': self.organization.monitoring,
                     'organization': self.organization,
                 })
 
-  def _get_open(self):
-    if self.status == self.TASK_OPEN: return True
-    else: return False
+    def _get_open(self):
+        if self.status == self.TASK_OPEN: return True
+        else: return False
 
-  def _get_ready(self):
-    if self.status == self.TASK_READY: return True
-    else: return False
+    def _get_ready(self):
+        if self.status == self.TASK_READY: return True
+        else: return False
 
-  def _get_approved(self):
-    if self.status == self.TASK_APPROVED: return True
-    else: return False
+    def _get_approved(self):
+        if self.status == self.TASK_APPROVED: return True
+        else: return False
 
-  def _get_checked(self):
-    if self.status == self.TASK_CHECK: return True
-    else: return False
+    def _get_checked(self):
+        if self.status == self.TASK_CHECK: return True
+        else: return False
 
-  def _set_open(self, val):
-    if val:
-        self.status = self.TASK_OPEN
-        self.full_clean()
-        self.save()
+    def _set_open(self, val):
+        if val:
+            self.status = self.TASK_OPEN
+            self.full_clean()
+            self.save()
 
-  def _set_ready(self ,val):
-    if val:
-        self.status = self.TASK_READY
-        self.full_clean()
-        self.save()
+    def _set_ready(self ,val):
+        if val:
+            self.status = self.TASK_READY
+            self.full_clean()
+            self.save()
 
-  def _set_approved(self, val):
-    if val:
-        self.status = self.TASK_APPROVED
-        self.full_clean()
-        self.save()
+    def _set_approved(self, val):
+        if val:
+            self.status = self.TASK_APPROVED
+            self.full_clean()
+            self.save()
 
-  def _set_checked(self, val):
-    if val:
-        self.status = self.TASK_CHECKED
-        self.full_clean()
-        self.save()
+    def _set_checked(self, val):
+        if val:
+            self.status = self.TASK_CHECKED
+            self.full_clean()
+            self.save()
 
-  @property
-  def complete(self):
-    complete = 0
-    parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
-    if parameters:
-        scores_count = Score.objects.filter(
-            task=self,
-            revision=Score.REVISION_DEFAULT,
-        ).exclude(
-            parameter__exclude=self.organization
-        ).count()
-        complete = scores_count * 100.0 / parameters
-    return complete
+    @property
+    def complete(self):
+        complete = 0
+        parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
+        if parameters:
+            scores_count = Score.objects.filter(
+                task=self,
+                revision=Score.REVISION_DEFAULT,
+                ).exclude(
+                    parameter__exclude=self.organization
+                    ).count()
+            complete = scores_count * 100.0 / parameters
+        return complete
 
-  @property
-  def rating_place(self):
-    from exmo2010.view.helpers import rating
-    place = None
-    rating_list, avg = rating(self.organization.monitoring)
-    for rating_object in rating_list:
-          if rating_object['task'] == self:
-            place = rating_object['place']
-            break
-    return place
+    @property
+    def rating_place(self):
+        from exmo2010.view.helpers import rating
+        place = None
+        rating_list, avg = rating(self.organization.monitoring)
+        for rating_object in rating_list:
+            if rating_object['task'] == self:
+                place = rating_object['place']
+                break
+        return place
 
-  open = property(_get_open, _set_open)
-  ready = property(_get_ready, _set_ready)
-  checked = property(_get_checked, _set_checked)
-  approved = property(_get_approved, _set_approved)
-  openness = property(_get_openness)
+    def all_answered(self):
+        """
+        Заготовка метода, возвращающего False/True в зависимости от того,
+        даны ли ответы на все вопросы анкеты или нет.
+        """
+        pass
 
+    open = property(_get_open, _set_open)
+    ready = property(_get_ready, _set_ready)
+    checked = property(_get_checked, _set_checked)
+    approved = property(_get_approved, _set_approved)
+    openness = property(_get_openness)
+
+
+class QAnswer(models.Model):
+    """Ответ на вопрос анкеты"""
+    task = models.ForeignKey(Task)
+    question = models.ForeignKey(QQuestion, verbose_name="Вопрос")
+    text_answer = models.CharField("Ответ текстом", max_length=300, blank=True)
+    numeral_answer = models.PositiveIntegerField("Ответ числом", blank=True,
+        null=True)
+    variance_answer = models.ForeignKey(AnswerVariant,
+        verbose_name="Ответ-выбор варианта", blank=True, null=True)
+    def answer(self):
+        if self.question.qtype == 0:
+            return self.text_answer
+        elif self.question.qtype == 1:
+            return self.numeral_answer
+        elif self.question.qtype == 2:
+            return self.variance_answer.answer
+    class Meta:
+        unique_together = ('task','question')
 
 
 class Score(models.Model):
@@ -562,7 +621,7 @@ class Score(models.Model):
 
     def create_revision(self, revision):
         if self.task.organization.monitoring.status in Monitoring.after_interaction_status \
-          and revision == Score.REVISION_INTERACT:
+           and revision == Score.REVISION_INTERACT:
             revision_score = Score.objects.filter(
                 task=self.task,
                 parameter=self.parameter,
@@ -578,9 +637,9 @@ class Score(models.Model):
     @property
     def have_comment_without_reply(self):
         return Comment.objects.filter(object_pk=self.pk,
-            content_type=ContentType.objects.get_for_model(self.__class__)).\
+                                      content_type=ContentType.objects.get_for_model(self.__class__)).\
                order_by('-submit_date')[0].user.groups.filter(
-            name="organizations").exists()
+                   name="organizations").exists()
 
     active_claim = property(_get_claim)
     openness = property(_get_openness)
@@ -598,29 +657,29 @@ class Score(models.Model):
 
 
 class Claim(models.Model):
-  """Модель претензий/замечаний"""
-  score = models.ForeignKey(Score, verbose_name=_('score'))  # Оценка.
-  # Дата создания.
-  open_date = models.DateTimeField(auto_now_add=True,
-      verbose_name=_('claim open'))
-  # Дата закрытия. По её наличию определяется закрыта претензия или нет.
-  close_date = models.DateTimeField(null=True, blank=True,
-      verbose_name=_('claim close'))
-  # Комментарий.
-  comment = models.TextField(blank=True, verbose_name=_('comment'))
-  # Кто закрыл претензию.
-  close_user = models.ForeignKey(User, null=True, blank=True,
-      verbose_name=_('user who close'), related_name='close_user')
-  # Кто создал претензию.
-  creator = models.ForeignKey(User, verbose_name=_('creator'),
-      related_name='creator')
+    """Модель претензий/замечаний"""
+    score = models.ForeignKey(Score, verbose_name=_('score'))  # Оценка.
+    # Дата создания.
+    open_date = models.DateTimeField(auto_now_add=True,
+                                     verbose_name=_('claim open'))
+    # Дата закрытия. По её наличию определяется закрыта претензия или нет.
+    close_date = models.DateTimeField(null=True, blank=True,
+                                      verbose_name=_('claim close'))
+    # Комментарий.
+    comment = models.TextField(blank=True, verbose_name=_('comment'))
+    # Кто закрыл претензию.
+    close_user = models.ForeignKey(User, null=True, blank=True,
+                                   verbose_name=_('user who close'), related_name='close_user')
+    # Кто создал претензию.
+    creator = models.ForeignKey(User, verbose_name=_('creator'),
+                                related_name='creator')
 
-  def __unicode__(self):
-    return _('claim for %(score)s from %(creator)s') %\
-           {'score': self.score, 'creator': self.creator}
+    def __unicode__(self):
+        return _('claim for %(score)s from %(creator)s') %\
+               {'score': self.score, 'creator': self.creator}
 
-  class Meta:
-    permissions = (("view_claim", "Can view claim"),)
+    class Meta:
+        permissions = (("view_claim", "Can view claim"),)
 
 
 
@@ -723,11 +782,11 @@ class ExtUPManager(models.Manager):
     """
     def get_query_set(self):
         return super(ExtUPManager, self).\
-        get_query_set().\
-        exclude(user__is_superuser=True).\
-        exclude(user__is_staff=True).\
-        exclude(user__groups__name__in=UserProfile.expert_groups).\
-        distinct()
+               get_query_set().\
+               exclude(user__is_superuser=True).\
+               exclude(user__is_staff=True).\
+               exclude(user__groups__name__in=UserProfile.expert_groups).\
+               distinct()
 
 
 class IntUPManager(models.Manager):
@@ -736,11 +795,11 @@ class IntUPManager(models.Manager):
     """
     def get_query_set(self):
         return super(IntUPManager, self).\
-        get_query_set().\
-        filter(Q(user__is_superuser=True) |
-               Q(user__is_staff=True) |
-               Q(user__groups__name__in=UserProfile.expert_groups)).\
-        distinct()
+               get_query_set().\
+               filter(Q(user__is_superuser=True) |
+                      Q(user__is_staff=True) |
+                      Q(user__groups__name__in=UserProfile.expert_groups)).\
+               distinct()
 
 
 class UserProfile(models.Model):
@@ -786,11 +845,11 @@ class UserProfile(models.Model):
 
     user = models.ForeignKey(User, unique=True)
     organization = models.ManyToManyField(Organization, null=True, blank=True,
-        verbose_name=_('organizations for view'))
+                                          verbose_name=_('organizations for view'))
     preference = models.TextField(null=True, blank=True,
-        verbose_name=_('preference'))
+                                  verbose_name=_('preference'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"),
-        choices=SEX_CHOICES, default=0, db_index=True)
+                                           choices=SEX_CHOICES, default=0, db_index=True)
 
     @property
     def get_preference(self):
@@ -964,7 +1023,7 @@ class UserProfile(models.Model):
         Возвращает queryset из открытых претензий
         """
         claims = Claim.objects.filter(score__task__user=self.user,
-            close_date__isnull=True).order_by('open_date')
+                                      close_date__isnull=True).order_by('open_date')
         return claims
 
     is_expert = property(_is_expert)

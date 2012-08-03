@@ -130,8 +130,7 @@ def score_view(request, score_id):
 
 
 def score_list_by_task(request, task_id, report=None):
-    task = get_object_or_404(Task, pk = task_id)
-    task = Task.objects.get(pk = task_id)
+    task = get_object_or_404(Task, pk=task_id)
     title = _('Score list for %s') % ( task.organization.name )
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
