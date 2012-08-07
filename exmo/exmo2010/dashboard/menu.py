@@ -17,6 +17,8 @@ class CustomMenu(Menu):
     """
     Custom Menu for exmo admin site.
     """
+    template = 'user_dashboard/menu.html'
+
     class Media:
         js = (
             'admin_tools/js/jquery/jquery.cookie.min.js',
