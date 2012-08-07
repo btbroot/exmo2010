@@ -149,7 +149,12 @@ class QQuestion(models.Model):
     qtype = models.PositiveSmallIntegerField(choices=QUESTION_TYPE_CHOICES,
                                              verbose_name="Тип вопроса")
     question = models.CharField("Вопрос", max_length=300)
-    comment = models.CharField("Пояснение к вопросу", max_length=600)
+    comment = models.CharField("Пояснение к вопросу", max_length=600,
+        blank=True)
+
+    def __unicode__(self):
+        return '%s: %s' % (self.questionnaire.__unicode__(), self.question)
+
 
     def __unicode__(self):
         return '%s: %s' % (self.questionnaire.__unicode__(), self.question)
