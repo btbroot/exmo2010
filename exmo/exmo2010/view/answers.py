@@ -17,14 +17,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import csv
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from exmo2010.utils import UnicodeWriter
 from exmo2010.models import Monitoring, Task
-from exmo2010.models import Questionnaire, Task, QQuestion
+from exmo2010.models import Questionnaire, QQuestion
 
 
 @login_required

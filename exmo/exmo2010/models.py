@@ -34,9 +34,9 @@ from exmo2010.fields import TagField
 
 # Типы вопросов анкеты. Добавить переводы!
 QUESTION_TYPE_CHOICES = (
-    (0, "Текст"),
-    (1, "Число"),
-    (2, "Один из списка"),
+    (0, _("Text")),
+    (1, _("Number")),
+    (2, _("Choose a variant")),
 )
 
 
@@ -112,10 +112,20 @@ class Monitoring(models.Model):
         return not (self.is_prepare or self.is_planned)
 
     def has_questionnaire(self):
-        pass
+        return Questionnaire.objects.filter(monitoring=self).exists()
 
     def get_questionnaire(self):
-        pass
+        try:
+            return Questionnaire.objects.get(monitoring=self)
+        except ObjectDoesNotExist:
+            return None
+    def del_questionnaire(self):
+        try:
+            questionnaire =  Questionnaire.objects.get(monitoring=self)
+        except ObjectDoesNotExist:
+            pass
+        else:
+            questionnaire.delete()
 
     after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT,
                                 MONITORING_PUBLISH]
@@ -135,39 +145,34 @@ class Monitoring(models.Model):
 
 class Questionnaire(models.Model):
     """Анкета, привязанная к мониторингу"""
-    monitoring = models.ForeignKey(Monitoring, verbose_name="Мониторинг",
+    monitoring = models.ForeignKey(Monitoring, verbose_name=_("Monitoring"),
                                    unique=True)
 
     def __unicode__(self):
         return '%s' % self.monitoring.__unicode__()
 
 
-
 class QQuestion(models.Model):
     """Вопрос анкеты, привязанной к мониторингу"""
-    questionnaire = models.ForeignKey(Questionnaire, verbose_name="Анкета")
+    questionnaire = models.ForeignKey(Questionnaire,
+        verbose_name=_("Questionnaire"))
     qtype = models.PositiveSmallIntegerField(choices=QUESTION_TYPE_CHOICES,
-                                             verbose_name="Тип вопроса")
-    question = models.CharField("Вопрос", max_length=300)
-    comment = models.CharField("Пояснение к вопросу", max_length=600,
+                                             verbose_name=_("Question type"))
+    question = models.CharField(_("Question"), max_length=300)
+    comment = models.CharField(_("Question comment"), max_length=600,
         blank=True)
 
     def __unicode__(self):
         return '%s: %s' % (self.questionnaire.__unicode__(), self.question)
 
 
-    def __unicode__(self):
-        return '%s: %s' % (self.questionnaire.__unicode__(), self.question)
-
-
-
 class AnswerVariant(models.Model):
     """Вариант ответа на вопрос анкеты, предполагающий варианты"""
-    qquestion = models.ForeignKey(QQuestion, verbose_name="Вопрос")
-    answer = models.CharField("Ответ", max_length=300)
+    qquestion = models.ForeignKey(QQuestion, verbose_name=_("Question"))
+    answer = models.CharField(_("Answer"), max_length=300)
 
     def __unicode__(self):
-        return '%s: %s' % (self.question.__unicode__(), self.answer)
+        return self.answer
 
 
 
@@ -415,12 +420,20 @@ class Task(models.Model):
                 break
         return place
 
-    def all_answered(self):
+    def get_questionnaire_answers(self):
+        return QAnswer.objects.filter(task=self).order_by("pk")
+
+    def all_questionnaire_answered(self):
         """
-        Заготовка метода, возвращающего False/True в зависимости от того,
+        Метод, возвращающего False/True в зависимости от того,
         даны ли ответы на все вопросы анкеты или нет.
         """
-        pass
+        questionnaire = self.organization.monitoring.get_questionnaire()
+        if questionnaire and questionnaire.qquestion_set.count()==QAnswer.\
+        objects.filter(task=self).count():
+            return True
+        else:
+            return False
 
     open = property(_get_open, _set_open)
     ready = property(_get_ready, _set_ready)
@@ -432,24 +445,26 @@ class Task(models.Model):
 class QAnswer(models.Model):
     """Ответ на вопрос анкеты"""
     task = models.ForeignKey(Task)
-    question = models.ForeignKey(QQuestion, verbose_name="Вопрос")
-    text_answer = models.CharField("Ответ текстом", max_length=300, blank=True)
-    numeral_answer = models.PositiveIntegerField("Ответ числом", blank=True,
-        null=True)
+    question = models.ForeignKey(QQuestion, verbose_name=_("Question"))
+    text_answer = models.CharField(_("Text answer"), max_length=300,
+        blank=True)
+    numeral_answer = models.PositiveIntegerField(_("Numerical answer"),
+        blank=True, null=True)
     variance_answer = models.ForeignKey(AnswerVariant,
-        verbose_name="Ответ-выбор варианта", blank=True, null=True)
+        verbose_name=_("Variance choice"), blank=True, null=True)
     def answer(self):
         if self.question.qtype == 0:
             return self.text_answer
         elif self.question.qtype == 1:
             return self.numeral_answer
         elif self.question.qtype == 2:
-            return self.variance_answer.answer
+            return self.variance_answer
     class Meta:
         unique_together = ('task','question')
 
     def __unicode__(self):
-        return '%s: %s' % (self.task.__unicode__(), self.question.__unicode__())
+        return '%s: %s' % (self.task.__unicode__(),
+                           self.question.__unicode__())
 
 
 

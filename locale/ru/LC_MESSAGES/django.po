@@ -596,6 +596,12 @@ msgstr "Редактировать цикл мониторинга %s"
 msgid "Add new monitoring"
 msgstr "Добавить цикл мониторинга"
 
+msgid "Add questionnaire"
+msgstr "Добавить анкету в цикл"
+
+msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
+msgstr "Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты и собранных данных. Желаете ли вы удалить анкету?"
+
 #: exmo/exmo2010/view/monitoring.py:321
 #, python-format
 msgid "Experts of monitoring %(name)s"
@@ -1831,3 +1837,35 @@ msgstr "Зарегистрироваться"
 msgid "Modules"
 msgstr "Модули"
 
+msgid "Text"
+msgstr "Текст"
+
+msgid "Number"
+msgstr "Число"
+
+msgid "Choose a variant"
+msgstr "Выбор из списка"
+
+msgid "Questionnaire"
+msgstr "Анкета"
+
+msgid "Question type"
+msgstr "Тип вопроса"
+
+msgid "Question"
+msgstr "Вопрос"
+
+msgid "Answer"
+msgstr "Ответ"
+
+msgid "Text answer"
+msgstr "Ответ текстом"
+
+msgid "Numerical answer"
+msgstr "Ответ числом"
+
+msgid "Variance choice"
+msgstr "Ответ-выбор варианта"
+
+msgid "Question comment"
+msgstr "Пояснение к вопросу"

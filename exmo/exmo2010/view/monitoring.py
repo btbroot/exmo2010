@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -18,29 +19,25 @@
 from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating
 from django.shortcuts import get_object_or_404, render_to_response
-from django.views.generic.list_detail import object_list, object_detail
-from django.views.generic.create_update import update_object, create_object, delete_object
+from django.views.generic.create_update import  delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from exmo2010.models import Organization, Parameter, Score, Task
-from exmo2010.models import Monitoring, Claim
+from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
+from exmo2010.models import Monitoring, QQuestion, AnswerVariant
 from exmo2010.models import MonitoringStatus
-from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.db.models import Count
+from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
-from django.core.exceptions import ValidationError
-from django.http import HttpResponseForbidden
-from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.template import RequestContext
-from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
-from reversion import revision
 from exmo2010.utils import UnicodeReader, UnicodeWriter
 import csv
+import simplejson
 
 def _get_monitoring_list(request):
     monitorings_pk = []
@@ -121,18 +118,29 @@ def monitoring_manager(request, id, method):
             form = MonitoringStatusForm,
             )
 
-        form = MonitoringForm(instance = monitoring)
-        formset = MonitoringStatusFormset(instance = monitoring)
-
         if request.method == 'POST':
-            form = MonitoringForm(request.POST, instance = monitoring)
+            form = MonitoringForm(request.POST, instance=monitoring)
             if form.is_valid():
-                m = form.save(commit = False)
-                formset = MonitoringStatusFormset(request.POST, instance = m)
+                cd = form.cleaned_data
+                m = form.save(commit=False)
+                formset = MonitoringStatusFormset(request.POST, instance=m)
                 if formset.is_valid():
                     m.save()
                     formset.save()
+                    questionnaire = m.get_questionnaire()
+                    # Удаление опроса.
+                    if cd.get("add_questionnaire") == False and questionnaire:
+                        questionnaire.delete()
+                    elif cd.get("add_questionnaire") == True and not questionnaire:
+                        questionnaire = Questionnaire(monitoring=m)
+                        questionnaire.save()
                     return HttpResponseRedirect(redirect)
+            else:
+                formset = MonitoringStatusFormset(instance=monitoring)
+        else:
+            form = MonitoringForm(instance=monitoring,
+                initial={"add_questionnaire": monitoring.has_questionnaire()})
+            formset = MonitoringStatusFormset(instance=monitoring)
 
         return render_to_response(
             'exmo2010/monitoring_form.html',
@@ -153,21 +161,21 @@ def monitoring_add(request):
     if request.method == 'POST':
         form = MonitoringForm(request.POST)
         if form.is_valid:
-            monitoring_instance = form.save()
-            redirect = reverse('exmo2010:monitoring_manager', args=[monitoring_instance.pk, 'update'])
+            with transaction.commit_on_success():
+                # Чтобы нельзя было создать удачно мониторинг, а потом словить
+                # ошибку создания опроса для него.
+                monitoring_instance = form.save()
+                questionnaire = Questionnaire(monitoring=monitoring_instance)
+                questionnaire.save()
+            redirect = reverse('exmo2010:monitoring_manager',
+                args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
     else:
         form = MonitoringForm()
         form.fields['status'].choices = Monitoring.MONITORING_STATUS_NEW
-    return render_to_response(
-        'exmo2010/monitoring_form.html',
-        {
-            'title': title,
-            'media': form.media,
-            'form': form,
-            'formset': None,
-        },
-        context_instance=RequestContext(request))
+    return render_to_response('exmo2010/monitoring_form.html',
+            {'title': title, 'media': form.media, 'form': form,
+             'formset': None,}, context_instance=RequestContext(request))
 
 
 
@@ -714,9 +722,7 @@ def monitoring_comment_report(request, id):
         return HttpResponseForbidden(_('Forbidden'))
 
     from django.contrib.comments import models as commentModel
-    from django.contrib.sites import models as sitesModel
-    from datetime import datetime, timedelta
-    from django.db.models import Q
+    from datetime import datetime
     from exmo2010.forms import MonitoringCommentStatForm
 
     form = MonitoringCommentStatForm(monitoring = monitoring)
@@ -834,3 +840,50 @@ def monitoring_comment_report(request, id):
         'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, },
         'media': CORE_MEDIA,
         }, context_instance=RequestContext(request))
+
+
+def add_questionnaire(request, m_id):
+    """
+    Создание опросника анкеты мониторинга.
+    Формат входящего json-файла (уже дисериализованного):
+    [
+    ("Текст вопроса", "Пояснение к вопросу", 0, []),
+    ("Текст вопроса2", "", 1, []),
+    ("Текст вопроса3", "Пояснение к вопросу3", 2, ["Первый вариант ответа",
+       "Второй вариант ответа", "Третий вариант ответа"]),
+    ]
+    """
+    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+    if not monitoring.has_questionnaire():
+        return HttpResponseForbidden(_('Forbidden'))
+    if request.method == "POST":
+        if request.is_ajax():
+            questionnaire_json = request.POST.get("questionnaire")
+            try:
+                questionnaire = simplejson.loads(questionnaire_json)
+            except simplejson.JSONDecodeError:
+                questionnaire = None
+            if questionnaire:
+                for q in questionnaire:
+                    q_question, q_comment, q_type, q_a_variants = q
+                    new_question = QQuestion(questionnaire=monitoring.\
+                    get_questionnaire())
+                    new_question.qtype = int(q_type)
+                    new_question.question = q_question
+                    if q_comment:
+                        new_question.comment = q_comment
+                    new_question.save()
+                    if int(q_type) == 2:  # Выбор варианта ответа.
+                        for a in q_a_variants:
+                            new_answer = AnswerVariant(qquestion=new_question)
+                            new_answer.answer = a
+                            new_answer.save()
+            return HttpResponse("Опросник создан!")  # Сделать редирект куда надо.
+        else:
+            return HttpResponseForbidden(_('Forbidden'))
+    else:
+        return render_to_response('exmo2010/add_questionnaire.html',
+            {"monitoring": monitoring,},
+            context_instance=RequestContext(request))

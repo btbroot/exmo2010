@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -250,7 +251,10 @@ class ClaimReportForm(forms.Form):
 
 
 class MonitoringForm(forms.ModelForm):
-    status = forms.ChoiceField(choices = Monitoring.MONITORING_STATUS_FULL, label=_('status'))
+    status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS_FULL,
+        label=_('status'))
+    add_questionnaire = forms.BooleanField(required=False,
+        label=_('Add questionnaire'))
     class Meta:
         model = Monitoring
 
@@ -306,7 +310,6 @@ class OrganizationForm(forms.ModelForm):
         }
 
 
-
 class MonitoringCommentStatForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.monitoring = kwargs.get('monitoring')
@@ -323,10 +326,30 @@ class MonitoringCommentStatForm(forms.Form):
     limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)
 
 
-
 class MonitoringRatingMultiple(forms.Form):
     monitoring = forms.ModelMultipleChoiceField(
                     queryset = Monitoring.objects.all(),
                     label =_('monitorings'),
                     widget = widgets.FilteredSelectMultiple('',is_stacked=False),
                 )
+
+
+class QuestionnaireDynForm(forms.Form):
+    """Динамическая форма анкеты с вопросами на странице задачи мониторинга."""
+    def __init__(self, *args, **kwargs):
+        questions = kwargs.pop('questions')
+        super(QuestionnaireDynForm, self).__init__(*args, **kwargs)
+        for q in questions:
+            if q.qtype == 0:
+                self.fields['q_%s' % q.pk] = forms.CharField(label=q.question,
+                    help_text=q.comment, max_length=300, required=False,
+                    widget=forms.TextInput(attrs={'placeholder': _('Text')}))
+            elif q.qtype == 1:
+                self.fields['q_%s' % q.pk] = forms.IntegerField(min_value=0,
+                    label=q.question, help_text=q.comment, required=False,
+                    widget=forms.TextInput(attrs={'placeholder': _('Number')}))
+            elif q.qtype == 2:
+                self.fields['q_%s' % q.pk] = forms.ModelChoiceField(
+                    label=q.question, help_text=q.comment, empty_label=None,
+                    required=False, queryset=q.answervariant_set.all(),
+                    widget=forms.RadioSelect())

@@ -18,29 +18,24 @@
 from exmo2010.sort_headers import SortHeaders
 from django.views.generic.list_detail import object_list
 
+
 def table_prepare_queryset(request, headers, queryset):
-  '''Generic sortable table view'''
+  """Generic sortable table view"""
   sort_headers = SortHeaders(request, headers)
   if sort_headers.get_order_by():
-        queryset = queryset.order_by(
-        sort_headers.get_order_by())
-  queryset = queryset.filter(
-    **sort_headers.get_filter()
-  )
-  extra_context = {
-      'headers': sort_headers.headers(),
-  }
+        queryset = queryset.order_by(sort_headers.get_order_by())
+  queryset = queryset.filter(**sort_headers.get_filter())
+  extra_context = {'headers': sort_headers.headers(),}
   return queryset, extra_context
 
-def table(request, headers, **kwargs):
 
+def table(request, headers, **kwargs):
   kwargs['queryset'], extra_context = table_prepare_queryset(request, headers, kwargs['queryset'])
   if 'extra_context' not in kwargs:
     kwargs['extra_context'] = extra_context
   else:
     kwargs['extra_context'].update(extra_context)
   return object_list(request, **kwargs)
-
 
 
 def rating(monitoring):

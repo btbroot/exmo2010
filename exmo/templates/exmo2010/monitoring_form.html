@@ -23,6 +23,22 @@
 {% url django.views.i18n.javascript_catalog as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
 {{ media }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($("#id_add_questionnaire").is(':checked')) {
+            $('#id_add_questionnaire').change(function () {
+                if (!$("#id_add_questionnaire").is(':checked')) {
+                    if (confirm("{% trans "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?" %}")) {
+                        $("#id_add_questionnaire").attr('checked', false);
+                    }
+                    else {
+                        $("#id_add_questionnaire").attr('checked', true);
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
 {% block breadcrumbs %}
@@ -59,7 +75,7 @@
 <input type="submit" name="submit" class="button">
 </form>
 {% if object %}
-<form action="{% url exmo2010:monitoring_manager object.pk, 'calculate' %}" method="post" class="monitoring_form">{% csrf_token %}
+<form action="{% url exmo2010:monitoring_manager object.pk 'calculate' %}" method="post" class="monitoring_form">{% csrf_token %}
 <input type="submit" name="submit" class="button" value="{% trans 'Recalculate rating' %}">
 </form>
 {% endif %}

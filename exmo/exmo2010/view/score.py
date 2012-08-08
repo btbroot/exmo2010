@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -17,22 +18,22 @@
 #
 
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic.list_detail import object_list, object_detail
-from django.views.generic.create_update import update_object, create_object, delete_object
+from django.views.generic.list_detail import object_detail
+from django.views.generic.create_update import update_object, create_object
+from django.views.generic.create_update import delete_object
 from reversion import revision
-from exmo2010.forms import ScoreForm
+from exmo2010.forms import ScoreForm, QuestionnaireDynForm
 from exmo2010.helpers import construct_change_message
-from exmo2010.view.helpers import table, table_prepare_queryset
-from exmo2010.models import Organization, Parameter, Score, Task
-from exmo2010.models import Monitoring, Claim
-
+from exmo2010.view.helpers import table_prepare_queryset
+from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
 
 
 @login_required
@@ -134,10 +135,9 @@ def score_list_by_task(request, task_id, report=None):
     title = _('Score list for %s') % ( task.organization.name )
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
-    parameters = Parameter.objects.filter(
-        monitoring=task.organization.monitoring
-    ).exclude(exclude=task.organization)
-
+    monitoring = task.organization.monitoring
+    parameters = Parameter.objects.filter(monitoring=monitoring).exclude\
+        (exclude=task.organization)
     headers=(
         (_('Code'), None, None, None, None),
         (_('Parameter'), 'name', 'name', None, None),
@@ -150,7 +150,8 @@ def score_list_by_task(request, task_id, report=None):
         (_('Image'), None, None, None, None),
         (_('Weight'), None, None, None, None),
     )
-    parameters, extra_context = table_prepare_queryset(request, headers, queryset=parameters)
+    parameters, extra_context = table_prepare_queryset(request, headers,
+        queryset=parameters)
 
     scores_default = Score.objects.select_related().filter(
         parameter__in=parameters,
@@ -190,6 +191,43 @@ def score_list_by_task(request, task_id, report=None):
             context_instance=RequestContext(request),
         )
     else:
+        questionnaire = monitoring.get_questionnaire()
+        if (request.user.has_perm('exmo2010.fill_task', task) and
+            questionnaire and questionnaire.qquestion_set.exists()):
+            questions = questionnaire.qquestion_set.order_by("pk")
+            if request.method == "POST":
+                form = QuestionnaireDynForm(request.POST, questions=questions)
+                if form.is_valid():
+                    cd = form.cleaned_data
+                    for answ in cd.items():
+                        if answ[1] and answ[0].startswith("q_"):
+                            try:
+                                q_id = int(answ[0][2:])
+                                question_obj = QQuestion.objects.get(pk=q_id)
+                            except (ValueError, ObjectDoesNotExist):
+                                continue
+                            answer = QAnswer.objects.get_or_create(task=task,
+                                question=question_obj)[0]
+                            if question_obj.qtype == 0:
+                                answer.text_answer = answ[1]
+                                answer.save()
+                            elif question_obj.qtype == 1:
+                                answer.numeral_answer = answ[1]
+                                answer.save()
+                            elif question_obj.qtype == 2:
+                                answer.variance_answer = answ[1]
+                                answer.save()
+                    return HttpResponseRedirect(reverse(
+                        'exmo2010:score_list_by_task', args=[task.pk]))
+            else:
+                existing_answers = task.get_questionnaire_answers()
+                initial_data = {}
+                for a in existing_answers:
+                    initial_data["q_%s" % a.question.pk] = a.answer()
+                form = QuestionnaireDynForm(questions=questions,
+                    initial=initial_data)
+        else:
+            form = None
         extra_context.update(
             {
                 'score_dict': score_dict,
@@ -198,6 +236,7 @@ def score_list_by_task(request, task_id, report=None):
                 'task': task,
                 'title': title,
                 'place': task.rating_place,
+                'form': form,
             }
         )
         return render_to_response(
