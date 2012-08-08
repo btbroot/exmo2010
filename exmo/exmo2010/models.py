@@ -391,15 +391,17 @@ class Task(models.Model):
     @property
     def complete(self):
         complete = 0
-        parameters = Parameter.objects.filter(monitoring = self.organization.monitoring).exclude(exclude = self.organization).count()
-        if parameters:
-            scores_count = Score.objects.filter(
+        parameters_num = Parameter.objects.filter(monitoring=self.organization.monitoring).exclude(exclude=self.organization).count()
+        questions_num = QQuestion.objects.filter(questionnaire__monitoring=self.organization.monitoring).count()
+        answers_num = QAnswer.objects.filter(question__questionnaire__monitoring= self.organization.monitoring, task=self).count()
+        if parameters_num:
+            scores_num = Score.objects.filter(
                 task=self,
                 revision=Score.REVISION_DEFAULT,
                 ).exclude(
                     parameter__exclude=self.organization
                     ).count()
-            complete = scores_count * 100.0 / parameters
+            complete = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
         return complete
 
     @property
