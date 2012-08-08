@@ -28,8 +28,8 @@ from exmo2010.models import Questionnaire, Task, QQuestion
 
 
 @login_required
-def answers_export(request, id):
-    monitoring = get_object_or_404(Monitoring, pk=id)
+def answers_export(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
 
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -38,7 +38,7 @@ def answers_export(request, id):
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)
 
     #Нет задач для экспорта
-    if not tasks:
+    if not tasks.exists():
         raise Http404
 
     #Удобнее отлаживать без сохранения
@@ -50,7 +50,7 @@ def answers_export(request, id):
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
 
-    header = ['#organization','url',]
+    header = ['#organization', 'url']
     questions = QQuestion.objects.filter(questionnaire=questionnaire)
     for question in questions:
         header.append(question.question)
@@ -59,7 +59,6 @@ def answers_export(request, id):
     #Это работает только если анкета заполнена целиком. Но иного по workflow быть не должно.
     for task in tasks:
         answers = task.qanswer_set.filter(question__questionnaire=questionnaire)
-
         out = [task.organization.name, task.organization.url,]
 
         for answer in answers:

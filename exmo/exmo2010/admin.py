@@ -106,8 +106,3 @@ admin.site.register(exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo2010.models.MonitoringStatus)
 admin.site.register(exmo2010.models.Claim)
 admin.site.register(exmo2010.models.OpennessExpression)
-admin.site.register(exmo2010.models.Questionnaire)
-admin.site.register(exmo2010.models.QQuestion)
-admin.site.register(exmo2010.models.AnswerVariant)
-#Лучше не подключать, на добавление тормоза из-за большого количества задач в ForeignKey
-admin.site.register(exmo2010.models.QAnswer)
