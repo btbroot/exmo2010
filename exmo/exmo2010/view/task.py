@@ -41,7 +41,6 @@ import csv
 
 
 
-@login_required
 def task_export(request, id):
     from exmo2010.utils import UnicodeWriter
 
