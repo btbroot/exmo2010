@@ -35,7 +35,7 @@ from exmo2010.widgets import TagAutocomplete
 CORE_JS = (
                 settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
                 settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
-                settings.ADMIN_MEDIA_PREFIX + 'js/jquery.min.js',
+                settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
                 settings.ADMIN_MEDIA_PREFIX + 'js/jquery.init.js',
                 settings.ADMIN_MEDIA_PREFIX + 'js/actions.min.js',
           )

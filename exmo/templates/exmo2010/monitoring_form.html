@@ -24,6 +24,7 @@
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
 {{ media }}
 <script type="text/javascript">
+    var $ = django.jQuery;
     $(document).ready(function () {
         if ($("#id_add_questionnaire").is(':checked')) {
             $('#id_add_questionnaire').change(function () {
