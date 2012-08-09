@@ -74,7 +74,9 @@
        {% else %}
          {% check_object_permission exmo2010.fill_task task as perm %}
          {% if perm %}
-          <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+            <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+         {% else %}
+            {{ parameter.name }}
          {% endif %}
        {% endif %}
        {% with parameter.monitoring as monitoring %}
