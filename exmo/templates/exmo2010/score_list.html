@@ -110,7 +110,10 @@
 {% if form %}
     <div style="background-color:#FFFFCC">
         <a name="q"></a>
-        <h1>{% trans "Questionnaire" %}</h1>
+        <h1>{{ task.organization.monitoring.get_questionnaire.title }}</h1>
+        {% if task.organization.monitoring.get_questionnaire.comment %}
+            <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
+        {% endif %}
         <form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
             {% csrf_token %}
             <table>
@@ -130,7 +133,8 @@
                                     {% endfor %}
                                 </ul>
                             {% endif %}
-                            {{ field }}
+                            {{ field }}<br /><span class="helptext">{{ field.help_text }}</span>
+
                         </td>
                     </tr>
                 {% endfor %}

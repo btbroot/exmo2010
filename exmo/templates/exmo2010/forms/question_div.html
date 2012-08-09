@@ -1,0 +1,11 @@
+<p><b>Вопрос: </b><input type="text" class="qquestion" maxlength="300"></p>
+<p><b>Пояснение к
+    вопросу: </b><input type="text" class="qcomment" maxlength="600"></p>
+<p><b>Тип вопроса:</b>
+    <select class="qtype">
+        {% for ch in choices %}
+            <option value="{{ ch.0 }}">{{ ch.1 }}</option>
+        {% endfor %}
+    </select>
+</p>
+<input type="button" class="fquestion" value="Готово">

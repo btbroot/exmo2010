@@ -590,6 +590,9 @@ msgstr "Разрешен только POST"
 msgid "Edit monitoring %s"
 msgstr "Редактировать цикл мониторинга %s"
 
+msgid "Create questionnaire"
+msgstr "Конструктор опросника анкеты"
+
 #: exmo/exmo2010/view/monitoring.py:152
 #: exmo/templates/exmo2010/monitoring_list.html:44
 #: exmo/templates/user_dashboard/modules/monitoring_list.html:31

@@ -119,6 +119,14 @@ class Monitoring(models.Model):
             return Questionnaire.objects.get(monitoring=self)
         except ObjectDoesNotExist:
             return None
+
+    def has_questions(self):
+        questionnaire = self.get_questionnaire()
+        if questionnaire and questionnaire.qquestion_set.exists():
+            return True
+        else:
+            return False
+
     def del_questionnaire(self):
         try:
             questionnaire =  Questionnaire.objects.get(monitoring=self)
@@ -147,6 +155,10 @@ class Questionnaire(models.Model):
     """Анкета, привязанная к мониторингу"""
     monitoring = models.ForeignKey(Monitoring, verbose_name=_("Monitoring"),
                                    unique=True)
+    title = models.CharField(max_length=300, verbose_name="Название анкеты",
+        blank=True)
+    comment = models.CharField(max_length=600, verbose_name="Примечание к анкете",
+        blank=True)
 
     def __unicode__(self):
         return '%s' % self.monitoring.__unicode__()

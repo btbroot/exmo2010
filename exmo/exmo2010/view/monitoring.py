@@ -24,11 +24,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
-from exmo2010.models import MonitoringStatus
+from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db import transaction
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
@@ -842,15 +842,20 @@ def monitoring_comment_report(request, id):
         }, context_instance=RequestContext(request))
 
 
+@csrf_exempt
 def add_questionnaire(request, m_id):
     """
     Создание опросника анкеты мониторинга.
     Формат входящего json-файла (уже дисериализованного):
     [
-    ("Текст вопроса", "Пояснение к вопросу", 0, []),
-    ("Текст вопроса2", "", 1, []),
-    ("Текст вопроса3", "Пояснение к вопросу3", 2, ["Первый вариант ответа",
+     "Название анкеты",
+     "Примечание к анкете",
+     [
+      ("Текст вопроса", "Пояснение к вопросу", 0, []),
+      ("Текст вопроса2", "", 1, []),
+      ("Текст вопроса3", "Пояснение к вопросу3", 2, ["Первый вариант ответа",
        "Второй вариант ответа", "Третий вариант ответа"]),
+     ]
     ]
     """
     monitoring = get_object_or_404(Monitoring, pk=m_id)
@@ -858,18 +863,24 @@ def add_questionnaire(request, m_id):
         return HttpResponseForbidden(_('Forbidden'))
     if not monitoring.has_questionnaire():
         return HttpResponseForbidden(_('Forbidden'))
+    if monitoring.has_questions():
+        return HttpResponseForbidden(_('Forbidden'))
     if request.method == "POST":
         if request.is_ajax():
-            questionnaire_json = request.POST.get("questionnaire")
+            questionset_json = request.POST.get("questionaire")
             try:
-                questionnaire = simplejson.loads(questionnaire_json)
+                questionset = simplejson.loads(questionset_json)
             except simplejson.JSONDecodeError:
-                questionnaire = None
-            if questionnaire:
-                for q in questionnaire:
+                questionset = None
+            if questionset:
+                a_name, a_comm, qlist = questionset
+                questionnaire = monitoring.get_questionnaire()
+                questionnaire.title = a_name
+                questionnaire.comment = a_comm
+                questionnaire.save()
+                for q in qlist:
                     q_question, q_comment, q_type, q_a_variants = q
-                    new_question = QQuestion(questionnaire=monitoring.\
-                    get_questionnaire())
+                    new_question = QQuestion(questionnaire=questionnaire)
                     new_question.qtype = int(q_type)
                     new_question.question = q_question
                     if q_comment:
@@ -880,10 +891,33 @@ def add_questionnaire(request, m_id):
                             new_answer = AnswerVariant(qquestion=new_question)
                             new_answer.answer = a
                             new_answer.save()
+            print "Опросник создан!"
             return HttpResponse("Опросник создан!")  # Сделать редирект куда надо.
         else:
             return HttpResponseForbidden(_('Forbidden'))
     else:
-        return render_to_response('exmo2010/add_questionnaire.html',
-            {"monitoring": monitoring,},
+        title = _('Edit monitoring %s') % monitoring
+        # title0 - потому что переменную title ждет темплейт base.html и
+        # использует не так, как мне тут нужно.
+        return render_to_response('exmo2010/add_questionnaire_simple.html',
+            {"monitoring": monitoring, "title0": title},
             context_instance=RequestContext(request))
+
+
+def get_qq(request):
+    """AJAX-вьюха для получения кода div'а для одного вопроса (c полями)"""
+    if request.method == "GET" and request.is_ajax():
+        return render_to_response('exmo2010/forms/question_div.html',
+            {"choices": QUESTION_TYPE_CHOICES,},
+            context_instance=RequestContext(request))
+    else:
+        raise Http404
+
+
+def get_qqt(request):
+    """AJAX-вьюха для получения кода div'а для одного вопроса (без полей)"""
+    if request.method == "GET" and request.is_ajax():
+        return render_to_response('exmo2010/forms/question_div2.html',
+            context_instance=RequestContext(request))
+    else:
+        raise Http404
