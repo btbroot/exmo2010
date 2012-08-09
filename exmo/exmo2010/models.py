@@ -663,7 +663,7 @@ class Score(models.Model):
                 parameter=self.parameter,
                 revision=revision,
             )
-            if not revision_score:
+            if not revision_score and self.pk:
                 revision_score = Score.objects.get(pk=self.pk)
                 revision_score.pk = None
                 revision_score.revision = revision
