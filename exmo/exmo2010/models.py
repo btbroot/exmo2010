@@ -458,7 +458,10 @@ class QAnswer(models.Model):
         elif self.question.qtype == 1:
             return self.numeral_answer
         elif self.question.qtype == 2:
-            return self.variance_answer
+            if self.variance_answer:
+                return self.variance_answer.answer
+            else:
+                return None
     class Meta:
         unique_together = ('task','question')
 
