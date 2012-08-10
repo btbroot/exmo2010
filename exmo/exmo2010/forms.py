@@ -345,9 +345,10 @@ class QuestionnaireDynForm(forms.Form):
                     help_text=q.comment, max_length=300, required=False,
                     widget=forms.TextInput(attrs={'placeholder': _('Text')}))
             elif q.qtype == 1:
-                self.fields['q_%s' % q.pk] = forms.IntegerField(min_value=0,
+                self.fields['q_%s' % q.pk] = forms.IntegerField(
                     label=q.question, help_text=q.comment, required=False,
-                    widget=forms.TextInput(attrs={'placeholder': _('Number')}))
+                    widget=forms.TextInput(attrs={'placeholder': _('Number')}),
+                    min_value=0, max_value=4294967295)
             elif q.qtype == 2:
                 self.fields['q_%s' % q.pk] = forms.ModelChoiceField(
                     label=q.question, help_text=q.comment, empty_label=None,
