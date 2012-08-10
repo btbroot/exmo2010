@@ -45,7 +45,7 @@ def answers_export(request, monitoring_pk):
         response = HttpResponse(mimetype = 'text/plain')
     else:
         response = HttpResponse(mimetype = 'application/vnd.ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=answers-%s.csv' % id
+        response['Content-Disposition'] = 'attachment; filename=anketa-%s.csv' % monitoring.pk
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
 
