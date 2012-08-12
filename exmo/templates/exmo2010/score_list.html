@@ -108,24 +108,21 @@
     </tbody></table>
 </div><br>
 {% if form %}
-    <div style="background-color:#FFFFCC">
+    <div id='fc_container'>
         <a name="q"></a>
         <h1>{{ task.organization.monitoring.get_questionnaire.title }}</h1>
         {% if task.organization.monitoring.get_questionnaire.comment %}
             <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
         {% endif %}
-        <form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
+	<form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
             {% csrf_token %}
-            <table>
+            <div>
                 {% for error in form.non_field_errors %}
-                    <tr>
-                        <td>{{ error }}</td>
-                    </tr>
+                    <div>{{ error }}</div>
                 {% endfor %}
-                {% for field in form %}
-                    <tr>
-                        <th><b>{{ forloop.counter }}</b>.&nbsp;{{ field.label_tag }}:</th>
-                        <td>
+                {% for field in form %}                    
+                    <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}:</span>
+                        <div>
                             {% if field.errors %}
                                 <ul class="errorlist">
                                     {% for error in field.errors %}
@@ -133,14 +130,12 @@
                                     {% endfor %}
                                 </ul>
                             {% endif %}
-                            {{ field }}<br /><span class="helptext">{{ field.help_text }}</span>
-
-                        </td>
-                    </tr>
+                            <span>{{ field.help_text }}</span><br><div class="fc_field_header">{{ field }}</div>
+                        </div>                    
                 {% endfor %}
-            </table>
+            </div>
             <input type="submit" value="{% trans 'Save' %}">
-        </form>
+        </form>        
     </div>
     <br>
 {% endif %}
