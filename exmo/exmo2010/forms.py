@@ -354,5 +354,5 @@ class QuestionnaireDynForm(forms.Form):
             elif q.qtype == 2:
                 self.fields['q_%s' % q.pk] = forms.ModelChoiceField(
                     label=q.question, help_text=q.comment, empty_label=None,
-                    required=False, queryset=q.answervariant_set.all(),
+                    required=False, queryset=q.answervariant_set.order_by('-pk'),
                     widget=forms.RadioSelect(attrs={'class': 'aqchoice',}))
