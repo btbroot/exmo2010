@@ -343,14 +343,16 @@ class QuestionnaireDynForm(forms.Form):
             if q.qtype == 0:
                 self.fields['q_%s' % q.pk] = forms.CharField(label=q.question,
                     help_text=q.comment, max_length=300, required=False,
-                    widget=forms.TextInput(attrs={'placeholder': _('Text')}))
+                    widget=forms.TextInput(attrs={'class': 'aqtext',
+                                                  'placeholder': _('Text')}))
             elif q.qtype == 1:
                 self.fields['q_%s' % q.pk] = forms.IntegerField(
                     label=q.question, help_text=q.comment, required=False,
-                    widget=forms.TextInput(attrs={'placeholder': _('Number')}),
+                    widget=forms.TextInput(attrs={'class': 'aqint',
+                                                  'placeholder': _('Number')}),
                     min_value=0, max_value=4294967295)
             elif q.qtype == 2:
                 self.fields['q_%s' % q.pk] = forms.ModelChoiceField(
                     label=q.question, help_text=q.comment, empty_label=None,
                     required=False, queryset=q.answervariant_set.all(),
-                    widget=forms.RadioSelect())
+                    widget=forms.RadioSelect(attrs={'class': 'aqchoice',}))
