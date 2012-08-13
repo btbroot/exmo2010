@@ -899,7 +899,7 @@ def add_questionnaire(request, m_id):
         title = _('Edit monitoring %s') % monitoring
         # title0 - потому что переменную title ждет темплейт base.html и
         # использует не так, как мне тут нужно.
-        return render_to_response('exmo2010/add_questionnaire_simple.html',
+        return render_to_response('exmo2010/add_questionnaire.html',
             {"monitoring": monitoring, "title0": title},
             context_instance=RequestContext(request))
 

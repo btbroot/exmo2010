@@ -22,6 +22,7 @@
 {% block extrahead %}{{ block.super }}
     {% url django.views.i18n.javascript_catalog as jsi18nurl %}
     <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.json-2.3.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/questionnaire.js"></script>
     {{ media }}
