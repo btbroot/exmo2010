@@ -232,7 +232,7 @@ def score_list_by_task(request, task_id, report=None):
                 existing_answers = task.get_questionnaire_answers()
                 initial_data = {}
                 for a in existing_answers:
-                    initial_data["q_%s" % a.question.pk] = a.answer()
+                    initial_data["q_%s" % a.question.pk] = a.answer4form()
                 form = QuestionnaireDynForm(questions=questions,
                     initial=initial_data)
         else:

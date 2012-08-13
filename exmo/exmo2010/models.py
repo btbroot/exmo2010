@@ -474,6 +474,16 @@ class QAnswer(models.Model):
                 return self.variance_answer.answer
             else:
                 return None
+    def answer4form(self):
+        if self.question.qtype == 0:
+            return self.text_answer
+        elif self.question.qtype == 1:
+            return self.numeral_answer
+        elif self.question.qtype == 2:
+            if self.variance_answer:
+                return self.variance_answer
+            else:
+                return None
     class Meta:
         unique_together = ('task','question')
 
