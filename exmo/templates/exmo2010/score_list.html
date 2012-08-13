@@ -117,9 +117,13 @@
 	<form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
             {% csrf_token %}
             <div>
-                {% for error in form.non_field_errors %}
-                    <div>{{ error }}</div>
-                {% endfor %}
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
                 {% for field in form %}
                     <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
                         <div>
