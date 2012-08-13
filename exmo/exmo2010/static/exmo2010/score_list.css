@@ -95,3 +95,7 @@
 .aqint{
     text-align: right;
 }
+
+.fc_field_header ul li {
+    list-style-type: none
+}
