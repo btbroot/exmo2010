@@ -32,7 +32,7 @@
   <a href="{% url exmo2010:task_mass_assign_tasks monitoring.pk %}">{% trans 'Mass assign' %}</a> /
   <a href="{% url exmo2010:monitoring_by_criteria_mass_export monitoring.pk %}">{% trans 'Export by criteria' %}</a> /
   <a href="{% url exmo2010:claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
-  {% if monitoring.questionnaire_set.count %}
+  {% if monitoring.ready_export_answers %}
     <a href="{% url exmo2010:monitoring_answers_export monitoring.pk %}">{% trans 'Export answers' %}</a> /
   {% endif %}
 {% endif %}

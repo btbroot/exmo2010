@@ -135,6 +135,17 @@ class Monitoring(models.Model):
         else:
             questionnaire.delete()
 
+
+    def ready_export_answers(self):
+        questionnaire = self.get_questionnaire()
+        if questionnaire and QAnswer.objects.filter(
+            question__questionnaire=questionnaire,
+            task__status=Task.TASK_APPROVED).exists():
+            return True
+        else:
+            return False
+
+
     after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT,
                                 MONITORING_PUBLISH]
 
