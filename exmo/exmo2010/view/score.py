@@ -200,23 +200,32 @@ def score_list_by_task(request, task_id, report=None):
                 if form.is_valid():
                     cd = form.cleaned_data
                     for answ in cd.items():
-                        if answ[1] and answ[0].startswith("q_"):
+                        if answ[0].startswith("q_"):
                             try:
                                 q_id = int(answ[0][2:])
                                 question_obj = QQuestion.objects.get(pk=q_id)
                             except (ValueError, ObjectDoesNotExist):
                                 continue
-                            answer = QAnswer.objects.get_or_create(task=task,
-                                question=question_obj)[0]
-                            if question_obj.qtype == 0:
-                                answer.text_answer = answ[1]
-                                answer.save()
-                            elif question_obj.qtype == 1:
-                                answer.numeral_answer = answ[1]
-                                answer.save()
-                            elif question_obj.qtype == 2:
-                                answer.variance_answer = answ[1]
-                                answer.save()
+                            if answ[1]:  # Непустое значение ответа.
+                                answer = QAnswer.objects.get_or_create(task=\
+                                task, question=question_obj)[0]
+                                if question_obj.qtype == 0:
+                                    answer.text_answer = answ[1]
+                                    answer.save()
+                                elif question_obj.qtype == 1:
+                                    answer.numeral_answer = answ[1]
+                                    answer.save()
+                                elif question_obj.qtype == 2:
+                                    answer.variance_answer = answ[1]
+                                    answer.save()
+                            else:  # Пустой ответ.
+                                try:
+                                    answer = QAnswer.objects.get(task=task,
+                                        question=question_obj)
+                                except ObjectDoesNotExist:
+                                    continue
+                                else:
+                                    answer.delete()
                     return HttpResponseRedirect(reverse(
                         'exmo2010:score_list_by_task', args=[task.pk]))
             else:

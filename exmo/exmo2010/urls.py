@@ -24,7 +24,8 @@ urlpatterns = patterns('',
   url( r'^score/(\d+)_(\d+)/$', 'exmo2010.view.score.score_add', name='score_add'),
   url( r'^score/(\d+)_(\w+)/$', 'exmo2010.view.score.score_manager', name='score_manager'),
   url( r'^score/(\d+)/$', 'exmo2010.view.score.score_view', name='score_view'),
-  url( r'^scores/(\d+)/(print|printfull)?$', 'exmo2010.view.score.score_list_by_task', name='score_list_by_task'),
+  url( r'^scores/(\d+)/(print|printfull)?$',
+      'exmo2010.view.score.score_list_by_task', name='score_list_by_task'),
   url( r'^score/(\d+)/comment/add$', 'exmo2010.view.score.score_add_comment', name='score_add_comment'),
 
 
