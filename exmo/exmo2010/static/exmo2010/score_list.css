@@ -74,18 +74,24 @@
     margin: 0 auto;
     padding: 20px;
     position: relative;
-    /*width: 560px;*/
-    /*border: 1px dashed  #00ff00;*/
 }
 
 .fc_item_header{
-   font-size: 12px ;
-   font-weight: bold;
-   font-family: "Verdana";
-   margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: bold;
+    font-family: "Verdana";
+    margin-bottom: 7px;
 }
 
 .fc_field_header{
-   margin-top: 8px;
-   margin-bottom: 25px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+}
+
+.aqtext{
+    width: 600px;
+}
+
+.aqint{
+    text-align: right;
 }

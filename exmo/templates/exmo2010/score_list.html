@@ -120,8 +120,8 @@
                 {% for error in form.non_field_errors %}
                     <div>{{ error }}</div>
                 {% endfor %}
-                {% for field in form %}                    
-                    <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}:</span>
+                {% for field in form %}
+                    <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
                         <div>
                             {% if field.errors %}
                                 <ul class="errorlist">
@@ -130,12 +130,15 @@
                                     {% endfor %}
                                 </ul>
                             {% endif %}
-                            <span>{{ field.help_text }}</span><br><div class="fc_field_header">{{ field }}</div>
-                        </div>                    
+                            {% if field.help_text %}
+                                <span>{{ field.help_text }}</span><br>
+                            {% endif %}
+                            <div class="fc_field_header">{{ field }}</div>
+                        </div>
                 {% endfor %}
             </div>
             <input type="submit" value="{% trans 'Save' %}">
-        </form>        
+        </form>
     </div>
     <br>
 {% endif %}
