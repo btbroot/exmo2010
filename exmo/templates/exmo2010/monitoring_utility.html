@@ -32,8 +32,15 @@
   <a href="{% url exmo2010:task_mass_assign_tasks monitoring.pk %}">{% trans 'Mass assign' %}</a> /
   <a href="{% url exmo2010:monitoring_by_criteria_mass_export monitoring.pk %}">{% trans 'Export by criteria' %}</a> /
   <a href="{% url exmo2010:claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
-  {% if monitoring.ready_export_answers %}
-    <a href="{% url exmo2010:monitoring_answers_export monitoring.pk %}">{% trans 'Export answers' %}</a> /
+  {% if monitoring.has_questionnaire %}
+    <a
+    {% if not monitoring.ready_export_answers %}
+    href="#"
+    onclick='alert("{% trans 'You must have approved task for export' %} ")'
+    {% else %}
+    href="{% url exmo2010:monitoring_answers_export monitoring.pk %}"
+    {% endif %}
+    >{% trans 'Export answers' %}</a> /
   {% endif %}
 {% endif %}
 {% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
