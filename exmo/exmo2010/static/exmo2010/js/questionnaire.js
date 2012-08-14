@@ -53,13 +53,11 @@ $(".fquestion").live('click', function () {
             });
             $("#addq").show();
         }
-        else
-        {
+        else {
             alert("Должно быть введено не менее двух вариантов ответа!");
         }
     }
-    else
-    {
+    else {
         alert("Не введен текст вопроса!");
     }
 });
@@ -78,6 +76,14 @@ $("select.qtype").live('change', function () {
 
 //Обработчик клика по полю с вариантом ответа.
 $("input.qalt").live("click", function () {
+    var qdiv = $(this).parents("div.qs");
+    var last_qalt = qdiv.find("input.qalt:last");
+    if ($(this).is(last_qalt))
+        $(this).after(qaltinp);
+});
+
+//Обработчик перехода по Tab на поле с вариантом ответа.
+$("input.qalt").live("focus", function () {
     var qdiv = $(this).parents("div.qs");
     var last_qalt = qdiv.find("input.qalt:last");
     if ($(this).is(last_qalt))
@@ -111,7 +117,12 @@ $(function () {
 
     //Обработчик клика на кнопку "Добавить вопрос".
     $("#addq").click(function () {
-        $("div.qs:last").after("<div style='background-color:#FFFFCC' class='qs'>" + qdc + "</div>");
+        if ($("div.qs").length) {
+            $("div.qs:last").after("<div style='background-color:#FFFFCC' class='qs'>" + qdc + "</div>");
+        }
+        else{
+            $("#ainfo").after("<div style='background-color:#FFFFCC' class='qs'>" + qdc + "</div>");
+        }
         $("#addq").hide();
     });
 
