@@ -72,9 +72,9 @@
    </form>
    {% if not object.has_questions %}
        {% if object.has_questionnaire %}
-           <a id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">Редактировать анкету</a>
+           <a id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">{% trans 'Edit questionnaire' %}</a>
        {% else %}
-           <a style="display: none;" id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">Редактировать анкету</a>
+           <a style="display: none;" id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">{% trans 'Edit questionnaire' %}</a>
            <br />
        {% endif %}
    {% else %}

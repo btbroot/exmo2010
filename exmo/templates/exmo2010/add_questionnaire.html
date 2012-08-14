@@ -42,16 +42,16 @@
     <h1>{% trans "Create questionnaire" %}</h1>
 
     <div id="ainfo">
-        <label for="aname">Название анкеты</label><br/>
+        <label for="aname">{% trans 'Questionnaire name' %}</label><br/>
         <input id="aname" type="text" maxlength="300" style="width: 600px;"><br/>
-        <label for="acomm">Примечание к анкете</label><br/>
+        <label for="acomm">{% trans 'Questionnaire comment'</label><br/>
         <textarea id="acomm" maxlength="600" style="width: 600px; height: 80px;"></textarea><br/>
         <br/>
     </div>
-    <input type="button" value="Добавить вопрос" id="addq">
+    <input type="button" value="{% trans 'Add question' %}" id="addq">
     <br />
     <br />
     <br />
-    <input type="button" value="Сохранить анкету" id="sendqq">
+    <input type="button" value="{% trans 'Save questionnaire' %}" id="sendqq">
 
 {% endblock %}

@@ -166,9 +166,9 @@ class Questionnaire(models.Model):
     """Анкета, привязанная к мониторингу"""
     monitoring = models.ForeignKey(Monitoring, verbose_name=_("Monitoring"),
                                    unique=True)
-    title = models.CharField(max_length=300, verbose_name="Название анкеты",
+    title = models.CharField(max_length=300, verbose_name=_("Questionnaire name"),
         blank=True)
-    comment = models.CharField(max_length=600, verbose_name="Примечание к анкете",
+    comment = models.CharField(max_length=600, verbose_name=_("Questionnaire comment"),
         blank=True)
 
     def __unicode__(self):
