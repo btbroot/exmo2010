@@ -26,7 +26,6 @@
 <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
 {{ media }}
 <script type="text/javascript">
-    var $ = django.jQuery;
     $(document).ready(function () {
         if ($("#id_add_questionnaire").is(':checked')) {
             $('#id_add_questionnaire').change(function () {
@@ -37,6 +36,16 @@
                     else {
                         $("#id_add_questionnaire").attr('checked', true);
                     }
+                }
+            });
+        }
+        else {
+            $('#id_add_questionnaire').change(function () {
+                if ($("#id_add_questionnaire").is(':checked')) {
+                    $("#addqa").show();
+                }
+                else {
+                    $("#addqa").hide();
                 }
             });
         }
@@ -61,8 +70,15 @@
      <a href="{% url exmo2010:monitoring_parameter_export object.pk %}">{% trans 'Export parameters' %}</a> /
      <label>{% trans "Import parameters from CSV" %}: <input type="file" name="paramfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
-   {% if object.has_questionnaire and not object.has_questions %}
-    <a href="{% url exmo2010:add_questionnaire object.pk %}">Редактировать анкету</a>
+   {% if not object.has_questions %}
+       {% if object.has_questionnaire %}
+           <a id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">Редактировать анкету</a>
+       {% else %}
+           <a style="display: none;" id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">Редактировать анкету</a>
+           <br />
+       {% endif %}
+   {% else %}
+       <b>{% trans 'Monitoring questionnaire already created' %}.</b> {% trans 'To delete it turn off "Add questionnaire" checkbox and save changes' %}.
    {% endif %}
 {% endif %}
 <form action="." method="post" class="monitoring_form">{% csrf_token %}

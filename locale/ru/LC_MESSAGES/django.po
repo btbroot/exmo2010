@@ -1903,3 +1903,9 @@ msgstr "Модули"
 
 msgid "Choose a variant"
 msgstr "Один из списка"
+
+msgid "Monitoring questionnaire already created"
+msgstr "Опросник анкеты уже создан"
+
+msgid "To delete it turn off \"Add questionnaire\" checkbox and save changes"
+msgstr "Для его удаления снимите чекбокс \"Добавить анкету в цикл\" и сохраните изменения"

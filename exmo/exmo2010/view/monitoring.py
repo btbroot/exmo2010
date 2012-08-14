@@ -160,13 +160,15 @@ def monitoring_add(request):
     title = _('Add new monitoring')
     if request.method == 'POST':
         form = MonitoringForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
+            cd = form.cleaned_data
             with transaction.commit_on_success():
                 # Чтобы нельзя было создать удачно мониторинг, а потом словить
                 # ошибку создания опроса для него.
                 monitoring_instance = form.save()
-                questionnaire = Questionnaire(monitoring=monitoring_instance)
-                questionnaire.save()
+                if cd.get("add_questionnaire"):
+                    questionnaire = Questionnaire(monitoring=monitoring_instance)
+                    questionnaire.save()
             redirect = reverse('exmo2010:monitoring_manager',
                 args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
@@ -861,8 +863,6 @@ def add_questionnaire(request, m_id):
     monitoring = get_object_or_404(Monitoring, pk=m_id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    if not monitoring.has_questionnaire():
-        return HttpResponseForbidden(_('Forbidden'))
     if monitoring.has_questions():
         return HttpResponseForbidden(_('Forbidden'))
     if request.method == "POST":
@@ -874,7 +874,8 @@ def add_questionnaire(request, m_id):
                 questionset = None
             if questionset:
                 a_name, a_comm, qlist = questionset
-                questionnaire = monitoring.get_questionnaire()
+                questionnaire = Questionnaire.objects.get_or_create(
+                    monitoring=monitoring)[0]
                 questionnaire.title = a_name
                 questionnaire.comment = a_comm
                 questionnaire.save()
@@ -891,8 +892,7 @@ def add_questionnaire(request, m_id):
                             new_answer = AnswerVariant(qquestion=new_question)
                             new_answer.answer = a
                             new_answer.save()
-            print "Опросник создан!"
-            return HttpResponse("Опросник создан!")  # Сделать редирект куда надо.
+            return HttpResponse("Опросник создан!")
         else:
             return HttpResponseForbidden(_('Forbidden'))
     else:
