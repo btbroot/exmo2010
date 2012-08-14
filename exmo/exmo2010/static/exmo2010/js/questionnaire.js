@@ -1,4 +1,4 @@
-var qtypes = ['Текст', 'Число', 'Выбор из списка'];
+var qtypes = ['Текст', 'Число', 'Один из списка'];
 
 var qaltinp = "<div class='qalt'><br /><input type='text' class='qalt'></div>";
 

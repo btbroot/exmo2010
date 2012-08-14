@@ -209,10 +209,6 @@ msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претенз
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: exmo/exmo2010/models.py:39
-msgid "Choose a variant"
-msgstr "Выбор из списка"
-
 #: exmo/exmo2010/models.py:48
 #, python-format
 msgid "%(name)s (from EXMO2010 v%(code)d)"
@@ -1905,7 +1901,5 @@ msgstr "Зарегистрироваться"
 msgid "Modules"
 msgstr "Модули"
 
-#: exmo/templates/user_dashboard/menu.html:32
-msgid "Please enter a name for the bookmark"
-msgstr ""
-
+msgid "Choose a variant"
+msgstr "Один из списка"
