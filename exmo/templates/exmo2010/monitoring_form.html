@@ -78,7 +78,7 @@
            <br />
        {% endif %}
    {% else %}
-       <b>{% trans 'Monitoring questionnaire already created' %}.</b> {% trans 'To delete it turn off "Add questionnaire" checkbox and save changes' %}.
+       <div style="background-color: #FFFFCC">{% trans 'Questionnaire is already created. To delete it turn off "Add questionnaire" checkbox and save changes' %}.</div>
    {% endif %}
 {% endif %}
 <form action="." method="post" class="monitoring_form">{% csrf_token %}

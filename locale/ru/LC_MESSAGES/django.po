@@ -1985,14 +1985,6 @@ msgstr "Модули"
 msgid "Choose a variant"
 msgstr "Один из списка"
 
-msgid "Monitoring questionnaire already created"
-msgstr "Опросник анкеты уже создан"
-
-msgid "To delete it turn off \"Add questionnaire\" checkbox and save changes"
-msgstr ""
-"Для его удаления снимите чекбокс \"Добавить анкету в цикл\" и сохраните "
-"изменения"
-
 #: exmo/exmo2010/models.py:169
 #: exmo/templates/exmo2010/add_questionnaire.html:45
 msgid "Questionnaire name"
@@ -2018,3 +2010,7 @@ msgstr "Редактировать анкету"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
+msgid "Questionnaire is already created. To delete it turn off "
+"\"Add questionnaire\" checkbox and save changes"
+msgstr "Анкета уже создана. Для её удаления снимите галочку напротив "
+"\"Добавить анкету в цикл\", и сохраните изменения"
