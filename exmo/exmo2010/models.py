@@ -475,24 +475,17 @@ class QAnswer(models.Model):
         blank=True, null=True)
     variance_answer = models.ForeignKey(AnswerVariant,
         verbose_name=_("Variance choice"), blank=True, null=True)
-    def answer(self):
+    def answer(self, for_form=False):
         if self.question.qtype == 0:
             return self.text_answer
         elif self.question.qtype == 1:
             return self.numeral_answer
         elif self.question.qtype == 2:
             if self.variance_answer:
-                return self.variance_answer.answer
-            else:
-                return None
-    def answer4form(self):
-        if self.question.qtype == 0:
-            return self.text_answer
-        elif self.question.qtype == 1:
-            return self.numeral_answer
-        elif self.question.qtype == 2:
-            if self.variance_answer:
-                return self.variance_answer
+                if for_form:
+                    return self.variance_answer
+                else:
+                    return self.variance_answer.answer
             else:
                 return None
     class Meta:
