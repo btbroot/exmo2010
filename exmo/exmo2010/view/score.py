@@ -192,11 +192,16 @@ def score_list_by_task(request, task_id, report=None):
         )
     else:
         questionnaire = monitoring.get_questionnaire()
-        if (request.user.has_perm('exmo2010.fill_task', task) and
-            questionnaire and questionnaire.qquestion_set.exists()):
+        if questionnaire and questionnaire.qquestion_set.exists():
             questions = questionnaire.qquestion_set.order_by("pk")
             if request.method == "POST":
-                form = QuestionnaireDynForm(request.POST, questions=questions)
+                if not request.user.has_perm('exmo2010.fill_task', task):
+                    return HttpResponseForbidden(_('Forbidden'))
+                form = QuestionnaireDynForm(
+                    request.POST,
+                    questions=questions,
+                    task=task,
+                )
                 if form.is_valid():
                     cd = form.cleaned_data
                     for answ in cd.items():

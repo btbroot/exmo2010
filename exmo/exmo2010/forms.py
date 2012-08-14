@@ -312,9 +312,7 @@ class OrganizationForm(forms.ModelForm):
 
 class MonitoringCommentStatForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.monitoring = kwargs.get('monitoring')
-        if self.monitoring:
-            kwargs.pop('monitoring')
+        self.monitoring = kwargs.pop('monitoring', None)
         super(MonitoringCommentStatForm, self).__init__(*args, **kwargs)
 
     def clean(self):
@@ -338,6 +336,7 @@ class QuestionnaireDynForm(forms.Form):
     """Динамическая форма анкеты с вопросами на странице задачи мониторинга."""
     def __init__(self, *args, **kwargs):
         questions = kwargs.pop('questions')
+        self.task = kwargs.pop('task', None)
         super(QuestionnaireDynForm, self).__init__(*args, **kwargs)
         for q in questions:
             if q.qtype == 0:
@@ -356,3 +355,12 @@ class QuestionnaireDynForm(forms.Form):
                     label=q.question, help_text=q.comment, empty_label=None,
                     required=False, queryset=q.answervariant_set.order_by('-pk'),
                     widget=forms.RadioSelect(attrs={'class': 'aqchoice',}))
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        for answ in cleaned_data.items():
+            if answ[0].startswith("q_") and not answ[1] \
+            and self.task and self.task.approved:
+                raise forms.ValidationError(_('Cannot delete answer for '
+                                      'approved task. Edit answer instead.'))
+        return cleaned_data

@@ -51,6 +51,8 @@
 {% endif %}
 </div>
 
+{% check_object_permission exmo2010.fill_task task as perm_fill_task %}
+
 <table>
 {% table_header headers %}
 <tbody>
@@ -72,8 +74,7 @@
          {% if score.claim_color and perm %}<img src="{{ STATIC_URL }}exmo2010/icon_{{score.claim_color}}.gif" alt="{% trans 'claim' %}" />{% endif %}
             <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
        {% else %}
-         {% check_object_permission exmo2010.fill_task task as perm %}
-         {% if perm %}
+         {% if perm_fill_task %}
             <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
          {% else %}
             {{ parameter.name }}
@@ -114,7 +115,7 @@
         {% if task.organization.monitoring.get_questionnaire.comment %}
             <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
         {% endif %}
-	<form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
+        <form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
             {% csrf_token %}
             <div>
                 {% if form.non_field_errors %}
@@ -141,7 +142,7 @@
                         </div>
                 {% endfor %}
             </div>
-            <input type="submit" value="{% trans 'Save' %}">
+            <input type="submit" value="{% trans 'Save' %}" {% if not perm_fill_task %}disabled{% endif %}>
         </form>
     </div>
     <br>
