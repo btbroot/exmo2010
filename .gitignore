@@ -6,3 +6,4 @@ exmo/settings.py
 cache
 /static
 _build
+.idea

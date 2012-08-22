@@ -258,3 +258,10 @@ SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
 SOCIAL_AUTH_EXPIRATION = 'expires'
 
 EXMO_PAGINATEBY = 20
+
+DATE_INPUT_FORMATS = (
+    '%d.%m.%Y',
+    '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
+    '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
+    '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
+)

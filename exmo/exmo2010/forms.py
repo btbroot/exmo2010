@@ -258,18 +258,51 @@ class MonitoringForm(forms.ModelForm):
     class Meta:
         model = Monitoring
 
+    class Media:
+        css = {
+            'all': (
+                settings.STATIC_URL + 'exmo2010/css/jquery-ui.css',
+                settings.STATIC_URL + 'exmo2010/css/exmo2010-base.css',
+            )
+        }
+        js = (
+            settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
+            settings.STATIC_URL + 'exmo2010/js/jquery/jquery-ui.min.js',
+        )
+
+
+
+from django.forms.models import BaseInlineFormSet
+class MonitoringStatusBaseFormset(BaseInlineFormSet):
+    def get_queryset(self):
+        if not hasattr(self, '_queryset'):
+            self._queryset = self.queryset.filter(
+                status__in=Monitoring.MONITORING_EDIT_STATUSES.keys()
+            )
+        return self._queryset
+
 
 
 class MonitoringStatusForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         ms = kwargs.get('instance')
         super(MonitoringStatusForm, self).__init__(*args, **kwargs)
+        #убираем возможность выбора для поля
         self.fields['status'].choices = ((ms.status, ms),)
+        #по умолчанию метка берется из модели
+        self.fields['start'].label = Monitoring.MONITORING_EDIT_STATUSES[ms.status]
+        #по умолчанию, поле в моделе необязательное,
+        #а для формы здесь меняем его свойство, т.к. здесь уже обязательно его указание
+        self.fields['start'].required = True
 
     class Meta:
         model = MonitoringStatus
         widgets = {
-            'start':widgets.AdminSplitDateTime,
+            'start': forms.DateInput(attrs={
+                'class': 'jdatefield',
+                'maxlength': 300
+            }),
+            'status': forms.HiddenInput(),
         }
 
 

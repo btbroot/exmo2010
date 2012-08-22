@@ -20,11 +20,6 @@
 {% endcomment %}
 {% load i18n adminmedia %}
 {% block extrahead %}{{ block.super }}
-{% url django.views.i18n.javascript_catalog as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
-{#TEMP!!!#}
-<script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
-{{ media }}
 <script type="text/javascript">
     $(document).ready(function () {
         if ($("#id_add_questionnaire").is(':checked')) {
@@ -50,6 +45,18 @@
             });
         }
     });
+
+    $(function() {
+        $( ".jdatefield" ).datepicker({
+            showOn: "button",
+            buttonImage: "{{STATIC_URL}}exmo2010/img/calendar.gif",
+            buttonImageOnly: true,
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
 </script>
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}

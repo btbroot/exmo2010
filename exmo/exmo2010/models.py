@@ -69,6 +69,13 @@ class Monitoring(models.Model):
     MONITORING_STATUS_NEW = (MONITORING_STATUS_FULL[0],) +\
         (MONITORING_STATUS_FULL[6],)
 
+    MONITORING_EDIT_STATUSES = {
+        MONITORING_PREPARE: _('Monitoring begin date'),
+        MONITORING_INTERACT: _('Monitoring interact start date'),
+        MONITORING_RESULT: _('Monitoring interact end date'),
+        MONITORING_PUBLISH: _('Monitoring publish date'),
+    }
+
     name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
     status = models.PositiveIntegerField(choices=MONITORING_STATUS_FULL,
                                          default=MONITORING_PLANNED, verbose_name=_('status'))
@@ -200,9 +207,17 @@ class AnswerVariant(models.Model):
 
 
 class MonitoringStatus(models.Model):
-    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    status       = models.PositiveIntegerField(choices = Monitoring.MONITORING_STATUS, default = Monitoring.MONITORING_PREPARE, verbose_name=_('status'))
-    start        = models.DateTimeField(null = True, blank=True, verbose_name=_('start at'))
+    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    status = models.PositiveIntegerField(
+        choices=Monitoring.MONITORING_STATUS,
+        default=Monitoring.MONITORING_PREPARE,
+        verbose_name=_('status'),
+    )
+    start = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_('start at')
+    )
 
     def __unicode__(self):
         for status in Monitoring.MONITORING_STATUS_FULL:
@@ -213,6 +228,7 @@ class MonitoringStatus(models.Model):
             ('status', 'monitoring'),
         )
         ordering = (
+            'status',
             '-start',
         )
 

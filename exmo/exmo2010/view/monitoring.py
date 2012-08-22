@@ -16,15 +16,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.view.helpers import table
-from exmo2010.view.helpers import rating
-from django.shortcuts import get_object_or_404, render_to_response
-from django.views.generic.create_update import  delete_object
-from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
-from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
-from exmo2010.models import Monitoring, QQuestion, AnswerVariant
-from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
+import csv
+import simplejson
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db import transaction
@@ -34,10 +27,19 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404, render_to_response
+from django.views.generic.create_update import  delete_object
+from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext as _
+from django.forms.models import inlineformset_factory
+from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
+from exmo2010.models import Monitoring, QQuestion, AnswerVariant
+from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
+from exmo2010.view.helpers import table
+from exmo2010.view.helpers import rating
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from exmo2010.utils import UnicodeReader, UnicodeWriter
-import csv
-import simplejson
+from exmo2010.forms import MonitoringStatusBaseFormset
 
 def _get_monitoring_list(request):
     monitorings_pk = []
@@ -109,13 +111,13 @@ def monitoring_manager(request, id, method):
         if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit monitoring %s') % monitoring
-        from django.forms.models import inlineformset_factory
         MonitoringStatusFormset = inlineformset_factory(
             Monitoring,
             MonitoringStatus,
             can_delete = False,
             extra = 0,
             form = MonitoringStatusForm,
+            formset = MonitoringStatusBaseFormset,
             )
 
         if request.method == 'POST':
@@ -148,7 +150,7 @@ def monitoring_manager(request, id, method):
                 'title': title,
                 'form': form,
                 'formset': formset,
-                'media': CORE_MEDIA+formset.media,
+                'media': form.media,
                 'object': monitoring,
             },
             context_instance=RequestContext(request))
