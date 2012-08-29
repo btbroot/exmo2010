@@ -15,8 +15,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.sort_headers import SortHeaders
 from django.views.generic.list_detail import object_list
+from exmo2010.sort_headers import SortHeaders
+from exmo2010.models import Task
 
 
 def table_prepare_queryset(request, headers, queryset):
@@ -39,13 +40,25 @@ def table(request, headers, **kwargs):
 
 
 def rating(monitoring):
-  from exmo2010.models import Task
-  object_list = [{'task':task, 'openness': task.openness} for task in Task.approved_tasks.filter(organization__monitoring = monitoring).order_by('-openness_cache')]
-  place=1
-  avg=None
+  object_list = [
+      {
+        'task': task,
+        'openness': task.openness,
+        'openness_first': task.openness_first,
+      } for task in Task.approved_tasks.filter(
+      organization__monitoring=monitoring
+      ).order_by('-openness_cache')
+  ]
+  place = 1
+  avg = {
+      'openness': 0,
+      'openness_first': 0,
+  }
+  max_rating = 0
   if object_list:
     max_rating = object_list[0]['openness']
-    avg = sum([t['openness'] for t in object_list])/len(object_list)
+    avg['openness'] = sum([t['openness'] for t in object_list])/len(object_list)
+    avg['openness_first'] = sum([t['openness_first'] for t in object_list])/len(object_list)
   rating_list = []
   place_count={}
   for rating_object in object_list:

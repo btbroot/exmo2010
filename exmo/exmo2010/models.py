@@ -322,20 +322,42 @@ class ApprovedTaskManager(models.Manager):
 
 
 class Task(models.Model):
-    TASK_OPEN       = 0
-    TASK_READY      = TASK_CLOSE = TASK_CLOSED = 1
-    TASK_APPROVED   = TASK_APPROVE = 2
-    TASK_CHECK      = TASK_CHECKED = 3
-    TASK_STATUS     = (
+    TASK_OPEN = 0
+    TASK_READY = TASK_CLOSE = TASK_CLOSED = 1
+    TASK_APPROVED = TASK_APPROVE = 2
+    TASK_CHECK = TASK_CHECKED = 3
+    TASK_STATUS = (
         (TASK_OPEN, _('opened')),
         (TASK_CLOSE, _('closed')),
         (TASK_CHECK, _('check')),
         (TASK_APPROVE, _('approved'))
     )
-    user         = models.ForeignKey(User, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'))
     organization = models.ForeignKey(Organization, verbose_name=_('organization'))
-    status       = models.PositiveIntegerField(choices = TASK_STATUS, default = TASK_OPEN, verbose_name=_('status'))
-    openness_cache     = models.FloatField(null = True, blank = True, default = 0, editable = False, verbose_name = _('openness'))
+    status = models.PositiveIntegerField(
+        choices=TASK_STATUS,
+        default=TASK_OPEN,
+        verbose_name=_('status'),
+    )
+
+    #хранит рассчитанное значение текущего Кид. обновляется по сигналу
+    openness_cache = models.FloatField(
+        null=True,
+        blank=True,
+        default=-1,
+        editable=False,
+        db_index=True,
+        verbose_name=_('openness'),
+    )
+
+    #хранит рассчитанное значение первичного Кид. обновляется по сигналу
+    openness_first = models.FloatField(
+        null=True,
+        blank=True,
+        default=-1,
+        editable=False,
+        verbose_name=_('openness first'),
+    )
 
     def _openness(self):
         openness = 0
@@ -354,12 +376,16 @@ class Task(models.Model):
         return openness
 
     def _get_openness(self):
-        if not self.openness_cache:
+        if self.openness_cache < 0:
             self.update_openness()
         return self.openness_cache
 
     def update_openness(self):
         self.openness_cache = self._openness()
+        #по умолчанию openness_first=-1.
+        #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness_cache=0
+        if self.organization.monitoring.is_interact and self.openness_first < 0:
+            self.openness_first_cache = self.openness_cache
         self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager

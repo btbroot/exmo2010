@@ -34,7 +34,19 @@
 <div id=organization_list>
 {% if object_list %}
 <table>
-  <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
+  <thead>
+    <td>{% trans "Position" %}</td>
+    <td>{% trans "Organization" %}</td>
+    <td>{% trans "URL" %}</td>
+    {% if monitoring.is_publish %}
+        {% if average.openness_first >= 0 %}
+            <td>{% trans "First openness" %}*</td>
+        {% endif %}
+        <td>{% trans "Finally openness" %}</td>
+    {% else %}
+        <td>{% trans "Actualy openness" %}</td>
+    {% endif %}
+  </thead>
   <tbody>
   {% for object in object_list %}
         <tr class="{%if forloop.counter|divisibleby:'2'%}row2{%else%}row1{%endif%} {%ifchanged object.place%}rating-top-border{%endifchanged%}">
@@ -43,12 +55,36 @@
         {% endifchanged %}
         <td>{{ object.task.organization.name }}</td>
         <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
+        {% if monitoring.is_publish and average.openness_first >= 0 %}
+            <td>{{ object.openness_first|floatformat:3 }}</td>
+        {% endif %}
         <td>{{ object.openness|floatformat:3 }}</td>
     </tr>
   {% endfor %}</tbody>
-  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
-  <tr style="font-weight: bold"><td colspan=3>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
+  <tr style="font-weight: bold">
+      <td colspan=3>{% trans 'Average' %}</td>
+      {% if monitoring.is_publish and average.openness_first >= 0 %}
+          <td>{{ average.openness_first|floatformat:3 }}</td>
+      {% endif %}
+      <td>{{ average.openness|floatformat:3 }}</td>
+  </tr>
+  <tr style="font-weight: bold">
+      <td colspan=
+      {% if monitoring.is_publish and average.openness_first >= 0 %}
+          4
+      {% else %}
+          3
+      {% endif %}>
+          {% trans 'Total organizations' %}
+      </td>
+      <td>{{ object_list|length }}</td>
+  </tr>
 </table>
+{% if monitoring.is_publish and average.openness_first >= 0 %}
+    <p>
+    * {% trans 'First openness &mdash; openness value before interact' %}
+    </p>
+{% endif %}
 {% else %}
 {% trans 'Empty list' %}
 {% endif %}
