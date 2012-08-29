@@ -342,8 +342,6 @@ class Task(models.Model):
 
     #хранит рассчитанное значение текущего Кид. обновляется по сигналу
     openness_cache = models.FloatField(
-        null=True,
-        blank=True,
         default=-1,
         editable=False,
         db_index=True,
@@ -352,8 +350,6 @@ class Task(models.Model):
 
     #хранит рассчитанное значение первичного Кид. обновляется по сигналу
     openness_first = models.FloatField(
-        null=True,
-        blank=True,
         default=-1,
         editable=False,
         verbose_name=_('openness first'),
@@ -385,7 +381,7 @@ class Task(models.Model):
         #по умолчанию openness_first=-1.
         #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness_cache=0
         if self.organization.monitoring.is_interact and self.openness_first < 0:
-            self.openness_first_cache = self.openness_cache
+            self.openness_first = self.openness_cache
         self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
