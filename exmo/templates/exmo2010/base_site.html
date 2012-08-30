@@ -18,22 +18,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n admin_tools_menu_tags admin_tools_dashboard_tags %}
+{% load i18n admin_tools_menu_tags admin_tools_dashboard_tags theming_tags %}
 
 {% block extrastyle %}
 {{ block.super }}
 {% block dashboard_css %}
 {% admin_tools_render_menu_css %}
 {% endblock %}
-{% endblock %}
-
-{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'Exmo' %}{% endblock %}
-
-{% block branding %}
-<h1 id="site-name">{% trans 'Exmo' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
+{% render_theming_css %}
 {% endblock %}
 
 {% block nav-global %}
 {% admin_tools_render_menu %}
 {% endblock %}
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
