@@ -38,7 +38,7 @@
     <td>{% trans "Position" %}</td>
     <td>{% trans "Organization" %}</td>
     <td>{% trans "URL" %}</td>
-    {% if monitoring.is_publish %}
+    {% if monitoring.status in monitoring.after_interaction_status %}
         {% if average.openness_first >= 0 %}
             <td>{% trans "First openness" %}*</td>
         {% endif %}
@@ -55,7 +55,7 @@
         {% endifchanged %}
         <td>{{ object.task.organization.name }}</td>
         <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
-        {% if monitoring.is_publish and average.openness_first >= 0 %}
+        {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
             <td>{{ object.openness_first|floatformat:3 }}</td>
         {% endif %}
         <td>{{ object.openness|floatformat:3 }}</td>
@@ -63,14 +63,14 @@
   {% endfor %}</tbody>
   <tr style="font-weight: bold">
       <td colspan=3>{% trans 'Average' %}</td>
-      {% if monitoring.is_publish and average.openness_first >= 0 %}
+      {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
           <td>{{ average.openness_first|floatformat:3 }}</td>
       {% endif %}
       <td>{{ average.openness|floatformat:3 }}</td>
   </tr>
   <tr style="font-weight: bold">
       <td colspan=
-      {% if monitoring.is_publish and average.openness_first >= 0 %}
+      {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
           4
       {% else %}
           3
@@ -80,7 +80,7 @@
       <td>{{ object_list|length }}</td>
   </tr>
 </table>
-{% if monitoring.is_publish and average.openness_first >= 0 %}
+{% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
     <p>
     * {% trans 'First openness &mdash; openness value before interact' %}
     </p>
