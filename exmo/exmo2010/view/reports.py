@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.db.models import Count
@@ -24,7 +24,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponseForbidden, Http404
-from exmo2010.models import UserProfile, SEX_CHOICES, Score, Monitoring
+from exmo2010.models import UserProfile, SEX_CHOICES, Monitoring
 
 
 
@@ -68,7 +68,7 @@ def comment_list(request, report_type='1'):
     except ValueError:
         raise Http404
 
-    if not request.user.profile.is_expert:
+    if not (request.user.is_active and request.user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
     if report_type not in COMMUNICATION_REPORT_TYPE_DICT.keys():
         raise Http404
@@ -88,13 +88,15 @@ def comment_list(request, report_type='1'):
 
     try:
         page = int(request.GET.get('page', '1'))
+        if page < 1:
+            page = 1
     except ValueError:
         page = 1
 
     try:
         paginator_list = paginator.page(page)
     except (EmptyPage, InvalidPage):
-        paginator_list = paginator.page(paginator.num_pages)
+        paginator_list = paginator.page(1)
 
     return render_to_response(template,
         {
@@ -102,6 +104,66 @@ def comment_list(request, report_type='1'):
             'title': COMMUNICATION_REPORT_TYPE_DICT[report_type],
             'report_dict': COMMUNICATION_REPORT_TYPE_DICT,
             'current_report': report_type,
+        },
+        RequestContext(request),
+    )
+
+def monitoring_report(request, report_type='inprogress', monitoring_id=None):
+    if report_type not in ['inprogress', 'finished']:
+        raise Http404
+
+    all_monitorings = None
+    paginator_list = None
+
+    if report_type == 'inprogress':
+        monitorings = Monitoring.objects.exclude(
+            status=Monitoring.MONITORING_PUBLISH
+        ).extra(select={
+                'start_date': Monitoring().prepare_date_sql_inline(),
+            }
+        ).order_by('-start_date')[:3]
+    elif report_type == 'finished':
+        all_monitorings = Monitoring.objects.filter(
+            status=Monitoring.MONITORING_PUBLISH
+        ).extra(select={
+                'start_date': Monitoring().prepare_date_sql_inline(),
+            }
+        ).order_by('-start_date')
+        if monitoring_id:
+            monitorings = Monitoring.objects.filter(
+                status=Monitoring.MONITORING_PUBLISH,
+                pk=monitoring_id,
+            ).extra(select={
+                    'start_date': Monitoring().prepare_date_sql_inline(),
+                }
+            ).order_by('-start_date')
+            if not monitorings: raise Http404
+        else:
+            monitorings = all_monitorings
+
+            paginator = Paginator(monitorings, 10)
+            try:
+                page = int(request.GET.get('page', '1'))
+                if page < 1:
+                    page = 1
+            except ValueError:
+                page = 1
+
+            try:
+                paginator_list = paginator.page(page)
+            except (EmptyPage, InvalidPage):
+                paginator_list = paginator.page(1)
+
+            monitorings = paginator_list.object_list
+
+    return render_to_response('exmo2010/monitoring_report.html',
+        {
+            'paginator': paginator_list,
+            'monitorings': monitorings,
+            'report_type': report_type,
+            'title': _('Monitoring statistics'),
+            'monitoring_id': monitoring_id,
+            'all_monitorings': all_monitorings,
         },
         RequestContext(request),
     )

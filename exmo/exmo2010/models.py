@@ -27,6 +27,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
+from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
 from exmo2010.fields import TagField
@@ -38,6 +39,29 @@ QUESTION_TYPE_CHOICES = (
     (1, _("Number")),
     (2, _("Choose a variant")),
 )
+
+MONITORING_STAT_DICT = {
+    'organization': 0,
+    'organization_rated': 0,
+    'organization_users': 0,
+    'organization_users_active': 0,
+    'expert': 0,
+    'comment_organization': 0,
+    'comment_expert': 0,
+    'avg_openness': 0,
+    'avg_openness_first': 0,
+}
+"""
+Кол-во организаций
+Кол-во оцененных организций (одобренных)
+Кол-во зарегистрированных представителей для организаций
+Кол-во активных представителей
+Кол-во экспертов занятых в оценке
+Кол-во комментариев оставленных представителями
+Кол-во комментариев оставленных экспертами
+Ср. знач. Кид
+Ср. знач. первичного Кид
+"""
 
 
 class OpennessExpression(models.Model):
@@ -153,6 +177,86 @@ class Monitoring(models.Model):
             return False
 
 
+    def statistics(self):
+        """
+        Метод возращающий словарь `MONITORING_STAT_DICT` со статистикой по мониторингу.
+        См. описание словаря
+        """
+        stat = MONITORING_STAT_DICT
+        stat['organization'] = self.organization_set.count()
+        stat['organization_rated'] = Task.approved_tasks.filter(
+            organization__monitoring=self
+        ).count()
+        stat['organization_users'] = User.objects.filter(
+            groups__name='organizations',
+            userprofile__organization__in=self.organization_set.all()
+        ).count()
+        stat['organization_users_active'] = MonitoringInteractActivity.objects.filter(
+            monitoring=self,
+        ).count()
+        stat['expert'] = Task.objects.filter(
+            organization__monitoring=self
+        ).aggregate(count=Count('user', distinct=True))['count']
+        stat['comment_organization'] = Comment.objects.filter(
+            content_type__model='score',
+            object_pk__in=Score.objects.filter(
+                task__organization__monitoring=self),
+            user__in = User.objects.filter(groups__name='organizations'),
+        ).count()
+
+        stat['comment_expert'] = Comment.objects.filter(
+            content_type__model='score',
+            object_pk__in=Score.objects.filter(
+                task__organization__monitoring=self),
+            user__in=User.objects.exclude(groups__name='organizations')
+        ).count()
+        from exmo2010.view.helpers import rating
+        rating_list, avg = rating(self)
+        stat['avg_openness'] = avg['openness']
+        stat['avg_openness_first'] = avg['openness_first']
+        return stat
+
+    def _get_date(self, status):
+        try:
+            date = MonitoringStatus.objects.get(
+                monitoring=self,
+                status=status,
+            ).start
+        except MonitoringStatus.DoesNotExist:
+            date = None
+        return date
+
+    @property
+    def prepare_date(self):
+        return self._get_date(self.MONITORING_PREPARE)
+
+    @property
+    def interact_date(self):
+        return self._get_date(self.MONITORING_INTERACT)
+
+    @property
+    def result_date(self):
+        return self._get_date(self.MONITORING_RESULT)
+
+    @property
+    def publish_date(self):
+        return self._get_date(self.MONITORING_PUBLISH)
+
+    def prepare_date_sql_inline(self):
+        sql = "select " \
+              "%(start_field)s from %(monitoringstatus_table)s " \
+              "where " \
+              "%(status_field)s = %(status)s and " \
+              "%(monitoring_field)s = %(monitoring)s" % {
+            'start_field': 'start',
+            'monitoringstatus_table': MonitoringStatus._meta.db_table,
+            'status_field': 'status',
+            'status': Monitoring._meta.db_table + ".status",
+            'monitoring_field': 'monitoring_id',
+            'monitoring': Monitoring._meta.db_table + "." + Monitoring._meta.pk.name,
+        }
+        return sql
+
     after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT,
                                 MONITORING_PUBLISH]
 
@@ -216,7 +320,8 @@ class MonitoringStatus(models.Model):
     start = models.DateField(
         null=True,
         blank=True,
-        verbose_name=_('start at')
+        verbose_name=_('start at'),
+        db_index=True,
     )
 
     def __unicode__(self):
@@ -1158,3 +1263,9 @@ class UserProfile(models.Model):
 
 User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+
+
+class MonitoringInteractActivity(models.Model):
+    monitoring = models.ForeignKey(Monitoring)
+    user = models.ForeignKey(User)
+    timestamp = models.DateTimeField(auto_now_add=True)

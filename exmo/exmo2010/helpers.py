@@ -26,6 +26,7 @@ from django.utils.text import capfirst, get_text_list
 from reversion import revision
 from exmo2010.models import UserProfile
 from exmo2010.models import Score
+from exmo2010.models import MonitoringInteractActivity
 from exmo2010.utils import disable_for_loaddata
 
 
@@ -264,3 +265,12 @@ def score_change_notify(sender, **kwargs):
         for rcpt_ in rcpt:
             email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
             email.send()
+
+def log_monitoring_interact_activity(monitoring, user):
+    created = False
+    if monitoring.is_interact and user.is_active and user.profile.is_organization:
+        obj, created = MonitoringInteractActivity.objects.get_or_create(
+            monitoring=monitoring,
+            user=user,
+        )
+    return created

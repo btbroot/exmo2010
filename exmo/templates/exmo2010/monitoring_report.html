@@ -1,0 +1,147 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n model_status %}
+{% block extrahead %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            $(".monitoring-status").each(function()
+            {
+                $(this).find("tr:odd").addClass('row1');
+                $(this).find("tr:even").addClass('row2');
+            });
+        });
+</script>
+{% endblock %}
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/monitoring_report.css" />
+{% endblock %}
+{% block content %}
+<div id="report_menu">
+{% if report_type == 'finished' %}
+    <a href="{% url exmo2010:monitoring_report_type 'inprogress' %}">{% trans 'In progress' %}</a>&nbsp;
+    {% trans 'Finished' %}
+    <h3>{% trans 'Select monitoring' %}</h3>
+    <p><select onchange="location = '{% url exmo2010:monitoring_report_type 'finished' %}' + this.options[this.selectedIndex].value;">
+        <option value=""
+          {% if not monitoring_id %}selected{% endif %}>
+            {% trans 'All finished monitorings' %}
+        </option>
+        {% for monitoring in all_monitorings %}
+            <option value="{{ monitoring.pk }}"
+              {% if monitoring.pk|slugify == monitoring_id %}selected{% endif %}>
+                {{ monitoring }}
+            </option>
+        {% endfor %}
+    </select></p>
+{% else %}
+    {% trans 'In progress' %}
+    <a href="{% url exmo2010:monitoring_report_type 'finished' %}">{% trans 'Finished' %}</a>
+{% endif %}
+</div>
+{% if paginator %}
+    {% include 'exmo2010/paginator_paginator.html' %}
+{% endif %}
+{% for monitoring in monitorings %}
+<h3>{{ monitoring.name }}</h3>
+<div class="monitoring-stat">
+<div class="monitoring-status-div monitoring-status-left">
+<table class="monitoring-status">
+{% if not monitoring.is_publish %}
+<tr>
+    <td>{% trans 'Monitoring status' %}</td>
+    <td>{% monitoring_status monitoring.status %}</td>
+</tr>
+{% endif %}
+<tr>
+    <td>{% trans 'Monitoring begin date' %}</td>
+    <td>{{ monitoring.prepare_date|date:"d F Y" }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Monitoring interact start date' %}</td>
+    <td>{{ monitoring.interact_date|date:"d F Y" }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Monitoring interact end date' %}</td>
+    <td>{{ monitoring.result_date|date:"d F Y" }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Monitoring publish date' %}</td>
+    <td>{{ monitoring.publish_date|date:"d F Y" }}</td>
+</tr>
+
+</table>
+</div>
+<div class="monitoring-status-div monitoring-status-right">
+{% with monitoring.statistics as stat %}
+<table class="monitoring-status">
+    <tr>
+        <td>{% trans 'Organization in monitoring' %}</td>
+        <td>{{ stat.organization }}</td>
+    </tr>
+    {% if monitoring.status not in monitoring.after_interaction_status %}
+    <tr>
+        <td>{% trans 'Rated organization' %}</td>
+        <td>{{ stat.organization_rated }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>{% trans 'Organization registered' %}</td>
+        <td>{{ stat.organization_users }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Organization active' %}</td>
+        <td>{{ stat.organization_users_active }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Expert active' %}</td>
+        <td>{{ stat.expert }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Organization comments' %}</td>
+        <td>{{ stat.comment_organization }}</td>
+    </tr>
+    <tr>
+        <td>{% trans 'Expert comments' %}</td>
+        <td>{{ stat.comment_expert }}</td>
+    </tr>
+    {% if stat.avg_openness_first >= 0 %}
+    <tr>
+        <td>{% trans 'Average openness first' %}</td>
+        <td>{{ stat.avg_openness_first|floatformat:3 }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>{% trans 'Average openness' %}</td>
+        <td>{{ stat.avg_openness|floatformat:3 }}</td>
+    </tr>
+</table>
+{% endwith %}
+</div>
+</div>
+{% if not forloop.last %}<hr class="monitoring-stat-hr">{% endif %}
+{% endfor %}
+{% if paginator %}
+    {% include 'exmo2010/paginator_paginator.html' %}
+{% endif %}
+{% endblock %}

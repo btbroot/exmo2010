@@ -21,7 +21,7 @@
 {% load i18n %}
 {% block module_content %}
 <ul>
-            <li><a href="{% url exmo2010:index %}">{% trans 'Dashboard' %}</a></li>
+            <li><a href="{% url exmo2010:monitoring_report %}">{% trans 'Monitoring statistics' %}</a></li>
             <li><a href="{% url exmo2010:user_profile %}">{% trans 'Profile' %}</a></li>
             {% if user.is_active %}
             <li><a href="{% url auth_password_change %}">{% trans 'Change password' %}</a></li>

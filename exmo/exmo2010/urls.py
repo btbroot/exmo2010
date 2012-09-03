@@ -83,6 +83,12 @@ urlpatterns = patterns('',
 
   url(r'^reports/comment/(\d+)/$', 'exmo2010.view.reports.comment_list',
       name='comment_list'),
+  url(r'^reports/monitoring/$', 'exmo2010.view.reports.monitoring_report',
+      name='monitoring_report'),
+  url(r'^reports/monitoring/(\w+)/$', 'exmo2010.view.reports.monitoring_report',
+      name='monitoring_report_type'),
+  url(r'^reports/monitoring/(\w+)/(\d+)/$', 'exmo2010.view.reports.monitoring_report',
+      name='monitoring_report_finished'),
 )
 
 

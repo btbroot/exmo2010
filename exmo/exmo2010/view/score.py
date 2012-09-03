@@ -32,6 +32,7 @@ from django.views.generic.create_update import delete_object
 from reversion import revision
 from exmo2010.forms import ScoreForm, QuestionnaireDynForm
 from exmo2010.helpers import construct_change_message
+from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table_prepare_queryset
 from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
 
@@ -115,6 +116,8 @@ def score_view(request, score_id):
             }
         )
     elif request.user.has_perm('exmo2010.view_score', score):
+        #представители имеют права только на просмотр
+        log_monitoring_interact_activity(score.task.organization.monitoring, request.user)
         title = _('View score %s') % score.parameter
         return object_detail(
             request,
@@ -138,6 +141,7 @@ def score_list_by_task(request, task_id, report=None):
     monitoring = task.organization.monitoring
     parameters = Parameter.objects.filter(monitoring=monitoring).exclude\
         (exclude=task.organization)
+    log_monitoring_interact_activity(monitoring, request.user)
     headers=(
         (_('Code'), None, None, None, None),
         (_('Parameter'), 'name', 'name', None, None),

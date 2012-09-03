@@ -32,6 +32,7 @@ from django.views.generic.create_update import  delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
+from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
 from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
@@ -217,6 +218,8 @@ def monitoring_rating_color(request, id):
 def monitoring_rating(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
+
+  log_monitoring_interact_activity(monitoring, request.user)
 
   rating_list, avg = rating(monitoring)
 

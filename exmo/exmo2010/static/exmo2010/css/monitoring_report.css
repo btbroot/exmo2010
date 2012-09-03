@@ -1,0 +1,53 @@
+.monitoring-status-div {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    width: 340px;
+}
+
+.monitoring-status-right {
+    margin-left: 40px;
+}
+
+.monitoring-stat-hr {
+    margin: 15px 0 15px 0;
+    background-color: #CCCCCC;
+    color: #CCCCCC;
+}
+
+.monitoring-status {
+    width: 100%;
+}
+
+.row1 {
+    background: none repeat scroll 0 0 #F2F2F2;
+}
+
+.row2 {
+    background: none repeat scroll 0 0 white;
+}
+
+table {
+    border-collapse: collapse;
+}
+table td, table th {
+    border: 1px solid #999999;
+}
+table tr:first-child td {
+    border-top: 0;
+}
+table tr:last-child td {
+    border-bottom: 0;
+}
+table tr td:first-child,
+table tr th:first-child {
+    border-left: 0;
+}
+table tr td:last-child,
+table tr th:last-child {
+    border-right: 0;
+}
+
+#report_menu a:link, #report_menu a:visited {
+    border-bottom: 1px dashed;
+}

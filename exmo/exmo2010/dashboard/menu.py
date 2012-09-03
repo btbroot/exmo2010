@@ -53,9 +53,12 @@ class CustomMenu(Menu):
         self.children.append(items.MenuItem(msg, children = children))
 
         rep_children = [
-            items.MenuItem(_('Gender stats'), reverse('exmo2010:gender_stats')),
+            items.MenuItem(_('Monitoring statistics'), reverse('exmo2010:monitoring_report'))
             ]
-        self.children.append(items.MenuItem(_('Reports'), children=rep_children))
+
+        if request.user.is_active and request.user.profile.is_expert:
+            rep_children.append(items.MenuItem(_('Gender stats'), reverse('exmo2010:gender_stats')))
+        self.children.append(items.MenuItem(_('Statictics'), children=rep_children))
 
         communication_children = []
 
