@@ -30,6 +30,8 @@ urlpatterns = patterns('',
 
 
   url( r'^score/(\d+)/claim/add$', 'exmo2010.view.claim.claim_manager', name='claim_manager'),
+  url( r'^score/(\d+)/claimstatus/$', 'exmo2010.view.score.score_claim_color', name='score_claim_color'),
+  url( r'^score/(\d+)/commentunreaded/$', 'exmo2010.view.score.score_comment_unreaded', name='score_commentunreaded'),
   url( r'^monitoring/(\d+)/claims/$', 'exmo2010.view.claim.claim_report', name='claim_report'),
 
 

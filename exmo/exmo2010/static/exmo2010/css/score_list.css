@@ -66,6 +66,10 @@
         opacity: 0.5;
 }
 
+.ajaxloader {
+    display: inline-block;
+}
+
 /*Styles for ankete*/
 
 #fc_container {

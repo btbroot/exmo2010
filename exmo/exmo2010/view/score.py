@@ -20,7 +20,7 @@
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -274,3 +274,31 @@ def score_add_comment(request, score_id):
                 context_instance=RequestContext(request),
                 )
     else: return HttpResponseForbidden(_('Forbidden'))
+
+
+@login_required
+def score_claim_color(request, score_id):
+    """AJAX-вьюха для получения изображения для претензий"""
+    score = get_object_or_404(Score, pk=score_id)
+    if request.method == "GET" and request.is_ajax():
+        return render_to_response('exmo2010/ajax/claim_image.html',
+            {
+                'score': score,
+            },
+            context_instance=RequestContext(request))
+    else:
+        raise Http404
+
+
+@login_required
+def score_comment_unreaded(request, score_id):
+    """AJAX-вьюха для получения изображения для непрочитанных коментов"""
+    score = get_object_or_404(Score, pk=score_id)
+    if request.method == "GET" and request.is_ajax():
+        return render_to_response('exmo2010/ajax/commentunread_image.html',
+            {
+                'score': score,
+            },
+            context_instance=RequestContext(request))
+    else:
+        raise Http404

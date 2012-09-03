@@ -739,10 +739,16 @@ class Score(models.Model):
 
     @property
     def have_comment_without_reply(self):
-        return Comment.objects.filter(object_pk=self.pk,
-                                      content_type=ContentType.objects.get_for_model(self.__class__)).\
-               order_by('-submit_date')[0].user.groups.filter(
-                   name="organizations").exists()
+        comments = Comment.objects.filter(
+            object_pk=self.pk,
+            content_type=ContentType.objects.get_for_model(self.__class__),
+            ).order_by('-submit_date')[:1]
+        if comments:
+            if comments[0].user.groups.filter(
+                   name="organizations",
+            ).exist():
+                return comments[0].pk
+        return False
 
     active_claim = property(_get_claim)
     openness = property(_get_openness)
