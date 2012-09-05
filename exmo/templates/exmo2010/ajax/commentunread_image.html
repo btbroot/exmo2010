@@ -18,5 +18,5 @@
 #
 {% endcomment %}
 {% if score.have_comment_without_reply %}
-    <a href="{{ score.url }}#c{{ score.have_comment_without_reply }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png"></a>
+    <a href="{% url exmo2010:score_view score.pk %}#c{{ score.have_comment_without_reply }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png"></a>
 {% endif %}

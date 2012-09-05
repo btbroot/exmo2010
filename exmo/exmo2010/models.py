@@ -851,7 +851,7 @@ class Score(models.Model):
         if comments:
             if comments[0].user.groups.filter(
                    name="organizations",
-            ).exist():
+            ).exists():
                 return comments[0].pk
         return False
 

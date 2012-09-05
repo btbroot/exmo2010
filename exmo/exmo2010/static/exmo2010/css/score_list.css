@@ -70,6 +70,10 @@
     display: inline-block;
 }
 
+.comment-unreaded {
+    float: right;
+}
+
 /*Styles for ankete*/
 
 #fc_container {
