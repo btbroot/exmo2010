@@ -41,7 +41,7 @@ def table(request, headers, **kwargs):
 
 def rating(monitoring):
     #get task from monitoring for valid sql
-    generic_task=Task.objects.filter(organization__monitoring=monitoring)[0][0]
+    generic_task=Task.objects.filter(organization__monitoring=monitoring)[0]
     object_list = [
         {
             'task': task,
