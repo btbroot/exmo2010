@@ -33,6 +33,9 @@ from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
 from exmo2010.fields import TagField
+from exmo2010.sql import sql_score_openness_v1
+from exmo2010.sql import sql_score_openness_v8
+from exmo2010.sql import sql_task_openness
 
 
 # Типы вопросов анкеты. Добавить переводы!
@@ -474,14 +477,6 @@ class Task(models.Model):
         verbose_name=_('status'),
     )
 
-    #хранит рассчитанное значение текущего Кид. обновляется по сигналу
-    openness_cache = models.FloatField(
-        default=-1,
-        editable=False,
-        db_index=True,
-        verbose_name=_('openness'),
-    )
-
     #хранит рассчитанное значение первичного Кид. обновляется по сигналу
     openness_first = models.FloatField(
         default=-1,
@@ -489,34 +484,26 @@ class Task(models.Model):
         verbose_name=_('openness first'),
     )
 
-    def _openness(self):
-        openness = 0
-        scores = Score.objects.filter(
-            revision = Score.REVISION_DEFAULT,
-            task = self,
-            parameter__in = Parameter.objects.filter(
-                monitoring = self.organization.monitoring
-                ).exclude(exclude = self.organization)
-            ).select_related()
-        openness_actual = sum([openness_helper(s) for s in scores])
-        parameters_weight = Parameter.objects.exclude(exclude = self.organization).filter(monitoring = self.organization.monitoring, weight__gte = 0)
-        openness_max = sum([parameter_weight.weight for parameter_weight in parameters_weight])
-        if openness_max:
-            openness = float(openness_actual * 100) / openness_max
-        return openness
+    def _sql_openness(self):
+        sql_score_openness = sql_score_openness_v8
+        if self.organization.monitoring.openness_expression.code == 1:
+            sql_score_openness = sql_score_openness_v1
+        return sql_task_openness % {'sql_score_openness': sql_score_openness}
 
-    def _get_openness(self):
-        if self.openness_cache < 0:
-            self.update_openness()
-        return self.openness_cache
+    @property
+    def openness(self):
+        return float(Task.objects.filter(
+            pk=self.pk
+        ).extra(select={
+            '__openness': self._sql_openness()
+        }).values('__openness')[0]['__openness'])
 
     def update_openness(self):
-        self.openness_cache = self._openness()
         #по умолчанию openness_first=-1.
-        #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness_cache=0
+        #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness=0
         if self.organization.monitoring.is_interact and self.openness_first < 0:
-            self.openness_first = self.openness_cache
-        self.save()
+            self.openness_first = self.openness
+            self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
@@ -634,7 +621,6 @@ class Task(models.Model):
     ready = property(_get_ready, _set_ready)
     checked = property(_get_checked, _set_checked)
     approved = property(_get_approved, _set_approved)
-    openness = property(_get_openness)
 
 
 class QAnswer(models.Model):
@@ -927,86 +913,21 @@ class Claim(models.Model):
 
 
 def openness_helper(score):
-    "Враппер для расчета КО"
-    f = eval("openness_helper_v%d" % score.task.organization.monitoring.openness_expression.code)
-    return f(score)
-
-
-
-def openness_helper_v1(score):
-    """Превая версия формулы расчета КО
-
-    Не учитывает доступность в граф. формате
-    """
-    found = score.found
-    weight = score.parameter.weight
-    complete = 1
-    topical = 1
-    accessible = 1
-    format = 1
-    if score.parameter.complete:
-        if score.complete == 1: complete = 0.2
-        if score.complete == 2: complete = 0.5
-        if score.complete == 3: complete = 1
-    if score.parameter.topical:
-        if score.topical == 1: topical = 0.7
-        if score.topical == 2: topical = 0.85
-        if score.topical == 3: topical = 1
-    if score.parameter.accessible:
-        if score.accessible == 1: accessible = 0.9
-        if score.accessible == 2: accessible = 0.95
-        if score.accessible == 3: accessible = 1
-    if score.parameter.hypertext:
-        if score.parameter.document:
-            if score.hypertext == 0:
-                if score.document == 0: format = 0.2
-                if score.document == 1: format = 0.2
-            if score.hypertext == 1:
-                if score.document == 0: format = 0.9
-                if score.document == 1: format = 1
-        else:
-            if score.hypertext == 0: format = 0.2
-            if score.hypertext == 1: format = 1
-    openness = weight * found * complete * topical * accessible * format
-    return openness
-
-
-
-def openness_helper_v8(score):
-    "Вторая версия расчета КО"
-    found = score.found
-    weight = score.parameter.weight
-    complete = 1
-    topical = 1
-    accessible = 1
-    format_html = 1
-    format_doc = 1
-    format_image = 1
-    if score.parameter.complete:
-        if score.complete == 1: complete = 0.2
-        if score.complete == 2: complete = 0.5
-        if score.complete == 3: complete = 1
-    if score.parameter.topical:
-        if score.topical == 1: topical = 0.7
-        if score.topical == 2: topical = 0.85
-        if score.topical == 3: topical = 1
-    if score.parameter.accessible:
-        if score.accessible == 1: accessible = 0.9
-        if score.accessible == 2: accessible = 0.95
-        if score.accessible == 3: accessible = 1
-    if score.parameter.hypertext:
-        if score.hypertext == 0: format_html = 0.2
-        if score.hypertext == 1: format_html = 1
-    if score.parameter.document:
-        if score.document == 0: format_doc = 0.85
-        if score.document == 1: format_doc = 1
-    if score.parameter.image:
-        if score.image == 0: format_image = 0.95
-        if score.image == 1: format_image = 1
-    openness = weight * found * complete * topical * accessible * format_html * format_doc * format_image
-    return openness
-
-
+    sql="""
+    SELECT
+    %(score_openness)s
+    FROM
+	exmo2010_score
+	join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
+	where exmo2010_score.id=%(pk)d
+    """ % {
+        'pk': score.pk,
+        'score_openness': score.task._sql_openness(),
+    }
+    s = Score.objects.filter(pk=score.pk).extra(select={
+        'sql_openness': sql,
+    })
+    return float(s[0].score_openness)
 
 from digest_email.models import Digest, DigestPreference
 from django.contrib.auth.models import Group
