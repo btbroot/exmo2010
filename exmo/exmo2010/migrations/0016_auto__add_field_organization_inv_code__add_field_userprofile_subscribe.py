@@ -20,7 +20,6 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from exmo2010.models import Organization
 
 
 class Migration(SchemaMigration):
@@ -50,8 +49,6 @@ class Migration(SchemaMigration):
         # Changing field 'UserProfile.preference'
         db.alter_column('exmo2010_userprofile', 'preference', self.gf('django.db.models.fields.TextField')(default=''))
 
-        # Filling in `inv_code` column.
-        Organization.objects.create_inv_codes()
 
     def backwards(self, orm):
         # Deleting field 'Organization.inv_code'
