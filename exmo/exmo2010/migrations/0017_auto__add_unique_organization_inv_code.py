@@ -20,12 +20,17 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from exmo2010.models import generate_inv_code
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding unique constraint on 'Organization', fields ['inv_code']
+        if not db.dry_run:
+            for organization in orm.Organization.objects.all():
+                organization.inv_code=generate_inv_code(6)
+                organization.save()
         db.create_unique('exmo2010_organization', ['inv_code'])
 
 
