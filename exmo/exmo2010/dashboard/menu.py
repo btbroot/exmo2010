@@ -1,3 +1,21 @@
+# -*- coding: utf-8 -*-
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 """
 This file was generated with the custommenu management command, it contains
 the classes for the admin menu, you can customize this class as you want.
@@ -31,34 +49,41 @@ class CustomMenu(Menu):
 
         ]
         request = context['request']
-        children = [
-            items.MenuItem(_('Profile'), reverse('exmo2010:user_profile')),
-        ]
+        children = []
         if request.user.is_active:
             children += [
-                items.MenuItem(_('Change password'), reverse('auth_password_change')),
-                items.MenuItem(_('Log out'), reverse('auth_logout')),
+                items.MenuItem(_('Preferences'), reverse('exmo2010:settings')),
+                items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout')),
             ]
             if request.user.get_full_name():
                 welcome_msg = request.user.get_full_name()
             else:
                 welcome_msg = request.user.username
+            msg = _('Welcome') + ', ' + welcome_msg
         else:
             children += [
-#                items.MenuItem(_('Register'), reverse('registration_register')),
-                items.MenuItem(_('Log in'), reverse('auth_login')),
+                items.MenuItem(_('Register'), reverse('exmo2010:registration_register')),
+                items.MenuItem(_('Log in'), reverse('exmo2010:auth_login')),
             ]
-            welcome_msg = "Anonymous"
-        msg = _('Welcome,') + ' ' + welcome_msg
+            msg = _('Welcome')
         self.children.append(items.MenuItem(msg, children = children))
 
-        rep_children = [
-            items.MenuItem(_('Monitoring statistics'), reverse('exmo2010:monitoring_report'))
+        rep_children = []
+        if request.user.is_authenticated() and request.user.profile.is_internal():
+            rep_children.append(items.MenuItem(_('Gender stats'),
+                reverse('exmo2010:gender_stats')))
+            rep_children.append(items.MenuItem(_('Monitoring stats'),
+                reverse('exmo2010:monitoring_report')))
+            self.children.append(items.MenuItem(_('Statistics'), children=rep_children))
+        else:
+            self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
+        inf_children = [
+            items.MenuItem(_('Help'), reverse('exmo2010:help')),
+            items.MenuItem(_('Parameter lists'), "http://www.svobodainfo.org/ru/node/1930"),
+            items.MenuItem(_('About project'), reverse('exmo2010:about')),
             ]
-
-        if request.user.is_active and request.user.profile.is_expert:
-            rep_children.append(items.MenuItem(_('Gender stats'), reverse('exmo2010:gender_stats')))
-        self.children.append(items.MenuItem(_('Statictics'), children=rep_children))
+        self.children.append(items.MenuItem(_('Information'),
+            children=inf_children))
 
         communication_children = []
 

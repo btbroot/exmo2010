@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -24,17 +25,13 @@ from exmo2010 import site as exmo
 admin.autodiscover()
 
 urlpatterns = patterns('',
-  (r'^admin/', include(admin.site.urls)),
-  (r'^comments/', include('django.contrib.comments.urls')),
-  (r'^exmo2010/', include(exmo.urls)),
-  (r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
-  (r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
-  (r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
-  (r'^admin_tools/', include('admin_tools.urls')),
-  # TEMP!!!
-  (r'^accounts/password/reset/$',lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
-  (r'^accounts/', include('registration.backends.default.urls')),
-#  (r'^accounts/socialauth/', include('social_auth.urls')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^comments/', include('django.contrib.comments.urls')),
+    url(r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
+    url(r'^exmo2010/', include(exmo.urls)),
+    url(r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
+    url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
+    url(r'^admin_tools/', include('admin_tools.urls')),
 )
 
 if settings.DEBUG:

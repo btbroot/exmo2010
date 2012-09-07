@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,22 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n admin_tools_menu_tags admin_tools_dashboard_tags theming_tags %}
+
+{% load i18n %}
 
 {% block extrastyle %}
-{{ block.super }}
-{% block dashboard_css %}
-{% admin_tools_render_menu_css %}
-{% endblock %}
-{% render_theming_css %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
 {% endblock %}
 
-{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'Exmo' %}{% endblock %}
-
-{% block branding %}
-<h1 id="site-name" style="background-color: #3C78A7; color: white;">{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
-{% endblock %}
-
-{% block nav-global %}
-{% admin_tools_render_menu %}
+{% block content %}
+    <h1>{% trans 'Help' %}</h1>
+    тут будет контент страницы
 {% endblock %}

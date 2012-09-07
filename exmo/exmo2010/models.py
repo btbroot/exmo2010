@@ -21,6 +21,8 @@
 EXMO2010 Models module
 """
 
+import string
+import random
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
@@ -40,17 +42,6 @@ QUESTION_TYPE_CHOICES = (
     (2, _("Choose a variant")),
 )
 
-MONITORING_STAT_DICT = {
-    'organization': 0,
-    'organization_rated': 0,
-    'organization_users': 0,
-    'organization_users_active': 0,
-    'expert': 0,
-    'comment_organization': 0,
-    'comment_expert': 0,
-    'avg_openness': 0,
-    'avg_openness_first': 0,
-}
 """
 Кол-во организаций
 Кол-во оцененных организций (одобренных)
@@ -62,6 +53,25 @@ MONITORING_STAT_DICT = {
 Ср. знач. Кид
 Ср. знач. первичного Кид
 """
+MONITORING_STAT_DICT = {
+    'organization': 0,
+    'organization_rated': 0,
+    'organization_users': 0,
+    'organization_users_active': 0,
+    'expert': 0,
+    'comment_organization': 0,
+    'comment_expert': 0,
+    'avg_openness': 0,
+    'avg_openness_first': 0,
+}
+
+
+INV_CODE_CHARS = string.ascii_uppercase + string.digits
+
+
+def generate_inv_code(ch_nr):
+    """Генерит код приглашения с указанным количеством символов."""
+    return "".join(random.sample(INV_CODE_CHARS, ch_nr))
 
 
 class OpennessExpression(models.Model):
@@ -337,6 +347,16 @@ class MonitoringStatus(models.Model):
             '-start',
         )
 
+class OrganizationMngr(models.Manager):
+    """
+    Менеджер с одним специальным методом для генерации кодов приглашения
+     для всех орг-ий, у которых его нет.
+    """
+    def create_inv_codes(self):
+        orgs = self.filter(inv_code="")
+        for o in orgs:
+            o.inv_code = generate_inv_code(6)
+            o.save()
 
 
 class Organization(models.Model):
@@ -352,10 +372,19 @@ class Organization(models.Model):
     keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
     comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
     monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True,
+        max_length=6, unique=True)
 
-#I dont know why, but this breaks reversion while import-(
+    objects = OrganizationMngr()
+
+    def save(self,*args,**kwargs):
+        if not self.pk and not self.inv_code:
+            self.inv_code = generate_inv_code(6)
+        super(Organization, self).save(*args, **kwargs)
+
+    #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
     def _get_tags(self):
         return Tag.objects.get_for_object(self)
@@ -1059,11 +1088,16 @@ class UserProfile(models.Model):
 
     user = models.ForeignKey(User, unique=True)
     organization = models.ManyToManyField(Organization, null=True, blank=True,
-                                          verbose_name=_('organizations for view'))
-    preference = models.TextField(null=True, blank=True,
-                                  verbose_name=_('preference'))
+                                      verbose_name=_('organizations for view'))
+    preference = models.TextField(blank=True, verbose_name=_('Preferences'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"),
-                                           choices=SEX_CHOICES, default=0, db_index=True)
+        choices=SEX_CHOICES, default=0, db_index=True)
+    subscribe = models.BooleanField(
+        verbose_name=_("Subscribe to news e-mail notification"), default=False)
+    position = models.CharField(verbose_name=_("Seat"), max_length=48,
+        blank=True)
+    phone = models.CharField(verbose_name=_("Phone"), max_length=30,
+        blank=True)
 
     @property
     def get_preference(self):
@@ -1090,7 +1124,7 @@ class UserProfile(models.Model):
             else:
                 pref['digest_duratation'] = 0
         else:
-            pref['digest_duratation'] = 5
+            pref['digest_duratation'] = 1
         return pref
 
     @property

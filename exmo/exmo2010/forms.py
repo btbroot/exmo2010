@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import string
 from django import forms
 from django.utils.safestring import mark_safe
 from exmo2010.models import Score, Task
@@ -26,11 +27,11 @@ from exmo2010.models import MonitoringStatus
 from exmo2010.models import Organization
 from exmo2010.models import UserProfile
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
 from exmo2010.widgets import TagAutocomplete
+from annoying.decorators import autostrip
 
 CORE_JS = (
                 settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
@@ -42,7 +43,37 @@ CORE_JS = (
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
 
+SEX_CHOICES = (
+    (1, _("male")),
+    (2, _("female")),
+    )
 
+COMMENT_NOTIFICATION_CHOICES = (
+    (0, _('do not send')),
+    (1, _('one email per one comment')),
+    (2, _('one email for all in time interval')),
+    )
+
+SCORE_CHANGE_NOTIFICATION_CHOICES = (
+    (0, _('do not send')),
+    (1, _('one email per one change')),
+    (2, _('one email for all in time interval')),
+    )
+
+YES_NO_CHOICES = (
+    (1, _('Yes')),
+    (0, _('No')),
+)
+
+DIGEST_INTERVALS = (
+    (1, _("once in 1 hour")),
+    (3, _("once in 3 hours")),
+    (6, _("once in 6 hours")),
+    (12, _("once in 12 hours")),
+    (24, _("once in 24 hours")),
+)
+
+PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
 from django.utils.html import escape
 def add_required_label_tag(original_function):
@@ -120,121 +151,9 @@ class TaskForm(forms.ModelForm):
         model = Task
 
 
-
-from exmo2010.stackedform import StackedForm
-class UserForm(forms.ModelForm, StackedForm):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email"]
-
-    form_template  = 'exmo2010/forms/stacked_form.html'
-    field_template = 'exmo2010/forms/stack_field.html'
-
-    class Stack:
-        stack = (
-            {
-                'label': _('User information'),
-                'fields': ('first_name', 'last_name', 'email'),
-            },
-        )
-
-
-class UserProfileForm(forms.ModelForm, StackedForm):
-    comment_notification_type = forms.ChoiceField(
-        choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
-        label = _('notification type'),
-        required = False,
-        widget = forms.RadioSelect(),
-    )
-
-    comment_notification_digest = forms.IntegerField(label = _('digest interval (in hours)'), required = False, min_value = 1, max_value = 24)
-
-    comment_notification_self = forms.BooleanField(
-        label = _('send to me my comments'),
-        required = False,
-    )
-
-    score_notification_type = forms.ChoiceField(
-        choices = UserProfile.NOTIFICATION_TYPE_CHOICES,
-        label = _('notification type'),
-        required = False,
-        widget = forms.RadioSelect(),
-    )
-
-    score_notification_digest = forms.IntegerField(label = _('digest interval (in hours)'), required = False, min_value = 1, max_value = 24)
-
-    form_template  = 'exmo2010/forms/stacked_form.html'
-    field_template = 'exmo2010/forms/stack_field.html'
-
-    class Stack:
-      stack = (
-        {
-            'label': _('Sex'),
-            'fields': ('sex',),
-        },
-        {
-            'label': _('Comment notification'),
-            'fields': ('comment_notification_type','comment_notification_digest','comment_notification_self'),
-        },
-        {
-            'label': _('Score change notification'),
-            'fields': ('score_notification_type','score_notification_digest'),
-        }
-      )
-
-    class Meta:
-        model = UserProfile
-        exclude = ["user", "organization", "preference"]
-
-    def __init__(self, *args, **kwargs):
-        profile = kwargs.get('instance')
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-        score_pref = profile.notify_score_preference
-        comment_pref = profile.notify_comment_preference
-
-        self.fields['comment_notification_type'].initial = comment_pref['type']
-        self.fields['comment_notification_self'].initial = comment_pref['self']
-        self.fields['comment_notification_digest'].initial = comment_pref['digest_duratation']
-
-        self.fields['score_notification_type'].initial = score_pref['type']
-        self.fields['score_notification_digest'].initial = score_pref['digest_duratation']
-
-    def clean_comment_notification_digest(self):
-        if self.cleaned_data['comment_notification_type'] == str(UserProfile.NOTIFICATION_TYPE_DIGEST) \
-          and not self.cleaned_data['comment_notification_digest']:
-            raise forms.ValidationError(_("Must be filled if you select digest notification"))
-        return self.cleaned_data['comment_notification_digest']
-
-    def clean_score_notification_digest(self):
-        if self.cleaned_data['score_notification_type'] == str(UserProfile.NOTIFICATION_TYPE_DIGEST) \
-          and not self.cleaned_data['score_notification_digest']:
-            raise forms.ValidationError(_("Must be filled if you select digest notification"))
-        return self.cleaned_data['score_notification_digest']
-
-    def save(self, force_insert=False, force_update=False, commit=True):
-        profile = super(UserProfileForm, self).save(commit=False)
-        comment_pref = {
-            'type': self.cleaned_data['comment_notification_type'],
-            'self': self.cleaned_data['comment_notification_self'],
-            'digest_duratation': self.cleaned_data['comment_notification_digest'],
-        }
-        score_pref = {
-            'type': self.cleaned_data['score_notification_type'],
-            'digest_duratation': self.cleaned_data['score_notification_digest'],
-        }
-
-        profile.notify_comment_preference = comment_pref
-        profile.notify_score_preference = score_pref
-
-        if commit:
-            profile.save()
-
-
-
 class ParameterFilterForm(forms.Form):
     parameter = forms.ModelChoiceField(queryset = Parameter.objects.all(), label=_('parameter'))
     found = forms.IntegerField(min_value = 0, max_value = 1, label=_('found'))
-
 
 
 class ClaimForm(forms.ModelForm):
@@ -242,12 +161,10 @@ class ClaimForm(forms.ModelForm):
         model = Claim
 
 
-
 class ClaimReportForm(forms.Form):
     expert = forms.ModelChoiceField(queryset = User.objects.all(), label=_('expert'))
     from_date = forms.DateTimeField(label=_('from date'), widget=widgets.AdminSplitDateTime)
     to_date = forms.DateTimeField(label=_('to date'), widget=widgets.AdminSplitDateTime)
-
 
 
 class MonitoringForm(forms.ModelForm):
@@ -282,7 +199,6 @@ class MonitoringStatusBaseFormset(BaseInlineFormSet):
         return self._queryset
 
 
-
 class MonitoringStatusForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         ms = kwargs.get('instance')
@@ -304,7 +220,6 @@ class MonitoringStatusForm(forms.ModelForm):
             }),
             'status': forms.HiddenInput(),
         }
-
 
 
 class ParameterForm(forms.ModelForm):
@@ -332,7 +247,6 @@ class ParameterForm(forms.ModelForm):
         css = {
             "all": ("exmo2010/selector.css",)
         }
-
 
 
 class OrganizationForm(forms.ModelForm):
@@ -397,3 +311,116 @@ class QuestionnaireDynForm(forms.Form):
                 raise forms.ValidationError(_('Cannot delete answer for '
                                       'approved task. Edit answer instead.'))
         return cleaned_data
+
+
+class BaseUserSettingsForm(forms.Form):
+    """
+    Базовая форма настроек пользователя."""
+    first_name = forms.CharField(label=_("First name"),
+        widget=forms.TextInput(attrs={"maxlength": 14}),
+        required=False, max_length=14)
+    patronymic = forms.CharField(label=_("Patronymic"),
+        widget=forms.TextInput(attrs={"maxlength": 14}),
+        required=False, max_length=14)
+    last_name = forms.CharField(label=_("Last name"),
+        widget=forms.TextInput(attrs={"maxlength": 30}),
+        required=False, max_length=30)
+    email = forms.EmailField(label="E-mail",
+        widget=forms.TextInput({"maxlength": 75}), required=False)
+    sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
+        widget=forms.RadioSelect(), required=False)
+    old_password = forms.CharField(label=_("Current password"),
+        widget=forms.PasswordInput(attrs={"maxlength": 24},
+            render_value=False), required=False)
+    new_password = forms.CharField(label=_("New password"),
+        widget=forms.PasswordInput(attrs={"maxlength": 24},
+            render_value=False), required=False)
+    subscribe = forms.BooleanField(label="",
+        help_text=_("Subscribe to news e-mail notification"), required=False)
+
+    def clean(self):
+        cd = self.cleaned_data
+        email = cd.get("email")
+        new_password = cd.get("new_password")
+        # Требуется текущий пароль для смены email.
+        if email and email != self.user.email:
+            if not self.user.check_password(cd.get("old_password")):
+                raise forms.ValidationError(
+                    _("Current password required to change e-mail."))
+        # Требуется текущий пароль для установки нового.
+        if (new_password and
+            not self.user.check_password(cd.get("old_password"))):
+            raise forms.ValidationError(
+                _("Current password required to set the new one."))
+        return cd
+
+    def clean_email(self):
+        """Проверка email на уникальность в нашей системе."""
+        email = self.cleaned_data.get('email')
+        if (email and email != self.user.email and
+            (User.objects.filter(email__iexact=email).exists() or
+             User.objects.filter(username__iexact=email).exists())):
+            raise forms.ValidationError(_("This email address is already in "
+                          "use. Please supply a different email address."))
+        return email
+
+    def clean_new_password(self):
+        """Проверка пароля на наличие недопустимых символов."""
+        password = self.cleaned_data.get('new_password', '')
+        for char in password:  # Проверять на наличие пароля необязательно.
+            if char not in PASSWORD_ALLOWED_CHARS:
+                raise forms.ValidationError(_("Password contains unallowed "
+                      "characters. Please use only latin letters and digits."))
+        return password
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(BaseUserSettingsForm, self).__init__(*args, **kwargs)
+
+
+@autostrip
+class OrdinaryUserSettingsForm(BaseUserSettingsForm):
+    """Форма настроек обычного пользователя."""
+    invitation_code = forms.CharField(label=_("Invitation code"),
+        widget=forms.TextInput(attrs={"maxlength": 6}),
+        required=False, max_length=6, min_length=6)
+
+
+@autostrip
+class OurUserSettingsForm(BaseUserSettingsForm):
+    """Форма настроек нашего сотрудника."""
+    comment_notification_type = forms.ChoiceField(
+        choices=COMMENT_NOTIFICATION_CHOICES,
+        label =_('Comment notification'), required = False)
+    comment_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
+        required=False)
+    notify_on_my_comments = forms.ChoiceField(
+        choices=YES_NO_CHOICES, label=_('Send to me my comments'),
+        required = False, widget = forms.RadioSelect())
+    score_notification_type = forms.ChoiceField(
+        choices=SCORE_CHANGE_NOTIFICATION_CHOICES,
+        label=_('Score change notification'), required = False)
+    score_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
+        required=False)
+
+
+@autostrip
+class OrgUserSettingsForm(OurUserSettingsForm):
+    """Форма настроек представителя организации."""
+    position = forms.CharField(label=_("Seat"),
+        widget=forms.TextInput(attrs={"maxlength": 48}),
+        required=False, max_length=48)
+    phone = forms.CharField(label=_("Phone"),
+        widget=forms.TextInput(attrs={"maxlength": 30}),
+        required=False, max_length=30)
+
+
+@autostrip
+class OrgUserInfoForm(forms.Form):
+    """Форма ввода доп. данных представителя организации."""
+    position = forms.CharField(label=_("Seat"),
+        widget=forms.TextInput(attrs={"maxlength": 48}),
+        required=False, max_length=48)
+    phone = forms.CharField(label=_("Phone"),
+        widget=forms.TextInput(attrs={"maxlength": 30}),
+        required=False, max_length=30)

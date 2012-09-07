@@ -31,19 +31,23 @@ from exmo2010.models import UserProfile, SEX_CHOICES, Monitoring
 SEX_CHOICES_DICT = dict(SEX_CHOICES)
 
 COMMUNICATION_REPORT_TYPE_DICT = {
-    1: _('Comments without answer'),
-    2: _('Comments with answer'),
+    1: _('Comments with answer'),
+    2: _('Comments without answer'),
     3: _('Opened claims')
 }
-
 
 
 def gender_stats(request):
     """
     Страница гендерной статистики.
     """
-    external_users = User.objects.exclude(is_superuser=True).exclude(is_staff=True).exclude(groups__name__in=UserProfile.expert_groups)
-    result = external_users.values_list('userprofile__sex').order_by('userprofile__sex').annotate(Count('userprofile__sex'))
+    if (not request.user.is_authenticated() or
+        not request.user.profile.is_internal()):
+        raise Http404
+    external_users = User.objects.exclude(is_superuser=True).exclude(
+        is_staff=True).exclude(groups__name__in=UserProfile.expert_groups)
+    result = external_users.values_list('userprofile__sex').order_by(
+        'userprofile__sex').annotate(Count('userprofile__sex'))
     result_list = []
     for val, count in result:
         if val is not None:  # Workaround для косяка MySQL в django.
@@ -58,8 +62,8 @@ def comment_list(request, report_type='1'):
     """
     Страница сводного списка комментариев
     report_type:
-        1 -- неотвеченные комментарии
-        2 -- отвеченные комментарии
+        1 -- отвеченные комментарии
+        2 -- неотвеченные комментарии
         3 -- открытые претензии
     """
 
@@ -76,9 +80,9 @@ def comment_list(request, report_type='1'):
     template = 'exmo2010/comment_list.html'
 
     if report_type == 1:
-        queryset = request.user.profile.get_not_answered_comments()
-    elif report_type == 2:
         queryset = request.user.profile.get_answered_comments()
+    elif report_type == 2:
+        queryset = request.user.profile.get_not_answered_comments()
     elif report_type == 3:
         queryset = request.user.profile.get_opened_claims()
         template = 'exmo2010/claim_list.html'

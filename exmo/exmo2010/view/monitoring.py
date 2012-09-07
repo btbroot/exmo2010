@@ -47,7 +47,7 @@ def _get_monitoring_list(request):
     for m in Monitoring.objects.all().select_related():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    queryset = Monitoring.objects.filter(pk__in = monitorings_pk)
+    queryset = Monitoring.objects.filter(pk__in=monitorings_pk).order_by("-id")
     return queryset
 
 def monitoring_list(request):

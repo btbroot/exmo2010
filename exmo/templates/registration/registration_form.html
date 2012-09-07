@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,39 +21,29 @@
 
 {% load i18n %}
 
-{% block extrastyle %}{% load adminmedia %}{{ block.super }}
-    <link rel="stylesheet" type="text/css"
-          href="{{STATIC_URL}}admin/css/login.css"/>{% endblock %}
-
-{% block bodyclass %}login{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block userwelcome %}{% endblock %}
-
-{% block userlinks %}{% endblock %}
-
-{% block title %}{% trans 'Register new user' %} | {% trans 'Exmo' %}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+{% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Register new user' %}</h1>
+    <h1>{% trans 'Registration' %}</h1>
     {% if request.user.is_authenticated %}
     <p>{% trans 'You are already logged in' %}.</p>
-    {% url auth_logout as auth_logout_url %}
+    {% url exmo2010:auth_logout as auth_logout_url %}
     <p>{% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
-    <h2>{% trans 'or with your local login and password' %}:</h2>
+    <p>{% trans 'In order to log in the system, please register first.' %}</p>
     <div id="content-main">
         <form action="" method="post">
             {% csrf_token %}
             <table>{{ form }}</table>
+            <p>* {% trans "required fields" %}</p>
             <input type="submit" value="{% trans 'Register' %}"/>
         </form>
     </div>
     <script type="text/javascript">
-        document.getElementById('id_username').focus()
+        document.getElementById('id_first_name').focus()
     </script>
     {% endif %}
 {% endblock %}

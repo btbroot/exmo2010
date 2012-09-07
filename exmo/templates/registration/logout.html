@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,24 +21,13 @@
 
 {% load i18n %}
 
-{% block extrastyle %}{% load adminmedia %}{{ block.super }}
-    <link rel="stylesheet" type="text/css"
-          href="{{STATIC_URL}}admin/css/login.css"/>{% endblock %}
-
-{% block bodyclass %}login{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block userwelcome %}{% endblock %}
-
-{% block userlinks %}{% endblock %}
-
-{% block title %}{% trans 'Log out' %} | {% trans 'Exmo' %}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+{% endblock %}
 
 {% block content %}
     <p>{% trans 'Thanks for spending some quality time with the Web site today' %}.</p>
-    <p><a href="{% url auth_login %}">{% trans 'Log in again' %}</a></p>
+    <p><a href="{% url exmo2010:auth_login %}">{% trans 'Log in again' %}</a></p>
     <p><a href="{% url exmo2010:index %}">{% trans 'Go to main page' %}</a></p>
 {% endblock %}

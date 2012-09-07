@@ -16,11 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
-{% load i18n %}
-{% trans 'Registration on' %} {{ site }}
+{% endcomment %}{% load i18n %}{% trans 'Registration on' %} {{ site }}
 
 {% trans 'In order to activate your account you should follow the link' %}:
-http://{{ site }}/accounts/activate/{{ activation_key }}/
+http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/
 
 {% trans 'Thank you' %}!

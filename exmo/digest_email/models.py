@@ -24,6 +24,7 @@ Digest email models module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 
 
@@ -82,7 +83,7 @@ class DigestPreference(models.Model):
     digest = models.ForeignKey(Digest, verbose_name = _('digest'))
     "Дайджест"
 
-    interval = models.PositiveIntegerField(default = 5, verbose_name = _('interval (hours)'))
+    interval = models.PositiveIntegerField(default = 1, verbose_name = _('interval (hours)'))
     "Периодичность дайджестов в часах"
 
     def __unicode__(self):

@@ -33,3 +33,4 @@ git+https://github.com/simplegeo/python-oauth2.git
 git+https://github.com/bsavelev/django-social-auth.git
 django-wysiwyg
 simplejson
+hg+https://bitbucket.org/offline/django-annoying

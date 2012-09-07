@@ -47,9 +47,10 @@ class ScoreAdmin(VersionAdmin):
     list_filter = ('revision',)
 
 class OrganizationAdmin(VersionAdmin):
-  list_display = ('pk', 'name')
-  search_fields = ('name', )
+  list_display = ('pk', 'name', 'inv_code')
+  search_fields = ('name', 'inv_code')
   list_filter = ('monitoring',)
+  readonly_fields = ('inv_code',)
 
 class MonitoringAdmin(VersionAdmin):
   list_display = ('name',)

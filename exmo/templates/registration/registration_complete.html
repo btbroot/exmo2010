@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,29 +21,16 @@
 
 {% load i18n %}
 
-{% block extrastyle %}{% load adminmedia %}{{ block.super }}
-    <link rel="stylesheet" type="text/css"
-          href="{{STATIC_URL}}admin/css/login.css"/>{% endblock %}
-
-{% block bodyclass %}login{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block userwelcome %}{% endblock %}
-
-{% block userlinks %}{% endblock %}
-
-{% block title %}{% trans 'Registration complete' %} | {% trans 'Exmo' %}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+{% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Registration complete' %}</h1>
+    <h1>{% trans 'Please, confirm your registration' %}</h1>
     <div id="content-main">
-        {% blocktrans %}
-            <p>Thank you for your time.</p>
-            <p>Special email was sant to your email address.</p>
-            <p>You can confirm your registration by simply following a link from the email.</p>
-        {% endblocktrans %}
+        <p>{% trans 'We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can log in the system.' %}</p>
+        {% url exmo2010:index as index %}
+        {% blocktrans %}<p>To get published monitorings info, <a href="{{ index }}">please go to the main page</a>.</p>{% endblocktrans %}
     </div>
 {% endblock %}

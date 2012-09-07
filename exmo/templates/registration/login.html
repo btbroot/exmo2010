@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,36 +21,60 @@
 
 {% load i18n %}
 
-{% block extrastyle %}{% load adminmedia %}{{ block.super }}
-    <link rel="stylesheet" type="text/css"
-          href="{{STATIC_URL}}admin/css/login.css"/>{% endblock %}
-
-{% block bodyclass %}login{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block userwelcome %}{% endblock %}
-
-{% block userlinks %}{% endblock %}
-
-{% block title %}{% trans 'Log in' %} | {% trans 'Exmo' %}{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+{% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Log in' %}</h1>
+    <h1>{% trans 'Log in the system' %}</h1>
     {% if request.user.is_authenticated %}
     <p>{% trans 'You are already logged in' %}.</p>
     {% url auth_logout as auth_logout_url %}
     <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
-    <h2>{% trans 'with your local login and password' %}:</h2>
     <div id="content-main">
         <form action="" method="post">
             {% csrf_token %}
-            <table>{{ form }}</table>
+            <div>
+                {% if form.non_field_errors %}
+                    <ul class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <span class="fc_item_header">{% trans 'E-mail or username' %}</span>
+                <div>
+                    {% if form.username.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.username.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.username.help_text %}
+                        <span>{{ form.username.help_text }}</span><br>
+                    {% endif %}
+                    <div class="fc_field_header">{{ form.username }}</div>
+                </div>
+                <span class="fc_item_header">{% trans 'Password' %}</span>
+                <div>
+                    {% if form.password.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.password.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if form.password.help_text %}
+                        <span>{{ form.password.help_text }}</span><br>
+                    {% endif %}
+                    <div class="fc_field_header">{{ form.password }}</div>
+                </div>
+            </div>
+            <a href="{% url exmo2010:auth_password_reset %}">{% trans 'Forgot your password' %}?</a>
             <input type="submit" value="{% trans 'Log in' %}"/><br/>
-            <a href="{% url exmo2010:index %}">{% trans 'Go to main page' %}</a>
         </form>
     </div>
     <script type="text/javascript">
