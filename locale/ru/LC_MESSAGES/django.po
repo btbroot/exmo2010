@@ -28,7 +28,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Lokalize 1.0\n"
 
 #: exmo/digest_email/digest.py:57
@@ -168,8 +169,11 @@ msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
 #: exmo/exmo2010/forms.py:268
-msgid "Monitoring interact start date is missing. Check your monitoring calendar"
-msgstr "Не указана дата начала периода взаимодействия. Проверьте календарь мониторинга"
+msgid ""
+"Monitoring interact start date is missing. Check your monitoring calendar"
+msgstr ""
+"Не указана дата начала периода взаимодействия. Проверьте календарь "
+"мониторинга"
 
 #: exmo/exmo2010/forms.py:271
 msgid "time limit (in days)"
@@ -232,13 +236,19 @@ msgid "Current password required to set the new one."
 msgstr "Для установки нового пароля необходимо ввести текущий пароль."
 
 #: exmo/exmo2010/forms.py:363 exmo/exmo2010/custom_registration/forms.py:89
-msgid "This email address is already in use. Please supply a different email address."
+msgid ""
+"This email address is already in use. Please supply a different email "
+"address."
 msgstr ""
 
 #: exmo/exmo2010/forms.py:372 exmo/exmo2010/custom_registration/forms.py:78
 #: exmo/exmo2010/custom_registration/forms.py:112
-msgid "Password contains unallowed characters. Please use only latin letters and digits."
-msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы и цифры."
+msgid ""
+"Password contains unallowed characters. Please use only latin letters and "
+"digits."
+msgstr ""
+"Пароль содержит недопустимые символы. Разрешены только латинские буквы и "
+"цифры."
 
 #: exmo/exmo2010/forms.py:384 exmo/exmo2010/models.py:378
 #: exmo/exmo2010/custom_registration/forms.py:64
@@ -522,8 +532,12 @@ msgstr "Готовая задача должна быть выполнена н�
 
 #: exmo/exmo2010/models.py:533
 #, python-format
-msgid "Approved task for monitoring %(monitoring)s and organization %(organization)s already exist."
-msgstr "Для мониторинга %(monitoring)s и органа/организации %(organization)s уже существует одобренная задача."
+msgid ""
+"Approved task for monitoring %(monitoring)s and organization "
+"%(organization)s already exist."
+msgstr ""
+"Для мониторинга %(monitoring)s и органа/организации %(organization)s уже "
+"существует одобренная задача."
 
 #: exmo/exmo2010/models.py:630
 msgid "Text answer"
@@ -1182,7 +1196,8 @@ msgstr "Страница не найдена"
 
 #: exmo/templates/404.html:29
 msgid "We're sorry, but the requested page could not be found."
-msgstr "Приносим свои извинения, но страница которую вы запросили не существует."
+msgstr ""
+"Приносим свои извинения, но страница которую вы запросили не существует."
 
 #: exmo/templates/500.html:23
 msgid "Server error (500)"
@@ -1193,8 +1208,13 @@ msgid "Server Error <em>(500)</em>"
 msgstr "Ошибка сервера <em>(500)</em>"
 
 #: exmo/templates/500.html:27
-msgid "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience."
-msgstr "На сервере произошла ошибка. О ней было сообщено администратору по элестронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за понимание."
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+"На сервере произошла ошибка. О ней было сообщено администратору по "
+"элестронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за "
+"понимание."
 
 #: exmo/templates/msg.html:23
 #: exmo/templates/exmo2010/add_questionnaire.html:33
@@ -1413,8 +1433,10 @@ msgid "Comments count from organizations without reply and date in limit"
 msgstr "Кол-во комментариев от организаций без ответов"
 
 #: exmo/templates/exmo2010/monitoring_comment_report.html:63
-msgid "Comments count from organizations without reply and should be answered today"
-msgstr "Кол-во комментариев от организаций на которые необходимо ответить сегодня"
+msgid ""
+"Comments count from organizations without reply and should be answered today"
+msgstr ""
+"Кол-во комментариев от организаций на которые необходимо ответить сегодня"
 
 #: exmo/templates/exmo2010/monitoring_comment_report.html:64
 msgid "Comments count from organizations without reply and date out of limit"
@@ -1433,12 +1455,19 @@ msgid "Comments list from organizations without reply and date out of limit"
 msgstr "Комментарии от организаций без ответов в срок"
 
 #: exmo/templates/exmo2010/monitoring_comment_report.html:109
-msgid "Comments list from organization that needs to reply today (exclude list above)"
-msgstr "Комментарии от организаций на которые необходимо ответить сегодня (за исключением списка выше)"
+msgid ""
+"Comments list from organization that needs to reply today (exclude list "
+"above)"
+msgstr ""
+"Комментарии от организаций на которые необходимо ответить сегодня (за "
+"исключением списка выше)"
 
 #: exmo/templates/exmo2010/monitoring_comment_report.html:121
-msgid "Comments list from organization that needs to reply (exclude list above)"
-msgstr "Комментарии от организаций на которые необходимо ответить (за исключением списка выше)"
+msgid ""
+"Comments list from organization that needs to reply (exclude list above)"
+msgstr ""
+"Комментарии от организаций на которые необходимо ответить (за исключением "
+"списка выше)"
 
 #: exmo/templates/exmo2010/monitoring_comment_report.html:134
 msgid "Haven't comments from organizations"
@@ -1453,8 +1482,12 @@ msgid "Delete this monitoring?"
 msgstr "Удалить цикл мониторинга?"
 
 #: exmo/templates/exmo2010/monitoring_form.html:28
-msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
-msgstr "Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты и собранных данных. Желаете ли вы удалить анкету?"
+msgid ""
+"You've chosen to delete monitoring's questionnaire. This will lead to "
+"removing all its questions and collected answers. Are you sure?"
+msgstr ""
+"Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты "
+"и собранных данных. Желаете ли вы удалить анкету?"
 
 #: exmo/templates/exmo2010/monitoring_form.html:73
 msgid "Export organizations"
@@ -1484,8 +1517,12 @@ msgid "Edit questionnaire"
 msgstr "Редактировать анкету"
 
 #: exmo/templates/exmo2010/monitoring_form.html:88
-msgid "Questionnaire is already created. To delete it turn off \"Add questionnaire\" checkbox and save changes"
-msgstr "Анкета уже создана. Для её удаления снимите галочку напротив \"Добавить анкету в цикл\", и сохраните изменения"
+msgid ""
+"Questionnaire is already created. To delete it turn off \"Add questionnaire"
+"\" checkbox and save changes"
+msgstr ""
+"Анкета уже создана. Для её удаления снимите галочку напротив \"Добавить "
+"анкету в цикл\", и сохраните изменения"
 
 #: exmo/templates/exmo2010/monitoring_form.html:97
 msgid "Calendar"
@@ -1655,8 +1692,12 @@ msgid "Registration's last step"
 msgstr "Окончание регистрации"
 
 #: exmo/templates/exmo2010/org_user_info.html:29
-msgid "Please enter your seat and phone. We need this info to make sure you're really its representative."
-msgstr "Пожалуйста, укажите вашу должность и контактный телефон. Это необходимо, чтобы удостовериться, что вы являетесь представителем органа власти."
+msgid ""
+"Please enter your seat and phone. We need this info to make sure you're "
+"really its representative."
+msgstr ""
+"Пожалуйста, укажите вашу должность и контактный телефон. Это необходимо, "
+"чтобы удостовериться, что вы являетесь представителем органа власти."
 
 #: exmo/templates/exmo2010/org_user_info.html:68
 msgid "Finish registration"
@@ -1737,7 +1778,9 @@ msgstr "Среднее значение"
 
 #: exmo/templates/exmo2010/rating.html:85
 msgid "First openness &mdash; openness value before interact"
-msgstr "Первичный Кид &mdash; значение коэффициента информационной доступности до этапа взаимодействия с представителями организаций"
+msgstr ""
+"Первичный Кид &mdash; значение коэффициента информационной доступности до "
+"этапа взаимодействия с представителями организаций"
 
 #: exmo/templates/exmo2010/rating_color.html:38
 #: exmo/templates/exmo2010/rating_common.html:23
@@ -1905,7 +1948,9 @@ msgstr "Задача "
 
 #: exmo/templates/exmo2010/user_settings.html:33
 msgid "Here you can change your account, password and notification settings."
-msgstr "На этой странице вы можете изменить настройки своего профиля, сменить пароль и настроить рассылку уведомлений."
+msgstr ""
+"На этой странице вы можете изменить настройки своего профиля, сменить пароль "
+"и настроить рассылку уведомлений."
 
 #: exmo/templates/exmo2010/user_settings.html:46
 msgid "Personal info"
@@ -1930,13 +1975,16 @@ msgstr "Ошибка активации аккаунта"
 #: exmo/templates/registration/activate.html:31
 msgid ""
 "\n"
-"        <p>Please make sure you properly copied activation link from our email.</p>\n"
+"        <p>Please make sure you properly copied activation link from our "
+"email.</p>\n"
 "        <p>Also note that the link is alive only for 3 days.</p>\n"
 "    "
 msgstr ""
 "\n"
-"        <p>Пожалуйста, убедитесь, что вы правильно открыли ссылку из полученного от нас письма.</p>\n"
-"        <p>Также, имейте ввиду, что эта ссылка действительна только в течение 3 дней.</p>\n"
+"        <p>Пожалуйста, убедитесь, что вы правильно открыли ссылку из "
+"полученного от нас письма.</p>\n"
+"        <p>Также, имейте ввиду, что эта ссылка действительна только в "
+"течение 3 дней.</p>\n"
 "    "
 
 #: exmo/templates/registration/activate.html:35
@@ -1956,11 +2004,13 @@ msgstr "Регистрация подтверждена"
 #, python-format
 msgid ""
 "\n"
-"            <p>Now you can <a href=\"%(login_url)s\">log in</a> with credentials provided during registration.</p>\n"
+"            <p>Now you can <a href=\"%(login_url)s\">log in</a> with "
+"credentials provided during registration.</p>\n"
 "        "
 msgstr ""
 "\n"
-"            <p>Теперь вы можете <a href=\"%(login_url)s\">войти</a>, используя email и пароль, указанные при регистрации.</p>\n"
+"            <p>Теперь вы можете <a href=\"%(login_url)s\">войти</a>, "
+"используя email и пароль, указанные при регистрации.</p>\n"
 "        "
 
 #: exmo/templates/registration/activation_email.txt:19
@@ -1987,8 +2037,12 @@ msgstr "Вы уже авторизованы в системе"
 
 #: exmo/templates/registration/login.html:34
 #, python-format
-msgid "If you really want to log in again, please <a href=\"%(auth_logout_url)s\">log out</a> first"
-msgstr "Если вы хотите зайти под другой учетной записью, пожалуйста, сначала <a href=\"%(auth_logout_url)s\">выйдите</a> из системы"
+msgid ""
+"If you really want to log in again, please <a href=\"%(auth_logout_url)s"
+"\">log out</a> first"
+msgstr ""
+"Если вы хотите зайти под другой учетной записью, пожалуйста, сначала <a href="
+"\"%(auth_logout_url)s\">выйдите</a> из системы"
 
 #: exmo/templates/registration/login.html:47
 msgid "E-mail or username"
@@ -2032,8 +2086,12 @@ msgstr[1] "Пожалуйста, исправьте найденные ошиб�
 msgstr[2] "Пожалуйста, исправьте найденные ошибки"
 
 #: exmo/templates/registration/password_change_form.html:53
-msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
-msgstr "Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, чтобы быть уверенным, что вы не ошиблись при вводе."
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+"Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, чтобы "
+"быть уверенным, что вы не ошиблись при вводе."
 
 #: exmo/templates/registration/password_change_form.html:60
 msgid "Old password"
@@ -2062,7 +2120,9 @@ msgstr "Введите новый пароль"
 
 #: exmo/templates/registration/password_reset_confirm.html:34
 msgid "Please enter your new password."
-msgstr "Пожалуйста, введите новый пароль, который будет использоваться вами для входа в систему."
+msgstr ""
+"Пожалуйста, введите новый пароль, который будет использоваться вами для "
+"входа в систему."
 
 #: exmo/templates/registration/password_reset_confirm.html:35
 msgid "Use latin letters and digits combination as a password."
@@ -2077,22 +2137,36 @@ msgid "Password reset unsuccessful"
 msgstr "Не удалось изменить пароль"
 
 #: exmo/templates/registration/password_reset_confirm.html:67
-msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
-msgstr "Неправильная ссылка для восстановление пароля. Возможно, потому, что она уже была использована. Пожалуйста, пройдите процедуру восстановления еще раз."
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Неправильная ссылка для восстановление пароля. Возможно, потому, что она уже "
+"была использована. Пожалуйста, пройдите процедуру восстановления еще раз."
 
 #: exmo/templates/registration/password_reset_done.html:30
 msgid "Please check your email"
 msgstr "Пожалуйста, проверьте ваш e-mail"
 
 #: exmo/templates/registration/password_reset_done.html:31
-msgid "We've sent a message to your e-mail. In order to reset your password, please follow the link in the message. Then you'll be able to enter a new password for your account."
-msgstr "На ваш e-mail отправлено письмо. Для восстановления пароля, пожалуйста, перейдите по ссылке внутри письма. После этого вы попадете на страницу ввода нового пароля, по которому сможете входить в систему EXMO."
+msgid ""
+"We've sent a message to your e-mail. In order to reset your password, please "
+"follow the link in the message. Then you'll be able to enter a new password "
+"for your account."
+msgstr ""
+"На ваш e-mail отправлено письмо. Для восстановления пароля, пожалуйста, "
+"перейдите по ссылке внутри письма. После этого вы попадете на страницу ввода "
+"нового пароля, по которому сможете входить в систему EXMO."
 
 #: exmo/templates/registration/password_reset_done.html:33
 #: exmo/templates/registration/registration_complete.html:34
 #, python-format
-msgid "<p>To get published monitorings info, <a href=\"%(index)s\">please go to the main page</a>.</p>"
-msgstr "<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s\">перейдите на главную страницу</a>.</p>"
+msgid ""
+"<p>To get published monitorings info, <a href=\"%(index)s\">please go to the "
+"main page</a>.</p>"
+msgstr ""
+"<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s"
+"\">перейдите на главную страницу</a>.</p>"
 
 #: exmo/templates/registration/password_reset_email.html:19
 msgid "In order to reset your password, please follow the link:"
@@ -2100,15 +2174,21 @@ msgstr "Для восстановления пароля, пожалуйста, 
 
 #: exmo/templates/registration/password_reset_email.html:23
 msgid "Then you'll be able to enter a new password for your account."
-msgstr "После этого вы попадете на страницу ввода нового пароля, по которому сможете входить в систему EXMO."
+msgstr ""
+"После этого вы попадете на страницу ввода нового пароля, по которому сможете "
+"входить в систему EXMO."
 
 #: exmo/templates/registration/password_reset_form.html:30
 msgid "Password reset"
 msgstr "Восстановление пароля"
 
 #: exmo/templates/registration/password_reset_form.html:32
-msgid "In order to reset your password enter your e-mail address below. We'll send you a message with a link which you should open and enter a new password."
-msgstr "Для восстановления пароля введите ваш e-mail. Вам будет отправлено письмо с ссылкой, перейдя по которой вы сможете ввести новый пароль."
+msgid ""
+"In order to reset your password enter your e-mail address below. We'll send "
+"you a message with a link which you should open and enter a new password."
+msgstr ""
+"Для восстановления пароля введите ваш e-mail. Вам будет отправлено письмо с "
+"ссылкой, перейдя по которой вы сможете ввести новый пароль."
 
 #: exmo/templates/registration/password_reset_form.html:38
 msgid "Recover password"
@@ -2131,8 +2211,13 @@ msgid "Please, confirm your registration"
 msgstr "Пожалуйста, подтвердите регистрацию в системе EXMO"
 
 #: exmo/templates/registration/registration_complete.html:32
-msgid "We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can log in the system."
-msgstr "На ваш e-mail отправлено письмо. Для подтверждения регистрации, пожалуйста, перейдите по ссылке внутри письма. После этого вы сможете использовать весь функционал системы EXMO."
+msgid ""
+"We have sent a message to your e-mail. To confirm your registration, please "
+"follow the link in the message. After confirmation you can log in the system."
+msgstr ""
+"На ваш e-mail отправлено письмо. Для подтверждения регистрации, пожалуйста, "
+"перейдите по ссылке внутри письма. После этого вы сможете использовать весь "
+"функционал системы EXMO."
 
 #: exmo/templates/registration/registration_form.html:30
 msgid "Registration"
@@ -2140,12 +2225,18 @@ msgstr "Регистрация"
 
 #: exmo/templates/registration/registration_form.html:34
 #, python-format
-msgid "If you really want to register again, please <a href=\"%(auth_logout_url)s\">log out</a> first"
-msgstr "Если вы хотите зарегистрироваться еще раз, пожалуйста, сначала <a href=\"%(auth_logout_url)s\">выйдите</a> из системы"
+msgid ""
+"If you really want to register again, please <a href=\"%(auth_logout_url)s"
+"\">log out</a> first"
+msgstr ""
+"Если вы хотите зарегистрироваться еще раз, пожалуйста, сначала <a href="
+"\"%(auth_logout_url)s\">выйдите</a> из системы"
 
 #: exmo/templates/registration/registration_form.html:36
 msgid "In order to log in the system, please register first."
-msgstr "Для получения расширенного доступа к системе EXMO, пожалуйста, пройдите процедуру регистрации."
+msgstr ""
+"Для получения расширенного доступа к системе EXMO, пожалуйста, пройдите "
+"процедуру регистрации."
 
 #: exmo/templates/registration/registration_form.html:41
 msgid "required fields"
@@ -2158,3 +2249,18 @@ msgstr "Модули"
 #: exmo/templates/user_dashboard/menu.html:32
 msgid "Please enter a name for the bookmark"
 msgstr ""
+
+msgid "once in"
+msgstr "в"
+
+msgid "Title"
+msgstr "Название"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Does not allowed to connect with global parameter type."
+msgstr "Нельзя связывать параметр с глобальным типом."
+
+msgid "Parameter's monitoring differs from type's one."
+msgstr "Циклы мониторинга параметра и типа не совпадают."

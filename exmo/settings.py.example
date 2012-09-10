@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'tagging_autocomplete',
     'registration',  # django-registration.
     'django_wysiwyg',
+    'mptt',
     # Our own apps.
     'exmo2010',
     'digest_email',
