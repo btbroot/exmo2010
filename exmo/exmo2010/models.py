@@ -107,7 +107,7 @@ class Monitoring(models.Model):
         (MONITORING_STATUS_FULL[6],)
 
     MONITORING_EDIT_STATUSES = {
-        MONITORING_PREPARE: _('Monitoring begin date'),
+        MONITORING_RATE: _('Monitoring rate begin date'),
         MONITORING_INTERACT: _('Monitoring interact start date'),
         MONITORING_RESULT: _('Monitoring interact end date'),
         MONITORING_PUBLISH: _('Monitoring publish date'),
@@ -244,6 +244,10 @@ class Monitoring(models.Model):
         return self._get_date(self.MONITORING_PREPARE)
 
     @property
+    def rate_date(self):
+        return self._get_date(self.MONITORING_RATE)
+
+    @property
     def interact_date(self):
         return self._get_date(self.MONITORING_INTERACT)
 
@@ -255,7 +259,7 @@ class Monitoring(models.Model):
     def publish_date(self):
         return self._get_date(self.MONITORING_PUBLISH)
 
-    def prepare_date_sql_inline(self):
+    def prepare_date_sql_inline(self, status=MONITORING_RATE):
         sql = "select " \
               "%(start_field)s from %(monitoringstatus_table)s " \
               "where " \
@@ -264,7 +268,7 @@ class Monitoring(models.Model):
             'start_field': 'start',
             'monitoringstatus_table': MonitoringStatus._meta.db_table,
             'status_field': 'status',
-            'status': Monitoring._meta.db_table + ".status",
+            'status': status,
             'monitoring_field': 'monitoring_id',
             'monitoring': Monitoring._meta.db_table + "." + Monitoring._meta.pk.name,
         }
