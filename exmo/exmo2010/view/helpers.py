@@ -40,8 +40,12 @@ def table(request, headers, **kwargs):
 
 
 def rating(monitoring):
+    #sample extra for select
+    extra_select = "count(*)"
     #get task from monitoring for valid sql
-    generic_task=Task.objects.filter(organization__monitoring=monitoring)[0]
+    generic_task_qs=Task.objects.filter(organization__monitoring=monitoring)
+    if generic_task_qs.exists():
+        extra_select = generic_task_qs[0]._sql_openness()
     object_list = [
         {
             'task': task,
@@ -50,7 +54,7 @@ def rating(monitoring):
         } for task in Task.approved_tasks.filter(
         organization__monitoring=monitoring
         ).extra(select={
-            '__task_openness': generic_task._sql_openness(),
+            '__task_openness': extra_select,
         }).order_by('-__task_openness')
     ]
 
