@@ -47,7 +47,11 @@ def _get_monitoring_list(request):
     for m in Monitoring.objects.all().select_related():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    queryset = Monitoring.objects.filter(pk__in=monitorings_pk).order_by("-id")
+    queryset = Monitoring.objects.filter(pk__in=monitorings_pk).extra(
+        select={'start_date': Monitoring().prepare_date_sql_inline(
+            Monitoring.MONITORING_PUBLISH),
+                }
+    ).order_by('-start_date')
     return queryset
 
 def monitoring_list(request):
@@ -66,7 +70,8 @@ def monitoring_list(request):
             status = Task.TASK_APPROVED,
             )
 
-    if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()): return HttpResponseForbidden(_('Forbidden'))
+    if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
+        return HttpResponseForbidden(_('Forbidden'))
     return table(
         request,
         headers,
