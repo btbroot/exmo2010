@@ -202,12 +202,8 @@ def post_save_model(sender, instance, created, **kwargs):
         must_register = True
     #update task openness hook
     from exmo2010 import models
-    if instance.__class__ == models.Score:
-        instance.task.update_openness()
     if instance.__class__ == models.Monitoring:
-        for task in models.Task.objects.filter(organization__monitoring = instance).select_related(): task.update_openness()
-    if instance.__class__ == models.Parameter:
-        for task in models.Task.objects.filter(score__parameter = instance).select_related(): task.update_openness()
+        for task in models.Task.objects.filter(organization__monitoring = instance): task.update_openness()
     if must_register:
         revision.register(instance.__class__)
 
