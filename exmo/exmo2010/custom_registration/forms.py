@@ -85,10 +85,12 @@ class RegistrationForm(forms.Form):
         site.
 
         """
-        if User.objects.filter(email__iexact=self.cleaned_data['email']):
+        email = self.cleaned_data['email']
+        if (User.objects.filter(email__iexact=email).exists() or
+            User.objects.filter(username__iexact=email).exists()):
             raise forms.ValidationError(_("This email address is already in "
                               "use. Please supply a different email address."))
-        return self.cleaned_data['email']
+        return email
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
