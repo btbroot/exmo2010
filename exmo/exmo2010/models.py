@@ -384,7 +384,7 @@ class Organization(models.Model):
 
     objects = OrganizationMngr()
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         if not self.pk and not self.inv_code:
             self.inv_code = generate_inv_code(6)
         super(Organization, self).save(*args, **kwargs)

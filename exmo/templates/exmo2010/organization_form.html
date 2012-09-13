@@ -37,14 +37,10 @@
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
-<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-  <p>{{form.name.label_tag}}{{ form.name }} {{ form.name.errors }}</p>
-  <p>{{form.url.label_tag}}{{ form.url }} {{ form.url.errors }}</p>
-  <p>{{form.entity.label_tag}}{{ form.entity }} {{ form.entity.errors }}</p>
-  <p>{{form.keywords.label_tag}}{{ form.keywords }} {{ form.keywords.errors }}</p>
-  <p>{{form.comments.label_tag}}{{ form.comments }} {{ form.comments.errors }}</p>
-  <p>{{form.keyname.label_tag}}{{ form.keyname }} {{ form.keyname.errors }}</p>
-  <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
-  <p><input type="submit" /><input class="button" type="reset" /></p>
+<form method="post" action="?{{request.GET.urlencode}}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
+    <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>
 {% endblock %}

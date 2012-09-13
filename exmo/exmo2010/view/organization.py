@@ -67,38 +67,41 @@ def organization_list(request, id):
 
 
 @login_required
-def organization_manager(request, monitoring_id, id, method):
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
+def organization_manager(request, monitoring_id, org_id, method):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%","%%")
+    redirect = '%s?%s' % (reverse('exmo2010:organization_list',
+        args=[monitoring.pk,]), request.GET.urlencode())
+    redirect = redirect.replace("%", "%%")
     if method == 'add':
         title = _('Add new organization for %s') % monitoring
-        return create_object(request, form_class = OrganizationForm, post_save_redirect = redirect, extra_context = {'title': title, 'monitoring': monitoring,})
+        return create_object(request, form_class=OrganizationForm,
+            post_save_redirect=redirect,
+            extra_context={'title': title, 'monitoring': monitoring,})
     elif method == 'delete':
-        organization = get_object_or_404(Organization, pk = id)
+        organization = get_object_or_404(Organization, pk=org_id)
         title = _('Delete organization %s') % monitoring
         return delete_object(
             request,
-            model = Organization,
-            object_id = id,
-            post_delete_redirect = redirect,
-            extra_context = {
+            model=Organization,
+            object_id=org_id,
+            post_delete_redirect=redirect,
+            extra_context={
                 'title': title,
                 'monitoring': monitoring,
-                'deleted_objects': Task.objects.filter(organization = organization),
+                'deleted_objects': Task.objects.filter(
+                    organization=organization),
                 }
             )
     else: #update
-        organization = get_object_or_404(Organization, pk = id)
         title = _('Edit organization %s') % monitoring
         return update_object(
             request,
-            form_class = OrganizationForm,
-            object_id = id,
-            post_save_redirect = redirect,
-            extra_context = {
+            form_class=OrganizationForm,
+            object_id=org_id,
+            post_save_redirect=redirect,
+            extra_context={
                 'title': title,
                 'monitoring': monitoring,
                 }

@@ -36,6 +36,7 @@ from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
 from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
+from exmo2010.models import generate_inv_code
 from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
@@ -606,7 +607,8 @@ def monitoring_organization_import(request, id):
                 continue
             try:
                 name = row[0]
-                organization = Organization.objects.get(monitoring = monitoring, name = name)
+                organization = Organization.objects.get(monitoring=monitoring,
+                    name=name)
             except Organization.DoesNotExist:
                 organization = Organization()
                 organization.monitoring = monitoring
@@ -618,6 +620,7 @@ def monitoring_organization_import(request, id):
                 organization.url = row[1].strip()
                 organization.comments = row[2]
                 organization.keywords = row[3]
+                organization.inv_code = generate_inv_code(6)
                 organization.full_clean()
                 organization.save()
             except ValidationError, e:
