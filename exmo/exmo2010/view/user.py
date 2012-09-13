@@ -61,10 +61,6 @@ def settings(request):
                 profile.sex = sex_id
             subscribe = cd.get("subscribe", False)
             profile.subscribe = subscribe
-            email = cd.get("email")
-            if email and email != user.email:
-                user.email = email
-                user.username = email
             new_password = cd.get("new_password")
             if new_password:
                 user.set_password(new_password)
@@ -142,10 +138,6 @@ def settings(request):
                 initial_data["patronymic"] = first_name_parts[1]
         if user.last_name:
             initial_data["last_name"] = user.last_name
-        # Возможно существование пользователей, не имеющих email
-        # (и они есть у нас).
-        if user.email:
-            initial_data["email"] = user.email
         if profile.sex:
             initial_data["sex"] = profile.sex
         if profile.subscribe:

@@ -325,8 +325,6 @@ class BaseUserSettingsForm(forms.Form):
     last_name = forms.CharField(label=_("Last name"),
         widget=forms.TextInput(attrs={"maxlength": 30}),
         required=False, max_length=30)
-    email = forms.EmailField(label="E-mail",
-        widget=forms.TextInput({"maxlength": 75}), required=False)
     sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
         widget=forms.RadioSelect(), required=False)
     old_password = forms.CharField(label=_("Current password"),
@@ -353,16 +351,6 @@ class BaseUserSettingsForm(forms.Form):
             raise forms.ValidationError(
                 _("Current password required to set the new one."))
         return cd
-
-    def clean_email(self):
-        """Проверка email на уникальность в нашей системе."""
-        email = self.cleaned_data.get('email')
-        if (email and email != self.user.email and
-            (User.objects.filter(email__iexact=email).exists() or
-             User.objects.filter(username__iexact=email).exists())):
-            raise forms.ValidationError(_("This email address is already in "
-                          "use. Please supply a different email address."))
-        return email
 
     def clean_new_password(self):
         """Проверка пароля на наличие недопустимых символов."""
