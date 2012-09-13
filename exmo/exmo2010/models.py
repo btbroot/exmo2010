@@ -36,7 +36,6 @@ from exmo2010.fields import TagField
 from exmo2010.sql import sql_score_openness_v1
 from exmo2010.sql import sql_score_openness_v8
 from exmo2010.sql import sql_task_openness
-from mptt.models import MPTTModel, TreeForeignKey
 
 
 # Типы вопросов анкеты. Добавить переводы!
@@ -409,54 +408,26 @@ class Organization(models.Model):
         )
 
 
-# TODO: настроить отображение в админке. Пока не ясно, что нам там нужно.
-class ParameterType(MPTTModel):
-    """Тип параметра."""
-    title = models.CharField(max_length=100, verbose_name=_("Title"),
-        db_index=True)
-    # Возможно, нужно добавить индексы по сл. 2 полям, но это может работать
-    # неправильно в MySQL из-за null=True. Проверить!
-    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'),
-        blank=True, null=True)
-    parent = TreeForeignKey('self', null=True, blank=True,
-        related_name='children')
-
-    class MPTTMeta:
-        order_insertion_by = ['title']
-
 
 class Parameter(models.Model):
-    code = models.PositiveIntegerField(verbose_name=_('code'))
-    name = models.CharField(max_length=1000, verbose_name=_('name'))
-    description = models.TextField(blank=True, verbose_name=_('description'))
-    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    exclude = models.ManyToManyField(Organization, null=True, blank=True,
-        verbose_name=_('excluded organizations'))
-    weight = models.IntegerField(verbose_name=_('weight'))
-    keywords = TagField(blank=True, verbose_name=_('keywords'))
-    complete = models.BooleanField(default=True, verbose_name=_('complete'))
-    topical = models.BooleanField(default=True, verbose_name=_('topical'))
-    accessible = models.BooleanField(default=True,
-        verbose_name=_('accessible'))
-    hypertext = models.BooleanField(default=True, verbose_name=_('hypertext'))
-    document = models.BooleanField(default=True, verbose_name=_('document'))
-    image = models.BooleanField(default=True, verbose_name=_('image'))
-    p_type = models.ForeignKey(ParameterType, verbose_name=_("Type"),
-        blank=True, null=True)
+    code               = models.PositiveIntegerField(verbose_name=_('code'))
+    #db_index=False -- MySQL get error: "Specified key was too long; max key length is 1000 bytes" for long varchar field
+    name               = models.CharField(max_length = 1000, verbose_name=_('name'), db_index=False)
+    description        = models.TextField(null = True, blank = True, verbose_name=_('description'))
+    monitoring         = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    exclude            = models.ManyToManyField(Organization, null = True, blank = True, verbose_name=_('excluded organizations'))
+    weight             = models.IntegerField(verbose_name=_('weight'))
+    keywords           = TagField(null = True, blank = True, verbose_name = _('keywords'))
+    complete           = models.BooleanField(default = True, verbose_name=_('complete'))
+    topical            = models.BooleanField(default = True, verbose_name=_('topical'))
+    accessible         = models.BooleanField(default = True, verbose_name=_('accessible'))
+    hypertext          = models.BooleanField(default = True, verbose_name=_('hypertext'))
+    document           = models.BooleanField(default = True, verbose_name=_('document'))
+    image              = models.BooleanField(default = True, verbose_name=_('image'))
 
-    def clean(self):
-        # Подстраховываемся от возможного нарушения целостности данных.
-        if self.p_type and not self.p_type.monitoring:
-            # Нельзя связывать параметр с глобальным типом.
-            raise ValidationError(_('Does not allowed to connect with global '
-                                  'parameter type.'))
-        if self.monitoring != self.p_type.monitoring:
-            # Нельзя связывать параметр с типом, связанным с др. циклом.
-            raise ValidationError(_("Parameter's monitoring differs from "
-                                    "type's one."))
-
+#I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
-        return u"%s" % self.name
+        return "%s" % self.name
 
     def _get_tags(self):
         return Tag.objects.get_for_object(self)

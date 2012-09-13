@@ -21,7 +21,6 @@ from django.contrib import admin
 from reversion.admin import VersionAdmin
 from django.db import models
 from django.contrib.auth.admin import UserAdmin
-from mptt.admin import MPTTModelAdmin
 
 UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
@@ -108,4 +107,3 @@ admin.site.register(exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo2010.models.MonitoringStatus)
 admin.site.register(exmo2010.models.Claim)
 admin.site.register(exmo2010.models.OpennessExpression)
-admin.site.register(exmo2010.models.ParameterType, MPTTModelAdmin)
