@@ -344,105 +344,113 @@ def task_add(request, monitoring_id, organization_id=None):
 
 @revision.create_on_success
 @login_required
-def task_manager(request, id, method, monitoring_id=None, organization_id=None):
-    task = get_object_or_404(Task, pk = id)
+def task_manager(request, task_id, method, monitoring_id=None, organization_id=None):
+    task = get_object_or_404(Task, pk=task_id)
     organization = task.organization
     monitoring = organization.monitoring
-    organization_from_get = request.GET.get('organization','')
+    organization_from_get = request.GET.get('organization', '')
     if organization_id or organization_from_get:
         q = request.GET.copy()
         if organization_from_get:
             q.pop('organization')
-        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
+        redirect = '%s?%s' % (
+        reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
     else:
         redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%","%%")
+    redirect = redirect.replace("%", "%%")
+    valid_method = [
+        'delete', 'approve', 'close',
+        'open', 'check', 'update', 'get',
+        ]
+    if method not in valid_method:
+        HttpResponseForbidden(_('Forbidden'))
     if method == 'delete':
-      title = _('Delete task %s') % task
-      if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return delete_object(
-            request,
-            model = Task,
-            object_id = id,
-            post_delete_redirect = redirect,
-            extra_context = {
-                'monitoring': monitoring,
-                'organization': organization,
-                'title': title,
-                'deleted_objects': Score.objects.filter(task = task),
+        title = _('Delete task %s') % task
+        if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            return delete_object(
+                request,
+                model=Task,
+                object_id=task_id,
+                post_delete_redirect=redirect,
+                extra_context={
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title,
+                    'deleted_objects': Score.objects.filter(task=task),
                 }
             )
-      else: return HttpResponseForbidden(_('Forbidden'))
+        else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
-      title = _('Close task %s') % task
-      if request.user.has_perm('exmo2010.close_task', task):
-        if task.open:
-            try:
-                revision.comment = _('Task ready')
-                task.ready = True
-            except ValidationError, e:
-                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            return HttpResponseRedirect(redirect)
-        else:
-          return HttpResponse(_('Already closed'))
-      else: return HttpResponseForbidden(_('Forbidden'))
+        title = _('Close task %s') % task
+        if request.user.has_perm('exmo2010.close_task', task):
+            if task.open:
+                try:
+                    revision.comment = _('Task ready')
+                    task.ready = True
+                except ValidationError, e:
+                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+            else:
+                return HttpResponse(_('Already closed'))
+        else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
-      title = _('Approve task for %s') % task
-      if request.user.has_perm('exmo2010.approve_task', task):
-        if not task.approved:
-            try:
-                revision.comment = _('Task approved')
-                task.approved = True
-            except ValidationError, e:
-                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            return HttpResponseRedirect(redirect)
-        else: return HttpResponse(_('Already approved'))
-      else: return HttpResponseForbidden(_('Forbidden'))
+        title = _('Approve task for %s') % task
+        if request.user.has_perm('exmo2010.approve_task', task):
+            if not task.approved:
+                try:
+                    revision.comment = _('Task approved')
+                    task.approved = True
+                except ValidationError, e:
+                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+            else: return HttpResponse(_('Already approved'))
+        else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
-      title = _('Open task %s') % task
-      if request.user.has_perm('exmo2010.open_task', task):
-        if not task.open:
-            try:
-                revision.comment = _('Task openned')
-                task.open = True
-            except ValidationError, e:
-                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            return HttpResponseRedirect(redirect)
-        else: return HttpResponse(_('Already open'))
-      else: return HttpResponseForbidden(_('Forbidden'))
+        title = _('Open task %s') % task
+        if request.user.has_perm('exmo2010.open_task', task):
+            if not task.open:
+                try:
+                    revision.comment = _('Task openned')
+                    task.open = True
+                except ValidationError, e:
+                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+            else: return HttpResponse(_('Already open'))
+        else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'check':
-      title = _('Check task %s') % task
-      if request.user.has_perm('exmo2010.check_task', task):
-        if task.ready:
-            try:
-                revision.comment = _('Task on check')
-                task.checked = True
-            except ValidationError, e:
-                return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            return HttpResponseRedirect(redirect)
-        else: return HttpResponse(_('Already on check'))
-      else: return HttpResponseForbidden(_('Forbidden'))
-    else: #update
-      title = _('Edit task %s') % task
-      if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        revision.comment = _('Task updated')
-        return update_object(
-            request,
-            form_class = TaskForm,
-            object_id = task.pk,
-            post_save_redirect = redirect,
-            extra_context = {
-                'monitoring': monitoring,
-                'organization': organization,
-                'title': title
+        title = _('Check task %s') % task
+        if request.user.has_perm('exmo2010.check_task', task):
+            if task.ready:
+                try:
+                    revision.comment = _('Task on check')
+                    task.checked = True
+                except ValidationError, e:
+                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+            else: return HttpResponse(_('Already on check'))
+        else: return HttpResponseForbidden(_('Forbidden'))
+    elif method == 'update': #update
+        title = _('Edit task %s') % task
+        if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            revision.comment = _('Task updated')
+            return update_object(
+                request,
+                form_class=TaskForm,
+                object_id=task.pk,
+                post_save_redirect=redirect,
+                extra_context={
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title
                 }
             )
-      else: return HttpResponseForbidden(_('Forbidden'))
+        else: return HttpResponseForbidden(_('Forbidden'))
+    return render_to_response(
+      'exmo2010/ajax/task_status.html', {
+        'object': task,
+      }, context_instance=RequestContext(request))
 
 
 
-def tasks_by_monitoring(request, id):
-    monitoring = get_object_or_404(Monitoring, pk = id)
+
+def tasks_by_monitoring(request, monitorgin_id):
+    monitoring = get_object_or_404(Monitoring, pk = monitorgin_id)
     profile = None
     if request.user.is_active: profile = request.user.profile
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))

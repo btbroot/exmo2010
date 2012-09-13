@@ -26,7 +26,7 @@ def model_status(choices, status):
     for code, text in choices:
         if status == code:
             return text
-        elif type(status) != type(long()) and  _(status) == text:
+        elif not isinstance(status, (int, long)) and _(status) == text:
             return code
     else:
         return ""
