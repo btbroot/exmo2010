@@ -252,9 +252,10 @@ class ParameterForm(forms.ModelForm):
 class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
-        exclude = ("monitoring", "inv_code")
+        exclude = ("inv_code",)
         widgets = {
             'keywords': TagAutocomplete,
+            'monitoring': forms.HiddenInput,
         }
 
 
