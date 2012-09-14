@@ -496,11 +496,11 @@ class Task(models.Model):
 
     @property
     def openness(self):
-        return float(Task.objects.filter(
+        return Task.objects.filter(
             pk=self.pk
         ).extra(select={
             '__openness': self._sql_openness()
-        }).values('__openness')[0]['__openness'])
+        }).values('__openness')[0]['__openness'] or 0
 
     def update_openness(self):
         #по умолчанию openness_first=-1.
