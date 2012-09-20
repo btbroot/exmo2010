@@ -67,7 +67,7 @@ def set_npa_params(request, m_id):
     else:
         formset = ParameterTypeFormSet(queryset=parameters)
     return render_to_response('exmo2010/set_npa_params.html',
-        {"formset": formset,},
+        {"formset": formset, "monitoring": monitoring},
         context_instance=RequestContext(request))
 
 
