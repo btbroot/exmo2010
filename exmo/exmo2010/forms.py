@@ -273,14 +273,6 @@ class MonitoringCommentStatForm(forms.Form):
     limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)
 
 
-class MonitoringRatingMultiple(forms.Form):
-    monitoring = forms.ModelMultipleChoiceField(
-                    queryset = Monitoring.objects.all(),
-                    label =_('monitorings'),
-                    widget = widgets.FilteredSelectMultiple('',is_stacked=False),
-                )
-
-
 class QuestionnaireDynForm(forms.Form):
     """Динамическая форма анкеты с вопросами на странице задачи мониторинга."""
     def __init__(self, *args, **kwargs):
@@ -437,3 +429,12 @@ class ParameterDynForm(forms.Form):
             self.fields['parameter_%s' % p.pk] = forms.BooleanField(label=p.name,
                 help_text=p.description, required=False,
             )
+
+class MonitoringFilterForm(forms.Form):
+    monitoring = forms.ModelChoiceField(
+        queryset = Monitoring.objects.filter(status=Monitoring.MONITORING_PUBLISH).extra(select={
+                'start_date': Monitoring().prepare_date_sql_inline(Monitoring.MONITORING_PUBLISH),
+            }).order_by('-start_date'),
+        required=False,
+        empty_label=_('monitoring not select'),
+        )

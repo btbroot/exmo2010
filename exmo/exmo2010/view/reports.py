@@ -25,6 +25,8 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponseForbidden, Http404
 from exmo2010.models import UserProfile, SEX_CHOICES, Monitoring
+from exmo2010.view.helpers import rating_type_parameter, rating
+from exmo2010.forms import MonitoringFilterForm
 
 
 
@@ -171,3 +173,28 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         },
         RequestContext(request),
     )
+
+def ratings(request):
+    m_id = request.GET.get('monitoring')
+    monitoring = None
+    rating_list = None
+    rating_type = None
+    avg = None
+    form = None
+    mform = MonitoringFilterForm(request.GET)
+
+    if m_id:
+        monitoring = get_object_or_404(Monitoring, pk = m_id)
+        rating_type, parameter_list, form = rating_type_parameter(request, monitoring)
+        rating_list, avg = rating(monitoring, parameters=parameter_list)
+
+    return render_to_response('exmo2010/rating_report.html', {
+        'monitoring': monitoring,
+        'object_list': rating_list,
+        'rating_type': rating_type,
+        'average': avg,
+        'title': _('Ratings'),
+        'form': form,
+        'report': True,
+        'mform': mform,
+    }, context_instance=RequestContext(request))

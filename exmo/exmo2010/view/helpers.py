@@ -17,7 +17,8 @@
 #
 from django.views.generic.list_detail import object_list
 from exmo2010.sort_headers import SortHeaders
-from exmo2010.models import Task
+from exmo2010.models import Task, Parameter
+from exmo2010.forms import ParameterDynForm
 
 
 def table_prepare_queryset(request, headers, queryset):
@@ -87,3 +88,24 @@ def rating(monitoring, parameters=None):
         rating_object['place_count'] = place_count[rating_object['place']]
         rating_list_final.append(rating_object)
     return rating_list_final, avg
+
+def rating_type_parameter(request, monitoring):
+    rating_type_list = ['all', 'npa', 'user']
+    rating_type = request.GET.get('type', 'all')
+    if rating_type not in rating_type_list:
+        raise Http404
+
+    form = ParameterDynForm(monitoring=monitoring)
+    parameter_list = []
+    if rating_type == 'npa':
+        parameter_list = Parameter.objects.filter(
+            monitoring=monitoring,
+            npa=True,
+            )
+    elif rating_type == 'user':
+        form = ParameterDynForm(request.GET, monitoring=monitoring)
+        for parameter in Parameter.objects.filter(monitoring=monitoring):
+            if request.GET.get('parameter_%d' % parameter.pk):
+                parameter_list.append(parameter.pk)
+
+    return (rating_type, parameter_list, form)

@@ -67,6 +67,7 @@ class CustomMenu(Menu):
             ]
             msg = _('Welcome')
         self.children.append(items.MenuItem(msg, children = children))
+        self.children.append(items.MenuItem(_('Ratings'), reverse('exmo2010:ratings')))
 
         rep_children = []
         if request.user.is_authenticated() and request.user.profile.is_internal():

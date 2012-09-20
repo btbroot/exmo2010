@@ -39,11 +39,10 @@ from exmo2010.models import Monitoring, QQuestion, AnswerVariant
 from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
 from exmo2010.models import generate_inv_code
 from exmo2010.view.helpers import table
-from exmo2010.view.helpers import rating
+from exmo2010.view.helpers import rating, rating_type_parameter
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from exmo2010.utils import UnicodeReader, UnicodeWriter
 from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
-from exmo2010.forms import ParameterDynForm
 
 
 def set_npa_params(request, m_id):
@@ -251,30 +250,13 @@ def monitoring_rating_color(request, id):
 
 
 
-def monitoring_rating(request, id):
-    monitoring = get_object_or_404(Monitoring, pk = id)
+def monitoring_rating(request, m_id):
+    monitoring = get_object_or_404(Monitoring, pk = m_id)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
 
     log_monitoring_interact_activity(monitoring, request.user)
 
-    rating_type_list = ['all', 'npa', 'user']
-    rating_type = request.GET.get('type', 'all')
-    if rating_type not in rating_type_list:
-        raise Http404
-
-    form = ParameterDynForm(monitoring=monitoring)
-    parameter_list = []
-    if rating_type == 'npa':
-        parameter_list = Parameter.objects.filter(
-            monitoring=monitoring,
-            npa=True,
-            )
-    elif rating_type == 'user':
-        form = ParameterDynForm(request.GET, monitoring=monitoring)
-        for parameter in Parameter.objects.filter(monitoring=monitoring):
-            if request.GET.get('parameter_%d' % parameter.pk):
-                parameter_list.append(parameter.pk)
-
+    rating_type, parameter_list, form = rating_type_parameter(request, monitoring)
     rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     return render_to_response('exmo2010/rating.html', {
