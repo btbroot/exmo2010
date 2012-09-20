@@ -121,6 +121,9 @@ urlpatterns = patterns('',
     url(r'^monitoring/(\d+)/add_questionnaire/$',
         'exmo2010.view.monitoring.add_questionnaire',
         name='add_questionnaire'),
+    url(r'^monitoring/(\d+)/set_npa_params/$',
+        'exmo2010.view.monitoring.set_npa_params',
+        name='set_npa_params'),
 
     # AJAX-вьюха для получения кода div'а для одного вопроса (c полями).
     url(r'^get_qq/$', 'exmo2010.view.monitoring.get_qq', name='get_qq'),

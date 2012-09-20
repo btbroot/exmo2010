@@ -26,7 +26,7 @@ UserAdmin.filter_horizontal = ('user_permissions', 'groups')
 
 class ParameterAdmin(VersionAdmin):
     list_display = search_fields = ('code','name',)
-    list_filter = ('monitoring',)
+    list_filter = ('monitoring', 'npa')
     formfield_overrides = {
         models.ManyToManyField: {
             'widget': admin.widgets.FilteredSelectMultiple('',

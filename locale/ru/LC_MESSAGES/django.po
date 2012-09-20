@@ -2158,3 +2158,19 @@ msgstr "Модули"
 #: exmo/templates/user_dashboard/menu.html:32
 msgid "Please enter a name for the bookmark"
 msgstr ""
+
+msgid "coherent"
+msgstr "согласован"
+
+msgid "Choose coherent parameters"
+msgstr "Выбрать согласованные параметры"
+
+msgid "Reset"
+msgstr "Сбросить выделение"
+
+msgid "Changes have saved."
+msgstr "Изменения сохранены."
+
+msgid "Forbidden to modify already published monitorings."
+msgstr "Невозможно изменить выборку согласованных параметров в опубликованном"
+" цикле мониторинга."

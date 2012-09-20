@@ -19,6 +19,7 @@
 import csv
 import simplejson
 from django.contrib.auth.models import User
+from django.contrib import messages
 from django.db.models import Count
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -31,7 +32,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.create_update import  delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, modelformset_factory
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
@@ -41,7 +42,35 @@ from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from exmo2010.utils import UnicodeReader, UnicodeWriter
-from exmo2010.forms import MonitoringStatusBaseFormset
+from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
+
+
+def set_npa_params(request, m_id):
+    """Страница 'Выбрать согласованные параметры'."""
+    # На админа проверять не надо. Они и так все is_expertA.
+    if not request.user.profile.is_expertA:
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    parameters = monitoring.parameter_set.all()
+    ParameterTypeFormSet = modelformset_factory(Parameter, extra=0,
+        form=ParameterTypeForm)
+    if request.method == "POST":
+        formset = ParameterTypeFormSet(request.POST, queryset=parameters)
+        # Нельзя изменять опубликованные мониторинги.
+        if monitoring.status == Monitoring.MONITORING_PUBLISH:
+            messages.warning(request, _("Forbidden to modify already "
+                                        "published monitorings."))
+        else:
+            if formset.is_valid():
+                formset.save()
+                messages.success(request, _("Changes have saved."))
+    else:
+        formset = ParameterTypeFormSet(queryset=parameters)
+    return render_to_response('exmo2010/set_npa_params.html',
+        {"formset": formset,},
+        context_instance=RequestContext(request))
+
+
 
 def _get_monitoring_list(request):
     monitorings_pk = []

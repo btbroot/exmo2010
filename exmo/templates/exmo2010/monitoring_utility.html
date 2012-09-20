@@ -50,5 +50,8 @@
 {% if perm %}
   <a href="{% url exmo2010:monitoring_parameter_found_report monitoring.pk %}" target="_blank">{% trans 'Parameter found report' %}</a> /
 {% endif %}
+{% if request.user.profile.is_expertA %}
+  <a href="{% url exmo2010:set_npa_params monitoring.pk %}">{% trans 'Choose coherent parameters' %}</a> /
+{% endif %}
 </div>
 {% endif %}

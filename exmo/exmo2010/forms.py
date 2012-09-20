@@ -414,3 +414,15 @@ class OrgUserInfoForm(forms.Form):
     phone = forms.CharField(label=_("Phone"),
         widget=forms.TextInput(attrs={"maxlength": 30}),
         required=False, max_length=30)
+
+
+class ParameterTypeForm(forms.ModelForm):
+    """Форма для использования в формсете
+     на странице установки типа параметра.
+     """
+    class Meta:
+        model = Parameter
+        fields = ('npa',)
+    def __init__(self, *args, **kwargs):
+        super(ParameterTypeForm, self).__init__(*args, **kwargs)
+        self.fields['npa'].label = self.instance.name
