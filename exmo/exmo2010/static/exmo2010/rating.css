@@ -36,7 +36,7 @@
 .group1{
 	background: #54A754;
         }
-a:link, a:visited {
+#organization_list a:link, #organization_list a:visited {
         color: #333333;
 }
 
@@ -47,4 +47,50 @@ td, th .rating_color{
 .rating-top-border {
         border-top: solid;
         border-color: #5B80B2;
+}
+
+.pseudolink {
+    border-bottom: 1px dashed;
+    color: #5B80B2 !important;
+    cursor: pointer;
+}
+
+.pseudolink-off {
+    color: #333 !important;
+    cursor: text !important;
+}
+
+div.scroll {
+    height: 200px;
+    overflow: auto;
+    border: 1px solid #666;
+    padding: 8px;
+}
+
+h1
+{
+    margin-top: 17px;
+    margin-bottom: 13px;
+}
+
+.rating-menu
+{
+    font-size: 14px;
+}
+
+.rating-menu a, .rating-menu span
+{
+    margin-left: 20px;
+}
+
+.footnote
+{
+    margin-top: 17px;
+    font-size: 11px;
+    color: #333;
+}
+
+.scroll
+{
+    margin-bottom: 15px;
 }

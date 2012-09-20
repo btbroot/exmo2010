@@ -43,6 +43,7 @@ from exmo2010.view.helpers import rating
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
 from exmo2010.utils import UnicodeReader, UnicodeWriter
 from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
+from exmo2010.forms import ParameterDynForm
 
 
 def set_npa_params(request, m_id):
@@ -251,17 +252,38 @@ def monitoring_rating_color(request, id):
 
 
 def monitoring_rating(request, id):
-  monitoring = get_object_or_404(Monitoring, pk = id)
-  if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk = id)
+    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
 
-  log_monitoring_interact_activity(monitoring, request.user)
+    log_monitoring_interact_activity(monitoring, request.user)
 
-  rating_list, avg = rating(monitoring)
+    rating_type_list = ['all', 'npa', 'user']
+    rating_type = request.GET.get('type', 'all')
+    if rating_type not in rating_type_list:
+        raise Http404
 
-  return render_to_response('exmo2010/rating.html', {
+    form = ParameterDynForm(monitoring=monitoring)
+    parameter_list = []
+    if rating_type == 'npa':
+        parameter_list = Parameter.objects.filter(
+            monitoring=monitoring,
+            npa=True,
+            )
+    elif rating_type == 'user':
+        form = ParameterDynForm(request.GET, monitoring=monitoring)
+        for parameter in Parameter.objects.filter(monitoring=monitoring):
+            if request.GET.get('parameter_%d' % parameter.pk):
+                parameter_list.append(parameter.pk)
+
+    rating_list, avg = rating(monitoring, parameters=parameter_list)
+
+    return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
         'object_list': rating_list,
+        'rating_type': rating_type,
         'average': avg,
+        'title': _('Rating'),
+        'form': form,
     }, context_instance=RequestContext(request))
 
 

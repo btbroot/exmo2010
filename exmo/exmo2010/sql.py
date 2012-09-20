@@ -121,8 +121,9 @@ WHERE (
 	(SELECT
 		U0.`id`
 	FROM `exmo2010_parameter` U0
-	WHERE `exmo2010_parameter`.`monitoring_id` = exmo2010_organization.monitoring_id AND
-	NOT ((`exmo2010_parameter`.`id` IN
+	WHERE `exmo2010_parameter`.`monitoring_id` = exmo2010_organization.monitoring_id
+    %(sql_parameter_filter)s
+	AND NOT ((`exmo2010_parameter`.`id` IN
 		(SELECT U1.`parameter_id`
 		FROM `exmo2010_parameter_exclude` U1
 		WHERE (U1.`organization_id` = exmo2010_task.organization_id
@@ -133,12 +134,16 @@ WHERE (
 (SELECT
     sum(exmo2010_parameter.weight)
 FROM `exmo2010_parameter`
-WHERE (`exmo2010_parameter`.`weight` >= 0
+WHERE (
+    `exmo2010_parameter`.`weight` >= 0
     AND `exmo2010_parameter`.`monitoring_id` = exmo2010_organization.monitoring_id
+    %(sql_parameter_filter)s
     AND NOT ((`exmo2010_parameter`.`id` IN (
         SELECT U1.`parameter_id`
         FROM `exmo2010_parameter_exclude` U1
         WHERE (U1.`organization_id` = exmo2010_organization.id
             AND U1.`parameter_id` IS NOT NULL))
-    AND `exmo2010_parameter`.`id` IS NOT NULL))))
+        AND `exmo2010_parameter`.`id` IS NOT NULL))
+    )
+)
 """

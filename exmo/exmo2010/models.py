@@ -491,11 +491,28 @@ class Task(models.Model):
         verbose_name=_('openness first'),
     )
 
-    def _sql_openness(self):
+    def _sql_openness(self, parameters=None):
+        """
+        функция для получения SQL пригодного для использования в extra(select=
+        по умолчанию считается для всех параметров
+        если указать parameters, то считается только для параметров имеющих соотв. pk
+        """
         sql_score_openness = sql_score_openness_v8
+        #empty addtional filter for parameter
+        sql_parameter_filter = ""
         if self.organization.monitoring.openness_expression.code == 1:
             sql_score_openness = sql_score_openness_v1
-        return sql_task_openness % {'sql_score_openness': sql_score_openness}
+        if parameters:
+            parameters_pk_list = parameters
+            if isinstance(parameters[0], Parameter):
+                parameters_pk_list = [p.pk for p in parameters]
+            sql_parameter_filter = "AND `exmo2010_parameter`.`id` in (%s)" %\
+                                   ",".join([str(p) for p in parameters_pk_list])
+        return sql_task_openness % {
+            'sql_score_openness': sql_score_openness,
+            'sql_parameter_filter': sql_parameter_filter,
+        }
+
 
     @property
     def openness(self):

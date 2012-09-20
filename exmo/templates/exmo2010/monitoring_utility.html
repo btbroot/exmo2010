@@ -45,7 +45,7 @@
 {% endif %}
 {% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
 {% if can_rating %}
-  <a href="{% url exmo2010:monitoring_rating monitoring.pk %}" target="_blank">{% trans 'Rating' %}</a> /
+  <a href="{% url exmo2010:monitoring_rating monitoring.pk %}">{% trans 'Rating' %}</a> /
 {% endif %}
 {% if perm %}
   <a href="{% url exmo2010:monitoring_parameter_found_report monitoring.pk %}" target="_blank">{% trans 'Parameter found report' %}</a> /

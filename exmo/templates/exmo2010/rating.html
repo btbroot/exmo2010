@@ -1,3 +1,4 @@
+{% extends 'exmo2010/base_site.html' %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -17,20 +18,125 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% spaceless %}
 {% load i18n %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-<head>
-<title>{% trans "Rating " %} {{ monitoring }}</title>
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/rating.css" />
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-</head>
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-<div id=content>
-<h1>{% trans "Rating " %} {{ monitoring }}</h1>
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/rating.css"
+          xmlns="http://www.w3.org/1999/html"/>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+{{title}}
+</div>
+{% endblock %}
+{% block pretitle %}
+{% include "exmo2010/monitoring_utility.html" %}
+{% endblock %}
+{% block content %}
+    <div style="margin-bottom: 10px;">
+        <p>
+        {% blocktrans %}
+            You can get rating with various parameters.
+            1) all parameters
+            2) npa parameters
+            3) selected parameters
+            By default you see rating based on all types.
+        {% endblocktrans %}
+        </p>
+        <p class="rating-menu">
+        <b>{% trans 'Rating view' %}:</b>
+        {% if rating_type == "all" %}
+            <span>{% trans 'all parameters' %}</span>
+        {% else %}
+            <a href="?type=all" class="pseudolink">{% trans 'all parameters' %}</a>
+        {% endif %}
+        {% if rating_type == "npa" %}
+            <span>{% trans 'npa parameters' %}</span>
+        {% else %}
+            <a href="?type=npa" class="pseudolink">{% trans 'npa parameters' %}</a>
+        {% endif %}
+        {% if rating_type == "user" %}
+            <span>{% trans 'user selected' %}</span>
+        {% else %}
+            <a id="user-selcted" href="#" class="pseudolink">{% trans 'user selected' %}</a>
+        {% endif %}
+        </p>
+    </div>
+<div id="pselect_div" {% if rating_type != "user" %}style="display: none;"{% endif %}>
+    <div style="height: 30px;">
+        <h3 style="display: inline;">{% trans 'Parameter list' %}</h3>
+    </div>
+    <form action="." method="GET" id="pselect_form">
+        <div class="scroll">
+            <input type="hidden" name="type" value="user">
+            {% for field in form %}
+                {{ field }}{{ field.label_tag }}<br>
+            {% endfor %}
+        </div>
+        <input type="submit" value="{% trans "Get rating" %}">
+    </form>
+</div>
+
+<a href="#" id="parameters-toggle" class="pseudolink"
+       style="float: right;{% if rating_type != "user" %} display: none;{% endif %}">{% trans 'Hide parameter list' %}</a>
+<br>
+
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+
+    function pseudolinkHandler( e ) {
+        $('#user-selcted').removeClass('pseudolink-off')
+        $('#user-selcted').addClass('pseudolink')
+        $(e.target).removeClass('pseudolink')
+        $(e.target).addClass('pseudolink-off')
+
+        $('#pselect_div').hide()
+        $('#parameters-toggle').hide()
+
+        e.preventDefault();
+    }
+
+    $('#user-selcted').click(function( e ) {
+
+        $('.rating-menu span').each(function(){
+            console.log($(this))
+            $(this).removeClass('pseudolink-off')
+            $(this).addClass('pseudolink')
+            $(this).on("click", pseudolinkHandler);
+        });
+
+        $('#pselect_div').show()
+        $(this).removeClass('pseudolink')
+        $(this).addClass('pseudolink-off')
+        $('#parameters-toggle').show()
+
+        e.preventDefault();
+     })
+
+    $('#parameters-toggle').click(function( e ) {
+        $('#pselect_div').toggle(e)
+
+        if($('#pselect_div').is(":visible")) {
+            $('#parameters-toggle').html('{% trans 'Hide parameter list' %}')
+        } else {
+            $('#parameters-toggle').html('{% trans 'Show parameter list' %}')
+        }
+
+        e.preventDefault();
+    })
+});
+</script>
+
+<h1>{{ monitoring.name }}
+{% if rating_type == "npa" %} —
+    {% trans 'generated by parameters based on normative-legal acts' %}
+{% endif %}
+{% if rating_type == "user" %} —
+    {% trans 'generated by parameters on user selected' %}
+{% endif %}
+</h1>
+
 <div id=organization_list>
 {% if object_list %}
 <table>
@@ -81,7 +187,7 @@
   </tr>
 </table>
 {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
-    <p>
+    <p class="footnote">
     * {% trans 'First openness &mdash; openness value before interact' %}
     </p>
 {% endif %}
@@ -89,7 +195,6 @@
 {% trans 'Empty list' %}
 {% endif %}
 </div>
-</div>
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
-</body></html>
-{% endspaceless %}
+
+{% endblock %}
+

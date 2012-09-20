@@ -426,3 +426,14 @@ class ParameterTypeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ParameterTypeForm, self).__init__(*args, **kwargs)
         self.fields['npa'].label = self.instance.name
+
+
+class ParameterDynForm(forms.Form):
+    """Динамическая форма параметров мониторинга."""
+    def __init__(self, *args, **kwargs):
+        monitoring = kwargs.pop('monitoring')
+        super(ParameterDynForm, self).__init__(*args, **kwargs)
+        for p in Parameter.objects.filter(monitoring=monitoring):
+            self.fields['parameter_%s' % p.pk] = forms.BooleanField(label=p.name,
+                help_text=p.description, required=False,
+            )
