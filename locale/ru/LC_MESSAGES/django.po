@@ -661,7 +661,13 @@ msgstr "органы/организации для просмотра"
 msgid "Preferences"
 msgstr "Настройки"
 
-#: exmo/exmo2010/models.py:1100
+#: exmo/exmo2010/models.py:1013 exmo/exmo2010/dashboard/menu.py:64
+#: exmo/templates/user_dashboard/modules/quicklinks.html:28
+msgid "Scores of my organisation"
+msgstr "Оценки моей организации"
+
+
+#: exmo/exmo2010/models.py:1076
 msgid "Digest duratation must be greater or equal than 1."
 msgstr "Период дайджеста должен быть больше или равен единице"
 

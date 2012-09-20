@@ -20,7 +20,11 @@
 {% endcomment %}
 {% load i18n %}
 {% block module_content %}
+
 <ul>
+            {% if task_id != None %}
+            <li><a href="{% url exmo2010:score_list_by_task task_id %}">{% trans 'Scores of my organisation' %}</a></li>
+            {% endif %}
             <li><a href="{% url exmo2010:monitoring_report %}">{% trans 'Monitoring statistics' %}</a></li>
             {% if user.is_authenticated %}
             <li><a href="{% url exmo2010:settings %}">{% trans 'Preferences' %}</a></li>

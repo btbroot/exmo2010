@@ -27,9 +27,13 @@ To activate your custom menu add the following to your settings.py::
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from exmo2010.models import Task
+
 from admin_tools.menu import items, Menu
 
 from exmo2010.view.reports import COMMUNICATION_REPORT_TYPE_DICT
+
+
 
 class CustomMenu(Menu):
     """
@@ -46,10 +50,20 @@ class CustomMenu(Menu):
     def init_with_context(self, context):
         self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
-
         ]
         request = context['request']
         children = []
+
+        if request.user.is_authenticated():
+            if request.user.profile.is_organization:
+                task_id = request.user.profile.get_task_review_id()
+                if task_id != None:
+                    self.children += [
+                        items.MenuItem(_('Scores of my organisation'),
+                                        reverse('exmo2010:score_list_by_task',
+                                        args=[task_id])),
+                        ]
+
         if request.user.is_active:
             children += [
                 items.MenuItem(_('Preferences'), reverse('exmo2010:settings')),

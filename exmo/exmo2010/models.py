@@ -1262,6 +1262,17 @@ class UserProfile(models.Model):
                                       close_date__isnull=True).order_by('open_date')
         return claims
 
+    def get_task_review_id(self):
+        organizations = self.organization.all()
+        if organizations:
+            organization = organizations[0]
+            tasks = Task.objects.filter(
+                organization=organization, status=Task.TASK_APPROVED
+            )
+            if tasks:
+                task = tasks[0]
+                return task.id
+
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)
     is_expertA = property(_is_expertA)

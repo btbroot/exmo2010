@@ -37,6 +37,11 @@ class CustomIndexDashboard(UserDashboard):
     def init_with_context(self, context):
         request = context['request']
 
+        if request.user.is_authenticated():
+            if request.user.profile.is_organization:
+                task_id = request.user.profile.get_task_review_id()
+                context.update({ 'task_id' : task_id }) if task_id != None else None
+
         site_name = get_admin_site_name(context)
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
