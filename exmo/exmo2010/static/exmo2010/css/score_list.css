@@ -18,52 +18,52 @@
 #
 */
 .score-ok-nonzero{
-	background: #00B050;
-	text-align: center;
-        }
+    background: #80e580;
+    text-align: center;
+}
 
 .score-ok-val1{
-	background: #ff9218;
-	text-align: center;
-        }
+    background: #fecb80;
+    text-align: center;
+}
 
 .score-ok-val2{
-	background: #fcff18;
-	text-align: center;
-        }
+    background: #fefe80;
+    text-align: center;
+}
 
 .score-ok-val3{
-	background: #00B050;
-	text-align: center;
-        }
+    background: #80e580;
+    text-align: center;
+}
 
 .score-ok-zero{
-	background: #ff0000;
-	text-align: center;
-        }
+    background: #fe9898;
+    text-align: center;
+}
 
 .score-none {
-	background:gray;
+    background:gray;
 
-        }
+}
 
 #score_list td {
-        border-collapse: collapse;
-        border: 1px solid;
-        }
+    border-collapse: collapse;
+    border: 1px solid;
+}
 
 #score_list table {
-        width: 100%
-        }
+    width: 100%
+}
 
 #legend td {
-        border-collapse: collapse;
-        border: 1px solid;
-        }
+    border-collapse: collapse;
+    border: 1px solid;
+}
 
 .score_interact {
-        font-size: 9px;
-        opacity: 0.5;
+    font-size: 9px;
+    opacity: 0.5;
 }
 
 .ajaxloader {

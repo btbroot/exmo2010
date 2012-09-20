@@ -36,77 +36,138 @@
 </div>
 <br>
 <div id=score_add>
-<table id=score_add_table>
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
+{% endblock %}
+
+{% load criteria_css_class %}
+
+<table class="table-parameter">
     <thead>
-    <th>{% trans 'Criteria' %}</th>
-    <th>{% trans 'Value' %}</th>
+    <th class="criteria">{% trans 'Criteria' %}</th>
+    <th class="value">{% trans 'Value' %}</th>
+    <th class="explanation">{% trans 'Explanation' %}</th>
     </thead>
     <tbody>
-    <tr><td>{% trans 'Found' %}</td><td>{{ object.found }}</td>
-{% if parameter.complete and object.complete %}
-    <tr><td>
-    {% trans 'Complete' %}</td><td> {{ object.complete }}</td></tr>
-      {%if object.completeComment %}
-       <tr><td>
-        {% trans 'Comment for complete' %}</td><td>{{ object.completeComment }}</td>
-       </tr>
-      {% endif %}
-{% endif %}
-{% if parameter.topical and object.topical %}
-    <tr><td>
-    {% trans 'Topical' %}</td><td>{{ object.topical }}</td></tr>
-      {% if object.topicalComment %}
-      <tr><td>
-        {% trans 'Comment for topical' %}</td><td>{{ object.topicalComment }}</td>
-      </tr>
-      {% endif %}
-{% endif %}
-{% if parameter.accessible and object.accessible %}
-    <tr id=score_add_accessible><td>
-    {% trans 'Accessible' %}</td><td>{{ object.accessible }}</td></tr>
-    {% if object.accessibleComment %}
-      <tr id=score_add_accessibleComment><td>
-        {% trans 'Comment for accessible' %}</td><td>{{ object.accessibleComment }}</td></tr>
-    {% endif %}
-{% endif %}
-{% if parameter.hypertext and object.hypertext != "" %}
-    <tr id=score_add_hypertext>
-    <td>{% trans 'Hypertext' %}</td><td>{{ object.hypertext }}</td>
-    </tr>
-      {% if object.hypertextComment %}
-      <tr id=score_add_hypertextComment>
-        <td>{% trans 'Comment for hypertext' %}</td><td>{{ object.hypertextComment }}</td>
-      </tr>
-      {% endif %}
-{% endif %}
-{% if parameter.document and object.document != "" %}
-    <tr id=score_add_document>
-    <td>{% trans 'Document' %}</td><td>{{ object.document }}</td>
-    </tr>
-    {% if object.documentComment %}
-      <tr id=score_add_documentComment>
-        <td>{% trans 'Comment for document' %}</td><td>{{ object.documentComment }}</td>
-      </tr>
-    {% endif %}
-{% endif %}
-{% if parameter.image and object.image != "" %}
-    <tr id=score_add_image>
-    <td>{% trans 'Image' %}</td><td>{{ object.image }}</td>
-    </tr>
-    {% if object.imageComment %}
-      <tr id=score_add_imageComment>
-        <td>{% trans 'Comment for image' %}</td><td>{{ object.imageComment }}</td>
-      </tr>
-    {% endif %}
-{% endif %}
-{% if object.comment %}
-    <tr id=score_add_comment>
-    <td>{% trans 'Common parameter comment' %}</td><td>{{ object.comment }}</td>
-    </tr>
-{% endif %}
+        <tr>
+            <td>{% trans 'Found' %}</td>
+            <td class="value {{object|criteria_css_class:'found'}}">{{ object.found }}</td>
+            <td></td>
+        </tr>
+
+        {% if parameter.complete and object.complete %}
+        <tr>
+            <td>{% trans 'Complete' %}</td>
+            <td class="value {{object|criteria_css_class:'complete'}}">{{ object.complete }}</td>
+            <td>{% if object.completeComment %}{{ object.completeComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
+
+        {% if parameter.topical and object.topical %}
+        <tr>
+            <td>{% trans 'Topical' %}</td>
+            <td class="value {{object|criteria_css_class:'topical'}}">{{ object.topical }}</td>
+            <td>{% if object.topicalComment %}{{ object.topicalComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
+
+        {% if parameter.accessible and object.accessible %}
+        <tr>
+            <td>{% trans 'Accessible' %}</td>
+            <td class="value {{object|criteria_css_class:'accessible'}}">{{ object.accessible }}</td>
+            <td>{% if object.accessibleComment %}{{ object.accessibleComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
+
+        {% if parameter.hypertext and object.hypertext != "" %}
+        <tr>
+            <td>{% trans 'Hypertext' %}</td>
+            <td class="value {{object|criteria_css_class:'hypertext'}}">{{ object.hypertext }}</td>
+            <td>{% if object.hypertextComment %}{{ object.hypertextComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
+
+        {% if parameter.document and object.document != "" %}
+        <tr>
+            <td>{% trans 'Document' %}</td>
+            <td class="value {{object|criteria_css_class:'document'}}">{{ object.document }}</td>
+            <td>{% if object.documentComment %}{{ object.documentComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
+
+        {% if parameter.image and object.image != "" %}
+        <tr>
+            <td>{% trans 'Image' %}</td>
+            <td class="value {{object|criteria_css_class:'image'}}">{{ object.image }}</td>
+            <td>{% if object.imageComment %}{{ object.imageComment }}{% endif %}</td>
+        </tr>
+        {% endif %}
     </tbody>
 </table>
+
+{% if user.profile.is_internal or user.profile.is_organization %}
+
+{% load comments %}
+{% get_comment_list for object as comment_list %}
+{% if comment_list %}
+<h3 class="heading-comments-parameter">{% trans 'Comments' %}</h3>
+    <table class="table-comments-parameter">
+        <tbody>
+        {% for comment in comment_list %}
+            <tr id="c{{ comment.id }}">
+                <td class="author">
+                    {{ comment.user_name }}
+                    <br />
+                    <span>{{ comment.submit_date }}</span>
+                </td>
+                <td>
+                    {{ comment.comment }}<br />
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<h3 class="heading-yourcomment-parameter">{% trans 'Your comment' %}</h3>
+
+{% get_comment_form for object as form %}
+<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+    {{ form.content_type.as_hidden }}
+    {{ form.object_pk.as_hidden }}
+    {{ form.timestamp.as_hidden }}
+    {{ form.security_hash.as_hidden }}
+    {% if user %}
+        <input type="hidden" name="id_user" value="{{ user }}" />
+        <br />
+    {% else %}
+        <label class="label-comment">{{ form.user.label }}</label>
+        <br />
+        {{ form.user }}
+        <br />
+    {% endif %}
+    {% if user.email %}
+        <input type="hidden" name="id_email" value="{{ user.email }}" />
+        <br />
+    {% else %}
+        <label class="label-comment">{{ form.email.label }}</label>
+        <br />
+        {{ form.email }}
+        <br />
+    {% endif %}
+        {% comment %}
+        <label class="label-comment">{{ form.comment.label }}</label>
+        <br />
+        {% endcomment %}
+        {{ form.comment }}
+        <br />
+        <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
+        <input type="submit" name="post" class="submit-post" value="{% trans 'Post' %}">
+</form>
+{% endif %}
+
 </div>
-{% include "exmo2010/score_claim.html" %}
-{% include "exmo2010/score_comment.html" %}
 {% endblock %}

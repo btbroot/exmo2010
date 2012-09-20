@@ -1916,6 +1916,16 @@ msgstr "Комментарий к критерию 'Графическая до�
 msgid "Common parameter comment"
 msgstr "Общий комментарий к параметру"
 
+#: exmo/templates/exmo2010/score_detail.html:52
+msgid "Explanation"
+msgstr "Пояснение"
+
+#: exmo/templates/exmo2010/score_detail.html:52
+msgid "Your comment"
+msgstr "Ваш комментарий"
+
+
+
 #: exmo/templates/exmo2010/score_form.html:36
 msgid "Parameter description"
 msgstr "Описание параметра"

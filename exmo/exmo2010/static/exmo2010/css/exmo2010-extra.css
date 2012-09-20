@@ -1,0 +1,205 @@
+/* Parameter */
+
+.table-parameter
+{
+    border-spacing: 0;
+    border-collapse: separate;
+    *border-collapse: collapse;
+    border: #fff 1px solid;
+    width: 100%;
+}
+
+.table-parameter th
+{
+    padding: 8px 12px;
+    background-image: none;
+    background-color: transparent;
+    border-bottom: #fff 1px solid;
+    border-left: #bbb 1px solid;
+    color: #333;
+    font-size: 12px;
+}
+
+.table-parameter td
+{
+    padding: 8px 12px;
+    border-left: #bbb 1px solid;
+    border-top: #bbb 1px solid;
+    border-bottom: #fff 1px solid;
+}
+
+.table-parameter td:first-child
+{
+    border-left: #fff 1px solid;
+}
+
+.table-parameter .value
+{
+    width: 80px;
+    text-align: center;
+}
+
+.table-parameter .criteria
+{
+    width: 20%;
+}
+
+.heading-comments-parameter
+{
+    margin-top: 34px;
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.table-comments-parameter {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.table-comments-parameter td {
+    padding: 8px;
+    line-height: 17px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+}
+
+.table-comments-parameter .author
+{
+    font-size: 13px;
+    width: 11%;
+    font-weight: bold;
+}
+
+.table-comments-parameter .author span
+{
+    width: 11%;
+    font-weight: normal;
+    font-size: 11px;
+    color: #333;
+}
+
+.heading-yourcomment-parameter
+{
+    font-size: 12px;
+    color: #333;
+}
+
+
+.textarea-parameter
+{
+    width: 55%;
+    margin-bottom: 10px;
+    overflow: auto;
+}
+
+
+.label-comment
+{
+    font-size: 12px;
+}
+
+#id_email
+{
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+#id_comment
+{
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 55%;
+    overflow: auto;
+}
+
+.form-requred
+{
+    color: red;
+}
+
+/* Filter by parameter */
+
+fieldset {
+    padding: 0;
+    margin: 0 0 19px 0;
+    border: 0;
+}
+
+.label-parameter-filter
+{
+    color: #333;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.select-parameter {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    display: block;
+    height: 22px;
+}
+
+.table-filter_by_parameter
+{
+    border-spacing: 0;
+    border-collapse: separate;
+    *border-collapse: collapse;
+    border: #fff 1px solid;
+}
+
+.table-filter_by_parameter th
+{
+    padding: 8px 12px;
+    background-image: none;
+    background-color: transparent;
+    border-bottom: #fff 1px solid;
+    border-left: #bbb 1px solid;
+    color: #333;
+    text-align: center;
+    font-size: 12px;
+}
+
+.table-filter_by_parameter td
+{
+    padding: 8px 12px;
+    border-left: #bbb 1px solid;
+    border-top: #bbb 1px solid;
+    border-bottom: #fff 1px solid;
+}
+
+.table-filter_by_parameter td:first-child
+{
+    border-left: #fff 1px solid;
+}
+
+.table-filter_by_parameter td label
+{
+    font-size: 13px;
+    color: #333;
+    position: relative;
+    top: 3px;
+    margin-right: 17px;
+    margin-left: 2px;
+}
+
+input[type=checkbox]
+{
+    margin-bottom: 7px;
+}
+
+input[type=checkbox] + label
+{
+    font-size: 12px;
+    color: #333;
+    margin-left: 5px;
+
+}

@@ -1,0 +1,29 @@
+.score-ok-nonzero{
+    background: #80e580;
+    border-bottom-color: #80e580 !important;
+}
+
+.score-ok-val1{
+    background: #fecb80;
+    border-bottom-color:  #fecb80 !important;
+}
+
+.score-ok-val2{
+    background: #fefe80;
+    border-bottom-color: #fefe80 !important;
+}
+
+.score-ok-val3{
+    background: #80e580;
+    border-bottom-color: #80e580 !important;
+}
+
+.score-ok-zero{
+    background: #fecb80;
+    border-bottom-color: #fecb80 !important;
+}
+
+.score-none {
+    background: #e5e5e5;
+    border-bottom-color: #e5e5e5  !important;
+}
