@@ -18,6 +18,7 @@
 #
 import string
 from django import forms
+from django.utils import formats
 from django.utils.safestring import mark_safe
 from exmo2010.models import Score, Task
 from exmo2010.models import Parameter
@@ -33,13 +34,15 @@ from django.contrib.admin import widgets
 from exmo2010.widgets import TagAutocomplete
 from annoying.decorators import autostrip
 
+DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
+
 CORE_JS = (
-                settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
-                settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
-                settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
-                settings.ADMIN_MEDIA_PREFIX + 'js/jquery.init.js',
-                settings.ADMIN_MEDIA_PREFIX + 'js/actions.min.js',
-          )
+    settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
+    settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
+    settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
+    settings.ADMIN_MEDIA_PREFIX + 'js/jquery.init.js',
+    settings.ADMIN_MEDIA_PREFIX + 'js/actions.min.js',
+    )
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
 
@@ -63,7 +66,7 @@ SCORE_CHANGE_NOTIFICATION_CHOICES = (
 YES_NO_CHOICES = (
     (1, _('Yes')),
     (0, _('No')),
-)
+    )
 
 DIGEST_INTERVALS = (
     (1, _("once in 1 hour")),
@@ -71,28 +74,28 @@ DIGEST_INTERVALS = (
     (6, _("once in 6 hours")),
     (12, _("once in 12 hours")),
     (24, _("once in 24 hours")),
-)
+    )
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
 from django.utils.html import escape
 def add_required_label_tag(original_function):
-  """Adds the 'required' CSS class and an asterisks to required field labels."""
-  def required_label_tag(self, contents=None, attrs=None):
-    contents = contents or escape(self.label)
-    if self.field.required:
-      if not self.label.endswith("*"):
-        self.label += "*"
-        contents += "*"
-      attrs = {'class': 'required'}
-    return original_function(self, contents, attrs)
-  return required_label_tag
+    """Adds the 'required' CSS class and an asterisks to required field labels."""
+    def required_label_tag(self, contents=None, attrs=None):
+        contents = contents or escape(self.label)
+        if self.field.required:
+            if not self.label.endswith("*"):
+                self.label += "*"
+                contents += "*"
+            attrs = {'class': 'required'}
+        return original_function(self, contents, attrs)
+    return required_label_tag
 
 
 
 def decorate_bound_field():
-  from django.forms.forms import BoundField
-  BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
+    from django.forms.forms import BoundField
+    BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
 decorate_bound_field()
 
 
@@ -102,8 +105,8 @@ class HorizRadioRenderer(forms.RadioSelect.renderer):
         instead of vertically.
     """
     def render(self):
-            """Outputs radios"""
-            return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+        """Outputs radios"""
+        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
 
@@ -118,7 +121,7 @@ class ScoreForm(forms.ModelForm):
             'document': forms.RadioSelect(renderer=HorizRadioRenderer),
             'hypertext': forms.RadioSelect(renderer=HorizRadioRenderer),
             'image': forms.RadioSelect(renderer=HorizRadioRenderer),
-        }
+            }
         exclude = ('revision',)
 
 
@@ -163,8 +166,12 @@ class ClaimForm(forms.ModelForm):
 
 class ClaimReportForm(forms.Form):
     expert = forms.ModelChoiceField(queryset = User.objects.all(), label=_('expert'))
-    from_date = forms.DateTimeField(label=_('from date'), widget=widgets.AdminSplitDateTime)
-    to_date = forms.DateTimeField(label=_('to date'), widget=widgets.AdminSplitDateTime)
+    from_date = forms.DateTimeField(label=_('from date'),
+        widget=widgets.AdminSplitDateTime,
+        input_formats=DATETIME_INPUT_FORMATS)
+    to_date = forms.DateTimeField(label=_('to date'),
+        widget=widgets.AdminSplitDateTime,
+        input_formats=DATETIME_INPUT_FORMATS)
 
 
 class MonitoringForm(forms.ModelForm):
@@ -180,12 +187,12 @@ class MonitoringForm(forms.ModelForm):
             'all': (
                 settings.STATIC_URL + 'exmo2010/css/jquery-ui.css',
                 settings.STATIC_URL + 'exmo2010/css/exmo2010-base.css',
-            )
+                )
         }
         js = (
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery-ui.min.js',
-        )
+            )
 
 
 
@@ -219,7 +226,7 @@ class MonitoringStatusForm(forms.ModelForm):
                 'maxlength': 300
             }),
             'status': forms.HiddenInput(),
-        }
+            }
 
 
 class ParameterForm(forms.ModelForm):
@@ -241,7 +248,7 @@ class ParameterForm(forms.ModelForm):
             'keywords': TagAutocomplete,
             'exclude': widgets.FilteredSelectMultiple('',is_stacked=False),
             'monitoring': forms.widgets.HiddenInput,
-        }
+            }
 
     class Media:
         css = {
@@ -256,7 +263,7 @@ class OrganizationForm(forms.ModelForm):
         widgets = {
             'keywords': TagAutocomplete,
             'monitoring': forms.HiddenInput,
-        }
+            }
 
 
 class MonitoringCommentStatForm(forms.Form):
@@ -271,6 +278,14 @@ class MonitoringCommentStatForm(forms.Form):
         return cleaned_data
 
     limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)
+
+
+class MonitoringRatingMultiple(forms.Form):
+    monitoring = forms.ModelMultipleChoiceField(
+        queryset = Monitoring.objects.all(),
+        label =_('monitorings'),
+        widget = widgets.FilteredSelectMultiple('',is_stacked=False),
+    )
 
 
 class QuestionnaireDynForm(forms.Form):
@@ -300,10 +315,10 @@ class QuestionnaireDynForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
         for answ in cleaned_data.items():
-            if answ[0].startswith("q_") and not answ[1] \
-            and self.task and self.task.approved:
+            if answ[0].startswith("q_") and not answ[1]\
+               and self.task and self.task.approved:
                 raise forms.ValidationError(_('Cannot delete answer for '
-                                      'approved task. Edit answer instead.'))
+                                              'approved task. Edit answer instead.'))
         return cleaned_data
 
 
@@ -339,7 +354,7 @@ class BaseUserSettingsForm(forms.Form):
             if not self.user.check_password(cd.get("old_password")):
                 raise forms.ValidationError(
                     _("Current password required to change e-mail."))
-        # Требуется текущий пароль для установки нового.
+            # Требуется текущий пароль для установки нового.
         if (new_password and
             not self.user.check_password(cd.get("old_password"))):
             raise forms.ValidationError(
@@ -352,7 +367,7 @@ class BaseUserSettingsForm(forms.Form):
         for char in password:  # Проверять на наличие пароля необязательно.
             if char not in PASSWORD_ALLOWED_CHARS:
                 raise forms.ValidationError(_("Password contains unallowed "
-                      "characters. Please use only latin letters and digits."))
+                                              "characters. Please use only latin letters and digits."))
         return password
 
     def __init__(self, *args, **kwargs):
