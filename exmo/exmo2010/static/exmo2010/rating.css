@@ -20,34 +20,44 @@
 
 /* red */
 .group4{
-	background: #FF6262;
-        }
+    background: #FF6262;
+}
 
 .group3{
-	background: #FFB76F;
-        }
+    background: #FFB76F;
+}
 
 /* yellow */
 .group2{
-	background: #FFFF77;
-        }
+    background: #FFFF77;
+}
 
 /* green */
 .group1{
-	background: #54A754;
-        }
+    background: #54A754;
+}
 #organization_list a:link, #organization_list a:visited {
-        color: #333333;
+    color: #333333;
 }
 
 td, th .rating_color{
-        border-bottom: None;
+    border-bottom: None;
 }
 
 .rating-top-border {
-        border-top: solid;
-        border-color: #5B80B2;
+    border-top: solid;
+    border-color: #5B80B2;
 }
+
+a.pseudolink-toggle {
+    border-bottom: 1px dashed;
+    font-family:Verdana;
+    font-size: 12px;
+    font-weight:bold;
+    color: #333;
+    cursor: pointer;
+}
+
 
 .pseudolink {
     border-bottom: 1px dashed;
@@ -83,6 +93,13 @@ h1
     margin-left: 20px;
 }
 
+.parameter-list
+{
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
 .footnote
 {
     margin-top: 17px;
@@ -93,4 +110,28 @@ h1
 .scroll
 {
     margin-bottom: 15px;
+    line-height: 25px;
+}
+
+.scroll input[type="checkbox"]
+{
+    margin-right: 10px;
+}
+
+[class^="arrow"]
+{
+    background-position: 100% 0%;
+    background-repeat: no-repeat;
+    padding-right: 22px;
+    height: 20px;
+}
+
+.arrow-up
+{
+    background-image: url(img/arrow_up_parameters.png);
+}
+
+.arrow-down
+{
+    background-image: url(img/arrow_down_parameters.png);
 }
