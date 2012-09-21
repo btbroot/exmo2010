@@ -1263,7 +1263,9 @@ class UserProfile(models.Model):
         return claims
 
     def get_task_review_id(self):
-        organizations = self.organization.all()
+        organizations = self.organization.filter(monitoring__status__in=[Monitoring.MONITORING_INTERACT,
+                                                                         Monitoring.MONITORING_RESULT,
+                                                                         Monitoring.MONITORING_PUBLISH])
         if organizations:
             organization = organizations[0]
             tasks = Task.objects.filter(
