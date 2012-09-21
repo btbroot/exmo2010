@@ -2256,3 +2256,20 @@ msgstr "Модули"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
+msgid "Openness for all parameters"
+msgstr "Кид по всем параметрам"
+
+msgid "Openness for npa parameters"
+msgstr "Кид по параметрам на основе нормативных правовых актов"
+
+msgid "Openness for other parameters"
+msgstr "Кид по дополнительным параметрам"
+
+msgid "place"
+msgstr "место"
+
+msgid "NPA parameters"
+msgstr "Параметры на основе нормативных правовых актов"
+
+msgid "Other parameters"
+msgstr "Дополнительные параметры"

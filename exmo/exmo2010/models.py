@@ -503,24 +503,43 @@ class Task(models.Model):
         if self.organization.monitoring.openness_expression.code == 1:
             sql_score_openness = sql_score_openness_v1
         if parameters:
-            parameters_pk_list = parameters
             if isinstance(parameters[0], Parameter):
                 parameters_pk_list = [p.pk for p in parameters]
+            else:
+                parameters_pk_list = parameters
             sql_parameter_filter = "AND `exmo2010_parameter`.`id` in (%s)" %\
-                                   ",".join([str(p) for p in parameters_pk_list])
+                               ",".join([str(p) for p in parameters_pk_list])
         return sql_task_openness % {
             'sql_score_openness': sql_score_openness,
             'sql_parameter_filter': sql_parameter_filter,
         }
 
-
-    @property
-    def openness(self):
+    def get_openness(self, parameters=None):
         return Task.objects.filter(
             pk=self.pk
         ).extra(select={
-            '__openness': self._sql_openness()
+            '__openness': self._sql_openness(parameters)
         }).values('__openness')[0]['__openness'] or 0
+
+    @property
+    def openness(self):
+        return self.get_openness()
+
+    @property
+    def openness_npa(self):
+        params = self.organization.monitoring.parameter_set.filter(npa=True)
+        if params.exists():
+            return self.get_openness(params)
+        else:
+            return 0
+
+    @property
+    def openness_other(self):
+        params = self.organization.monitoring.parameter_set.filter(npa=False)
+        if params.exists():
+            return self.get_openness(params)
+        else:
+            return 0
 
     def update_openness(self):
         #по умолчанию openness_first=-1.
@@ -528,6 +547,11 @@ class Task(models.Model):
         if self.organization.monitoring.is_interact and self.openness_first < 0:
             self.openness_first = self.openness
             self.save()
+
+    @property
+    def has_npa(self):
+        return self.organization.monitoring.parameter_set.filter(npa=True).\
+        exists()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
@@ -615,16 +639,35 @@ class Task(models.Model):
             complete = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
         return complete
 
-    @property
-    def rating_place(self):
+    def get_rating_place(self, parameters=None):
         from exmo2010.view.helpers import rating
         place = None
-        rating_list, avg = rating(self.organization.monitoring)
+        rating_list, avg = rating(self.organization.monitoring, parameters)
         for rating_object in rating_list:
             if rating_object['task'] == self:
                 place = rating_object['place']
                 break
         return place
+
+    @property
+    def rating_place(self):
+        return self.get_rating_place()
+
+    @property
+    def rating_place_npa(self):
+        params = self.organization.monitoring.parameter_set.filter(npa=True)
+        if params.exists():
+            return self.get_rating_place(params)
+        else:
+            return None
+
+    @property
+    def rating_place_other(self):
+        params = self.organization.monitoring.parameter_set.filter(npa=False)
+        if params.exists():
+            return self.get_rating_place(params)
+        else:
+            return None
 
     def get_questionnaire_answers(self):
         return QAnswer.objects.filter(task=self).order_by("pk")

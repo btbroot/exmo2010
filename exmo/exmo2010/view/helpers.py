@@ -19,6 +19,7 @@ from django.views.generic.list_detail import object_list
 from exmo2010.sort_headers import SortHeaders
 from exmo2010.models import Task, Parameter
 from exmo2010.forms import ParameterDynForm
+from django.http import Http404
 
 
 def table_prepare_queryset(request, headers, queryset):
@@ -74,7 +75,7 @@ def rating(monitoring, parameters=None):
     place_count={}
     for rating_object in object_list:
         if rating_object['openness'] < max_rating:
-            place+=1
+            place += 1
             max_rating = rating_object['openness']
         try:
             place_count[place] += 1
@@ -88,6 +89,7 @@ def rating(monitoring, parameters=None):
         rating_object['place_count'] = place_count[rating_object['place']]
         rating_list_final.append(rating_object)
     return rating_list_final, avg
+
 
 def rating_type_parameter(request, monitoring):
     rating_type_list = ['all', 'npa', 'user']

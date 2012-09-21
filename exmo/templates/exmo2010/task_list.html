@@ -30,7 +30,7 @@
     <script>
         var baseURL='/exmo2010/tasks/task/';
         function change_status(task_id, status) {
-            var loaderHTML='<img src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif" class="ajaxloader">';
+            var loaderHTML='<img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif" class="ajaxloader">';
             $('#task-status-'+task_id).html(loaderHTML);
             $.ajax({
                 url: baseURL+task_id+'_'+status+'/',
