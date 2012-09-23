@@ -249,11 +249,10 @@ def score_list_by_task(request, task_id, report=None):
         has_npa = task.has_npa
         if has_npa:
             place_npa = task.rating_place_npa
-            place_other = task.rating_place_other
             parameters_npa = parameters.filter(npa=True)
             parameters_other = parameters.filter(npa=False)
         else:
-            place_npa = place_other = None
+            place_npa = None
             parameters_npa = None
             parameters_other = parameters
         extra_context.update(
@@ -267,7 +266,6 @@ def score_list_by_task(request, task_id, report=None):
                 'title': title,
                 'place': task.rating_place,
                 'place_npa': place_npa,
-                'place_other': place_other,
                 'form': form,
             }
         )
