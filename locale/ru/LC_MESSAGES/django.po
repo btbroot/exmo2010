@@ -681,15 +681,15 @@ msgstr "Главная"
 
 #: exmo/exmo2010/custom_registration/forms.py:40
 msgid "Enter your first name in order the system can address you with it."
-msgstr "Введите свое имя, чтобы система знала как к вам обращаться."
+msgstr "Введите свое имя, чтобы система знала, как к вам обращаться."
 
 #: exmo/exmo2010/custom_registration/forms.py:45
 msgid "Enter your patronymic in order the system can address you with it."
-msgstr "Введите свое отчество, чтобы система знала как к вам обращаться."
+msgstr "Введите свое отчество, чтобы система знала, как к вам обращаться."
 
 #: exmo/exmo2010/custom_registration/forms.py:50
 msgid "Enter your last name in order the system can address you with it."
-msgstr "Введите свою фамилию, чтобы система знала как к вам обращаться."
+msgstr "Введите свою фамилию, чтобы система знала, как к вам обращаться."
 
 #: exmo/exmo2010/custom_registration/forms.py:55
 msgid "E-mail is required for confirming registration and loggin in."
