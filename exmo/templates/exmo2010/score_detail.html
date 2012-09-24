@@ -54,14 +54,18 @@
     <tbody>
         <tr>
             <td>{% trans 'Found' %}</td>
-            <td class="value {{object|criteria_css_class:'found'}}">{{ object.found }}</td>
+            <td class="value {{object|criteria_css_class:'found'}}">
+                {{ object.found|default_if_none:"—" }}
+            </td>
             <td></td>
         </tr>
 
         {% if parameter.complete and object.complete %}
         <tr>
             <td>{% trans 'Complete' %}</td>
-            <td class="value {{object|criteria_css_class:'complete'}}">{{ object.complete }}</td>
+            <td class="value {{object|criteria_css_class:'complete'}}">
+                {{ object.complete|default_if_none:"—" }}
+            </td>
             <td>{% if object.completeComment %}{{ object.completeComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -69,7 +73,9 @@
         {% if parameter.topical and object.topical %}
         <tr>
             <td>{% trans 'Topical' %}</td>
-            <td class="value {{object|criteria_css_class:'topical'}}">{{ object.topical }}</td>
+            <td class="value {{object|criteria_css_class:'topical'}}">
+                {{ object.topical|default_if_none:"—" }}
+            </td>
             <td>{% if object.topicalComment %}{{ object.topicalComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -77,7 +83,9 @@
         {% if parameter.accessible and object.accessible %}
         <tr>
             <td>{% trans 'Accessible' %}</td>
-            <td class="value {{object|criteria_css_class:'accessible'}}">{{ object.accessible }}</td>
+            <td class="value {{object|criteria_css_class:'accessible'}}">
+                {{ object.accessible|default_if_none:"—" }}
+            </td>
             <td>{% if object.accessibleComment %}{{ object.accessibleComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -85,7 +93,9 @@
         {% if parameter.hypertext and object.hypertext != "" %}
         <tr>
             <td>{% trans 'Hypertext' %}</td>
-            <td class="value {{object|criteria_css_class:'hypertext'}}">{{ object.hypertext }}</td>
+            <td class="value {{object|criteria_css_class:'hypertext'}}">
+                {{ object.hypertext|default_if_none:"—" }}
+            </td>
             <td>{% if object.hypertextComment %}{{ object.hypertextComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -93,7 +103,9 @@
         {% if parameter.document and object.document != "" %}
         <tr>
             <td>{% trans 'Document' %}</td>
-            <td class="value {{object|criteria_css_class:'document'}}">{{ object.document }}</td>
+            <td class="value {{object|criteria_css_class:'document'}}">
+                {{ object.document|default_if_none:"—" }}
+            </td>
             <td>{% if object.documentComment %}{{ object.documentComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -101,7 +113,9 @@
         {% if parameter.image and object.image != "" %}
         <tr>
             <td>{% trans 'Image' %}</td>
-            <td class="value {{object|criteria_css_class:'image'}}">{{ object.image }}</td>
+            <td class="value {{object|criteria_css_class:'image'}}">
+                {{ object.image|default_if_none:"—" }}
+            </td>
             <td>{% if object.imageComment %}{{ object.imageComment }}{% endif %}</td>
         </tr>
         {% endif %}
@@ -121,10 +135,12 @@
                 <td class="author">
                     {{ comment.user_name }}
                     <br />
-                    <span>{{ comment.submit_date }}</span>
+                    <span>
+                        {{ comment.submit_date|date:"H:i d.m.Y" }}
+                    </span>
                 </td>
                 <td>
-                    {{ comment.comment }}<br />
+                    {{ comment.comment|linebreaksbr }}<br />
                 </td>
             </tr>
         {% endfor %}
@@ -142,7 +158,6 @@
     {{ form.security_hash.as_hidden }}
     {% if user %}
         <input type="hidden" name="id_user" value="{{ user }}" />
-        <br />
     {% else %}
         <label class="label-comment">{{ form.user.label }}</label>
         <br />
@@ -151,17 +166,12 @@
     {% endif %}
     {% if user.email %}
         <input type="hidden" name="id_email" value="{{ user.email }}" />
-        <br />
     {% else %}
         <label class="label-comment">{{ form.email.label }}</label>
         <br />
         {{ form.email }}
         <br />
     {% endif %}
-        {% comment %}
-        <label class="label-comment">{{ form.comment.label }}</label>
-        <br />
-        {% endcomment %}
         {{ form.comment }}
         <br />
         <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />

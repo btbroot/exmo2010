@@ -72,13 +72,12 @@
 .table-comments-parameter .author
 {
     font-size: 13px;
-    width: 11%;
+    width: 140px;
     font-weight: bold;
 }
 
 .table-comments-parameter .author span
 {
-    width: 11%;
     font-weight: normal;
     font-size: 11px;
     color: #333;
@@ -112,8 +111,8 @@
 
 #id_comment
 {
-    margin-top: 5px;
-    margin-bottom: 15px;
+    margin-top: 3px;
+    margin-bottom: 4px;
     width: 55%;
     overflow: auto;
 }
@@ -122,6 +121,9 @@
 {
     color: red;
 }
+
+
+
 
 /* Filter by parameter */
 
