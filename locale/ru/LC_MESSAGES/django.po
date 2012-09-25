@@ -1771,9 +1771,10 @@ msgid ""
 "You can get rating with various parameters.\n"
 "1) all parameters\n"
 "2) npa parameters\n"
-"3) selected parameters\n"
-"By default you see rating based on all types."
-msgstr "Вы можете ознакомиться с рейтингом построенном на основе: 1) всех параметров; 2) параметров на основе нормативных правовых актов; 3) выбранных вами параметров."
+"3) selected parameters"
+msgstr "Вы можете ознакомиться с рейтингом построенном на основе: "
+"1) всех параметров; 2) параметров на основе нормативных правовых актов; "
+"3) выбранных вами параметров."
 
 #: exmo/templates/exmo2010/rating_content.html:31
 msgid "You can select rating type after monitoring selection"
