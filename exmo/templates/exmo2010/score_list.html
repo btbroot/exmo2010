@@ -62,6 +62,8 @@
     <br />
     {% trans 'Openness for npa parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
     {% if place_npa %}&nbsp;(<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=npa">{{ place_npa }} {% trans 'place' %}</a>){%endif%}<br />
+    {% trans 'Openness for other parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
+    {% if place_other %}&nbsp;(<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=other">{{ place_other }} {% trans 'place' %}</a>){%endif%}
     {% endif %}
 </h2>
 

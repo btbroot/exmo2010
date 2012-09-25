@@ -184,8 +184,9 @@ def ratings(request):
     mform = MonitoringFilterForm(request.GET)
 
     if m_id:
-        monitoring = get_object_or_404(Monitoring, pk = m_id)
-        rating_type, parameter_list, form = rating_type_parameter(request, monitoring)
+        monitoring = get_object_or_404(Monitoring, pk=m_id)
+        rating_type, parameter_list, form = rating_type_parameter(request,
+            monitoring)
         rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     return render_to_response('exmo2010/rating_report.html', {
