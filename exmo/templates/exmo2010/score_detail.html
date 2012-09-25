@@ -122,31 +122,47 @@
     </tbody>
 </table>
 
-{% if user.profile.is_internal or user.profile.is_organization %}
+{% load comments check_object_permission %}
 
-{% load comments %}
-{% get_comment_list for object as comment_list %}
-{% if comment_list %}
-<h3 class="heading-comments-parameter">{% trans 'Comments' %}</h3>
-    <table class="table-comments-parameter">
-        <tbody>
-        {% for comment in comment_list %}
-            <tr id="c{{ comment.id }}">
-                <td class="author">
-                    {{ comment.user_name }}
-                    <br />
-                    <span>
-                        {{ comment.submit_date|date:"H:i d.m.Y" }}
-                    </span>
-                </td>
-                <td>
-                    {{ comment.comment|linebreaksbr }}<br />
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+{% check_object_permission exmo2010.comment_score object as can_comment %}
+{% check_object_permission exmo2010.view_comment_score object as can_view_comment %}
+
+{% if can_view_comment %}
+
+    {% get_comment_list for object as comment_list %}
+    {% if comment_list %}
+    <h3 class="heading-comments-parameter">{% trans 'Comments' %}</h3>
+        <table class="table-comments-parameter">
+            <tbody>
+            {% for comment in comment_list %}
+                <tr id="c{{ comment.id }}">
+                    <td class="author">
+                        {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
+                            {% if user.userprofile.is_expert or user.is_superuser %}
+                                {{ comment.user_name }}
+                            {% else %}
+                                {% trans 'Foundation Analyst' %}
+                            {% endif %}
+                        {% else %}
+                          {{ comment.user_name }}
+                        {% endif %}
+                        <br />
+                        <span>
+                            {{ comment.submit_date|date:"H:i d.m.Y" }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ comment.comment|linebreaksbr }}<br />
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
 {% endif %}
+
+{% if can_comment %}
 
 <h3 class="heading-yourcomment-parameter">{% trans 'Your comment' %}</h3>
 
@@ -177,7 +193,9 @@
         <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
         <input type="submit" name="post" class="submit-post" value="{% trans 'Post' %}">
 </form>
+
 {% endif %}
+
 
 </div>
 {% endblock %}

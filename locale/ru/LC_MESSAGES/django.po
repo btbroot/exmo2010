@@ -1001,6 +1001,10 @@ msgstr "Оценки для %s"
 msgid "Code"
 msgstr "Код"
 
+#: exmo/templates/exmo2010/score_detail.html:144
+msgid "Foundation Analyst"
+msgstr "Аналитик Фонда"
+
 #: exmo/exmo2010/view/score.py:147
 #: exmo/templates/exmo2010/claim_report.html:52
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:42
