@@ -391,7 +391,7 @@ class Organization(models.Model):
 
     #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
-        return '%s' % self.name
+        return '%s(%s)' % (self.name, self.monitoring.name[:24])
 
     def _get_tags(self):
         return Tag.objects.get_for_object(self)
