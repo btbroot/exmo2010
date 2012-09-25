@@ -60,7 +60,7 @@
             <td></td>
         </tr>
 
-        {% if parameter.complete and object.complete %}
+        {% if parameter.complete %}
         <tr>
             <td>{% trans 'Complete' %}</td>
             <td class="value {{object|criteria_css_class:'complete'}}">
@@ -70,7 +70,7 @@
         </tr>
         {% endif %}
 
-        {% if parameter.topical and object.topical %}
+        {% if parameter.topical %}
         <tr>
             <td>{% trans 'Topical' %}</td>
             <td class="value {{object|criteria_css_class:'topical'}}">
@@ -80,7 +80,7 @@
         </tr>
         {% endif %}
 
-        {% if parameter.accessible and object.accessible %}
+        {% if parameter.accessible %}
         <tr>
             <td>{% trans 'Accessible' %}</td>
             <td class="value {{object|criteria_css_class:'accessible'}}">
@@ -90,7 +90,7 @@
         </tr>
         {% endif %}
 
-        {% if parameter.hypertext and object.hypertext != "" %}
+        {% if parameter.hypertext %}
         <tr>
             <td>{% trans 'Hypertext' %}</td>
             <td class="value {{object|criteria_css_class:'hypertext'}}">
@@ -100,7 +100,7 @@
         </tr>
         {% endif %}
 
-        {% if parameter.document and object.document != "" %}
+        {% if parameter.document %}
         <tr>
             <td>{% trans 'Document' %}</td>
             <td class="value {{object|criteria_css_class:'document'}}">
@@ -110,7 +110,7 @@
         </tr>
         {% endif %}
 
-        {% if parameter.image and object.image != "" %}
+        {% if parameter.image %}
         <tr>
             <td>{% trans 'Image' %}</td>
             <td class="value {{object|criteria_css_class:'image'}}">
