@@ -45,15 +45,17 @@
             {% else %}
                 <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=all" class="pseudolink">{% trans 'all parameters' %}</a>
             {% endif %}
-            {% if rating_type == "npa" %}
-                <span>{% trans 'npa parameters' %}</span>
-            {% else %}
-                <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=npa" class="pseudolink">{% trans 'npa parameters' %}</a>
-            {% endif %}
-            {% if rating_type == "other" %}
-                <span>{% trans 'other parameters' %}</span>
-            {% else %}
-                <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=other" class="pseudolink">{% trans 'other parameters' %}</a>
+            {% if has_npa %}
+                {% if rating_type == "npa" %}
+                    <span>{% trans 'npa parameters' %}</span>
+                {% else %}
+                    <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=npa" class="pseudolink">{% trans 'npa parameters' %}</a>
+                {% endif %}
+                {% if rating_type == "other" %}
+                    <span>{% trans 'other parameters' %}</span>
+                {% else %}
+                    <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=other" class="pseudolink">{% trans 'other parameters' %}</a>
+                {% endif %}
             {% endif %}
             {% if rating_type == "user" %}
                 <span>{% trans 'user selected' %}</span>

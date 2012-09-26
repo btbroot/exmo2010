@@ -251,16 +251,19 @@ def monitoring_rating_color(request, id):
 
 
 def monitoring_rating(request, m_id):
-    monitoring = get_object_or_404(Monitoring, pk = m_id)
-    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
 
     log_monitoring_interact_activity(monitoring, request.user)
-
-    rating_type, parameter_list, form = rating_type_parameter(request, monitoring)
+    has_npa = monitoring.has_npa
+    rating_type, parameter_list, form = rating_type_parameter(request,
+        monitoring, has_npa)
     rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
+        'has_npa': has_npa,
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,

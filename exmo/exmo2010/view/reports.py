@@ -177,6 +177,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 def ratings(request):
     m_id = request.GET.get('monitoring')
     monitoring = None
+    has_npa = False
     rating_list = None
     rating_type = None
     avg = None
@@ -185,12 +186,14 @@ def ratings(request):
 
     if m_id:
         monitoring = get_object_or_404(Monitoring, pk=m_id)
+        has_npa = monitoring.has_npa
         rating_type, parameter_list, form = rating_type_parameter(request,
-            monitoring)
+            monitoring, has_npa)
         rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     return render_to_response('exmo2010/rating_report.html', {
         'monitoring': monitoring,
+        'has_npa': has_npa,
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,

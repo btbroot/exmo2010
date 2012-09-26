@@ -246,7 +246,7 @@ def score_list_by_task(request, task_id, report=None):
                     initial=initial_data)
         else:
             form = None
-        has_npa = task.has_npa
+        has_npa = task.organization.monitoring.has_npa
         if has_npa:
             place_npa = task.rating_place_npa
             place_other = task.rating_place_other

@@ -259,6 +259,10 @@ class Monitoring(models.Model):
     def publish_date(self):
         return self._get_date(self.MONITORING_PUBLISH)
 
+    @property
+    def has_npa(self):
+        return self.parameter_set.filter(npa=True).exists()
+
     def prepare_date_sql_inline(self, status=MONITORING_RATE):
         sql = "select " \
               "%(start_field)s from %(monitoringstatus_table)s " \
@@ -547,11 +551,6 @@ class Task(models.Model):
         if self.organization.monitoring.is_interact and self.openness_first < 0:
             self.openness_first = self.openness
             self.save()
-
-    @property
-    def has_npa(self):
-        return self.organization.monitoring.parameter_set.filter(npa=True).\
-        exists()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets

@@ -91,8 +91,11 @@ def rating(monitoring, parameters=None):
     return rating_list_final, avg
 
 
-def rating_type_parameter(request, monitoring):
-    rating_type_list = ['all', 'npa', 'user', 'other']
+def rating_type_parameter(request, monitoring, has_npa=False):
+    if has_npa:
+        rating_type_list = ('all', 'npa', 'user', 'other')
+    else:
+        rating_type_list = ('all', 'user')
     rating_type = request.GET.get('type', 'all')
     if rating_type not in rating_type_list:
         raise Http404
