@@ -1303,3 +1303,9 @@ class MonitoringInteractActivity(models.Model):
     monitoring = models.ForeignKey(Monitoring)
     user = models.ForeignKey(User)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return u"%s (%s)" % (self.user.username, self.monitoring.name)
+
+    class Meta:
+        unique_together = ('user', 'monitoring')

@@ -263,10 +263,13 @@ def score_change_notify(sender, **kwargs):
             email.send()
 
 def log_monitoring_interact_activity(monitoring, user):
-    created = False
     if monitoring.is_interact and user.is_active and user.profile.is_organization:
-        obj, created = MonitoringInteractActivity.objects.get_or_create(
+        if not MonitoringInteractActivity.objects.filter(
             monitoring=monitoring,
             user=user,
-        )
-    return created
+        ).exists():
+            log = MonitoringInteractActivity(
+                        monitoring=monitoring,
+                        user=user,
+                    )
+            log.save()

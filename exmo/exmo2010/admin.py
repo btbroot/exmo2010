@@ -96,6 +96,10 @@ class UserAdmin(UserAdmin):
     inlines = [UserProfileInline,]
 
 
+class MonitoringInteractActivityAdmin(admin.ModelAdmin):
+    search_fields = ('user__username', )
+    list_filter = ('monitoring',)
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
@@ -107,3 +111,4 @@ admin.site.register(exmo2010.models.Monitoring, MonitoringAdmin)
 admin.site.register(exmo2010.models.MonitoringStatus)
 admin.site.register(exmo2010.models.Claim)
 admin.site.register(exmo2010.models.OpennessExpression)
+admin.site.register(exmo2010.models.MonitoringInteractActivity, MonitoringInteractActivityAdmin)
