@@ -19,9 +19,13 @@
 #
 {% endcomment %}
 {% load table_header i18n adminmedia check_object_permission hash %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/changelists.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/score_list.css" />
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/changelists.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/score_list.css" />
 {% endblock %}
+
 {% block extrahead %}
     {{ block.super }}
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
@@ -238,5 +242,6 @@
     </div>
     <br>
 {% endif %}
+
 {% include "exmo2010/score_legend.html" %}
 {% endblock %}

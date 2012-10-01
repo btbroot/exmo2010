@@ -43,7 +43,7 @@
 }
 
 .score-none {
-    background:gray;
+    background: #e5e5e5;
 
 }
 
@@ -106,4 +106,153 @@
 
 .fc_field_header ul li {
     list-style-type: none
+}
+
+
+/* Score legend */
+
+ol
+{
+    margin:0;
+    padding:0;
+}
+
+p
+{
+    margin:0;
+}
+
+.c9
+{
+    vertical-align:middle;
+    width:85.05000000000001pt;
+    border-style:solid;
+    background-color:#80e580;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c21
+{
+    vertical-align:middle;
+    width:99.35pt;
+    border-style:solid;
+    background-color:#80e580;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c14
+{
+    vertical-align:top;
+    width:133.0pt;
+    border-style:solid;
+    background-color:#fecb80; /* orange */
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c7
+{
+    vertical-align:middle;
+    width:75.64999999999998pt;
+    border-style:solid;
+    background-color:#fe9898;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c2{
+    vertical-align:top;
+    width:133.0pt;
+    border-style:solid;
+    background-color:#80e580;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c17
+{
+    vertical-align:middle;
+    width:87.29999999999998pt;
+    border-style:solid;
+    background-color:#e5e5e5;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c1{
+    vertical-align:top;
+    width:133.0pt;
+    border-style:solid;
+    background-color:#fefe80;
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt}
+.c29
+{
+    vertical-align:middle;
+    width:99.25000000000006pt;
+    border-style:solid;
+    background-color:#fecb80; /* orange */
+    border-color:#000000;
+    border-width:1.0pt;
+    padding:0pt 5.4pt 0pt 5.4pt
+}
+.c30{vertical-align:middle;width:99.25000000000006pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c22{vertical-align:middle;width:87.29999999999998pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c23{vertical-align:middle;width:85.05000000000001pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c10{vertical-align:middle;width:75.64999999999998pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+
+.c34{vertical-align:top;width:133.0pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c31{vertical-align:middle;width:133.0pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c19{vertical-align:middle;width:154.25pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c26{vertical-align:middle;width:99.35pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.c3{vertical-align:middle;width:616.6pt;border-style:solid;border-color:#000000;border-width:1.0pt;padding:0pt 5.4pt 0pt 5.4pt}
+.
+c13{line-height:1.15;padding-top:0pt;text-align:left;direction:ltr;padding-bottom:0pt}
+.c0{line-height:1.0;padding-top:0pt;text-align:center;direction:ltr;padding-bottom:0pt}
+.c15{line-height:1.0;padding-top:0pt;text-align:left;direction:ltr;padding-bottom:0pt}
+.c27{line-height:1.0;padding-top:0pt;text-align:left;direction:ltr;padding-bottom:10.0pt}
+.c35
+{
+    width:728.4999999999999pt;
+    background-color:#ffffff;
+    padding:85.1pt 56.7pt 42.5pt 56.7pt
+}
+.c18{font-size:12pt;}
+.c11{font-size:10pt;}
+.c4{font-size:10pt;}
+.c20{font-size:12pt;}
+.c32
+{
+    background-color:#fecb80 /* orange */
+}
+.c24
+{
+    background-color:#fe9898
+}
+.c8{font-weight:bold}
+.c6{border-collapse:collapse}
+.c12{height:11pt}
+
+.c28
+{
+    background-color:#80e580
+}
+.c16
+{
+    background-color:#e5e5e5
+}
+.c25
+{
+    background-color:#e5e5e5
+}
+.c5
+{
+    height:0pt
+}
+.c33
+{
+    background-color:#fefe80
 }
