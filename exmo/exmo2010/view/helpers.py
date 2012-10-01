@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Модуль помощников для вью
+"""
+
 from django.views.generic.list_detail import object_list
 from exmo2010.sort_headers import SortHeaders
 from exmo2010.models import Task, Parameter
@@ -23,7 +29,9 @@ from django.http import Http404
 
 
 def table_prepare_queryset(request, headers, queryset):
-  """Generic sortable table view"""
+  """
+  Поготовка отсортированного и отфильтрованного QS для object_list
+  """
   sort_headers = SortHeaders(request, headers)
   if sort_headers.get_order_by():
         queryset = queryset.order_by(sort_headers.get_order_by())
@@ -33,6 +41,7 @@ def table_prepare_queryset(request, headers, queryset):
 
 
 def table(request, headers, **kwargs):
+  """Generic sortable table view"""
   kwargs['queryset'], extra_context = table_prepare_queryset(request, headers, kwargs['queryset'])
   if 'extra_context' not in kwargs:
     kwargs['extra_context'] = extra_context
@@ -42,6 +51,11 @@ def table(request, headers, **kwargs):
 
 
 def rating(monitoring, parameters=None):
+    """
+    Генерация ретинга для мониторинга по выбранным параметрам
+    Вернет tuple из отсортированного списка объектов рейинга
+    и словаря средних значений Кид
+    """
     #sample extra for select
     extra_select = "count(*)"
     #get task from monitoring for valid sql
@@ -92,6 +106,9 @@ def rating(monitoring, parameters=None):
 
 
 def rating_type_parameter(request, monitoring, has_npa=False):
+    """
+    Функция подготовки списка параметров и формы выбора параметров
+    """
     if has_npa:
         rating_type_list = ('all', 'npa', 'user', 'other')
     else:

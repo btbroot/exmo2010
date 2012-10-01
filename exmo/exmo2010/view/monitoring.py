@@ -16,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Модуль вью для работы с мониторингами
+"""
+
 import csv
 import simplejson
 from django.contrib.auth.models import User
@@ -86,6 +91,9 @@ def _get_monitoring_list(request):
     return queryset
 
 def monitoring_list(request):
+    """
+    Список мониторингов
+    """
     queryset = _get_monitoring_list(request)
 
     headers =   (
@@ -93,6 +101,7 @@ def monitoring_list(request):
                 (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS),
                 )
 
+    #todo: remove this
     active_tasks = None
     if request.user.is_active and request.user.userprofile.is_organization:
         active_tasks = Task.objects.filter(
@@ -119,6 +128,9 @@ def monitoring_list(request):
 
 @login_required
 def monitoring_manager(request, id, method):
+    """
+    Удаление/редактирование/пересчет мониторинга
+    """
     redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
     monitoring = get_object_or_404(Monitoring, pk = id)
@@ -136,7 +148,7 @@ def monitoring_manager(request, id, method):
                 'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
                 }
             )
-    elif method == 'calculate':
+    elif method == 'calculate': #todo: remove this
         if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         if request.method != 'POST':
@@ -194,6 +206,9 @@ def monitoring_manager(request, id, method):
 
 @login_required
 def monitoring_add(request):
+    """
+    Создание мониторинга
+    """
     if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Add new monitoring')
@@ -223,6 +238,7 @@ def monitoring_add(request):
 from operator import itemgetter
 #update rating twice in a day
 #@cache_page(60 * 60 * 12)
+#todo: remove this
 def monitoring_rating_color(request, id):
   monitoring = get_object_or_404(Monitoring, pk = id)
   if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
@@ -252,6 +268,9 @@ def monitoring_rating_color(request, id):
 
 
 def monitoring_rating(request, m_id):
+    """
+    Вывод мониторинга
+    """
     monitoring = get_object_or_404(Monitoring, pk=m_id)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -281,7 +300,10 @@ import os
 from cStringIO import StringIO
 @login_required
 def monitoring_by_criteria_mass_export(request, id):
-
+    """
+    Экспорт по критерию
+    Архив из CVS файлов -- по файлу на критерий
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -372,6 +394,9 @@ def monitoring_by_criteria_mass_export(request, id):
 
 @login_required
 def monitoring_by_experts(request, id):
+    """
+    Статистика мониторинга по экспертам
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -425,6 +450,7 @@ def monitoring_by_experts(request, id):
 
 
 
+#todo: remove
 @login_required
 def monitoring_info(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
@@ -446,6 +472,9 @@ def monitoring_info(request, id):
 
 @login_required
 def monitoring_parameter_filter(request, m_id):
+    """
+    Отчёт по параметру и критерию
+    """
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=m_id)
@@ -536,6 +565,9 @@ def monitoring_parameter_filter(request, m_id):
 
 @login_required
 def monitoring_parameter_found_report(request, id):
+    """
+    Отчёт по наличию параметра
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -594,6 +626,9 @@ def monitoring_parameter_found_report(request, id):
 
 @login_required
 def monitoring_parameter_export(request, id):
+    """
+    Экспорт параметров в CSV
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -637,6 +672,9 @@ def monitoring_parameter_export(request, id):
 
 @login_required
 def monitoring_organization_export(request, id):
+    """
+    Экспорт организаций в CSV
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
@@ -667,6 +705,9 @@ def monitoring_organization_export(request, id):
 @login_required
 @csrf_protect
 def monitoring_organization_import(request, id):
+    """
+    Импорт организаций из CSV
+    """
     from reversion import revision
     must_register = False
     if revision.is_registered(Organization):
@@ -741,6 +782,9 @@ def monitoring_organization_import(request, id):
 @login_required
 @csrf_protect
 def monitoring_parameter_import(request, id):
+    """
+    Импорт параметров из CSV
+    """
     from reversion import revision
     must_register = False
     if revision.is_registered(Parameter):
@@ -823,6 +867,9 @@ def monitoring_parameter_import(request, id):
 @login_required
 @csrf_protect
 def monitoring_comment_report(request, id):
+    """
+    Отчёт по комментариям
+    """
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))

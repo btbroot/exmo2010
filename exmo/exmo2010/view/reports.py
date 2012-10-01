@@ -16,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Модуль отчётов
+"""
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -89,6 +94,9 @@ def comment_list(request, report_type='1'):
     )
 
 def monitoring_report(request, report_type='inprogress', monitoring_id=None):
+    """
+    Статистика по мониторингам
+    """
     if report_type not in ['inprogress', 'finished']:
         raise Http404
 
@@ -149,6 +157,9 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
     )
 
 def ratings(request):
+    """
+    Рейтинги
+    """
     m_id = request.GET.get('monitoring')
     monitoring = None
     has_npa = False

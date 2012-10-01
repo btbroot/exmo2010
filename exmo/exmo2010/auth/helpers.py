@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,9 +16,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+ Помощники для бекенда. По помощнику на каждый класс модели.
+"""
+
 from django.contrib.auth.models import Group, User
 from exmo2010 import models as em
-
 
 def monitoring_permission(user, priv, monitoring):
     if priv in ('exmo2010.admin_monitoring', 'exmo2010.create_monitoring', 'exmo2010.edit_monitoring', 'exmo2010.delete_monitoring'):
@@ -158,7 +163,10 @@ def parameter_permission(user, priv, parameter):
 
 
 def check_permission(user, priv, context = None):
-    '''check user permission for context'''
+    '''check user permission for context
+    врапер для функций выше. точка входа для бекенда авторизации django
+    делает eval на имя класса
+    '''
     if context is None:
         return False
     func = eval(context._meta.object_name.lower() + '_permission')

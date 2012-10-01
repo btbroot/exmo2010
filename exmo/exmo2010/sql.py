@@ -17,6 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Модуль в котором хранится RAW SQL
+"""
+
+#Расчёт Кид для одной оценки по формуле v1
 sql_score_openness_v1="""
 exmo2010_parameter.weight*
 exmo2010_score.found*
@@ -60,8 +65,7 @@ if (exmo2010_parameter.hypertext=1,
 	1)
 """
 
-
-
+#Расчёт Кид для одной оценки по формуле v8
 sql_score_openness_v8="""
 exmo2010_parameter.weight*
 exmo2010_score.found*
@@ -107,7 +111,7 @@ if (exmo2010_parameter.image=1,
 """
 
 
-
+#Расчет Кид для задачи
 sql_task_openness="""
 (SELECT (SUM(
 %(sql_score_openness)s

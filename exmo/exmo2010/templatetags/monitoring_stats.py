@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,9 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Тег аггрегации оперативной статистики по мониторингу
+"""
+
 from django import template
 from exmo2010.models import Organization, Task
 
+#TODO: выкинуть и заменить
 def monitoring_stats(context, monitoring):
     approved_organizations = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_APPROVED).distinct()
     organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()

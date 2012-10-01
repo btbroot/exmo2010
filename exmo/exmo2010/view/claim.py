@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Модуль для работы с претензиями
+"""
+
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -33,6 +39,9 @@ from datetime import datetime, timedelta
 @csrf_protect
 @login_required
 def claim_manager(request, score_id, claim_id=None, method=None):
+    """
+    Вью для манипуляции с претензиями
+    """
     score = get_object_or_404(Score, pk = score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
     title = _('Add new claim for %s') % score
@@ -73,6 +82,9 @@ def claim_manager(request, score_id, claim_id=None, method=None):
 @csrf_protect
 @login_required
 def claim_report(request, monitoring_id):
+    """
+    Отчёт по претензиям
+    """
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
     title = _('Claims report for %(monitoring)s') % { 'monitoring': monitoring }
     claims = queryset = None

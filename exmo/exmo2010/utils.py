@@ -16,7 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#http://code.djangoproject.com/ticket/8399
+
+"""
+Модуль для утилит EXMO2010
+"""
+
 try:
     from functools import wraps
 except ImportError:
@@ -29,6 +33,10 @@ from django.contrib.auth.models import User
 
 
 def disable_for_loaddata(signal_handler):
+    """
+    http://code.djangoproject.com/ticket/8399
+    Декоратор для пропуска при loaddata
+    """
     @wraps(signal_handler)
     def wrapper(*args, **kwargs):
         for fr in inspect.stack():
@@ -42,6 +50,9 @@ def disable_for_loaddata(signal_handler):
 from dateutil import rrule
 from dateutil.rrule import DAILY
 def workday_count(alpha, omega):
+    """
+    Расчёт рабочих дней с учетов выходных
+    """
     dates=rrule.rruleset() # create an rrule.rruleset instance
     dates.rrule(rrule.rrule(DAILY, dtstart=alpha, until=omega)) # this set is INCLUSIVE of alpha and omega
     dates.exrule(rrule.rrule(DAILY,
@@ -53,6 +64,9 @@ def workday_count(alpha, omega):
 
 
 def safeConvert(string):
+  """
+  Безопасное приведение к utf-8
+  """
   if string and type(string) in [str, unicode]:
     return string.encode("utf-8")
   elif type(string) in [long, int]:

@@ -78,6 +78,9 @@ def generate_inv_code(ch_nr):
 
 
 class OpennessExpression(models.Model):
+    """
+    Модель для хранения кода и наименования формул расчета Кид
+    """
     code    = models.PositiveIntegerField(primary_key=True)
     name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
 
@@ -126,6 +129,9 @@ class Monitoring(models.Model):
         return ('exmo2010:tasks_by_monitoring', [str(self.id)])
 
     def create_calendar(self):
+        """
+        создание календаря для мониторинга (первичное создание объектов)
+        """
         for status in self.MONITORING_STATUS:
             MonitoringStatus.objects.get_or_create(status=status[0],
                                                    monitoring=self)
@@ -180,6 +186,7 @@ class Monitoring(models.Model):
 
 
     def ready_export_answers(self):
+        #Готов ли мониторинг к экспорту ответов анкеты
         questionnaire = self.get_questionnaire()
         if questionnaire and QAnswer.objects.filter(
             question__questionnaire=questionnaire,
@@ -229,6 +236,10 @@ class Monitoring(models.Model):
         return stat
 
     def _get_date(self, status):
+        """
+        Возвращает дату начала соотв. этапа
+        Помощник для св-в ниже
+        """
         try:
             date = MonitoringStatus.objects.get(
                 monitoring=self,
@@ -267,6 +278,10 @@ class Monitoring(models.Model):
         return self.parameter_set.filter(npa=True).exists()
 
     def prepare_date_sql_inline(self, status=MONITORING_RATE):
+        """
+        Возвращает SQL пригодный для extra, который добавит столбец
+        с датой соотв. статуса
+        """
         sql = "select " \
               "%(start_field)s from %(monitoringstatus_table)s " \
               "where " \
@@ -335,6 +350,9 @@ class AnswerVariant(models.Model):
 
 
 class MonitoringStatus(models.Model):
+    """
+    Модель для хранения даты на каждый статус мониторинга
+    """
     monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
     status = models.PositiveIntegerField(choices=Monitoring.MONITORING_STATUS,
         default=Monitoring.MONITORING_PREPARE, verbose_name=_('status'))
@@ -455,17 +473,26 @@ class Parameter(models.Model):
 
 
 class OpenTaskManager(models.Manager):
+    """
+    Менеджер для получения открытых задач
+    """
     def get_query_set(self):
         return super(OpenTaskManager, self).get_query_set().filter(status = Task.TASK_OPEN)
 
 
 
 class ReadyTaskManager(models.Manager):
+    """
+    Менеджер для получения закрытых задач
+    """
     def get_query_set(self):
         return super(ReadyTaskManager, self).get_query_set().filter(status = Task.TASK_READY)
 
 
 class ApprovedTaskManager(models.Manager):
+    """
+    Менеджер для получения одобренных задач
+    """
     def get_query_set(self):
         return super(ApprovedTaskManager, self).get_query_set().filter(status = Task.TASK_APPROVED)
 
@@ -572,6 +599,11 @@ class Task(models.Model):
         permissions = (("view_task", "Can view task"),)
 
     def clean(self):
+        """
+        Не давать закрыть задачу если она не 100% выполнена
+        Не давать закрыть задачу если уже есть одобренная
+         задача для этой организации в мониторинге
+        """
         if self.ready or self.approved:
             if self.complete != 100:
                 raise ValidationError(_('Ready task must be 100 percent complete.'))
@@ -625,6 +657,9 @@ class Task(models.Model):
 
     @property
     def complete(self):
+        """
+        Расчёт выполненности
+        """
         complete = 0
         parameters_num = Parameter.objects.filter(monitoring=self.organization.monitoring).exclude(exclude=self.organization).count()
         questions_num = QQuestion.objects.filter(questionnaire__monitoring=self.organization.monitoring).count()
@@ -640,6 +675,10 @@ class Task(models.Model):
         return complete
 
     def get_rating_place(self, parameters=None):
+        """
+        Если задача в рейтинге (одобрена), то вернет место в
+        рейтинге относительно прочих задач
+        """
         from exmo2010.view.helpers import rating
         place = None
         rating_list, avg = rating(self.organization.monitoring, parameters)
@@ -723,6 +762,9 @@ class QAnswer(models.Model):
 
 
 class Score(models.Model):
+    """
+    Модель оценки
+    """
 
     REVISION_DEFAULT = 0
     REVISION_INTERACT = 1
@@ -838,6 +880,12 @@ class Score(models.Model):
         )
 
     def clean(self):
+        """
+        Оценка не может быть заполнена частично
+        В оценке не может быть оценено то,
+        что не предусмотрено к оценке в параметре
+        У оценки не может быть found=0 при не пустых прочих критериях
+        """
         if self.found:
             if self.parameter.complete and self.complete in ('', None):
                 raise ValidationError(_('Complete must be set'))
@@ -910,6 +958,9 @@ class Score(models.Model):
         return color
 
     def create_revision(self, revision):
+        """
+        Создание ревизии оценки
+        """
         if self.task.organization.monitoring.status in Monitoring.after_interaction_status \
            and revision == Score.REVISION_INTERACT:
             revision_score = Score.objects.filter(
@@ -926,6 +977,9 @@ class Score(models.Model):
 
     @property
     def have_comment_without_reply(self):
+        """
+        Вернет pk последнего неотвеченного комента или False
+        """
         comments = Comment.objects.filter(
             object_pk=self.pk,
             content_type=ContentType.objects.get_for_model(self.__class__),
@@ -980,6 +1034,9 @@ class Claim(models.Model):
 
 
 def openness_helper(score):
+    """
+    Помощник для вычисления Кид через SQL
+    """
     sql="""
     SELECT
     %(score_openness)s
@@ -1301,6 +1358,9 @@ User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
 
 
 class MonitoringInteractActivity(models.Model):
+    """
+    Модель регистрации посещений мониторинга
+    """
     monitoring = models.ForeignKey(Monitoring)
     user = models.ForeignKey(User)
     timestamp = models.DateTimeField(auto_now_add=True)

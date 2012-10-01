@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,9 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import urllib, string
 
-# http://djangosnippets.org/snippets/308/
+"""
+http://djangosnippets.org/snippets/308/
+"""
+
+import urllib, string
 
 ORDER_VAR = 'o'
 ORDER_TYPE_VAR = 'ot'

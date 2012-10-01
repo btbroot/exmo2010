@@ -16,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+"""
+Формы EXMO2010
+"""
+
 import string
 from django import forms
 from django.utils import formats
@@ -36,6 +41,7 @@ from annoying.decorators import autostrip
 
 DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
 
+# основные JS ресурсы для форм с виджетами из админки
 CORE_JS = (
     settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
     settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
@@ -119,6 +125,9 @@ class HorizRadioRenderer(forms.RadioSelect.renderer):
 
 
 class ScoreForm(forms.ModelForm):
+    """
+    Форма выставления оценки
+    """
     class Meta:
         model = Score
         widgets = {
@@ -135,7 +144,14 @@ class ScoreForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    """
+    Форма редактирования/создания задачи
+    """
     def __init__(self, *args, **kwargs):
+        """
+        Фильтруем пользователей (нужны только эксперты)
+        Фильтруем организации (нужны только из текущего мониторинга)
+        """
         self._monitoring = kwargs.get('monitoring')
         if self._monitoring:
             kwargs.pop('monitoring')
@@ -145,6 +161,9 @@ class TaskForm(forms.ModelForm):
             self.fields['organization'].queryset = Organization.objects.filter(monitoring = self._monitoring)
 
     def clean_user(self):
+        """
+        Проверка на активность пользователя которому была назначена задача
+        """
         user = self.cleaned_data['user']
         user_obj=User.objects.filter(username=user, is_active=True)
         if not user_obj:
@@ -152,6 +171,9 @@ class TaskForm(forms.ModelForm):
         return user
 
     def clean_organization(self):
+        """
+        Проверка на соответствие мониторинга
+        """
         organization = self.cleaned_data['organization']
         if self._monitoring:
             if Organization.objects.filter(pk=organization.pk, monitoring = self._monitoring).count() < 1:
@@ -204,6 +226,9 @@ class ClaimForm(forms.ModelForm):
 
 
 class ClaimReportForm(forms.Form):
+    """
+    Форма для отчета по претензиям
+    """
     expert = forms.ModelChoiceField(queryset = User.objects.all(), label=_('expert'))
     from_date = forms.DateTimeField(label=_('from date'),
         widget=widgets.AdminSplitDateTime,
@@ -214,6 +239,9 @@ class ClaimReportForm(forms.Form):
 
 
 class MonitoringForm(forms.ModelForm):
+    """
+    Форма редактирования/создания мониторинга
+    """
     status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS,
         label=_('status'))
     add_questionnaire = forms.BooleanField(required=False,
@@ -237,6 +265,9 @@ class MonitoringForm(forms.ModelForm):
 
 from django.forms.models import BaseInlineFormSet
 class MonitoringStatusBaseFormset(BaseInlineFormSet):
+    """
+    Формсет для календаря мониторинга
+    """
     def get_queryset(self):
         if not hasattr(self, '_queryset'):
             self._queryset = self.queryset.filter(
@@ -246,6 +277,9 @@ class MonitoringStatusBaseFormset(BaseInlineFormSet):
 
 
 class MonitoringStatusForm(forms.ModelForm):
+    """
+    Базовая форма для формсета календаря мониторинга
+    """
     def __init__(self, *args, **kwargs):
         ms = kwargs.get('instance')
         super(MonitoringStatusForm, self).__init__(*args, **kwargs)
@@ -269,7 +303,13 @@ class MonitoringStatusForm(forms.ModelForm):
 
 
 class ParameterForm(forms.ModelForm):
+    """
+    Форма редактирования/создания параметра
+    """
     def __init__(self, *args, **kwargs):
+        """
+        Фильтруем организации для поля exclude
+        """
         _parameter = kwargs.get('instance')
         _monitoring = kwargs.get('monitoring')
         if _monitoring:
@@ -306,11 +346,17 @@ class OrganizationForm(forms.ModelForm):
 
 
 class MonitoringCommentStatForm(forms.Form):
+    """
+    Форма отчета по комментариям
+    """
     def __init__(self, *args, **kwargs):
         self.monitoring = kwargs.pop('monitoring', None)
         super(MonitoringCommentStatForm, self).__init__(*args, **kwargs)
 
     def clean(self):
+        """
+        Проверяем что поле начала периода взаимодействия в календаре заполнено
+        """
         cleaned_data = self.cleaned_data
         if not MonitoringStatus.objects.get(monitoring = self.monitoring, status = Monitoring.MONITORING_INTERACT).start:
             raise forms.ValidationError(_('Monitoring interact start date is missing. Check your monitoring calendar'))
@@ -483,6 +529,9 @@ class ParameterDynForm(forms.Form):
             )
 
 class MonitoringFilterForm(forms.Form):
+    """
+    Форма выбора мониторинга. К выбору доступны лишь опубликованные
+    """
     monitoring = forms.ModelChoiceField(
         queryset = Monitoring.objects.filter(status=Monitoring.MONITORING_PUBLISH).extra(select={
                 'start_date': Monitoring().prepare_date_sql_inline(Monitoring.MONITORING_PUBLISH),

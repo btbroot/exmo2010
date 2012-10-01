@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -16,6 +17,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Модуль помощников для всего проекта в целом
+"""
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -33,6 +38,7 @@ from exmo2010.utils import disable_for_loaddata
 def construct_change_message(request, form, formsets):
         """
         Construct a change message from a changed object.
+        Можно использовать для reversion
         """
         change_message = []
         if form.changed_data:
@@ -59,6 +65,10 @@ def construct_change_message(request, form, formsets):
 
 
 def comment_notification(sender, **kwargs):
+    """
+    Оповещение о комментариях
+    """
+
     comment = kwargs['comment']
     request = kwargs['request']
     score = comment.content_object
@@ -146,6 +156,10 @@ def comment_notification(sender, **kwargs):
 
 
 def claim_notification(sender, **kwargs):
+    """
+    Оповещение о претензиях
+    """
+
     claim = kwargs['claim']
     request = kwargs['request']
     score = claim.score
@@ -195,6 +209,11 @@ def claim_notification(sender, **kwargs):
 
 @disable_for_loaddata
 def post_save_model(sender, instance, created, **kwargs):
+    """
+    Функция для тригера post-save-model
+    Сейчас нужна лишь для сохранения openness_first
+    """
+
     must_register = False
     if revision.is_registered(instance.__class__):
         revision.unregister(instance.__class__)
@@ -209,6 +228,10 @@ def post_save_model(sender, instance, created, **kwargs):
 
 
 def create_profile(sender, instance, created, **kwargs):
+    """
+    post-save для модели User для создания профиля
+    """
+
     if created:
         from exmo2010 import models
         profile = models.UserProfile(user = instance)
@@ -217,18 +240,30 @@ def create_profile(sender, instance, created, **kwargs):
 
 
 def create_calendar(sender, instance, created, **kwargs):
+    """
+    Заполнение календаря мониторинга после создания
+    """
+
     if created:
         instance.create_calendar()
 
 
 
 def create_revision(sender, instance, using, **kwargs):
+    """
+    Сохранение ревизии оценки на стадии взаимодействия
+    """
+
     if instance.revision != Score.REVISION_INTERACT:
         instance.create_revision(Score.REVISION_INTERACT)
 
 
 
 def score_change_notify(sender, **kwargs):
+    """
+    Оповещение об измененях оценки
+    """
+
     form = kwargs['form']
     score = form.instance
     request = kwargs['request']
@@ -263,6 +298,10 @@ def score_change_notify(sender, **kwargs):
 
 
 def log_monitoring_interact_activity(monitoring, user):
+    """
+    Функция для ведения журнала посещений представителя организации
+     на стадии взаимодействия
+    """
     if (monitoring.is_interact and user.is_active and
         user.profile.is_organization):
         if not MonitoringInteractActivity.objects.filter(

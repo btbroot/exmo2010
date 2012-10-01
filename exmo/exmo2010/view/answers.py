@@ -17,6 +17,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Модуль работы с ответами анкеты
+"""
+
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -28,6 +32,9 @@ from exmo2010.models import Questionnaire, QQuestion
 
 @login_required
 def answers_export(request, monitoring_pk):
+    """
+    Экспорт ответов на анкету
+    """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
 
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):

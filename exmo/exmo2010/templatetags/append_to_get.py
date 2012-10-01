@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -15,18 +16,24 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# http://djangosnippets.org/snippets/1627/
+"""
+Этот снипет взят из
+http://djangosnippets.org/snippets/1627/
+"""
+
 from django import template
 
 register = template.Library()
 
 
-"""
-Decorator to facilitate template tag creation
-"""
 def easy_tag(func):
-    """deal with the repetitive parts of parsing template tags"""
+    """
+    Decorator to facilitate template tag creation
+    """
+
     def inner(parser, token):
+        """deal with the repetitive parts of parsing template tags"""
+
         #print token
         try:
             return func(*token.split_contents())
