@@ -214,6 +214,10 @@ msgstr "Текущий пароль"
 msgid "New password"
 msgstr "Новый пароль"
 
+#: exmo/exmo2010/custom_registration/forms.py:60
+msgid "Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)."
+msgstr "Создайте сложный пароль, используя латинские буквы (A-Z, a-z) и цифры (0-9)."
+
 #: exmo/exmo2010/forms.py:331 exmo/exmo2010/models.py:1041
 #: exmo/exmo2010/custom_registration/forms.py:70
 msgid "Subscribe to news e-mail notification"

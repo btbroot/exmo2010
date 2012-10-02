@@ -51,13 +51,13 @@ class RegistrationForm(forms.Form):
                     "you with it."),
         widget=forms.TextInput(attrs={"maxlength": 30}),
         required=False, max_length=30)
-    email = forms.EmailField(label="E-mail*",
+    email = forms.EmailField(label="E-mail",
         help_text=_("E-mail is required for confirming registration and "
                     "loggin in."),
         widget=forms.TextInput({"maxlength": 75}))
-    password = forms.CharField(label=_("Password")+"*",
-        widget=forms.PasswordInput(attrs={"maxlength": 24},
-            render_value=False))
+    password = forms.CharField(label=_("Password"),
+        widget=forms.TextInput(attrs={"maxlength": 24}),
+        help_text=_("Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)."))
     sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
         widget=forms.RadioSelect(),
         required=False)
@@ -76,7 +76,7 @@ class RegistrationForm(forms.Form):
         for char in password:
             if char not in PASSWORD_ALLOWED_CHARS:
                 raise forms.ValidationError(_("Password contains unallowed "
-                      "characters. Please use only latin letters and digits."))
+                                              "characters. Please use only latin letters and digits."))
         return password
 
     def clean_email(self):
@@ -89,7 +89,7 @@ class RegistrationForm(forms.Form):
         if (User.objects.filter(email__iexact=email).exists() or
             User.objects.filter(username__iexact=email).exists()):
             raise forms.ValidationError(_("This email address is already in "
-                              "use. Please supply a different email address."))
+                                          "use. Please supply a different email address."))
         return email
 
     def __init__(self, *args, **kwargs):
@@ -104,7 +104,7 @@ class SetPasswordForm(forms.Form):
     entering the old password
     """
     new_password = forms.CharField(label=_("New password"),
-        widget=forms.PasswordInput)
+        widget=forms.TextInput)
 
     def clean_new_password(self):
         """Проверка пароля на наличие недопустимых символов."""
@@ -112,7 +112,7 @@ class SetPasswordForm(forms.Form):
         for char in password:
             if char not in PASSWORD_ALLOWED_CHARS:
                 raise forms.ValidationError(_("Password contains unallowed "
-                      "characters. Please use only latin letters and digits."))
+                                              "characters. Please use only latin letters and digits."))
         return password
 
     def __init__(self, user, *args, **kwargs):

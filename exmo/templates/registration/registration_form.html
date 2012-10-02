@@ -23,27 +23,67 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/registration.css"/>
 {% endblock %}
 
 {% block content %}
     <h1>{% trans 'Registration' %}</h1>
     {% if request.user.is_authenticated %}
-    <p>{% trans 'You are already logged in' %}.</p>
-    {% url exmo2010:auth_logout as auth_logout_url %}
-    <p>{% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
+        <p>{% trans 'You are already logged in' %}.</p>
+        {% url exmo2010:auth_logout as auth_logout_url %}
+        <p>{% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
-    <p>{% trans 'In order to log in the system, please register first.' %}</p>
-    <div id="content-main">
-        <form action="" method="post">
-            {% csrf_token %}
-            <table>{{ form }}</table>
-            <p>* {% trans "required fields" %}</p>
-            <input type="submit" value="{% trans 'Register' %}"/>
-        </form>
-    </div>
-    <script type="text/javascript">
-        document.getElementById('id_first_name').focus()
-    </script>
+        <p>{% trans 'In order to log in the system, please register first.' %}</p>
+        <div id="content-main">
+            <form action="" method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <ul class="errorlist">
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <table class="table-registration">
+                    <tbody>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <tr>
+                                <td colspan="3">
+                                    {% for error in field.errors %}
+                                        <span class="form-error">{{ error }}</span>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="label-registration">
+                                <label>{{ field.field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
+                            </td>
+                            {% if field.field == form.fields.subscribe %}
+                                <td class="subscribe" colspan="2">
+                                    {{ field }} {{ field.help_text }}
+                                </td>
+                            {% else %}
+                                <td>
+                                    {{ field }}
+                                </td>
+                                <td class="help-text-registration">
+                                    {{ field.help_text }}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p><span class="required">*</span> {% trans "required fields" %}</p>
+                <input type="submit" value="{% trans 'Register' %}"/>
+            </form>
+        </div>
+        <script type="text/javascript">
+            document.getElementById('id_first_name').focus()
+        </script>
     {% endif %}
 {% endblock %}

@@ -1,0 +1,39 @@
+.table-registration td
+{
+    vertical-align: middle;
+}
+
+.label-registration label
+{
+    font-weight: bold;
+}
+
+.table-registration ul
+{
+    padding-left: 0;
+}
+.table-registration ul > li
+{
+    list-style: none;
+}
+
+.required
+{
+    color: red;
+}
+
+.subscribe
+{
+    padding-top: 9px;
+}
+
+.subscribe input
+{
+    position: relative;
+    bottom: 2px;
+}
+
+.form-error
+{
+    color: red;
+}
