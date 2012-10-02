@@ -23,62 +23,75 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/login.css"/>
 {% endblock %}
 
 {% block content %}
     <h1>{% trans 'Log in the system' %}</h1>
     {% if request.user.is_authenticated %}
-    <p>{% trans 'You are already logged in' %}.</p>
-    {% url auth_logout as auth_logout_url %}
-    <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
+        <p>{% trans 'You are already logged in' %}.</p>
+        {% url auth_logout as auth_logout_url %}
+        <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
-    <div id="content-main">
-        <form action="" method="post">
-            {% csrf_token %}
-            <div>
+        <div id="content-main">
+            <form action="" method="post">
+                {% csrf_token %}
                 {% if form.non_field_errors %}
                     <ul class="errorlist">
                         {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
+                        <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
                 {% endif %}
-                <span class="fc_item_header">{% trans 'E-mail or username' %}</span>
-                <div>
-                    {% if form.username.errors %}
-                        <ul class="errorlist">
-                            {% for error in form.username.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if form.username.help_text %}
-                        <span>{{ form.username.help_text }}</span><br>
-                    {% endif %}
-                    <div class="fc_field_header">{{ form.username }}</div>
-                </div>
-                <span class="fc_item_header">{% trans 'Password' %}</span>
-                <div>
-                    {% if form.password.errors %}
-                        <ul class="errorlist">
-                            {% for error in form.password.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    {% if form.password.help_text %}
-                        <span>{{ form.password.help_text }}</span><br>
-                    {% endif %}
-                    <div class="fc_field_header">{{ form.password }}</div>
-                </div>
-            </div>
-            <a href="{% url exmo2010:auth_password_reset %}">{% trans 'Forgot your password' %}?</a>
-            <input type="submit" value="{% trans 'Log in' %}"/><br/>
-        </form>
-    </div>
-    <script type="text/javascript">
-        document.getElementById('id_username').focus()
-    </script>
+
+                <table class="table-login">
+                    <tbody>
+
+                    {% for field in form %}
+
+                        {% if field.errors %}
+                            <tr>
+                                <td colspan="2">
+                                    {% for error in field.errors %}
+                                        <span class="form-error">{{ error }}</span>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                        <tr>
+                            <td>
+                                <label>
+                                {% ifequal field.field form.username.field %}
+                                    {% trans 'E-mail or username' %}
+                                {% else %}
+                                    {{ field.label }}
+                                {% endifequal %}
+                                </label>
+                            </td>
+                            <td>
+                                {{ field }}
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+                    <tr>
+                        <td>
+                            <a href="{% url exmo2010:auth_password_reset %}">
+                                {% trans 'Forgot your password' %}?
+                            </a>
+                        </td>
+                        <td class="login-submit">
+                            <input type="submit" value="{% trans 'Log in' %}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </form>
+        </div>
+        <script type="text/javascript">
+            document.getElementById('id_username').focus()
+        </script>
     {% endif %}
 {% endblock %}
