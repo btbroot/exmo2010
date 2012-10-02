@@ -80,7 +80,7 @@ class CustomMenu(Menu):
                 items.MenuItem(_('Log in'), reverse('exmo2010:auth_login')),
             ]
             msg = _('Welcome')
-        self.children.append(items.MenuItem(msg, children = children))
+        self.children.append(items.MenuItem(msg, children=children))
         self.children.append(items.MenuItem(_('Ratings'), reverse('exmo2010:ratings')))
 
         rep_children = []
@@ -94,7 +94,7 @@ class CustomMenu(Menu):
             self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
         inf_children = [
             items.MenuItem(_('Help'), reverse('exmo2010:help')),
-            items.MenuItem(_('Parameter lists'), "http://www.svobodainfo.org/ru/node/1930"),
+            items.MenuItem(_('Parameter lists'), "http://www.svobodainfo.org/ru/node/1930", template='user_dashboard/item_target_blank.html'),
             items.MenuItem(_('About project'), reverse('exmo2010:about')),
             ]
         self.children.append(items.MenuItem(_('Information'),
