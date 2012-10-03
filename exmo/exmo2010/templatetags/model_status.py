@@ -32,7 +32,7 @@ def model_status(choices, status):
         return ""
 
 def monitoring_status(status):
-    return model_status(Monitoring.MONITORING_STATUS_FULL, status)
+    return model_status(Monitoring.MONITORING_STATUS, status)
 
 def task_status(status):
     return model_status(Task.TASK_STATUS, status)

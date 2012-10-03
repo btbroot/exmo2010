@@ -175,7 +175,7 @@ class ClaimReportForm(forms.Form):
 
 
 class MonitoringForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS_FULL,
+    status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS,
         label=_('status'))
     add_questionnaire = forms.BooleanField(required=False,
         label=_('Add questionnaire'))

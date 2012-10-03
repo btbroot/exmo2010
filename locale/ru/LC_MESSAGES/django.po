@@ -319,12 +319,12 @@ msgid "prepare"
 msgstr "подготовка"
 
 #: exmo/exmo2010/models.py:98
-msgid "rate"
-msgstr "оценка"
+msgid "initial rate"
+msgstr "первоначальная оценка"
 
 #: exmo/exmo2010/models.py:99
-msgid "revision"
-msgstr "проверка"
+msgid "rates revision"
+msgstr "проверка оценок"
 
 #: exmo/exmo2010/models.py:100
 msgid "interact"
@@ -335,12 +335,15 @@ msgid "result"
 msgstr "результаты"
 
 #: exmo/exmo2010/models.py:102
-msgid "publish"
-msgstr "опубликован"
+msgid "published"
+msgstr "результаты опубликованы"
 
 #: exmo/exmo2010/models.py:105
 msgid "planned"
 msgstr "запланирован"
+
+msgid "finishing"
+msgstr "подведение итогов"
 
 #: exmo/exmo2010/models.py:110
 #: exmo/templates/exmo2010/monitoring_report.html:77

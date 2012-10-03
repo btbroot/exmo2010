@@ -25,15 +25,27 @@ def monitoring_permission(user, priv, monitoring):
             if user.profile.is_manager_expertB: return True
     if priv == 'exmo2010.view_monitoring':
         if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
+            if user.profile.is_expertA or user.profile.is_manager_expertB:
+                return True
         #monitoring have one approved task for anonymous and publish
-        if em.Task.approved_tasks.filter(organization__monitoring = monitoring).count() > 0 and monitoring.is_publish: return True
+        if em.Task.approved_tasks.filter(organization__monitoring=monitoring).\
+           count() > 0 and monitoring.is_publish:
+            return True
         if user.is_active: #minimaze query
             profile = user.profile
-            if profile.is_expert and em.Task.objects.filter(organization__monitoring = monitoring, user = user).count() > 0 and monitoring.is_active : return True
+            if profile.is_expert and em.Task.objects.filter(
+                organization__monitoring=monitoring, user=user).count() > 0 \
+                    and monitoring.is_active:
+                return True
             elif profile.is_organization \
-              and em.Task.approved_tasks.filter(organization__monitoring = monitoring, organization__in = profile.organization.all()).count() > 0 \
-              and (monitoring.is_interact or monitoring.is_result):
+              and em.Task.approved_tasks.filter(
+                organization__monitoring=monitoring,
+                organization__monitoring__status__in=(
+                    em.Monitoring.MONITORING_INTERACT,
+                    em.Monitoring.MONITORING_RESULT,
+                    em.Monitoring.MONITORING_FINISHING
+                    ),
+                organization__in=profile.organization.all()).exists():
                 return True
     if priv == 'exmo2010.rating_monitoring':
         if user.is_active:
@@ -72,7 +84,9 @@ def task_permission(user, priv, task):
         if user.is_active:
             profile = user.profile
             if profile.is_expertB and task.user == user and \
-                (task.organization.monitoring.is_interact or task.organization.monitoring.is_result):
+                (task.organization.monitoring.is_interact or
+                 task.organization.monitoring.is_result or
+                 task.organization.monitoring.is_finishing):
                     return True
             if profile.is_organization and \
                 user.has_perm('exmo2010.view_task', task) and \

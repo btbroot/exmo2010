@@ -92,32 +92,31 @@ class Monitoring(models.Model):
     MONITORING_INTERACT = 3
     MONITORING_RESULT = 4
     MONITORING_PUBLISH = 5
-    MONITORING_PLANNED = 6
+    MONITORING_FINISHING = 7
     MONITORING_STATUS = (
         (MONITORING_PREPARE, _('prepare')),
-        (MONITORING_RATE, _('rate')),
-        (MONITORING_REVISION, _('revision')),
-        (MONITORING_INTERACT, _('interact')),
+        (MONITORING_RATE, _('initial rate')),
+        (MONITORING_REVISION, _('rates revision')),
         (MONITORING_RESULT, _('result')),
-        (MONITORING_PUBLISH, _('publish')),
+        (MONITORING_INTERACT, _('interact')),
+        (MONITORING_FINISHING, _('finishing')),
+        (MONITORING_PUBLISH, _('published')),
     )
-    MONITORING_STATUS_FULL = MONITORING_STATUS +\
-        ((MONITORING_PLANNED, _('planned')),)
-    MONITORING_STATUS_NEW = (MONITORING_STATUS_FULL[0],) +\
-        (MONITORING_STATUS_FULL[6],)
+    MONITORING_STATUS_NEW = ((MONITORING_PREPARE, _('prepare')),)
 
     MONITORING_EDIT_STATUSES = {
         MONITORING_RATE: _('Monitoring rate begin date'),
         MONITORING_INTERACT: _('Monitoring interact start date'),
-        MONITORING_RESULT: _('Monitoring interact end date'),
+        MONITORING_FINISHING: _('Monitoring interact end date'),
         MONITORING_PUBLISH: _('Monitoring publish date'),
     }
 
-    name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
-    status = models.PositiveIntegerField(choices=MONITORING_STATUS_FULL,
-                                         default=MONITORING_PLANNED, verbose_name=_('status'))
-    openness_expression = models.ForeignKey(OpennessExpression, default=8,
-                                            verbose_name=_('openness expression'))
+    name = models.CharField(max_length=255, default="-",
+        verbose_name=_('name'))
+    status = models.PositiveIntegerField(choices=MONITORING_STATUS,
+        default=MONITORING_PREPARE, verbose_name=_('status'))
+    openness_expression = models.ForeignKey(OpennessExpression,
+        default=8, verbose_name=_('openness expression'))
 
     def __unicode__(self):
         return '%s' % self.name
@@ -146,14 +145,14 @@ class Monitoring(models.Model):
     def _get_result(self):
         return self.status == self.MONITORING_RESULT
 
+    def _get_finishing(self):
+        return self.status == self.MONITORING_FINISHING
+
     def _get_publish(self):
         return self.status == self.MONITORING_PUBLISH
 
-    def _get_planned(self):
-        return self.status == self.MONITORING_PLANNED
-
     def _get_active(self):
-        return not (self.is_prepare or self.is_planned)
+        return not self.is_prepare
 
     def has_questionnaire(self):
         return Questionnaire.objects.filter(monitoring=self).exists()
@@ -256,6 +255,10 @@ class Monitoring(models.Model):
         return self._get_date(self.MONITORING_RESULT)
 
     @property
+    def finishing_date(self):
+        return self._get_date(self.MONITORING_FINISHING)
+
+    @property
     def publish_date(self):
         return self._get_date(self.MONITORING_PUBLISH)
 
@@ -278,7 +281,7 @@ class Monitoring(models.Model):
         }
         return sql
 
-    after_interaction_status = [MONITORING_INTERACT, MONITORING_RESULT,
+    after_interaction_status = [MONITORING_INTERACT, MONITORING_FINISHING,
                                 MONITORING_PUBLISH]
 
     is_prepare = property(_get_prepare)
@@ -286,8 +289,8 @@ class Monitoring(models.Model):
     is_revision = property(_get_revision)
     is_interact = property(_get_interact)
     is_result = property(_get_result)
+    is_finishing = property(_get_finishing)
     is_publish = property(_get_publish)
-    is_planned = property(_get_planned)
     is_active = property(_get_active)
 
     class Meta:
@@ -333,11 +336,8 @@ class AnswerVariant(models.Model):
 
 class MonitoringStatus(models.Model):
     monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    status = models.PositiveIntegerField(
-        choices=Monitoring.MONITORING_STATUS,
-        default=Monitoring.MONITORING_PREPARE,
-        verbose_name=_('status'),
-    )
+    status = models.PositiveIntegerField(choices=Monitoring.MONITORING_STATUS,
+        default=Monitoring.MONITORING_PREPARE, verbose_name=_('status'))
     start = models.DateField(
         null=True,
         blank=True,
@@ -346,8 +346,9 @@ class MonitoringStatus(models.Model):
     )
 
     def __unicode__(self):
-        for status in Monitoring.MONITORING_STATUS_FULL:
-            if status[0] == self.status: return "%s: %s" % (self.monitoring.name, status[1])
+        for status in Monitoring.MONITORING_STATUS:
+            if status[0] == self.status:
+                return "%s: %s" % (self.monitoring.name, status[1])
 
     class Meta:
         unique_together = (
@@ -1263,7 +1264,7 @@ class UserProfile(models.Model):
 
     def get_task_review_id(self):
         organizations = self.organization.filter(monitoring__status__in=[Monitoring.MONITORING_INTERACT,
-                                                                         Monitoring.MONITORING_RESULT,
+                                                                         Monitoring.MONITORING_FINISHING,
                                                                          Monitoring.MONITORING_PUBLISH])
         if organizations:
             organization = organizations[0]

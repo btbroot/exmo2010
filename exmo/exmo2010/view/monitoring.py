@@ -89,7 +89,7 @@ def monitoring_list(request):
 
     headers =   (
                 (_('monitoring'), 'name', 'name', None, None),
-                (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS_FULL),
+                (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS),
                 )
 
     active_tasks = None
