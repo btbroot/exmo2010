@@ -64,7 +64,7 @@
             {% endif %}
         </p>
     </div>
-    <div id="pselect_div" {% if rating_type != "user" %}style="display: none;"{% endif %}>
+    <div id="pselect_div" style="display: none;">
         <div style="height: 30px;">
             <h3 class="parameter-list" style="display: inline;">{% trans 'Parameter list' %}</h3>
         </div>
@@ -82,11 +82,11 @@
         </form>
     </div>
 
-    <p id="parameters-toggle" class="arrow-up" style="{% if rating_type != "user" %}display: none;{% endif %}">
+    <p id="parameters-toggle" class="arrow-down" style="{% if rating_type != "user" %}display: none;{% endif %}">
         <a href="#"
            class="pseudolink-toggle"
            style="float: right;">
-            {% trans 'Hide parameter list' %}
+            {% trans 'Show parameter list' %}
         </a>
     </p>
 
