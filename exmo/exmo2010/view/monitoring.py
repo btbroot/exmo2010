@@ -771,7 +771,8 @@ def monitoring_parameter_import(request, id):
             try:
                 code = row[0]
                 name = row[1]
-                parameter = Parameter.objects.get(monitoring = monitoring, code = code, name = name)
+                parameter = Parameter.objects.get(monitoring=monitoring,
+                    code=code, name=name)
             except Parameter.DoesNotExist:
                 parameter = Parameter()
             except Exception, e:
@@ -781,7 +782,8 @@ def monitoring_parameter_import(request, id):
                 parameter.monitoring = monitoring
                 parameter.code = code
                 parameter.name = name
-                parameter.description = row[2]
+                # Присваиваем пустую строку, а не None.
+                parameter.description = row[2] or ''
                 parameter.complete = bool(int(row[3]))
                 parameter.topical = bool(int(row[4]))
                 parameter.accessible = bool(int(row[5]))
