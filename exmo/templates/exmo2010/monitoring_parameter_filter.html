@@ -19,11 +19,68 @@
 #
 {% endcomment %}
 {% load i18n adminmedia %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+{% endblock %}
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script>
+        $(function () {
+            if ({{ hide }})
+            {
+            $("#ftable tr:gt(0)").hide();
+            $("#fbutton").attr('disabled', 'disabled');
+            }
+            else
+            {
+                $.ajax({
+                    url:"/exmo2010/get_pc/",
+                    type:"POST",
+                    async:false,
+                    data:{p_id: $("#id_parameter").val()}
+                }).done(function (data) {
+                            $.each(data, function(index, value) {
+                                $("#ftable tr:eq("+value+")").hide();
+                            });
+                        });
+            }
+        });
+
+        $("#id_parameter").live('change', function () {
+            $("#parameter_filter_result").remove();
+            var par_val = $("#id_parameter").val();
+            $("#form").get(0).reset();
+            $("#id_parameter").val(par_val);
+            if ($("#id_parameter").val()=='')
+            {
+                $("#ftable tr:gt(0)").hide();
+                $("#fbutton").attr('disabled', 'disabled');
+            }
+            else
+            {
+                $("#ftable tr").show();
+                $.ajax({
+                    url:"/exmo2010/get_pc/",
+                    type:"POST",
+                    async:false,
+                    data:{p_id: $("#id_parameter").val()}
+                }).done(function (data) {
+                            $.each(data, function(index, value) {
+                                $("#ftable tr:eq("+value+")").hide();
+                            });
+                        });
+
+                $("#fbutton").removeAttr('disabled');
+            }
+        });
+    </script>
+{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-{{ title }}
+{% trans 'Parameter-criteria filter' %}
 </div>
 {% endblock %}
 
@@ -32,11 +89,13 @@
 {% endblock %}
 
 {% block content %}
-<p>{{ form.non_field_errors }}</p>
 <div id=parameter_filter_form>
-<form method="get" action="">
-  {{ form.as_p }}
-  <p><input type="submit" /><input class="button" type="reset" /></p>
+<form id="form" method="post" action="">
+    {% csrf_token %}
+    <table id="ftable">
+    {{ form.as_table }}
+    </table>
+    <input id="fbutton" type="submit" value="{% trans 'Filter' %}"/>
 </form>
 </div>
 {% if object_list %}

@@ -2306,3 +2306,6 @@ msgstr "Параметры на основе нормативных правов
 
 msgid "Other parameters"
 msgstr "Дополнительные параметры"
+
+msgid "Filter"
+msgstr "Отфильтровать"

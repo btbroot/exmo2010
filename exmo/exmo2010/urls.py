@@ -125,6 +125,9 @@ urlpatterns = patterns('',
         'exmo2010.view.monitoring.set_npa_params',
         name='set_npa_params'),
 
+
+    # AJAX-вьюха для получения списка критериев, отключенных у параметра
+    url(r'^get_pc/$', 'exmo2010.view.monitoring.get_pc', name='get_pc'),
     # AJAX-вьюха для получения кода div'а для одного вопроса (c полями).
     url(r'^get_qq/$', 'exmo2010.view.monitoring.get_qq', name='get_qq'),
     # AJAX-вьюха для получения кода div'а для одного вопроса (без полей).

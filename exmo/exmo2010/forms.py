@@ -76,6 +76,19 @@ DIGEST_INTERVALS = (
     (24, _("once in 24 hours")),
     )
 
+SCORE_CHOICES1 = (
+    (5, "-"),
+    (0, "0"),
+    (1, "1"),
+    )
+
+SCORE_CHOICES2 = (
+    (5, "-"),
+    (1, "1"),
+    (2, "2"),
+    (3, "3"),
+    )
+
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
 from django.utils.html import escape
@@ -140,23 +153,54 @@ class TaskForm(forms.ModelForm):
         user = self.cleaned_data['user']
         user_obj=User.objects.filter(username=user, is_active=True)
         if not user_obj:
-            raise forms.ValidationError(_("This user account is inactive"));
+            raise forms.ValidationError(_("This user account is inactive"))
         return user
 
     def clean_organization(self):
         organization = self.cleaned_data['organization']
         if self._monitoring:
             if Organization.objects.filter(pk=organization.pk, monitoring = self._monitoring).count() < 1:
-                raise forms.ValidationError(_("Illegal monitoring"));
+                raise forms.ValidationError(_("Illegal monitoring"))
         return organization
 
     class Meta:
         model = Task
 
 
-class ParameterFilterForm(forms.Form):
-    parameter = forms.ModelChoiceField(queryset = Parameter.objects.all(), label=_('parameter'))
-    found = forms.IntegerField(min_value = 0, max_value = 1, label=_('found'))
+class ParamCritScoreFilterForm(forms.Form):
+    """Форма фильтрации оценок по параметру и значениям критериев.
+    Кроме стандартных вариантов оценок у критерия, добавляем вариант 5,
+    означающий, что ничего не выбрано и фильтрация по этому критерию не нужна.
+    """
+    parameter = forms.ModelChoiceField(label=_('Parameter'),
+        queryset=Parameter.objects.none(), empty_label="")
+    found = forms.ChoiceField(label=_('Found'), choices=SCORE_CHOICES1,
+        initial=5, widget=forms.RadioSelect)
+    complete = forms.ChoiceField(label=_('Complete'), choices=SCORE_CHOICES2,
+        initial=5, widget=forms.RadioSelect)
+    topical = forms.ChoiceField(label=_('Topical'), choices=SCORE_CHOICES2,
+        initial=5, widget=forms.RadioSelect)
+    accessible = forms.ChoiceField(label=_('Accessible'),
+        choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
+    hypertext = forms.ChoiceField(label=_('Hypertext'), choices=SCORE_CHOICES1,
+        initial=5, widget=forms.RadioSelect)
+    document = forms.ChoiceField(label=_('Document'), choices=SCORE_CHOICES1,
+        initial=5, widget=forms.RadioSelect)
+    image = forms.ChoiceField(label=_('Image'), choices=SCORE_CHOICES1,
+        initial=5, widget=forms.RadioSelect)
+    t_opened = forms.BooleanField(label=_('opened'), required=False,
+        initial=True)
+    t_closed = forms.BooleanField(label=_('closed'), required=False,
+        initial=True)
+    t_check = forms.BooleanField(label=_('check'), required=False,
+        initial=True)
+    t_approved = forms.BooleanField(label=_('approved'), required=False,
+        initial=True)
+    def __init__(self, *args, **kwargs):
+        monitoring = kwargs.pop('monitoring', None)
+        super(ParamCritScoreFilterForm, self).__init__(*args, **kwargs)
+        self.fields['parameter'].queryset = Parameter.objects.filter(
+            monitoring=monitoring)
 
 
 class ClaimForm(forms.ModelForm):

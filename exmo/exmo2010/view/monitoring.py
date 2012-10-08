@@ -41,6 +41,7 @@ from exmo2010.models import generate_inv_code
 from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating, rating_type_parameter
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
+from exmo2010.forms import ParamCritScoreFilterForm
 from exmo2010.utils import UnicodeReader, UnicodeWriter
 from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
 
@@ -443,42 +444,94 @@ def monitoring_info(request, id):
     }
 
 
-
-from exmo2010.forms import ParameterFilterForm
 @login_required
-def monitoring_parameter_filter(request, id):
-    monitoring = get_object_or_404(Monitoring, pk = id)
+def monitoring_parameter_filter(request, m_id):
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
-    title = _('Parameter-criteria filter')
-    monitoring = get_object_or_404(Monitoring, pk = id)
-    form = ParameterFilterForm()
-    form.fields['parameter'].queryset = Parameter.objects.filter(monitoring = monitoring)
+    monitoring = get_object_or_404(Monitoring, pk=m_id)
     queryset = None
-    if request.GET.__contains__("parameter"):
-        form = ParameterFilterForm(request.GET)
-        form.fields['parameter'].queryset = Parameter.objects.filter(monitoring = monitoring)
+    if request.method == "POST":
+        hide = 0
+        form = ParamCritScoreFilterForm(request.POST, monitoring=monitoring)
         if form.is_valid():
-            parameter = form.cleaned_data['parameter']
+            cd = form.cleaned_data
+            parameter = cd.get("parameter")
             queryset = Score.objects.filter(
-                task__organization__monitoring = monitoring,
-                parameter = parameter,
-                revision = Score.REVISION_DEFAULT,
-                found = form.cleaned_data['found'],
+                task__organization__monitoring=monitoring,
+                parameter=parameter,
+                revision=Score.REVISION_DEFAULT
             ).exclude(
                 task__organization__in = parameter.exclude.all(),
             )
-            if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA or monitoring.is_publish:
-                queryset = queryset.filter(task__status = Task.TASK_APPROVED)
+
+            # Оценки по критериям.
+            found = cd.get("found")
+            if found is not None:
+                found_int = int(found)
+                if found_int != 5:
+                    queryset = queryset.filter(found=found_int)
+            complete = cd.get("complete")
+            if complete is not None:
+                complete_int = int(complete)
+                if complete_int != 5:
+                    queryset = queryset.filter(complete=complete_int)
+            topical = cd.get("topical")
+            if topical is not None:
+                topical_int = int(topical)
+                if topical_int != 5:
+                    queryset = queryset.filter(topical=topical_int)
+            accessible = cd.get("accessible")
+            if accessible is not None:
+                accessible_int = int(accessible)
+                if accessible_int != 5:
+                    queryset = queryset.filter(accessible=accessible_int)
+            hypertext = cd.get("hypertext")
+            if hypertext is not None:
+                hypertext_int = int(hypertext)
+                if hypertext_int != 5:
+                    queryset = queryset.filter(hypertext=hypertext_int)
+            document = cd.get("document")
+            if document is not None:
+                document_int = int(document)
+                if document_int != 5:
+                    queryset = queryset.filter(document=document_int)
+            image = cd.get("image")
+            if image is not None:
+                image_int = int(image)
+                if image_int != 5:
+                    queryset = queryset.filter(image=image_int)
+
+            # Статусы задачи.
+            t_st_list = []
+            t_opened = cd.get("t_opened")
+            if t_opened:
+                t_st_list.append(Task.TASK_OPEN)
+            t_closed = cd.get("t_closed")
+            if t_closed:
+                t_st_list.append(Task.TASK_CLOSED)
+            t_check = cd.get("t_check")
+            if t_check:
+                t_st_list.append(Task.TASK_CHECKED)
+            t_approved = cd.get("t_approved")
+            if t_approved:
+                t_st_list.append(Task.TASK_APPROVED)
+            queryset = queryset.filter(task__status__in=t_st_list)
+
+            if request.user.has_perm('exmo2010.admin_monitoring', monitoring) \
+               or request.user.profile.is_expertA or monitoring.is_publish:
+                queryset = queryset.filter(task__status=Task.TASK_APPROVED)
             elif request.user.profile.is_expertB:
-                queryset = queryset.filter(task__user = request.user)
+                queryset = queryset.filter(task__user=request.user)
+    else:
+        form = ParamCritScoreFilterForm(monitoring=monitoring)
+        hide = 1
+
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
-        'title': title,
         'monitoring': monitoring,
+        'hide': hide
     }, context_instance=RequestContext(request))
-
 
 
 @login_required
@@ -968,5 +1021,33 @@ def get_qqt(request):
     if request.method == "GET" and request.is_ajax():
         return render_to_response('exmo2010/forms/question_div2.html',
             context_instance=RequestContext(request))
+    else:
+        raise Http404
+
+@csrf_exempt
+def get_pc(request):
+    """AJAX-вьюха для получения списка критериев, отключенных у параметра"""
+    if request.user.is_authenticated() and request.method == "POST" and \
+       request.is_ajax():
+        try:
+            parameter = Parameter.objects.get(pk=request.POST.get("p_id"))
+        except ObjectDoesNotExist:
+            raise Http404
+        skip_list = []
+        if not parameter.complete:
+            skip_list.append(2)
+        if not parameter.topical:
+            skip_list.append(3)
+        if not parameter.accessible:
+            skip_list.append(4)
+        if not parameter.hypertext:
+            skip_list.append(5)
+        if not parameter.document:
+            skip_list.append(6)
+        if not parameter.image:
+            skip_list.append(7)
+
+        return HttpResponse(simplejson.dumps(skip_list),
+            mimetype='application/json')
     else:
         raise Http404
