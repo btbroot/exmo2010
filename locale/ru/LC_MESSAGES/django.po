@@ -1619,23 +1619,23 @@ msgstr "Закончена оценка сайтов"
 
 #: exmo/templates/exmo2010/monitoring_report.html:109
 msgid "Organization registered"
-msgstr "Представителей органов власти зарегистрировано"
+msgstr "Зарегистрированных представителей организаций"
 
 #: exmo/templates/exmo2010/monitoring_report.html:113
 msgid "Organization active"
-msgstr "Представителей органов власти активно"
+msgstr "Активных представителей организаций"
 
 #: exmo/templates/exmo2010/monitoring_report.html:117
 msgid "Expert active"
-msgstr "Задействовано экспертов-аналитиков"
+msgstr "Задействовано аналитиков"
 
 #: exmo/templates/exmo2010/monitoring_report.html:121
 msgid "Organization comments"
-msgstr "Комментариев от представителей органов власти"
+msgstr "Комментариев от представителей организаций"
 
 #: exmo/templates/exmo2010/monitoring_report.html:125
 msgid "Expert comments"
-msgstr "Комментариев от экспертов-аналитиков"
+msgstr "Комментариев от аналитиков"
 
 #: exmo/templates/exmo2010/monitoring_report.html:130
 msgid "Average openness first"
