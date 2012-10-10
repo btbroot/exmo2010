@@ -22,97 +22,164 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/monitoring_parameter_filter.css" />
 {% endblock %}
 {% block extrahead %}
     {{ block.super }}
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
     <script>
         $(function () {
-            if ({{ hide }})
-            {
-            $("#ftable tr:gt(0)").hide();
-            $("#fbutton").attr('disabled', 'disabled');
-            }
-            else
-            {
-                $.ajax({
-                    url:"/exmo2010/get_pc/",
-                    type:"POST",
-                    async:false,
-                    data:{p_id: $("#id_parameter").val()}
-                }).done(function (data) {
-                            $.each(data, function(index, value) {
-                                $("#ftable tr:eq("+value+")").hide();
-                            });
-                        });
-            }
-        });
-
-        $("#id_parameter").live('change', function () {
-            $("#parameter_filter_result").remove();
-            var par_val = $("#id_parameter").val();
-            $("#form").get(0).reset();
-            $("#id_parameter").val(par_val);
-            if ($("#id_parameter").val()=='')
-            {
-                $("#ftable tr:gt(0)").hide();
+            if ({{ hide }}) {
+                $(".filter-result").hide();
                 $("#fbutton").attr('disabled', 'disabled');
+            } else {
+                getData();
             }
-            else
-            {
-                $("#ftable tr").show();
+
+            $("#id_parameter").live('change', parameterCallBack);
+
+            function parameterCallBack() {
+                var par_val = $("#id_parameter").val();
+                $("#form").get(0).reset();
+                $("#id_parameter").val(par_val);
+
+                if ($("#id_parameter").val()=='') {
+                    $(".filter-result").hide();
+                    $("#fbutton").attr('disabled', 'disabled');
+                } else {
+                    $(".filter-result").show();
+
+                    $("#ftable tr").show();
+                    getData();
+                    $("#fbutton").removeAttr('disabled');
+                }
+            }
+
+            function getData() {
                 $.ajax({
-                    url:"/exmo2010/get_pc/",
-                    type:"POST",
-                    async:false,
-                    data:{p_id: $("#id_parameter").val()}
+                    url: "/exmo2010/get_pc/"
+                    , type: "POST"
+                    , async: false
+                    , data: { p_id: $("#id_parameter").val() }
                 }).done(function (data) {
                             $.each(data, function(index, value) {
-                                $("#ftable tr:eq("+value+")").hide();
+                                $("#ftable tr.row-"+value).hide();
                             });
                         });
-
-                $("#fbutton").removeAttr('disabled');
             }
         });
     </script>
 {% endblock %}
+
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-{% trans 'Parameter-criteria filter' %}
-</div>
+    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
+        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+        {% trans 'Parameter-criteria filter' %}
+    </div>
 {% endblock %}
 
 {% block pretitle %}
-{% include "exmo2010/monitoring_utility.html" %}
+    {% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}
 
 {% block content %}
-<div id=parameter_filter_form>
-<form id="form" method="post" action="">
-    {% csrf_token %}
-    <table id="ftable">
-    {{ form.as_table }}
-    </table>
-    <input id="fbutton" type="submit" value="{% trans 'Filter' %}"/>
-</form>
-</div>
-{% if object_list %}
-<div id=parameter_filter_result>
-<table>
- <thead>
-  <tr><td>{% trans 'Task' %}</td><td>{% trans 'Score' %}</td></tr>
- </thead>
-{% for object in object_list %}
- <tbody>
-  <tr>
-    <td><a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task }}</a></td>
-    <td><a href="{% url exmo2010:score_view object.pk %}">{{ object.parameter }}</a></td>
-  </tr>
-{% endfor %}
- </tbody>
-</table>
-</div>
-{% endif %}
+
+    <h1>{% trans 'Parameter-criteria filter' %}</h1>
+
+    <div id=parameter_filter_form>
+        <form id="form" method="post" action="">
+            {{ form.non_field_errors }}
+            {% csrf_token %}
+            <fieldset>
+                <h6>{{ form.parameter.label }}</h6>
+                {{ form.parameter }}
+                {{ form.parameter.errors }}
+            </fieldset>
+
+            <fieldset class="filter-result">
+
+                <table id="ftable" class="criteria">
+                    <thead>
+                    <th>
+                        {% trans "Criterion" %}
+                    </th>
+                    <th>
+                        {% trans "Score" %}
+                    </th>
+                    </thead>
+                    <tbody>
+
+                    {% for field in form %}
+                        {% if field.field == form.found.field or field.field == form.complete.field or field.field == form.topical.field or field.field == form.accessible.field or field.field == form.hypertext.field or field.field == form.document.field or field.field == form.image.field %}
+                            <tr class="row-{{ forloop.counter0 }}">
+                                <td>
+                                    {{ field.label }}
+                                </td>
+                                <td>
+                                    {{ field }}
+                                </td>
+                            </tr>
+                            {% if field.errors  %}
+                                <tr class="row-{{ forloop.counter0 }}">
+                                    <td colspan="2">
+                                        {{ field.errors }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset class="filter-result status">
+                <h6>{% trans "Task status" %}</h6>
+                {{ form.t_opened }}{{ form.t_opened.label_tag }}
+                {% if form.t_opened.errors %}
+                    {{ form.t_opened.errors }}
+                    <br />
+                {% endif %}
+                <br />
+                {{ form.t_closed }}{{ form.t_closed.label_tag }}
+                {% if form.t_closed.errors %}
+                    {{ form.t_closed.errors }}
+                    <br />
+                {% endif %}
+                <br />
+                {{ form.t_check }}{{ form.t_check.label_tag }}
+                {% if form.t_check.errors %}
+                    {{ form.t_check.errors }}
+                    <br />
+                {% endif %}
+                <br />
+                {{ form.t_approved }}{{ form.t_approved.label_tag }}
+                {% if form.t_approved.errors %}
+                    <br />
+                    {{ form.t_approved.errors }}
+                {% endif %}
+            </fieldset>
+            <fieldset class="filter-result">
+                <input id="fbutton" type="submit" value="{% trans 'Filter' %}"/>
+            </fieldset>
+        </form>
+    </div>
+
+    {% if object_list %}
+        <div id=parameter_filter_result>
+            <table>
+                <thead>
+                <tr><td>{% trans 'Task' %}</td><td>{% trans 'Score' %}</td></tr>
+                </thead>
+                {% for object in object_list %}
+                    <tbody>
+                    <tr>
+                        <td><a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task }}</a></td>
+                        <td><a href="{% url exmo2010:score_view object.pk %}">{{ object.parameter }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}

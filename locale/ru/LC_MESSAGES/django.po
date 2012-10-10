@@ -1566,6 +1566,14 @@ msgstr "Задача"
 msgid "Score"
 msgstr "Оценка"
 
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:104
+msgid "Criterion"
+msgstr "Критерий"
+
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:137
+msgid "Task status"
+msgstr "Статус задачи"
+
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:25
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:36
 #: exmo/templates/exmo2010/monitoring_utility.html:51
