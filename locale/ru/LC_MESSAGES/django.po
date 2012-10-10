@@ -2044,6 +2044,10 @@ msgstr "Сменить пароль"
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
+#: exmo/templates/exmo2010/user_settings.html:34
+msgid "Settings are successfully saved"
+msgstr "Настройки успешно сохранены"
+
 #: exmo/templates/exmo2010/ajax/claim_image.html:22
 msgid "claim"
 msgstr "претензия"

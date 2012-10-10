@@ -33,6 +33,7 @@ from exmo2010.models import Organization, UserProfile
 
 def settings(request):
     """Страница настроек пользователя."""
+    success = False
     if not request.user.is_authenticated():
         raise Http404
     user = request.user
@@ -126,7 +127,7 @@ def settings(request):
                         profile.organization.add(organization)
             profile.save()
             user.save()
-            return HttpResponseRedirect(reverse("exmo2010:settings"))
+            success = True
     else:
         initial_data = {}
         first_name_parts = user.first_name.split()
@@ -159,7 +160,7 @@ def settings(request):
                     initial_data["phone"] = profile.phone
         form = form_class(initial=initial_data, user=user)
     return render_to_response('exmo2010/user_settings.html',
-        {"form": form,},
+        {"form": form, "success": success},
         context_instance=RequestContext(request))
 
 

@@ -30,6 +30,9 @@
 
 {% block content %}
     <h1>{% trans 'Preferences' %}</h1>
+    {% if success %}
+    <p style="color: red;">{% trans 'Settings are successfully saved' %}.</p>
+    {% endif %}
     <p>{% trans 'Here you can change your account, password and notification settings.' %}</p>
     <form action="" method="post">
         {% csrf_token %}
