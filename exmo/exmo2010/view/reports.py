@@ -56,7 +56,7 @@ def gender_stats(request):
             result_list.append((SEX_CHOICES_DICT[val], count))
     result_list.append((_("Total"), external_users.count()))
     return render_to_response('exmo2010/gender_stats.html',
-            {"results": result_list,}, RequestContext(request))
+        {"results": result_list,}, RequestContext(request))
 
 
 
@@ -110,7 +110,7 @@ def comment_list(request, report_type='1'):
             'title': COMMUNICATION_REPORT_TYPE_DICT[report_type],
             'report_dict': COMMUNICATION_REPORT_TYPE_DICT,
             'current_report': report_type,
-        },
+            },
         RequestContext(request),
     )
 
@@ -122,45 +122,45 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
     paginator_list = None
 
     if report_type == 'inprogress':
-        monitorings = Monitoring.objects.exclude(
+        all_monitorings = Monitoring.objects.exclude(
             status=Monitoring.MONITORING_PUBLISH
         ).extra(select={
-                'start_date': Monitoring().prepare_date_sql_inline(),
+            'start_date': Monitoring().prepare_date_sql_inline(),
             }
-        ).order_by('-start_date')[:3]
+        ).order_by('-start_date')
     elif report_type == 'finished':
         all_monitorings = Monitoring.objects.filter(
             status=Monitoring.MONITORING_PUBLISH
         ).extra(select={
-                'start_date': Monitoring().prepare_date_sql_inline(),
+            'start_date': Monitoring().prepare_date_sql_inline(),
             }
         ).order_by('-start_date')
-        if monitoring_id:
-            monitorings = Monitoring.objects.filter(
-                status=Monitoring.MONITORING_PUBLISH,
-                pk=monitoring_id,
-            ).extra(select={
-                    'start_date': Monitoring().prepare_date_sql_inline(),
-                }
-            ).order_by('-start_date')
-            if not monitorings: raise Http404
-        else:
-            monitorings = all_monitorings
+    if monitoring_id:
+        monitorings = Monitoring.objects.filter(
+            status=Monitoring.MONITORING_PUBLISH,
+            pk=monitoring_id,
+        ).extra(select={
+            'start_date': Monitoring().prepare_date_sql_inline(),
+            }
+        ).order_by('-start_date')
+        if not monitorings: raise Http404
+    else:
+        monitorings = all_monitorings
 
-            paginator = Paginator(monitorings, 10)
-            try:
-                page = int(request.GET.get('page', '1'))
-                if page < 1:
-                    page = 1
-            except ValueError:
+        paginator = Paginator(monitorings, 10)
+        try:
+            page = int(request.GET.get('page', '1'))
+            if page < 1:
                 page = 1
+        except ValueError:
+            page = 1
 
-            try:
-                paginator_list = paginator.page(page)
-            except (EmptyPage, InvalidPage):
-                paginator_list = paginator.page(1)
+        try:
+            paginator_list = paginator.page(page)
+        except (EmptyPage, InvalidPage):
+            paginator_list = paginator.page(1)
 
-            monitorings = paginator_list.object_list
+        monitorings = paginator_list.object_list
 
     return render_to_response('exmo2010/monitoring_report.html',
         {
@@ -170,7 +170,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
             'title': _('Monitoring statistics'),
             'monitoring_id': monitoring_id,
             'all_monitorings': all_monitorings,
-        },
+            },
         RequestContext(request),
     )
 
@@ -201,4 +201,4 @@ def ratings(request):
         'form': form,
         'report': True,
         'mform': mform,
-    }, context_instance=RequestContext(request))
+        }, context_instance=RequestContext(request))
