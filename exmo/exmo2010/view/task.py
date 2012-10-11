@@ -312,7 +312,7 @@ def task_add(request, monitoring_id, organization_id=None):
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         if request.method == 'GET':
-            form = TaskForm(initial={'organization':organization}, monitoring=monitoring)
+            form = TaskForm(initial={'organization': organization}, monitoring=monitoring)
             return render_to_response(
                 'exmo2010/task_form.html',
                 {
@@ -335,7 +335,7 @@ def task_add(request, monitoring_id, organization_id=None):
                     'monitoring': monitoring,
                     'organization': organization,
                     'title': title,
-                    'form': form,
+                    'form': form
                 },
                 context_instance=RequestContext(request),
             )
