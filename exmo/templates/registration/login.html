@@ -30,7 +30,7 @@
     <h1>{% trans 'Log in the system' %}</h1>
     {% if request.user.is_authenticated %}
         <p>{% trans 'You are already logged in' %}.</p>
-        {% url auth_logout as auth_logout_url %}
+        {% url exmo2010:auth_logout as auth_logout_url %}
         <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
         <div id="content-main">
