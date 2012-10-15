@@ -123,7 +123,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
-            status=Monitoring.MONITORING_PUBLISH
+            status__in=[Monitoring.MONITORING_PUBLISH, Monitoring.MONITORING_PREPARE]
         ).extra(select={
             'start_date': Monitoring().prepare_date_sql_inline(),
             }
