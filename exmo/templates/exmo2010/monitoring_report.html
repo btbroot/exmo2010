@@ -112,6 +112,8 @@
                 <td class="value">{{ stat.organization_rated }}</td>
             </tr>
             {% endif %}
+
+            {% if monitoring.status in monitoring.after_interaction_status %}
             <tr>
                 <td>{% trans 'Organization registered' %}</td>
                 <td class="value">{{ stat.organization_users }}</td>
@@ -120,6 +122,8 @@
                 <td>{% trans 'Organization active' %}</td>
                 <td class="value">{{ stat.organization_users_active }}</td>
             </tr>
+            {% endif %}
+
             <tr>
                 <td>{% trans 'Expert active' %}</td>
                 <td class="value">{{ stat.expert }}</td>
