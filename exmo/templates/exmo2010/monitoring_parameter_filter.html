@@ -67,6 +67,21 @@
                             });
                         });
             }
+
+            $.each($('select option'), function(key, optionElement) {
+                var curText = $(optionElement).text();
+                $(this).attr('title', curText);
+
+                var lengthToShortenTo = Math.round((parseInt($(this).parent('select').width(), 10) + 35) / 7.3);
+
+                if (curText.length > lengthToShortenTo) {
+                    $(this).text(curText.substring(0, lengthToShortenTo) + '...');
+                }
+            });
+
+            $('select').change(function() {
+                $(this).attr('title', ($(this).find('option:eq('+$(this).get(0).selectedIndex +')').attr('title')));
+            });
         });
     </script>
 {% endblock %}

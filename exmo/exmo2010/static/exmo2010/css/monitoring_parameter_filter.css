@@ -28,10 +28,12 @@ h6
 select
 {
     width: 100%;
+    max-width: 100%;
     font-family: Arial;
     font-size: 13px;
     font-style: normal;
     font-weight: normal;
+    overflow: hidden;
 }
 
 /* table borders */

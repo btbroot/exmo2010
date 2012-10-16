@@ -435,10 +435,7 @@ class Parameter(models.Model):
 
 #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
-        if len(self.name) <= 96:
-            return self.name
-        else:
-            return "%s..." % (self.name[:93],)
+        return self.name
 
     def _get_tags(self):
         return Tag.objects.get_for_object(self)
