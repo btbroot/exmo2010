@@ -18,7 +18,6 @@
 #
 from exmo2010.forms import OrgUserSettingsForm, OrdinaryUserSettingsForm
 from exmo2010.forms import OurUserSettingsForm
-from exmo2010.custom_registration.forms import SEX_CHOICES
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User, Group
 from django.views.decorators.csrf import csrf_protect
@@ -53,13 +52,6 @@ def settings(request):
             patronymic = cd.get("patronymic", "")
             user.first_name = "%s %s".strip() % (first_name, patronymic)
             user.last_name = cd.get("last_name", "")
-            try:
-                sex_id = int(cd.get("sex"))
-            except (ValueError, TypeError):
-                sex_id = None
-            sex_choices_dict = dict(SEX_CHOICES)
-            if sex_id in sex_choices_dict:
-                profile.sex = sex_id
             subscribe = cd.get("subscribe", False)
             profile.subscribe = subscribe
             new_password = cd.get("new_password")
@@ -141,8 +133,6 @@ def settings(request):
                 initial_data["patronymic"] = first_name_parts[1]
         if user.last_name:
             initial_data["last_name"] = user.last_name
-        if profile.sex:
-            initial_data["sex"] = profile.sex
         if profile.subscribe:
             initial_data["subscribe"] = profile.subscribe
         if profile.is_internal() or profile.is_organization:

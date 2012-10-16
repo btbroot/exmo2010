@@ -26,7 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from registration import signals
 from registration.models import RegistrationProfile
 
-from exmo2010.custom_registration.forms import RegistrationForm, SEX_CHOICES
+from exmo2010.custom_registration.forms import RegistrationForm
 from exmo2010.models import UserProfile, Organization
 
 
@@ -117,16 +117,8 @@ class CustomBackend(object):
         if user_changed:
             new_user.save()
         # Сохраняем поля профиля пользователя.
-        try:
-            sex_id = int(kwargs.get("sex"))
-        except (ValueError, TypeError):
-            sex_id = None
-        sex_choices_dict = dict(SEX_CHOICES)
         user_profile = UserProfile.objects.get_or_create(user=new_user)[0]
         up_changed = False
-        if sex_id in sex_choices_dict:
-            user_profile.sex = sex_id
-            up_changed = True
         subscribe = kwargs.get("subscribe")
         if subscribe:
             user_profile.subscribe = subscribe

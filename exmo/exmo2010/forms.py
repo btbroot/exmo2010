@@ -46,11 +46,6 @@ CORE_JS = (
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
 
-SEX_CHOICES = (
-    (1, _("male")),
-    (2, _("female")),
-    )
-
 COMMENT_NOTIFICATION_CHOICES = (
     (0, _('do not send')),
     (1, _('one email per one comment')),
@@ -378,8 +373,6 @@ class BaseUserSettingsForm(forms.Form):
     last_name = forms.CharField(label=_("Last name"),
         widget=forms.TextInput(attrs={"maxlength": 30}),
         required=False, max_length=30)
-    sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
-        widget=forms.RadioSelect(), required=False)
     old_password = forms.CharField(label=_("Current password"),
         widget=forms.PasswordInput(attrs={"maxlength": 24},
             render_value=False), required=False)

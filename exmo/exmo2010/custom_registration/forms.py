@@ -24,12 +24,6 @@ from annoying.decorators import autostrip
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
-SEX_CHOICES = (
-    (1, _("male")),
-    (2, _("female")),
-    )
-
-
 @autostrip
 class RegistrationForm(forms.Form):
     """Форма регистрации.
@@ -58,9 +52,7 @@ class RegistrationForm(forms.Form):
     password = forms.CharField(label=_("Password"),
         widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
         help_text=_("Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)."))
-    sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
-        widget=forms.RadioSelect(),
-        required=False)
+
     invitation_code = forms.CharField(label=_("Invitation code"),
         help_text=_("If you don't have invitation code, leave this field "
                     "empty."),

@@ -24,41 +24,15 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import HttpResponseForbidden, Http404
-from exmo2010.models import UserProfile, SEX_CHOICES, Monitoring
+from exmo2010.models import UserProfile, Monitoring
 from exmo2010.view.helpers import rating_type_parameter, rating
 from exmo2010.forms import MonitoringFilterForm
-
-
-
-SEX_CHOICES_DICT = dict(SEX_CHOICES)
 
 COMMUNICATION_REPORT_TYPE_DICT = {
     1: _('Comments with answer'),
     2: _('Comments without answer'),
     3: _('Opened claims')
 }
-
-
-def gender_stats(request):
-    """
-    Страница гендерной статистики.
-    """
-    if (not request.user.is_authenticated() or
-        not request.user.profile.is_internal()):
-        raise Http404
-    external_users = User.objects.exclude(is_superuser=True).exclude(
-        is_staff=True).exclude(groups__name__in=UserProfile.expert_groups)
-    result = external_users.values_list('userprofile__sex').order_by(
-        'userprofile__sex').annotate(Count('userprofile__sex'))
-    result_list = []
-    for val, count in result:
-        if val is not None:  # Workaround для косяка MySQL в django.
-            result_list.append((SEX_CHOICES_DICT[val], count))
-    result_list.append((_("Total"), external_users.count()))
-    return render_to_response('exmo2010/gender_stats.html',
-        {"results": result_list,}, RequestContext(request))
-
-
 
 def comment_list(request, report_type='1'):
     """

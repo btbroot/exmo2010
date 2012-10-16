@@ -133,9 +133,6 @@ urlpatterns = patterns('',
     # AJAX-вьюха для получения кода div'а для одного вопроса (без полей).
     url(r'^get_qqt/$', 'exmo2010.view.monitoring.get_qqt', name='get_qqt'),
 
-    url(r'^reports/gender/$', 'exmo2010.view.reports.gender_stats',
-        name='gender_stats'),
-
     url(r'^reports/comment/(\d+)/$', 'exmo2010.view.reports.comment_list',
         name='comment_list'),
 

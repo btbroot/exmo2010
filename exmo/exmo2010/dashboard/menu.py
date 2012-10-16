@@ -85,8 +85,6 @@ class CustomMenu(Menu):
 
         rep_children = []
         if request.user.is_authenticated() and request.user.profile.is_internal():
-            rep_children.append(items.MenuItem(_('Gender stats'),
-                reverse('exmo2010:gender_stats')))
             rep_children.append(items.MenuItem(_('Monitoring stats'),
                 reverse('exmo2010:monitoring_report')))
             self.children.append(items.MenuItem(_('Statistics'), children=rep_children))
