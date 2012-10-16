@@ -141,10 +141,14 @@ INSTALLED_APPS = (
     'tagging_autocomplete',
     'registration',  # django-registration.
     'django_wysiwyg',
+    # Custom Django apps
+    'custom_comments',
     # Our own apps.
     'exmo2010',
     'digest_email',
 )
+
+COMMENTS_APP = 'custom_comments'
 
 try:
     import django_extensions
