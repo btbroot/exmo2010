@@ -357,10 +357,18 @@ class QuestionnaireDynForm(forms.Form):
                                               'approved task. Edit answer instead.'))
         return cleaned_data
 
+class EmailReadonlyWidget(forms.Widget):
+    def render(self, name, value=" ", attrs=None):
+        html = '<p id="id_%(name)s" name="%(name)s"> %(value)s </p>' % {'name': name,
+                                                                        'value': value}
+        return mark_safe(html)
 
 class BaseUserSettingsForm(forms.Form):
     """
     Базовая форма настроек пользователя."""
+    email = forms.EmailField(label=_("E-mail"),
+        widget=EmailReadonlyWidget,
+        required=False)
     first_name = forms.CharField(label=_("First name"),
         widget=forms.TextInput(attrs={"maxlength": 14}),
         required=False, max_length=14)

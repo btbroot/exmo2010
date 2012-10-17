@@ -130,6 +130,8 @@ def settings(request):
             success = True
     else:
         initial_data = {}
+        if user.email:
+            initial_data["email"] = user.email
         first_name_parts = user.first_name.split()
         # Имя и отчество храним разделенными пробелом
         # в поле first_name модели User.
