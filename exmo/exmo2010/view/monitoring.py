@@ -515,13 +515,13 @@ def monitoring_parameter_filter(request, m_id):
             t_approved = cd.get("t_approved")
             if t_approved:
                 t_st_list.append(Task.TASK_APPROVED)
+
             queryset = queryset.filter(task__status__in=t_st_list)
 
-            if request.user.has_perm('exmo2010.admin_monitoring', monitoring) \
-               or request.user.profile.is_expertA or monitoring.is_publish:
-                queryset = queryset.filter(task__status=Task.TASK_APPROVED)
-            elif request.user.profile.is_expertB:
+            if request.user.profile.is_expertB and not (request.user.has_perm('exmo2010.admin_monitoring',
+                monitoring) or request.user.profile.is_expertA or monitoring.is_publish):
                 queryset = queryset.filter(task__user=request.user)
+
     else:
         form = ParamCritScoreFilterForm(monitoring=monitoring)
         hide = 1
