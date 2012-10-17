@@ -384,7 +384,7 @@ class BaseUserSettingsForm(forms.Form):
         widget=forms.PasswordInput(attrs={"maxlength": 24},
             render_value=False), required=False)
     new_password = forms.CharField(label=_("New password"),
-        widget=forms.TextInput(attrs={"maxlength": 24}),
+        widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
         required=False)
     subscribe = forms.BooleanField(label="",
         help_text=_("Subscribe to news e-mail notification"), required=False)

@@ -56,7 +56,7 @@ class RegistrationForm(forms.Form):
                     "loggin in."),
         widget=forms.TextInput({"maxlength": 75}))
     password = forms.CharField(label=_("Password"),
-        widget=forms.TextInput(attrs={"maxlength": 24}),
+        widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
         help_text=_("Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)."))
     sex = forms.ChoiceField(label=_("Sex"), choices=SEX_CHOICES,
         widget=forms.RadioSelect(),
