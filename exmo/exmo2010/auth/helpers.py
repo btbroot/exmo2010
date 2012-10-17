@@ -42,7 +42,6 @@ def monitoring_permission(user, priv, monitoring):
                 organization__monitoring=monitoring,
                 organization__monitoring__status__in=(
                     em.Monitoring.MONITORING_INTERACT,
-                    em.Monitoring.MONITORING_RESULT,
                     em.Monitoring.MONITORING_FINISHING
                     ),
                 organization__in=profile.organization.all()).exists():
@@ -78,14 +77,18 @@ def task_permission(user, priv, task):
     elif priv == 'exmo2010.open_task':
         if task.ready and task.user == user and task.organization.monitoring.is_rate: return True
     elif priv == 'exmo2010.fill_task': #create_score
-        if (task.open or task.checked) and task.user == user and (task.organization.monitoring.is_rate or task.organization.monitoring.is_revision): return True
-        if task.user == user and task.organization.monitoring.is_interact: return True
+        if (task.open or task.checked) and task.user==user and \
+           (task.organization.monitoring.is_rate or
+            task.organization.monitoring.is_revision or
+            task.organization.monitoring.is_finishing):
+            return True
+        if task.user==user and task.organization.monitoring.is_interact:
+            return True
     elif priv == 'exmo2010.comment_score':
         if user.is_active:
             profile = user.profile
             if profile.is_expertB and task.user == user and \
                 (task.organization.monitoring.is_interact or
-                 task.organization.monitoring.is_result or
                  task.organization.monitoring.is_finishing):
                     return True
             if profile.is_organization and \

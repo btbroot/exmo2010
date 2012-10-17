@@ -451,37 +451,45 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
 
 
 def tasks_by_monitoring(request, monitorgin_id):
-    monitoring = get_object_or_404(Monitoring, pk = monitorgin_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitorgin_id)
     profile = None
-    if request.user.is_active: profile = request.user.profile
-    if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    log_monitoring_interact_activity(monitoring, request.user)
-    title = _('Task list for %(monitoring)s') %  { 'monitoring': monitoring}
-    task_list = []
-    queryset = Task.objects.filter(organization__monitoring = monitoring).select_related()
-    for task in queryset:
-        if request.user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
-    if not task_list and not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if request.user.is_active:
+        profile = request.user.profile
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    queryset = Task.objects.filter(pk__in = task_list)
+    log_monitoring_interact_activity(monitoring, request.user)
+    title = _('Task list for %(monitoring)s') % {'monitoring': monitoring}
+    task_list = []
+    queryset = Task.objects.filter(organization__monitoring=monitoring).\
+    select_related()
+    for task in queryset:
+        if request.user.has_perm('exmo2010.view_task', task):
+            task_list.append(task.pk)
+    if not task_list and not \
+    request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+    queryset = Task.objects.filter(pk__in=task_list)
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('expert'), 'user__username', 'user__username', None, None),
-                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), None, None, None, None),
-              )
+            (_('organization'), 'organization__name', 'organization__name',
+             None, None),
+            (_('expert'), 'user__username', 'user__username', None, None),
+            (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+            (_('complete, %'), None, None, None, None),
+            )
     elif profile and profile.is_expert:
         headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), None, None, None, None),
-              )
+            (_('organization'), 'organization__name', 'organization__name',
+             None, None),
+             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+             (_('complete, %'), None, None, None, None),
+            )
     else:
         headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), None, None, None, None),
-              )
+            (_('organization'), 'organization__name', 'organization__name',
+             None, None),
+            (_('complete, %'), None, None, None, None),
+            )
 
     return table(
         request,

@@ -84,7 +84,8 @@ def score_manager(request, score_id, method='update'):
 
 def score_view(request, score_id):
     score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
+        args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if request.user.has_perm('exmo2010.edit_score', score):
         title = _('Edit score %s') % score.parameter
@@ -103,7 +104,8 @@ def score_view(request, score_id):
                 if form.is_valid() and form.changed_data:
                     score.close_claim(request.user)
                 else:
-                    return HttpResponse(_('Have active claim, but no data changed'))
+                    return HttpResponse(_('Have active claim, but no data '
+                                          'changed'))
         return update_object(
             request,
             form_class = ScoreForm,
@@ -117,7 +119,8 @@ def score_view(request, score_id):
         )
     elif request.user.has_perm('exmo2010.view_score', score):
         #представители имеют права только на просмотр
-        log_monitoring_interact_activity(score.task.organization.monitoring, request.user)
+        log_monitoring_interact_activity(score.task.organization.monitoring,
+            request.user)
         title = _('View score %s') % score.parameter
         return object_detail(
             request,
@@ -130,7 +133,8 @@ def score_view(request, score_id):
               'view': True,
             }
         )
-    else: return HttpResponseForbidden(_('Forbidden'))
+    else:
+        return HttpResponseForbidden(_('Forbidden'))
 
 
 def score_list_by_task(request, task_id, report=None):
