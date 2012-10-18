@@ -21,6 +21,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.http import HttpResponsePermanentRedirect
 from django.core.urlresolvers import reverse
+from django.views.generic.simple import direct_to_template
 from exmo2010 import site as exmo
 admin.autodiscover()
 
@@ -32,6 +33,9 @@ urlpatterns = patterns('',
     url(r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
     url(r'^admin_tools/', include('admin_tools.urls')),
+    url(r'^license.txt$', direct_to_template,
+        {'template': 'license.txt', 'mimetype': 'text/plain'},
+        name='license'),
 )
 
 if settings.DEBUG:
