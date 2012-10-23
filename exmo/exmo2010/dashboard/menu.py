@@ -82,14 +82,7 @@ class CustomMenu(Menu):
             msg = _('Welcome')
         self.children.append(items.MenuItem(msg, children=children))
         self.children.append(items.MenuItem(_('Ratings'), reverse('exmo2010:ratings')))
-
-        rep_children = []
-        if request.user.is_authenticated() and request.user.profile.is_internal():
-            rep_children.append(items.MenuItem(_('Monitoring stats'),
-                reverse('exmo2010:monitoring_report')))
-            self.children.append(items.MenuItem(_('Statistics'), children=rep_children))
-        else:
-            self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
+        self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
         inf_children = [
             items.MenuItem(_('Help'), reverse('exmo2010:help')),
             items.MenuItem(_('Parameter lists'), "http://www.svobodainfo.org/ru/node/1930", template='user_dashboard/item_target_blank.html'),
