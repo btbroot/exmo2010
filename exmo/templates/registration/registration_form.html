@@ -37,6 +37,11 @@
         <div id="content-main">
             <form action="" method="post">
                 {% csrf_token %}
+                <noscript>
+                    <ul class="errorlist">
+                        <li>{% trans "In order for site to work correctly, turn Javascript in browser's settings." %}</li>
+                    </ul>
+                </noscript>
 
                 {% if form.non_field_errors %}
                 <ul class="errorlist">

@@ -16,18 +16,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-from django.views.decorators.cache import never_cache
-from django.contrib.auth.tokens import default_token_generator
-from django.core.urlresolvers import reverse
-from django.utils.http import base36_to_int
-from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.contrib.auth import login
+from django.template import RequestContext, Context, Template
+from django.utils.http import base36_to_int
+from django.core.urlresolvers import reverse
+from django.views.decorators.cache import never_cache
+from django.conf import settings
+from django.views.csrf import CSRF_FAILRE_TEMPLATE
+from django.middleware.csrf import REASON_NO_CSRF_COOKIE
+from django.middleware.csrf import REASON_NO_COOKIE, REASON_NO_REFERER
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.contrib.auth import login, REDIRECT_FIELD_NAME
+from django.contrib.auth.views import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
+from registration.views import register
 from exmo2010.custom_registration.forms import SetPasswordForm
 from exmo2010.forms import OrgUserInfoForm
+
 
 @never_cache
 def password_reset_confirm(request, uidb36=None, token=None,
@@ -70,9 +77,10 @@ def password_reset_confirm(request, uidb36=None, token=None,
 
 
 def reg_finish(request):
-    """Страница ввода доп. данных представителем орг-ии
-     по окончании регистрации.
-     """
+    """
+    Страница ввода доп. данных представителем орг-ии
+    по окончании регистрации.
+    """
     if not request.user.is_authenticated():
         raise Http404
     profile = request.user.profile
@@ -95,3 +103,64 @@ def reg_finish(request):
     return render_to_response('exmo2010/org_user_info.html',
         {"form": form,},
         context_instance=RequestContext(request))
+
+
+def register_test_cookie(request, backend, success_url=None, form_class=None,
+                         disallowed_url='registration_disallowed',
+                         template_name='registration/registration_form.html',
+                         extra_context=None):
+    """
+    Проверяет работу cookie и возвращает стандартную вью для регистрации.
+    Или отправляет на страницу с ошибкой.
+    """
+    if request.method == 'POST':
+        if request.session.test_cookie_worked():
+            request.session.delete_test_cookie()
+        else:
+            return render_to_response('cookies.html', RequestContext(request))
+
+    request.session.set_test_cookie()
+    return register(request,
+        backend,
+        success_url, form_class,
+        disallowed_url,
+        template_name,
+        extra_context)
+
+
+def login_test_cookie(request, template_name='registration/login.html',
+                       redirect_field_name=REDIRECT_FIELD_NAME,
+                       authentication_form=AuthenticationForm,
+                       current_app=None, extra_context=None):
+    """
+    Проверяет работу cookie и возвращает стандартную вью для логина.
+    Тестовые cookies создаются в оригинальной auth_login.
+    """
+    if request.method == 'POST':
+        if not request.session.test_cookie_worked():
+            return render_to_response('cookies.html', RequestContext(request))
+
+    return auth_login(request,
+        template_name,
+        redirect_field_name,
+        authentication_form,
+        current_app,
+        extra_context)
+
+
+def csrf_failure(request, reason=""):
+    """
+    Вызывается при непрохождении джанговских тестов.
+    Cross Site Request Forgery protection. Переписана для того,
+    чтобы объясняла пользователю о выключенных cookies в браузере.
+    """
+    if (reason == REASON_NO_COOKIE or
+        reason == REASON_NO_CSRF_COOKIE):
+        return render_to_response('cookies.html', RequestContext(request))
+    else:
+        t = Template(CSRF_FAILRE_TEMPLATE)
+        c = Context({'DEBUG': settings.DEBUG,
+                     'reason': reason,
+                     'no_referer': reason == REASON_NO_REFERER
+        })
+        return HttpResponseForbidden(t.render(c), mimetype='text/html')

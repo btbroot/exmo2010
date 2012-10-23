@@ -36,15 +36,16 @@ up your own URL patterns for these views instead.
 
 """
 
-
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.contrib.auth import views as auth_views
-from registration.views import activate, register
+from registration.views import activate
 from exmo2010.custom_registration.views import password_reset_confirm
 from exmo2010.custom_registration.views import reg_finish
+from exmo2010.custom_registration.views import register_test_cookie
+from exmo2010.custom_registration.views import login_test_cookie
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
 
@@ -62,7 +63,7 @@ urlpatterns = patterns('',
        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
        name='registration_activate'),
     url(r'^register/$',
-       register,
+        register_test_cookie,
        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
        name='registration_register'),
     url(r'^register/complete/$',
@@ -78,7 +79,7 @@ urlpatterns = patterns('',
         name='registration_finish'),
     # Auth urls.
     url(r'^login/$',
-        auth_views.login,
+        login_test_cookie,
         {'template_name': 'registration/login.html'},
         name='auth_login'),
     url(r'^logout/$',

@@ -2143,6 +2143,10 @@ msgstr "E-mail или логин"
 msgid "Forgot your password"
 msgstr "Забыли пароль"
 
+#: exmo/templates/registration/login.html:38
+msgid "In order for site to work correctly, turn Javascript in browser's settings."
+msgstr "Для правильной работы сайта включите JavaScript в настройках браузера."
+
 #: exmo/templates/registration/logout.html:30
 msgid "Thanks for spending some quality time with the Web site today"
 msgstr "Спасибо за проведенное с нами время"
@@ -2324,3 +2328,11 @@ msgstr "Дополнительные параметры"
 
 msgid "Filter"
 msgstr "Отфильтровать"
+
+#: exmo/templates/cookies.html:23
+msgid "Error: cookies disabled in your browser!"
+msgstr "Ошибка: в вашем браузере отключены cookies!"
+
+#: exmo/templates/cookies.html:29
+msgid "Our site requires enabled cookies and JavaScript. Please enable them in your browser settings."
+msgstr "Для правильной работы сайта необходимо разрешить хранение cookies в настройках вашего браузера."
