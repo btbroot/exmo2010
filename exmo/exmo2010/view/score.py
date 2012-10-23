@@ -39,16 +39,19 @@ from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
 
 @login_required
 def score_add(request, task_id, parameter_id):
-    task = get_object_or_404(Task, pk = task_id)
-    parameter = get_object_or_404(Parameter, pk = parameter_id)
+    task = get_object_or_404(Task, pk=task_id)
+    parameter = get_object_or_404(Parameter, pk=parameter_id)
     try:
-        score = Score.objects.get(parameter = parameter, task = task)
+        score = Score.objects.get(parameter=parameter, task=task)
     except Score.DoesNotExist:
         pass
     else:
-        return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
-    if not request.user.has_perm('exmo2010.fill_task', task): return HttpResponseForbidden(_('Forbidden'))
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode(), parameter.code)
+        return HttpResponseRedirect(reverse('exmo2010:score_view',
+            args=(score.pk,)))
+    if not request.user.has_perm('exmo2010.fill_task', task):
+        return HttpResponseForbidden(_('Forbidden'))
+    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
+        args=(task.pk,)), request.GET.urlencode(), parameter.code)
     redirect = redirect.replace("%","%%")
     return create_object(
         request,

@@ -19,14 +19,13 @@
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.template import loader, Context
-from django.utils.translation import ugettext_lazy, ugettext as _
+from django.utils.translation import ugettext as _
 from django.utils.text import capfirst, get_text_list
+from django.db import IntegrityError
 from reversion import revision
-from exmo2010.models import UserProfile
-from exmo2010.models import Score
-from exmo2010.models import MonitoringInteractActivity
+from exmo2010.models import UserProfile, Score, MonitoringInteractActivity
 from exmo2010.utils import disable_for_loaddata
 
 
@@ -262,8 +261,10 @@ def score_change_notify(sender, **kwargs):
             email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
             email.send()
 
+
 def log_monitoring_interact_activity(monitoring, user):
-    if monitoring.is_interact and user.is_active and user.profile.is_organization:
+    if (monitoring.is_interact and user.is_active and
+        user.profile.is_organization):
         if not MonitoringInteractActivity.objects.filter(
             monitoring=monitoring,
             user=user,
@@ -272,4 +273,7 @@ def log_monitoring_interact_activity(monitoring, user):
                         monitoring=monitoring,
                         user=user,
                     )
-            log.save()
+            try:
+                log.save()
+            except IntegrityError:
+                pass

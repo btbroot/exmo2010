@@ -24,7 +24,7 @@
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo2010:organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a>&rsaquo;
-<a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
+<a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo2010:score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
 {{title}}
 </div>
@@ -167,7 +167,8 @@
 <h3 class="heading-yourcomment-parameter">{% trans 'Your comment' %}</h3>
 
 {% get_comment_form for object as form %}
-<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+<form action="{% comment_form_target %}" method="post">
+    {% csrf_token %}
     {{ form.content_type.as_hidden }}
     {{ form.object_pk.as_hidden }}
     {{ form.timestamp.as_hidden }}
