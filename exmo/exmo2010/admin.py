@@ -100,6 +100,11 @@ class MonitoringInteractActivityAdmin(admin.ModelAdmin):
     search_fields = ('user__username', )
     list_filter = ('monitoring',)
 
+class MonitoringStatusAdmin(admin.ModelAdmin):
+    ordering = ('monitoring', 'start')
+    search_fields = ('monitoring__name', )
+    list_filter = ('monitoring',)
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
@@ -108,7 +113,7 @@ admin.site.register(exmo2010.models.Parameter, ParameterAdmin)
 admin.site.register(exmo2010.models.Score, ScoreAdmin)
 admin.site.register(exmo2010.models.Task, TaskAdmin)
 admin.site.register(exmo2010.models.Monitoring, MonitoringAdmin)
-admin.site.register(exmo2010.models.MonitoringStatus)
+admin.site.register(exmo2010.models.MonitoringStatus, MonitoringStatusAdmin)
 admin.site.register(exmo2010.models.Claim)
 admin.site.register(exmo2010.models.OpennessExpression)
 admin.site.register(exmo2010.models.MonitoringInteractActivity, MonitoringInteractActivityAdmin)

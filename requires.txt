@@ -16,8 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Django==1.3.1
-django-reversion==1.5.2
+Django==1.3.4
+django-reversion==1.5.4
 south
 hg+https://bitbucket.org/bsavelev/django-admin-tools
 git+https://github.com/django-debug-toolbar/django-debug-toolbar.git
@@ -28,9 +28,6 @@ git+https://github.com/bsavelev/django-tagging-autocomplete.git
 django-extensions
 feedparser==5.1.2
 django-registration==0.8
-python-openid
-git+https://github.com/simplegeo/python-oauth2.git
-git+https://github.com/bsavelev/django-social-auth.git
 django-wysiwyg
 simplejson
 hg+https://bitbucket.org/offline/django-annoying
