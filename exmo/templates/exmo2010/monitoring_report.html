@@ -143,7 +143,13 @@
             </tr>
             {% endif %}
             <tr>
-                <td>{% trans 'Average openness' %}</td>
+                <td>
+                    {% if report_type == 'inprogress' %}
+                        {% trans 'Average openness' %}
+                    {% else %}
+                        {% trans 'Average final openness' %}
+                    {% endif %}
+                </td>
                 <td class="value">{{ stat.avg_openness|floatformat:3 }}</td>
             </tr>
         </table>

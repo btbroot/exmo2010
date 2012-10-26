@@ -1651,6 +1651,9 @@ msgstr "Среднее значение первичного Кид"
 
 #: exmo/templates/exmo2010/monitoring_report.html:135
 msgid "Average openness"
+msgstr "Среднее значение актуального Кид"
+
+msgid "Average final openness"
 msgstr "Среднее значение итогового Кид"
 
 #: exmo/templates/exmo2010/monitoring_stats.html:22
