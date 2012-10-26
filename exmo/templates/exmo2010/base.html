@@ -47,7 +47,7 @@
     <div id="header">
         <div id="branding">
             {% block branding %}
-                <h1 id="site-name">{% trans 'Exmo' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
+                <h1 id="site-name" style="background-color: #3C78A7; color: white; margin: 5px 0px 14px 0px;">{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
             {% endblock %}
         </div>
         <div id="user-tools">
@@ -60,7 +60,9 @@
     </div>
     <!-- END Header -->
     {% block breadcrumbs %}
-    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>
+    <div class="breadcrumbs-base">
+        <a class="breadcrumps-link first" href="/">{% trans "Home" %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
     {% endblock %}
     {% endif %}
 

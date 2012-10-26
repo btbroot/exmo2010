@@ -5,3 +5,33 @@
 body {
     font-family: Verdana, Arial, sans-serif;
 }
+
+#header
+{
+    background-color: #3C78A7;
+}
+
+a.breadcrumps-link
+{
+    color: #555;
+}
+
+a.breadcrumps-link:hover
+{
+    color: #333;
+}
+
+.breadcrumbs-base
+{
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 10px 14px 11px 10px;
+    border-bottom: 1px solid #CCC;
+}
+
+.breadcrumbs-base a.first
+{
+    padding: 5px 0px 5px 30px;
+    background: transparent url(../admin_tools/images/admin-tools.png) no-repeat 2px -384px;
+}
