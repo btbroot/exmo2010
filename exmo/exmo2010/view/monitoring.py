@@ -867,10 +867,7 @@ def monitoring_parameter_import(request, id):
 @login_required
 @csrf_protect
 def monitoring_comment_report(request, id):
-    """
-    Отчёт по комментариям
-    """
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk=id)
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
 
@@ -878,19 +875,19 @@ def monitoring_comment_report(request, id):
     from datetime import datetime
     from exmo2010.forms import MonitoringCommentStatForm
 
-    form = MonitoringCommentStatForm(monitoring = monitoring)
+    form = MonitoringCommentStatForm(monitoring=monitoring)
 
-    start_date = MonitoringStatus.objects.get(monitoring = monitoring, status = Monitoring.MONITORING_INTERACT).start
+    start_date = MonitoringStatus.objects.get(monitoring=monitoring, status=Monitoring.MONITORING_INTERACT).start
     if not start_date:
         return render_to_response(
             "msg.html", {
                 'msg': _('Start date for interact not defined.')
-                }, context_instance=RequestContext(request))
-    end_date = datetime.now()
+            }, context_instance=RequestContext(request))
+    end_date = datetime.today()
 
     limit = 2
     if request.method == "GET" and request.GET.__contains__('limit'):
-        form = MonitoringCommentStatForm(request.GET, monitoring = monitoring)
+        form = MonitoringCommentStatForm(request.GET, monitoring=monitoring)
         if form.is_valid():
             limit = form.cleaned_data['limit']
 
@@ -906,45 +903,48 @@ def monitoring_comment_report(request, id):
     iifd_all_comments = []
 
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA:
-        scores = Score.objects.filter(task__organization__monitoring = monitoring)
+        scores = Score.objects.filter(task__organization__monitoring=monitoring)
     elif request.user.profile.is_expertB:
-        scores = Score.objects.filter(task__organization__monitoring = monitoring, task__user = request.user)
+        scores = Score.objects.filter(task__organization__monitoring=monitoring, task__user=request.user)
 
     if start_date:
-        total_org = Organization.objects.filter(monitoring = monitoring)
-        reg_org = total_org.filter(userprofile__isnull = False)
+        total_org = Organization.objects.filter(monitoring=monitoring)
+        reg_org = total_org.filter(userprofile__isnull=False)
         iifd_all_comments = commentModel.Comment.objects.filter(
-            content_type__model = 'score',
-            submit_date__gte = start_date,
-            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring ),
-            user__in = User.objects.exclude(groups__name = 'organizations')).order_by('submit_date')
+            content_type__model='score',
+            submit_date__gte=start_date,
+            object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring ),
+            user__in=User.objects.exclude(groups__name='organizations')).order_by('submit_date')
 
         org_comments = commentModel.Comment.objects.filter(
-            content_type__model = 'score',
-            submit_date__gte = start_date,
-            object_pk__in = scores,
-            user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
-        org_all_comments = commentModel.Comment.objects.filter(
-            content_type__model = 'score',
-            submit_date__gte = start_date,
-            object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring),
-            user__in = User.objects.filter(groups__name = 'organizations')).order_by('submit_date')
+            content_type__model='score',
+            submit_date__gte=start_date,
+            object_pk__in=scores,
+            user__in=User.objects.filter(groups__name='organizations')).order_by('submit_date')
+        org_all_comments=commentModel.Comment.objects.filter(
+            content_type__model='score',
+            submit_date__gte=start_date,
+            object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring),
+            user__in=User.objects.filter(groups__name='organizations')).order_by('submit_date')
 
-        active_organizations = set([Score.objects.get(pk = oco.object_pk).task.organization for oco in org_all_comments])
+        active_organizations = set([Score.objects.get(pk=oco.object_pk).task.organization for oco in org_all_comments])
         for active_organization in active_organizations:
             active_org_comments_count = org_comments.filter(
-                object_pk__in = Score.objects.filter(task__organization__monitoring = monitoring, task__organization = active_organization)
-            ).count()
-            active_organization_stats.append({ 'org': active_organization, 'comments_count': active_org_comments_count})
+                object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring,
+                    task__organization=active_organization)).count()
 
-        active_iifd_person_stats = User.objects.filter(comment_comments__pk__in = iifd_all_comments).annotate(comments_count = Count('comment_comments'))
+            active_organization_stats.append({'org': active_organization,
+                                              'comments_count': active_org_comments_count})
+
+        active_iifd_person_stats = User.objects.filter(comment_comments__pk__in=iifd_all_comments)\
+        .annotate(comments_count=Count('comment_comments'))
 
 
     for org_comment in org_comments:
         from exmo2010.utils import workday_count
         iifd_comments = iifd_all_comments.filter(
-            submit_date__gte = org_comment.submit_date,
-            object_pk = org_comment.object_pk,
+            submit_date__gte=org_comment.submit_date,
+            object_pk=org_comment.object_pk,
         ).order_by('submit_date')
         #append comment or not
         flag = False
@@ -963,12 +963,12 @@ def monitoring_comment_report(request, id):
                     flag = True
                     fail_comments_with_reply.append(org_comment)
                     break
-        #org comment is without comment from iifd
+                    #org comment is without comment from iifd
         if not flag:
             #check limit
-            if limit-1 < workday_count(org_comment.submit_date, end_date) <= limit:
+            if limit-1 < workday_count(org_comment.submit_date.date(), end_date) <= limit:
                 fail_soon_comments_without_reply.append(org_comment)
-            elif workday_count(org_comment.submit_date, end_date) > limit:
+            elif workday_count(org_comment.submit_date.date(), end_date) > limit:
                 fail_comments_without_reply.append(org_comment)
             else:
                 comments_without_reply.append(org_comment)
@@ -990,7 +990,7 @@ def monitoring_comment_report(request, id):
         'active_iifd_person_stats': active_iifd_person_stats,
         'limit': limit,
         'monitoring': monitoring,
-        'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring, },
+        'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring,},
         'media': CORE_MEDIA,
         }, context_instance=RequestContext(request))
 
