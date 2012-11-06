@@ -1345,6 +1345,10 @@ msgstr "EXMO — система экспертного мониторинга"
 msgid "Creator"
 msgstr "Создатель"
 
+#: exmo/templates/exmo2010/claim_email.html:27
+msgid "Receiver"
+msgstr "Кому"
+
 #: exmo/templates/exmo2010/claim_form.html:26
 #: exmo/templates/exmo2010/parameter_confirm_delete.html:27
 #: exmo/templates/exmo2010/parameter_form.html:35

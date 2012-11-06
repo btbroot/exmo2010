@@ -170,12 +170,17 @@ def claim_notification(sender, **kwargs):
             'code': score.parameter.code,
             }
 
+    profile = score.task.user.get_profile()
+    if profile.is_expertB:
+        receiver = score.task.user
+    else:
+        receiver = None
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/claim_email.html')
-    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': False })
+    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': False, 'receiver': receiver })
     message_nonadmin=t.render(c)
-    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': True })
+    c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': True, 'receiver': receiver })
     message_admin=t.render(c)
 
     headers = {

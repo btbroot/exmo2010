@@ -23,6 +23,9 @@
 {% if admin %}
 {% trans 'Creator' %}: {{ claim.creator }}
 {% endif %}
+{% if receiver %}
+{% trans 'Receiver' %}: {{ receiver }}
+{% endif %}
 {% trans 'Comment' %}:
 {{ claim.comment }}
 URL: {{ url }}
