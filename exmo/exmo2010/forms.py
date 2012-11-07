@@ -135,6 +135,12 @@ class ScoreForm(forms.ModelForm):
     """
     Форма выставления оценки
     """
+    def __init__(self, *args, **kwargs):
+        super(ScoreForm, self).__init__(*args, **kwargs)
+        # префикс для формы, чтобы в верстке поле id_comment не пересекалось
+        # с полем комментариев, т.к. по id wyswyg-редактор цепляется к форме
+        self.prefix = "score"
+
     class Meta:
         model = Score
         widgets = {

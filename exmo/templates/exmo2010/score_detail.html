@@ -40,10 +40,7 @@
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
 {% block content %}
-<h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
-<div id=parameter_desc>
-{% trans 'Parameter' %}: {{ parameter }}<br>
-</div>
+{% include "exmo2010/helpers/parameter_header.html" %}
 <br>
 <div id=score_add>
 
@@ -125,6 +122,16 @@
         {% endif %}
     </tbody>
 </table>
+
+<dl>
+    <dt>
+        {% trans 'Recomendations' %}
+    </dt>
+    <dd>
+        {{ object.comment }}
+    </dd>
+</dl>
+
 {% include "exmo2010/score_comment.html" %}
 </div>
 {% endblock %}

@@ -39,7 +39,7 @@
             <br />{% trans 'Closed by ' %}{{ claim.close_user }} {{ claim.close_date }}
         {% endif %}
     </td>
-    <td>{% if user.profile.is_expertA %}{% trans 'Comment from' %} {{claim.creator}}:<br />{% endif %}{{ claim.comment }}</td>
+    <td>{% if user.profile.is_expertA %}{% trans 'Comment from' %} {{ claim.creator }}:<br />{% endif %}{{ claim.comment }}</td>
     </tr>
 {% endfor %}
     </tbody>

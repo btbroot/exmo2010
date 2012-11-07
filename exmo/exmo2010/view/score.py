@@ -17,10 +17,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import datetime
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.decorators import login_required
+from django.utils import simplejson
 from django.contrib.comments.signals import comment_was_posted
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -36,7 +38,9 @@ from exmo2010.helpers import construct_change_message
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table_prepare_queryset
 from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
-from exmo2010.models import Monitoring
+from exmo2010.models import Claim, Clarification, Monitoring
+from exmo2010 import signals
+from custom_comments.models import CommentExmo
 
 
 @login_required
@@ -67,7 +71,6 @@ def score_add(request, task_id, parameter_id):
     )
 
 
-
 @revision.create_on_success
 @login_required
 def score_manager(request, score_id, method='update'):
@@ -86,60 +89,95 @@ def score_manager(request, score_id, method='update'):
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
-
 def score_view(request, score_id):
-    score = get_object_or_404(Score, pk = score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-        args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
-    redirect = redirect.replace("%","%%")
-    if request.user.has_perm('exmo2010.edit_score', score):
+    """
+    Generic view для просмотра или изменения параметра, в зависимости от прав.
+    """
+    score = get_object_or_404(Score, pk=score_id)
+    user = request.user
+
+    if user.has_perm('exmo2010.edit_score', score):
+        redirect = "%s?%s#parameter_%s" % (
+        reverse('exmo2010:score_list_by_task',
+            args=[score.task.pk]),
+        request.GET.urlencode(),
+        score.parameter.code)
+        redirect = redirect.replace("%","%%")
         title = _('Edit score %s') % score.parameter
         if request.method == 'POST':
-            form = ScoreForm(request.POST,instance=score)
-            message = construct_change_message(request,form, None)
+            form = ScoreForm(request.POST, instance=score)
+            message = construct_change_message(request, form, None)
             revision.comment = message
             if form.is_valid() and form.changed_data:
-                from exmo2010 import signals
                 signals.score_was_changed.send(
-                        sender  = Score.__class__,
-                        form = form,
-                        request = request,
-                    )
+                    sender = Score.__class__,
+                    form = form,
+                    request = request,
+                )
             if score.active_claim:
                 if form.is_valid() and form.changed_data:
                     score.close_claim(request.user)
                 else:
                     return HttpResponse(_('Have active claim, but no data '
                                           'changed'))
+        all_score_claims = Claim.objects.filter(score=score)
+        all_score_clarifications = Clarification.objects.filter(score=score)
         return update_object(
             request,
             form_class = ScoreForm,
-
             object_id = score.pk,
             post_save_redirect = redirect,
             extra_context = {
-              'task': score.task,
-              'parameter': score.parameter,
-              'title': title,
-            }
-        )
-    elif request.user.has_perm('exmo2010.view_score', score):
-        #представители имеют права только на просмотр
-        title = _('View score %s') % score.parameter
+                'task': score.task,
+                'parameter': score.parameter,
+                'title': title,
+                'claim_list': all_score_claims,
+                'clarification_list': all_score_clarifications,
+                })
+    elif user.has_perm('exmo2010.view_score', score):
+        # представители имеют права только на просмотр
+        title = _('Score for parameter "%s"') % score.parameter.name
+        time_to_answer = score.task.organization.monitoring.time_to_answer
+        delta = datetime.timedelta(days=time_to_answer)
+        today = datetime.date.today()
+        peremptory_day = today + delta
         return object_detail(
             request,
             queryset = Score.objects.all(),
             object_id = score.pk,
             extra_context = {
-              'task': score.task,
-              'parameter': score.parameter,
-              'title': title,
-              'view': True,
-              'invcodeform': SettingsInvCodeForm(),
-            }
-        )
+                'title': title,
+                'task': score.task,
+                'parameter': score.parameter,
+                'peremptory_day' : peremptory_day,
+                'view': True,
+                'invcodeform': SettingsInvCodeForm(),
+                })
     else:
         return HttpResponseForbidden(_('Forbidden'))
+
+
+def _save_comment(comment):
+    comment.save()
+    result = simplejson.dumps(
+        {'success': True, 'status': comment.status})
+    return HttpResponse(result, mimetype='application/json')
+
+
+def toggle_comment(request):
+    if request.is_ajax() and request.method == 'POST':
+        comment_id = request.POST['pk']
+        comment = get_object_or_404(CommentExmo, pk=comment_id)
+
+        if comment.status == CommentExmo.OPEN:
+            comment.status = CommentExmo.NOT_ANSWERED
+            return _save_comment(comment)
+        elif comment.status in (CommentExmo.NOT_ANSWERED,
+                                CommentExmo.ANSWERED):
+            comment.status = CommentExmo.OPEN
+            return _save_comment(comment)
+
+    return Http404
 
 
 def score_list_by_task(request, task_id, report=None):
@@ -264,15 +302,15 @@ def score_list_by_task(request, task_id, report=None):
             place_npa = place_other = None
             parameters_npa = None
             parameters_other = parameters
-        # Не показываем ссылку экспертам B или представителям, если статус
-        # мониторинга отличается от "Опубликован".
-        if (monitoring.status != Monitoring.MONITORING_PUBLISH
-            and (request.user.profile.is_expertB
-                 or request.user.profile.is_organization)
-            and not request.user.is_superuser):
-            show_link = False
-        else:
-            show_link = True
+            # Не показываем ссылку экспертам B или предатвителям, если статус
+            # мониторинга отличается от "Опубликован".
+            if (request.user.profile.is_expertB or
+                request.user.profile.is_organization)\
+                and monitoring.status != Monitoring.MONITORING_PUBLISH\
+                and not request.user.is_superuser:
+                show_link = False
+            else:
+                show_link = True
         extra_context.update(
             {
                 'score_dict': score_dict,
@@ -287,7 +325,7 @@ def score_list_by_task(request, task_id, report=None):
                 'place_other': place_other,
                 'form': form,
                 'invcodeform': SettingsInvCodeForm(),
-                'show_link': show_link
+                'show_link': show_link,
             }
         )
         return render_to_response(
@@ -311,6 +349,21 @@ def score_add_comment(request, score_id):
                 context_instance=RequestContext(request),
                 )
     else: return HttpResponseForbidden(_('Forbidden'))
+
+
+def log_user_activity(**kwargs):
+    """
+    Функция - обработчик сигнала при создании нового комментария.
+    """
+    comment = kwargs['comment']
+    if comment.content_type.model == 'score':
+        score = Score.objects.get(pk=comment.object_pk)
+        log_monitoring_interact_activity(score.task.organization.monitoring,
+            comment.user)
+
+
+# Регистрируем обработчик сигнала.
+comment_was_posted.connect(log_user_activity)
 
 
 @login_required
@@ -339,18 +392,3 @@ def score_comment_unreaded(request, score_id):
             context_instance=RequestContext(request))
     else:
         raise Http404
-
-
-def log_user_activity(**kwargs):
-    """
-    Функция - обработчик сигнала при создании нового комментария.
-    """
-    comment = kwargs['comment']
-    if comment.content_type.model == 'score':
-        score = Score.objects.get(pk=comment.object_pk)
-        log_monitoring_interact_activity(score.task.organization.monitoring,
-                                         comment.user)
-
-
-# Регистрируем обработчик сигнала.
-comment_was_posted.connect(log_user_activity)

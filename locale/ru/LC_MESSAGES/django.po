@@ -2441,3 +2441,30 @@ msgstr "Вернитесь назад или перейдите на <a href='/'
 
 msgid "No interact stage"
 msgstr "Без этапа взаимодействия"
+
+msgid "Peremptory day to answer your question is"
+msgstr "Крайний срок ответа на ваш комментарий:"
+
+msgid "Recomendations"
+msgstr "Рекомендации"
+
+msgid "Organization's website"
+msgstr "Сайт организации"
+
+msgid "The social importance of the parameter"
+msgstr "Социальная значимость параметра"
+
+msgid "high importance"
+msgstr "высокая"
+
+msgid "middle importance"
+msgstr "средняя"
+
+msgid "low importance"
+msgstr "низкая"
+
+msgid "Close without answer"
+msgstr "Закрыть без ответа"
+
+msgid "Open comment"
+msgstr "Открыть комментарий"

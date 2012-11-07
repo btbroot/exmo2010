@@ -24,6 +24,44 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
 {% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {% if request.user.is_superuser or request.user.userprofile.is_expertA %}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $anchor = $('a.toggle-comment');
+
+            $anchor.click(function( e ) {
+                var $this = $(this)
+                        , url = $this.attr('href')
+                        , pk = $this.attr('rel');
+
+                $.ajax({
+                    type : "POST",
+                    url: url,
+                    data : {pk: pk},
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.success) {
+                            $this.html('');
+                            if (data.status == 0)
+                                $this.append('{% trans 'Close without answer' %}');
+                            if (data.status == 2)
+                                $this.append('{% trans 'Open comment' %}');
+                        }
+                    }
+                })
+
+                return false;
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
@@ -31,6 +69,7 @@
 <a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo2010:score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
 {{title}}
+
 </div>
 {% endblock %}
 {% block content %}

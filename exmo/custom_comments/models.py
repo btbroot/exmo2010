@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -16,21 +17,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Django==1.3.4
-django-reversion==1.5.4
-south
-hg+https://bitbucket.org/bsavelev/django-admin-tools
-git+https://github.com/django-debug-toolbar/django-debug-toolbar.git
-git+https://github.com/playfire/django-debug-toolbar-user-panel.git
-git+https://github.com/bsavelev/django403.git
-git+https://github.com/bsavelev/django-tagging.git
-git+https://github.com/bsavelev/django-tagging-autocomplete.git
-django-extensions
-feedparser==5.1.2
-lxml==2.3.2
-django-registration==0.8
-django-wysiwyg==0.5
-simplejson
-hg+https://bitbucket.org/offline/django-annoying
-python-dateutil
-MySQL-python
+from django.db import models
+from django.utils.translation import ugettext as _
+from django.contrib.comments.models import Comment
+
+class CommentExmo(Comment):
+    """
+    Кастомная модель комментария, добавлено поле "status".
+    """
+
+    OPEN = 0
+    ANSWERED = 1
+    NOT_ANSWERED = 2
+
+    STATUSES = (
+        (OPEN, _('Comment is open')),
+        (ANSWERED, _('Comment is closed and answered')),
+        (NOT_ANSWERED, _('Comment is closed and not answered')),
+        )
+
+    status = models.PositiveIntegerField(choices=STATUSES, default=OPEN,
+        verbose_name=_('status'))

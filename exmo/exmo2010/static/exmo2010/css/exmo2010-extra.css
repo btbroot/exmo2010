@@ -79,6 +79,11 @@
     margin-bottom: 20px;
 }
 
+.table-comments-parameter a {
+    cursor: pointer;
+    color: #5B80B2;
+}
+
 .table-comments-parameter td {
     padding: 8px;
     line-height: 17px;

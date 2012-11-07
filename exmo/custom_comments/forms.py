@@ -19,28 +19,35 @@
 
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.contrib.comments.forms import CommentDetailsForm
+from django.forms.widgets import HiddenInput
+from django.contrib.comments.forms import CommentForm
+from lxml.html.clean import Cleaner
+from custom_comments.models import CommentExmo
 
-class CustomCommentDetailsForm(CommentDetailsForm):
+
+class CustomCommentForm(CommentForm):
+    status = forms.ChoiceField(choices=CommentExmo.STATUSES,
+                               label=_('status'),
+                               widget=HiddenInput(),
+                               initial=0)
+
     def check_for_duplicate_comment(self, new):
         """
-        Check that a submitted comment isn't a duplicate.
-        Overridden function to allow duplicates.
+        Проверяет дубликаты комментариев.
+        В оргинальной функции возвращает старый коментарий,
+        если он повторяется. Переопределена, чтобы пользователи могли
+        оставлять повторяющиеся комментарии.
         """
-        # проверяет дубликаты комментарие,
-        # в оргинальной функции возвращает старый коментарий,
-        # если он повторяется. Перекрыто,
-        # чтобы пользователи могли оставлять повторяющиеся комментарии
         return new
 
-class CustomCommentForm(CustomCommentDetailsForm):
-    honeypot      = forms.CharField(required=False,
-        label=_('If you enter anything in this field '\
-                'your comment will be treated as spam'))
+    def get_comment_model(self):
+        return CommentExmo
 
-    def clean_honeypot(self):
-        """Check that nothing's been entered into the honeypot."""
-        value = self.cleaned_data["honeypot"]
-        if value:
-            raise forms.ValidationError(self.fields["honeypot"].label)
-        return value
+    def get_comment_create_data(self):
+        data = super(CustomCommentForm, self).get_comment_create_data()
+        # Очистка от XSS
+        cleaner = Cleaner(safe_attrs_only=False)
+        data['comment'] = cleaner.clean_html(data['comment'])
+        # Условие, чтобы формы в шаблонах без поля не отправляли пустую строку
+        return data
+

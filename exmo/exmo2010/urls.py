@@ -133,6 +133,11 @@ urlpatterns = patterns('',
     # AJAX-вьюха для получения кода div'а для одного вопроса (без полей).
     url(r'^get_qqt/$', 'exmo2010.view.monitoring.get_qqt', name='get_qqt'),
 
+    # AJAX-вьюха открытия/закрытия комментария
+    url(r'^toggle_comment/$',
+        'exmo2010.view.score.toggle_comment',
+        name='toggle_comment'),
+
     url(r'^reports/comment/(\d+)/$', 'exmo2010.view.reports.comment_list',
         name='comment_list'),
 

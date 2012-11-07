@@ -32,7 +32,7 @@ from django.db import IntegrityError
 from reversion import revision
 from exmo2010.models import UserProfile, Score, MonitoringInteractActivity
 from exmo2010.utils import disable_for_loaddata
-
+from custom_comments.models import CommentExmo
 
 
 def construct_change_message(request, form, formsets):
@@ -63,7 +63,6 @@ def construct_change_message(request, form, formsets):
         return change_message or _('No fields changed.')
 
 
-
 def comment_notification(sender, **kwargs):
     """
     Оповещение о комментариях
@@ -92,14 +91,12 @@ def comment_notification(sender, **kwargs):
         'X-iifd-exmo-comment-organization-url': score.task.organization.url,
     }
 
-
     if comment.user.profile.notify_comment_preference['self']:
         admin_users = [comment.user,]
         nonadmin_users = [comment.user,]
     else:
         admin_users = []
         nonadmin_users = []
-
 
     #A-expert + B-expert-manager
     experts=User.objects.filter(
@@ -117,7 +114,6 @@ def comment_notification(sender, **kwargs):
     #get only uniq emails
     admin_rcpt=list(set(admin_rcpt))
 
-
     #organization
     nonadmin_users = User.objects.filter(
         userprofile__organization = score.task.organization,
@@ -130,7 +126,6 @@ def comment_notification(sender, **kwargs):
     #get only uniq emails
     nonadmin_rcpt=list(set(nonadmin_rcpt))
 
-
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
@@ -142,7 +137,6 @@ def comment_notification(sender, **kwargs):
         email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers,)
         email.send()
 
-
     t = loader.get_template('exmo2010/score_comment_email.html')
     c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment, 'url': url })
     message_admin = t.render(c)
@@ -153,6 +147,26 @@ def comment_notification(sender, **kwargs):
         email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
         email.send()
 
+
+def comment_change_status(sender, **kwargs):
+    """
+    Изменение статуса предыдущего комментария после его сохранения
+    """
+    comment = kwargs['comment']
+    if comment.content_type.model == 'score':
+        score = Score.objects.get(pk=comment.object_pk)
+
+        previous_comments = CommentExmo.objects.filter(
+            object_pk=score.pk).exclude(pk=comment.pk).order_by('-submit_date')
+
+        if comment.user.profile.is_expert:
+            for c in previous_comments:
+                if c.user.profile.is_organization and \
+                   c.status == CommentExmo.OPEN:
+                    c.status = CommentExmo.ANSWERED
+                    c.save()
+                elif c.user.profile.is_expert:
+                    break
 
 
 def claim_notification(sender, **kwargs):

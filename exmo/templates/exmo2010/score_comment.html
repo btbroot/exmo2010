@@ -46,17 +46,40 @@
                         </span>
                     </td>
                     <td>
-                        {{ comment.comment|linebreaksbr }}<br />
+                        {{ comment.comment|safe }}<br />
+                        {% if request.user.userprofile.is_expertA and comment.user.userprofile.is_organization %}
+                            {% url exmo2010:toggle_comment as toggle_url %}
+                            <a class="toggle-comment"
+                               style="border-bottom: 1px dashed;"
+                               href="{{ toggle_url }}"
+                               rel="{{ comment.pk }}">
+                                {% if comment.status == 0 %}
+                                    {% trans 'Close comment' %}
+                                {% else %}
+                                    {% trans 'Open comment' %}
+                                {% endif %}
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% endif %}
-
 {% endif %}
 
+{% load wysiwyg %}
+{% wysiwyg_setup %}
+
 {% if can_comment %}
+
+    {% if peremptory_day %}
+        <div style="background-color: pink">
+            {% trans 'Peremptory day to answer your question is' %}
+            {{ peremptory_day|date:"j F Y" }}
+        </div>
+    {% endif %}
+
     <h3 class="heading-yourcomment-parameter">{% trans 'Your comment' %}</h3>
 
     {% get_comment_form for object as form %}
@@ -81,8 +104,10 @@
             <br />
         {% endif %}
         {{ form.comment }}
+        {% wysiwyg_editor "id_comment" %}
         <br />
         <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
-        <input type="submit" name="post" class="submit-post" value="{% trans 'Post' %}">
+        <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post' %}">
     </form>
 {% endif %}
+

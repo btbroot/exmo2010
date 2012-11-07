@@ -17,7 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from custom_comments.forms import CustomCommentForm
+# Импорты в телах функций, т.к. есть проблема с python circular imports
+def get_model():
+    from custom_comments.models import CommentExmo
+    return CommentExmo
 
 def get_form():
+    from custom_comments.forms import CustomCommentForm
     return CustomCommentForm

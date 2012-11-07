@@ -1,0 +1,43 @@
+{% load i18n %}
+
+<dl>
+    <!--Organization -->
+    <dt>
+        {% trans 'Organization' %}
+    </dt>
+    <dd>
+        {{ task.organization.name }}
+    </dd>
+
+    <!--URL -->
+    <dt>
+        {% trans "Organization's website" %}
+    </dt>
+    <dd>
+        <a href="{{ task.organization.url }}">{{ task.organization.url }}</a>
+    </dd>
+
+    <!--Importance -->
+    <dt>
+        {% trans "The social importance of the parameter" %}
+    </dt>
+    <dd>
+        {% ifequal parameter.weight 3 %}
+            {% trans "high importance" %}
+        {% endifequal %}
+        {% ifequal parameter.weight 2 %}
+            {% trans "middle importance" %}
+        {% endifequal %}
+        {% ifequal parameter.weight 1 %}
+            {% trans "low importance" %}
+        {% endifequal %}
+    </dd>
+
+    <!--Description -->
+    <dt>
+        {% trans "Parameter description" %}
+    </dt>
+    <dd>
+        {{ parameter.description }}
+    </dd>
+</dl>
