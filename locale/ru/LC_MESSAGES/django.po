@@ -163,6 +163,9 @@ msgstr "по"
 msgid "status"
 msgstr "статус"
 
+msgid "Status"
+msgstr "Статус"
+
 #: exmo/exmo2010/forms.py:174
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
@@ -687,20 +690,20 @@ msgid "Dashboard"
 msgstr "Главная"
 
 #: exmo/exmo2010/custom_registration/forms.py:40
-msgid "Enter your first name in order the system can address you with it."
-msgstr "Введите свое имя, чтобы система знала, как к вам обращаться."
+msgid "Enter your first name in order the system can address you with it"
+msgstr "Введите свое имя, чтобы система знала, как к вам обращаться"
 
 #: exmo/exmo2010/custom_registration/forms.py:45
-msgid "Enter your patronymic in order the system can address you with it."
-msgstr "Введите свое отчество, чтобы система знала, как к вам обращаться."
+msgid "Enter your patronymic in order the system can address you with it"
+msgstr "Введите свое отчество, чтобы система знала, как к вам обращаться"
 
 #: exmo/exmo2010/custom_registration/forms.py:50
-msgid "Enter your last name in order the system can address you with it."
-msgstr "Введите свою фамилию, чтобы система знала, как к вам обращаться."
+msgid "Enter your last name in order the system can address you with it"
+msgstr "Введите свою фамилию, чтобы система знала, как к вам обращаться"
 
 #: exmo/exmo2010/custom_registration/forms.py:55
-msgid "E-mail is required for confirming registration and loggin in."
-msgstr "Ваш e-mail необходим для подтверждения регистрации и входа в систему."
+msgid "E-mail is required for confirming registration and loggin in"
+msgstr "Будет использована для подтверждения регистрации и входа в систему"
 
 #: exmo/exmo2010/custom_registration/forms.py:58
 #: exmo/templates/registration/login.html:61
@@ -1237,7 +1240,7 @@ msgstr "Ошибка сервера <em>(500)</em>"
 
 #: exmo/templates/500.html:27
 msgid "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience."
-msgstr "На сервере произошла ошибка. О ней было сообщено администратору по элестронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за понимание."
+msgstr "На сервере произошла ошибка. О ней было сообщено администратору по электронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за понимание."
 
 #: exmo/templates/msg.html:23
 #: exmo/templates/exmo2010/add_questionnaire.html:33
@@ -2340,3 +2343,18 @@ msgstr "Ошибка: в вашем браузере отключены cookies!
 #: exmo/templates/cookies.html:29
 msgid "Our site requires enabled cookies and JavaScript. Please enable them in your browser settings."
 msgstr "Для правильной работы сайта необходимо разрешить хранение cookies в настройках вашего браузера."
+
+msgid "representative"
+msgstr "представитель организации"
+
+msgid "concerned person"
+msgstr "интересующийся гражданин"
+
+msgid "E-mail"
+msgstr "Электронная почта"
+
+msgid "Required to get access to your organization scores"
+msgstr "Введите для получения доступа к оценкам своей организации"
+
+msgid "Submitted invitation code does not exist. Please enter correct one"
+msgstr "Код приглашения, который вы ввели, не существует. Введите корректный код приглашения"

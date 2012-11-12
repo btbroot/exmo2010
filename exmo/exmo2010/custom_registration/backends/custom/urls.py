@@ -43,7 +43,6 @@ from django.utils.functional import lazy
 from django.contrib.auth import views as auth_views
 from registration.views import activate
 from exmo2010.custom_registration.views import password_reset_confirm
-from exmo2010.custom_registration.views import reg_finish
 from exmo2010.custom_registration.views import register_test_cookie
 from exmo2010.custom_registration.views import login_test_cookie
 
@@ -74,9 +73,6 @@ urlpatterns = patterns('',
        direct_to_template,
        {'template': 'registration/registration_closed.html'},
        name='registration_disallowed'),
-    url(r'^register/finish/$',
-        reg_finish,
-        name='registration_finish'),
     # Auth urls.
     url(r'^login/$',
         login_test_cookie,

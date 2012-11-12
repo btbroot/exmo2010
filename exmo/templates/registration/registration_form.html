@@ -26,6 +26,32 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/registration.css"/>
 {% endblock %}
 
+{% block extrahead %}{{ block.super }}
+    <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_status').change(function () {
+                if ($("#id_status").val() == '0') {
+                    $("#id_row_position").show();
+                    $("#id_row_phone").show();
+                    $("#id_row_invitation_code").show();
+                }
+                else {
+                    $("#id_err_position").hide();
+                    $("#id_position").val("");
+                    $("#id_row_position").hide();
+                    $("#id_err_phone").hide();
+                    $("#id_phone").val("");
+                    $("#id_row_phone").hide();
+                    $("#id_err_invitation_code").hide();
+                    $("#id_invitation_code").val("");
+                    $("#id_row_invitation_code").hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
     <h1>{% trans 'Registration' %}</h1>
     {% if request.user.is_authenticated %}
@@ -55,7 +81,7 @@
                     <tbody>
                     {% for field in form %}
                         {% if field.errors %}
-                            <tr>
+                            <tr id="id_err_{{ field.name }}">
                                 <td colspan="3">
                                     {% for error in field.errors %}
                                         <span class="form-error">{{ error }}</span>{% if not forloop.last %}, {% endif %}
@@ -63,9 +89,9 @@
                                 </td>
                             </tr>
                         {% endif %}
-                        <tr>
+                        <tr id="id_row_{{ field.name }}">
                             <td class="label-registration">
-                                <label>{{ field.field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
+                                <label>{{ field.field.label }}{% if field.field.required and field.name != 'status' %}<span class="required">*</span>{% endif %}</label>
                             </td>
                             {% if field.field == form.fields.subscribe %}
                                 <td class="subscribe" colspan="2">

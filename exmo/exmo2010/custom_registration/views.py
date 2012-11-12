@@ -17,7 +17,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
-from django.shortcuts import render_to_response
+from django.http import HttpResponse
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Context, Template
 from django.utils.http import base36_to_int
 from django.core.urlresolvers import reverse
@@ -31,9 +32,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
-from registration.views import register
 from exmo2010.custom_registration.forms import SetPasswordForm
+from exmo2010.custom_registration.forms import RegistrationFormFull
+from exmo2010.custom_registration.forms import RegistrationFormShort
 from exmo2010.forms import OrgUserInfoForm
+from registration.backends import get_backend
 
 
 @never_cache
@@ -76,42 +79,15 @@ def password_reset_confirm(request, uidb36=None, token=None,
         context_instance=RequestContext(request, current_app=current_app))
 
 
-def reg_finish(request):
-    """
-    Страница ввода доп. данных представителем орг-ии
-    по окончании регистрации.
-    """
-    if not request.user.is_authenticated():
-        raise Http404
-    profile = request.user.profile
-    if not profile.is_organization:
-        raise Http404
-    if profile.position or profile.phone:
-        raise Http404
-    if request.method == "POST":
-        form = OrgUserInfoForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            position = cd.get("position", "")
-            profile.position = position
-            phone = cd.get("phone", "")
-            profile.phone = phone
-            profile.save()
-            return HttpResponseRedirect(reverse("exmo2010:index"))
-    else:
-        form = OrgUserInfoForm()
-    return render_to_response('exmo2010/org_user_info.html',
-        {"form": form,},
-        context_instance=RequestContext(request))
-
-
 def register_test_cookie(request, backend, success_url=None, form_class=None,
                          disallowed_url='registration_disallowed',
                          template_name='registration/registration_form.html',
                          extra_context=None):
     """
-    Проверяет работу cookie и возвращает стандартную вью для регистрации.
-    Или отправляет на страницу с ошибкой.
+    Регистрация пользователя.
+    Создано основе стандартного представления register из django-registration
+    путем добавления в начале проверки включенности cookies в браузере,
+    и фокусов с формой в зависимости от статуса регистрирующегося.
     """
     if request.method == 'POST':
         if request.session.test_cookie_worked():
@@ -120,12 +96,39 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
             return render_to_response('cookies.html', RequestContext(request))
 
     request.session.set_test_cookie()
-    return register(request,
-        backend,
-        success_url, form_class,
-        disallowed_url,
-        template_name,
-        extra_context)
+
+    backend = get_backend(backend)
+    if not backend.registration_allowed(request):
+        return redirect(disallowed_url)
+
+    if request.method == 'POST':
+        status = int(request.POST.get("status", u"0"))
+        if status == 1:  # интересующийся гражданин.
+            form = RegistrationFormShort(data=request.POST,
+                files=request.FILES)
+        else:  # представитель организации.
+            form = RegistrationFormFull(data=request.POST, files=request.FILES)
+
+        if form.is_valid():
+            new_user = backend.register(request, **form.cleaned_data)
+            if success_url is None:
+                to, args, kwargs = backend.post_registration_redirect(request,
+                    new_user)
+                return redirect(to, *args, **kwargs)
+            else:
+                return redirect(success_url)
+    else:
+        form = RegistrationFormFull()
+
+    if extra_context is None:
+        extra_context = {}
+    context = RequestContext(request)
+    for key, value in extra_context.items():
+        context[key] = callable(value) and value() or value
+
+    return render_to_response(template_name,
+        {'form': form},
+        context_instance=context)
 
 
 def login_test_cookie(request, template_name='registration/login.html',

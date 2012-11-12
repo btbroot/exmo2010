@@ -123,18 +123,28 @@ class CustomBackend(object):
         if subscribe:
             user_profile.subscribe = subscribe
             up_changed = True
-        invitation_code = kwargs.get("invitation_code")
-        if invitation_code:
-            try:
-                organization = Organization.objects.get(
-                    inv_code=invitation_code)
-            except ObjectDoesNotExist:
-                pass
-            else:
-                og_name = UserProfile.organization_group
-                og = Group.objects.get(name=og_name)
-                new_user.groups.add(og)
-                user_profile.organization.add(organization)
+        status = int(kwargs.get("status"))
+        if status == 1:  # представитель организации.
+            position = kwargs.get("position")
+            if position:
+                user_profile.position = position
+                up_changed = True
+            phone = kwargs.get("phone")
+            if phone:
+                user_profile.phone = phone
+                up_changed = True
+            invitation_code = kwargs.get("invitation_code")
+            if invitation_code:
+                try:
+                    organization = Organization.objects.get(
+                        inv_code=invitation_code)
+                except ObjectDoesNotExist:
+                    pass
+                else:
+                    og_name = UserProfile.organization_group
+                    og = Group.objects.get(name=og_name)
+                    new_user.groups.add(og)
+                    user_profile.organization.add(organization)
         if up_changed:
             user_profile.save()
         signals.user_registered.send(sender=self.__class__,
@@ -198,7 +208,4 @@ class CustomBackend(object):
         account activation.
         
         """
-        if user.profile.is_organization:
-            return 'exmo2010:registration_finish', (), {}
-        else:
-            return 'exmo2010:index', (), {}
+        return 'exmo2010:index', (), {}
