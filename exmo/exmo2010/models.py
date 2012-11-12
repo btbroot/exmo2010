@@ -1032,6 +1032,33 @@ class Claim(models.Model):
         permissions = (("view_claim", "Can view claim"),)
 
 
+class Clarification(models.Model):
+    """
+    Модель уточнений, по наличию даты закрытия определяется
+    закрыто уточнение или нет.
+    """
+    score = models.ForeignKey(Score, verbose_name=_('score'))
+    open_date = models.DateTimeField(auto_now_add=True,
+                                     verbose_name=_('clarification open'))
+    close_date = models.DateTimeField(null=True,
+                                      blank=True,
+                                      verbose_name=_('clarification close'))
+    comment = models.TextField(blank=True,
+                               verbose_name=_('comment'))
+    creator = models.ForeignKey(User,
+                                verbose_name=_('creator'),
+                                related_name='clarification_creator')
+
+    def __unicode__(self):
+        return _('clarification for %s from %s') % (self.score, self.creator)
+
+    class Meta:
+        permissions = (("view_clarification", "Can view clarification"),)
+
+    @property
+    def recipient(self):
+        return self.score.task.user
+
 
 def openness_helper(score):
     """
