@@ -26,7 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from registration import signals
 from registration.models import RegistrationProfile
 
-from exmo2010.custom_registration.forms import RegistrationForm
+from exmo2010.custom_registration.forms import RegistrationFormFull
 from exmo2010.models import UserProfile, Organization
 
 
@@ -192,7 +192,7 @@ class CustomBackend(object):
         Return the default form class used for user registration.
         
         """
-        return RegistrationForm
+        return RegistrationFormFull
 
     def post_registration_redirect(self, request, user):
         """
