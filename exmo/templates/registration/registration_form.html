@@ -26,7 +26,8 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/registration.css"/>
 {% endblock %}
 
-{% block extrahead %}{{ block.super }}
+{% block extrahead %}
+    {{ block.super }}
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -55,62 +56,108 @@
 {% block content %}
     <h1>{% trans 'Registration' %}</h1>
     {% if request.user.is_authenticated %}
-        <p>{% trans 'You are already logged in' %}.</p>
+        <p>
+            {% trans 'You are already logged in' %}.
+        </p>
         {% url exmo2010:auth_logout as auth_logout_url %}
-        <p>{% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
+        <p>
+            {% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.
+        </p>
     {% else %}
         <p>{% trans 'In order to log in the system, please register first.' %}</p>
         <div id="content-main">
             <form action="" method="post">
                 {% csrf_token %}
                 <noscript>
-                    <ul class="errorlist">
+                    <ul class="form-errors">
                         <li>{% trans "In order for site to work correctly, turn Javascript in browser's settings." %}</li>
                     </ul>
                 </noscript>
 
                 {% if form.non_field_errors %}
-                <ul class="errorlist">
+                <ul class="form-errors">
                     {% for error in form.non_field_errors %}
                         <li>{{ error }}</li>
                     {% endfor %}
                 </ul>
                 {% endif %}
 
+                {% if form.errors %}
+                <ol class="form-errors">
+                {% endif %}
+                {% for field in form %}
+                    {% if field.errors %}
+                    <li id="id_err_{{ field.name }}">
+                        {% for error in field.errors %}
+                        <span class="form-error">
+                            {% if error == required_error %}
+                                {{ field.label }}
+                                {% trans 'is required field' %}.
+                            {% else %}
+                                {{ error }}
+                            {% endif %}
+                        </span>
+                        {% endfor %}
+                    </li>
+                {% endif %}
+                {% endfor %}
+                {% if form.errors %}
+                </ol>
+                {% endif %}
+
                 <table class="table-registration">
                     <tbody>
                     {% for field in form %}
-                        {% if field.errors %}
-                            <tr id="id_err_{{ field.name }}">
-                                <td colspan="3">
-                                    {% for error in field.errors %}
-                                        <span class="form-error">{{ error }}</span>{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        {% endif %}
+
+                        {% if field.field != form.fields.subscribe %}
                         <tr id="id_row_{{ field.name }}">
                             <td class="label-registration">
-                                <label>{{ field.field.label }}{% if field.field.required and field.name != 'status' %}<span class="required">*</span>{% endif %}</label>
+                                <label>
+                                    {{ field.field.label }}{% if field.field.required and field.name != 'status' %}<span class="required">*</span>{% endif %}
+                                </label>
                             </td>
-                            {% if field.field == form.fields.subscribe %}
-                                <td class="subscribe" colspan="2">
-                                    {{ field }} {{ field.help_text }}
-                                </td>
-                            {% else %}
-                                <td>
-                                    {{ field }}
-                                </td>
-                                <td class="help-text-registration">
-                                    {{ field.help_text }}
-                                </td>
+                            <td>
+                                {{ field }}
+                            </td>
+                            {% if field.field != form.fields.first_name and field.field != form.fields.patronymic and field.field != form.fields.last_name  %}
+                            <td class="help-text-registration{% if field.help_text %} help-text{% endif %}">
+                                {{ field.help_text }}
+                            </td>
+                            {% endif %}
+                            {% if field.field == form.fields.first_name %}
+                            <td class="help-text-registration help-text" rowspan="3">
+                                {% trans 'Enter your first name, patronymic, and last name in order the system can address you with it' %}
+                            </td>
                             {% endif %}
                         </tr>
+                        {% endif %}
                     {% endfor %}
+                        <tr id="id_row_required">
+                            <td>
+                            </td>
+                            <td colspan="2">
+                                <span class="required">*</span> {% trans "required fields" %}
+                            </td>
+                        </tr>
+                        <tr id="id_row_{{ form.subscribe.name }}">
+                            <td class="label-registration">
+                                <label>
+                                    {{ form.subscribe.label }}{% if form.subscribe.required %}<span class="required">*</span>{% endif %}
+                                </label>
+                            </td>
+                            <td class="subscribe" colspan="2">
+                                {{ form.subscribe }} {{ form.subscribe.help_text }}
+                            </td>
+                        </tr>
+                        <tr id="id_row_submit">
+                            <td>
+                            </td>
+                            <td colspan="2">
+                                <input type="submit" value="{% trans 'Register' %}"/>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-                <p><span class="required">*</span> {% trans "required fields" %}</p>
-                <input type="submit" value="{% trans 'Register' %}"/>
             </form>
         </div>
         <script type="text/javascript">

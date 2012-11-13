@@ -1,17 +1,41 @@
 .table-registration td
 {
     vertical-align: middle;
+    border-bottom-color: #fff;
+    padding: 4px 6px;
+    font-size: 13px;
+    font-family: Arial;
+    line-height: 18px;
+}
+
+.table-registration td:first-child
+{
+    text-align: right;
+    width: 175px;
 }
 
 .label-registration label
 {
-    font-weight: bold;
+    color: #333;
+}
+
+td input[type="text"]
+{
+    width: 300px;
+    font-size: 13px;
+}
+
+td select
+{
+    width: 308px;
+    font-size: 13px;
 }
 
 .table-registration ul
 {
     padding-left: 0;
 }
+
 .table-registration ul > li
 {
     list-style: none;
@@ -22,9 +46,10 @@
     color: red;
 }
 
-.subscribe
+td.subscribe
 {
     padding-top: 9px;
+    padding-bottom: 9px;
 }
 
 .subscribe input
@@ -33,7 +58,46 @@
     bottom: 2px;
 }
 
-.form-error
+.help-text
 {
-    color: red;
+    background-color: #f6f6f6;
+}
+
+.form-errors
+{
+    margin-left: 5px;
+    padding-left: 28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #fecdcd;
+    border: #fe9898 1px solid;
+    color: #000000;
+}
+
+ul.form-errors
+{
+    padding-left: 10px;
+}
+
+ul.form-errors li
+{
+    list-style: none;
+}
+
+.form-errors li
+{
+    padding-left: 0px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+
+    font-size: 13px;
+    font-family: Arial;
+}
+
+span.form-error
+{
+    font-size: 13px;
+    font-family: Arial;
 }

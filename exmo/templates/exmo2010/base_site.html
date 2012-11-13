@@ -34,6 +34,9 @@
 <h1 id="site-name" style="background-color: #3C78A7; color: white;">{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
 {% endblock %}
 
+{% block breadcrumbs %}
+{% endblock %}
+
 {% block nav-global %}
 {% admin_tools_render_menu %}
 {% endblock %}

@@ -237,7 +237,7 @@ msgstr "Для установки нового пароля необходимо
 #: exmo/exmo2010/forms.py:354 exmo/exmo2010/custom_registration/forms.py:78
 #: exmo/exmo2010/custom_registration/forms.py:114
 msgid "Password contains unallowed characters. Please use only latin letters and digits."
-msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы и цифры."
+msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы  и цифры - заменить на Пароль содержит недопустимые символы. Разрешены только латинские буквы (A-Z, a-z) и цифры (0-9)."
 
 #: exmo/exmo2010/forms.py:366 exmo/exmo2010/models.py:382
 #: exmo/exmo2010/custom_registration/forms.py:64
@@ -756,7 +756,7 @@ msgstr "Добро пожаловать"
 #: exmo/templates/registration/registration_form.html:42
 #: exmo/templates/user_dashboard/modules/quicklinks.html:29
 msgid "Register"
-msgstr "Регистрация"
+msgstr "Зарегистрироваться"
 
 #: exmo/exmo2010/dashboard/menu.py:66
 #: exmo/templates/registration/login.html:77
@@ -2307,6 +2307,14 @@ msgstr "Для получения расширенного доступа к с�
 msgid "required fields"
 msgstr "обязательны для заполнения"
 
+#: exmo/templates/registration/registration_form.html:133
+msgid "Enter your first name, patronymic, and last name in order the system can address you with it"
+msgstr "Введите имя, отчетчество и фамилию, чтобы мы знали, как к вам обращаться, а также, в случае необходимости, для проверки являетесь ли вы сотрудником организации, которую представляете"
+
+#: exmo/templates/registration/registration_form.html:98
+msgid "is required field"
+msgstr "является обязательным полем"
+
 #: exmo/templates/user_dashboard/dashboard.html:78
 msgid "Modules"
 msgstr "Модули"
@@ -2354,7 +2362,29 @@ msgid "E-mail"
 msgstr "Электронная почта"
 
 msgid "Required to get access to your organization scores"
-msgstr "Введите для получения доступа к оценкам своей организации"
+msgstr "Необходим для получения доступа к оценкам своей организации"
 
 msgid "Submitted invitation code does not exist. Please enter correct one"
 msgstr "Код приглашения, который вы ввели, не существует. Введите корректный код приглашения"
+
+#: core/validators.py:138 forms/fields.py:449
+msgid "Enter a valid e-mail address."
+msgstr "Введите корректный адрес электронной почты."
+
+#: custom_registration/forms.py:103
+#, python-format
+msgid ""
+"Ensure invitation code has at least %(limit_value)d characters (it has %"
+"(show_value)d)."
+msgstr ""
+"Код приглашения должен содержать не менее %(limit_value)d символов "
+"(сейчас %(show_value)d)."
+
+#: custom_registration/forms.py:109
+#, python-format
+msgid ""
+"Ensure invitation code has at most %(limit_value)d characters (it has %"
+"(show_value)d)."
+msgstr ""
+"Код приглашения должен содержать не более %(limit_value)d символов "
+"(сейчас %(show_value)d)."

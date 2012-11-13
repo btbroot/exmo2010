@@ -24,6 +24,7 @@ from django.utils.http import base36_to_int
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+from django.forms.fields import Field
 from django.views.csrf import CSRF_FAILRE_TEMPLATE
 from django.middleware.csrf import REASON_NO_CSRF_COOKIE
 from django.middleware.csrf import REASON_NO_COOKIE, REASON_NO_REFERER
@@ -122,6 +123,9 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
 
     if extra_context is None:
         extra_context = {}
+
+    extra_context.update({'required_error': Field.default_error_messages['required']})
+
     context = RequestContext(request)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
