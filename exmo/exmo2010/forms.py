@@ -36,6 +36,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
+from django.core.exceptions import ObjectDoesNotExist
 from exmo2010.widgets import TagAutocomplete
 from annoying.decorators import autostrip
 
@@ -386,7 +387,8 @@ class QuestionnaireDynForm(forms.Form):
             elif q.qtype == 2:
                 self.fields['q_%s' % q.pk] = forms.ModelChoiceField(
                     label=q.question, help_text=q.comment, empty_label=None,
-                    required=False, queryset=q.answervariant_set.order_by('-pk'),
+                    required=False,
+                    queryset=q.answervariant_set.order_by('-pk'),
                     widget=forms.RadioSelect(attrs={'class': 'aqchoice',}))
 
     def clean(self):
@@ -395,21 +397,25 @@ class QuestionnaireDynForm(forms.Form):
             if answ[0].startswith("q_") and not answ[1]\
                and self.task and self.task.approved:
                 raise forms.ValidationError(_('Cannot delete answer for '
-                                              'approved task. Edit answer instead.'))
+                                      'approved task. Edit answer instead.'))
         return cleaned_data
+
 
 class EmailReadonlyWidget(forms.Widget):
     def render(self, name, value=" ", attrs=None):
-        html = '<p id="id_%(name)s" name="%(name)s"> %(value)s </p>' % {'name': name,
-                                                                        'value': value}
+        html = '<p id="id_%(name)s" name="%(name)s">%(value)s</p>' % \
+               {'name': name, 'value': value}
         return mark_safe(html)
 
-class BaseUserSettingsForm(forms.Form):
+
+@autostrip
+class SettingsPersInfForm(forms.Form):
     """
-    Базовая форма настроек пользователя."""
-    email = forms.EmailField(label=_("E-mail"),
-        widget=EmailReadonlyWidget,
-        required=False)
+    Форма для блока "Личная информация" страницы настроек пользователя.
+    Версия для пользователя, не являющегося представителем организации.
+    """
+    # required=False у email потому, что не предполагается сабмит этого поля
+    # из-за кастомного виджета.
     first_name = forms.CharField(label=_("First name"),
         widget=forms.TextInput(attrs={"maxlength": 14}),
         required=False, max_length=14)
@@ -419,91 +425,105 @@ class BaseUserSettingsForm(forms.Form):
     last_name = forms.CharField(label=_("Last name"),
         widget=forms.TextInput(attrs={"maxlength": 30}),
         required=False, max_length=30)
-    old_password = forms.CharField(label=_("Current password"),
+
+
+@autostrip
+class SettingsPersInfFormFull(SettingsPersInfForm):
+    """
+    Форма для блока "Личная информация" страницы настроек пользователя.
+    Версия для пользователя, являющегося представителем организации.
+    """
+    position = forms.CharField(label=_("Seat"),
+        widget=forms.TextInput(attrs={"maxlength": 48}),
+        required=False, max_length=48)
+    phone = forms.CharField(label=_("Phone"),
+        widget=forms.TextInput(attrs={"maxlength": 30}),
+        required=False, max_length=30)
+
+
+@autostrip
+class SettingsInvCodeForm(forms.Form):
+    """
+    Форма для блока "Код приглашения" страницы настроек пользователя.
+    """
+    invitation_code = forms.CharField(label=_("New code"),
+        widget=forms.TextInput(attrs={"maxlength": 6}),
+        max_length=6, min_length=6)
+
+    def clean_invitation_code(self):
+        invitation_code = self.cleaned_data.get("invitation_code")
+        try:
+            organization = Organization.objects.get(inv_code=invitation_code)
+        except ObjectDoesNotExist:
+            raise forms.ValidationError("")  # Текст ошибки не нужен.
+        else:
+            return invitation_code
+
+
+class SettingsChPassForm(forms.Form):
+    """
+    Форма для блока "Сменить пароль" страницы настроек пользователя.
+    """
+    old_password = forms.CharField(label=_("Old password"),
         widget=forms.PasswordInput(attrs={"maxlength": 24},
-            render_value=False), required=False)
+            render_value=True), required=False)
     new_password = forms.CharField(label=_("New password"),
         widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
-        required=False)
-    subscribe = forms.BooleanField(label="",
-        help_text=_("Subscribe to news e-mail notification"), required=False)
-
-    def clean(self):
-        cd = self.cleaned_data
-        email = cd.get("email")
-        new_password = cd.get("new_password")
-        # Требуется текущий пароль для смены email.
-        if email and email != self.user.email:
-            if not self.user.check_password(cd.get("old_password")):
-                raise forms.ValidationError(
-                    _("Current password required to change e-mail."))
-            # Требуется текущий пароль для установки нового.
-        if (new_password and
-            not self.user.check_password(cd.get("old_password"))):
-            raise forms.ValidationError(
-                _("Current password required to set the new one."))
-        return cd
-
-    def clean_new_password(self):
-        """Проверка пароля на наличие недопустимых символов."""
-        password = self.cleaned_data.get('new_password', '')
-        for char in password:  # Проверять на наличие пароля необязательно.
-            if char not in PASSWORD_ALLOWED_CHARS:
-                raise forms.ValidationError(_("Password contains unallowed "
-                                              "characters. Please use only latin letters and digits."))
-        return password
+            required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(BaseUserSettingsForm, self).__init__(*args, **kwargs)
+        super(SettingsChPassForm, self).__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        if not self.user.check_password(self.cleaned_data.get("old_password")):
+            raise forms.ValidationError(_("Failed to change password: "
+                                          "submitted wrong current password"))
+
+    def clean_new_password(self):
+        """Проверка пароля на наличие недопустимых символов."""
+        new_password = self.cleaned_data.get('new_password')
+        if not new_password:
+            # Ставим заведомо недопустимый символ.
+            new_password = "@"
+        for char in new_password:  # Проверять на наличие пароля необязательно.
+            if char not in PASSWORD_ALLOWED_CHARS:
+                raise forms.ValidationError(_("Failed to change password: "
+                                              "it can contain only latin "
+                                              "characters (A-Z, a-z) and "
+                                              "digits (0-9)"))
+        return new_password
 
 
-@autostrip
-class OrdinaryUserSettingsForm(BaseUserSettingsForm):
-    """Форма настроек обычного пользователя."""
-    invitation_code = forms.CharField(label=_("Invitation code"),
-        widget=forms.TextInput(attrs={"maxlength": 6}),
-        required=False, max_length=6, min_length=6)
+class SettingsSendNotifForm(forms.Form):
+    """
+    Форма для блока "Рассылка уведомлений" страницы настроек пользователя.
+    Версия для пользователя, не являющегося представителем организации.
+    """
+    subscribe = forms.BooleanField(label="",
+        help_text=_("Subscribe to news e-mail notification"), required=False)
 
 
-@autostrip
-class OurUserSettingsForm(BaseUserSettingsForm):
-    """Форма настроек нашего сотрудника."""
+class SettingsSendNotifFormFull(SettingsSendNotifForm):
+    """
+    Форма для блока "Рассылка уведомлений" страницы настроек пользователя.
+    Версия для пользователя, являющегося представителем организации.
+    """
     comment_notification_type = forms.ChoiceField(
         choices=COMMENT_NOTIFICATION_CHOICES,
-        label =_('Comment notification'), required = False)
+        label=_('Comment notification'))
     comment_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
         required=False)
-    notify_on_my_comments = forms.ChoiceField(
-        choices=YES_NO_CHOICES, label=_('Send to me my comments'),
-        required = False, widget = forms.RadioSelect())
     score_notification_type = forms.ChoiceField(
         choices=SCORE_CHANGE_NOTIFICATION_CHOICES,
-        label=_('Score change notification'), required = False)
+        label=_('Score change notification'))
     score_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
         required=False)
+    notify_on_my_comments = forms.BooleanField(label="",
+        help_text=_("Send to me my comments"), required = False)
 
-
-@autostrip
-class OrgUserSettingsForm(OurUserSettingsForm):
-    """Форма настроек представителя организации."""
-    position = forms.CharField(label=_("Seat"),
-        widget=forms.TextInput(attrs={"maxlength": 48}),
-        required=False, max_length=48)
-    phone = forms.CharField(label=_("Phone"),
-        widget=forms.TextInput(attrs={"maxlength": 30}),
-        required=False, max_length=30)
-
-
-@autostrip
-class OrgUserInfoForm(forms.Form):
-    """Форма ввода доп. данных представителя организации."""
-    position = forms.CharField(label=_("Seat"),
-        widget=forms.TextInput(attrs={"maxlength": 48}),
-        required=False, max_length=48)
-    phone = forms.CharField(label=_("Phone"),
-        widget=forms.TextInput(attrs={"maxlength": 30}),
-        required=False, max_length=30)
+    def __init__(self, *args, **kwargs):
+        super(SettingsSendNotifFormFull, self).__init__(*args, **kwargs)
 
 
 class ParameterTypeForm(forms.ModelForm):

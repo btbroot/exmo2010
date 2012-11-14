@@ -36,7 +36,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from exmo2010.custom_registration.forms import SetPasswordForm
 from exmo2010.custom_registration.forms import RegistrationFormFull
 from exmo2010.custom_registration.forms import RegistrationFormShort
-from exmo2010.forms import OrgUserInfoForm
 from registration.backends import get_backend
 
 

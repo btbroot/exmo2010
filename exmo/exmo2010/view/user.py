@@ -16,8 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.forms import OrgUserSettingsForm, OrdinaryUserSettingsForm
-from exmo2010.forms import OurUserSettingsForm
+from exmo2010.forms import SettingsPersInfForm, SettingsPersInfFormFull
+from exmo2010.forms import SettingsInvCodeForm, SettingsChPassForm
+from exmo2010.forms import SettingsSendNotifForm, SettingsSendNotifFormFull
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User, Group
 from django.views.decorators.csrf import csrf_protect
@@ -32,127 +33,187 @@ from exmo2010.models import Organization, UserProfile
 
 def settings(request):
     """Страница настроек пользователя."""
-    success = False
     if not request.user.is_authenticated():
         raise Http404
+
     user = request.user
     profile = user.get_profile()
-    if profile.is_internal():  # Наш сотрудник.
-        form_class = OurUserSettingsForm
-    elif profile.is_organization:
-        form_class = OrgUserSettingsForm
+    # Сохраняем is_organization , чтобы не обращаться многократно к базе
+    # за одним и тем же.
+    if profile.is_organization:
+        is_organization = True
     else:
-        form_class = OrdinaryUserSettingsForm
+        is_organization = False
+
+    # Маркеры того, что форма уже создана.
+    pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = \
+    send_notif_form_ready = False
+    # Ошибки и сообщения об успехе операций.
+    # Сообщение об успехе при сабмите формы с личными данными.
+    pers_inf_form_mess = False
+    # Сообщение об успехе при сабмите формы с кодом приглашения.
+    inv_code_form_mess = False
+    # Сообщение об ошибке при сабмите формы с кодом приглашения.
+    inv_code_form_err = ""
+    # Сообщение об успехе при сабмите формы смены пароля.
+    ch_pass_form_mess = False
+    # Сообщение об ошибке при сабмите формы смены пароля.
+    ch_pass_form_err = ""
+    # Сообщение об успехе при сабмите формы настроек уведомлений.
+    send_notif_form_mess = False
     if request.method == "POST":
-        form = form_class(request.POST, user=user)
-        if form.is_valid():
-            cd = form.cleaned_data
-            # Поля, присутствующие у всех.
-            first_name = cd.get("first_name", "")
-            patronymic = cd.get("patronymic", "")
-            user.first_name = "%s %s".strip() % (first_name, patronymic)
-            user.last_name = cd.get("last_name", "")
-            subscribe = cd.get("subscribe", False)
-            profile.subscribe = subscribe
-            new_password = cd.get("new_password")
-            if new_password:
-                user.set_password(new_password)
-            # Поля, присутствующие у наших внутренних пользователей
-            # и представителей организаций.
-            if profile.is_internal() or profile.is_organization:
-                cnt = cd.get("comment_notification_type")
-                if not cnt:
-                    cnt = 0
-                else:
-                    cnt = int(cnt)
-                nmc = cd.get("notify_on_my_comments")
-                try:
-                    nmc = int(nmc)
-                except (ValueError, TypeError):
-                    nmc = 0
-                nmc = bool(nmc)
-                comment_pref = {"type": cnt, "self": nmc}
-                if cnt == 2:
-                    cnd = cd.get("comment_notification_digest", 1)
-                    if not cnd:
-                        cnd = 1
-                    else:
-                        cnd = int(cnd)
-                    comment_pref["digest_duratation"] = cnd
-                profile.notify_comment_preference = comment_pref
-
-                snt = cd.get("score_notification_type")
-                if not snt:
-                    snt = 0
-                else:
-                    snt = int(snt)
-                score_pref = {"type": snt}
-                if snt == 2:
-                    snd = cd.get("score_notification_digest", 1)
-                    if not snd:
-                        snd = 1
-                    else:
-                        snd = int(snd)
-                    score_pref["digest_duratation"] = snd
-                profile.notify_score_preference = score_pref
-
-                if profile.is_organization:
-                    # Поля, присутствующие только у представителей организаций.
-                    position = cd.get("position", "")
-                    profile.position = position
-                    phone = cd.get("phone", "")
-                    profile.phone = phone
-            # Поля, присутствующие только у обычных пользователей (внешние, но
-            # не представители организаций).
+        # Засабмитили форму с личными данными.
+        if request.POST.has_key("first_name"):
+            if is_organization:
+                pers_inf_form = SettingsPersInfFormFull(request.POST)
             else:
-                invitation_code = cd.get("invitation_code", "")
-                if invitation_code:
-                    try:
-                        organization = Organization.objects.get(
-                            inv_code=invitation_code)
-                    except ObjectDoesNotExist:
-                        pass
-                    else:
-                        og_name = UserProfile.organization_group
-                        og = Group.objects.get(name=og_name)
-                        user.groups.add(og)
-                        profile.organization.add(organization)
-            profile.save()
-            user.save()
-            success = True
-    else:
-        initial_data = {}
-        if user.email:
-            initial_data["email"] = user.email
+                pers_inf_form = SettingsPersInfForm(request.POST)
+            if pers_inf_form.is_valid():
+                pers_inf_form_cd = pers_inf_form.cleaned_data
+                first_name = pers_inf_form_cd.get("first_name", "")
+                patronymic = pers_inf_form_cd.get("patronymic", "")
+                user.first_name = "%s %s".strip() % (first_name, patronymic)
+                user.last_name = pers_inf_form_cd.get("last_name", "")
+                if is_organization:
+                    position = pers_inf_form_cd.get("position", "")
+                    profile.position = position
+                    phone = pers_inf_form_cd.get("phone", "")
+                    profile.phone = phone
+                pers_inf_form_mess = True
+            pers_inf_form_ready = True
+        # Засабмитили форму с кодом приглашения.
+        elif request.POST.has_key("invitation_code"):
+            inv_code_form = SettingsInvCodeForm(request.POST)
+            if inv_code_form.is_valid():
+                inv_code_form_cd = inv_code_form.cleaned_data
+                invitation_code = inv_code_form_cd.get("invitation_code")
+                organization = Organization.objects.get(
+                    inv_code=invitation_code)
+                og = Group.objects.get(name=UserProfile.organization_group)
+                # Безопасно так делать, даже если он уже там.
+                user.groups.add(og)
+                profile.organization.add(organization)
+                inv_code_form_mess = "%s: %s" % (_("You are associated with"),
+                                 organization.name)
+            else:
+                inv_code_form_err = _("Submitted invitation code does not "
+                                      "exist")
+                inv_code_form_ready = True
+        # Засабмитили форму смены пароля.
+        elif request.POST.has_key("old_password"):
+            ch_pass_form = SettingsChPassForm(request.POST, user=user)
+            if ch_pass_form.is_valid():
+                ch_pass_form_cd = ch_pass_form.cleaned_data
+                new_password = ch_pass_form_cd.get("new_password")
+                user.set_password(new_password)
+                ch_pass_form_mess = _("Password changed")
+            else:
+                ch_pass_form_err = True
+                ch_pass_form_ready = True
+        # Засабмитили форму настроек уведомлений.
+        elif request.POST.has_key("subscribe"):
+            if is_organization:
+                send_notif_form = SettingsSendNotifFormFull(request.POST)
+            else:
+                send_notif_form = SettingsSendNotifForm(request.POST)
+            if send_notif_form.is_valid():
+                send_notif_form_cd = send_notif_form.cleaned_data
+                subscribe = send_notif_form_cd.get("subscribe", False)
+                profile.subscribe = subscribe
+                if is_organization:
+                    cnt = int(send_notif_form_cd.get(
+                        "comment_notification_type"))
+                    nmc = bool(send_notif_form_cd.get("notify_on_my_comments",
+                        False))
+                    comment_pref = {"type": cnt, "self": nmc}
+                    if cnt == 2:
+                        cnd = send_notif_form_cd.get(
+                            "comment_notification_digest", 1)
+                        if not cnd:
+                            cnd = 1
+                        else:
+                            cnd = int(cnd)
+                        comment_pref["digest_duratation"] = cnd
+                    profile.notify_comment_preference = comment_pref
+                    snt = int(send_notif_form_cd.get(
+                        "score_notification_type"))
+                    score_pref = {"type": snt}
+                    if snt == 2:
+                        snd = send_notif_form_cd.get(
+                            "score_notification_digest", 1)
+                        if not snd:
+                            snd = 1
+                        else:
+                            snd = int(snd)
+                        score_pref["digest_duratation"] = snd
+                    profile.notify_score_preference = score_pref
+            send_notif_form_mess = _("E-mail notification settings saved")
+            send_notif_form_ready = True
+        profile.save()
+        user.save()
+
+    # Создание форм при GET-запросе, а также прочих, кроме засабмиченой
+    # при POST-запросе.
+    if not pers_inf_form_ready:
+        pers_inf_form_indata = {}  # Для 1-й формы.
         first_name_parts = user.first_name.split()
         # Имя и отчество храним разделенными пробелом
         # в поле first_name модели User.
         if first_name_parts:
-            initial_data["first_name"] = first_name_parts[0]
+            pers_inf_form_indata["first_name"] = first_name_parts[0]
             if len(first_name_parts) > 1:
-                initial_data["patronymic"] = first_name_parts[1]
+                pers_inf_form_indata["patronymic"] = first_name_parts[1]
         if user.last_name:
-            initial_data["last_name"] = user.last_name
+            pers_inf_form_indata["last_name"] = user.last_name
+        if is_organization:
+            if profile.position:
+                pers_inf_form_indata["position"] = profile.position
+            if profile.phone:
+                pers_inf_form_indata["phone"] = profile.phone
+            pers_inf_form = SettingsPersInfFormFull(
+                initial=pers_inf_form_indata)
+        else:
+            pers_inf_form = SettingsPersInfForm(initial=pers_inf_form_indata)
+
+    if not inv_code_form_ready:
+        inv_code_form = SettingsInvCodeForm()
+
+    if not ch_pass_form_ready:
+        ch_pass_form = SettingsChPassForm(user=user)
+
+    if not send_notif_form_ready:
+        send_notif_form_indata = {}  # Для 4-й формы.
         if profile.subscribe:
-            initial_data["subscribe"] = profile.subscribe
-        if profile.is_internal() or profile.is_organization:
+            send_notif_form_indata["subscribe"] = profile.subscribe
+        if is_organization:
             score_pref = profile.notify_score_preference
             comment_pref = profile.notify_comment_preference
-            initial_data["comment_notification_type"] = comment_pref['type']
-            initial_data["comment_notification_digest"] = \
-                comment_pref['digest_duratation']
-            initial_data["notify_on_my_comments"] = int(comment_pref['self'])
-            initial_data["score_notification_type"] = score_pref['type']
-            initial_data["score_notification_digest"] = \
-                score_pref['digest_duratation']
-            if profile.is_organization:
-                if profile.position:
-                    initial_data["position"] = profile.position
-                if profile.phone:
-                    initial_data["phone"] = profile.phone
-        form = form_class(initial=initial_data, user=user)
+            send_notif_form_indata["comment_notification_type"] = \
+            comment_pref['type']
+            send_notif_form_indata["comment_notification_digest"] = \
+            comment_pref['digest_duratation']
+            send_notif_form_indata["score_notification_type"] = \
+            score_pref['type']
+            send_notif_form_indata["score_notification_digest"] = \
+            score_pref['digest_duratation']
+            send_notif_form_indata["notify_on_my_comments"] = \
+            comment_pref['self']
+            send_notif_form = SettingsSendNotifFormFull(
+                initial=send_notif_form_indata)
+        else:
+            send_notif_form = SettingsSendNotifForm(
+                initial=send_notif_form_indata)
+
     return render_to_response('exmo2010/user_settings.html',
-        {"form": form, "success": success},
+        {"email": user.email, "is_organization": is_organization,
+         "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
+         "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,
+         "pers_inf_form_mess": pers_inf_form_mess,
+         "inv_code_form_mess": inv_code_form_mess,
+         "ch_pass_form_mess": ch_pass_form_mess,
+         "send_notif_form_mess": send_notif_form_mess,
+         "inv_code_form_err": inv_code_form_err,
+         "ch_pass_form_err": ch_pass_form_err},
         context_instance=RequestContext(request))
 
 

@@ -2388,3 +2388,33 @@ msgid ""
 msgstr ""
 "Код приглашения должен содержать не более %(limit_value)d символов "
 "(сейчас %(show_value)d)."
+
+msgid "New code"
+msgstr "Новый код"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Apply password change"
+msgstr "Изменить пароль"
+
+msgid "Personal info changed successfully"
+msgstr "Изменения личной информации сохранены"
+
+msgid "You are associated with"
+msgstr "Сейчас вы привязаны к организации"
+
+msgid "Submitted invitation code does not exist"
+msgstr "Код приглашения, который вы ввели, не существует"
+
+msgid "Failed to change password: submitted wrong current password"
+msgstr "Изменить пароль не удалось: указан неверный существующий пароль"
+
+msgid "Failed to change password: it can contain only latin characters (A-Z, a-z) and digits (0-9)"
+msgstr "Изменить пароль не удалось: пароль может состоять только из латинских букв (A-Z, a-z) и цифр (0-9)"
+
+msgid "Password changed"
+msgstr "Пароль изменен на новый"
+
+msgid "E-mail notification settings saved"
+msgstr "Параметры рассылки уведомлений сохранены"
