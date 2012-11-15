@@ -115,7 +115,7 @@ def settings(request):
                 ch_pass_form_err = True
                 ch_pass_form_ready = True
         # Засабмитили форму настроек уведомлений.
-        elif request.POST.has_key("subscribe"):
+        elif request.POST.has_key("snf"):
             if is_internal or is_organization:
                 send_notif_form = SettingsSendNotifFormFull(request.POST)
             else:

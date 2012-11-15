@@ -500,6 +500,10 @@ class SettingsSendNotifForm(forms.Form):
     Форма для блока "Рассылка уведомлений" страницы настроек пользователя.
     Версия для пользователя, не являющегося представителем организации.
     """
+    # Скрытое поле, нужное для того, чтобы однозначно идентифицировать форму,
+    # т.к. при снятой галке у subscribe, django вообще не кладет
+    # это поле (subscribe) в POST.
+    snf = forms.IntegerField(widget=forms.HiddenInput)
     subscribe = forms.BooleanField(label="",
         help_text=_("Subscribe to news e-mail notification"), required=False)
 
