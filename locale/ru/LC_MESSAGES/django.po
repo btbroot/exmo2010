@@ -237,7 +237,7 @@ msgstr "Для установки нового пароля необходимо
 #: exmo/exmo2010/forms.py:354 exmo/exmo2010/custom_registration/forms.py:78
 #: exmo/exmo2010/custom_registration/forms.py:114
 msgid "Password contains unallowed characters. Please use only latin letters and digits."
-msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы  и цифры - заменить на Пароль содержит недопустимые символы. Разрешены только латинские буквы (A-Z, a-z) и цифры (0-9)."
+msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы (A-Z, a-z) и цифры (0-9)."
 
 #: exmo/exmo2010/forms.py:366 exmo/exmo2010/models.py:382
 #: exmo/exmo2010/custom_registration/forms.py:64

@@ -21,16 +21,12 @@
 {% load i18n %}
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
-    <style>
-        #id_email
-        {
-            margin-top: 1px;
-            margin-bottom: 5px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/settings.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/form_errors.css"/>
 {% endblock %}
-{% block extrahead %}{{ block.super }}
+
+{% block extrahead %}
+    {{ block.super }}
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/user_settings.js"></script>
 {% endblock %}
@@ -38,131 +34,185 @@
 {% block content %}
     <h1>{% trans 'Preferences' %}</h1>
     <p>{% trans 'Here you can change your account, password and notification settings.' %}</p>
+
     <h2>{% trans 'Personal info' %}</h2>
+
     {% if pers_inf_form_mess %}
-        <p style="background-color: #80E580;">{% trans 'Personal info changed successfully' %}</p>
+        <ul class="form-success">
+            <li>
+                {% trans 'Personal info changed successfully' %}
+            </li>
+        </ul>
     {% endif %}
+
+    {% include "exmo2010/helpers/form_errors.html" with form=pers_inf_form %}
+
     <form action="" method="post">
         {% csrf_token %}
-        <div>
-            <span class="fc_item_header">{% trans 'E-mail' %}</span>
-            <div>
-                <div class="fc_field_header">{{ email }}</div>
-            </div>
-
-            <span class="fc_item_header">{{ pers_inf_form.first_name.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ pers_inf_form.first_name }}</div>
-            </div>
-
-            <span class="fc_item_header">{{ pers_inf_form.patronymic.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ pers_inf_form.patronymic }}</div>
-            </div>
-
-            <span class="fc_item_header">{{ pers_inf_form.last_name.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ pers_inf_form.last_name }}</div>
-            </div>
-
-            {% if is_organization %}
-                <span class="fc_item_header">{{ pers_inf_form.position.label }}</span>
-                <div>
-                    <div class="fc_field_header">{{ pers_inf_form.position }}</div>
-                </div>
-
-                <span class="fc_item_header">{{ pers_inf_form.phone.label }}</span>
-                <div>
-                    <div class="fc_field_header">{{ pers_inf_form.phone }}</div>
-                </div>
-            {% endif %}
-            <input type="submit" value="{% trans 'Save' %}">
-        </div>
+        <table class="table-setings">
+            <tbody>
+                <tr>
+                    <td>
+                        {% trans 'E-mail' %}
+                    </td>
+                    <td>
+                        {{ email }}
+                    </td>
+                </tr>
+                {% for field in pers_inf_form %}
+                <tr>
+                    <td>
+                        {{ field.label_tag }}
+                    </td>
+                    <td>
+                        {{ field }}
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="{% trans 'Save' %}" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </form>
+
     <hr />
+
     <h2>{% trans 'Invitation code' %}</h2>
+
     {% if inv_code_form_mess %}
-        <p style="background-color: #80E580;">{{ inv_code_form_mess }}</p>
+        <ul class="form-success">
+            <li>
+                {{ inv_code_form_mess }}
+            </li>
+        </ul>
     {% endif %}
-    {% if inv_code_form_err %}
-        <p style="background-color: #FE9898;">{{ inv_code_form_err }}</p>
-    {% endif %}
+
+    {% include "exmo2010/helpers/form_errors.html" with extra_error=inv_code_form_err %}
+
     <form action="" method="post">
         {% csrf_token %}
-        <div>
-            <span class="fc_item_header">{{ inv_code_form.invitation_code.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ inv_code_form.invitation_code }}</div>
-            </div>
-            <input type="submit" value="{% trans 'Send' %}">
-        </div>
+        <table class="table-setings">
+            <tbody>
+            {% for field in inv_code_form %}
+                <tr>
+                    <td>
+                        <label for="id_{{ field.name }}">{{ field.label }}</label>
+                    </td>
+                    <td>
+                        {{ field }}
+                    </td>
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="{% trans 'Send' %}" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </form>
+
     <hr />
+
     <h2>{% trans 'Change password' %}</h2>
-    {% if ch_pass_form_err %}
-        <p style="background-color: #FE9898;">
-            {% if ch_pass_form.old_password.errors %}
-                {{ ch_pass_form.old_password.errors.0 }}
-            {% else %}
-                {% if ch_pass_form.new_password.errors %}
-                    {{ ch_pass_form.new_password.errors.0 }}
-                {% endif %}
-            {% endif %}
-        </p>
-    {% endif %}
+
+    {% include "exmo2010/helpers/form_errors.html" with form=ch_pass_form %}
+
     {% if ch_pass_form_mess %}
-        <p style="background-color: #80E580;">{{ ch_pass_form_mess }}</p>
+        <ul class="form-success">
+            <li>
+                {{ ch_pass_form_mess }}
+            </li>
+        </ul>
     {% endif %}
+
     <form action="" method="post">
         {% csrf_token %}
-        <div>
-            <span class="fc_item_header">{{ ch_pass_form.old_password.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ ch_pass_form.old_password }}</div>
-            </div>
-
-            <span class="fc_item_header">{{ ch_pass_form.new_password.label }}</span>
-            <div>
-                <div class="fc_field_header">{{ ch_pass_form.new_password }}</div>
-            </div>
-            <input type="submit" value="{% trans 'Apply password change' %}">
-        </div>
+        <table class="table-setings">
+            <tbody>
+            {% for field in ch_pass_form %}
+                <tr>
+                    <td>
+                        {{ field.label_tag }}
+                    </td>
+                    <td>
+                        {{ field }}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="{% trans 'Apply password change' %}" />
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </form>
+
     <hr />
+
     <h2>{% trans 'E-mail notifications' %}</h2>
+
     {% if send_notif_form_mess %}
-        <p style="background-color: #80E580;">{{ send_notif_form_mess }}</p>
+        <ul class="form-success">
+            <li>
+                {{ send_notif_form_mess }}
+            </li>
+        </ul>
     {% endif %}
+
+    {% include "exmo2010/helpers/form_errors.html" with form=send_notif_form %}
+
     <form action="" method="post">
         {% csrf_token %}
-        <div>
-            {% if is_internal or is_organization %}
-                <span class="fc_item_header">{{ send_notif_form.score_notification_type.label }}</span>
-                <div>
-                    <div class="fc_field_header">{{ send_notif_form.score_notification_type }}</div>
-                </div>
+        <table class="table-setings">
+            <tbody>
+                {% if is_internal or is_organization %}
+                <tr>
+                    <td>
+                        {{ send_notif_form.score_notification_type.label }}
+                    </td>
+                    <td>
+                        {{ send_notif_form.score_notification_type }}
+                        <span id="snd" class="fc_field_header">{{ send_notif_form.score_notification_digest }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{ send_notif_form.comment_notification_type.label }}
+                    </td>
+                    <td>
+                        {{ send_notif_form.comment_notification_type }}
+                        <span id="cnd" class="fc_field_header">{{ send_notif_form.comment_notification_digest }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        {{ send_notif_form.notify_on_my_comments }} {{ send_notif_form.notify_on_my_comments.help_text }}
+                    </td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td></td>
+                    <td>
+                        {{ send_notif_form.subscribe }} {{ send_notif_form.subscribe.help_text }}
+                    </td>
+                </tr>
 
-                <div>
-                    <div id="snd" class="fc_field_header">{{ send_notif_form.score_notification_digest }}</div>
-                </div>
-
-                <span class="fc_item_header">{{ send_notif_form.comment_notification_type.label }}</span>
-                <div>
-                    <div class="fc_field_header">{{ send_notif_form.comment_notification_type }}</div>
-                </div>
-
-                <div>
-                    <div id="cnd" class="fc_field_header">{{ send_notif_form.comment_notification_digest }}</div>
-                </div>
-
-                <div>
-                    <div class="fc_field_header">{{ send_notif_form.notify_on_my_comments }} {{ send_notif_form.notify_on_my_comments.help_text }}</div>
-                </div>
-            {% endif %}
-            <div>
-                <div class="fc_field_header">{{ send_notif_form.subscribe }} {{ send_notif_form.subscribe.help_text }}</div>
-            </div>
-            <input type="submit" value="{% trans 'Save' %}">
-        </div>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="{% trans 'Save' %}" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </form>
 {% endblock %}

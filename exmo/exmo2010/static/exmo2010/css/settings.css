@@ -1,0 +1,108 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+#id_email
+{
+    margin-top: 1px;
+    margin-bottom: 5px;
+}
+
+.form-success
+{
+    margin-left: 5px;
+    padding-left: 28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #d6f5d6;
+    border: #80e580 1px solid;
+    color: #000000;
+}
+
+ul.form-success
+{
+    padding-left: 28px;
+}
+
+ul.form-success li
+{
+    list-style: disc;
+}
+
+.form-success li
+{
+    padding-left: 0px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+
+    font-size: 13px;
+    font-family: Arial;
+}
+
+.table-setings td
+{
+    vertical-align: middle;
+    border-bottom-color: #fff;
+    padding: 4px 6px;
+    font-size: 13px;
+    font-family: Arial;
+    line-height: 18px;
+}
+
+.table-setings td:first-child
+{
+    text-align: right;
+    width: 215px;
+}
+
+.table-setings td input[type="text"], .table-setings td input[type="password"]
+{
+    width: 300px;
+    font-size: 13px;
+}
+
+.table-setings td > select
+{
+    width: 308px;
+    font-size: 13px;
+}
+
+.table-setings td span > select
+{
+    font-size: 13px;
+}
+
+.fc_field_header
+{
+    padding-left: 10px;
+}
+
+h2
+{
+    font-family: Verdana;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+hr
+{
+    margin-top: 12px;
+}
