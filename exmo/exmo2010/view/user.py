@@ -44,6 +44,10 @@ def settings(request):
         is_organization = True
     else:
         is_organization = False
+    if profile.is_internal():
+        is_internal = True
+    else:
+        is_internal = False
 
     # Маркеры того, что форма уже создана.
     pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = \
@@ -112,7 +116,7 @@ def settings(request):
                 ch_pass_form_ready = True
         # Засабмитили форму настроек уведомлений.
         elif request.POST.has_key("subscribe"):
-            if is_organization:
+            if is_internal or is_organization:
                 send_notif_form = SettingsSendNotifFormFull(request.POST)
             else:
                 send_notif_form = SettingsSendNotifForm(request.POST)
@@ -120,7 +124,7 @@ def settings(request):
                 send_notif_form_cd = send_notif_form.cleaned_data
                 subscribe = send_notif_form_cd.get("subscribe", False)
                 profile.subscribe = subscribe
-                if is_organization:
+                if is_internal or is_organization:
                     cnt = int(send_notif_form_cd.get(
                         "comment_notification_type"))
                     nmc = bool(send_notif_form_cd.get("notify_on_my_comments",
@@ -185,7 +189,7 @@ def settings(request):
         send_notif_form_indata = {}  # Для 4-й формы.
         if profile.subscribe:
             send_notif_form_indata["subscribe"] = profile.subscribe
-        if is_organization:
+        if is_internal or is_organization:
             score_pref = profile.notify_score_preference
             comment_pref = profile.notify_comment_preference
             send_notif_form_indata["comment_notification_type"] = \
@@ -205,7 +209,8 @@ def settings(request):
                 initial=send_notif_form_indata)
 
     return render_to_response('exmo2010/user_settings.html',
-        {"email": user.email, "is_organization": is_organization,
+        {"email": user.email,
+         "is_organization": is_organization, "is_internal": is_internal,
          "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
          "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,
          "pers_inf_form_mess": pers_inf_form_mess,

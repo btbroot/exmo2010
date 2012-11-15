@@ -136,7 +136,7 @@
     <form action="" method="post">
         {% csrf_token %}
         <div>
-            {% if is_organization %}
+            {% if is_internal or is_organization %}
                 <span class="fc_item_header">{{ send_notif_form.score_notification_type.label }}</span>
                 <div>
                     <div class="fc_field_header">{{ send_notif_form.score_notification_type }}</div>
