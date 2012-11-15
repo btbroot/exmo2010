@@ -33,6 +33,7 @@ from exmo2010.models import MonitoringStatus
 from exmo2010.models import Organization
 from exmo2010.models import UserProfile
 from django.contrib.auth.models import User
+from django.utils.translation import ungettext
 from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.contrib.admin import widgets
@@ -92,6 +93,10 @@ SCORE_CHOICES2 = (
     )
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
+
+ANSWER_TIME_CHOICES = [(d, ungettext('%(count)d day',
+    '%(count)d days', d) % {"count": d}) for d in range(1, 11)]
+
 
 from django.utils.html import escape
 def add_required_label_tag(original_function):
@@ -249,6 +254,7 @@ class MonitoringForm(forms.ModelForm):
         label=_('Add questionnaire'))
     class Meta:
         model = Monitoring
+        exclude = ('time_to_answer',)
 
     class Media:
         css = {
@@ -350,6 +356,10 @@ class MonitoringCommentStatForm(forms.Form):
     """
     Форма отчета по комментариям
     """
+    time_to_answer = forms.ChoiceField(
+        choices=ANSWER_TIME_CHOICES,
+        label = _('Maximum time to answer'))
+
     def __init__(self, *args, **kwargs):
         self.monitoring = kwargs.pop('monitoring', None)
         super(MonitoringCommentStatForm, self).__init__(*args, **kwargs)
@@ -359,11 +369,13 @@ class MonitoringCommentStatForm(forms.Form):
         Проверяем что поле начала периода взаимодействия в календаре заполнено
         """
         cleaned_data = self.cleaned_data
-        if not MonitoringStatus.objects.get(monitoring = self.monitoring, status = Monitoring.MONITORING_INTERACT).start:
-            raise forms.ValidationError(_('Monitoring interact start date is missing. Check your monitoring calendar'))
+        if not MonitoringStatus.objects.get(
+            monitoring = self.monitoring,
+            status = Monitoring.MONITORING_INTERACT).start:
+            raise forms.ValidationError(_('Monitoring interact start '
+                                          'date is missing. '
+                                          'Check your monitoring calendar'))
         return cleaned_data
-
-    limit = forms.IntegerField(min_value = 1, max_value = 10, label = _('time limit (in days)'), initial = 2)
 
 
 class QuestionnaireDynForm(forms.Form):

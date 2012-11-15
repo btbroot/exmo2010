@@ -120,6 +120,10 @@ class Monitoring(models.Model):
         default=MONITORING_PREPARE, verbose_name=_('status'))
     openness_expression = models.ForeignKey(OpennessExpression,
         default=8, verbose_name=_('openness expression'))
+    # Максимальное время ответа в днях.
+    time_to_answer = models.PositiveSmallIntegerField(
+        default=3,
+        verbose_name=_('Maximum time to answer'))
 
     def __unicode__(self):
         return '%s' % self.name

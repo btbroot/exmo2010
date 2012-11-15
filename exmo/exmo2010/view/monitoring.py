@@ -872,6 +872,7 @@ def monitoring_parameter_import(request, id):
 @csrf_protect
 def monitoring_comment_report(request, id):
     monitoring = get_object_or_404(Monitoring, pk=id)
+    time_to_answer = monitoring.time_to_answer
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
 
@@ -879,9 +880,13 @@ def monitoring_comment_report(request, id):
     from datetime import datetime
     from exmo2010.forms import MonitoringCommentStatForm
 
-    form = MonitoringCommentStatForm(monitoring=monitoring)
+    form = MonitoringCommentStatForm(
+        monitoring=monitoring,
+        initial= {'time_to_answer': time_to_answer})
 
-    start_date = MonitoringStatus.objects.get(monitoring=monitoring, status=Monitoring.MONITORING_INTERACT).start
+    start_date = MonitoringStatus.objects.get(
+        monitoring=monitoring,
+        status=Monitoring.MONITORING_INTERACT).start
     if not start_date:
         return render_to_response(
             "msg.html", {
@@ -889,11 +894,13 @@ def monitoring_comment_report(request, id):
             }, context_instance=RequestContext(request))
     end_date = datetime.today()
 
-    limit = 2
-    if request.method == "GET" and request.GET.__contains__('limit'):
+    if request.method == "GET" and request.GET.__contains__('time_to_answer'):
         form = MonitoringCommentStatForm(request.GET, monitoring=monitoring)
         if form.is_valid():
-            limit = form.cleaned_data['limit']
+            time_to_answer = int(form.cleaned_data['time_to_answer'])
+            if time_to_answer != monitoring.time_to_answer:
+                monitoring.time_to_answer = time_to_answer
+                monitoring.save()
 
     comments_without_reply = []
     fail_comments_without_reply = []
@@ -906,10 +913,14 @@ def monitoring_comment_report(request, id):
     active_iifd_person_stats = []
     iifd_all_comments = []
 
-    if request.user.has_perm('exmo2010.admin_monitoring', monitoring) or request.user.profile.is_expertA:
-        scores = Score.objects.filter(task__organization__monitoring=monitoring)
+    if (request.user.has_perm('exmo2010.admin_monitoring', monitoring) or
+        request.user.profile.is_expertA):
+        scores = Score.objects.filter(
+            task__organization__monitoring=monitoring)
     elif request.user.profile.is_expertB:
-        scores = Score.objects.filter(task__organization__monitoring=monitoring, task__user=request.user)
+        scores = Score.objects.filter(
+            task__organization__monitoring=monitoring,
+            task__user=request.user)
 
     if start_date:
         total_org = Organization.objects.filter(monitoring=monitoring)
@@ -917,31 +928,40 @@ def monitoring_comment_report(request, id):
         iifd_all_comments = commentModel.Comment.objects.filter(
             content_type__model='score',
             submit_date__gte=start_date,
-            object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring ),
-            user__in=User.objects.exclude(groups__name='organizations')).order_by('submit_date')
+            object_pk__in=Score.objects.filter(
+                task__organization__monitoring=monitoring),
+            user__in=User.objects.exclude(
+                groups__name='organizations')).order_by('submit_date')
 
         org_comments = commentModel.Comment.objects.filter(
             content_type__model='score',
             submit_date__gte=start_date,
             object_pk__in=scores,
-            user__in=User.objects.filter(groups__name='organizations')).order_by('submit_date')
+            user__in=User.objects.filter(
+                groups__name='organizations')).order_by('submit_date')
         org_all_comments=commentModel.Comment.objects.filter(
             content_type__model='score',
             submit_date__gte=start_date,
-            object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring),
-            user__in=User.objects.filter(groups__name='organizations')).order_by('submit_date')
+            object_pk__in=Score.objects.filter(
+                task__organization__monitoring=monitoring),
+            user__in=User.objects.filter(
+                groups__name='organizations')).order_by('submit_date')
 
-        active_organizations = set([Score.objects.get(pk=oco.object_pk).task.organization for oco in org_all_comments])
+        active_organizations = set([Score.objects.get(
+            pk=oco.object_pk).task.organization for oco in org_all_comments])
         for active_organization in active_organizations:
             active_org_comments_count = org_comments.filter(
-                object_pk__in=Score.objects.filter(task__organization__monitoring=monitoring,
+                object_pk__in=Score.objects.filter(
+                    task__organization__monitoring=monitoring,
                     task__organization=active_organization)).count()
 
-            active_organization_stats.append({'org': active_organization,
-                                              'comments_count': active_org_comments_count})
+            active_organization_stats.append(
+                {'org': active_organization,
+                 'comments_count': active_org_comments_count})
 
-        active_iifd_person_stats = User.objects.filter(comment_comments__pk__in=iifd_all_comments)\
-        .annotate(comments_count=Count('comment_comments'))
+        active_iifd_person_stats = User.objects.filter(
+            comment_comments__pk__in=iifd_all_comments).annotate(
+            comments_count=Count('comment_comments'))
 
 
     for org_comment in org_comments:
@@ -955,24 +975,28 @@ def monitoring_comment_report(request, id):
         for iifd_comment in iifd_comments:
             #check that comment from iifd comes after organization
             if iifd_comment.submit_date > org_comment.submit_date:
-                #iifd comment comes in limit
-                if workday_count(org_comment.submit_date, iifd_comment.submit_date) <= limit:
+                #iifd comment comes in time_to_answer
+                if workday_count(org_comment.submit_date,
+                                 iifd_comment.submit_date) <= time_to_answer:
                     #pass that this org_comment is with reply
                     flag = True
                     comments_with_reply.append(org_comment)
                     break
-                #iifd comment comes out of limit
-                elif workday_count(org_comment.submit_date, iifd_comment.submit_date) > limit:
+                #iifd comment comes out of time_to_answer
+                elif workday_count(org_comment.submit_date,
+                                   iifd_comment.submit_date) > time_to_answer:
                     #pass that this org_comment is with reply
                     flag = True
                     fail_comments_with_reply.append(org_comment)
                     break
                     #org comment is without comment from iifd
         if not flag:
-            #check limit
-            if limit-1 < workday_count(org_comment.submit_date.date(), end_date) <= limit:
+            #check time_to_answer
+            if time_to_answer-1 < workday_count(org_comment.submit_date.date(),
+                                       end_date) <= time_to_answer:
                 fail_soon_comments_without_reply.append(org_comment)
-            elif workday_count(org_comment.submit_date.date(), end_date) > limit:
+            elif workday_count(org_comment.submit_date.date(),
+                               end_date) > time_to_answer:
                 fail_comments_without_reply.append(org_comment)
             else:
                 comments_without_reply.append(org_comment)
@@ -992,7 +1016,7 @@ def monitoring_comment_report(request, id):
         'total_org': total_org.count(),
         'reg_org': reg_org.count(),
         'active_iifd_person_stats': active_iifd_person_stats,
-        'limit': limit,
+        'time_to_answer': time_to_answer,
         'monitoring': monitoring,
         'title': _('Comment report for %(monitoring)s') % { 'monitoring': monitoring,},
         'media': CORE_MEDIA,

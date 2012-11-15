@@ -20,118 +20,137 @@
 {% endcomment %}
 {% load i18n adminmedia check_object_permission %}
 {% block extrahead %}{{ block.super }}
-    {% url django.views.i18n.javascript_catalog as jsi18nurl %}
-    <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
-    <script type="text/javascript">
-        function toggle(el) {
-            django.jQuery('#' + el).toggle();
-        }
-    </script>
-    {{ media }}
+{% url django.views.i18n.javascript_catalog as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+<script type="text/javascript">
+function toggle(el) {
+    django.jQuery('#' + el).toggle();
+}
+</script>
+{{ media }}
 {% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <style>
+        #{{ form.time_to_answer.name }}-label
+        {
+            padding-right: 10px;
+            font-weight: bold !important;
+            color: #333;
+        }
+
+        #report-submit
+        {
+            padding-left: 10px;
+        }
+    </style>
+{% endblock %}
 {% block breadcrumbs %}
-    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-        {{ title }}
-    </div>
+<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+{{ title }}
+</div>
 {% endblock %}
 
 {% block pretitle %}
-    {% include "exmo2010/monitoring_utility.html" %}
+{% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}
 
 {% block content %}
-    <div id=monitoring_comment_stat_form>
-        <form method="get" action="">
-            {{ form.as_p }}
-            <p><input type="submit" /><input class="button" type="reset" /></p>
-        </form>
-    </div>
-    {% if org_comments %}
-        <div id="monitoring_comment_stat">
-            <h2>{% trans 'Report from' %} {{ start_date }} -- {{ end_date }}</h2>
-            <h3>{% trans 'Statistics' %}</h3>
-            <ul>
-                <li>{% trans 'Total organizations' %}: {{ total_org }}</li>
-                <li>{% trans 'Registered organizations' %}: {{ reg_org }}</li>
-                <li>{% trans 'Organizations with comments from organization' %}: {{ active_organization_stats|length }}</li>
-                <li>{% trans 'Comments count from organizations' %}: {{ org_comments|length }}</li>
-                <li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ comments_with_reply|length }}</li>
-                <li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ fail_comments_with_reply|length }}</li>
-                <li>{% trans 'Comments count from organizations without reply and date in limit' %}: {{ comments_without_reply|length }}</li>
-                <li>{% trans 'Comments count from organizations without reply and should be answered today' %}: {{ fail_soon_comments_without_reply|length }}</li>
-                <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
-            </ul>
+<div id=monitoring_comment_stat_form>
+<form method="get" action="">
+  <label id="{{ form.time_to_answer.name }}-label">{{ form.time_to_answer.label }}</label>
+  {{ form.time_to_answer }}
+  <span id="report-submit">
+    <input type="submit" value="{% trans 'Save' %}"/>
+  </span>
+</form>
+</div>
+{% if org_comments %}
+<div id="monitoring_comment_stat">
+<h2>{% trans 'Report from' %} {{ start_date }} -- {{ end_date }}</h2>
+<h3>{% trans 'Statistics' %}</h3>
+<ul>
+<li>{% trans 'Total organizations' %}: {{ total_org }}</li>
+<li>{% trans 'Registered organizations' %}: {{ reg_org }}</li>
+<li>{% trans 'Organizations with comments from organization' %}: {{ active_organization_stats|length }}</li>
+<li>{% trans 'Comments count from organizations' %}: {{ org_comments|length }}</li>
+<li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ comments_with_reply|length }}</li>
+<li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ fail_comments_with_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and date in limit' %}: {{ comments_without_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and should be answered today' %}: {{ fail_soon_comments_without_reply|length }}</li>
+<li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ fail_comments_without_reply|length }}</li>
+</ul>
 
-            <h3 onClick="toggle('org_stat');" style="cursor: pointer;">
-                {% trans 'Statistics by organization' %} ({{ active_organization_stats|length }})</h3>
-            <div id="org_stat" style="display: none;">
-                {% if active_organization_stats %}
-                    <ul>
-                        {% for active_organization in active_organization_stats %}
-                            <li>
-                                {{ active_organization.org }}: {{ active_organization.comments_count }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
+<h3 onClick="toggle('org_stat');" style="cursor: pointer;">
+{% trans 'Statistics by organization' %} ({{ active_organization_stats|length }})</h3>
+<div id="org_stat" style="display: none;">
+{% if active_organization_stats %}
+<ul>
+{% for active_organization in active_organization_stats %}
+<li>
+{{ active_organization.org }}: {{ active_organization.comments_count }}
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
 
-            <h3 onClick="toggle('emp_stat');" style="cursor: pointer;">
-                {% trans 'Statistics by iifd employers' %} ({{active_iifd_person_stats|length}})</h3>
-            <div id="emp_stat" style="display: none;">
-                {% if active_iifd_person_stats %}
-                    <ul>
-                        {% for active_iifd_person in active_iifd_person_stats %}
-                            <li>
-                                {{ active_iifd_person }}: {{ active_iifd_person.comments_count }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    Total: {{ iifd_comments|length }}
-                {% endif %}
-            </div>
+<h3 onClick="toggle('emp_stat');" style="cursor: pointer;">
+{% trans 'Statistics by iifd employers' %} ({{active_iifd_person_stats|length}})</h3>
+<div id="emp_stat" style="display: none;">
+{% if active_iifd_person_stats %}
+<ul>
+{% for active_iifd_person in active_iifd_person_stats %}
+<li>
+{{ active_iifd_person }}: {{ active_iifd_person.comments_count }}
+</li>
+{% endfor %}
+</ul>
+Total: {{ iifd_comments|length }}
+{% endif %}
+</div>
 
 
-            <h3 style="color:red; cursor: pointer;" onClick="toggle('fail_comments_without_reply');">
-                {% trans 'Comments list from organizations without reply and date out of limit' %} ({{ fail_comments_without_reply|length }})</h3>
-            <div id="fail_comments_without_reply" style="color:red; display: none;">
-                {% if fail_comments_without_reply %}
-                    <ul>
-                        {% for c in fail_comments_without_reply %}
-                            <li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
+<h3 style="color:red; cursor: pointer;" onClick="toggle('fail_comments_without_reply');">
+{% trans 'Comments list from organizations without reply and date out of limit' %} ({{ fail_comments_without_reply|length }})</h3>
+<div id="fail_comments_without_reply" style="color:red; display: none;">
+{% if fail_comments_without_reply %}
+<ul>
+{% for c in fail_comments_without_reply %}
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
 
-            <h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('fail_soon_comments_without_reply');">
-                {% trans 'Comments list from organization that needs to reply today (exclude list above)' %} ({{ fail_soon_comments_without_reply|length }})</h3>
-            <div id="fail_soon_comments_without_reply" style="color:#ff9218; display: none;" >
-                {% if fail_soon_comments_without_reply %}
-                    <ul>
-                        {% for c in fail_soon_comments_without_reply %}
-                            <li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
+<h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('fail_soon_comments_without_reply');">
+{% trans 'Comments list from organization that needs to reply today (exclude list above)' %} ({{ fail_soon_comments_without_reply|length }})</h3>
+<div id="fail_soon_comments_without_reply" style="color:#ff9218; display: none;" >
+{% if fail_soon_comments_without_reply %}
+<ul>
+{% for c in fail_soon_comments_without_reply %}
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
 
-            <h3 style="color:green; cursor: pointer;" onClick="toggle('comments_without_reply');">
-                {% trans 'Comments list from organization that needs to reply (exclude list above)' %} ({{ comments_without_reply|length }})</h3>
-            <div id="comments_without_reply" style="color:green; display: none;">
-                {% if comments_without_reply %}
-                    <ul>
-                        {% for c in comments_without_reply %}
-                            <li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </div>
+<h3 style="color:green; cursor: pointer;" onClick="toggle('comments_without_reply');">
+{% trans 'Comments list from organization that needs to reply (exclude list above)' %} ({{ comments_without_reply|length }})</h3>
+<div id="comments_without_reply" style="color:green; display: none;">
+{% if comments_without_reply %}
+<ul>
+{% for c in comments_without_reply %}
+<li><a href="{% url exmo2010:score_view c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
 
-        </div>
-    {% else %}
-        {% trans "Haven't comments from organizations" %}.
-    {% endif %}
+</div>
+{% else %}
+{% trans "Haven't comments from organizations" %}.
+{% endif %}
 {% endblock %}

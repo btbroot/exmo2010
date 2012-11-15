@@ -174,9 +174,16 @@ msgstr "Добавить анкету в цикл"
 msgid "Monitoring interact start date is missing. Check your monitoring calendar"
 msgstr "Не указана дата начала периода взаимодействия. Проверьте календарь мониторинга"
 
-#: exmo/exmo2010/forms.py:273
-msgid "time limit (in days)"
-msgstr "Сроки (в днях)"
+#: exmo/exmo2010/forms.py:356
+msgid "Maximum time to answer"
+msgstr "Максимальное время ответа"
+
+#: exmo/exmo2010/forms.py:352
+msgid "%(count)d day"
+msgid_plural "%(count)d days"
+msgstr[0] "%(count)d день"
+msgstr[1] "%(count)d дня"
+msgstr[2] "%(count)d дней"
 
 #: exmo/exmo2010/forms.py:287 exmo/exmo2010/models.py:43
 msgid "Text"
