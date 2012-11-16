@@ -64,7 +64,7 @@ class RegistrationFormShort(forms.Form):
     password = forms.CharField(label=_("Password"),
         widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
         help_text=_("Create a complicated password using latin characters "
-                    "(A-Z, a-z) and digits (0-9)."))
+                    "(A-Z, a-z) and digits (0-9)"))
     subscribe = forms.BooleanField(label="",
         help_text=_("Subscribe to news e-mail notification"),
         required=False)

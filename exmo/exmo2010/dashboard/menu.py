@@ -76,7 +76,7 @@ class CustomMenu(Menu):
             msg = _('Welcome') + ', ' + welcome_msg
         else:
             children += [
-                items.MenuItem(_('Register'), reverse('exmo2010:registration_register')),
+                items.MenuItem(_('Registration'), reverse('exmo2010:registration_register')),
                 items.MenuItem(_('Log in'), reverse('exmo2010:auth_login')),
             ]
             msg = _('Welcome')

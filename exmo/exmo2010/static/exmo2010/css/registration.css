@@ -30,8 +30,9 @@
 
 .table-registration td:first-child
 {
+    padding-left: 0px;
     text-align: right;
-    width: 175px;
+    width: 127px;
 }
 
 .label-registration label
@@ -96,12 +97,12 @@ td.subscribe
 
 ul.form-errors
 {
-    padding-left: 10px;
+    padding-left: 28px;
 }
 
 ul.form-errors li
 {
-    list-style: none;
+    list-style: disc;
 }
 
 .form-errors li
