@@ -87,22 +87,24 @@ def settings(request):
             pers_inf_form_ready = True
         # Засабмитили форму с кодом приглашения.
         elif request.POST.has_key("invitation_code"):
-            inv_code_form = SettingsInvCodeForm(request.POST)
-            if inv_code_form.is_valid():
-                inv_code_form_cd = inv_code_form.cleaned_data
-                invitation_code = inv_code_form_cd.get("invitation_code")
-                organization = Organization.objects.get(
-                    inv_code=invitation_code)
-                og = Group.objects.get(name=UserProfile.organization_group)
-                # Безопасно так делать, даже если он уже там.
-                user.groups.add(og)
-                profile.organization.add(organization)
-                inv_code_form_mess = "%s: %s" % (_("You are associated with"),
-                                 organization.name)
-            else:
-                inv_code_form_err = _("Submitted invitation code does not "
-                                      "exist")
-                inv_code_form_ready = True
+            if not is_internal:
+                inv_code_form = SettingsInvCodeForm(request.POST)
+                if inv_code_form.is_valid():
+                    inv_code_form_cd = inv_code_form.cleaned_data
+                    invitation_code = inv_code_form_cd.get("invitation_code")
+                    organization = Organization.objects.get(
+                        inv_code=invitation_code)
+                    og = Group.objects.get(name=UserProfile.organization_group)
+                    # Безопасно так делать, даже если он уже там.
+                    user.groups.add(og)
+                    profile.organization.add(organization)
+                    inv_code_form_mess = "%s: %s" % (_("You are associated "
+                                                       "with"),
+                                     organization.name)
+                else:
+                    inv_code_form_err = _("Submitted invitation code does not "
+                                          "exist")
+                    inv_code_form_ready = True
         # Засабмитили форму смены пароля.
         elif request.POST.has_key("old_password"):
             ch_pass_form = SettingsChPassForm(request.POST, user=user)

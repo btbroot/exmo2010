@@ -81,6 +81,7 @@
 
     <hr />
 
+    {% if not is_internal %}
     <h2>{% trans 'Invitation code' %}</h2>
 
     {% if inv_code_form_mess %}
@@ -118,6 +119,7 @@
     </form>
 
     <hr />
+    {% endif %}
 
     <h2>{% trans 'Change password' %}</h2>
 

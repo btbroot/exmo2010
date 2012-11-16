@@ -503,7 +503,7 @@ class SettingsSendNotifForm(forms.Form):
     # Скрытое поле, нужное для того, чтобы однозначно идентифицировать форму,
     # т.к. при снятой галке у subscribe, django вообще не кладет
     # это поле (subscribe) в POST.
-    snf = forms.IntegerField(widget=forms.HiddenInput)
+    snf = forms.IntegerField(widget=forms.HiddenInput, required=False)
     subscribe = forms.BooleanField(label="",
         help_text=_("Subscribe to news e-mail notification"), required=False)
 
