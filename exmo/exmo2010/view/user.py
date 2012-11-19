@@ -100,6 +100,7 @@ def settings(request):
                     inv_code_form_mess = "%s: %s" % (_("You are associated "
                                                        "with"),
                                      organization.name)
+                    is_organization = True
                 else:
                     inv_code_form_err = _("Submitted invitation code does not "
                                           "exist")
