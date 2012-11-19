@@ -124,7 +124,7 @@ class CustomBackend(object):
             user_profile.subscribe = subscribe
             up_changed = True
         status = int(kwargs.get("status"))
-        if status == 1:  # представитель организации.
+        if status == 0:  # представитель организации.
             position = kwargs.get("position")
             if position:
                 user_profile.position = position

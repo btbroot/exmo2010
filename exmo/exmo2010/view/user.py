@@ -27,7 +27,6 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
 from exmo2010.models import Organization, UserProfile
 
 
