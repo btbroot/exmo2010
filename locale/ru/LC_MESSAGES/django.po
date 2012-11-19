@@ -2309,7 +2309,7 @@ msgstr "обязательны для заполнения"
 
 #: exmo/templates/registration/registration_form.html:133
 msgid "Enter your first name, patronymic, and last name in order the system can address you with it"
-msgstr "Введите имя, отчетчество и фамилию, чтобы мы знали, как к вам обращаться, а также, в случае необходимости, для проверки являетесь ли вы сотрудником организации, которую представляете"
+msgstr "Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться, а также, в случае необходимости, для проверки являетесь ли вы сотрудником организации, которую представляете"
 
 #: exmo/templates/registration/registration_form.html:98
 msgid "is required field"
