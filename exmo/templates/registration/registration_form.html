@@ -31,6 +31,18 @@
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            if ($("#id_status").val() == '1') {
+                $("#id_err_position").hide();
+                $("#id_position").val("");
+                $("#id_row_position").hide();
+                $("#id_err_phone").hide();
+                $("#id_phone").val("");
+                $("#id_row_phone").hide();
+                $("#id_err_invitation_code").hide();
+                $("#id_invitation_code").val("");
+                $("#id_row_invitation_code").hide();
+            }
+
             $('#id_status').change(function () {
                 if ($("#id_status").val() == '0') {
                     $("#id_row_position").show();

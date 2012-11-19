@@ -117,6 +117,9 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
                 return redirect(to, *args, **kwargs)
             else:
                 return redirect(success_url)
+        else:
+            if status == 1:
+                form = RegistrationFormFull(data=request.POST, files=request.FILES)
     else:
         form = RegistrationFormFull()
 
