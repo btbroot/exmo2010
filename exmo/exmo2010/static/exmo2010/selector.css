@@ -2,18 +2,18 @@
     http://stackoverflow.com/questions/5101887/how-can-i-increase-the-width-of-filter-horizontal-widget-only-for-admin-permissi
 */
 .selector {
-    width: 780px;
+    width: 1180px;
     float: left;
 }
 
 .selector select {
-    width: 370px;
+    width: 570px;
     height: 17.2em;
 }
 
 .selector-available, .selector-chosen {
     float: left;
-    width: 370px;
+    width: 570px;
     text-align: center;
     margin-bottom: 5px;
 }
