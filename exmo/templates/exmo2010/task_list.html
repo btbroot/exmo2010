@@ -19,6 +19,10 @@
 #
 {% endcomment %}
 {% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+{% endblock %}
 {% block extrahead %}{{ block.spuer }}
     <style>
         .ajaxloader {

@@ -112,6 +112,7 @@ def score_view(request, score_id):
         return update_object(
             request,
             form_class = ScoreForm,
+
             object_id = score.pk,
             post_save_redirect = redirect,
             extra_context = {
@@ -134,6 +135,7 @@ def score_view(request, score_id):
               'parameter': score.parameter,
               'title': title,
               'view': True,
+              'invcodeform': SettingsInvCodeForm(),
             }
         )
     else:
@@ -193,7 +195,7 @@ def score_list_by_task(request, task_id, report=None):
                 'parameters': parameters,
                 'task': task,
                 'title': title,
-                'report': report
+                'report': report,
             }
         )
         return render_to_response(

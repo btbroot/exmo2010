@@ -2426,4 +2426,4 @@ msgid "Monitoring \"%(mname)s\" finished. You cannot leave comments any more."
 msgstr "Цикл мониторинга \"%(mname)s\" завершен. Вы больше не можете оставлять комментарии."
 
 msgid "To access current monitoring, please enter invitation code sent to your organization."
-msgstr "Для получения доступа к текущему циклу мониторинга, введите код приглашения, который был выслан на электронную почту вашей организации."
+msgstr "Для получения доступа к новому циклу мониторинга необходимо ввести код приглашения, который высылается организациям заблаговременно."

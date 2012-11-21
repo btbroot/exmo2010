@@ -19,6 +19,14 @@
 #
 {% endcomment %}
 {% load i18n %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+{% endblock %}
+
 {% block title %}{{parameter}}{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
@@ -29,6 +37,8 @@
 {{title}}
 </div>
 {% endblock %}
+{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
+
 {% block content %}
 <h2><a href={{task.organization.url }}>{{task.organization.name}}</a></h2>
 <div id=parameter_desc>
@@ -36,12 +46,6 @@
 </div>
 <br>
 <div id=score_add>
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
-{% endblock %}
 
 {% load criteria_css_class %}
 

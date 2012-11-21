@@ -21,7 +21,7 @@
 {% if request.user.profile.is_organization %}
     {% with request.user.profile.bubble_info as bubble_info %}
         {% if bubble_info.0 %}
-            <div style="background-color: #FECB80;">
+            <div class="bubble">
                 {% if bubble_info.1 %}
                     <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" didn't started yet. You cannot leave comments.{% endblocktrans %}</p>
                 {% else %}
@@ -32,10 +32,9 @@
                     </p>
                     <form action="{% url exmo2010:settings %}" method="post">
                         {% csrf_token %}
-                        <label for="id_invitation_code"><b>{% trans "Invitation code" %}</b>&nbsp;</label>
+                        <label for="id_invitation_code">{% trans "Invitation code" %}&nbsp;</label>
                         {{ invcodeform.invitation_code }}&nbsp;
                         <input type="submit" value="{% trans 'Send' %}">
-
                     </form>
                 {% endif %}
             </div>

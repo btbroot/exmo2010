@@ -18,6 +18,12 @@
 #
 {% endcomment %}
 {% load i18n admin_tools_dashboard_tags %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+{% endblock %}
+
 <script type="text/javascript" src="{{ media_url }}/admin_tools/js/utils.js"></script>
 
 <script type="text/javascript" charset="utf-8">
@@ -69,7 +75,9 @@
         });
     });
 </script>
+<div class="bubble-dashboard-container">
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
+</div>
 <div id="dashboard-panel">
     <h3><a href="#">{% trans "Modules" %}</a></h3>
     {% if has_disabled_modules %}

@@ -1,0 +1,37 @@
+.bubble-dashboard-container
+{
+    margin: 0px -10px -5px -10px;
+}
+
+
+.bubble
+{
+    margin: 20px;
+    padding: 10px;
+    background-color: #FEEACB;
+    border: #FECB80 1px solid;
+}
+
+.bubble p
+{
+    margin: 0px;
+    color: #000000;
+    line-height: 19px;
+}
+
+.bubble form
+{
+    margin-top: 10px;
+}
+
+.bubble label
+{
+    color: #000000;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.bubble input[type="text"]
+{
+    width: 150px;
+}
