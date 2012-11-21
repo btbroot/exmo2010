@@ -102,32 +102,37 @@
     <div class="monitoring-status-div monitoring-status-right">
         {% with monitoring.statistics as stat %}
         <table class="monitoring-status">
+
             <tr>
                 <td>{% trans 'Organization in monitoring' %}</td>
                 <td class="value">{{ stat.organization }}</td>
             </tr>
-            {% if monitoring.status not in monitoring.after_interaction_status %}
+
             <tr>
                 <td>{% trans 'Rated organization' %}</td>
                 <td class="value">{{ stat.organization_rated }}</td>
             </tr>
-            {% endif %}
 
-            {% if monitoring.status in monitoring.after_interaction_status %}
             <tr>
                 <td>{% trans 'Organization registered' %}</td>
                 <td class="value">{{ stat.organization_users }}</td>
             </tr>
+
+            {% if monitoring.status in monitoring.after_interaction_status %}
             <tr>
                 <td>{% trans 'Organization active' %}</td>
                 <td class="value">{{ stat.organization_users_active }}</td>
             </tr>
             {% endif %}
 
+
             <tr>
                 <td>{% trans 'Expert active' %}</td>
                 <td class="value">{{ stat.expert }}</td>
             </tr>
+
+            {% if monitoring.status in monitoring.after_interaction_status %}
+
             <tr>
                 <td>{% trans 'Organization comments' %}</td>
                 <td class="value">{{ stat.comment_organization }}</td>
@@ -152,6 +157,7 @@
                 </td>
                 <td class="value">{{ stat.avg_openness|floatformat:3 }}</td>
             </tr>
+            {% endif %}
         </table>
         {% endwith %}
     </div>
