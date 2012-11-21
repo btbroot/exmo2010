@@ -46,7 +46,7 @@ from exmo2010.models import generate_inv_code
 from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating, rating_type_parameter
 from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
-from exmo2010.forms import ParamCritScoreFilterForm
+from exmo2010.forms import ParamCritScoreFilterForm, SettingsInvCodeForm
 from exmo2010.utils import UnicodeReader, UnicodeWriter
 from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
 
@@ -109,6 +109,9 @@ def monitoring_list(request):
             organization__in = request.user.profile.organization.all(),
             status = Task.TASK_APPROVED,
             )
+        invcodeform = SettingsInvCodeForm()
+    else:
+        invcodeform = None
 
     if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
@@ -121,6 +124,7 @@ def monitoring_list(request):
             #'title': _('Monitoring list'),
             'fakeobject': Monitoring(),
             'active_tasks': active_tasks,
+            'invcodeform': invcodeform,
         },
     )
 

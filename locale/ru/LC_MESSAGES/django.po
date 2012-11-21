@@ -2418,3 +2418,12 @@ msgstr "Пароль изменен на новый"
 
 msgid "E-mail notification settings saved"
 msgstr "Параметры рассылки уведомлений сохранены"
+
+msgid "Monitoring \"%(mname)s\" didn't started yet. You cannot leave comments."
+msgstr "Этап взаимодействия по циклу мониторинга \"%(mname)s\" еще не начался. Вы не можете оставлять комментарии."
+
+msgid "Monitoring \"%(mname)s\" finished. You cannot leave comments any more."
+msgstr "Цикл мониторинга \"%(mname)s\" завершен. Вы больше не можете оставлять комментарии."
+
+msgid "To access current monitoring, please enter invitation code sent to your organization."
+msgstr "Для получения доступа к текущему циклу мониторинга, введите код приглашения, который был выслан на электронную почту вашей организации."

@@ -27,7 +27,7 @@ from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models
+from django.db import models, IntegrityError
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
@@ -1289,11 +1289,36 @@ class UserProfile(models.Model):
 
     def _is_organization(self):
         try:
-            group, creater = Group.objects.get_or_create(name=self.organization_group)
-        except:
+            group, creater = Group.objects.get_or_create(
+                name=self.organization_group)
+        except IntegrityError:
             return False
         else:
             return group in self.user.groups.all() or self.user.is_superuser
+
+    @property
+    def bubble_info(self):
+        """
+        Определяем наличие связанных организаций в мониторингах с определенными
+        статусами для показа сообщения/формы ввода кода приглашения
+        на определенных страницах.
+        """
+        show_bubble = True
+        monitoring_running = False
+        monitoring_name = None
+        for o in self.organization.all():
+            if o.monitoring.status in (Monitoring.MONITORING_INTERACT,
+                                       Monitoring.MONITORING_FINISHING):
+                show_bubble = False
+            else:
+                monitoring_name = o.monitoring.name
+            if not monitoring_running and \
+               o.monitoring.status in (Monitoring.MONITORING_RATE,
+                                       Monitoring.MONITORING_REVISION,
+                                       Monitoring.MONITORING_RESULT):
+                monitoring_running = True
+                monitoring_name = o.monitoring.name
+            return show_bubble, monitoring_running, monitoring_name
 
     def _get_my_scores(self):
         return Score.objects.filter(task__user=self.user)

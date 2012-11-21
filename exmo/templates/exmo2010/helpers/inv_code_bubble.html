@@ -1,0 +1,44 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+{% if request.user.profile.is_organization %}
+    {% with request.user.profile.bubble_info as bubble_info %}
+        {% if bubble_info.0 %}
+            <div style="background-color: #FECB80;">
+                {% if bubble_info.1 %}
+                    <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" didn't started yet. You cannot leave comments.{% endblocktrans %}</p>
+                {% else %}
+                    <p>
+                        {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" finished. You cannot leave comments any more.{% endblocktrans %}
+                        <br />
+                        {% trans "To access current monitoring, please enter invitation code sent to your organization." %}
+                    </p>
+                    <form action="{% url exmo2010:settings %}" method="post">
+                        {% csrf_token %}
+                        <label for="id_invitation_code"><b>{% trans "Invitation code" %}</b>&nbsp;</label>
+                        {{ invcodeform.invitation_code }}&nbsp;
+                        <input type="submit" value="{% trans 'Send' %}">
+
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endif %}

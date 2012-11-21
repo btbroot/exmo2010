@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from exmo2010.forms import OrganizationForm, CORE_MEDIA
+from exmo2010.forms import OrganizationForm, SettingsInvCodeForm
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Task
 from exmo2010.models import Monitoring
@@ -61,6 +61,7 @@ def organization_list(request, id):
         extra_context = {
             'title': title,
             'monitoring': monitoring,
+            'invcodeform': SettingsInvCodeForm(),
         },
     )
 

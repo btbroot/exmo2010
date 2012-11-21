@@ -29,7 +29,7 @@ from django.template import RequestContext
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from reversion import revision
-from exmo2010.forms import TaskForm
+from exmo2010.forms import TaskForm, SettingsInvCodeForm
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table
 from exmo2010.models import Organization, Parameter, Score, Task
@@ -499,6 +499,7 @@ def tasks_by_monitoring(request, monitorgin_id):
         extra_context = {
             'monitoring': monitoring,
             'title': title,
+            'invcodeform': SettingsInvCodeForm(),
             },
         template_name = "exmo2010/task_list.html",
         )

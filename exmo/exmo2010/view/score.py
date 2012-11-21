@@ -30,7 +30,7 @@ from django.views.generic.list_detail import object_detail
 from django.views.generic.create_update import update_object, create_object
 from django.views.generic.create_update import delete_object
 from reversion import revision
-from exmo2010.forms import ScoreForm, QuestionnaireDynForm
+from exmo2010.forms import ScoreForm, QuestionnaireDynForm, SettingsInvCodeForm
 from exmo2010.helpers import construct_change_message
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table_prepare_queryset
@@ -276,6 +276,7 @@ def score_list_by_task(request, task_id, report=None):
                 'place_npa': place_npa,
                 'place_other': place_other,
                 'form': form,
+                'invcodeform': SettingsInvCodeForm(),
             }
         )
         return render_to_response(

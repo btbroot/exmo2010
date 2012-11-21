@@ -36,7 +36,7 @@ from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 from admin_tools.utils import get_admin_site_name
 from exmo2010.dashboard import modules as custom_modules
 from exmo2010.view.monitoring import _get_monitoring_list
-from exmo2010 import models as exmo_models
+from exmo2010.forms import SettingsInvCodeForm
 
 class UserDashboard(Dashboard):
     """
@@ -64,6 +64,7 @@ class CustomIndexDashboard(UserDashboard):
             if request.user.profile.is_organization:
                 task_id = request.user.profile.get_task_review_id()
                 context.update({ 'task_id' : task_id }) if task_id != None else None
+                context.update({'invcodeform': SettingsInvCodeForm()})
 
         site_name = get_admin_site_name(context)
         # append a link list module for "quick links"

@@ -28,7 +28,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comments/', include('django.contrib.comments.urls')),
-    url(r'^$',lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
+    url(r'^$', lambda request: HttpResponsePermanentRedirect(
+        reverse('exmo2010:index'))),
     url(r'^exmo2010/', include(exmo.urls)),
     url(r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
