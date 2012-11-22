@@ -45,7 +45,9 @@ class CustomMenu(Menu):
         js = (
             'admin_tools/js/jquery/jquery.cookie.min.js',
             )
-        css = ()
+        css = (
+            'dashboard/css/menu.css',
+            )
 
     def init_with_context(self, context):
         self.children = [

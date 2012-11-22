@@ -25,8 +25,6 @@
 {{ media }}
 {% endblock %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
-
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
