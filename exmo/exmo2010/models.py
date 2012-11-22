@@ -1306,7 +1306,7 @@ class UserProfile(models.Model):
         show_bubble = True
         monitoring_running = False
         monitoring_name = None
-        for o in self.organization.all():
+        for o in self.organization.order_by("-id"):
             if o.monitoring.status in (Monitoring.MONITORING_INTERACT,
                                        Monitoring.MONITORING_FINISHING):
                 show_bubble = False
@@ -1368,13 +1368,15 @@ class UserProfile(models.Model):
         Возвращает queryset из открытых претензий
         """
         claims = Claim.objects.filter(score__task__user=self.user,
-                                      close_date__isnull=True).order_by('open_date')
+                              close_date__isnull=True).order_by('open_date')
         return claims
 
     def get_task_review_id(self):
-        organizations = self.organization.filter(monitoring__status__in=[Monitoring.MONITORING_INTERACT,
-                                                                         Monitoring.MONITORING_FINISHING,
-                                                                         Monitoring.MONITORING_PUBLISH])
+        organizations = self.organization.filter(
+            monitoring__status__in=[Monitoring.MONITORING_INTERACT,
+                                    Monitoring.MONITORING_FINISHING,
+                                    Monitoring.MONITORING_PUBLISH])\
+        .order_by("-id")
         if organizations:
             organization = organizations[0]
             tasks = Task.objects.filter(
