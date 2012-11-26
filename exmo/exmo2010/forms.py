@@ -22,6 +22,7 @@
 """
 
 import string
+import time
 from django import forms
 from django.utils import formats
 from django.utils.safestring import mark_safe
@@ -467,6 +468,7 @@ class SettingsInvCodeForm(forms.Form):
         try:
             organization = Organization.objects.get(inv_code=invitation_code)
         except ObjectDoesNotExist:
+            time.sleep(3)  # Чтобы усложнить перебор.
             raise forms.ValidationError("")  # Текст ошибки не нужен.
         else:
             return invitation_code
