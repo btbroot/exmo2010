@@ -1322,7 +1322,7 @@ class UserProfile(models.Model):
                                        Monitoring.MONITORING_RESULT):
                 monitoring_running = True
                 monitoring_name = o.monitoring.name
-            return show_bubble, monitoring_running, monitoring_name
+        return show_bubble, monitoring_running, monitoring_name
 
     def _get_my_scores(self):
         return Score.objects.filter(task__user=self.user)
