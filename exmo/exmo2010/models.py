@@ -1319,7 +1319,8 @@ class UserProfile(models.Model):
             if not monitoring_running and \
                o.monitoring.status in (Monitoring.MONITORING_RATE,
                                        Monitoring.MONITORING_REVISION,
-                                       Monitoring.MONITORING_RESULT):
+                                       Monitoring.MONITORING_RESULT,
+                                       Monitoring.MONITORING_PREPARE):
                 monitoring_running = True
                 monitoring_name = o.monitoring.name
         return show_bubble, monitoring_running, monitoring_name
