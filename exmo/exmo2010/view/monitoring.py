@@ -967,6 +967,7 @@ def monitoring_comment_report(request, id):
             object_pk=org_comment.object_pk,
         ).order_by('submit_date')
         #append comment or not
+        delta = datetime.timedelta(days=1)
         flag = False
         for iifd_comment in iifd_comments:
             #check that comment from iifd comes after organization
@@ -988,10 +989,10 @@ def monitoring_comment_report(request, id):
                     #org comment is without comment from iifd
         if not flag:
             #check time_to_answer
-            if time_to_answer-1 < workday_count(org_comment.submit_date.date(),
-                                       end_date) <= time_to_answer:
+            if workday_count(org_comment.submit_date.date() + delta,
+                             end_date) == time_to_answer:
                 fail_soon_comments_without_reply.append(org_comment)
-            elif workday_count(org_comment.submit_date.date(),
+            elif workday_count(org_comment.submit_date.date() + delta,
                                end_date) > time_to_answer:
                 fail_comments_without_reply.append(org_comment)
             else:
