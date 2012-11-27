@@ -873,7 +873,7 @@ def monitoring_parameter_import(request, id):
 def monitoring_comment_report(request, id):
     monitoring = get_object_or_404(Monitoring, pk=id)
     time_to_answer = monitoring.time_to_answer
-    if not (request.user.profile.is_expert or request.user.is_superuser):
+    if not (request.user.profile.is_expertA or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
 
     from django.contrib.comments import models as commentModel
@@ -917,10 +917,6 @@ def monitoring_comment_report(request, id):
         request.user.profile.is_expertA):
         scores = Score.objects.filter(
             task__organization__monitoring=monitoring)
-    elif request.user.profile.is_expertB:
-        scores = Score.objects.filter(
-            task__organization__monitoring=monitoring,
-            task__user=request.user)
 
     if start_date:
         total_org = Organization.objects.filter(monitoring=monitoring)

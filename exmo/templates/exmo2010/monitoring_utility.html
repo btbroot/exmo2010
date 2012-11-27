@@ -22,9 +22,11 @@
 <div id="utility">
   <a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations' %}</a> /
   <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{% trans 'Tasks' %}</a> /
-{% if user.userprofile.is_expert or user.is_superuser %}
+{% if request.user.userprofile.is_expert or request.user.is_superuser %}
   <a href="{% url exmo2010:monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
+  {% if request.user.userprofile.is_expertA %}
   <a href="{% url exmo2010:monitoring_comment_report monitoring.pk %}">{% trans 'Comment report' %}</a> /
+  {% endif %}
 {% endif %}
 {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
 {% if perm %}
