@@ -41,7 +41,15 @@ class Migration(SchemaMigration):
                 c = comment.comment.replace('\n', '<br />')
                 comment.comment = clean_html(c)
                 comment.save()
-
+            for comment in orm.CommentExmo.objects.filter(user__groups__name='organizations'):
+                expert_answered = orm.CommentExmo.objects.filter(
+                    content_type__model='score',
+                    object_pk=comment.object_pk,
+                    id__gt=comment.id
+                ).exclude(user=comment.user, user__groups__name='organizations').exists()
+                if expert_answered:
+                    comment.status = 1
+                    comment.save()
 
     def backwards(self, orm):
         # Deleting model 'CommentExmo'
