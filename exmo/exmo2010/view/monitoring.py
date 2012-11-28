@@ -877,7 +877,7 @@ def monitoring_comment_report(request, id):
         return HttpResponseForbidden(_('Forbidden'))
 
     from django.contrib.comments import models as commentModel
-    from datetime import datetime
+    from datetime import datetime, timedelta
     from exmo2010.forms import MonitoringCommentStatForm
 
     form = MonitoringCommentStatForm(
@@ -967,7 +967,7 @@ def monitoring_comment_report(request, id):
             object_pk=org_comment.object_pk,
         ).order_by('submit_date')
         #append comment or not
-        delta = datetime.timedelta(days=1)
+        delta = timedelta(days=1)
         flag = False
         for iifd_comment in iifd_comments:
             #check that comment from iifd comes after organization
