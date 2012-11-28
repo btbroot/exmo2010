@@ -1315,7 +1315,8 @@ class UserProfile(models.Model):
                                        Monitoring.MONITORING_FINISHING):
                 show_bubble = False
             else:
-                monitoring_name = o.monitoring.name
+                if not monitoring_running:
+                    monitoring_name = o.monitoring.name
             if not monitoring_running and \
                o.monitoring.status in (Monitoring.MONITORING_RATE,
                                        Monitoring.MONITORING_REVISION,
