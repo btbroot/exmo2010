@@ -111,7 +111,9 @@
                 <td>{% trans "URL" %}</td>
                 {% if monitoring.status in monitoring.after_interaction_status %}
                     {% if average.openness_first >= 0 %}
-                        <td>{% trans "First openness" %}*</td>
+                        {% if rating_type == "all" %}
+                            <td>{% trans "First openness" %}*</td>
+                        {% endif %}
                     {% endif %}
                     <td>{% trans "Finally openness" %}</td>
                 {% else %}
@@ -127,7 +129,9 @@
                         <td>{{ object.task.organization.name }}</td>
                         <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
                         {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
-                            <td>{{ object.openness_first|floatformat:3 }}</td>
+                            {% if rating_type == "all" %}
+                                <td>{{ object.openness_first|floatformat:3 }}</td>
+                            {% endif %}
                         {% endif %}
                         <td>{{ object.openness|floatformat:3 }}</td>
                     </tr>
@@ -135,14 +139,20 @@
                 <tr style="font-weight: bold">
                     <td colspan=3>{% trans 'Average' %}</td>
                     {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
-                        <td>{{ average.openness_first|floatformat:3 }}</td>
+                        {% if rating_type == "all" %}
+                            <td>{{ average.openness_first|floatformat:3 }}</td>
+                        {% endif %}
                     {% endif %}
                     <td>{{ average.openness|floatformat:3 }}</td>
                 </tr>
                 <tr style="font-weight: bold">
                     <td colspan=
                                 {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
+                                    {% if rating_type == "all" %}
                                     4
+                                    {% else %}
+                                    3
+                                    {% endif %}
                                 {% else %}
                                     3
                                 {% endif %}>
@@ -152,9 +162,11 @@
                 </tr>
             </table>
             {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
-                <p class="footnote">
-                    * {% trans 'First openness &mdash; openness value before interact' %}
-                </p>
+                {% if rating_type == "all" %}
+                    <p class="footnote">
+                        * {% trans 'First openness &mdash; openness value before interact' %}
+                    </p>
+                {% endif %}
             {% endif %}
         {% else %}
             {% trans 'Empty list' %}
