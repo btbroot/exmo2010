@@ -35,6 +35,7 @@ from exmo2010.helpers import construct_change_message
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table_prepare_queryset
 from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
+from exmo2010.models import Monitoring
 
 
 @login_required
@@ -265,6 +266,15 @@ def score_list_by_task(request, task_id, report=None):
             place_npa = place_other = None
             parameters_npa = None
             parameters_other = parameters
+        # Не показываем ссылку экспертам B или предатвителям, если статус
+        # мониторинга отличается от "Опубликован".
+        if (request.user.profile.is_expertB or
+            request.user.profile.is_organization) \
+           and monitoring.status != Monitoring.MONITORING_PUBLISH \
+           and not request.user.is_superuser:
+            show_link = False
+        else:
+            show_link = True
         extra_context.update(
             {
                 'score_dict': score_dict,
@@ -279,6 +289,7 @@ def score_list_by_task(request, task_id, report=None):
                 'place_other': place_other,
                 'form': form,
                 'invcodeform': SettingsInvCodeForm(),
+                'show_link': show_link
             }
         )
         return render_to_response(
