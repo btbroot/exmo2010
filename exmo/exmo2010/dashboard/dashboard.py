@@ -105,11 +105,11 @@ class CustomIndexDashboard(UserDashboard):
                 _('Communication'),
                 children=(
                     (
-                        _('Comments without answer') + ': ' + str(request.user.profile.get_not_answered_comments().count()),
-                        reverse('exmo2010:comment_list', args=[1,])
-                    ),
-                    (
                         _('Comments with answer') + ': ' + str(request.user.profile.get_answered_comments().count()),
+                        reverse('exmo2010:comment_list', args=[1,])
+                        ),
+                    (
+                        _('Comments without answer') + ': ' + str(request.user.profile.get_not_answered_comments().count()),
                         reverse('exmo2010:comment_list', args=[2,])
                     ),
                     (
