@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "exmo2010/base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,10 +22,16 @@
 
 {% block title %}{% trans 'Permission denied' %}{% endblock %}
 
+{% block brand_name %}{% trans 'Forbidden.' %}{% endblock %}
+
 {% block content %}
 
 <h2>{% trans 'Forbidden.' %}</h2>
 
 <p>{% trans "We're sorry, you haven't permission for viewing this page." %}</p>
+
+<p>
+    {% trans "Go back or go <a href='/'>Dashboard</a>." %}
+</p>
 
 {% endblock %}

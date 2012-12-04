@@ -47,7 +47,7 @@
     <div id="header">
         <div id="branding">
             {% block branding %}
-                <h1 id="site-name" style="background-color: #3C78A7; color: white; margin: 5px 0px 14px 0px;">{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}</h1>
+                <h1 id="site-name" style="background-color: #3C78A7; color: white; margin: 5px 0px 14px 0px;">{% block brand_name %}{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}{% endblock %}</h1>
             {% endblock %}
         </div>
         <div id="user-tools">
