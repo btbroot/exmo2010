@@ -1,26 +1,19 @@
 {% load i18n %}
 
-<dl>
+<dl class="score-header">
     <!--Organization -->
-    <dt>
-        {% trans 'Organization' %}
-    </dt>
-    <dd>
-        {{ task.organization.name }}
-    </dd>
+    <dt>{% trans 'Organization' %}</dt>
+    <dd>{{ task.organization.name }}</dd>
+    <br />
 
     <!--URL -->
-    <dt>
-        {% trans "Organization's website" %}
-    </dt>
-    <dd>
-        <a href="{{ task.organization.url }}">{{ task.organization.url }}</a>
-    </dd>
+    <dt>{% trans "Organization's website" %}</dt>
+    <dd><a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a></dd>
+
+    <br />
 
     <!--Importance -->
-    <dt>
-        {% trans "The social importance of the parameter" %}
-    </dt>
+    <dt>{% trans "The social importance of the parameter" %}</dt>
     <dd>
         {% ifequal parameter.weight 3 %}
             {% trans "high importance" %}
@@ -33,11 +26,14 @@
         {% endifequal %}
     </dd>
 
+    <br />
+
     <!--Description -->
-    <dt>
-        {% trans "Parameter description" %}
-    </dt>
-    <dd>
-        {{ parameter.description }}
+    <dt>{% trans "Parameter description" %}</dt>
+
+    <br />
+
+    <dd class="parm-description">
+        {{ parameter.description|safe }}
     </dd>
 </dl>

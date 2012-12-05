@@ -764,7 +764,6 @@ class QAnswer(models.Model):
                            self.question.__unicode__())
 
 
-
 class Score(models.Model):
     """
     Модель оценки
@@ -859,7 +858,7 @@ class Score(models.Model):
     comment = models.TextField(
         null=True,
         blank=True,
-        verbose_name=_('comment'),
+        verbose_name=_('recomendation'),
     )
     created = models.DateTimeField(
         null=True,

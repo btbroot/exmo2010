@@ -1,0 +1,187 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+
+table.score-form
+{
+    width: 100%;
+}
+
+table.score-form label
+{
+    color: #333;
+}
+
+table.score-form th
+{
+    background: none;
+    height: 16px;
+    vertical-align: bottom;
+    color: #333;
+}
+
+table.score-form td.explanation
+{
+    vertical-align: middle;
+}
+
+
+
+table.score-form td:first-child, table.score-form th:first-child
+{
+    width: 175px;
+}
+
+table.score-form td:first-child
+{
+    padding-top: 7px;
+}
+
+table.score-form td ul li
+{
+    padding-top: 4px;
+}
+
+
+table.score-form .value
+{
+    width: 175px;
+    padding: 0;
+    padding-left: 14px;
+}
+
+
+
+table.score-form .value ul
+{
+    list-style: none;
+    margin: 0;
+    padding: 7px 0px;
+    position: relative;
+    top: -4px;
+}
+
+table.score-form .value ul li
+{
+    float: left;
+    list-style: none;
+    /* display: inline; */
+    padding-left: 20px;
+}
+
+table.score-form .value ul li:first-child
+{
+    padding-left: 0px;
+}
+
+.recomendation-container
+{
+    padding-right: 7px;
+}
+
+#id_score-comment
+{
+    width: 100%;
+    resize: none;
+}
+
+.recomendation
+{
+    color: #333;
+    font-size: 13px;
+}
+
+/* Table bordered */
+
+.table-bordered
+{
+    border-spacing: 0;
+    border-collapse: separate;
+    *border-collapse: collapse;
+    border: #fff 1px solid;
+}
+
+.table-bordered th
+{
+    background-image: none;
+    background-color: transparent;
+    border-bottom: #fff 1px solid;
+    border-left: #bbb 1px solid;
+}
+
+.table-bordered td
+{
+    border-left: #bbb 1px solid;
+    border-top: #bbb 1px solid;
+    border-bottom: #fff 1px solid;
+}
+
+.table-bordered td:first-child
+{
+    border-left: #fff 1px solid;
+}
+
+.table-bordered textarea
+{
+    width: 99%;
+    resize: none;
+
+}
+
+span.button-bar
+{
+    padding-left: 15px;
+}
+
+span.non-relevant-button
+{
+    float: right;
+    /* padding-left: 330px; */
+}
+
+.non-relevant-button input
+{
+    background-color: #ffd8dd;
+    background-image: none;
+}
+
+.reset-button {
+    border: 1px solid #fff;
+    border-bottom: 1px dotted;
+    padding: 0;
+}
+
+.reset-button input {
+    cursor: pointer;
+    color: #5B80B2;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.reset-button input:hover {
+    color: #036;
+}
+
+h1
+{
+    margin-bottom: 7px;
+}

@@ -229,3 +229,42 @@ label
 {
     font-size: 13px;
 }
+
+/* Score header */
+
+.score-header
+{
+    float: left;
+    display: block;
+    line-height: 22px;
+    margin-bottom: 15px;
+}
+
+.score-header dd, .score-header dt
+{
+    float: left;
+    display: block;
+}
+
+.score-header dt
+{
+    padding-right: 4px;
+}
+
+.score-header dd
+{
+    position: relative;
+    top: 3px;
+    line-height: 19px;
+}
+
+.score-header dt:after
+{
+    content: ":"
+}
+
+.score-header .parm-description
+{
+    position: relative;
+    top: -2px;
+}

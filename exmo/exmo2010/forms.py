@@ -130,7 +130,6 @@ class HorizRadioRenderer(forms.RadioSelect.renderer):
         return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 
-
 class ScoreForm(forms.ModelForm):
     """
     Форма выставления оценки
@@ -140,20 +139,31 @@ class ScoreForm(forms.ModelForm):
         # префикс для формы, чтобы в верстке поле id_comment не пересекалось
         # с полем комментариев, т.к. по id wyswyg-редактор цепляется к форме
         self.prefix = "score"
+        # Замена "-----" на "-" в виджетах полей формы варианта blank choice
+        fields_to_change = ('found', 'complete', 'topical', 'accessible',
+                            'document', 'hypertext', 'image')
+        for f in fields_to_change:
+            self.fields[f].widget.choices[0] = ('', '-')
 
     class Meta:
         model = Score
         widgets = {
-            'found': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'complete': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'topical': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'accessible': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'document': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'hypertext': forms.RadioSelect(renderer=HorizRadioRenderer),
-            'image': forms.RadioSelect(renderer=HorizRadioRenderer),
+            'found': forms.RadioSelect(),
+            'complete': forms.RadioSelect(),
+            'topical': forms.RadioSelect(),
+            'accessible': forms.RadioSelect(),
+            'document': forms.RadioSelect(),
+            'hypertext': forms.RadioSelect(),
+            'image': forms.RadioSelect(),
+            'completeComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'topicalComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'accessibleComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'documentComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'hypertextComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'imageComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
+            'comment': forms.Textarea(attrs={'cols': 45, 'rows': 5}),
             }
         exclude = ('revision',)
-
 
 
 class TaskForm(forms.ModelForm):

@@ -58,7 +58,6 @@ def monitoring_permission(user, priv, monitoring):
     return False
 
 
-
 def task_permission(user, priv, task):
     if user.is_active:
         if user.profile.is_expertA or user.profile.is_manager_expertB: return True
@@ -104,7 +103,6 @@ def task_permission(user, priv, task):
     return False
 
 
-
 def score_permission(user, priv, score):
     if priv == 'exmo2010.view_score':
         if score.task.organization not in score.parameter.exclude.all():
@@ -133,7 +131,6 @@ def score_permission(user, priv, score):
     return False
 
 
-
 def organization_permission(user, priv, organization):
     '''
     strange permission.
@@ -150,16 +147,11 @@ def organization_permission(user, priv, organization):
     return False
 
 
-
 def parameter_permission(user, priv, parameter):
     if priv == 'exmo2010.exclude_parameter':
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-            if user.profile.is_expertB \
-              and (parameter.monitoring.is_rate or parameter.monitoring.is_interact or parameter.monitoring.is_revision):
-                return True
     return False
-
 
 
 def check_permission(user, priv, context = None):

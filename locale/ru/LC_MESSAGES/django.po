@@ -2016,10 +2016,6 @@ msgstr "Импортировать задачу из CSV"
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
-#: exmo/templates/exmo2010/set_npa_params.html:49
-msgid "Reset"
-msgstr "Сбросить выделение"
-
 #: exmo/templates/exmo2010/task_confirm_delete.html:32
 msgid "When you delete task you also delete this scores:"
 msgstr "При удалении задачи Вы так же удалите следующие оценки:"
@@ -2468,3 +2464,6 @@ msgstr "Закрыть без ответа"
 
 msgid "Open comment"
 msgstr "Открыть комментарий"
+
+msgid "Reset"
+msgstr "Сбросить"

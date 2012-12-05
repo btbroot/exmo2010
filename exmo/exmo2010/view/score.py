@@ -64,10 +64,10 @@ def score_add(request, task_id, parameter_id):
         form_class = ScoreForm,
         post_save_redirect = redirect,
         extra_context = {
-          'task': task,
-          'parameter': parameter,
-          'title': parameter,
-        }
+            'task': task,
+            'parameter': parameter,
+            'title': parameter,
+            }
     )
 
 
@@ -78,10 +78,10 @@ def score_manager(request, score_id, method='update'):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[score.task.pk]), request.GET.urlencode(), score.parameter.code)
     redirect = redirect.replace("%","%%")
     if method == 'delete':
-      title = _('Delete score %s') % score.parameter
-      if request.user.has_perm('exmo2010.delete_score', score):
-        return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
-      else: return HttpResponseForbidden(_('Forbidden'))
+        title = _('Delete score %s') % score.parameter
+        if request.user.has_perm('exmo2010.delete_score', score):
+            return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
+        else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
         return score_view(request, score.pk)
     elif method == 'view':
@@ -98,10 +98,10 @@ def score_view(request, score_id):
 
     if user.has_perm('exmo2010.edit_score', score):
         redirect = "%s?%s#parameter_%s" % (
-        reverse('exmo2010:score_list_by_task',
-            args=[score.task.pk]),
-        request.GET.urlencode(),
-        score.parameter.code)
+            reverse('exmo2010:score_list_by_task',
+                args=[score.task.pk]),
+            request.GET.urlencode(),
+            score.parameter.code)
         redirect = redirect.replace("%","%%")
         title = _('Edit score %s') % score.parameter
         if request.method == 'POST':
@@ -302,15 +302,15 @@ def score_list_by_task(request, task_id, report=None):
             place_npa = place_other = None
             parameters_npa = None
             parameters_other = parameters
-            # Не показываем ссылку экспертам B или предатвителям, если статус
-            # мониторинга отличается от "Опубликован".
-            if (request.user.profile.is_expertB or
-                request.user.profile.is_organization)\
-                and monitoring.status != Monitoring.MONITORING_PUBLISH\
-                and not request.user.is_superuser:
-                show_link = False
-            else:
-                show_link = True
+        # Не показываем ссылку экспертам B или предатвителям, если статус
+        # мониторинга отличается от "Опубликован".
+        if (request.user.profile.is_expertB or
+            request.user.profile.is_organization)\
+            and monitoring.status != Monitoring.MONITORING_PUBLISH\
+            and not request.user.is_superuser:
+            show_link = False
+        else:
+            show_link = True
         extra_context.update(
             {
                 'score_dict': score_dict,
@@ -326,7 +326,7 @@ def score_list_by_task(request, task_id, report=None):
                 'form': form,
                 'invcodeform': SettingsInvCodeForm(),
                 'show_link': show_link,
-            }
+                }
         )
         return render_to_response(
             'exmo2010/score_list.html',
@@ -341,13 +341,13 @@ def score_add_comment(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
     if request.user.has_perm('exmo2010.comment_score', score):
         return render_to_response(
-                'exmo2010/score_comment_form.html',
-                {
-                    'score': score,
-                    'title': _('Add new comment'),
+            'exmo2010/score_comment_form.html',
+            {
+                'score': score,
+                'title': _('Add new comment'),
                 },
-                context_instance=RequestContext(request),
-                )
+            context_instance=RequestContext(request),
+        )
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
