@@ -307,16 +307,11 @@ def log_monitoring_interact_activity(monitoring, user):
     Функция для ведения журнала посещений представителя организации
      на стадии взаимодействия
     """
-    if (monitoring.is_interact and user.is_active and
-        user.profile.is_organization):
-        if not MonitoringInteractActivity.objects.filter(
-            monitoring=monitoring,
-            user=user,
-        ).exists():
-            log = MonitoringInteractActivity(
-                        monitoring=monitoring,
-                        user=user,
-                    )
+    if (monitoring.is_interact and user.profile.is_organization
+            and not user.is_superuser):
+        if not MonitoringInteractActivity.objects.filter(monitoring=monitoring,
+                                                         user=user).exists():
+            log = MonitoringInteractActivity(monitoring=monitoring, user=user)
             try:
                 log.save()
             except IntegrityError:

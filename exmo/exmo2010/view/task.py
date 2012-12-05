@@ -30,7 +30,6 @@ from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from reversion import revision
 from exmo2010.forms import TaskForm, SettingsInvCodeForm
-from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table
 from exmo2010.models import Organization, Parameter, Score, Task
 from exmo2010.models import Monitoring, Claim
@@ -260,7 +259,6 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     profile = None
     if user.is_active: profile = user.profile
     if not user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    log_monitoring_interact_activity(monitoring, user)
     title = _('Task list for %(org)s') % { 'org': organization.name }
     queryset = Task.objects.filter(organization = organization)
     # Or, filtered by user
@@ -457,7 +455,6 @@ def tasks_by_monitoring(request, monitorgin_id):
         profile = request.user.profile
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    log_monitoring_interact_activity(monitoring, request.user)
     title = _('Task list for %(monitoring)s') % {'monitoring': monitoring}
     task_list = []
     queryset = Task.objects.filter(organization__monitoring=monitoring).\

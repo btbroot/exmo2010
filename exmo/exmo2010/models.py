@@ -202,8 +202,7 @@ class Monitoring(models.Model):
 
     def statistics(self):
         """
-        Метод возращающий словарь `MONITORING_STAT_DICT` со статистикой по мониторингу.
-        См. описание словаря
+        Метод, возвращающий словарь со статистикой по мониторингу.
         """
         stat = MONITORING_STAT_DICT
         stat['organization'] = self.organization_set.count()
@@ -214,9 +213,8 @@ class Monitoring(models.Model):
             groups__name='organizations',
             userprofile__organization__in=self.organization_set.all()
         ).count()
-        stat['organization_users_active'] = MonitoringInteractActivity.objects.filter(
-            monitoring=self,
-        ).count()
+        stat['organization_users_active'] = MonitoringInteractActivity.\
+            objects.filter(monitoring=self,).count()
         stat['expert'] = Task.objects.filter(
             organization__monitoring=self
         ).aggregate(count=Count('user', distinct=True))['count']

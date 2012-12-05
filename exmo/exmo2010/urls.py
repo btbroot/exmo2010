@@ -28,7 +28,7 @@ urlpatterns = patterns('',
         name='score_view'),
     url(r'^scores/(\d+)/(print|printfull)?$',
         'exmo2010.view.score.score_list_by_task', name='score_list_by_task'),
-    url(r'^score/(\d+)/comment/add$', 'exmo2010.view.score.score_add_comment',
+    url(r'^score/(\d+)/comment/add/$', 'exmo2010.view.score.score_add_comment',
         name='score_add_comment'),
 
     url(r'^score/(\d+)/claim/add$', 'exmo2010.view.claim.claim_manager',

@@ -20,6 +20,7 @@
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
+from django.contrib.comments.signals import comment_was_posted
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -124,8 +125,6 @@ def score_view(request, score_id):
         )
     elif request.user.has_perm('exmo2010.view_score', score):
         #представители имеют права только на просмотр
-        log_monitoring_interact_activity(score.task.organization.monitoring,
-            request.user)
         title = _('View score %s') % score.parameter
         return object_detail(
             request,
@@ -151,7 +150,6 @@ def score_list_by_task(request, task_id, report=None):
     monitoring = task.organization.monitoring
     parameters = Parameter.objects.filter(monitoring=monitoring).exclude\
         (exclude=task.organization)
-    log_monitoring_interact_activity(monitoring, request.user)
     headers=(
         (_('Code'), None, None, None, None),
         (_('Parameter'), 'name', 'name', None, None),
@@ -302,7 +300,7 @@ def score_list_by_task(request, task_id, report=None):
 @csrf_protect
 @login_required
 def score_add_comment(request, score_id):
-    score = get_object_or_404(Score, pk = score_id)
+    score = get_object_or_404(Score, pk=score_id)
     if request.user.has_perm('exmo2010.comment_score', score):
         return render_to_response(
                 'exmo2010/score_comment_form.html',
@@ -341,3 +339,18 @@ def score_comment_unreaded(request, score_id):
             context_instance=RequestContext(request))
     else:
         raise Http404
+
+
+def log_user_activity(**kwargs):
+    """
+    Функция - обработчик сигнала при создании нового комментария.
+    """
+    comment = kwargs['comment']
+    if comment.content_type.model == 'score':
+        score = Score.objects.get(pk=comment.object_pk)
+        log_monitoring_interact_activity(score.task.organization.monitoring,
+                                         comment.user)
+
+
+# Регистрируем обработчик сигнала.
+comment_was_posted.connect(log_user_activity)

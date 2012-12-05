@@ -22,7 +22,6 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from exmo2010.forms import OrganizationForm, SettingsInvCodeForm
-from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Task
 from exmo2010.models import Monitoring
 from exmo2010.view.helpers import table
@@ -31,7 +30,6 @@ from exmo2010.view.helpers import table
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    log_monitoring_interact_activity(monitoring, request.user)
     title = _('Organizations for monitoring %(name)s') % {'name': monitoring}
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring = monitoring).extra(

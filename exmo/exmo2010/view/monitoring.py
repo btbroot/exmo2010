@@ -38,7 +38,6 @@ from django.views.generic.create_update import  delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory, modelformset_factory
-from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
 from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
@@ -279,7 +278,6 @@ def monitoring_rating(request, m_id):
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
 
-    log_monitoring_interact_activity(monitoring, request.user)
     has_npa = monitoring.has_npa
     rating_type, parameter_list, form = rating_type_parameter(request,
         monitoring, has_npa)
