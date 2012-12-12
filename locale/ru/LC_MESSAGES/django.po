@@ -846,8 +846,8 @@ msgstr "Добавить претензию для %s"
 
 #: exmo/exmo2010/view/claim.py:77
 #, python-format
-msgid "Claims report for %(monitoring)s"
-msgstr "Отчёт претензий для %(monitoring)s"
+msgid "Claims report for \"%(monitoring)s\""
+msgstr "Претензии по циклу мониторинга \"%(monitoring)s\""
 
 #: exmo/exmo2010/view/claim.py:95
 #, python-format
@@ -2514,6 +2514,18 @@ msgstr "Комментариев нет"
 msgid "Time and date"
 msgstr "Время и дата"
 
+msgid "addressee"
+msgstr "кому выставили"
+
+msgid "Date and time"
+msgstr "Время и дата"
+
+msgid "Claim addressee"
+msgstr "Кому выставили"
+
+msgid "Claim creator"
+msgstr "Кто выставил"
+
 msgid "Link to claim"
 msgstr "Ссылка на претензию"
 
@@ -2526,7 +2538,7 @@ msgstr "Ссылка на уточнение"
 msgid "Without answer"
 msgstr "Без ответа"
 
-msgid "Trimmed"
+msgid "Processed"
 msgstr "Обработанные"
 
 msgid "go to claim"
@@ -2537,3 +2549,9 @@ msgstr "перейти к комментарию"
 
 msgid "go to clarification"
 msgstr "перейти к уточнению"
+
+msgid "all experts"
+msgstr "все аналитики"
+
+msgid "all managers"
+msgstr "все руководители"

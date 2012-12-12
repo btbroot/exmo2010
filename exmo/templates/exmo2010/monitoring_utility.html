@@ -33,7 +33,9 @@
   <a href="{% url exmo2010:monitoring_by_experts monitoring.pk %}">{% trans 'Experts' %}</a> /
   <a href="{% url exmo2010:task_mass_assign_tasks monitoring.pk %}">{% trans 'Mass assign' %}</a> /
   <a href="{% url exmo2010:monitoring_by_criteria_mass_export monitoring.pk %}">{% trans 'Export by criteria' %}</a> /
-  <a href="{% url exmo2010:claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
+  {% if request.user.profile.is_expertA %}
+    <a href="{% url exmo2010:claim_report monitoring.pk %}">{% trans 'Claim report' %}</a> /
+  {% endif %}
   {% if monitoring.has_questionnaire %}
     <a
     {% if not monitoring.ready_export_answers %}

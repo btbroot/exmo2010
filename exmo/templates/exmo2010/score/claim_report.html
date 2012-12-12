@@ -23,6 +23,17 @@
 {% url django.views.i18n.javascript_catalog as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
 {{ media }}
+<script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#id_addressee').change(function () {
+            $('#cform').submit();
+        });
+        $('#id_creator').change(function () {
+            $('#cform').submit();
+        });
+    });
+</script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -34,31 +45,57 @@
 {% block pretitle %}
 {% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}
+
 {% block content %}
-<p>{{ form.non_field_errors }}</p>
-<form method="post" action="">{% csrf_token %}
-  {{ form.as_p }}
-  <p><input type="submit" /><input class="button" type="reset" /></p>
-</form>
-{% if claims %}
-<div id=claim_list>
-    <table id=claim_table>
-    <thead>
-    <th>{% trans 'Open date' %}</th>
-    <th>{% trans 'Close date' %}</th>
-    <th>{% trans 'Organization' %}</th>
-    <th>{% trans 'Parameter' %}</th>
-    </thead>
-    <tbody>
-    {% for claim in claims %}
-        <tr>
-        <td>{{claim.open_date}}</td>
-        <td>{{claim.close_date}}</td>
-        <td>{{claim.score.task.organization}}</td>
-        <td><a href="{% url exmo2010:score_view claim.score.pk %}">{{claim.score.parameter}}</a></td>
-    {% endfor %}
-    </tbody>
-    </table>
-</div>
-{% endif %}
+    <form action="" method="post" id="cform">
+        {% csrf_token %}
+        <table>
+            <thead>
+            <tr>
+                <td>{% trans 'Date and time' %}</td>
+                <td>{% trans 'Claim addressee' %}<br/>{{ form.addressee }}</td>
+                <td>{% trans 'Claim creator' %}<br/>{{ form.creator }}</td>
+                <td>{% trans 'Link to claim' %}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% if opened_claims %}
+                <tr>
+                    <th colspan="4" style="color: red; text-align: left;">{% trans 'Without answer' %}
+                        ({{ opened_claims.count }})
+                    </th>
+                </tr>
+                {% for op in opened_claims %}
+                    <tr>
+                        <td>{{ op.open_date|date:"H:i d.m.Y" }}</td>
+                        <td>{{ op.addressee.first_name }} {{ op.addressee.last_name }}</td>
+                        <td>{{ op.creator.first_name }} {{ op.creator.last_name }}</td>
+                        <td>
+                            <a href="{% url exmo2010:score_view op.score.pk %}" target="_blank">{% trans 'go to claim' %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% endif %}
+            {% if closed_claims %}
+                <tr>
+                    <th colspan="4" style="text-align: left;">{% trans 'Processed' %}
+                        ({{ closed_claims.count }})
+                    </th>
+                </tr>
+                {% for cp in closed_claims %}
+                    <tr>
+                        <td>{{ cp.open_date|date:"H:i d.m.Y" }}</td>
+                        <td>{{ cp.addressee.first_name }} {{ cp.addressee.last_name }}</td>
+                        <td>{{ cp.creator.first_name }} {{ cp.creator.last_name }}</td>
+                        <td>
+                            <a href="{% url exmo2010:score_view cp.score.pk %}" target="_blank">{% trans 'go to claim' %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% endif %}
+            </tbody>
+        </table>
+    </form>
 {% endblock %}

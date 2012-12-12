@@ -143,42 +143,52 @@ def claim_delete(request):
     raise Http404
 
 
-@csrf_protect
 @login_required
 def claim_report(request, monitoring_id):
     """
-    Отчёт по претензиям
+    Отчёт по претензиям.
     """
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    title = _('Claims report for %(monitoring)s') % { 'monitoring': monitoring }
-    claims = queryset = None
-    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        queryset = User.objects.filter(task__score__claim__isnull = False, task__organization__monitoring = monitoring).annotate()
-    elif request.user.is_expert:
-        queryset = User.objects.filter(pk = request.user.pk)
-    else:
+    if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
-    if request.method == 'GET':
-        form = ClaimReportForm()
-        form.fields['from_date'].initial = datetime.now() - timedelta(days=30)
-        form.fields['to_date'].initial = datetime.now()
-    elif request.method == 'POST':
-        form = ClaimReportForm(request.POST)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    title = _('Claims report for "%(monitoring)s"') % {'monitoring':
+                                                           monitoring}
+    all_claims = Claim.objects.filter(
+        score__task__organization__monitoring=monitoring).order_by("open_date")
+    opened_claims = all_claims.filter(close_date__isnull=True)
+    closed_claims = all_claims.filter(close_date__isnull=False)
+    addressee_id_list = all_claims.order_by().values_list(
+        "addressee", flat=True).distinct()
+    creator_id_list = all_claims.order_by().values_list(
+        "creator", flat=True).distinct()
+
+    if request.method == "POST":
+        form = ClaimReportForm(request.POST, creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list)
         if form.is_valid():
-            user = form.cleaned_data['expert']
-            from_date = form.cleaned_data['from_date']
-            to_date = form.cleaned_data['to_date']
-            title = title + _(' for expert %s') % user
-            claims = Claim.objects.filter(score__task__organization__monitoring = monitoring, score__task__user = user, open_date__gte = from_date, open_date__lte = to_date)
-    form.fields['expert'].queryset = queryset
+            cd = form.cleaned_data
+            creator_id = int(cd["creator"])
+            addressee_id = int(cd["addressee"])
+            if creator_id != 0:
+                opened_claims = opened_claims.filter(creator__id=creator_id)
+                closed_claims = closed_claims.filter(creator__id=creator_id)
+            if addressee_id != 0:
+                opened_claims = opened_claims.filter(
+                    addressee__id=addressee_id)
+                closed_claims = closed_claims.filter(
+                    addressee__id=addressee_id)
+    else:
+        form = ClaimReportForm(creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list)
+
     return render_to_response(
             'exmo2010/score/claim_report.html',
             {
                 'monitoring': monitoring,
                 'title': title,
+                'opened_claims': opened_claims,
+                'closed_claims': closed_claims,
                 'form': form,
-                'media': CORE_MEDIA+form.media,
-                'claims': claims,
             },
             context_instance=RequestContext(request),
      )

@@ -263,15 +263,27 @@ class ClaimForm(forms.Form):
 
 class ClaimReportForm(forms.Form):
     """
-    Форма для отчета по претензиям
+    Форма для отчета по претензиям.
     """
-    expert = forms.ModelChoiceField(queryset = User.objects.all(), label=_('expert'))
-    from_date = forms.DateTimeField(label=_('from date'),
-        widget=widgets.AdminSplitDateTime,
-        input_formats=DATETIME_INPUT_FORMATS)
-    to_date = forms.DateTimeField(label=_('to date'),
-        widget=widgets.AdminSplitDateTime,
-        input_formats=DATETIME_INPUT_FORMATS)
+    creator = forms.ChoiceField()
+    addressee = forms.ChoiceField()
+
+    def __init__(self, *args, **kwargs):
+        creator_id_list = kwargs.pop("creator_id_list")
+        addressee_id_list = kwargs.pop("addressee_id_list")
+        super(ClaimReportForm, self).__init__(*args, **kwargs)
+        creator_choices = [(0, _("all managers"))]
+        for i in creator_id_list:
+            user = User.objects.get(pk=i)
+            name = "%s %s" % (user.first_name, user.last_name)
+            creator_choices.append((i, name))
+        self.fields['creator'].choices = creator_choices
+        addressee_choices = [(0, _("all experts"))]
+        for i in addressee_id_list:
+            user = User.objects.get(pk=i)
+            name = "%s %s" % (user.first_name, user.last_name)
+            addressee_choices.append((i, name))
+        self.fields['addressee'].choices = addressee_choices
 
 
 class MonitoringForm(forms.ModelForm):

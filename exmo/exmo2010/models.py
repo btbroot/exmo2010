@@ -1038,10 +1038,12 @@ class Claim(models.Model):
 
     # Кто закрыл претензию.
     close_user = models.ForeignKey(User, null=True, blank=True,
-                                   verbose_name=_('user who close'), related_name='close_user')
+        verbose_name=_('user who close'), related_name='close_user')
     # Кто создал претензию.
     creator = models.ForeignKey(User, verbose_name=_('creator'),
                                 related_name='creator')
+    addressee = models.ForeignKey(User, verbose_name=_('addressee'),
+        related_name='addressee')
 
     def add_answer(self, user, answer):
         cleaner = Cleaner()
@@ -1055,6 +1057,16 @@ class Claim(models.Model):
     def __unicode__(self):
         return _('claim for %(score)s from %(creator)s') %\
                {'score': self.score, 'creator': self.creator}
+
+    def save(self, *args, **kwargs):
+        """
+        Переопределяем метод save для того, чтобы автоматически заполнять
+        значение поля`addressee`, но только в момент первоначального создания
+        экземпляра модели.
+        """
+        if not self.id:  # Экземпляр новый.
+            self.addressee = self.score.task.user
+        super(Claim, self).save(*args, **kwargs)
 
     class Meta:
         permissions = (("view_claim", "Can view claim"),)
