@@ -485,7 +485,6 @@ def tasks_by_monitoring(request, monitorgin_id):
         headers = (
             (_('organization'), 'organization__name', 'organization__name',
              None, None),
-            (_('complete, %'), None, None, None, None),
             )
 
     return table(
@@ -500,7 +499,6 @@ def tasks_by_monitoring(request, monitorgin_id):
             },
         template_name = "exmo2010/task_list.html",
         )
-
 
 
 @login_required

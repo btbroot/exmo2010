@@ -122,12 +122,12 @@
                 </thead>
                 <tbody>
                 {% for object in object_list %}
-                    <tr class="{%if forloop.counter|divisibleby:'2'%}row2{%else%}row1{%endif%} {%ifchanged object.place%}rating-top-border{%endifchanged%}">
+                    <tr class="{% if forloop.counter|divisibleby:'2' %}row2{% else %}row1{% endif %}{% if forloop.last %} rating-bottom-border{% endif %}{% ifchanged object.place %} rating-top-border{% endifchanged %}">
                         {% ifchanged object.place %}
-                            <td rowspan={{object.place_count}} align='center' style="vertical-align:middle; background: none repeat scroll 0 0 white;">{{ object.place }}</td>
+                            <td rowspan="{{ object.place_count }}" align="center" style="vertical-align:middle; background: none repeat scroll 0 0 white;">{{ object.place }}</td>
                         {% endifchanged %}
-                        <td>{{ object.task.organization.name }}</td>
-                        <td><a href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
+                        <td><a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task.organization.name }}</a></td>
+                        <td><a target="_blank" href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
                         {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
                             {% if rating_type == "all" %}
                                 <td>{{ object.openness_first|floatformat:3 }}</td>
@@ -146,7 +146,7 @@
                     <td>{{ average.openness|floatformat:3 }}</td>
                 </tr>
                 <tr style="font-weight: bold">
-                    <td colspan=
+                    <td colspan="
                                 {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
                                     {% if rating_type == "all" %}
                                     4
@@ -155,7 +155,7 @@
                                     {% endif %}
                                 {% else %}
                                     3
-                                {% endif %}>
+                                {% endif %}">
                     {% trans 'Total organizations' %}
                     </td>
                     <td>{{ object_list|length }}</td>

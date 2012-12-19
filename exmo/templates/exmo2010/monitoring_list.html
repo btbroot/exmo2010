@@ -43,29 +43,35 @@
 <table>
   {% table_header headers %}
   <tbody>
-    <tr><td colspan=2>
+    <tr>
+        <td colspan=2>
         {% check_object_permission exmo2010.create_monitoring fakeobject as perm %}
-        {%if perm%}
+        {% if perm %}
             <a href="{% url exmo2010:monitoring_add %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
-        {%endif%}
-    </td></tr>
+        {% endif %}
+        </td>
+    </tr>
     {% for object in object_list %}
-      <tr>
+    <tr>
       <td>
-      <a href="{% url exmo2010:tasks_by_monitoring object.pk %}">{{ object.name }}</a>
+      {% if not request.user.is_authenticated and object.is_publish or request.user.profile.is_organization and object.is_publish %}
+        <a href="{% url exmo2010:monitoring_rating object.pk %}">{{ object }}</a>
+      {% else %}
+        <a href="{% url exmo2010:tasks_by_monitoring object.pk %}">{{ object.name }}</a>
         {% check_object_permission exmo2010.edit_monitoring object as perm %}
         {% if perm %}
-            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
-        {%endif%}
+            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+        {% endif %}
         {% check_object_permission exmo2010.admin_monitoring object as perm %}
         {% if perm and not object.is_publish %}
-            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
-        {%endif%}
+            &nbsp;<a href="{% url exmo2010:monitoring_manager object.pk 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
+        {% endif %}
+      {% endif %}
       </td>
       <td>
-            {% monitoring_status object.status %}
+        {% monitoring_status object.status %}
       </td>
-      </tr>
+    </tr>
     {% endfor %}
   </tbody>
 </table>

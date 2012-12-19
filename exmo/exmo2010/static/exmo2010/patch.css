@@ -32,6 +32,12 @@ li, dt, dd, td, th, thead th, tfoot td, select, input {
     font-size: 13px;
     line-height: 16px;
 }
+
+th.table-headers
+{
+    background-image: none;
+}
+
 h2 {
     font-size: 15px;
 }
