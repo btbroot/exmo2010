@@ -88,7 +88,6 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 --
 
 static/exmo2010/icon_newcomment.png
@@ -96,7 +95,6 @@ static/exmo2010/icon_newcomment.png
 Copyright (c) Delacro <delacro@gmail.com>
 http://www.ineversay.com/my-works/xiao-icon.html:
 "All 72 icons,PNG format.Feel free to use them without any permission.Hope you like them"
-
 
 --
 
@@ -110,7 +108,6 @@ http://www.facebook.com/brandpermissions/logos.php
     Приложение, которое вы предлагаете на платформе Facebook
     Ваше выполнение Facebook Connect
 
-
 --
 
 static/exmo2010/socialauth/VK.png
@@ -118,3 +115,60 @@ static/exmo2010/socialauth/VK.png
 Copyright (c) ВКонтакте 2006-2012
 http://vk.com/help.php?page=about
 Логотипы являются зарегистрированными товарными знаками ООО «В Контакте».
+
+--
+
+static/exmo2010/img/arrow_down_parameters.png
+static/exmo2010/img/arrow_up_parameters.png
+
+Copyright (c) Yusuke Kamiyamane
+http://p.yusukekamiyamane.com/
+
+License: Creative Commons (Attribution 3.0 Unported)
+http://creativecommons.org/licenses/by/3.0/
+
+--
+
+static/exmo2010/css/images
+
+Copyright 2012 jQuery Foundation and other contributors
+http://jquery.com/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+--
+
+static/exmo2010/img/calendar.gif
+
+Copyright (c) Gentleface.com
+http://www.gentleface.com/
+
+License: Creative Commons Attribution Non-commercial (by-nc)
+http://creativecommons.org/licenses/by-nc/3.0/
+
+--
+
+static/exmo2010/img/ajax-loader.gif
+
+Copyright (c) Yannick Croissant, Kath
+http://www.ajaxload.info/
+"Generated gifs are totally free for use"
+
+
