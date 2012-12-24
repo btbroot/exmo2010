@@ -264,12 +264,12 @@ def score_list_by_task(request, task_id, report=None):
             place_npa = place_other = None
             parameters_npa = None
             parameters_other = parameters
-        # Не показываем ссылку экспертам B или предатвителям, если статус
+        # Не показываем ссылку экспертам B или представителям, если статус
         # мониторинга отличается от "Опубликован".
-        if (request.user.profile.is_expertB or
-            request.user.profile.is_organization) \
-           and monitoring.status != Monitoring.MONITORING_PUBLISH \
-           and not request.user.is_superuser:
+        if (monitoring.status != Monitoring.MONITORING_PUBLISH
+            and (request.user.profile.is_expertB
+                 or request.user.profile.is_organization)
+            and not request.user.is_superuser):
             show_link = False
         else:
             show_link = True
