@@ -84,6 +84,7 @@
                 <td>{% trans 'Monitoring rate begin date' %}</td>
                 <td class="value">{{ monitoring.rate_date|date:"d F Y" }}</td>
             </tr>
+            {% if not monitoring.no_interact %}
             <tr>
                 <td>{% trans 'Monitoring interact start date' %}</td>
                 <td class="value">{{ monitoring.interact_date|date:"d F Y" }}</td>
@@ -92,6 +93,7 @@
                 <td>{% trans 'Monitoring interact end date' %}</td>
                 <td class="value">{{ monitoring.finishing_date|date:"d F Y" }}</td>
             </tr>
+            {% endif %}
             <tr>
                 <td>{% trans 'Monitoring publish date' %}</td>
                 <td class="value">{{ monitoring.publish_date|date:"d F Y" }}</td>

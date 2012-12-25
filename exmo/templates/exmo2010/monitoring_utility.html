@@ -24,7 +24,7 @@
   <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{% trans 'Tasks' %}</a> /
 {% if request.user.userprofile.is_expert or request.user.is_superuser %}
   <a href="{% url exmo2010:monitoring_parameter_filter monitoring.pk %}">{% trans 'Parameter-criteria filter' %}</a> /
-  {% if request.user.userprofile.is_expertA %}
+  {% if request.user.userprofile.is_expertA and not monitoring.no_interact %}
   <a href="{% url exmo2010:monitoring_comment_report monitoring.pk %}">{% trans 'Comment report' %}</a> /
   {% endif %}
 {% endif %}

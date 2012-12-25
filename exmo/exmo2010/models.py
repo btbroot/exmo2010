@@ -124,6 +124,8 @@ class Monitoring(models.Model):
     time_to_answer = models.PositiveSmallIntegerField(
         default=3,
         verbose_name=_('Maximum time to answer'))
+    no_interact = models.BooleanField(default=False,
+                                      verbose_name=_('No interact stage'))
 
     def __unicode__(self):
         return '%s' % self.name

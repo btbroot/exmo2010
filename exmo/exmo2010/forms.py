@@ -250,9 +250,15 @@ class MonitoringForm(forms.ModelForm):
     Форма редактирования/создания мониторинга
     """
     status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS,
-        label=_('status'))
+        label=_('Status'))
     add_questionnaire = forms.BooleanField(required=False,
         label=_('Add questionnaire'))
+
+    def __init__(self, *args, **kwargs):
+        super(MonitoringForm, self).__init__(*args, **kwargs)
+        self.fields.keyOrder = ['name', 'status', 'openness_expression',
+                                'add_questionnaire', 'no_interact']
+
     class Meta:
         model = Monitoring
         exclude = ('time_to_answer',)

@@ -939,7 +939,7 @@ msgstr "Дата взаимодействия не указана"
 #: exmo/exmo2010/view/monitoring.py:888
 #, python-format
 msgid "Comment report for %(monitoring)s"
-msgstr "Отчёт по комментариями для %(monitoring)s"
+msgstr "Отчёт по комментариям для %(monitoring)s"
 
 #: exmo/exmo2010/view/organization.py:35
 #, python-format
@@ -2438,3 +2438,6 @@ msgstr "Для получения доступа к новому циклу мо
 #: 404.html:34
 msgid "Go back or go <a href='/'>Dashboard</a>."
 msgstr "Вернитесь назад или перейдите на <a href='/'>Главную</a>."
+
+msgid "No interact stage"
+msgstr "Без этапа взаимодействия"
