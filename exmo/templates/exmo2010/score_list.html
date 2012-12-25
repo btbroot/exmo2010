@@ -67,9 +67,9 @@
     {% if has_npa %}
     <br />
     {% trans 'Openness for npa parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
-    {% if place_npa %}&nbsp;(({% if show_link %}<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=npa">{{ place_npa }} {% trans 'place' %}</a>{% else %}<span style='color:red;'>{{ place_npa }} {% trans 'place' %}</span>{% endif %}){%endif%}<br />
+    {% if place_npa %}&nbsp;({% if show_link %}<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=npa">{{ place_npa }} {% trans 'place' %}</a>{% else %}<span style='color:red;'>{{ place_npa }} {% trans 'place' %}</span>{% endif %}){%endif%}<br />
     {% trans 'Openness for other parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
-    {% if place_other %}&nbsp;(({% if show_link %}<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=other">{{ place_other }} {% trans 'place' %}</a>{% else %}<span style='color:red;'>{{ place_other }} {% trans 'place' %}</span>{% endif %}){%endif%}
+    {% if place_other %}&nbsp;({% if show_link %}<a target="_blank" style='color:red;' href="{% url exmo2010:monitoring_rating task.organization.monitoring.pk %}?type=other">{{ place_other }} {% trans 'place' %}</a>{% else %}<span style='color:red;'>{{ place_other }} {% trans 'place' %}</span>{% endif %}){%endif%}
     {% endif %}
 </h2>
 
