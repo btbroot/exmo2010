@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     url(r'^license.txt$', direct_to_template,
         {'template': 'license.txt', 'mimetype': 'text/plain'},
         name='license'),
+    url(r'^ckeditor/', include('ckeditor.urls')),
 )
 
 if settings.DEBUG:

@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments check_object_permission %}
+{% load i18n comments check_object_permission days_until %}
 {% check_object_permission exmo2010.comment_score object as can_comment %}
 {% check_object_permission exmo2010.view_comment_score object as can_view_comment %}
 
@@ -25,40 +25,62 @@
 
     {% get_comment_list for object as comment_list %}
     {% if comment_list %}
-        <h3 class="heading-comments-parameter">{% trans 'Comments' %}</h3>
         <table class="table-comments-parameter">
             <tbody>
             {% for comment in comment_list %}
                 <tr id="c{{ comment.id }}">
-                    <td class="author">
-                        {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
-                            {% if user.userprofile.is_expert or user.is_superuser %}
+                    <td
+                    {% with comment.submit_date|days_until:object.parameter.monitoring.time_to_answer as days_remaining %}
+                    {% if request.user.profile.is_internal and comment.user.profile.is_organization and comment.status == 0 %}
+                        {% if days_remaining < 0 %}class="answer-missed"{% endif %}
+                        {% if days_remaining == 0 %}class="answer-today"{% endif %}
+                        {% if days_remaining > 0 %}class="answer-later"{% endif %}
+                    {% endif %}
+                    {% if request.user.profile.is_expertA %}
+                        {% if days_remaining < 0 %}data-class="answer-missed"{% endif %}
+                        {% if days_remaining == 0 %}data-class="answer-today"{% endif %}
+                        {% if days_remaining > 0 %}data-class="answer-later"{% endif %}
+                    {% endif %}
+                    {% endwith %}
+                    >
+                        <span class="author">
+                        {% if comment.user.userprofile.is_expert %}
+                            {% if request.user.userprofile.is_expert %}
                                 {{ comment.user_name }}
                             {% else %}
                                 {% trans 'Foundation Analyst' %}
                             {% endif %}
                         {% else %}
-                            {{ comment.user_name }}
+                            {% if not comment.user.first_name or not comment.user.last_name %}
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
+                            {% else %}
+                                {{ comment.user.email }}
+                            {% endif %}
                         {% endif %}
-                        <br />
-                        <span>
-                            {{ comment.submit_date|date:"H:i d.m.Y" }}
                         </span>
-                    </td>
-                    <td>
-                        {{ comment.comment|safe }}<br />
+
+                        <span class="comment-date">
+                        {{ comment.submit_date|date:"H:i d.m.Y" }}
+                        </span>
+
+                        <div class="comment-content">
+                            {{ comment.comment|safe }}
+                        </div>
+
                         {% if request.user.userprofile.is_expertA and comment.user.userprofile.is_organization %}
+                        <div class="toggle-comment-container">
                             {% url exmo2010:toggle_comment as toggle_url %}
                             <a class="toggle-comment"
                                style="border-bottom: 1px dashed;"
                                href="{{ toggle_url }}"
                                rel="{{ comment.pk }}">
                                 {% if comment.status == 0 %}
-                                    {% trans 'Close comment' %}
+                                    {% trans 'Close without answer' %}
                                 {% else %}
                                     {% trans 'Open comment' %}
                                 {% endif %}
                             </a>
+                        </div>
                         {% endif %}
                     </td>
                 </tr>
@@ -74,7 +96,7 @@
 {% if can_comment %}
 
     {% if peremptory_day %}
-        <div style="background-color: pink">
+        <div class="notification-peremptory">
             {% trans 'Peremptory day to answer your question is' %}
             {{ peremptory_day|date:"j F Y" }}
         </div>
@@ -101,11 +123,9 @@
             <label class="label-comment">{{ form.email.label }}</label>
             <br />
             {{ form.email }}
-            <br />
         {% endif %}
         {{ form.comment }}
         {% wysiwyg_editor "id_comment" %}
-        <br />
         <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
         <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post' %}">
     </form>

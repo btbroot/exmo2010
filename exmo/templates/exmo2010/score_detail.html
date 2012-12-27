@@ -24,6 +24,7 @@
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_comments.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
 {% endblock %}
 
@@ -131,6 +132,7 @@
     </dd>
 </dl>
 
+<h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
 {% include "exmo2010/score_comment.html" %}
 
 {% endblock %}

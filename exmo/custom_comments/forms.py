@@ -46,7 +46,7 @@ class CustomCommentForm(CommentForm):
     def get_comment_create_data(self):
         data = super(CustomCommentForm, self).get_comment_create_data()
         # Очистка от XSS
-        cleaner = Cleaner(safe_attrs_only=False)
+        cleaner = Cleaner()
         data['comment'] = cleaner.clean_html(data['comment'])
         # Условие, чтобы формы в шаблонах без поля не отправляли пустую строку
         return data

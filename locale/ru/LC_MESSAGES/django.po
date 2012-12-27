@@ -2016,6 +2016,10 @@ msgstr "Импортировать задачу из CSV"
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
+#: exmo/templates/exmo2010/set_npa_params.html:49
+msgid "Reset selection"
+msgstr "Сбросить выделение"
+
 #: exmo/templates/exmo2010/task_confirm_delete.html:32
 msgid "When you delete task you also delete this scores:"
 msgstr "При удалении задачи Вы так же удалите следующие оценки:"
@@ -2447,7 +2451,7 @@ msgstr "Рекомендации"
 msgid "Organization's website"
 msgstr "Сайт организации"
 
-msgid "The social importance of the parameter"
+msgid "Social importance of the parameter"
 msgstr "Социальная значимость параметра"
 
 msgid "high importance"
@@ -2467,3 +2471,4 @@ msgstr "Открыть комментарий"
 
 msgid "Reset"
 msgstr "Сбросить"
+

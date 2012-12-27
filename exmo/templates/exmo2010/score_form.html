@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_form.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_comments.css" />
 {% endblock %}
 
 {% block extrahead %}
@@ -32,38 +33,53 @@
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery.autosize.js"></script>
     <script type="text/javascript">
+        {# Изменение размера полей в зависимости от количеств строк #}
         $(document).ready(function(){
             $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
         });
     </script>
 
-    {% if request.user.is_superuser or request.user.userprofile.is_expertA %}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
+    <script type="text/javascript">
+        {# Открытие нужной вкладки в завимости по id (#tab_id) в URL #}
+        $(document).ready(function(){
+            var hash = window.location.hash;
+            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+        });
+    </script>
+
+    {% if request.user.userprofile.is_expertA %}
     <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
     <script type="text/javascript">
+        {# Открытие/закртие комментария #}
         $(document).ready(function() {
             var $anchor = $('a.toggle-comment');
 
             $anchor.click(function( e ) {
                 var $this = $(this)
                         , url = $this.attr('href')
-                        , pk = $this.attr('rel');
+                        , pk = $this.attr('rel')
+                        , openedClass = $this.closest('td').attr('data-class');
 
                 $.ajax({
                     type : "POST",
                     url: url,
-                    data : {pk: pk},
+                    data : {pk: pk, openedClass: openedClass},
                     dataType: "json",
                     success: function(data) {
                         if (data.success) {
                             $this.html('');
-                            if (data.status == 0)
+                            if (data.status == 0) {
                                 $this.append('{% trans 'Close without answer' %}');
-                            if (data.status == 2)
+                                $this.closest('td').addClass(openedClass);
+                            }
+                            if (data.status == 2) {
                                 $this.append('{% trans 'Open comment' %}');
+                                $this.closest('td').removeClass(openedClass);
+                            }
                         }
                     }
                 })
-
                 return false;
             });
         });
@@ -112,13 +128,12 @@
         <th class="value">
             {% trans "Value" %}
         </th>
-        <th>
+        <th class="explanation">
             {% trans "Explanation" %}
         </th>
     </thead>
 
     <tbody>
-
         <tr>
             <td>
                 <label>{{ form.found.label }}</label>
@@ -269,17 +284,13 @@
             </tr>
         {% endif %}
     {% endif %}
-
     </tbody>
-
 </table>
-
 
 <div class="recomendation-container">
 <h3 class="recomendation">{{ form.comment.label }}</h3>
 {{ form.comment }}
 </div>
-
 
 <input type="submit" value={% trans 'Save' %} />
 
@@ -288,7 +299,6 @@
         <input type="reset" value={% trans 'Reset' %} />
     </span>
 </span>
-
 
 {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
 {% if perm %}
@@ -299,11 +309,9 @@
     </span>
 {% endif %}
 
-
 </form>
 
 {% if object %}
-{% include "exmo2010/score_claim.html" %}
-{% include "exmo2010/score_comment.html" %}
+{% include "exmo2010/score_tabs.html" %}
 {% endif %}
 {% endblock %}

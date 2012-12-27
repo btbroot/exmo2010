@@ -107,12 +107,6 @@
     color: #333;
 }
 
-.heading-yourcomment-parameter
-{
-    color: #333;
-}
-
-
 .textarea-parameter
 {
     width: 55%;
@@ -236,35 +230,83 @@ label
 {
     float: left;
     display: block;
-    line-height: 22px;
     margin-bottom: 15px;
-}
-
-.score-header dd, .score-header dt
-{
-    float: left;
-    display: block;
+    line-height: 42px;
 }
 
 .score-header dt
 {
-    padding-right: 4px;
+    clear: both;
+
+    float: left;
+    display: block;
+
+    margin-top: 0px;
+    padding-right: 5px;
 }
 
 .score-header dd
 {
-    position: relative;
-    top: 3px;
-    line-height: 19px;
+    margin-bottom: 14px;
 }
 
-.score-header dt:after
+.score-header dd.parm-description
 {
-    content: ":"
+    clear: both;
+    display: block;
+    float: left;
+    margin-top: 1px;
+    line-height: 22px;
 }
 
-.score-header .parm-description
+/* Score Tabs */
+
+.tab-content
 {
-    position: relative;
-    top: -2px;
+    width: 100%;
+    float: left;
+    padding-top: 2px;
+}
+
+.tab-pane
+{
+    display: none;
+}
+
+.tab-pane.active
+{
+    display: block;
+}
+
+
+ul.nav-tabs
+{
+    display: block;
+    float: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 6px;
+}
+
+ul.nav-tabs li
+{
+    list-style-type: none;
+    float: left;
+    padding-right: 25px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+ul.nav-tabs li.active a
+{
+    color: #333;
+    border: 0;
+}
+
+ul.nav-tabs li > a
+{
+    border: 0;
+    border-bottom: 1px dashed;
 }

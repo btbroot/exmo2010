@@ -1,0 +1,117 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+
+.heading-comments-parameter
+{
+    margin-top: 34px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.table-comments-parameter {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.table-comments-parameter td {
+    padding: 8px;
+    line-height: 17px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+}
+
+.table-comments-parameter .author
+{
+    font-size: 13px;
+    width: 140px;
+    font-weight: bold;
+}
+
+.heading-yourcomment-parameter
+{
+    font-size: 13px;
+    color: #333;
+}
+
+.comment-date
+{
+    float: right;
+    font-size: 11px;
+    color: #666;
+}
+
+.comment-content
+{
+    padding: 0;
+    margin: 0;
+    padding-top: 10px;
+}
+
+.comment-content p
+{
+    padding: 0;
+    margin: 0;
+}
+
+.answer-missed
+{
+    background-color: #ffdddd;
+}
+
+.answer-today
+{
+    background-color: #ffffdd;
+}
+
+.answer-later
+{
+    background-color: #ddffdd;
+}
+
+.notification-peremptory
+{
+    padding: 5px;
+    font-size:14px;
+    font-weight: bold;
+    background-color: #ffdddd;
+}
+
+.toggle-comment-container
+{
+    margin-top: 7px;
+}
+
+.toggle-comment
+{
+    font-size:12px;
+    font-weight: bold;
+}
+
+.submit-post
+{
+    margin-top: 7px;
+}

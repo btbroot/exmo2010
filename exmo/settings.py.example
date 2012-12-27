@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'tagging_autocomplete',
     'registration',  # django-registration.
     'django_wysiwyg',
+    'ckeditor',
     # Custom Django apps
     'custom_comments',
     # Our own apps.
@@ -149,7 +150,11 @@ INSTALLED_APPS = (
 )
 
 COMMENTS_APP = 'custom_comments'
+
 CSRF_FAILURE_VIEW = 'exmo2010.custom_registration.views.csrf_failure'
+
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+CKEDITOR_UPLOAD_PATH = os.path.join(SITE_ROOT, '../media/')
 
 try:
     import django_extensions
