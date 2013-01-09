@@ -24,12 +24,14 @@
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_protect
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
 from exmo2010.models import Score, Clarification
 from exmo2010.forms import ClarificationAddForm
+from exmo2010.models import Monitoring
+from exmo2010.forms import ClarificationReportForm
+from django.http import HttpResponseForbidden
 
 
 @login_required
@@ -76,3 +78,55 @@ def clarification_create(request, score_id):
             )
     else:
         raise Http404
+
+
+@login_required
+def clarification_report(request, monitoring_id):
+    """
+    Отчёт по уточнениям.
+    """
+    if not request.user.profile.is_expertA:
+        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    title = _('Clarifications report for "%(monitoring)s"') % {'monitoring':
+                                                           monitoring.name}
+    all_clarifications = Clarification.objects.filter(
+        score__task__organization__monitoring=monitoring).order_by("open_date")
+    opened_claims = all_clarifications.filter(close_date__isnull=True)
+    closed_claims = all_clarifications.filter(close_date__isnull=False)
+    addressee_id_list = all_clarifications.select_related(
+        'score__task__user').values_list('id', flat=True)
+    creator_id_list = all_clarifications.order_by().values_list(
+        "creator", flat=True).distinct()
+
+    if request.method == "POST":
+        form = ClarificationReportForm(request.POST,
+                                       creator_id_list=creator_id_list,
+                                       addressee_id_list=addressee_id_list)
+        if form.is_valid():
+            cd = form.cleaned_data
+            creator_id = int(cd["creator"])
+            addressee_id = int(cd["addressee"])
+            if creator_id != 0:
+                opened_claims = opened_claims.filter(creator__id=creator_id)
+                closed_claims = closed_claims.filter(creator__id=creator_id)
+            if addressee_id != 0:
+                opened_claims = opened_claims.filter(
+                    score__task__user__id=addressee_id)
+                closed_claims = closed_claims.filter(
+                    score__task__user__id=addressee_id)
+    else:
+        form = ClarificationReportForm(creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list)
+
+    return render_to_response(
+        'exmo2010/clarification_report.html',
+        {
+            'monitoring': monitoring,
+            'title': title,
+            'opened_clarifications': opened_claims,
+            'closed_clarifications': closed_claims,
+            'form': form,
+            },
+        context_instance=RequestContext(request),
+    )

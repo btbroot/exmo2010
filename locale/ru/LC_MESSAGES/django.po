@@ -2532,6 +2532,15 @@ msgstr "Ссылка на претензию"
 msgid "Link to comment"
 msgstr "Ссылка на комментарий"
 
+msgid "Clarifications report for \"%(monitoring)s\""
+msgstr "Уточнения по циклу мониторинга \"%(monitoring)s\""
+
+msgid "Clarification addressee"
+msgstr "У кого уточняли"
+
+msgid "Clarification creator"
+msgstr "Кто уточнял"
+
 msgid "Link to clarification"
 msgstr "Ссылка на уточнение"
 
@@ -2547,11 +2556,11 @@ msgstr "перейти к претензии"
 msgid "go to comment"
 msgstr "перейти к комментарию"
 
-msgid "go to clarification"
-msgstr "перейти к уточнению"
-
 msgid "all experts"
 msgstr "все аналитики"
 
 msgid "all managers"
 msgstr "все руководители"
+
+msgid "go to clarification"
+msgstr "перейти к уточнению"

@@ -54,6 +54,10 @@ urlpatterns = patterns('',
     url(r'^monitoring/(\d+)/claims/$', 'exmo2010.view.claim.claim_report',
         name='claim_report'),
 
+    url(r'^monitoring/(\d+)/clarifications/$',
+        'exmo2010.view.clarification.clarification_report',
+        name='clarification_report'),
+
     url(r'^tasks/$', 'exmo2010.view.task.tasks'),
     url(r'^tasks/task/(\d+)_(\w+)/$', 'exmo2010.view.task.task_manager',
         name='task_manager'),

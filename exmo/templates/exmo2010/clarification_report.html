@@ -1,0 +1,101 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n adminmedia %}
+{% block extrahead %}{{ block.super }}
+    {% url django.views.i18n.javascript_catalog as jsi18nurl %}
+    <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+    {{ media }}
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#id_addressee').change(function () {
+                $('#cform').submit();
+            });
+            $('#id_creator').change(function () {
+                $('#cform').submit();
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
+        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+        {{ title }}
+    </div>
+{% endblock %}
+{% block pretitle %}
+    {% include "exmo2010/monitoring_utility.html" %}
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post" id="cform">
+        {% csrf_token %}
+        <table>
+            <thead>
+            <tr>
+                <td>{% trans 'Date and time' %}</td>
+                <td>{% trans 'Clarification addressee' %}<br/>{{ form.addressee }}</td>
+                <td>{% trans 'Clarification creator' %}<br/>{{ form.creator }}</td>
+                <td>{% trans 'Link to claim' %}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% if opened_clarifications %}
+                <tr>
+                    <th colspan="4" style="color: red; text-align: left;">{% trans 'Without answer' %}
+                        ({{ opened_clarifications.count }})
+                    </th>
+                </tr>
+                {% for op in opened_clarifications %}
+                    <tr>
+                        <td>{{ op.open_date|date:"H:i d.m.Y" }}</td>
+                        <td>{{ op.addressee.first_name }} {{ op.addressee.last_name }}</td>
+                        <td>{{ op.creator.first_name }} {{ op.creator.last_name }}</td>
+                        <td>
+                            <a href="{% url exmo2010:score_view op.score.pk %}" target="_blank">{% trans 'go to clarification' %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% endif %}
+            {% if closed_clarifications %}
+                <tr>
+                    <th colspan="4" style="text-align: left;">{% trans 'Processed' %}
+                        ({{ closed_clarifications.count }})
+                    </th>
+                </tr>
+                {% for cp in closed_clarifications %}
+                    <tr>
+                        <td>{{ cp.open_date|date:"H:i d.m.Y" }}</td>
+                        <td>{{ cp.addressee.first_name }} {{ cp.addressee.last_name }}</td>
+                        <td>{{ cp.creator.first_name }} {{ cp.creator.last_name }}</td>
+                        <td>
+                            <a href="{% url exmo2010:score_view cp.score.pk %}" target="_blank">{% trans 'go to claim' %}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% endif %}
+            </tbody>
+        </table>
+    </form>
+{% endblock %}
