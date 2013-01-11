@@ -26,6 +26,7 @@ import random
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
+from custom_comments.models import CommentExmo
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, IntegrityError
@@ -1376,41 +1377,32 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из коментов на которые был дан ответ пользователем.
         """
-        all_my_comments = Comment.objects.filter(
+        comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
-            content_type__model='score').order_by('object_pk', '-submit_date')
-        rez_dict = {}
-        rez_list = []
-        for c in all_my_comments:
-            if c.object_pk in rez_dict:
-                continue
-            else:
-                rez_dict[c.object_pk] = True
-                if not c.user.groups.filter(name="organizations").exists():
-                    rez_list.append(c.pk)
-        rezult = Comment.objects.filter(pk__in=rez_list).order_by(
-            '-submit_date')
-        return rezult
+            content_type__model='score',
+            status=CommentExmo.ANSWERED).order_by('object_pk', '-submit_date')
+        return comments
 
     def get_not_answered_comments(self):
         """
         Возвращает queryset из коментов на которые еще не был дан ответ.
         """
-        all_my_comments = Comment.objects.filter(
+        comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
-            content_type__model='score').order_by('object_pk', '-submit_date')
-        rez_dict = {}
-        rez_list = []
-        for c in all_my_comments:
-            if c.object_pk in rez_dict:
-                continue
-            else:
-                rez_dict[c.object_pk] = True
-                if c.user.groups.filter(name="organizations").exists():
-                    rez_list.append(c.pk)
-        rezult = Comment.objects.filter(pk__in=rez_list).order_by(
-            'submit_date')
-        return rezult
+            content_type__model='score',
+            status=CommentExmo.OPEN).order_by('object_pk', '-submit_date')
+        return comments
+
+    def get_closed_without_answer_comments(self):
+        """
+        Возвращает queryset из коментов, которые закрыты без ответа.
+        """
+        comments = CommentExmo.objects.filter(
+            object_pk__in=self._get_my_scores(),
+            content_type__model='score',
+            status=CommentExmo.NOT_ANSWERED).order_by('object_pk',
+                                                      '-submit_date')
+        return comments
 
     def get_opened_claims(self):
         """
@@ -1419,6 +1411,57 @@ class UserProfile(models.Model):
         claims = Claim.objects.filter(score__task__user=self.user,
                               close_date__isnull=True).order_by('open_date')
         return claims
+
+    def get_closed_claims(self):
+        """
+        Возвращает queryset из закрытых претензий
+        """
+        claims = Claim.objects.filter(score__task__user=self.user,
+            close_date__isnull=False).order_by('open_date')
+
+        return claims
+
+    def get_opened_clarifications(self):
+        """
+        Возвращает queryset из открытых претензий
+        """
+        clarifications = Clarification.objects.filter(
+            score__task__user=self.user,
+            close_date__isnull=True).order_by('open_date')
+        return clarifications
+
+    def get_closed_clarifications(self):
+        """
+        Возвращает queryset из закрытых претензий
+        """
+        clarifications = Clarification.objects.filter(score__task__user=self.user,
+            close_date__isnull=False).order_by('open_date')
+
+        return clarifications
+
+    def get_comment_count(self):
+        """
+        Возвращает количество комментариев в оценках
+        """
+        answered_comments = self.get_answered_comments().count()
+        not_answered_comments = self.get_not_answered_comments().count()
+        return answered_comments + not_answered_comments
+
+    def get_claim_count(self):
+        """
+        Возвращает количество претензий в оценках
+        """
+        open_claims = self.get_opened_claims().count()
+        closed_claims = self.get_closed_claims().count()
+        return open_claims + closed_claims
+
+    def get_clarification_count(self):
+        """
+        Возвращает количество уточнений в оценках
+        """
+        open_clarifications = self.get_opened_clarifications().count()
+        closed_clarifications = self.get_closed_clarifications().count()
+        return open_clarifications + closed_clarifications
 
     def get_task_review_id(self):
         organizations = self.organization.filter(

@@ -1,0 +1,85 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+.analyst-reports-menu
+{
+    margin: 20px 0 18px 0;
+    padding: 0;
+}
+
+.analyst-reports-menu li
+{
+    padding-right: 20px;
+    display: inline;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.analyst-reports-menu li a
+{
+    text-decoration: underline;
+}
+
+.report-list-table
+{
+    margin-top: 17px;
+    width: 100%;
+}
+
+.report-list-table th
+{
+    background: none;
+    border-left: none;
+    border-bottom: #999 1px solid;
+    font-size: 13px;
+    color: #000;
+}
+
+.report-list-table td
+{
+    border-bottom: #999 1px solid;
+    font-size: 12px;
+}
+
+td.report-title
+{
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.report-title.open
+{
+   color: #ff0000;
+}
+
+.report-title.closed
+{
+    color: #000;
+}
+
+.report-date
+{
+    width: 110px;
+}
+
+.report-link
+{
+    width: 160px;
+}

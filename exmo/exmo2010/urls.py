@@ -149,8 +149,14 @@ urlpatterns = patterns('',
         'exmo2010.view.score.toggle_comment',
         name='toggle_comment'),
 
-    url(r'^reports/comment/(\d+)/$', 'exmo2010.view.reports.comment_list',
+    # Отчеты
+    url(r'^reports/comments/$', 'exmo2010.view.reports.comment_list',
         name='comment_list'),
+    url(r'^reports/clarifications/$',
+        'exmo2010.view.reports.clarification_list',
+        name='clarification_list'),
+    url(r'^reports/claims/$', 'exmo2010.view.reports.claim_list',
+        name='claim_list'),
 
     url(r'^reports/monitoring/$', 'exmo2010.view.reports.monitoring_report',
         name='monitoring_report'),

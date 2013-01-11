@@ -1,0 +1,50 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% comment %}
+Подключаемый шаблон с меню в отчеты по комментариям, претензиям и уточнениям для аналитиков,
+в зависимости от переданной переменной active_item, строка с числом: "1","2" или "3",
+отключается ссылка в меню.
+{% endcomment %}
+
+{% load i18n %}
+
+<ul class="analyst-reports-menu">
+
+    {% with menu_item_1="Comments" menu_item_2="Clarifications" menu_item_3="Claims" %}
+
+        {% url exmo2010:comment_list as url_1 %}
+        {% url exmo2010:clarification_list as url_2 %}
+        {% url exmo2010:claim_list as url_3 %}
+
+        {% for i in 123|make_list %}
+            {% spaceless %}
+            <li>
+{% cycle menu_item_1 menu_item_2 menu_item_3 as item silent %}
+{% cycle url_1 url_2 url_3 as url silent %}
+{% ifnotequal i active_item %}<a href="{{ url }}">{% else %}<span>{% endifnotequal %}{% trans item %}{% ifnotequal i active_item %}</a>{% else %}</span>{% endifnotequal %}
+            </li>
+            {% endspaceless %}
+        {% endfor %}
+
+    {% endwith %}
+
+</ul>
+

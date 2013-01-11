@@ -26,13 +26,8 @@ To activate your custom menu add the following to your settings.py::
 
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-
-from exmo2010.models import Task
-
 from admin_tools.menu import items, Menu
-
-from exmo2010.view.reports import COMMUNICATION_REPORT_TYPE_DICT
-
+from exmo2010.models import Task
 
 
 class CustomMenu(Menu):
@@ -95,12 +90,24 @@ class CustomMenu(Menu):
 
         communication_children = []
 
-        for key, value in COMMUNICATION_REPORT_TYPE_DICT.iteritems():
-            communication_children.append(
-                items.MenuItem(
-                    value, reverse('exmo2010:comment_list', args=[key,])
-                )
+        communication_children.append(
+            items.MenuItem(
+                _('Comments'),
+                reverse('exmo2010:comment_list')
             )
+        )
+        communication_children.append(
+            items.MenuItem(
+                _('Clarifications'),
+                reverse('exmo2010:clarification_list')
+            )
+        )
+        communication_children.append(
+            items.MenuItem(
+                _('Claims'),
+                reverse('exmo2010:claim_list')
+            )
+        )
 
         if request.user.is_active and request.user.profile.is_expert:
             self.children.append(items.MenuItem(_('Communication'), children=communication_children))

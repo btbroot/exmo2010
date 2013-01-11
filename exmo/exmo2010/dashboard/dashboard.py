@@ -105,16 +105,19 @@ class CustomIndexDashboard(UserDashboard):
                 _('Communication'),
                 children=(
                     (
-                        _('Comments with answer') + ': ' + str(request.user.profile.get_answered_comments().count()),
-                        reverse('exmo2010:comment_list', args=[1,])
-                        ),
-                    (
-                        _('Comments without answer') + ': ' + str(request.user.profile.get_not_answered_comments().count()),
-                        reverse('exmo2010:comment_list', args=[2,])
+                        _('Comments') + ': ' + str(
+                            request.user.profile.get_comment_count()),
+                        reverse('exmo2010:comment_list')
                     ),
                     (
-                        _('Opened claims') + ': ' + str(request.user.profile.get_opened_claims().count()),
-                        reverse('exmo2010:comment_list', args=[3,])
+                        _('Clarifications') + ': ' + str(
+                            request.user.profile.get_clarification_count()),
+                        reverse('exmo2010:clarification_list')
+                    ),
+                    (
+                        _('Claims') + ': ' + str(
+                            request.user.profile.get_claim_count()),
+                        reverse('exmo2010:claim_list')
                     ),
                 ),
             ))

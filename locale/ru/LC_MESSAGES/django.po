@@ -2472,6 +2472,9 @@ msgstr "Закрыть без ответа"
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
+msgid "Claims"
+msgstr "Претензии"
+
 msgid "Reset"
 msgstr "Сбросить"
 
@@ -2508,3 +2511,29 @@ msgstr "Уточнений нет"
 msgid "There are no comments"
 msgstr "Комментариев нет"
 
+msgid "Time and date"
+msgstr "Время и дата"
+
+msgid "Link to claim"
+msgstr "Ссылка на претензию"
+
+msgid "Link to comment"
+msgstr "Ссылка на комментарий"
+
+msgid "Link to clarification"
+msgstr "Ссылка на уточнение"
+
+msgid "Without answer"
+msgstr "Без ответа"
+
+msgid "Trimmed"
+msgstr "Обработанные"
+
+msgid "go to claim"
+msgstr "перейти к претензии"
+
+msgid "go to comment"
+msgstr "перейти к комментарию"
+
+msgid "go to clarification"
+msgstr "перейти к уточнению"

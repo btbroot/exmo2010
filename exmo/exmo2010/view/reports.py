@@ -33,65 +33,65 @@ from exmo2010.models import UserProfile, Monitoring
 from exmo2010.view.helpers import rating_type_parameter, rating
 from exmo2010.forms import MonitoringFilterForm
 
-COMMUNICATION_REPORT_TYPE_DICT = {
-    1: _('Comments with answer'),
-    2: _('Comments without answer'),
-    3: _('Opened claims')
-}
 
-def comment_list(request, report_type='1'):
+def comment_list(request):
     """
     Страница сводного списка комментариев
-    report_type:
-        1 -- отвеченные комментарии
-        2 -- неотвеченные комментарии
-        3 -- открытые претензии
     """
-
-    try:
-        report_type = int(report_type)
-    except ValueError:
-        raise Http404
-
     if not (request.user.is_active and request.user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
-    if report_type not in COMMUNICATION_REPORT_TYPE_DICT.keys():
-        raise Http404
 
-    template = 'exmo2010/comment_list.html'
+    opened_comments = request.user.profile.get_not_answered_comments()
+    closed_comments = request.user.profile.get_answered_comments()
 
-    if report_type == 1:
-        queryset = request.user.profile.get_answered_comments()
-    elif report_type == 2:
-        queryset = request.user.profile.get_not_answered_comments()
-    elif report_type == 3:
-        queryset = request.user.profile.get_opened_claims()
-        template = 'exmo2010/claim_list.html'
+    title = _('Comments')
 
-
-    paginator = Paginator(queryset, settings.EXMO_PAGINATEBY)
-
-    try:
-        page = int(request.GET.get('page', '1'))
-        if page < 1:
-            page = 1
-    except ValueError:
-        page = 1
-
-    try:
-        paginator_list = paginator.page(page)
-    except (EmptyPage, InvalidPage):
-        paginator_list = paginator.page(1)
-
-    return render_to_response(template,
+    return render_to_response('exmo2010/reports/comment_list.html',
         {
-            'paginator': paginator_list,
-            'title': COMMUNICATION_REPORT_TYPE_DICT[report_type],
-            'report_dict': COMMUNICATION_REPORT_TYPE_DICT,
-            'current_report': report_type,
+            'title': title,
+            'opened_comments': opened_comments,
+            'closed_comments': closed_comments,
             },
-        RequestContext(request),
-    )
+        RequestContext(request))
+
+def clarification_list(request):
+    """
+    Страница сводного списка уточнений для аналитиков
+    """
+    if not (request.user.is_active and request.user.profile.is_expert):
+        return HttpResponseForbidden(_('Forbidden'))
+
+    opened_clarifications = request.user.profile.get_opened_clarifications()
+    closed_clarifications = request.user.profile.get_closed_clarifications()
+    title = _('Clarifications')
+    return render_to_response('exmo2010/reports/clarification_list.html',
+        {
+            'title': title,
+            'opened_clarifications': opened_clarifications,
+            'closed_clarifications': closed_clarifications,
+            },
+        RequestContext(request))
+
+def claim_list(request):
+
+    """
+    Страница сводного списка претензий для аналитиков
+    """
+    # todo: декоратор для вьюшек на все экспертские проверки
+    if not (request.user.is_active and request.user.profile.is_expert):
+        return HttpResponseForbidden(_('Forbidden'))
+
+    opened_claims = request.user.profile.get_opened_claims()
+    closed_claims = request.user.profile.get_closed_claims()
+    title = _('Claims')
+    return render_to_response('exmo2010/reports/claim_list.html',
+        {
+            'title': title,
+            'opened_claims': opened_claims,
+            'closed_claims': closed_claims,
+        },
+        RequestContext(request))
+
 
 def monitoring_report(request, report_type='inprogress', monitoring_id=None):
     """

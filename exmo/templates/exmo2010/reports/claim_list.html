@@ -1,0 +1,84 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_analyst.css"/>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/reports_analyst.js"></script>
+{% endblock %}
+
+{% block pretitle %}
+    {% include "exmo2010/reports/menu_interaction.html" with active_item="3" %}
+{% endblock %}
+
+{% block content %}
+
+
+    <table class="report-list-table">
+        <thead>
+        <tr>
+            <th class="report-date">{% trans 'Time and date' %}</th>
+            <th>{% trans 'Organization' %}</th>
+            <th class="report-link">{% trans 'Link to claim' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in 12|make_list %}
+
+            {% cycle opened_claims closed_claims as claims silent %}
+
+            <tr>
+                <td colspan="3" class="report-title {% cycle "open" "closed" %}">
+                    {% cycle 'Without answer' 'Trimmed' as status silent %}
+                    {% trans status %} ({{ claims|length }})
+                </td>
+            </tr>
+
+
+            {% for c in claims %}
+                <tr class="{% ifequal claims opened_claims %}open{% else %}closed{% endifequal %}">
+                    <td class="report-date">
+                        {{ c.open_date|date:"H:i d.m.Y" }}
+                    </td>
+                    <td>
+                        <a href="{% url exmo2010:score_list_by_task c.score.task.id %}">
+                            {{ c.score.task.organization }}
+                        </a>
+                    </td>
+                    <td class="report-link">
+                        <a href="{% url exmo2010:score_view c.score.id %}#claims" target="_blank">
+                            {% trans 'go to claim' %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
