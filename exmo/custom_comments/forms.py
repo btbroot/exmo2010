@@ -48,6 +48,5 @@ class CustomCommentForm(CommentForm):
         # Очистка от XSS
         cleaner = Cleaner()
         data['comment'] = cleaner.clean_html(data['comment'])
-        # Условие, чтобы формы в шаблонах без поля не отправляли пустую строку
         return data
 

@@ -1,0 +1,104 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n check_object_permission wysiwyg %}
+
+{% if view_claim %}
+    {% if claim_list %}
+    <table class="table-messages-parameter">
+        <tbody>
+        {% for c in claim_list %}
+            <tr>
+                <td{% if not c.close_user and not add_claim %} class="not-answered"{% endif %}>
+                    <span class="messages-author">
+                        {{ c.creator.first_name }} {{ c.creator.last_name }}
+                    </span>
+
+                    <span class="messages-date">
+                        {{ c.open_date|date:"H:i d.m.Y" }}
+                    </span>
+
+                    <div class="messages-content">
+                        {{ c.comment|safe }}
+                    </div>
+
+                    {% if delete_claim %}
+                    <div class="claim-delete-container">
+                        {% url exmo2010:claim_delete as claim_delete_url %}
+                        <a class="delete-claim messages-pseudo"
+                           href="{{ claim_delete_url }}"
+                           rel="{{ c.pk }}">
+                            {% trans "Delete claim" %}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if c.answer %}
+                    <div class="messages-answer">
+                            <span class="messages-author">
+                                {{ c.close_user.first_name }} {{ c.close_user.last_name }}
+                            </span>
+                            <span class="messages-date">
+                                {{ c.close_date|date:"H:i d.m.Y" }}
+                            </span>
+                        <div class="messages-content">
+                            {{ c.answer|safe }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if not c.answer and answer_claim %}
+                    <div class="messages-reply">
+                        <a class="answer-claim messages-pseudo"
+                           href="#"
+                           rel="{{ c.pk }}">
+                            {% trans "Answer claim" %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    {% trans 'There are no claims' %}
+    {% endif %}
+{% endif %}
+
+{% if add_claim and claim_form or answer_claim and claim_form %}
+    <div id="add-claim"{% if answer_claim and not add_claim %} style="display: none;"{% endif %}>
+        <form action="{% url exmo2010:claim_create object.id %}" method="post">
+            {% csrf_token %}
+            {% for field in claim_form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {% if field.field == claim_form.comment.field and add_claim %}
+                    {% if field.field != claim_form.claim_id.field %}
+                    <h3 class="claim-label heading-yourmessage-parameter">{{ field.label }}</h3>
+                    {% endif %}
+                    {% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <input type="submit" class="submit-post" value="{% if not add_claim %}{% trans 'Reply' %}{% else %}{% trans 'Post' %}{% endif %}">
+            {% wysiwyg_editor "id_claim-comment" %}
+        </form>
+    </div>
+{% endif %}

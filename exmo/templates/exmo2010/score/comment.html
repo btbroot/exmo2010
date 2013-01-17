@@ -17,15 +17,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments check_object_permission days_until %}
-{% check_object_permission exmo2010.comment_score object as can_comment %}
-{% check_object_permission exmo2010.view_comment_score object as can_view_comment %}
+{% load i18n comments days_until date_until pytils_dt wysiwyg %}
 
-{% if can_view_comment %}
+{% if view_comment %}
 
     {% get_comment_list for object as comment_list %}
     {% if comment_list %}
-        <table class="table-comments-parameter">
+        <table class="table-messages-parameter">
             <tbody>
             {% for comment in comment_list %}
                 <tr id="c{{ comment.id }}">
@@ -36,14 +34,14 @@
                         {% if days_remaining == 0 %}class="answer-today"{% endif %}
                         {% if days_remaining > 0 %}class="answer-later"{% endif %}
                     {% endif %}
-                    {% if request.user.profile.is_expertA %}
+                    {% if close_comment %}
                         {% if days_remaining < 0 %}data-class="answer-missed"{% endif %}
                         {% if days_remaining == 0 %}data-class="answer-today"{% endif %}
                         {% if days_remaining > 0 %}data-class="answer-later"{% endif %}
                     {% endif %}
                     {% endwith %}
                     >
-                        <span class="author">
+                        <span class="messages-author">
                         {% if comment.user.userprofile.is_expert %}
                             {% if request.user.userprofile.is_expert %}
                                 {{ comment.user_name }}
@@ -59,19 +57,25 @@
                         {% endif %}
                         </span>
 
-                        <span class="comment-date">
+                        <span class="messages-date">
                         {{ comment.submit_date|date:"H:i d.m.Y" }}
                         </span>
 
-                        <div class="comment-content">
+                        <div class="messages-content">
                             {{ comment.comment|safe }}
                         </div>
 
-                        {% if request.user.userprofile.is_expertA and comment.user.userprofile.is_organization %}
+                        {% if request.user.profile.is_organization and comment.user.profile.is_organization and comment.status == 0 %}
+                        <div class="notification-peremptory">
+                            {% trans 'Peremptory day to answer your question is' %}
+                            {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|ru_strftime:"%d %B %Y" }}
+                        </div>
+                        {% endif %}
+
+                        {% if close_comment %}
                         <div class="toggle-comment-container">
                             {% url exmo2010:toggle_comment as toggle_url %}
                             <a class="toggle-comment"
-                               style="border-bottom: 1px dashed;"
                                href="{{ toggle_url }}"
                                rel="{{ comment.pk }}">
                                 {% if comment.status == 0 %}
@@ -87,23 +91,13 @@
             {% endfor %}
             </tbody>
         </table>
+    {% else %}
+    {% trans 'There are no comments' %}
     {% endif %}
 {% endif %}
 
-{% load wysiwyg %}
-{% wysiwyg_setup %}
-
-{% if can_comment %}
-
-    {% if peremptory_day %}
-        <div class="notification-peremptory">
-            {% trans 'Peremptory day to answer your question is' %}
-            {{ peremptory_day|date:"j F Y" }}
-        </div>
-    {% endif %}
-
-    <h3 class="heading-yourcomment-parameter">{% trans 'Your comment' %}</h3>
-
+{% if add_comment %}
+    <h3 class="heading-yourmessage-parameter">{% trans 'Your comment' %}</h3>
     {% get_comment_form for object as form %}
     <form action="{% comment_form_target %}" method="post">{% csrf_token %}
         {% for hidden in form.hidden_fields %}
@@ -127,7 +121,7 @@
         {{ form.comment }}
         {% wysiwyg_editor "id_comment" %}
         <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
-        <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post' %}">
+        <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post' %}" />
     </form>
 {% endif %}
 

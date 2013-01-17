@@ -1,4 +1,4 @@
-{% comment %}
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -16,37 +16,28 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
 
-{% load i18n %}
+import datetime
+from django import template
 
-<ul class="nav nav-tabs">
-    <li class="active">
-        <a href="#comments" data-toggle="tab">
-            {% trans 'Comments' %}
-        </a>
-    </li>
-    <li>
-        <a href="#claims" data-toggle="tab">
-            {% trans 'Opened claims' %}
-        </a>
-    </li>
-    <li>
-        <a href="#clarifications" data-toggle="tab">
-            {% trans 'Clarifications' %}
-        </a>
-    </li>
-</ul>
 
-<div class="tab-content">
-    <div class="tab-pane active" id="comments">
-        {% include "exmo2010/score_comment.html" %}
-    </div>
-    <div class="tab-pane" id="claims">
-        {# Score template #}
-        {% include "exmo2010/score_claim.html" %}
-    </div>
-    <div class="tab-pane" id="clarifications">
-        {# Clarifications template #}
-    </div>
-</div>
+register = template.Library()
+
+
+@register.filter
+def date_until(start_date, delta_days):
+    """
+    Прибавляет к дате количество дней
+    и возвращает новую дату.
+    """
+    if not isinstance(start_date, datetime.datetime):
+        return None
+    if not isinstance(delta_days, (int, long)):
+        return None
+
+    delta = datetime.timedelta(days=delta_days)
+    final_date = start_date + delta
+    return final_date
+
+
+date_until.is_safe = False

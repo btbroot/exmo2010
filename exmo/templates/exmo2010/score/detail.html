@@ -24,25 +24,34 @@
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_comments.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_messages.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
 {% endblock %}
 
-{% block title %}{{parameter}}{% endblock %}
+{% if request.user.profile.is_expert %}
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+    {% include "exmo2010/score/tabs_js.html" %}
+    {% include "exmo2010/score/messages_js.html" %}
+{% endblock %}
+{% endif %}
+
+{% block title %}{{ parameter }}{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
 <a href="{% url exmo2010:organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a>&rsaquo;
 <a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk task.organization.pk %}">{{ task.organization.name }}</a>&rsaquo;
 <a href="{% url exmo2010:score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a>&rsaquo;
-{{title}}
+{{ title }}
 </div>
 {% endblock %}
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
 {% block content %}
 
-{% include "exmo2010/helpers/parameter_header.html" %}
+{% include "exmo2010/score/parameter_header.html" %}
 
 {% load criteria_css_class %}
 
@@ -123,6 +132,7 @@
     </tbody>
 </table>
 
+{% if object.comment %}
 <dl>
     <dt>
         {% trans 'Recomendations' %}
@@ -131,8 +141,35 @@
         {{ object.comment }}
     </dd>
 </dl>
+{% endif %}
 
-<h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
-{% include "exmo2010/score_comment.html" %}
+{# Проверка всех прав для сообщений #}
+
+{% load check_object_permission %}
+
+{% check_object_permission exmo2010.view_comment_score object as view_comment %}
+{% check_object_permission exmo2010.add_comment_score object as add_comment %}
+{% check_object_permission exmo2010.close_comment_score object as close_comment %}
+
+{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
+{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
+
+{% check_object_permission exmo2010.add_claim_score object as add_claim %}
+{% check_object_permission exmo2010.view_claim_score object as view_claim %}
+{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
+{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
+
+{% if view_comment %}
+    {% if request.user.profile.is_expert and view_claim or request.user.profile.is_expert and view_clarification %}
+        {% include "exmo2010/score/tabs.html" %}
+    {% else %}
+        {% load wysiwyg %}
+        {% wysiwyg_setup %}
+
+        <h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
+        {% include "exmo2010/score/comment.html" %}
+    {% endif %}
+{% endif %}
 
 {% endblock %}

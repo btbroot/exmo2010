@@ -1,0 +1,95 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n wysiwyg %}
+
+{% if view_clarification %}
+    {% if clarification_list %}
+    <table class="table-messages-parameter">
+        <tbody>
+        {% for c in clarification_list %}
+            <tr>
+                <td{% if not c.close_user and not add_clarification %} class="not-answered"{% endif %}>
+                    <span class="messages-author">
+                        {{ c.creator.first_name }} {{ c.creator.last_name }}
+                    </span>
+
+                    <span class="messages-date">
+                        {{ c.open_date|date:"H:i d.m.Y" }}
+                    </span>
+
+                    <div class="messages-content">
+                        {{ c.comment|safe }}
+                    </div>
+
+                    {% if c.answer %}
+                        <div class="messages-answer">
+                            <span class="messages-author">
+                                {{ c.close_user.first_name }} {{ c.close_user.last_name }}
+                            </span>
+                            <span class="messages-date">
+                                {{ c.close_date|date:"H:i d.m.Y" }}
+                            </span>
+                            <div class="messages-content">
+                                {{ c.answer|safe }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if not c.answer and answer_clarification %}
+                        <div class="messages-reply">
+                            <a class="answer-clarification messages-pseudo"
+                               href="#"
+                               rel="{{ c.pk }}">
+                                {% trans "Answer clarification" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    {% trans 'There are no clarifications' %}
+    {% endif %}
+{% endif %}
+
+{% if add_clarification and clarification_form or answer_clarification and clarification_form %}
+    <div id="add-clarification"{% if answer_clarification and not add_clarification %} style="display: none;"{% endif %}>
+        <form action="{% url exmo2010:clarification_create object.id %}" method="post">{% csrf_token %}
+            {% for field in clarification_form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {% if field.field == clarification_form.comment.field and add_clarification %}
+                    {% if field.field != clarification_form.clarification_id.field %}
+                    <h3 class="heading-yourmessage-parameter">
+                        {{ field.label }}
+                    </h3>
+                    {% endif %}
+                    {% endif %}
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <input type="submit" class="submit-post" value="{% if add_clarification %}{% trans 'Specify' %}{% else %}{% trans 'Reply' %}{% endif %}">
+            {% wysiwyg_editor "id_clarification-comment" %}
+        </form>
+    </div>
+{% endif %}

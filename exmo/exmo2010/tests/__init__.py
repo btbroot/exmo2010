@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011, 2012 Institute for Information Freedom Development
@@ -16,24 +17,5 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Pillow==1.7.8
-Django==1.3.4
-django-reversion==1.5.4
-south
-hg+https://bitbucket.org/bsavelev/django-admin-tools
-git+https://github.com/django-debug-toolbar/django-debug-toolbar.git
-git+https://github.com/playfire/django-debug-toolbar-user-panel.git
-git+https://github.com/bsavelev/django403.git
-git+https://github.com/bsavelev/django-tagging.git
-git+https://github.com/bsavelev/django-tagging-autocomplete.git
-django-extensions
-feedparser==5.1.2
-lxml==2.3.2
-django-registration==0.8
-django-ckeditor==3.6.2.1
-django-wysiwyg==0.5
-simplejson
-hg+https://bitbucket.org/offline/django-annoying
-python-dateutil
-pytils==0.2.3
-MySQL-python
+from exmo2010.tests.views import *
+

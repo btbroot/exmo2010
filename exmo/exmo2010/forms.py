@@ -42,6 +42,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from exmo2010.widgets import TagAutocomplete
 from annoying.decorators import autostrip
 
+
 DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
 
 # основные JS ресурсы для форм с виджетами из админки
@@ -113,12 +114,10 @@ def add_required_label_tag(original_function):
     return required_label_tag
 
 
-
 def decorate_bound_field():
     from django.forms.forms import BoundField
     BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
 decorate_bound_field()
-
 
 
 class HorizRadioRenderer(forms.RadioSelect.renderer):
@@ -243,7 +242,21 @@ class ParamCritScoreFilterForm(forms.Form):
             monitoring=monitoring)
 
 
-class ClaimForm(forms.ModelForm):
+class ClaimAddForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea,
+                              label=_('Your claim'))
+    claim_id = forms.IntegerField(required=False,
+        widget=forms.widgets.HiddenInput())
+
+
+class ClarificationAddForm(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea,
+                              label=_('Your clarification'))
+    clarification_id = forms.IntegerField(required=False,
+        widget=forms.widgets.HiddenInput())
+
+
+class ClaimForm(forms.Form):
     class Meta:
         model = Claim
 
@@ -290,7 +303,6 @@ class MonitoringForm(forms.ModelForm):
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery-ui.min.js',
             )
-
 
 
 from django.forms.models import BaseInlineFormSet

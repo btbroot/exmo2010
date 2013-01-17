@@ -230,7 +230,7 @@ label
 {
     float: left;
     display: block;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     line-height: 42px;
 }
 
@@ -247,7 +247,7 @@ label
 
 .score-header dd
 {
-    margin-bottom: 14px;
+    margin-bottom: 7px;
 }
 
 .score-header dd.parm-description
@@ -278,7 +278,6 @@ label
     display: block;
 }
 
-
 ul.nav-tabs
 {
     display: block;
@@ -295,7 +294,7 @@ ul.nav-tabs li
     list-style-type: none;
     float: left;
     padding-right: 25px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
 }
 

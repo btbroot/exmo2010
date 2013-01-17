@@ -25,12 +25,13 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/exmo2010-extra.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_form.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_comments.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_messages.css" />
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery.autosize.js"></script>
     <script type="text/javascript">
         {# Изменение размера полей в зависимости от количеств строк #}
@@ -39,51 +40,9 @@
         });
     </script>
 
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
-    <script type="text/javascript">
-        {# Открытие нужной вкладки в завимости по id (#tab_id) в URL #}
-        $(document).ready(function(){
-            var hash = window.location.hash;
-            hash && $('ul.nav a[href="' + hash + '"]').tab('show');
-        });
-    </script>
-
-    {% if request.user.userprofile.is_expertA %}
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
-    <script type="text/javascript">
-        {# Открытие/закртие комментария #}
-        $(document).ready(function() {
-            var $anchor = $('a.toggle-comment');
-
-            $anchor.click(function( e ) {
-                var $this = $(this)
-                        , url = $this.attr('href')
-                        , pk = $this.attr('rel')
-                        , openedClass = $this.closest('td').attr('data-class');
-
-                $.ajax({
-                    type : "POST",
-                    url: url,
-                    data : {pk: pk, openedClass: openedClass},
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.success) {
-                            $this.html('');
-                            if (data.status == 0) {
-                                $this.append('{% trans 'Close without answer' %}');
-                                $this.closest('td').addClass(openedClass);
-                            }
-                            if (data.status == 2) {
-                                $this.append('{% trans 'Open comment' %}');
-                                $this.closest('td').removeClass(openedClass);
-                            }
-                        }
-                    }
-                })
-                return false;
-            });
-        });
-    </script>
+    {% if object %}
+    {% include "exmo2010/score/tabs_js.html" %}
+    {% include "exmo2010/score/messages_js.html" %}
     {% endif %}
 {% endblock %}
 
@@ -104,13 +63,13 @@
     <a href="{% url exmo2010:score_list_by_task task.pk %}">
         {% trans 'Score list for' %}&nbsp;{{ task.organization.name }}
     </a>&rsaquo;
-    {{title}}
+    {{ title }}
 </div>
 {% endblock %}
 
 {% block content %}
 
-{% include "exmo2010/helpers/parameter_header.html" %}
+{% include "exmo2010/score/parameter_header.html" %}
 
 <form action="" method="post">{% csrf_token %}
 
@@ -119,6 +78,9 @@
 {% endfor %}
 
 <p>{{ form.non_field_errors }}</p>
+
+{{ form.parameter.as_hidden }}
+{{ form.task.as_hidden }}
 
 <table class="score-form table-bordered">
     <thead>
@@ -312,6 +274,24 @@
 </form>
 
 {% if object %}
-{% include "exmo2010/score_tabs.html" %}
+
+{% load check_object_permission %}
+
+{% check_object_permission exmo2010.view_comment_score object as view_comment %}
+{% check_object_permission exmo2010.add_comment_score object as add_comment %}
+{% check_object_permission exmo2010.close_comment_score object as close_comment %}
+
+{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
+{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
+
+{% check_object_permission exmo2010.add_claim_score object as add_claim %}
+{% check_object_permission exmo2010.view_claim_score object as view_claim %}
+{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
+{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
+
+{% include "exmo2010/score/tabs.html" %}
+
 {% endif %}
 {% endblock %}
+

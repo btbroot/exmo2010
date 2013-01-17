@@ -153,6 +153,7 @@ def comment_change_status(sender, **kwargs):
     Изменение статуса предыдущего комментария после его сохранения
     """
     comment = kwargs['comment']
+
     if comment.content_type.model == 'score':
         score = Score.objects.get(pk=comment.object_pk)
 

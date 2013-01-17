@@ -1,0 +1,8 @@
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        {# Открытие нужной вкладки по id в завимости от Named Anchor в URL (#tab_id) #}
+        var hash = window.location.hash;
+        hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+    });
+</script>

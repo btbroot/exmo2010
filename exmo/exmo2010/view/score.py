@@ -34,6 +34,7 @@ from django.views.generic.create_update import update_object, create_object
 from django.views.generic.create_update import delete_object
 from reversion import revision
 from exmo2010.forms import ScoreForm, QuestionnaireDynForm, SettingsInvCodeForm
+from exmo2010.forms import ClaimAddForm, ClarificationAddForm
 from exmo2010.helpers import construct_change_message
 from exmo2010.helpers import log_monitoring_interact_activity
 from exmo2010.view.helpers import table_prepare_queryset
@@ -59,14 +60,23 @@ def score_add(request, task_id, parameter_id):
     redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
         args=(task.pk,)), request.GET.urlencode(), parameter.code)
     redirect = redirect.replace("%","%%")
+
+    # Форма с презаполненными task и parameter, при вовзвращении реквеста
+    # в исходниках Джанго, extra_context добавляется после создания
+    # экземпляра класса формы, и перезаписывает переменную формы.
+    form = ScoreForm(initial={'task': task,'parameter': parameter})
+
     return create_object(
         request,
+        template_name='exmo2010/score/form.html',
         form_class = ScoreForm,
+        model = Score,
         post_save_redirect = redirect,
         extra_context = {
             'task': task,
             'parameter': parameter,
             'title': parameter,
+            'form': form,
             }
     )
 
@@ -89,12 +99,15 @@ def score_manager(request, score_id, method='update'):
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
+@login_required
 def score_view(request, score_id):
     """
     Generic view для просмотра или изменения параметра, в зависимости от прав.
     """
     score = get_object_or_404(Score, pk=score_id)
     user = request.user
+    all_score_claims = Claim.objects.filter(score=score)
+    all_score_clarifications = Clarification.objects.filter(score=score)
 
     if user.has_perm('exmo2010.edit_score', score):
         redirect = "%s?%s#parameter_%s" % (
@@ -120,10 +133,9 @@ def score_view(request, score_id):
                 else:
                     return HttpResponse(_('Have active claim, but no data '
                                           'changed'))
-        all_score_claims = Claim.objects.filter(score=score)
-        all_score_clarifications = Clarification.objects.filter(score=score)
         return update_object(
             request,
+            template_name = 'exmo2010/score/form.html',
             form_class = ScoreForm,
             object_id = score.pk,
             post_save_redirect = redirect,
@@ -133,9 +145,12 @@ def score_view(request, score_id):
                 'title': title,
                 'claim_list': all_score_claims,
                 'clarification_list': all_score_clarifications,
+                'claim_form' : ClaimAddForm(prefix="claim"),
+                'clarification_form' : ClarificationAddForm(
+                    prefix="clarification"),
                 })
     elif user.has_perm('exmo2010.view_score', score):
-        # представители имеют права только на просмотр
+        # Представители имеют права только на просмотр!
         title = _('Score for parameter "%s"') % score.parameter.name
         time_to_answer = score.task.organization.monitoring.time_to_answer
         delta = datetime.timedelta(days=time_to_answer)
@@ -143,12 +158,15 @@ def score_view(request, score_id):
         peremptory_day = today + delta
         return object_detail(
             request,
+            template_name='exmo2010/score/detail.html',
             queryset = Score.objects.all(),
             object_id = score.pk,
             extra_context = {
                 'title': title,
                 'task': score.task,
                 'parameter': score.parameter,
+                'claim_list': all_score_claims,
+                'clarification_list': all_score_clarifications,
                 'peremptory_day' : peremptory_day,
                 'view': True,
                 'invcodeform': SettingsInvCodeForm(),
@@ -164,6 +182,7 @@ def _save_comment(comment):
     return HttpResponse(result, mimetype='application/json')
 
 
+@login_required
 def toggle_comment(request):
     if request.is_ajax() and request.method == 'POST':
         comment_id = request.POST['pk']

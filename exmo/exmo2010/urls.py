@@ -33,6 +33,17 @@ urlpatterns = patterns('',
 
     url(r'^score/(\d+)/claim/add$', 'exmo2010.view.claim.claim_manager',
         name='claim_manager'),
+    url(r'^score/(\d+)/claim/create/$', 'exmo2010.view.claim.claim_create',
+        name='claim_create'),
+    # AJAX-вьюха удаления претензии
+    url(r'^claim/delete/$',
+        'exmo2010.view.claim.claim_delete',
+        name='claim_delete'),
+
+    url(r'^score/(\d+)/clarification/create/$',
+        'exmo2010.view.clarification.clarification_create',
+        name='clarification_create'),
+
     url( r'^score/(\d+)/claimstatus/$',
         'exmo2010.view.score.score_claim_color',
         name='score_claim_color'),

@@ -104,30 +104,87 @@ def task_permission(user, priv, task):
 
 
 def score_permission(user, priv, score):
+    monitoring = score.task.organization.monitoring
+    profile = user.profile
+
     if priv == 'exmo2010.view_score':
         if score.task.organization not in score.parameter.exclude.all():
             return user.has_perm('exmo2010.view_task', score.task)
-    elif priv == 'exmo2010.edit_score':
+    if priv == 'exmo2010.edit_score':
         if score.task.organization not in score.parameter.exclude.all():
             return user.has_perm('exmo2010.fill_task', score.task)
-    elif priv == 'exmo2010.delete_score':
+    if priv == 'exmo2010.delete_score':
         return user.has_perm('exmo2010.fill_task', score.task)
-    elif priv == 'exmo2010.comment_score':
-        return user.has_perm('exmo2010.comment_score', score.task)
-    elif priv == 'exmo2010.view_comment_score':
+
+    if priv == 'exmo2010.add_comment_score':
         if user.is_active:
-            profile = user.profile
-            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-            if profile.is_organization and user.has_perm('exmo2010.view_task', score.task) and score.task.organization in profile.organization.all():
+            if (profile.is_expertB and not
+                profile.is_expertA) and (monitoring.is_interact or
+                                         monitoring.is_finishing):
                 return True
-            elif profile.is_expert and user.has_perm('exmo2010.view_task', score.task) and score.task.user == user:
+            if profile.is_expertA and monitoring.is_publish:
                 return True
-    elif priv == 'exmo2010.add_claim':
+            if profile.is_organization and monitoring.is_interact:
+                return True
+
+    if priv == 'exmo2010.view_comment_score':
         if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB: return True
-            if user.profile.is_expert and score.task.organization.monitoring.is_revision and score.task.checked: return True
-    elif priv == 'exmo2010.view_claim':
-        return user.has_perm('exmo2010.add_claim', score) or user == score.task.user
+            if (profile.is_expertA or profile.is_expertB or
+                profile.is_organization) and (monitoring.is_interact or
+                                              monitoring.is_finishing or
+                                              monitoring.is_publish):
+                return True
+
+    if priv == 'exmo2010.close_comment_score':
+        if user.is_active:
+            if user.profile.is_expertA and (monitoring.is_interact or
+                                            monitoring.is_finishing or
+                                            monitoring.is_publish):
+                return True
+
+    if priv == 'exmo2010.view_claim_score':
+        if user.is_active:
+            if (profile.is_expertA or
+                profile.is_expertB) and not monitoring.is_prepare:
+                return True
+
+    if priv == 'exmo2010.add_claim_score':
+        if user.is_active:
+            if user.profile.is_expertA and not (monitoring.is_prepare or
+                                                monitoring.is_publish):
+                return True
+
+    if priv == 'exmo2010.answer_claim_score':
+        if user.is_active:
+            if (user.profile.is_expertB and not
+                user.profile.is_expertA) and not (monitoring.is_prepare or
+                                                  monitoring.is_publish):
+                return True
+
+    if priv == 'exmo2010.delete_claim_score':
+        if user.is_active:
+            if user.profile.is_expertA:
+                return True
+
+    if priv == 'exmo2010.view_clarification_score':
+        if user.is_active:
+            if (profile.is_expertA or
+                profile.is_expertB) and not monitoring.is_prepare:
+                return True
+
+    if priv == 'exmo2010.add_clarification_score':
+        if user.is_active:
+            if user.profile.is_expertA and not (monitoring.is_prepare or
+                                                monitoring.is_publish):
+                return True
+
+    if priv == 'exmo2010.answer_clarification_score':
+        if user.is_active:
+            if (user.is_active and user.profile.is_expertB and not
+                user.profile.is_expertA) and not (monitoring.is_prepare or
+                                                  monitoring.is_publish):
+                return True
+
     return False
 
 

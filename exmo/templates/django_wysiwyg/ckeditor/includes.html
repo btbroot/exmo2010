@@ -44,8 +44,45 @@
                 '/static/exmo2010/patch.css'
             ],
             'bodyClass': 'ck-contents'
-        }
+        },
 
+        'id_claim-comment': {
+            'toolbar': [
+                [
+                    'Bold', 'Italic', 'Underline',
+                    '-', 'Blockquote',
+                    '-', 'BulletedList', 'NumberedList',
+                    '-', 'Link', 'Unlink'
+                ]
+            ],
+            'toolbarCanCollapse': false,
+            'resize_enabled': false,
+            'removePlugins' : 'elementspath',
+            'contentsCss': [
+                '/static/admin/css/base.css',
+                '/static/exmo2010/patch.css'
+            ],
+            'bodyClass': 'ck-contents'
+        },
+
+        'id_clarification-comment': {
+            'toolbar': [
+                [
+                    'Bold', 'Italic', 'Underline',
+                    '-', 'Blockquote',
+                    '-', 'BulletedList', 'NumberedList',
+                    '-', 'Link', 'Unlink'
+                ]
+            ],
+            'toolbarCanCollapse': false,
+            'resize_enabled': false,
+            'removePlugins' : 'elementspath',
+            'contentsCss': [
+                '/static/admin/css/base.css',
+                '/static/exmo2010/patch.css'
+            ],
+            'bodyClass': 'ck-contents'
+        }
     };
 
     {% block django_wysiwyg_editor_config %}
@@ -71,7 +108,7 @@
         {
             var editor = this.editors[editor_name];
             if( editor ) {
-                editor.destroy(/*noUpdate=*/false);
+                editor.destroy(true);
                 this.editors[editor_name] = null;
             }
         },

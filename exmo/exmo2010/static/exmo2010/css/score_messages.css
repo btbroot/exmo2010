@@ -26,7 +26,7 @@
     color: #333;
 }
 
-.table-comments-parameter {
+.table-messages-parameter {
     max-width: 100%;
     background-color: transparent;
     border-collapse: collapse;
@@ -35,7 +35,7 @@
     margin-bottom: 20px;
 }
 
-.table-comments-parameter td {
+.table-messages-parameter td {
     padding: 8px;
     line-height: 17px;
     text-align: left;
@@ -44,34 +44,34 @@
     border-bottom: 1px solid #bbb;
 }
 
-.table-comments-parameter .author
+.table-messages-parameter .messages-author
 {
     font-size: 13px;
     width: 140px;
     font-weight: bold;
 }
 
-.heading-yourcomment-parameter
+.heading-yourmessage-parameter
 {
     font-size: 13px;
     color: #333;
 }
 
-.comment-date
+.messages-date
 {
     float: right;
     font-size: 11px;
     color: #666;
 }
 
-.comment-content
+.messages-content
 {
     padding: 0;
     margin: 0;
-    padding-top: 10px;
+    padding-top: 6px;
 }
 
-.comment-content p
+.messages-content p
 {
     padding: 0;
     margin: 0;
@@ -109,9 +109,54 @@
 {
     font-size:12px;
     font-weight: bold;
+    border-bottom: 1px dashed;
 }
 
 .submit-post
 {
     margin-top: 7px;
+}
+
+.claim-delete-container
+{
+    margin-top: 7px;
+}
+
+.messages-pseudo
+{
+    font-size:12px;
+    font-weight: bold;
+    border-bottom: 1px dashed;
+}
+
+a.messages-pseudo-off
+{
+    font-size:12px;
+    font-weight: bold;
+    border-bottom: none;
+    color: #000;
+    cursor: text;
+}
+
+a.messages-pseudo-off:hover
+{
+    color: #000;
+}
+
+.messages-answer
+{
+    margin-top: 10px;
+    border-top: 1px #bbb solid;
+    padding-left: 50px;
+    padding-top: 10px;
+}
+
+.not-answered
+{
+    background-color: #ffdddd;
+}
+
+.messages-reply
+{
+    margin-top: 5px;
 }

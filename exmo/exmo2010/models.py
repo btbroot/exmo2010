@@ -23,6 +23,7 @@ EXMO2010 Models module
 
 import string
 import random
+import datetime
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
@@ -32,6 +33,7 @@ from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
+from lxml.html.clean import Cleaner
 from exmo2010.fields import TagField
 from exmo2010.sql import sql_score_openness_v1
 from exmo2010.sql import sql_score_openness_v8
@@ -858,7 +860,7 @@ class Score(models.Model):
     comment = models.TextField(
         null=True,
         blank=True,
-        verbose_name=_('recomendation'),
+        verbose_name=_('Recomendations'),
     )
     created = models.DateTimeField(
         null=True,
@@ -932,6 +934,16 @@ class Score(models.Model):
     def _get_openness(self):
         return openness_helper(self)
 
+    def add_clarification(self, creator, comment):
+        """
+        Добавляет уточнение
+        """
+        clarification = Clarification(score=self,
+                                      creator=creator,
+                                      comment=comment)
+        clarification.save()
+        return clarification
+
     def add_claim(self, creator, comment):
         claim = Claim(score=self, creator=creator, comment=comment)
         claim.full_clean()
@@ -939,7 +951,6 @@ class Score(models.Model):
         return claim
 
     def close_claim(self, close_user):
-        import datetime
         #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
         for claim in Claim.objects.filter(score=self, close_date__isnull=True):
             claim.close_date = datetime.datetime.now()
@@ -1020,12 +1031,25 @@ class Claim(models.Model):
                                       verbose_name=_('claim close'))
     # Комментарий.
     comment = models.TextField(blank=True, verbose_name=_('comment'))
+
+    # Ответ.
+    answer = models.TextField(blank=True, verbose_name=_('comment'))
+
     # Кто закрыл претензию.
     close_user = models.ForeignKey(User, null=True, blank=True,
                                    verbose_name=_('user who close'), related_name='close_user')
     # Кто создал претензию.
     creator = models.ForeignKey(User, verbose_name=_('creator'),
                                 related_name='creator')
+
+    def add_answer(self, user, answer):
+        cleaner = Cleaner()
+        # Очистка html-текста от возможных XSS-атак
+        self.answer = cleaner.clean_html(answer)
+        self.close_user = user
+        self.close_date = datetime.datetime.now()
+        self.save()
+        return self
 
     def __unicode__(self):
         return _('claim for %(score)s from %(creator)s') %\
@@ -1041,16 +1065,36 @@ class Clarification(models.Model):
     закрыто уточнение или нет.
     """
     score = models.ForeignKey(Score, verbose_name=_('score'))
+
     open_date = models.DateTimeField(auto_now_add=True,
                                      verbose_name=_('clarification open'))
-    close_date = models.DateTimeField(null=True,
-                                      blank=True,
-                                      verbose_name=_('clarification close'))
-    comment = models.TextField(blank=True,
-                               verbose_name=_('comment'))
     creator = models.ForeignKey(User,
                                 verbose_name=_('creator'),
                                 related_name='clarification_creator')
+
+    comment = models.TextField(blank=True,
+                               verbose_name=_('comment'))
+
+    close_date = models.DateTimeField(null=True,
+                                      blank=True,
+                                      verbose_name=_('clarification close'))
+
+    answer = models.TextField(blank=True, verbose_name=_('comment'))
+
+    close_user = models.ForeignKey(User,
+                                   null=True,
+                                   blank=True,
+                                   verbose_name=_('user who close'),
+                                   related_name='clarification_close_user')
+
+    def add_answer(self, user, answer):
+        cleaner = Cleaner()
+        # Очистка html-текста от возможных XSS-атак
+        self.answer = cleaner.clean_html(answer)
+        self.close_user = user
+        self.close_date = datetime.datetime.now()
+        self.save()
+        return self
 
     def __unicode__(self):
         return _('clarification for %s from %s') % (self.score, self.creator)

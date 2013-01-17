@@ -531,7 +531,7 @@ msgstr "одобрена"
 #: exmo/exmo2010/view/task.py:468 exmo/exmo2010/view/task.py:475
 #: exmo/exmo2010/view/task.py:481
 msgid "organization"
-msgstr "Наименование органа/организации"
+msgstr "организация"
 
 #: exmo/exmo2010/models.py:491
 msgid "openness first"
@@ -1396,7 +1396,7 @@ msgstr "Дата открытия"
 #: exmo/templates/exmo2010/rating_common.html:23
 #: exmo/templates/exmo2010/rating_content.html:145
 msgid "Organization"
-msgstr "Наименование органа/организации"
+msgstr "Организация"
 
 #: exmo/templates/exmo2010/claim_list.html:40
 #: exmo/templates/exmo2010/claim_list.html:48
@@ -2463,6 +2463,9 @@ msgstr "средняя"
 msgid "low importance"
 msgstr "низкая"
 
+msgid "Clarifications"
+msgstr "Уточнения"
+
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
@@ -2471,4 +2474,37 @@ msgstr "Открыть комментарий"
 
 msgid "Reset"
 msgstr "Сбросить"
+
+msgid "Your clarification"
+msgstr "Ваше уточнение"
+
+msgid "Specify"
+msgstr "Уточнить"
+
+msgid "Your claim"
+msgstr "Ваша претензия"
+
+msgid "Delete claim"
+msgstr "Удалить претензию"
+
+msgid "Answer clarification"
+msgstr "Ответить на уточнение"
+
+msgid "Your answer"
+msgstr "Ваш ответ"
+
+msgid "Reply"
+msgstr "Ответить"
+
+msgid "Answer claim"
+msgstr "Ответить на претензию"
+
+msgid "There are no claims"
+msgstr "Претензий нет"
+
+msgid "There are no clarifications"
+msgstr "Уточнений нет"
+
+msgid "There are no comments"
+msgstr "Комментариев нет"
 

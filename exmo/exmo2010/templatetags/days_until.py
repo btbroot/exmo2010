@@ -25,7 +25,7 @@ register = template.Library()
 
 
 @register.filter
-def days_until(start_date, delta_days=0):
+def days_until(start_date, delta_days):
     """
     Считает количество оставшихся от настоящего времени дней до даты.
     Дата: (start_date) + количество дней (delta_days).
