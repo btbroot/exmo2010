@@ -23,6 +23,7 @@
 
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.template import loader, Context
@@ -127,24 +128,29 @@ def comment_notification(sender, **kwargs):
     nonadmin_rcpt=list(set(nonadmin_rcpt))
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
-    t = loader.get_template('exmo2010/score_comment_email.html')
+    t_plain = loader.get_template('exmo2010/emails/score_comment.txt')
+    t_html = loader.get_template('exmo2010/emails/score_comment.html')
     c = Context({ 'score': score, 'user': comment.user, 'admin': False, 'comment':comment, 'url': url })
-    message = t.render(c)
+    message_plain = t_plain.render(c)
+    message_html = t_html.render(c)
+
     for rcpt_ in nonadmin_rcpt:
         if  rcpt_ == comment.user.email:
-            #self
             headers['X-iifd-exmo-comment-self'] = 'True'
-        email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers,)
+        email = EmailMultiAlternatives(subject, message_plain, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers,)
+        email.attach_alternative(message_html, "text/html")
         email.send()
 
-    t = loader.get_template('exmo2010/score_comment_email.html')
+    t_plain = loader.get_template('exmo2010/emails/score_comment.txt')
+    t_html = loader.get_template('exmo2010/emails/score_comment.html')
     c = Context({ 'score': comment.content_object, 'user': comment.user, 'admin': True, 'comment':comment, 'url': url })
-    message_admin = t.render(c)
+    message_admin_plain = t_plain.render(c)
+    message_admin_html = t_html.render(c)
     for rcpt_ in admin_rcpt:
         if  rcpt_ == comment.user.email:
-            #self
             headers['X-iifd-exmo-comment-self'] = 'True'
-        email = EmailMessage(subject, message_admin, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
+        email = EmailMultiAlternatives(subject, message_admin_plain, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers,)
+        email.attach_alternative(message_admin_html, "text/html")
         email.send()
 
 
@@ -192,7 +198,7 @@ def claim_notification(sender, **kwargs):
         receiver = None
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
-    t = loader.get_template('exmo2010/claim_email.html')
+    t = loader.get_template('exmo2010/emails/claim.html')
     c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': False, 'receiver': receiver })
     message_nonadmin=t.render(c)
     c=Context({ 'score': claim.score, 'claim': claim, 'url': url, 'admin': True, 'receiver': receiver })
