@@ -41,7 +41,7 @@ from django.views.generic.simple import direct_to_template
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.contrib.auth import views as auth_views
-from registration.views import activate
+from exmo2010.custom_registration.views import activate_redirect
 from exmo2010.custom_registration.views import password_reset_confirm
 from exmo2010.custom_registration.views import register_test_cookie
 from exmo2010.custom_registration.views import login_test_cookie
@@ -58,7 +58,7 @@ urlpatterns = patterns('',
     # that way it can return a sensible "invalid key" message instead of a
     # confusing 404.
     url(r'^activate/(?P<activation_key>\w+)/$',
-       activate,
+        activate_redirect,
        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
        name='registration_activate'),
     url(r'^register/$',

@@ -16,8 +16,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
-from django.http import HttpResponse
+import re
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Context, Template
 from django.utils.http import base36_to_int
@@ -119,14 +119,16 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
                 return redirect(success_url)
         else:
             if status == 1:
-                form = RegistrationFormFull(data=request.POST, files=request.FILES)
+                form = RegistrationFormFull(data=request.POST,
+                                            files=request.FILES)
     else:
         form = RegistrationFormFull()
 
     if extra_context is None:
         extra_context = {}
 
-    extra_context.update({'required_error': Field.default_error_messages['required']})
+    extra_context.update({'required_error':
+                              Field.default_error_messages['required']})
 
     context = RequestContext(request)
     for key, value in extra_context.items():
@@ -145,6 +147,10 @@ def login_test_cookie(request, template_name='registration/login.html',
     Проверяет работу cookie и возвращает стандартную вью для логина.
     Тестовые cookies создаются в оригинальной auth_login.
     """
+    # Перенаправление на главную залогиненных пользователей.
+    if request.user.is_authenticated():
+        return redirect('exmo2010:index')
+
     if request.method == 'POST':
         if not request.session.test_cookie_worked():
             return render_to_response('cookies.html', RequestContext(request))
@@ -173,3 +179,44 @@ def csrf_failure(request, reason=""):
                      'no_referer': reason == REASON_NO_REFERER
         })
         return HttpResponseForbidden(t.render(c), mimetype='text/html')
+
+
+def activate_redirect(request, backend,
+             template_name='registration/activate.html',
+             success_url=None, extra_context=None, **kwargs):
+    """
+    Вью на основании registration, добавлен редирект на страницу
+    логина, если backend.activate() возвращает False
+    """
+
+    # Проверка наличия ключа активации и является ли он 160-битным значением
+    # в шестнадцатеричной форме записи
+    activation_key = kwargs.get('activation_key')
+    hex_pattern = re.compile(r'^[0-9a-f]{40}$')
+    is_hex = re.search(hex_pattern, activation_key)
+    if activation_key and is_hex:
+        backend = get_backend(backend)
+        account = backend.activate(request, **kwargs)
+
+        if account:
+            # успех
+            if success_url is None:
+                to, args, kwargs = backend.post_activation_redirect(request,
+                                                                    account)
+                return redirect(to, *args, **kwargs)
+            else:
+                return redirect(success_url)
+
+        # если ключ правильный, но пользователь уже активирован
+        return redirect('exmo2010:auth_login')
+
+    # если ключ активации неправильный
+    if extra_context is None:
+        extra_context = {}
+    context = RequestContext(request)
+    for key, value in extra_context.items():
+        context[key] = callable(value) and value() or value
+
+    return render_to_response(template_name,
+        kwargs,
+        context_instance=context)

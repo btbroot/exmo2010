@@ -2133,12 +2133,16 @@ msgid "Registration on"
 msgstr "Регистрация на"
 
 #: exmo/templates/registration/activation_email.txt:21
-msgid "In order to activate your account you should follow the link"
-msgstr "Для активации вашего аккаунта необходимо перейти по ссылке"
+msgid "In order to activate your account you should follow the link ONCE"
+msgstr "Для активации вашего аккаунта необходимо перейти по ссылке ОДИН РАЗ"
 
 #: exmo/templates/registration/activation_email.txt:24
 msgid "Thank you"
 msgstr "Спасибо"
+
+#: exmo/templates/registration/activation_email.txt
+msgid "Later you'll be able to log in here"
+msgstr "В дальнейшем для входа на сайт можно использовать ссылку"
 
 #: exmo/templates/registration/login.html:30
 msgid "Log in the system"
@@ -2576,7 +2580,6 @@ msgstr "перейти к уточнению"
 msgid "Messages"
 msgstr "Сообщения"
 
-<<<<<<< HEAD
 msgid "From who"
 msgstr "От кого"
 
@@ -2591,7 +2594,6 @@ msgstr "Уточнение"
 
 msgid "at"
 msgstr "в"
-=======
+
 msgid "Score for parameter \"%s\""
 msgstr "Оценка параметра \"%s\""
->>>>>>> c272d5d... Bug #1002 Перевод на странице просмотра оценок по параметру.
