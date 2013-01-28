@@ -1706,9 +1706,11 @@ msgstr "Массовое назначение"
 msgid "Export by criteria"
 msgstr "Экспорт по критерию"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:34
 msgid "Claim report"
 msgstr "Отчёт по претензиям"
+
+msgid "Clarification report"
+msgstr "Отчёт по уточнениям"
 
 #: exmo/templates/exmo2010/monitoring_utility.html:39
 msgid "You must have approved task for export"

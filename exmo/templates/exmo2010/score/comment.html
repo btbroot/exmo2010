@@ -65,7 +65,7 @@
                             {{ comment.comment|safe }}
                         </div>
 
-                        {% if request.user.profile.is_organization and comment.user.profile.is_organization and comment.status == 0 %}
+                        {% if request.user.profile.is_organization and comment.user.profile.is_organization and comment.status == 0 and not comment.user.profile.is_expert %}
                         <div class="notification-peremptory">
                             {% trans 'Peremptory day to answer your question is' %}
                             {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|ru_strftime:"%d %B %Y" }}

@@ -946,7 +946,10 @@ class Score(models.Model):
         return clarification
 
     def add_claim(self, creator, comment):
-        claim = Claim(score=self, creator=creator, comment=comment)
+        claim = Claim(score=self,
+                      creator=creator,
+                      comment=comment)
+        claim.addressee=claim.score.task.user
         claim.full_clean()
         claim.save()
         return claim

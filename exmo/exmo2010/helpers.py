@@ -232,7 +232,6 @@ def claim_notification(sender, **kwargs):
         email.send()
 
 
-
 @disable_for_loaddata
 def post_save_model(sender, instance, created, **kwargs):
     """
@@ -252,7 +251,6 @@ def post_save_model(sender, instance, created, **kwargs):
         revision.register(instance.__class__)
 
 
-
 def create_profile(sender, instance, created, **kwargs):
     """
     post-save для модели User для создания профиля
@@ -264,7 +262,6 @@ def create_profile(sender, instance, created, **kwargs):
         profile.save()
 
 
-
 def create_calendar(sender, instance, created, **kwargs):
     """
     Заполнение календаря мониторинга после создания
@@ -274,7 +271,6 @@ def create_calendar(sender, instance, created, **kwargs):
         instance.create_calendar()
 
 
-
 def create_revision(sender, instance, using, **kwargs):
     """
     Сохранение ревизии оценки на стадии взаимодействия
@@ -282,7 +278,6 @@ def create_revision(sender, instance, using, **kwargs):
 
     if instance.revision != Score.REVISION_INTERACT:
         instance.create_revision(Score.REVISION_INTERACT)
-
 
 
 def score_change_notify(sender, **kwargs):
