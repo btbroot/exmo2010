@@ -182,7 +182,7 @@ def claim_report(request, monitoring_id):
             addressee_id_list=addressee_id_list)
 
     return render_to_response(
-            'exmo2010/score/claim_report.html',
+            'exmo2010/reports/claim_report.html',
             {
                 'monitoring': monitoring,
                 'title': title,

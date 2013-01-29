@@ -2501,6 +2501,9 @@ msgstr "Ваш ответ"
 msgid "Reply"
 msgstr "Ответить"
 
+msgid "Put forward"
+msgstr "Выставить"
+
 msgid "Answer claim"
 msgstr "Ответить на претензию"
 
@@ -2566,3 +2569,6 @@ msgstr "все руководители"
 
 msgid "go to clarification"
 msgstr "перейти к уточнению"
+
+msgid "Messages"
+msgstr "Сообщения"

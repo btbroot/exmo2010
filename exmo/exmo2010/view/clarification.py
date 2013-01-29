@@ -120,7 +120,7 @@ def clarification_report(request, monitoring_id):
             addressee_id_list=addressee_id_list)
 
     return render_to_response(
-        'exmo2010/clarification_report.html',
+        'exmo2010/reports/clarification_report.html',
         {
             'monitoring': monitoring,
             'title': title,

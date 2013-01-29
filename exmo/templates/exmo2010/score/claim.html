@@ -97,7 +97,7 @@
                     {{ field }}
                 </div>
             {% endfor %}
-            <input type="submit" class="submit-post" value="{% if not add_claim %}{% trans 'Reply' %}{% else %}{% trans 'Post' %}{% endif %}">
+            <input type="submit" class="submit-post" value="{% if not add_claim %}{% trans 'Reply' %}{% else %}{% trans 'Put forward' %}{% endif %}">
             {% wysiwyg_editor "id_claim-comment" %}
         </form>
     </div>

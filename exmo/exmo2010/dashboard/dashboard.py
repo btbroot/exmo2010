@@ -63,7 +63,8 @@ class CustomIndexDashboard(UserDashboard):
         if request.user.is_authenticated():
             if request.user.profile.is_organization:
                 task_id = request.user.profile.get_task_review_id()
-                context.update({ 'task_id' : task_id }) if task_id != None else None
+                if task_id is not None:
+                    context.update({'task_id': task_id})
                 context.update({'invcodeform': SettingsInvCodeForm()})
 
         site_name = get_admin_site_name(context)
@@ -92,17 +93,10 @@ class CustomIndexDashboard(UserDashboard):
             template="user_dashboard/modules/monitoring_list.html",
         ))
 
-#        # append a feed module
-#        self.children.append(modules.Feed(
-#            _('Svobodainfo news'),
-#            feed_url='http://www.svobodainfo.org/rss.xml',
-#            limit=10,
-#            template = "user_dashboard/modules/feed.html",
-#        ))
-
-        if request.user.is_active and request.user.profile.is_expert:
+        if request.user.is_active and request.user.profile.is_expertB \
+           and not request.user.profile.is_expertA:
             self.children.append(modules.LinkList(
-                _('Communication'),
+                _('Messages'),
                 children=(
                     (
                         _('Comments') + ': ' + str(

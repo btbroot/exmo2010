@@ -1,0 +1,7 @@
+.messages-report th
+{
+    background: none;
+    font-weight: bold;
+    border-left: none;
+    border-bottom: 1px solid #eee;
+}

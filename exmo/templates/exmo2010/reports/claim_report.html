@@ -19,6 +19,12 @@
 #
 {% endcomment %}
 {% load i18n adminmedia %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_manager.css"/>
+{% endblock %}
+
 {% block extrahead %}{{ block.super }}
 {% url django.views.i18n.javascript_catalog as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
@@ -49,13 +55,13 @@
 {% block content %}
     <form action="" method="post" id="cform">
         {% csrf_token %}
-        <table>
+        <table class="messages-report">
             <thead>
             <tr>
-                <td>{% trans 'Date and time' %}</td>
-                <td>{% trans 'Claim addressee' %}<br/>{{ form.addressee }}</td>
-                <td>{% trans 'Claim creator' %}<br/>{{ form.creator }}</td>
-                <td>{% trans 'Link to claim' %}</td>
+                <th>{% trans 'Date and time' %}</th>
+                <th>{% trans 'Claim addressee' %}<br/>{{ form.addressee }}</th>
+                <th>{% trans 'Claim creator' %}<br/>{{ form.creator }}</th>
+                <th>{% trans 'Link to claim' %}</th>
             </tr>
             </thead>
             <tbody>
