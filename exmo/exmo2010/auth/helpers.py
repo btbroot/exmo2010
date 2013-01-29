@@ -88,13 +88,20 @@ def task_permission(user, priv, task):
         if task.user==user and (task.organization.monitoring.is_interact or
                                 task.organization.monitoring.is_finishing):
             return True
-    elif priv == 'exmo2010.comment_score':
+
+    elif priv == 'exmo2010.add_comment_score':
         if user.is_active:
             profile = user.profile
+            if profile.is_expertA and\
+               (task.organization.monitoring.is_interact or
+                task.organization.monitoring.is_finishing):
+                return True
+
             if profile.is_expertB and task.user == user and \
                 (task.organization.monitoring.is_interact or
                  task.organization.monitoring.is_finishing):
                     return True
+
             if profile.is_organization and \
                 user.has_perm('exmo2010.view_task', task) and \
                 task.organization in profile.organization.all() and \
@@ -110,9 +117,11 @@ def score_permission(user, priv, score):
     if priv == 'exmo2010.view_score':
         if score.task.organization not in score.parameter.exclude.all():
             return user.has_perm('exmo2010.view_task', score.task)
+
     if priv == 'exmo2010.edit_score':
         if score.task.organization not in score.parameter.exclude.all():
             return user.has_perm('exmo2010.fill_task', score.task)
+
     if priv == 'exmo2010.delete_score':
         return user.has_perm('exmo2010.fill_task', score.task)
 
@@ -122,7 +131,8 @@ def score_permission(user, priv, score):
                 profile.is_expertA) and (monitoring.is_interact or
                                          monitoring.is_finishing):
                 return True
-            if profile.is_expertA and monitoring.is_publish:
+            if profile.is_expertA and (monitoring.is_interact or
+                                       monitoring.is_publish):
                 return True
             if profile.is_organization and monitoring.is_interact:
                 return True

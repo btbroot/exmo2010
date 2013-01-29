@@ -358,7 +358,7 @@ def score_list_by_task(request, task_id, report=None):
 @login_required
 def score_add_comment(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
-    if request.user.has_perm('exmo2010.comment_score', score):
+    if request.user.has_perm('exmo2010.add_comment_score', score):
         return render_to_response(
             'exmo2010/score_comment_form.html',
             {
