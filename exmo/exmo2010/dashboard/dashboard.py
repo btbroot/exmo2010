@@ -95,22 +95,24 @@ class CustomIndexDashboard(UserDashboard):
 
         if request.user.is_active and request.user.profile.is_expertB \
            and not request.user.profile.is_expertA:
+            comments = request.user.profile.get_not_answered_comments()
+            clarifications = request.user.profile.get_opened_clarifications()
+            claims = request.user.profile.get_opened_claims()
+
             self.children.append(modules.LinkList(
                 _('Messages'),
                 children=(
                     (
-                        _('Comments') + ': ' + str(
-                            request.user.profile.get_comment_count()),
+                        _('Comments') + ': ' + str(comments.count()),
                         reverse('exmo2010:comment_list')
                     ),
                     (
-                        _('Clarifications') + ': ' + str(
-                            request.user.profile.get_clarification_count()),
+                        _('Clarifications') + ': ' + \
+                        str(clarifications.count()),
                         reverse('exmo2010:clarification_list')
                     ),
                     (
-                        _('Claims') + ': ' + str(
-                            request.user.profile.get_claim_count()),
+                        _('Claims') + ': ' + str(claims.count()),
                         reverse('exmo2010:claim_list')
                     ),
                 ),
