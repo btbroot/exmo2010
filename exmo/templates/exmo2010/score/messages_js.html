@@ -110,6 +110,8 @@
                 var $this = $(this)
                     , $form = $('#add-claim').remove();
 
+                $form.addClass('reply-form-tweak');
+
                 if (pkClaim != undefined && pkClaim == $this.attr('rel')) {
                     if($form.css('display') == 'block') {
                         $form.hide();
@@ -147,6 +149,8 @@
 
                 var $this = $(this)
                     , $form = $('#add-clarification').remove()
+
+                $form.addClass('reply-form-tweak');
 
                 if (pkClarification != undefined && pkClarification == $this.attr('rel')) {
                     if($form.css('display') == 'block') {

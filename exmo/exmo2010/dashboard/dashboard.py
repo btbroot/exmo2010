@@ -59,10 +59,11 @@ class CustomIndexDashboard(UserDashboard):
     """
     def init_with_context(self, context):
         request = context['request']
+        user = request.user
 
-        if request.user.is_authenticated():
-            if request.user.profile.is_organization:
-                task_id = request.user.profile.get_task_review_id()
+        if user.is_authenticated():
+            if user.profile.is_organization:
+                task_id = user.profile.get_task_review_id()
                 if task_id is not None:
                     context.update({'task_id': task_id})
                 context.update({'invcodeform': SettingsInvCodeForm()})
@@ -93,11 +94,11 @@ class CustomIndexDashboard(UserDashboard):
             template="user_dashboard/modules/monitoring_list.html",
         ))
 
-        if request.user.is_active and request.user.profile.is_expertB \
-           and not request.user.profile.is_expertA:
-            comments = request.user.profile.get_not_answered_comments()
-            clarifications = request.user.profile.get_opened_clarifications()
-            claims = request.user.profile.get_opened_claims()
+        if user.is_active and user.profile.is_expertB \
+           and not user.profile.is_expertA:
+            comments = user.profile.get_filtered_not_answered_comments()
+            clarifications = user.profile.get_filtered_opened_clarifications()
+            claims = user.profile.get_filtered_opened_claims()
 
             self.children.append(modules.LinkList(
                 _('Messages'),

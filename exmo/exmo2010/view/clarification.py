@@ -92,8 +92,8 @@ def clarification_report(request, monitoring_id):
                                                            monitoring.name}
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
-    opened_claims = all_clarifications.filter(close_date__isnull=True)
-    closed_claims = all_clarifications.filter(close_date__isnull=False)
+    opened_clarifications = all_clarifications.filter(close_date__isnull=True)
+    closed_clarifications = all_clarifications.filter(close_date__isnull=False)
     addressee_id_list = all_clarifications.select_related(
         'score__task__user').values_list('id', flat=True)
     creator_id_list = all_clarifications.order_by().values_list(
@@ -108,12 +108,14 @@ def clarification_report(request, monitoring_id):
             creator_id = int(cd["creator"])
             addressee_id = int(cd["addressee"])
             if creator_id != 0:
-                opened_claims = opened_claims.filter(creator__id=creator_id)
-                closed_claims = closed_claims.filter(creator__id=creator_id)
+                opened_clarifications = opened_clarifications.filter(
+                    creator__id=creator_id)
+                closed_clarifications = closed_clarifications.filter(
+                    creator__id=creator_id)
             if addressee_id != 0:
-                opened_claims = opened_claims.filter(
+                opened_clarifications = opened_clarifications.filter(
                     score__task__user__id=addressee_id)
-                closed_claims = closed_claims.filter(
+                closed_clarifications = closed_clarifications.filter(
                     score__task__user__id=addressee_id)
     else:
         form = ClarificationReportForm(creator_id_list=creator_id_list,
@@ -124,8 +126,8 @@ def clarification_report(request, monitoring_id):
         {
             'monitoring': monitoring,
             'title': title,
-            'opened_clarifications': opened_claims,
-            'closed_clarifications': closed_claims,
+            'opened_clarifications': opened_clarifications,
+            'closed_clarifications': closed_clarifications,
             'form': form,
             },
         context_instance=RequestContext(request),

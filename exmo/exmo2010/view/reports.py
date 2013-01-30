@@ -38,57 +38,72 @@ def comment_list(request):
     """
     Страница сводного списка комментариев
     """
-    if not (request.user.is_active and request.user.profile.is_expert):
+    user = request.user
+    if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    opened_comments = request.user.profile.get_not_answered_comments()
-    closed_comments = request.user.profile.get_answered_comments()
+    if user.profile.is_expertA:
+        opened = user.profile.get_filtered_not_answered_comments()
+    else:
+        opened = user.profile.get_filtered_not_answered_comments()
+    closed = user.profile.get_answered_comments()
 
     title = _('Comments')
 
     return render_to_response('exmo2010/reports/comment_list.html',
         {
             'title': title,
-            'opened_comments': opened_comments,
-            'closed_comments': closed_comments,
-            },
+            'opened_comments': opened,
+            'closed_comments': closed,
+        },
         RequestContext(request))
 
 def clarification_list(request):
     """
     Страница сводного списка уточнений для аналитиков
     """
-    if not (request.user.is_active and request.user.profile.is_expert):
+    user = request.user
+
+    if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    opened_clarifications = request.user.profile.get_opened_clarifications()
-    closed_clarifications = request.user.profile.get_closed_clarifications()
+    if user.profile.is_expertA:
+        opened = user.profile.get_opened_clarifications()
+    else:
+        opened = user.profile.get_filtered_opened_clarifications()
+    closed = user.profile.get_closed_clarifications()
+
     title = _('Clarifications')
+
     return render_to_response('exmo2010/reports/clarification_list.html',
         {
             'title': title,
-            'opened_clarifications': opened_clarifications,
-            'closed_clarifications': closed_clarifications,
-            },
+            'opened_clarifications': opened,
+            'closed_clarifications': closed,
+        },
         RequestContext(request))
 
 def claim_list(request):
-
     """
     Страница сводного списка претензий для аналитиков
     """
-    # todo: декоратор для вьюшек на все экспертские проверки
-    if not (request.user.is_active and request.user.profile.is_expert):
+    user = request.user
+    if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    opened_claims = request.user.profile.get_opened_claims()
-    closed_claims = request.user.profile.get_closed_claims()
+    if user.profile.is_expertA:
+        opened = user.profile.get_opened_claims()
+    else:
+        opened = user.profile.get_filtered_opened_claims()
+    closed = user.profile.get_closed_claims()
+
     title = _('Claims')
+
     return render_to_response('exmo2010/reports/claim_list.html',
         {
             'title': title,
-            'opened_claims': opened_claims,
-            'closed_claims': closed_claims,
+            'opened_claims': opened,
+            'closed_claims': closed,
         },
         RequestContext(request))
 

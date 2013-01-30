@@ -1112,6 +1112,7 @@ class Clarification(models.Model):
         self.save()
         return self
 
+
     def __unicode__(self):
         return _('clarification for %s from %s') % (self.score, self.creator)
 
@@ -1119,7 +1120,7 @@ class Clarification(models.Model):
         permissions = (("view_clarification", "Can view clarification"),)
 
     @property
-    def recipient(self):
+    def addressee(self):
         return self.score.task.user
 
 
@@ -1388,6 +1389,22 @@ class UserProfile(models.Model):
     def _get_my_scores(self):
         return Score.objects.filter(task__user=self.user)
 
+    # оценки, к которым имеет доступ ЭкспертБ.
+    def _get_my_filtered_scores(self, enum="messages"):
+        statuses = []
+        if enum == "messages":
+            statuses=[Monitoring.MONITORING_PREPARE,
+                      Monitoring.MONITORING_PUBLISH,]
+        elif enum == "comments":
+            statuses=[Monitoring.MONITORING_PREPARE,
+                      Monitoring.MONITORING_PUBLISH,
+                      Monitoring.MONITORING_RATE,
+                      Monitoring.MONITORING_REVISION,
+                      Monitoring.MONITORING_RESULT,]
+
+        return Score.objects.filter(task__user=self.user).exclude(
+                task__organization__monitoring__status__in=statuses)
+
     def get_answered_comments(self):
         """
         Возвращает queryset из коментов на которые был дан ответ пользователем.
@@ -1438,7 +1455,7 @@ class UserProfile(models.Model):
 
     def get_opened_clarifications(self):
         """
-        Возвращает queryset из открытых претензий
+        Возвращает queryset из открытых уточнений
         """
         clarifications = Clarification.objects.filter(
             score__task__user=self.user,
@@ -1447,7 +1464,7 @@ class UserProfile(models.Model):
 
     def get_closed_clarifications(self):
         """
-        Возвращает queryset из закрытых претензий
+        Возвращает queryset из закрытых уточнений
         """
         clarifications = Clarification.objects.filter(score__task__user=self.user,
             close_date__isnull=False).order_by('open_date')
@@ -1477,6 +1494,40 @@ class UserProfile(models.Model):
         open_clarifications = self.get_opened_clarifications().count()
         closed_clarifications = self.get_closed_clarifications().count()
         return open_clarifications + closed_clarifications
+
+    def get_filtered_not_answered_comments(self):
+        """
+        Возвращает queryset из не отвеченных комментариев в соответствующих
+        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
+        """
+        comments = CommentExmo.objects.filter(
+            object_pk__in=self._get_my_filtered_scores("comments"),
+            content_type__model='score',
+            status=CommentExmo.OPEN).order_by('object_pk', '-submit_date')
+        return comments
+
+    def get_filtered_opened_clarifications(self):
+        """
+        Возвращает queryset из не отвеченных уточнений в соответствующих
+        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
+        """
+        clarifications = Clarification.objects.filter(
+            score__task__user=self.user,
+            score__in=self._get_my_filtered_scores("messages"),
+            close_date__isnull=True).order_by('open_date')
+        return clarifications
+
+    def get_filtered_opened_claims(self):
+        """
+        Возвращает queryset из не отвеченных претензий в соответствующих
+        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
+        """
+        claims = Claim.objects.filter(
+            score__task__user=self.user,
+            score__in=self._get_my_filtered_scores("messages"),
+            close_date__isnull=True).order_by('open_date')
+        return claims
+
 
     def get_task_review_id(self):
         organizations = self.organization.filter(

@@ -303,7 +303,7 @@ class ClarificationReportForm(forms.Form):
             name = "%s %s" % (user.first_name, user.last_name)
             creator_choices.append((i, name))
         self.fields['creator'].choices = creator_choices
-        addressee_choices = [(0, _("all managers"))]
+        addressee_choices = [(0, _("all experts"))]
         for i in addressee_id_list:
             user = User.objects.get(pk=i)
             name = "%s %s" % (user.first_name, user.last_name)
