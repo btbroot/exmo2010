@@ -37,8 +37,9 @@
 {% endblock %}
 
 {% block content %}
-
-
+{% if not opened_clarifications and not closed_clarifications %}
+    <p>{% trans "There are no clarifications" %}</p>
+{% else %}
     <table class="report-list-table">
         <thead>
         <tr>
@@ -81,4 +82,5 @@
         {% endfor %}
         </tbody>
     </table>
+{% endif %}
 {% endblock %}

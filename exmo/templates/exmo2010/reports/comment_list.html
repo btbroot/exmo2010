@@ -37,7 +37,9 @@
 {% endblock %}
 
 {% block content %}
-
+{% if not opened_comments and not closed_comments %}
+<p>{% trans "There are no comments" %}</p>
+{% else %}
     <table class="report-list-table">
         <thead>
         <tr>
@@ -80,4 +82,5 @@
         {% endfor %}
         </tbody>
     </table>
+{% endif %}
 {% endblock %}

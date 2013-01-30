@@ -37,7 +37,9 @@
 {% endblock %}
 
 {% block content %}
-
+{% if not opened_claims and not closed_claims %}
+<p>{% trans "There are no claims" %}</p>
+{% else %}
 
     <table class="report-list-table">
         <thead>
@@ -81,4 +83,5 @@
         {% endfor %}
         </tbody>
     </table>
+{% endif %}
 {% endblock %}

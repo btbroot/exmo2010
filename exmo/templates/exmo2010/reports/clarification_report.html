@@ -29,6 +29,9 @@
     {% url django.views.i18n.javascript_catalog as jsi18nurl %}
     <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
     {{ media }}
+
+    {% if all_clarifications %}
+
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -40,6 +43,9 @@
             });
         });
     </script>
+
+    {% endif %}
+
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -53,6 +59,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if all_clarifications %}
     <form action="" method="post" id="cform">
         {% csrf_token %}
         <table class="messages-report">
@@ -104,4 +111,8 @@
             </tbody>
         </table>
     </form>
+    {% else %}
+        <p>{% trans "There are no clarifications" %}</p>
+    {% endif %}
+
 {% endblock %}

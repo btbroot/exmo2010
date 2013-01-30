@@ -129,6 +129,7 @@ def clarification_report(request, monitoring_id):
             'opened_clarifications': opened_clarifications,
             'closed_clarifications': closed_clarifications,
             'form': form,
+            'all_clarifications': all_clarifications,
             },
         context_instance=RequestContext(request),
     )

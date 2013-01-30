@@ -189,6 +189,7 @@ def claim_report(request, monitoring_id):
                 'opened_claims': opened_claims,
                 'closed_claims': closed_claims,
                 'form': form,
+                'all_claims': all_claims,
             },
             context_instance=RequestContext(request),
      )

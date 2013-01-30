@@ -45,7 +45,7 @@
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-{{title}}
+{{ title }}
 </div>
 {% endblock %}
 {% block pretitle %}
@@ -53,6 +53,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if all_claims %}
     <form action="" method="post" id="cform">
         {% csrf_token %}
         <table class="messages-report">
@@ -104,4 +105,7 @@
             </tbody>
         </table>
     </form>
+    {% else %}
+        <p>{% trans "There are no claims" %}</p>
+    {% endif %}
 {% endblock %}
