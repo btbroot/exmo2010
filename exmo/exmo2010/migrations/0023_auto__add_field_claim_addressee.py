@@ -37,7 +37,7 @@ class Migration(SchemaMigration):
                     claim.addressee = claim.score.task.user
                 # Нужно, т.к. на продакшне нарушена целостность данных,
                 # и у некоторых (7 штук) Claim нет Score.
-                except claim.DoesNotExist:
+                except orm.Score.DoesNotExist:
                     # Ставим creator, чтобы хоть что-то поставить.
                     claim.addressee = claim.creator
                 claim.save()
