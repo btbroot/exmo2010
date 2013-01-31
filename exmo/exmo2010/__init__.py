@@ -23,7 +23,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.comments.signals import comment_was_posted
-from exmo2010 import signals
 from exmo2010.helpers import comment_notification
 from exmo2010.helpers import comment_change_status
 from exmo2010.helpers import claim_notification
@@ -35,6 +34,7 @@ from exmo2010.helpers import score_change_notify
 from exmo2010.models import Score
 from exmo2010.models import Monitoring
 from exmo2010.sites import site
+from exmo2010 import signals
 
 
 if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:

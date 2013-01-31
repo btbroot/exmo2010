@@ -324,11 +324,11 @@ def score_list_by_task(request, task_id, report=None):
         # Не показываем ссылку экспертам B или предатвителям, если статус
         # мониторинга отличается от "Опубликован".
         user = request.user
-        if (not user.is_aсtive or
+        if (not user.is_active or
             (user.profile.is_expertB and not user.profile.is_expertA) or
-            user.profile.is_organization) \
-           and monitoring.status != Monitoring.MONITORING_PUBLISH \
-           and not user.is_superuser:
+            user.profile.is_organization) and \
+           (monitoring.status != Monitoring.MONITORING_PUBLISH) and \
+           not user.is_superuser:
             show_link = False
         else:
             show_link = True
