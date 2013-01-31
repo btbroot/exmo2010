@@ -18,14 +18,29 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n pytils_dt %}
 
 {% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
 {% block content %}
     <h3>{{ score.task.organization }}: {{ score.parameter }}</h3>
-    <p><b>{% trans 'Date' %}:</b> {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}</p>
-    <p><b>{% trans 'User' %}:</b> {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}{% if admin %}{{ comment.user }}{% else %}svobodainfo{% endif %}{% else %}{{ comment.user }}{% endif %}</p>
-    <p><b>{% trans 'Comment' %}:</b></p>
-    <p>{{ comment.comment|safe }}</p>
-    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
+
+    <p><b>{% trans 'Date' %}:</b>
+        {% if claim.close_date %}
+            {{ claim.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.close_date|date:"G:i" }}
+        {% else %}
+            {{ claim.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.open_date|date:"G:i" }}
+        {% endif %}
+    </p>
+    <p><b>{% trans 'From who' %}:</b> {{ claim.creator }}</p>
+    <p><b>{% trans 'To whom' %}:</b> {{ claim.addressee }}</p>
+    <p><b>{% trans 'Claim' %}:</b></p>
+    <p>{{ claim.comment|safe }}</p>
+    {% if claim.close_date %}
+        <p><b>{% trans 'Answer' %}:</b></p>
+        <p>{{ claim.answer|safe }}</p>
+    {% endif %}
+    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#claims">{{ url }}#claims</a></p>
 {% endblock content %}
+
+

@@ -17,10 +17,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n pytils_dt %}
 {{ score.task.organization }}: {{ score.parameter }}
-{% trans 'Date' %}: {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
-{% trans 'User' %}: {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}{% if admin %}{{ comment.user }}{% else %}svobodainfo{% endif %}{% else %}{{ comment.user }}{% endif %}
-{% trans 'Comment' %}:
-{{ comment.comment|striptags }}
+
+{% trans 'Date' %}: {% if clarification.close_date %}{{ clarification.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.close_date|date:"G:i" }}{% else %}{{ clarification.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.open_date|date:"G:i" }}{% endif %}
+{% trans 'From who' %}: {{ clarification.creator }}
+{% trans 'To whom' %}: {{ clarification.addressee }}
+
+{% trans 'Clarification' %}:
+{{ clarification.comment|striptags }}
+
+{% if clarification.close_date %}
+{% trans 'Answer' %}:
+{{ clarification.answer|striptags }}
+{% endif %}
+
 {% trans 'Link' %}: {{ url }}

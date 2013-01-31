@@ -26,12 +26,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseForbidden
 from django.template import RequestContext
+from exmo2010 import signals
 from exmo2010.models import Score, Clarification
 from exmo2010.forms import ClarificationAddForm
 from exmo2010.models import Monitoring
 from exmo2010.forms import ClarificationReportForm
-from django.http import HttpResponseForbidden
+
 
 
 @login_required
@@ -61,6 +63,12 @@ def clarification_create(request, score_id):
                 # Если поле claim_id пустое, значит это выставление уточнения
                 clarification = score.add_clarification(
                     user, form.cleaned_data['comment'])
+
+            signals.clarification_was_posted.send(
+                sender=Clarification.__class__,
+                clarification=clarification,
+                request=request,
+            )
 
             return HttpResponseRedirect(redirect)
 

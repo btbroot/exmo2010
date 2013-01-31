@@ -305,10 +305,13 @@ msgstr "Удален %(name)s \"%(object)s\"."
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
-#: exmo/exmo2010/helpers.py:153
+#: exmo/exmo2010/helpers.py
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
+
+msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification"
+msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новое уточнение"
 
 #: exmo/exmo2010/helpers.py:248
 #, python-format
@@ -2572,3 +2575,18 @@ msgstr "перейти к уточнению"
 
 msgid "Messages"
 msgstr "Сообщения"
+
+msgid "From who"
+msgstr "От кого"
+
+msgid "To whom"
+msgstr "Кому"
+
+msgid "Claim"
+msgstr "Претензия"
+
+msgid "Clarification"
+msgstr "Уточнение"
+
+msgid "at"
+msgstr "в"

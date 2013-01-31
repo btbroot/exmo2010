@@ -26,6 +26,7 @@ from django.contrib.comments.signals import comment_was_posted
 from exmo2010.helpers import comment_notification
 from exmo2010.helpers import comment_change_status
 from exmo2010.helpers import claim_notification
+from exmo2010.helpers import clarification_notification
 from exmo2010.helpers import post_save_model
 from exmo2010.helpers import create_profile
 from exmo2010.helpers import create_calendar
@@ -40,6 +41,7 @@ from exmo2010 import signals
 if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
     signals.claim_was_posted.connect(claim_notification)
+    signals.clarification_was_posted.connect(clarification_notification)
     signals.score_was_changed.connect(score_change_notify)
 
 post_save.connect(post_save_model)

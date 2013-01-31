@@ -17,15 +17,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+
+{% load i18n pytils_dt %}
 {{ score.task.organization }}: {{ score.parameter }}
-{% trans 'Date' %}: {{ claim.open_date }}
-{% if admin %}
-{% trans 'Creator' %}: {{ claim.creator }}
+
+{% trans 'Date' %}: {% if claim.close_date %}{{ claim.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.close_date|date:"G:i" }}{% else %}{{ claim.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.open_date|date:"G:i" }}{% endif %}
+{% trans 'From who' %}: {{ claim.creator }}
+{% trans 'To whom' %}: {{ claim.addressee }}
+
+{% trans 'Claim' %}:
+{{ claim.comment|striptags }}
+
+{% if claim.close_date %}
+{% trans 'Answer' %}:
+{{ claim.answer|striptags }}
 {% endif %}
-{% if receiver %}
-{% trans 'Receiver' %}: {{ receiver }}
-{% endif %}
-{% trans 'Comment' %}:
-{{ claim.comment }}
-URL: {{ url }}
+
+{% trans 'Link' %}: {{ url }}#claims

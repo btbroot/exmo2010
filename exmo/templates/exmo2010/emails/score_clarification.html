@@ -23,9 +23,20 @@
 {% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
 {% block content %}
     <h3>{{ score.task.organization }}: {{ score.parameter }}</h3>
-    <p><b>{% trans 'Date' %}:</b> {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}</p>
-    <p><b>{% trans 'User' %}:</b> {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}{% if admin %}{{ comment.user }}{% else %}svobodainfo{% endif %}{% else %}{{ comment.user }}{% endif %}</p>
-    <p><b>{% trans 'Comment' %}:</b></p>
-    <p>{{ comment.comment|safe }}</p>
-    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
+    <p><b>{% trans 'Date' %}:</b>
+        {% if clarification.close_date %}
+            {{ clarification.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.close_date|date:"G:i" }}
+        {% else %}
+            {{ clarification.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.open_date|date:"G:i" }}
+        {% endif %}
+    </p>
+    <p><b>{% trans 'From who' %}:</b> {{ clarification.creator }}</p>
+    <p><b>{% trans 'To whom' %}:</b> {{ clarification.addressee }}</p>
+    <p><b>{% trans 'Clarification' %}:</b></p>
+    <p>{{ clarification.comment|safe }}</p>
+    {% if clarification.close_date %}
+        <p><b>{% trans 'Answer' %}:</b></p>
+        <p>{{ clarification.answer|safe }}</p>
+    {% endif %}
+    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#clarifications">{{ url }}#clarifications</a></p>
 {% endblock content %}
