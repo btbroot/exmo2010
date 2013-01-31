@@ -160,13 +160,13 @@
 {% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
 {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 
-{% if view_comment %}
-    {% if request.user.profile.is_expert and view_claim or request.user.profile.is_expert and view_clarification %}
-        {% include "exmo2010/score/tabs.html" %}
-    {% else %}
+
+{% if request.user.profile.is_expert and view_comment or request.user.profile.is_expert and view_claim or request.user.profile.is_expert and view_clarification %}
+    {% include "exmo2010/score/tabs.html" %}
+{% else %}
+    {% if view_comment %}
         {% load wysiwyg %}
         {% wysiwyg_setup %}
-
         <h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
         {% include "exmo2010/score/comment.html" %}
     {% endif %}

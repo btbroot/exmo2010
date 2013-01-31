@@ -44,8 +44,10 @@
     </dd>
 
     {# Description #}
+    {% if parameter.description %}
     <dt>{% trans "Parameter description" %}:</dt>
     <dd class="parm-description">
         {{ parameter.description|safe }}
     </dd>
+    {% endif %}
 </dl>
