@@ -2576,6 +2576,7 @@ msgstr "перейти к уточнению"
 msgid "Messages"
 msgstr "Сообщения"
 
+<<<<<<< HEAD
 msgid "From who"
 msgstr "От кого"
 
@@ -2590,3 +2591,7 @@ msgstr "Уточнение"
 
 msgid "at"
 msgstr "в"
+=======
+msgid "Score for parameter \"%s\""
+msgstr "Оценка параметра \"%s\""
+>>>>>>> c272d5d... Bug #1002 Перевод на странице просмотра оценок по параметру.
