@@ -71,7 +71,7 @@
 
 {% include "exmo2010/score/parameter_header.html" %}
 
-<form action="" method="post">{% csrf_token %}
+<form action="" method="post" class="score">{% csrf_token %}
 
 {% for hidden in form.hidden_fields %}
     {{ hidden }}

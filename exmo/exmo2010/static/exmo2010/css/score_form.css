@@ -18,6 +18,12 @@
 #
 */
 
+form.score
+{
+    float: left;
+    display: block;
+    width: 100%;
+}
 
 table.score-form
 {
@@ -85,6 +91,14 @@ table.score-form .value ul li:first-child
     padding-left: 0px;
 }
 
+table.score-form textarea
+{
+    height: 1.2em;
+    resize: none;
+    width: 99%;
+}
+
+
 .recomendation-container
 {
     padding-right: 7px;
@@ -130,12 +144,6 @@ table.score-form .value ul li:first-child
 .table-bordered td:first-child
 {
     border-left: #fff 1px solid;
-}
-
-.table-bordered textarea
-{
-    resize: none;
-    width: 99%;
 }
 
 span.button-bar
