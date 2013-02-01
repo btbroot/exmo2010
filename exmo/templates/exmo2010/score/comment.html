@@ -50,9 +50,9 @@
                             {% endif %}
                         {% else %}
                             {% if not comment.user.first_name or not comment.user.last_name %}
-                                {{ comment.user.first_name }} {{ comment.user.last_name }}
-                            {% else %}
                                 {{ comment.user.email }}
+                            {% else %}
+                                {{ comment.user.first_name }} {{ comment.user.last_name }}
                             {% endif %}
                         {% endif %}
                         </span>
