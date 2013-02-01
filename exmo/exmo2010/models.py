@@ -1503,7 +1503,8 @@ class UserProfile(models.Model):
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_filtered_scores("comments"),
             content_type__model='score',
-            status=CommentExmo.OPEN).order_by('object_pk', '-submit_date')
+            status=CommentExmo.OPEN).exclude(user=self.user).order_by(
+            'object_pk', '-submit_date')
         return comments
 
     def get_filtered_opened_clarifications(self):

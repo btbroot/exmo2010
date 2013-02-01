@@ -72,7 +72,7 @@
                         </div>
                         {% endif %}
 
-                        {% if close_comment %}
+                        {% if close_comment and not comment.user.profile.is_expert and comment.status != 1 %}
                         <div class="toggle-comment-container">
                             {% url exmo2010:toggle_comment as toggle_url %}
                             <a class="toggle-comment"
