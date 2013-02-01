@@ -167,6 +167,7 @@
     {% if view_comment %}
         {% load wysiwyg %}
         {% wysiwyg_setup %}
+        <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
         <h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
         {% include "exmo2010/score/comment.html" %}
     {% endif %}

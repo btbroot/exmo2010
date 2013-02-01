@@ -24,16 +24,54 @@
 
 {% load check_object_permission %}
 
+{% check_object_permission exmo2010.add_comment_score object as add_comment %}
+{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+{% check_object_permission exmo2010.add_claim_score object as add_claim %}
+
 {% check_object_permission exmo2010.close_comment_score object as close_comment %}
 {% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
 {% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
 {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 
-{% if close_comment or delete_claim or answer_claim or answer_clarification %}
+{% if add_comment or add_clarification or add_claim or close_comment or delete_claim or answer_claim or answer_clarification %}
 <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
 <script type="text/javascript">
 
     $(document).ready(function() {
+        {% if add_comment or add_clarification or add_claim or answer_claim or answer_clarification %}
+            {# disable кнопки submit у всех редакторов #}
+
+            for(var name in CKEDITOR.instances) {
+                var editor = CKEDITOR.instances[name];
+                $(editor.element.$).closest('form')
+                                   .children('input[type="submit"]')
+                                   .prop('disabled', true);
+            }
+
+            CKEDITOR.config.extraPlugins='onchange';
+
+            {# enable кнопки submit при заполнении текстом #}
+            function addContentListener(editor) {
+                editor.on('change', function( e ) {
+                    var sender = e.sender
+                            , $input = $(sender.container.$)
+                                    .closest('form')
+                                    .children('input[type="submit"]');
+
+                    if(sender.getData()) {
+                        $input.prop('disabled', false);
+                    } else {
+                        $input.prop('disabled', true);
+                    }
+                });
+            }
+
+            for(var name in CKEDITOR.instances) {
+                addContentListener(CKEDITOR.instances[name]);
+            }
+
+        {% endif %}
+
         {% if close_comment %}
             {# Открытие/закртие комментария #}
             var $anchor = $('a.toggle-comment');
@@ -136,6 +174,7 @@
                 $input.val(pkClaim);
 
                 django_wysiwyg.enable('id_claim-comment_editor', 'id_claim-comment', null);
+                addContentListener(CKEDITOR.instances['id_claim-comment']);
             })
         {% endif %}
 
@@ -176,6 +215,7 @@
                 $input.val(pkClarification);
 
                 django_wysiwyg.enable('id_clarification-comment_editor', 'id_clarification-comment', null);
+                addContentListener(CKEDITOR.instances['id_clarification-comment']);
             })
         {% endif %}
     });
