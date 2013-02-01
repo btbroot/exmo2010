@@ -99,7 +99,6 @@ def score_manager(request, score_id, method='update'):
     else: return HttpResponseForbidden(_('Forbidden'))
 
 
-@login_required
 def score_view(request, score_id):
     """
     Generic view для просмотра или изменения параметра, в зависимости от прав.
