@@ -35,7 +35,8 @@
 
         {% for object in child.object_list %}
             <li class="{% cycle 'odd' 'even' %}">
-            {% if not request.user.is_authenticated and object.is_publish or request.user.profile.is_organization and object.is_publish %}
+            {% check_object_permission exmo2010.edit_monitoring object as perm %}
+            {% if not perm and object.is_publish %}
                 <a href="{% url exmo2010:monitoring_rating object.pk %}">{{ object }}</a>
             {% else %}
                 <a href="{{ object.get_absolute_url }}">{{ object }}</a>
@@ -46,8 +47,8 @@
                         <img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" >
                     </a>
                 {% endif %}
-                {% check_object_permission exmo2010.admin_monitoring object as perm %}
-                {% if perm and not object.is_publish %}
+                {% check_object_permission exmo2010.delete_monitoring object as perm %}
+                {% if perm %}
                     &nbsp;
                     <a href="{% url exmo2010:monitoring_manager object.pk 'delete' %}">
                         <img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" >
