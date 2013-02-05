@@ -78,7 +78,7 @@
                         <td>{{ op.addressee.first_name }} {{ op.addressee.last_name }}</td>
                         <td>{{ op.creator.first_name }} {{ op.creator.last_name }}</td>
                         <td>
-                            <a href="{% url exmo2010:score_view op.score.pk %}" target="_blank">{% trans 'go to claim' %}</a>
+                            <a href="{% url exmo2010:score_view op.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
                         </td>
                     </tr>
                 {% endfor %}
@@ -96,7 +96,7 @@
                         <td>{{ cp.addressee.first_name }} {{ cp.addressee.last_name }}</td>
                         <td>{{ cp.creator.first_name }} {{ cp.creator.last_name }}</td>
                         <td>
-                            <a href="{% url exmo2010:score_view cp.score.pk %}" target="_blank">{% trans 'go to claim' %}</a>
+                            <a href="{% url exmo2010:score_view cp.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
                         </td>
                     </tr>
                 {% endfor %}
