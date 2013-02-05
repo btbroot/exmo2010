@@ -47,7 +47,7 @@
       <td width=55px class="{{score|criteria_css_class:'accessible'}}">
       {% if score.parameter.accessible %}
         {{score.accessible|default:"-"}}
-        {% if score_interact and score.interact.accessible != score.accessible %}
+        {% if score_interact and score_interact.accessible != score.accessible %}
             <span class="score_interact">({{score_interact.accessible|default:"-"}})</span>
         {% endif %}
       {% else %}
