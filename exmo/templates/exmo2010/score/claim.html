@@ -71,7 +71,7 @@
                     </div>
                     {% endif %}
 
-                    {% if not c.answer and answer_claim %}
+                    {% if c.creator != request.user and not c.answer and answer_claim %}
                     <div class="messages-reply">
                         <a class="answer-claim messages-pseudo"
                            href="#"
