@@ -75,8 +75,8 @@
                 {% for op in opened_claims %}
                     <tr>
                         <td>{{ op.open_date|date:"H:i d.m.Y" }}</td>
-                        <td>{{ op.addressee.first_name }} {{ op.addressee.last_name }}</td>
-                        <td>{{ op.creator.first_name }} {{ op.creator.last_name }}</td>
+                        <td>{{ op.addressee.profile.legal_name }}</td>
+                        <td>{{ op.creator.profile.legal_name }}</td>
                         <td>
                             <a href="{% url exmo2010:score_view op.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
                         </td>
@@ -93,8 +93,8 @@
                 {% for cp in closed_claims %}
                     <tr>
                         <td>{{ cp.open_date|date:"H:i d.m.Y" }}</td>
-                        <td>{{ cp.addressee.first_name }} {{ cp.addressee.last_name }}</td>
-                        <td>{{ cp.creator.first_name }} {{ cp.creator.last_name }}</td>
+                        <td>{{ cp.addressee.profile.legal_name }}</td>
+                        <td>{{ cp.creator.profile.legal_name }}</td>
                         <td>
                             <a href="{% url exmo2010:score_view cp.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
                         </td>

@@ -49,11 +49,7 @@
                                 {% trans 'Foundation Analyst' %}
                             {% endif %}
                         {% else %}
-                            {% if not comment.user.first_name or not comment.user.last_name %}
-                                {{ comment.user.email }}
-                            {% else %}
-                                {{ comment.user.first_name }} {{ comment.user.last_name }}
-                            {% endif %}
+                            {{ comment.user.profile.legal_name }}
                         {% endif %}
                         </span>
 

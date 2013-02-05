@@ -1490,6 +1490,13 @@ class UserProfile(models.Model):
                 task = tasks[0]
                 return task.id
 
+    @property
+    def legal_name(self):
+        if self.user.first_name or self.user.last_name:
+            return u"{0} {1}".format(self.user.first_name, self.user.last_name)
+        else:
+            return self.user.email
+
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)
     is_expertA = property(_is_expertA)

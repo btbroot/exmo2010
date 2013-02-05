@@ -28,11 +28,7 @@
             <tr>
                 <td{% if not c.close_user and not add_clarification %} class="not-answered"{% endif %}>
                     <span class="messages-author">
-                        {% if not c.creator.first_name or not c.creator.last_name %}
-                            {{ c.creator.email }}
-                        {% else %}
-                            {{ c.creator.first_name }} {{ c.creator.last_name }}
-                        {% endif %}
+                        {{ c.creator.profile.legal_name }}
                     </span>
 
                     <span class="messages-date">
@@ -44,21 +40,17 @@
                     </div>
 
                     {% if c.answer %}
-                        <div class="messages-answer">
-                            <span class="messages-author">
-                                {% if not c.close_user.first_name or not c.close_user.last_name %}
-                                    {{ c.close_user.email }}
-                                {% else %}
-                                    {{ c.close_user.first_name }} {{ c.close_user.last_name }}
-                                {% endif %}
-                            </span>
-                            <span class="messages-date">
-                                {{ c.close_date|date:"H:i d.m.Y" }}
-                            </span>
-                            <div class="messages-content">
-                                {{ c.answer|safe }}
-                            </div>
+                    <div class="messages-answer">
+                        <span class="messages-author">
+                            {{ c.creator.profile.legal_name }}
+                        </span>
+                        <span class="messages-date">
+                            {{ c.close_date|date:"H:i d.m.Y" }}
+                        </span>
+                        <div class="messages-content">
+                            {{ c.answer|safe }}
                         </div>
+                    </div>
                     {% endif %}
 
                     {% if c.creator != request.user and not c.answer and answer_clarification %}
