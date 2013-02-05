@@ -121,25 +121,16 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
             status__in=[Monitoring.MONITORING_PUBLISH, Monitoring.MONITORING_PREPARE]
-        ).extra(select={
-            'start_date': Monitoring().prepare_date_sql_inline(),
-            }
-        ).order_by('-start_date')
+        ).order_by('-rate_date')
     elif report_type == 'finished':
         all_monitorings = Monitoring.objects.filter(
             status=Monitoring.MONITORING_PUBLISH
-        ).extra(select={
-            'start_date': Monitoring().prepare_date_sql_inline(),
-            }
-        ).order_by('-start_date')
+        ).order_by('-publish_date')
     if monitoring_id:
         monitorings = Monitoring.objects.filter(
             status=Monitoring.MONITORING_PUBLISH,
             pk=monitoring_id,
-        ).extra(select={
-            'start_date': Monitoring().prepare_date_sql_inline(),
-            }
-        ).order_by('-start_date')
+        ).order_by('-publish_date')
         if not monitorings: raise Http404
     else:
         monitorings = all_monitorings

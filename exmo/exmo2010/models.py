@@ -130,20 +130,49 @@ class Monitoring(models.Model):
     no_interact = models.BooleanField(default=False,
                                       verbose_name=_('No interact stage'))
 
+    prepare_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('prepare date'),
+        )
+    rate_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('Monitoring rate begin date'),
+        )
+    revision_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('revision date'),
+        )
+    interact_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('Monitoring interact start date'),
+        )
+    result_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('result date'),
+        )
+    publish_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('Monitoring publish date'),
+        )
+    finishing_date = models.DateField(
+            null=True,
+            blank=True,
+            verbose_name=_('Monitoring interact end date'),
+        )
+
+
     def __unicode__(self):
         return '%s' % self.name
 
     @models.permalink
     def get_absolute_url(self):
         return ('exmo2010:tasks_by_monitoring', [str(self.id)])
-
-    def create_calendar(self):
-        """
-        создание календаря для мониторинга (первичное создание объектов)
-        """
-        for status in self.MONITORING_STATUS:
-            MonitoringStatus.objects.get_or_create(status=status[0],
-                                                   monitoring=self)
 
     def _get_prepare(self):
         return self.status == self.MONITORING_PREPARE
@@ -204,7 +233,6 @@ class Monitoring(models.Model):
         else:
             return False
 
-
     def statistics(self):
         """
         Метод, возвращающий словарь со статистикой по мониторингу.
@@ -242,66 +270,9 @@ class Monitoring(models.Model):
         stat['avg_openness_first'] = avg['openness_first']
         return stat
 
-    def _get_date(self, status):
-        """
-        Возвращает дату начала соотв. этапа
-        Помощник для св-в ниже
-        """
-        try:
-            date = MonitoringStatus.objects.get(
-                monitoring=self,
-                status=status,
-            ).start
-        except MonitoringStatus.DoesNotExist:
-            date = None
-        return date
-
-    @property
-    def prepare_date(self):
-        return self._get_date(self.MONITORING_PREPARE)
-
-    @property
-    def rate_date(self):
-        return self._get_date(self.MONITORING_RATE)
-
-    @property
-    def interact_date(self):
-        return self._get_date(self.MONITORING_INTERACT)
-
-    @property
-    def result_date(self):
-        return self._get_date(self.MONITORING_RESULT)
-
-    @property
-    def finishing_date(self):
-        return self._get_date(self.MONITORING_FINISHING)
-
-    @property
-    def publish_date(self):
-        return self._get_date(self.MONITORING_PUBLISH)
-
     @property
     def has_npa(self):
         return self.parameter_set.filter(npa=True).exists()
-
-    def prepare_date_sql_inline(self, status=MONITORING_RATE):
-        """
-        Возвращает SQL пригодный для extra, который добавит столбец
-        с датой соотв. статуса
-        """
-        sql = "select " \
-              "%(start_field)s from %(monitoringstatus_table)s " \
-              "where " \
-              "%(status_field)s = %(status)s and " \
-              "%(monitoring_field)s = %(monitoring)s" % {
-            'start_field': 'start',
-            'monitoringstatus_table': MonitoringStatus._meta.db_table,
-            'status_field': 'status',
-            'status': status,
-            'monitoring_field': 'monitoring_id',
-            'monitoring': Monitoring._meta.db_table + "." + Monitoring._meta.pk.name,
-        }
-        return sql
 
     after_interaction_status = [MONITORING_INTERACT, MONITORING_FINISHING,
                                 MONITORING_PUBLISH]
@@ -354,35 +325,6 @@ class AnswerVariant(models.Model):
     def __unicode__(self):
         return self.answer
 
-
-
-class MonitoringStatus(models.Model):
-    """
-    Модель для хранения даты на каждый статус мониторинга
-    """
-    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    status = models.PositiveIntegerField(choices=Monitoring.MONITORING_STATUS,
-        default=Monitoring.MONITORING_PREPARE, verbose_name=_('status'))
-    start = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('start at'),
-        db_index=True,
-    )
-
-    def __unicode__(self):
-        for status in Monitoring.MONITORING_STATUS:
-            if status[0] == self.status:
-                return "%s: %s" % (self.monitoring.name, status[1])
-
-    class Meta:
-        unique_together = (
-            ('status', 'monitoring'),
-        )
-        ordering = (
-            'status',
-            '-start',
-        )
 
 class OrganizationMngr(models.Manager):
     """
@@ -1045,8 +987,8 @@ class Claim(models.Model):
     # Кто создал претензию.
     creator = models.ForeignKey(User, verbose_name=_('creator'),
                                 related_name='creator')
-    addressee = models.ForeignKey(User, verbose_name=_('addressee'),
-        related_name='addressee')
+    addressee = models.ForeignKey(User, default=1,
+        verbose_name=_('addressee'), related_name='addressee')
 
     def add_answer(self, user, answer):
         cleaner = Cleaner()

@@ -30,7 +30,6 @@ from exmo2010.models import Score, Task
 from exmo2010.models import Parameter
 from exmo2010.models import Claim
 from exmo2010.models import Monitoring
-from exmo2010.models import MonitoringStatus
 from exmo2010.models import Organization
 from exmo2010.models import UserProfile
 from django.contrib.auth.models import User
@@ -322,12 +321,40 @@ class MonitoringForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(MonitoringForm, self).__init__(*args, **kwargs)
+        self.fields['rate_date'].required = True
+        self.fields['interact_date'].required = True
+        self.fields['finishing_date'].required = True
+        self.fields['publish_date'].required = True
         self.fields.keyOrder = ['name', 'status', 'openness_expression',
-                                'add_questionnaire', 'no_interact']
+                                'add_questionnaire', 'no_interact',
+                                'rate_date', 'interact_date',
+                                'finishing_date', 'publish_date']
 
     class Meta:
         model = Monitoring
-        exclude = ('time_to_answer',)
+        exclude = ('time_to_answer',
+                   'prepare_date',
+                   'revision_date',
+                   'result_date',
+            )
+        widgets = {
+            'rate_date': forms.DateInput(attrs={
+                'class': 'jdatefield',
+                'maxlength': 300
+            }),
+            'interact_date': forms.DateInput(attrs={
+                'class': 'jdatefield',
+                'maxlength': 300
+            }),
+            'finishing_date': forms.DateInput(attrs={
+                'class': 'jdatefield',
+                'maxlength': 300
+            }),
+            'publish_date': forms.DateInput(attrs={
+                'class': 'jdatefield',
+                'maxlength': 300
+            }),
+        }
 
     class Media:
         css = {
@@ -340,45 +367,6 @@ class MonitoringForm(forms.ModelForm):
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery-ui.min.js',
             )
-
-
-from django.forms.models import BaseInlineFormSet
-class MonitoringStatusBaseFormset(BaseInlineFormSet):
-    """
-    Формсет для календаря мониторинга
-    """
-    def get_queryset(self):
-        if not hasattr(self, '_queryset'):
-            self._queryset = self.queryset.filter(
-                status__in=Monitoring.MONITORING_EDIT_STATUSES.keys()
-            )
-        return self._queryset
-
-
-class MonitoringStatusForm(forms.ModelForm):
-    """
-    Базовая форма для формсета календаря мониторинга
-    """
-    def __init__(self, *args, **kwargs):
-        ms = kwargs.get('instance')
-        super(MonitoringStatusForm, self).__init__(*args, **kwargs)
-        #убираем возможность выбора для поля
-        self.fields['status'].choices = ((ms.status, ms),)
-        #по умолчанию метка берется из модели
-        self.fields['start'].label = Monitoring.MONITORING_EDIT_STATUSES[ms.status]
-        #по умолчанию, поле в моделе необязательное,
-        #а для формы здесь меняем его свойство, т.к. здесь уже обязательно его указание
-        self.fields['start'].required = True
-
-    class Meta:
-        model = MonitoringStatus
-        widgets = {
-            'start': forms.DateInput(attrs={
-                'class': 'jdatefield',
-                'maxlength': 300
-            }),
-            'status': forms.HiddenInput(),
-            }
 
 
 class ParameterForm(forms.ModelForm):
@@ -441,9 +429,7 @@ class MonitoringCommentStatForm(forms.Form):
         Проверяем что поле начала периода взаимодействия в календаре заполнено
         """
         cleaned_data = self.cleaned_data
-        if not MonitoringStatus.objects.get(
-            monitoring = self.monitoring,
-            status = Monitoring.MONITORING_INTERACT).start:
+        if not self.monitoring.interact_date:
             raise forms.ValidationError(_('Monitoring interact start '
                                           'date is missing. '
                                           'Check your monitoring calendar'))
@@ -642,9 +628,9 @@ class MonitoringFilterForm(forms.Form):
     Форма выбора мониторинга. К выбору доступны лишь опубликованные
     """
     monitoring = forms.ModelChoiceField(
-        queryset = Monitoring.objects.filter(status=Monitoring.MONITORING_PUBLISH).extra(select={
-                'start_date': Monitoring().prepare_date_sql_inline(Monitoring.MONITORING_PUBLISH),
-            }).order_by('-start_date'),
+        queryset = Monitoring.objects.filter(
+            status=Monitoring.MONITORING_PUBLISH
+        ).order_by('-publish_date'),
         required=False,
         empty_label=_('monitoring not select'),
         )

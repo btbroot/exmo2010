@@ -46,7 +46,7 @@ m_pk = sys.argv[1]
 if m_pk:
     monitoring = exmoModel.Monitoring.objects.get(pk=m_pk)
 
-start_date = exmoModel.MonitoringStatus.objects.get(monitoring = monitoring, status = exmoModel.Monitoring.MONITORING_INTERACT).start
+start_date = monitoring.interact_date
 
 org_for_monitoring = exmoModel.Organization.objects.filter(monitoring = monitoring)
 reg_org_for_monitoring = org_for_monitoring.filter(userprofile__isnull = False).distinct()

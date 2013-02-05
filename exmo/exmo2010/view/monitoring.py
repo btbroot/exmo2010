@@ -40,14 +40,14 @@ from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory, modelformset_factory
 from exmo2010.models import Organization, Parameter, Score, Task, Questionnaire
 from exmo2010.models import Monitoring, QQuestion, AnswerVariant
-from exmo2010.models import MonitoringStatus, QUESTION_TYPE_CHOICES
+from exmo2010.models import QUESTION_TYPE_CHOICES
 from exmo2010.models import generate_inv_code
 from exmo2010.view.helpers import table
 from exmo2010.view.helpers import rating, rating_type_parameter
-from exmo2010.forms import MonitoringForm, MonitoringStatusForm, CORE_MEDIA
+from exmo2010.forms import MonitoringForm, CORE_MEDIA
 from exmo2010.forms import ParamCritScoreFilterForm, SettingsInvCodeForm
 from exmo2010.utils import UnicodeReader, UnicodeWriter
-from exmo2010.forms import MonitoringStatusBaseFormset, ParameterTypeForm
+from exmo2010.forms import ParameterTypeForm
 
 
 def set_npa_params(request, m_id):
@@ -82,11 +82,8 @@ def _get_monitoring_list(request):
     for m in Monitoring.objects.all().select_related():
         if request.user.has_perm('exmo2010.view_monitoring', m):
             monitorings_pk.append(m.pk)
-    queryset = Monitoring.objects.filter(pk__in=monitorings_pk).extra(
-        select={'start_date': Monitoring().prepare_date_sql_inline(
-            Monitoring.MONITORING_PUBLISH),
-                }
-    ).order_by('-start_date')
+    queryset = Monitoring.objects.filter(
+        pk__in=monitorings_pk).order_by('-publish_date')
     return queryset
 
 def monitoring_list(request):
@@ -151,57 +148,33 @@ def monitoring_manager(request, id, method):
                 'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
                 }
             )
-    elif method == 'calculate': #todo: remove this
-        if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        if request.method != 'POST':
-            return HttpResponse(_('Only POST allowed'))
-        else:
-            for task in Task.objects.filter(organization__monitoring = monitoring).select_related(): task.update_openness()
-            return HttpResponseRedirect(redirect)
     else: #update
         if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit monitoring %s') % monitoring
-        MonitoringStatusFormset = inlineformset_factory(
-            Monitoring,
-            MonitoringStatus,
-            can_delete = False,
-            extra = 0,
-            form = MonitoringStatusForm,
-            formset = MonitoringStatusBaseFormset,
-            )
 
         if request.method == 'POST':
             form = MonitoringForm(request.POST, instance=monitoring)
             if form.is_valid():
                 cd = form.cleaned_data
-                m = form.save(commit=False)
-                formset = MonitoringStatusFormset(request.POST, instance=m)
-                if formset.is_valid():
-                    m.save()
-                    formset.save()
-                    questionnaire = m.get_questionnaire()
-                    # Удаление опроса.
-                    if cd.get("add_questionnaire") == False and questionnaire:
-                        questionnaire.delete()
-                    elif cd.get("add_questionnaire") == True and not questionnaire:
-                        questionnaire = Questionnaire(monitoring=m)
-                        questionnaire.save()
-                    return HttpResponseRedirect(redirect)
-            else:
-                formset = MonitoringStatusFormset(instance=monitoring)
+                m = form.save()
+                questionnaire = m.get_questionnaire()
+                # Удаление опроса.
+                if cd.get("add_questionnaire") == False and questionnaire:
+                    questionnaire.delete()
+                elif cd.get("add_questionnaire") == True and not questionnaire:
+                    questionnaire = Questionnaire(monitoring=m)
+                    questionnaire.save()
+                return HttpResponseRedirect(redirect)
         else:
             form = MonitoringForm(instance=monitoring,
                 initial={"add_questionnaire": monitoring.has_questionnaire()})
-            formset = MonitoringStatusFormset(instance=monitoring)
 
         return render_to_response(
             'exmo2010/monitoring_form.html',
             {
                 'title': title,
                 'form': form,
-                'formset': formset,
                 'media': form.media,
                 'object': monitoring,
             },
@@ -882,9 +855,7 @@ def monitoring_comment_report(request, id):
         monitoring=monitoring,
         initial= {'time_to_answer': time_to_answer})
 
-    start_date = MonitoringStatus.objects.get(
-        monitoring=monitoring,
-        status=Monitoring.MONITORING_INTERACT).start
+    start_date = monitoring.interact_date
     if not start_date:
         return render_to_response(
             "msg.html", {

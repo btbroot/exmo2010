@@ -23,25 +23,25 @@
 <script type="text/javascript">
     $(document).ready(function () {
         if ($("#id_no_interact").is(':checked')) {
-            $("#id_monitoringstatus_set-1-start").closest("tr").hide();
-            $("#id_monitoringstatus_set-3-start").closest("tr").hide();
+            $("#id_interact_date").closest("tr").hide();
+            $("#id_finishing_date").closest("tr").hide();
         }
 
         $('#id_no_interact').change(function () {
             if ($("#id_no_interact").is(':checked')) {
-                $("#id_monitoringstatus_set-1-start").closest("tr").hide();
-                $("#id_monitoringstatus_set-3-start").closest("tr").hide();
+                $("#id_interact_date").closest("tr").hide();
+                $("#id_finishing_date").closest("tr").hide();
             }
             else {
-                $("#id_monitoringstatus_set-1-start").closest("tr").show();
-                $("#id_monitoringstatus_set-3-start").closest("tr").show();
+                $("#id_interact_date").closest("tr").show();
+                $("#id_finishing_date").closest("tr").show();
             }
         });
 
         $("#main_form").submit(function(e) {
             if ($("#id_no_interact").is(':checked')) {
-                $("#id_monitoringstatus_set-1-start").val($("#id_monitoringstatus_set-0-start").val());
-                $("#id_monitoringstatus_set-3-start").val($("#id_monitoringstatus_set-0-start").val());
+                $("#id_interact_date").val($("#id_interact_date").val());
+                $("#id_finishing_date").val($("#id_finishing_date").val());
             }
         });
 
@@ -117,17 +117,7 @@
     <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
     {{ form.non_field_errors }}
     {{ form.as_table }}
-    {% if formset %}
-    <tr><td><h2>{% trans 'Calendar' %}</h2></td></tr>
-    {{ formset.non_field_errors }}
-    {{ formset.as_table }}
-    {% endif %}
 </table>
 <input type="submit" name="submit" class="button">
 </form>
-{% if object %}
-<form action="{% url exmo2010:monitoring_manager object.pk 'calculate' %}" method="post" class="monitoring_form">{% csrf_token %}
-<input type="submit" name="submit" class="button" value="{% trans 'Recalculate rating' %}">
-</form>
-{% endif %}
 {% endblock %}

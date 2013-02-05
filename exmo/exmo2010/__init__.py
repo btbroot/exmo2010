@@ -29,7 +29,6 @@ from exmo2010.helpers import claim_notification
 from exmo2010.helpers import clarification_notification
 from exmo2010.helpers import post_save_model
 from exmo2010.helpers import create_profile
-from exmo2010.helpers import create_calendar
 from exmo2010.helpers import create_revision
 from exmo2010.helpers import score_change_notify
 from exmo2010.models import Score
@@ -46,7 +45,6 @@ if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
 
 post_save.connect(post_save_model)
 #post_save.connect(create_profile, sender=User)
-post_save.connect(create_calendar, sender=Monitoring)
 pre_save.connect(create_revision, sender=Score)
 
 # Регистрация хэндлера для сигнала перед отправкой комментария,

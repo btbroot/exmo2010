@@ -343,15 +343,6 @@ def create_profile(sender, instance, created, **kwargs):
         profile.save()
 
 
-def create_calendar(sender, instance, created, **kwargs):
-    """
-    Заполнение календаря мониторинга после создания
-    """
-
-    if created:
-        instance.create_calendar()
-
-
 def create_revision(sender, instance, using, **kwargs):
     """
     Сохранение ревизии оценки на стадии взаимодействия
