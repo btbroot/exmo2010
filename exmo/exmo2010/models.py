@@ -1354,7 +1354,9 @@ class UserProfile(models.Model):
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
-            status=CommentExmo.ANSWERED).order_by('object_pk', '-submit_date')
+            status=CommentExmo.ANSWERED,
+            user__groups__name=UserProfile.organization_group,
+            ).order_by('object_pk', '-submit_date')
         return comments
 
     def get_not_answered_comments(self):
@@ -1445,8 +1447,9 @@ class UserProfile(models.Model):
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_filtered_scores("comments"),
             content_type__model='score',
-            status=CommentExmo.OPEN).exclude(user=self.user).order_by(
-            'object_pk', '-submit_date')
+            status=CommentExmo.OPEN,
+            user__groups__name=UserProfile.organization_group,
+            ).order_by('object_pk', '-submit_date')
         return comments
 
     def get_filtered_opened_clarifications(self):
