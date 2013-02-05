@@ -180,21 +180,20 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.view_claim_score':
         if user.is_active:
-            if (profile.is_expertA or
-                profile.is_expertB) and not monitoring.is_prepare:
+            if profile.is_expert and not monitoring.is_prepare:
                 return True
 
     if priv == 'exmo2010.add_claim_score':
         if user.is_active:
-            if profile.is_expertA and not (monitoring.is_prepare or
-                                           monitoring.is_publish):
+            if (profile.is_expertA or
+                user.is_superuser) and not (monitoring.is_prepare or
+                                            monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.answer_claim_score':
         if user.is_active:
-            if (profile.is_expertB and not
-            profile.is_expertA) and not (monitoring.is_prepare or
-                                         monitoring.is_publish):
+            if profile.is_expert and not (monitoring.is_prepare or
+                                            monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.delete_claim_score':
@@ -204,21 +203,20 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.view_clarification_score':
         if user.is_active:
-            if (profile.is_expertA or
-                profile.is_expertB) and not monitoring.is_prepare:
+            if profile.is_expert and not monitoring.is_prepare:
                 return True
 
     if priv == 'exmo2010.add_clarification_score':
         if user.is_active:
-            if profile.is_expertA and not (monitoring.is_prepare or
-                                           monitoring.is_publish):
+            if (profile.is_expertA or
+                user.is_superuser) and not (monitoring.is_prepare or
+                                            monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.answer_clarification_score':
         if user.is_active:
-            if (user.is_active and profile.is_expertB and not
-            profile.is_expertA) and not (monitoring.is_prepare or
-                                         monitoring.is_publish):
+            if profile.is_expert and not (monitoring.is_prepare or
+                                          monitoring.is_publish):
                 return True
 
     return False
