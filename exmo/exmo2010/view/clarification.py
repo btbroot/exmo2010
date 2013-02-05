@@ -102,8 +102,9 @@ def clarification_report(request, monitoring_id):
         score__task__organization__monitoring=monitoring).order_by("open_date")
     opened_clarifications = all_clarifications.filter(close_date__isnull=True)
     closed_clarifications = all_clarifications.filter(close_date__isnull=False)
-    addressee_id_list = all_clarifications.select_related(
-        'score__task__user').values_list('id', flat=True)
+
+    addressee_id_list = all_clarifications.order_by().values_list(
+        'score__task__user', flat=True).distinct()
     creator_id_list = all_clarifications.order_by().values_list(
         "creator", flat=True).distinct()
 
