@@ -27,7 +27,11 @@
             <tr>
                 <td{% if not c.close_user and not add_claim %} class="not-answered"{% endif %}>
                     <span class="messages-author">
-                        {{ c.creator.first_name }} {{ c.creator.last_name }}
+                        {% if not c.creator.user.first_name or not c.creator.user.last_name %}
+                            {{ c.creator.user.email }}
+                        {% else %}
+                            {{ c.creator.user.first_name }} {{ c.creator.user.last_name }}
+                        {% endif %}
                     </span>
 
                     <span class="messages-date">
@@ -52,7 +56,11 @@
                     {% if c.answer %}
                     <div class="messages-answer">
                             <span class="messages-author">
-                                {{ c.close_user.first_name }} {{ c.close_user.last_name }}
+                                {% if not c.close_user.user.first_name or not c.close_user.user.last_name %}
+                                    {{ c.close_user.user.email }}
+                                {% else %}
+                                    {{ c.close_user.first_name }} {{ c.close_user.user.last_name }}
+                                {% endif %}
                             </span>
                             <span class="messages-date">
                                 {{ c.close_date|date:"H:i d.m.Y" }}
