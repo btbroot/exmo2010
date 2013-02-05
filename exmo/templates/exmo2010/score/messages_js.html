@@ -36,40 +36,46 @@
 {% if add_comment or add_clarification or add_claim or close_comment or delete_claim or answer_claim or answer_clarification %}
 <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
 <script type="text/javascript">
-
     $(document).ready(function() {
+
         {% if add_comment or add_clarification or add_claim or answer_claim or answer_clarification %}
             {# disable кнопки submit у всех редакторов #}
 
-            for(var name in CKEDITOR.instances) {
-                var editor = CKEDITOR.instances[name];
-                $(editor.element.$).closest('form')
-                                   .children('input[type="submit"]')
-                                   .prop('disabled', true);
-            }
-
-            CKEDITOR.config.extraPlugins='onchange';
+            CKEDITOR.config.extraPlugins = 'onchange';
 
             {# enable кнопки submit при заполнении текстом #}
-            function addContentListener(editor) {
-                editor.on('change', function( e ) {
-                    var sender = e.sender
-                            , $input = $(sender.container.$)
-                                    .closest('form')
-                                    .children('input[type="submit"]');
+            function ckChangeHandler(e) {
+                var sender = e.sender
+                        , $input = $(sender.container.$)
+                                .closest('form')
+                                .children('input[type="submit"]');
 
-                    if(sender.getData()) {
-                        $input.prop('disabled', false);
-                    } else {
-                        $input.prop('disabled', true);
-                    }
-                });
+                if(sender.getData()) {
+                    $input.prop('disabled', false);
+                } else {
+                    $input.prop('disabled', true);
+                }
+            }
+
+            function addContentListener(editor) {
+                if ($.browser.msie) {
+                    editor.on('contentDom', function( e ) {
+                        editor.document.on('keyup', function(event) {
+                            ckChangeHandler(e);
+                        });
+                    });
+                } else {
+                    editor.on('change', ckChangeHandler);
+                }
             }
 
             for(var name in CKEDITOR.instances) {
-                addContentListener(CKEDITOR.instances[name]);
+                var editor = CKEDITOR.instances[name];
+                addContentListener(editor);
+                $(editor.element.$).closest('form')
+                        .children('input[type="submit"]')
+                        .prop('disabled', true);
             }
-
         {% endif %}
 
         {% if close_comment %}
