@@ -24,6 +24,13 @@
 from exmo2010 import models as em
 
 def monitoring_permission(user, priv, monitoring):
+    if priv == 'exmo2010.view_rate_link':
+        if monitoring.is_publish:
+            if not user.is_active:
+                return True
+            elif not user.profile.is_expert:
+                return True
+
     if priv in ('exmo2010.admin_monitoring',
                 'exmo2010.create_monitoring',
                 'exmo2010.edit_monitoring'):
@@ -69,6 +76,7 @@ def monitoring_permission(user, priv, monitoring):
         if em.Task.approved_tasks.filter(
             organization__monitoring = monitoring).exists() \
            and monitoring.is_publish: return True
+
     return False
 
 
