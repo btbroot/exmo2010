@@ -280,7 +280,7 @@ class ClaimReportForm(forms.Form):
         addressee_choices = [(0, _("all experts"))]
         for i in addressee_id_list:
             user = User.objects.get(pk=i)
-            name = "%s %s" % (user.first_name, user.last_name)
+            name = user.profile.legal_name
             addressee_choices.append((i, name))
         self.fields['addressee'].choices = addressee_choices
 
@@ -305,7 +305,7 @@ class ClarificationReportForm(forms.Form):
         addressee_choices = [(0, _("all experts"))]
         for i in addressee_id_list:
             user = User.objects.get(pk=i)
-            name = "%s %s" % (user.first_name, user.last_name)
+            name = user.profile.legal_name
             addressee_choices.append((i, name))
         self.fields['addressee'].choices = addressee_choices
 

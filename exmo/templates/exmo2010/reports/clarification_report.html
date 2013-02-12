@@ -33,23 +33,15 @@
     {% if all_clarifications %}
 
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#id_addressee').change(function () {
-                $('#cform').submit();
-            });
-            $('#id_creator').change(function () {
-                $('#cform').submit();
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/reports_manager.js"></script>
 
     {% endif %}
 
 {% endblock %}
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
+    <div class="breadcrumbs">
+        <a href="/">{% trans "Home" %}</a>&rsaquo;
         <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
         {{ title }}
     </div>
@@ -59,60 +51,79 @@
 {% endblock %}
 
 {% block content %}
+
     {% if all_clarifications %}
     <form action="" method="post" id="cform">
         {% csrf_token %}
         <table class="messages-report">
             <thead>
             <tr>
-                <th>{% trans 'Date and time' %}</th>
-                <th>{% trans 'Clarification addressee' %}<br/>{{ form.addressee }}</th>
-                <th>{% trans 'Clarification creator' %}<br/>{{ form.creator }}</th>
-                <th>{% trans 'Link to clarification' %}</th>
+                <th class="date">{% trans 'Date and time' %}</th>
+                <th class="addressee">{% trans 'Clarification addressee' %}<br/>{{ form.addressee }}</th>
+                <th class="creator">{% trans 'Clarification creator' %}<br/>{{ form.creator }}</th>
+                <th class="link">{% trans 'Link to clarification' %}</th>
             </tr>
             </thead>
+        </table>
+
+        {% if opened_clarifications %}
+        <table class="messages-report">
             <tbody>
-            {% if opened_clarifications %}
                 <tr>
-                    <th colspan="4" style="color: red; text-align: left;">{% trans 'Without answer' %}
+                    <td class="title open">
+                        {% trans 'Without answer' %}
                         ({{ opened_clarifications.count }})
-                    </th>
+                    </td>
                 </tr>
-                {% for op in opened_clarifications %}
-                    <tr>
-                        <td>{{ op.open_date|date:"H:i d.m.Y" }}</td>
-                        <td>{{ op.addressee.profile.legal_name }}</td>
-                        <td>{{ op.creator.profile.legal_name }}</td>
-                        <td>
-                            <a href="{% url exmo2010:score_view op.score.pk %}#clarifications" target="_blank">{% trans 'go to clarification' %}</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-
-            {% endif %}
-            {% if closed_clarifications %}
-                <tr>
-                    <th colspan="4" style="text-align: left;">{% trans 'Processed' %}
-                        ({{ closed_clarifications.count }})
-                    </th>
-                </tr>
-                {% for cp in closed_clarifications %}
-                    <tr>
-                        <td>{{ cp.open_date|date:"H:i d.m.Y" }}</td>
-                        <td>{{ cp.addressee.profile.legal_name }}</td>
-                        <td>{{ cp.creator.profile.legal_name }}</td>
-                        <td>
-                            <a href="{% url exmo2010:score_view cp.score.pk %}#clarifications" target="_blank">{% trans 'go to claim' %}</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-
-            {% endif %}
             </tbody>
         </table>
+
+        <table class="messages-report open">
+            <tbody>
+                {% for op in opened_clarifications %}
+                <tr>
+                    <td class="date">{{ op.open_date|date:"H:i d.m.Y" }}</td>
+                    <td class="addressee">{{ op.addressee.profile.legal_name }}</td>
+                    <td class="creator">{{ op.creator.profile.legal_name }}</td>
+                    <td class="link">
+                        <a href="{% url exmo2010:score_view op.score.pk %}#clarifications" target="_blank">{% trans 'go to clarification' %}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% if closed_clarifications %}
+        <table class="messages-report">
+            <tbody>
+                <tr>
+                    <td class="title closed">
+                        {% trans 'Processed' %}
+                        ({{ closed_clarifications.count }})
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="messages-report closed">
+            <tbody>
+                {% for cp in closed_clarifications %}
+                <tr>
+                    <td class="date">{{ cp.open_date|date:"H:i d.m.Y" }}</td>
+                    <td class="addressee">{{ cp.addressee.profile.legal_name }}</td>
+                    <td class="creator">{{ cp.creator.profile.legal_name }}</td>
+                    <td class="link">
+                        <a href="{% url exmo2010:score_view cp.score.pk %}#clarifications" target="_blank">{% trans 'go to clarification' %}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
     </form>
     {% else %}
-        <p>{% trans "There are no clarifications" %}</p>
+    <p>{% trans "There are no clarifications" %}</p>
     {% endif %}
 
 {% endblock %}

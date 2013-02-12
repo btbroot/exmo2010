@@ -97,7 +97,7 @@ def clarification_report(request, monitoring_id):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     title = _('Clarifications report for "%(monitoring)s"') % {'monitoring':
-                                                           monitoring.name}
+                                                               monitoring.name}
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
     opened_clarifications = all_clarifications.filter(close_date__isnull=True)
@@ -128,7 +128,7 @@ def clarification_report(request, monitoring_id):
                     score__task__user__id=addressee_id)
     else:
         form = ClarificationReportForm(creator_id_list=creator_id_list,
-            addressee_id_list=addressee_id_list)
+                                       addressee_id_list=addressee_id_list)
 
     return render_to_response(
         'exmo2010/reports/clarification_report.html',

@@ -45,11 +45,11 @@ def claim_manager(request, score_id, claim_id=None, method=None):
     """
     Вью для манипуляции с претензиями
     """
-    score = get_object_or_404(Score, pk = score_id)
+    score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
     title = _('Add new claim for %s') % score
     if claim_id:
-        claim = get_object_or_404(Claim, pk = claim_id)
+        claim = get_object_or_404(Claim, pk=claim_id)
     elif not method: #create new
         if not request.user.has_perm('exmo2010.add_claim', score):
             return HttpResponseForbidden(_('Forbidden'))
@@ -60,8 +60,10 @@ def claim_manager(request, score_id, claim_id=None, method=None):
         elif request.method == 'POST':
             form = ClaimForm(request.POST)
             if form.is_valid():
-                if form.cleaned_data['score'] == score and form.cleaned_data['creator'] == request.user:
-                    claim = score.add_claim(request.user, form.cleaned_data['comment'])
+                if form.cleaned_data['score'] == score and form.cleaned_data[
+                    'creator'] == request.user:
+                    claim = score.add_claim(request.user,
+                                            form.cleaned_data['comment'])
                     signals.claim_was_posted.send(
                         sender=Claim.__class__,
                         claim=claim,
@@ -88,11 +90,11 @@ def claim_create(request, score_id):
     """
     user = request.user
     score = get_object_or_404(Score, pk=score_id)
-    redirect = reverse('exmo2010:score_view', args=[score.pk,])
+    redirect = reverse('exmo2010:score_view', args=[score.pk, ])
     redirect += '#claims' # Named Anchor для открытия нужной вкладки
     if request.method == 'POST' and (
-        user.has_perm('exmo2010.add_claim_score', score) or
-        user.has_perm('exmo2010.answer_claim_score', score)):
+            user.has_perm('exmo2010.add_claim_score', score) or
+            user.has_perm('exmo2010.answer_claim_score', score)):
         form = ClaimAddForm(request.POST, prefix="claim")
         if form.is_valid():
             # Если заполнено поле claim_id, значит это ответ на претензию
@@ -152,7 +154,7 @@ def claim_report(request, monitoring_id):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     title = _('Claims report for "%(monitoring)s"') % {'monitoring':
-                                                           monitoring}
+                                                       monitoring}
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
     opened_claims = all_claims.filter(close_date__isnull=True)
@@ -163,8 +165,9 @@ def claim_report(request, monitoring_id):
         "creator", flat=True).distinct()
 
     if request.method == "POST":
-        form = ClaimReportForm(request.POST, creator_id_list=creator_id_list,
-            addressee_id_list=addressee_id_list)
+        form = ClaimReportForm(request.POST,
+                               creator_id_list=creator_id_list,
+                               addressee_id_list=addressee_id_list)
         if form.is_valid():
             cd = form.cleaned_data
             creator_id = int(cd["creator"])
@@ -179,17 +182,17 @@ def claim_report(request, monitoring_id):
                     addressee__id=addressee_id)
     else:
         form = ClaimReportForm(creator_id_list=creator_id_list,
-            addressee_id_list=addressee_id_list)
+                               addressee_id_list=addressee_id_list)
 
     return render_to_response(
-            'exmo2010/reports/claim_report.html',
-            {
-                'monitoring': monitoring,
-                'title': title,
-                'opened_claims': opened_claims,
-                'closed_claims': closed_claims,
-                'form': form,
-                'all_claims': all_claims,
-            },
-            context_instance=RequestContext(request),
-     )
+        'exmo2010/reports/claim_report.html',
+        {
+            'monitoring': monitoring,
+            'title': title,
+            'opened_claims': opened_claims,
+            'closed_claims': closed_claims,
+            'form': form,
+            'all_claims': all_claims,
+        },
+        context_instance=RequestContext(request),
+    )
