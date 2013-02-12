@@ -1,0 +1,23 @@
+{% load i18n %}
+    <tr style="display: none">
+        <td colspan="3" class="count">
+            {{ comments|length }}
+        </td>
+    </tr>
+{% for c in comments %}
+    <tr>
+        <td class="report-date">
+            {{ c.submit_date|date:"H:i d.m.Y" }}
+        </td>
+        <td class="report-organization">
+            <a href="{% url exmo2010:score_list_by_task c.content_object.task.id %}">
+                {{ c.content_object.task.organization }}
+            </a>
+        </td>
+        <td class="report-link">
+            <a href="{% url exmo2010:score_view c.content_object.id %}#comments" target="_blank">
+                {% trans 'go to comment' %}
+            </a>
+        </td>
+    </tr>
+{% endfor %}

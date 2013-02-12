@@ -37,50 +37,47 @@
 {% endblock %}
 
 {% block content %}
-{% if not opened_comments and not closed_comments %}
-<p>{% trans "There are no comments" %}</p>
-{% else %}
-    <table class="report-list-table">
-        <thead>
+<table class="report-list-table">
+    <thead>
         <tr>
             <th class="report-date">{% trans 'Time and date' %}</th>
             <th>{% trans 'Organization' %}</th>
             <th class="report-link">{% trans 'Link to comment' %}</th>
         </tr>
-        </thead>
-        <tbody>
-        {% for i in 12|make_list %}
+    </thead>
+</table>
 
-            {% cycle opened_comments closed_comments as comments silent %}
+{% if comments %}
+<table class="report-list-table">
+    <tbody>
+        <tr>
+            <td colspan="3" class="report-title open">
+                {% trans 'Without answer' %} ({{ comments|length }})
+            </td>
+        </tr>
+    </tbody>
+</table>
 
-            <tr>
-                <td colspan="3" class="report-title {% cycle "open" "closed" %}">
-                    {% cycle 'Without answer' 'Processed' as status silent %}
-                    {% trans status %} ({{ comments|length }})
-                </td>
-            </tr>
-
-
-            {% for c in comments %}
-                <tr class="{% ifequal comments opened_comments %}open{% else %}closed{% endifequal %}">
-                    <td class="report-date">
-                        {{ c.submit_date|date:"H:i d.m.Y" }}
-                    </td>
-                    <td>
-                        <a href="{% url exmo2010:score_list_by_task c.content_object.task.id %}">
-                            {{ c.content_object.task.organization }}
-                        </a>
-                    </td>
-                    <td class="report-link">
-                        <a href="{% url exmo2010:score_view c.content_object.id %}#comments" target="_blank">
-                            {% trans 'go to comment' %}
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-
-        {% endfor %}
-        </tbody>
-    </table>
+<table class="report-list-table open">
+    <tbody>
+    {% include "exmo2010/reports/comment_list_table.html" %}
+    </tbody>
+</table>
 {% endif %}
+
+<table class="report-list-table">
+    <tbody>
+        <tr>
+            <td colspan="3" class="report-title closed" rel="{% url exmo2010:comment_list %}">
+                {% trans 'Processed' %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="report-list-table closed">
+    <tbody>
+    </tbody>
+</table>
+
 {% endblock %}

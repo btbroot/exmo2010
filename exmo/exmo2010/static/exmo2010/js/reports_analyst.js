@@ -15,13 +15,35 @@
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$(document).ready(function() {
-    var $heading = $('td.report-title.closed'),
-        $items = $('tr.closed');
 
-    $items.hide();
-    $heading.css('cursor','pointer');
-    $heading.click(function() {
-        $items.toggle();
+$(document).ready(function() {
+    var $headingClosed = $('td.report-title.closed'),
+        $headingOpen = $('td.report-title.open'),
+        $closed = $('.report-list-table.closed tbody'),
+        $open = $('.report-list-table.open tbody'),
+        url = $headingClosed.attr("rel");
+
+    $closed.hide();
+
+    $headingClosed.css('cursor','pointer');
+    $headingOpen.css('cursor','pointer');
+
+    $headingClosed.click(function() {
+        if($closed.html() == "")
+        {
+            $closed.load(url, function(){
+                var $count = $("table.report-list-table.closed td.count"),
+                    count = parseInt($count.html()),
+                    $title = $('td.report-title.closed'),
+                    txt = $title.html();
+
+                $title.html(txt+"("+count+")");
+            });
+        }
+        $closed.toggle();
+    });
+
+    $headingOpen.click(function() {
+        $open.toggle();
     });
 });

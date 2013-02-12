@@ -23,12 +23,15 @@
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.http import HttpResponseForbidden, Http404, HttpResponse
 from django.utils.translation import ugettext as _
+from django.utils import simplejson
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
+
 from django.db.models import Count
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.http import HttpResponseForbidden, Http404
+
 from exmo2010.models import UserProfile, Monitoring
 from exmo2010.view.helpers import rating_type_parameter, rating
 from exmo2010.forms import MonitoringFilterForm
@@ -42,46 +45,49 @@ def comment_list(request):
     if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    if user.profile.is_expertA:
-        opened = user.profile.get_filtered_not_answered_comments()
+    if request.is_ajax():
+        comments = user.profile.get_answered_comments()
+        return render_to_response(
+            'exmo2010/reports/comment_list_table.html',
+            {'comments': comments},
+            context_instance=RequestContext(request))
+
     else:
-        opened = user.profile.get_filtered_not_answered_comments()
-    closed = user.profile.get_answered_comments()
+        comments = user.profile.get_filtered_not_answered_comments()
+        title = _('Comments')
+        return render_to_response('exmo2010/reports/comment_list.html',
+                                  {
+                                      'title': title,
+                                      'comments': comments,
+                                  },
+                                  RequestContext(request))
 
-    title = _('Comments')
-
-    return render_to_response('exmo2010/reports/comment_list.html',
-        {
-            'title': title,
-            'opened_comments': opened,
-            'closed_comments': closed,
-        },
-        RequestContext(request))
 
 def clarification_list(request):
     """
     Страница сводного списка уточнений для аналитиков
     """
     user = request.user
-
     if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    if user.profile.is_expertA:
-        opened = user.profile.get_opened_clarifications()
+    if request.is_ajax():
+        clarifications = user.profile.get_closed_clarifications()
+        return render_to_response(
+            'exmo2010/reports/clarification_list_table.html',
+            {'clarifications': clarifications},
+            context_instance=RequestContext(request))
+
     else:
-        opened = user.profile.get_filtered_opened_clarifications()
-    closed = user.profile.get_closed_clarifications()
+        clarifications = user.profile.get_filtered_opened_clarifications()
+        title = _('Clarifications')
+        return render_to_response('exmo2010/reports/clarification_list.html',
+                                  {
+                                      'title': title,
+                                      'clarifications': clarifications,
+                                  },
+                                  RequestContext(request))
 
-    title = _('Clarifications')
-
-    return render_to_response('exmo2010/reports/clarification_list.html',
-        {
-            'title': title,
-            'opened_clarifications': opened,
-            'closed_clarifications': closed,
-        },
-        RequestContext(request))
 
 def claim_list(request):
     """
@@ -91,21 +97,22 @@ def claim_list(request):
     if not (user.is_active and user.profile.is_expert):
         return HttpResponseForbidden(_('Forbidden'))
 
-    if user.profile.is_expertA:
-        opened = user.profile.get_opened_claims()
+    if request.is_ajax():
+        claims = user.profile.get_closed_claims()
+        return render_to_response(
+            'exmo2010/reports/claim_list_table.html',
+            {'claims': claims},
+            context_instance=RequestContext(request))
+
     else:
-        opened = user.profile.get_filtered_opened_claims()
-    closed = user.profile.get_closed_claims()
-
-    title = _('Claims')
-
-    return render_to_response('exmo2010/reports/claim_list.html',
-        {
-            'title': title,
-            'opened_claims': opened,
-            'closed_claims': closed,
-        },
-        RequestContext(request))
+        claims = user.profile.get_filtered_opened_claims()
+        title = _('Claims')
+        return render_to_response('exmo2010/reports/claim_list.html',
+                                  {
+                                      'title': title,
+                                      'claims': claims,
+                                  },
+                                  RequestContext(request))
 
 
 def monitoring_report(request, report_type='inprogress', monitoring_id=None):
@@ -120,7 +127,8 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
-            status__in=[Monitoring.MONITORING_PUBLISH, Monitoring.MONITORING_PREPARE]
+            status__in=[Monitoring.MONITORING_PUBLISH,
+                        Monitoring.MONITORING_PREPARE]
         ).order_by('-rate_date')
     elif report_type == 'finished':
         all_monitorings = Monitoring.objects.filter(
@@ -151,16 +159,17 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         monitorings = paginator_list.object_list
 
     return render_to_response('exmo2010/monitoring_report.html',
-        {
-            'paginator': paginator_list,
-            'monitorings': monitorings,
-            'report_type': report_type,
-            'title': _('Monitoring statistics'),
-            'monitoring_id': monitoring_id,
-            'all_monitorings': all_monitorings,
-            },
-        RequestContext(request),
+                              {
+                                  'paginator': paginator_list,
+                                  'monitorings': monitorings,
+                                  'report_type': report_type,
+                                  'title': _('Monitoring statistics'),
+                                  'monitoring_id': monitoring_id,
+                                  'all_monitorings': all_monitorings,
+                              },
+                              RequestContext(request),
     )
+
 
 def ratings(request):
     """
@@ -179,7 +188,8 @@ def ratings(request):
         monitoring = get_object_or_404(Monitoring, pk=m_id)
         has_npa = monitoring.has_npa
         rating_type, parameter_list, form = rating_type_parameter(request,
-            monitoring, has_npa)
+                                                                  monitoring,
+                                                                  has_npa)
         rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     return render_to_response('exmo2010/rating_report.html', {
@@ -192,4 +202,4 @@ def ratings(request):
         'form': form,
         'report': True,
         'mform': mform,
-        }, context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))

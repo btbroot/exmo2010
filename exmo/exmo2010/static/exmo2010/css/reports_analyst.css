@@ -39,7 +39,6 @@
 
 .report-list-table
 {
-    margin-top: 17px;
     width: 100%;
 }
 
@@ -82,4 +81,14 @@ td.report-title
 .report-link
 {
     width: 170px;
+}
+
+.hidden
+{
+    display: none;
+}
+
+.shown
+{
+    display: block;
 }
