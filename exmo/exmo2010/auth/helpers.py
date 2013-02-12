@@ -24,12 +24,12 @@
 from exmo2010 import models as em
 
 def monitoring_permission(user, priv, monitoring):
-    if priv == 'exmo2010.view_rate_link':
+    if priv == 'exmo2010.view_tasks':
         if monitoring.is_publish:
             if not user.is_active:
-                return True
+                return False
             elif not user.profile.is_expert:
-                return True
+                return False
 
     if priv in ('exmo2010.admin_monitoring',
                 'exmo2010.create_monitoring',
@@ -40,8 +40,6 @@ def monitoring_permission(user, priv, monitoring):
 
     if priv == 'exmo2010.delete_monitoring':
         if user.is_active:
-            if user.is_superuser:
-                return True
             if user.profile.is_manager_expertB and not monitoring.is_publish:
                 return True
 
@@ -162,8 +160,8 @@ def score_permission(user, priv, score):
     if priv == 'exmo2010.add_comment_score':
         if user.is_active:
             if (profile.is_expertB and not
-            profile.is_expertA) and (monitoring.is_interact or
-                                     monitoring.is_finishing):
+                profile.is_expertA) and (monitoring.is_interact or
+                                         monitoring.is_finishing):
                 return True
             if profile.is_expertA and (monitoring.is_interact or
                                        monitoring.is_publish):
@@ -193,15 +191,15 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.add_claim_score':
         if user.is_active:
-            if (profile.is_expertA or
-                user.is_superuser) and not (monitoring.is_prepare or
+            if profile.is_expertA and not (monitoring.is_prepare or
                                             monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.answer_claim_score':
         if user.is_active:
-            if profile.is_expert and not (monitoring.is_prepare or
-                                            monitoring.is_publish):
+            if (profile.is_expertB and not
+                profile.is_expertA) and not (monitoring.is_prepare or
+                                             monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.delete_claim_score':
@@ -216,15 +214,15 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.add_clarification_score':
         if user.is_active:
-            if (profile.is_expertA or
-                user.is_superuser) and not (monitoring.is_prepare or
-                                            monitoring.is_publish):
+            if profile.is_expertA and not (monitoring.is_prepare or
+                                           monitoring.is_publish):
                 return True
 
     if priv == 'exmo2010.answer_clarification_score':
         if user.is_active:
-            if profile.is_expert and not (monitoring.is_prepare or
-                                          monitoring.is_publish):
+            if (profile.is_expertB and not
+                profile.is_expertA) and not (monitoring.is_prepare or
+                                             monitoring.is_publish):
                 return True
 
     return False

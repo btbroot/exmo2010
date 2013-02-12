@@ -169,6 +169,10 @@ def score_view(request, score_id):
                 'peremptory_day' : peremptory_day,
                 'view': True,
                 'invcodeform': SettingsInvCodeForm(),
+                'claim_form': ClaimAddForm(
+                    prefix="claim"),
+                'clarification_form': ClarificationAddForm(
+                    prefix="clarification"),
                 })
     else:
         return HttpResponseForbidden(_('Forbidden'))

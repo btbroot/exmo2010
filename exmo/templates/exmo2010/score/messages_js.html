@@ -39,6 +39,7 @@
     $(document).ready(function() {
 
         {% if add_comment or add_clarification or add_claim or answer_claim or answer_clarification %}
+
             {# disable кнопки submit у всех редакторов #}
 
             CKEDITOR.config.extraPlugins = 'onchange';

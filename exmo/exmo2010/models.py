@@ -940,15 +940,16 @@ class Score(models.Model):
         """
         Вернет pk последнего неотвеченного комента или False
         """
-        comments = Comment.objects.filter(
+        comments = CommentExmo.objects.filter(
             object_pk=self.pk,
-            content_type=ContentType.objects.get_for_model(self.__class__),
-            ).order_by('-submit_date')[:1]
-        if comments:
-            if comments[0].user.groups.filter(
-                   name="organizations",
-            ).exists():
-                return comments[0].pk
+            content_type__model='score',
+            status=CommentExmo.OPEN,
+            user__groups__name=UserProfile.organization_group,
+            ).order_by('-submit_date')
+
+        if comments.exists():
+            return comments[0].pk
+
         return False
 
     active_claim = property(_get_claim)

@@ -53,7 +53,7 @@
                     </div>
                     {% endif %}
 
-                    {% if c.creator != request.user and not c.answer and answer_clarification %}
+                    {% if not request.user.is_superuser and c.creator != request.user and not c.answer and answer_clarification %}
                         <div class="messages-reply">
                             <a class="answer-clarification messages-pseudo"
                                href="#"
