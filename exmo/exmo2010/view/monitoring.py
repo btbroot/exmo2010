@@ -847,7 +847,9 @@ def monitoring_comment_report(request, id):
     if not (request.user.profile.is_expertA or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
 
-    from django.contrib.comments import models as commentModel
+    # from django.contrib.comments import models as commentModel
+    from custom_comments.models import CommentExmo
+
     from datetime import datetime, timedelta
     from exmo2010.forms import MonitoringCommentStatForm
 
@@ -890,7 +892,9 @@ def monitoring_comment_report(request, id):
     if start_date:
         total_org = Organization.objects.filter(monitoring=monitoring)
         reg_org = total_org.filter(userprofile__isnull=False)
-        iifd_all_comments = commentModel.Comment.objects.filter(
+
+        iifd_all_comments = CommentExmo.objects.filter(
+            status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
             content_type__model='score',
             submit_date__gte=start_date,
             object_pk__in=Score.objects.filter(
@@ -898,13 +902,16 @@ def monitoring_comment_report(request, id):
             user__in=User.objects.exclude(
                 groups__name='organizations')).order_by('submit_date')
 
-        org_comments = commentModel.Comment.objects.filter(
+        org_comments = CommentExmo.objects.filter(
+            status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
             content_type__model='score',
             submit_date__gte=start_date,
             object_pk__in=scores,
             user__in=User.objects.filter(
                 groups__name='organizations')).order_by('submit_date')
-        org_all_comments=commentModel.Comment.objects.filter(
+
+        org_all_comments = CommentExmo.objects.filter(
+            status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
             content_type__model='score',
             submit_date__gte=start_date,
             object_pk__in=Score.objects.filter(
