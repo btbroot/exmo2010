@@ -26,10 +26,10 @@ from exmo2010 import models as em
 def monitoring_permission(user, priv, monitoring):
     if priv == 'exmo2010.view_tasks':
         if monitoring.is_publish:
-            if not user.is_active:
-                return False
-            elif not user.profile.is_expert:
-                return False
+            if user.is_active and user.profile.is_expert:
+                return True
+        else:
+            return True
 
     if priv in ('exmo2010.admin_monitoring',
                 'exmo2010.create_monitoring',
