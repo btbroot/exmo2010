@@ -63,9 +63,19 @@ td.report-title
     font-weight: bold;
 }
 
+td.report-title span
+{
+    border-bottom: 1px dashed;
+}
+
+td.report-title.open span
+{
+    border-bottom-color: #ff0000;
+}
+
 .report-title.open
 {
-   color: #ff0000;
+    color: #ff0000;
 }
 
 .report-title.closed

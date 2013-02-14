@@ -274,7 +274,7 @@ class ClaimReportForm(forms.Form):
         creator_choices = [(0, _("all managers"))]
         for i in creator_id_list:
             user = User.objects.get(pk=i)
-            name = "%s %s" % (user.first_name, user.last_name)
+            name = user.profile.legal_name
             creator_choices.append((i, name))
         self.fields['creator'].choices = creator_choices
         addressee_choices = [(0, _("all experts"))]
@@ -299,7 +299,7 @@ class ClarificationReportForm(forms.Form):
         creator_choices = [(0, _("all managers"))]
         for i in creator_id_list:
             user = User.objects.get(pk=i)
-            name = "%s %s" % (user.first_name, user.last_name)
+            name = user.profile.legal_name
             creator_choices.append((i, name))
         self.fields['creator'].choices = creator_choices
         addressee_choices = [(0, _("all experts"))]

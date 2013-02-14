@@ -52,7 +52,7 @@
             <tbody>
             <tr>
                 <td colspan="3" class="report-title open">
-                    {% trans 'Without answer' %} ({{ clarifications|length }})
+                    <span>{% trans 'Without answer' %}</span> ({{ clarifications|length }})
                 </td>
             </tr>
             </tbody>
@@ -69,7 +69,7 @@
         <tbody>
         <tr>
             <td colspan="3" class="report-title closed" rel="{% url exmo2010:clarification_list %}">
-                {% trans 'Processed' %}
+                <span>{% trans 'Processed' %}</span>&nbsp;<img src="{{STATIC_URL}}exmo2010/img/ajax-loader.gif" />
             </td>
         </tr>
         </tbody>

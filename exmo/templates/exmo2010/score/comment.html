@@ -29,7 +29,7 @@
                 <tr id="c{{ comment.id }}">
                     <td
                     {% with comment.submit_date|days_until:object.parameter.monitoring.time_to_answer as days_remaining %}
-                    {% if request.user.profile.is_internal and comment.user.profile.is_organization and comment.status == 0 %}
+                    {% if not request.user.is_superuser and request.user.profile.is_internal and comment.user.profile.is_organization and comment.status == 0 %}
                         {% if days_remaining < 0 %}class="answer-missed"{% endif %}
                         {% if days_remaining == 0 %}class="answer-today"{% endif %}
                         {% if days_remaining > 0 %}class="answer-later"{% endif %}

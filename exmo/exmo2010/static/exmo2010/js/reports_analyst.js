@@ -21,17 +21,27 @@ $(document).ready(function() {
         $headingOpen = $('td.report-title.open'),
         $closed = $('.report-list-table.closed tbody'),
         $open = $('.report-list-table.open tbody'),
-        url = $headingClosed.attr("rel");
+        url = $headingClosed.attr("rel"),
+        $indicator = $headingClosed.children('img');
 
     $closed.hide();
+    $indicator.hide();
 
     $headingClosed.css('cursor','pointer');
     $headingOpen.css('cursor','pointer');
 
     $headingClosed.click(function() {
+
+
+
         if($closed.html() == "")
         {
+            $indicator.show();
+
             $closed.load(url, function(){
+
+                $indicator.hide();
+
                 var $count = $("table.report-list-table.closed td.count"),
                     count = parseInt($count.html()),
                     $title = $('td.report-title.closed'),
