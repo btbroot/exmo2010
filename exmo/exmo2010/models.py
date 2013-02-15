@@ -1367,7 +1367,7 @@ class UserProfile(models.Model):
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
-            status=CommentExmo.OPEN).order_by('object_pk', '-submit_date')
+            status=CommentExmo.OPEN).order_by('-submit_date')
         return comments
 
     def get_closed_without_answer_comments(self):
