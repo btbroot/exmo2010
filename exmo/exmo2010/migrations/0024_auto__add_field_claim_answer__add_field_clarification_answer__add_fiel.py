@@ -31,15 +31,12 @@ class Migration(SchemaMigration):
         # претензий, созданных Аналитиками (ранее являвшиеся ответами на претензии от Экспертов).
         # Удаление этих претензий из оригинальной таблицы.
         # В обеих таблицах id c auto_increment'ом. Поэтому порядок расположения в таблице не важен.
-        sql_claims_selection = 'FROM exmo2010_claim WHERE creator_id IN (SELECT user_id FROM \
-        auth_user_groups WHERE group_id=(SELECT id FROM auth_group \
-        WHERE name="%s")) AND creator_id NOT IN \
+        sql_claims_selection = 'FROM exmo2010_claim WHERE creator_id NOT IN \
         (SELECT user_id FROM auth_user_groups WHERE \
         group_id=(SELECT id FROM auth_group WHERE name="%s")) \
         AND creator_id NOT IN (SELECT user_id FROM auth_user_groups \
         WHERE group_id=(SELECT id FROM auth_group \
-        WHERE name="%s"));' % (UserProfile.expertB_group,
-                               UserProfile.expertA_group,
+        WHERE name="%s"));' % (UserProfile.expertA_group,
                                UserProfile.expertB_manager_group)
 
         db.execute('CREATE TABLE IF NOT EXISTS backup_exmo2010_claim LIKE exmo2010_claim;')
