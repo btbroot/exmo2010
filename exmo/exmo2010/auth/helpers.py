@@ -164,6 +164,7 @@ def score_permission(user, priv, score):
                                          monitoring.is_finishing):
                 return True
             if profile.is_expertA and (monitoring.is_interact or
+                                       monitoring.is_finishing or
                                        monitoring.is_publish):
                 return True
             if profile.is_organization and monitoring.is_interact:
