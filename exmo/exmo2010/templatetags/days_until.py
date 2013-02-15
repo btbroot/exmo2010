@@ -17,7 +17,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from datetime import datetime
+import datetime
+from dateutil import rrule
+from dateutil.rrule import DAILY
+from dateutil.rrule import MO, TU, WE, TH, FR
 from django import template
 
 
@@ -27,21 +30,20 @@ register = template.Library()
 @register.filter
 def days_until(start_date, delta_days):
     """
-    Считает количество оставшихся от настоящего времени дней до даты.
-    Дата: (start_date) + количество дней (delta_days).
-    Фильтр применяется к датам (date), в качестве аргумента принимает
-    количество дней (int). Возвращает оставшиеся дни (int).
-    Если просрочено, результат будет отрицательным числом.
+    Возвращает количество оставшихся дней:
+    от настоящего времени до даты (start_date + delta_days с учетом выходных).
     """
-
-    if not isinstance(start_date, datetime):
+    if not isinstance(start_date, datetime.datetime):
         return None
-    elif not isinstance(delta_days, (int, long)):
+    if not isinstance(delta_days, (int, long)):
         return None
-    else:
-        time_delta = datetime.now() - start_date
-        days = delta_days - time_delta.days
-        return days
+    start_date.replace(second=0, microsecond=0)
+    next_date = rrule.rrule(DAILY,
+                            byweekday=(MO, TU, WE, TH, FR),
+                            dtstart=start_date)
+    next_date = next_date[delta_days].replace(second=0, microsecond=0)
+    now = datetime.datetime.now().replace(second=0, microsecond=0)
+    return (next_date - now).days
 
 
 days_until.is_safe = False

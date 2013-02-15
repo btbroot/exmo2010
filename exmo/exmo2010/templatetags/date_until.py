@@ -18,6 +18,10 @@
 #
 
 import datetime
+from dateutil import rrule
+from dateutil.rrule import DAILY
+from dateutil.rrule import MO, TU, WE, TH, FR
+
 from django import template
 
 
@@ -27,17 +31,17 @@ register = template.Library()
 @register.filter
 def date_until(start_date, delta_days):
     """
-    Прибавляет к дате количество дней
-    и возвращает новую дату.
+    Прибавляет к начальной дате количество дней с учетом выходных.
+    Возвращает новую дату.
     """
     if not isinstance(start_date, datetime.datetime):
         return None
     if not isinstance(delta_days, (int, long)):
         return None
-
-    delta = datetime.timedelta(days=delta_days)
-    final_date = start_date + delta
-    return final_date
+    dates = rrule.rrule(DAILY,
+                        byweekday=(MO, TU, WE, TH, FR),
+                        dtstart=start_date)
+    return dates[delta_days]
 
 
 date_until.is_safe = False
