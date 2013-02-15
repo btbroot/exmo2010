@@ -1357,7 +1357,7 @@ class UserProfile(models.Model):
             content_type__model='score',
             status=CommentExmo.ANSWERED,
             user__groups__name=UserProfile.organization_group,
-            ).order_by('object_pk', '-submit_date')
+            ).order_by('-submit_date')
         return comments
 
     def get_not_answered_comments(self):
@@ -1377,8 +1377,7 @@ class UserProfile(models.Model):
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
-            status=CommentExmo.NOT_ANSWERED).order_by('object_pk',
-                                                      '-submit_date')
+            status=CommentExmo.NOT_ANSWERED).order_by('-submit_date')
         return comments
 
     def get_opened_claims(self):
@@ -1450,7 +1449,7 @@ class UserProfile(models.Model):
             content_type__model='score',
             status=CommentExmo.OPEN,
             user__groups__name=UserProfile.organization_group,
-            ).order_by('object_pk', '-submit_date')
+            ).order_by('-submit_date')
         return comments
 
     def get_filtered_opened_clarifications(self):
