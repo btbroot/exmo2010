@@ -34,15 +34,9 @@ sys.path.append(os.path.realpath(path))
 
 from django.template import loader, Context
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.sites import models as sitesModel
-from custom_comments.models import CommentExmo
-from exmo2010.models import Organization, Monitoring, Score
-from datetime import timedelta, date
-from exmo2010.utils import workday_count
-from django.db.models import Count
-
-end_date = date.today()
+from exmo2010.models import Monitoring
+from exmo2010.helpers import comment_report
 
 m_pk = sys.argv[1]
 monitoring = Monitoring.objects.get(pk=m_pk)
@@ -51,100 +45,20 @@ start_date = monitoring.interact_date
 
 limit = time_to_answer = monitoring.time_to_answer
 
-comments_without_reply = []
-fail_comments_without_reply = []
-comments_with_reply = []
-fail_soon_comments_without_reply = []
-fail_comments_with_reply = []
-org_comments = []
-active_organizations = []
-active_organization_stats = []
-active_iifd_person_stats = []
-iifd_all_comments = []
+report = comment_report(monitoring)
 
-total_org = Organization.objects.filter(monitoring=monitoring)
-reg_org = total_org.filter(userprofile__isnull=False)
-
-scores = Score.objects.filter(task__organization__monitoring=monitoring)
-
-iifd_all_comments = CommentExmo.objects.filter(
-    status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
-    content_type__model='score',
-    submit_date__gte=start_date,
-    object_pk__in=Score.objects.filter(
-        task__organization__monitoring=monitoring),
-    user__in=User.objects.exclude(
-        groups__name='organizations')).order_by('submit_date')
-
-org_comments = CommentExmo.objects.filter(
-    status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
-    content_type__model='score',
-    submit_date__gte=start_date,
-    object_pk__in=scores,
-    user__in=User.objects.filter(
-        groups__name='organizations')).order_by('submit_date')
-
-org_all_comments = CommentExmo.objects.filter(
-    status__in=[CommentExmo.OPEN, CommentExmo.ANSWERED],
-    content_type__model='score',
-    submit_date__gte=start_date,
-    object_pk__in=Score.objects.filter(
-        task__organization__monitoring=monitoring),
-    user__in=User.objects.filter(
-        groups__name='organizations')).order_by('submit_date')
-
-active_organizations = set([Score.objects.get(
-    pk=oco.object_pk).task.organization for oco in org_all_comments])
-for active_organization in active_organizations:
-    active_org_comments_count = org_comments.filter(
-        object_pk__in=Score.objects.filter(
-            task__organization__monitoring=monitoring,
-            task__organization=active_organization)).count()
-
-    active_organization_stats.append(
-        {'org': active_organization,
-         'comments_count': active_org_comments_count})
-
-active_iifd_person_stats = User.objects.filter(
-    comment_comments__pk__in=iifd_all_comments).annotate(
-    comments_count=Count('comment_comments'))
-
-for org_comment in org_comments:
-    iifd_comments = iifd_all_comments.filter(
-        submit_date__gte=org_comment.submit_date,
-        object_pk=org_comment.object_pk,
-    ).order_by('submit_date')
-    #append comment or not
-    delta = timedelta(days=1)
-    flag = False
-    for iifd_comment in iifd_comments:
-        #check that comment from iifd comes after organization
-        if iifd_comment.submit_date > org_comment.submit_date:
-            #iifd comment comes in time_to_answer
-            if workday_count(org_comment.submit_date,
-                             iifd_comment.submit_date) <= time_to_answer:
-                #pass that this org_comment is with reply
-                flag = True
-                comments_with_reply.append(org_comment)
-                break
-            #iifd comment comes out of time_to_answer
-            elif workday_count(org_comment.submit_date,
-                               iifd_comment.submit_date) > time_to_answer:
-                #pass that this org_comment is with reply
-                flag = True
-                fail_comments_with_reply.append(org_comment)
-                break
-                #org comment is without comment from iifd
-            if not flag:
-                #check time_to_answer
-                if workday_count(org_comment.submit_date.date() + delta,
-                                 end_date) == time_to_answer:
-                    fail_soon_comments_without_reply.append(org_comment)
-                elif workday_count(org_comment.submit_date.date() + delta,
-                                   end_date) > time_to_answer:
-                    fail_comments_without_reply.append(org_comment)
-                else:
-                    comments_without_reply.append(org_comment)
+end_date = report.get('end_date')
+comments_without_reply = report.get('comments_without_reply')
+fail_comments_without_reply = report.get('fail_comments_without_reply')
+fail_soon_comments_without_reply = report.get('fail_soon_comments_without_reply')
+fail_comments_with_reply = report.get('fail_comments_with_reply')
+comments_with_reply = report.get('comments_with_reply')
+org_comments = report.get('org_comments')
+iifd_all_comments = report.get('iifd_all_comments')
+active_organization_stats = report.get('active_organization_stats')
+total_org = report.get('total_org')
+reg_org = report.get('reg_org')
+active_iifd_person_stats = report.get('active_iifd_person_stats')
 
 t = loader.get_template('exmo2010/helpers/score_comments_stat.html')
 c = Context({
