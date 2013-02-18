@@ -26,8 +26,6 @@ import random
 import datetime
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
-from custom_comments.models import CommentExmo
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, IntegrityError
 from django.db.models import Q
@@ -942,6 +940,7 @@ class Score(models.Model):
         """
         Вернет pk последнего неотвеченного комента или False
         """
+        from custom_comments.models import CommentExmo
         comments = CommentExmo.objects.filter(
             object_pk=self.pk,
             content_type__model='score',
@@ -1354,6 +1353,7 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из коментов на которые был дан ответ пользователем.
         """
+        from custom_comments.models import CommentExmo
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
@@ -1366,6 +1366,7 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из коментов на которые еще не был дан ответ.
         """
+        from custom_comments.models import CommentExmo
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
@@ -1376,6 +1377,7 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из коментов, которые закрыты без ответа.
         """
+        from custom_comments.models import CommentExmo
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_scores(),
             content_type__model='score',
@@ -1446,6 +1448,7 @@ class UserProfile(models.Model):
         Возвращает queryset из не отвеченных комментариев в соответствующих
         этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
         """
+        from custom_comments.models import CommentExmo
         comments = CommentExmo.objects.filter(
             object_pk__in=self._get_my_filtered_scores("comments"),
             content_type__model='score',

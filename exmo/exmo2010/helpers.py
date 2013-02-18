@@ -33,7 +33,6 @@ from django.db import IntegrityError
 from reversion import revision
 from exmo2010.models import UserProfile, Score, MonitoringInteractActivity
 from exmo2010.utils import disable_for_loaddata
-from custom_comments.models import CommentExmo
 
 
 def construct_change_message(request, form, formsets):
@@ -192,6 +191,7 @@ def comment_change_status(sender, **kwargs):
     """
     Изменение статуса предыдущего комментария после его сохранения
     """
+    from custom_comments.models import CommentExmo
     comment = kwargs['comment']
 
     if comment.content_type.model == 'score':
