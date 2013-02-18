@@ -23,7 +23,9 @@
 
 from exmo2010 import models as em
 
+
 def monitoring_permission(user, priv, monitoring):
+    #определяет показывать ссылку на рейтинг или на задачи
     if priv == 'exmo2010.view_tasks':
         if monitoring.is_publish:
             if user.is_active and user.profile.is_expert:
@@ -43,37 +45,30 @@ def monitoring_permission(user, priv, monitoring):
             if user.profile.is_manager_expertB and not monitoring.is_publish:
                 return True
 
-    if priv == 'exmo2010.view_monitoring':
+    if priv in ('exmo2010.view_monitoring', 'exmo2010.rating_monitoring'):
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB:
                 return True
-        #monitoring have one approved task for anonymous and publish
+        #monitoring have one approved task for anonymous and publish and not hidden
         if em.Task.approved_tasks.filter(
-            organization__monitoring=monitoring).exists() \
-           and monitoring.is_publish:
-            return True
+                organization__monitoring=monitoring).exists() \
+            and monitoring.is_publish and not monitoring.hidden:
+                return True
         if user.is_active: #minimaze query
             profile = user.profile
             if profile.is_expert and em.Task.objects.filter(
-                organization__monitoring=monitoring, user=user).exists() \
-               and monitoring.is_active:
+                    organization__monitoring=monitoring, user=user).exists() \
+                and monitoring.is_active:
                 return True
-            elif profile.is_organization\
-            and em.Task.approved_tasks.filter(
-                organization__monitoring=monitoring,
-                organization__monitoring__status__in=(
-                    em.Monitoring.MONITORING_INTERACT,
-                    em.Monitoring.MONITORING_FINISHING
-                    ),
-                organization__in=profile.organization.all()).exists():
+            elif profile.is_organization \
+                and em.Task.approved_tasks.filter(
+                            organization__monitoring=monitoring,
+                            organization__monitoring__status__in=(
+                                em.Monitoring.MONITORING_INTERACT,
+                                em.Monitoring.MONITORING_FINISHING
+                            ),
+                            organization__in=profile.organization.all()).exists():
                 return True
-    if priv == 'exmo2010.rating_monitoring':
-        if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB:
-                return True
-        if em.Task.approved_tasks.filter(
-            organization__monitoring = monitoring).exists() \
-           and monitoring.is_publish: return True
 
     return False
 

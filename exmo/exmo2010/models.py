@@ -129,6 +129,8 @@ class Monitoring(models.Model):
         verbose_name=_('Maximum time to answer'))
     no_interact = models.BooleanField(default=False,
                                       verbose_name=_('No interact stage'))
+    hidden = models.BooleanField(default=False,
+                                      verbose_name=_('Hidden monitoring'))
 
     prepare_date = models.DateField(
             null=True,
@@ -1057,7 +1059,7 @@ class Clarification(models.Model):
 
 
     def __unicode__(self):
-        return _('clarification for %s from %s') % (self.score, self.creator)
+        return _('clarification for %(score)s from %(creator)s') % (self.score, self.creator)
 
     class Meta:
         permissions = (("view_clarification", "Can view clarification"),)

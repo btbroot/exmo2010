@@ -326,7 +326,7 @@ class MonitoringForm(forms.ModelForm):
         self.fields['finishing_date'].required = True
         self.fields['publish_date'].required = True
         self.fields.keyOrder = ['name', 'status', 'openness_expression',
-                                'add_questionnaire', 'no_interact',
+                                'add_questionnaire', 'no_interact', 'hidden',
                                 'rate_date', 'interact_date',
                                 'finishing_date', 'publish_date']
 
@@ -628,7 +628,7 @@ class MonitoringFilterForm(forms.Form):
     Форма выбора мониторинга. К выбору доступны лишь опубликованные
     """
     monitoring = forms.ModelChoiceField(
-        queryset = Monitoring.objects.filter(
+        queryset = Monitoring.objects.exclude(hidden=True).filter(
             status=Monitoring.MONITORING_PUBLISH
         ).order_by('-publish_date'),
         required=False,

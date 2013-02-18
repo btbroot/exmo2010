@@ -23,16 +23,11 @@
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseForbidden, Http404, HttpResponse
+from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import ugettext as _
-from django.utils import simplejson
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
-from django.db.models import Count
-from django.conf import settings
-from django.contrib.auth.models import User
-
-from exmo2010.models import UserProfile, Monitoring
+from exmo2010.models import Monitoring
 from exmo2010.view.helpers import rating_type_parameter, rating
 from exmo2010.forms import MonitoringFilterForm
 
@@ -127,19 +122,19 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
-            status__in=[Monitoring.MONITORING_PUBLISH,
-                        Monitoring.MONITORING_PREPARE]
+            hidden=True,
         ).order_by('-rate_date')
     elif report_type == 'finished':
-        all_monitorings = Monitoring.objects.filter(
+        all_monitorings = Monitoring.objects.exclude(
+            hidden=True
+        ).filter(
             status=Monitoring.MONITORING_PUBLISH
         ).order_by('-publish_date')
     if monitoring_id:
-        monitorings = Monitoring.objects.filter(
+        monitorings = get_object_or_404(Monitoring,
             status=Monitoring.MONITORING_PUBLISH,
             pk=monitoring_id,
-        ).order_by('-publish_date')
-        if not monitorings: raise Http404
+            hidden=False)
     else:
         monitorings = all_monitorings
 
@@ -186,6 +181,8 @@ def ratings(request):
 
     if m_id:
         monitoring = get_object_or_404(Monitoring, pk=m_id)
+        if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         has_npa = monitoring.has_npa
         rating_type, parameter_list, form = rating_type_parameter(request,
                                                                   monitoring,
