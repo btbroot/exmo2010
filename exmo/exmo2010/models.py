@@ -1392,7 +1392,7 @@ class UserProfile(models.Model):
         Возвращает queryset из открытых претензий
         """
         claims = Claim.objects.filter(score__task__user=self.user,
-                              close_date__isnull=True).order_by('open_date')
+                              close_date__isnull=True).order_by('-open_date')
         return claims
 
     def get_closed_claims(self):
@@ -1400,7 +1400,7 @@ class UserProfile(models.Model):
         Возвращает queryset из закрытых претензий
         """
         claims = Claim.objects.filter(score__task__user=self.user,
-            close_date__isnull=False).order_by('open_date')
+            close_date__isnull=False).order_by('-open_date')
 
         return claims
 
@@ -1410,7 +1410,7 @@ class UserProfile(models.Model):
         """
         clarifications = Clarification.objects.filter(
             score__task__user=self.user,
-            close_date__isnull=True).order_by('open_date')
+            close_date__isnull=True).order_by('-open_date')
         return clarifications
 
     def get_closed_clarifications(self):
@@ -1418,7 +1418,7 @@ class UserProfile(models.Model):
         Возвращает queryset из закрытых уточнений
         """
         clarifications = Clarification.objects.filter(score__task__user=self.user,
-            close_date__isnull=False).order_by('open_date')
+            close_date__isnull=False).order_by('-open_date')
 
         return clarifications
 
@@ -1468,7 +1468,7 @@ class UserProfile(models.Model):
         clarifications = Clarification.objects.filter(
             score__task__user=self.user,
             score__in=self._get_my_filtered_scores("messages"),
-            close_date__isnull=True).order_by('open_date')
+            close_date__isnull=True).order_by('-open_date')
         return clarifications
 
     def get_filtered_opened_claims(self):
@@ -1479,7 +1479,7 @@ class UserProfile(models.Model):
         claims = Claim.objects.filter(
             score__task__user=self.user,
             score__in=self._get_my_filtered_scores("messages"),
-            close_date__isnull=True).order_by('open_date')
+            close_date__isnull=True).order_by('-open_date')
         return claims
 
 
