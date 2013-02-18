@@ -21,7 +21,7 @@
 {% trans 'In order to activate your account you should follow the link ONCE' %}:
 http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/
 
-{% trans 'Later you'll be able to log in here' %}
+{% trans "Later you'll be able to log in here" %}
 http://{{ site }}/exmo2010/accounts/login/
 
 {% trans 'Thank you' %}!
