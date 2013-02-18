@@ -1311,7 +1311,10 @@ class UserProfile(models.Model):
         статусами для показа сообщения/формы ввода кода приглашения
         на определенных страницах.
         """
-        show_bubble = True
+        if self.user.is_superuser:
+            show_bubble = False
+        else:
+            show_bubble = True
         monitoring_running = False
         monitoring_name = None
         for o in self.organization.order_by("-id"):
