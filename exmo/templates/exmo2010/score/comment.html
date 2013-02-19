@@ -20,7 +20,6 @@
 {% load i18n comments days_until date_until pytils_dt wysiwyg %}
 
 {% if view_comment %}
-
     {% get_comment_list for object as comment_list %}
     {% if comment_list %}
         <table class="table-messages-parameter">
@@ -29,7 +28,7 @@
                 <tr id="c{{ comment.id }}">
                     <td
                     {% with comment.submit_date|days_until:object.parameter.monitoring.time_to_answer as days_remaining %}
-                    {% if not request.user.is_superuser and request.user.profile.is_internal and comment.user.profile.is_organization and comment.status == 0 %}
+                    {% if request.user.is_active and request.user.userprofile.is_expert and comment.user.userprofile.is_organization and not comment.user.is_superuser and comment.status == 0 %}
                         {% if days_remaining < 0 %}class="answer-missed"{% endif %}
                         {% if days_remaining == 0 %}class="answer-today"{% endif %}
                         {% if days_remaining > 0 %}class="answer-later"{% endif %}
@@ -43,13 +42,13 @@
                     >
                         <span class="messages-author">
                         {% if comment.user.userprofile.is_expert %}
-                            {% if request.user.userprofile.is_expert %}
+                            {% if request.user.is_active and request.user.userprofile.is_expert %}
                                 {{ comment.user.userprofile.legal_name }}
                             {% else %}
                                 {% trans 'Freedom Information Foundation Expert' %}
                             {% endif %}
                         {% else %}
-                            {{ comment.user.profile.legal_name }}
+                            {{ comment.user.userprofile.legal_name }}
                         {% endif %}
                         </span>
 
@@ -61,14 +60,14 @@
                             {{ comment.comment|safe }}
                         </div>
 
-                        {% if request.user.profile.is_organization and comment.user.profile.is_organization and comment.status == 0 and not comment.user.profile.is_expert %}
+                        {% if request.user.is_active and not request.user.userprofile.is_expert and request.user.userprofile.is_organization and comment.user.userprofile.is_organization and not comment.user.userprofile.is_expert and comment.status == 0 %}
                         <div class="notification-peremptory">
                             {% trans 'Peremptory day to answer your question is' %}
                             {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|ru_strftime:"%d %B %Y" }}
                         </div>
                         {% endif %}
 
-                        {% if close_comment and not comment.user.profile.is_expert and comment.status != 1 %}
+                        {% if close_comment and not comment.user.userprofile.is_expert and comment.status != 1 %}
                         <div class="toggle-comment-container">
                             {% url exmo2010:toggle_comment as toggle_url %}
                             <a class="toggle-comment"
