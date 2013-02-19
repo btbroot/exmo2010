@@ -1058,7 +1058,9 @@ class Clarification(models.Model):
 
 
     def __unicode__(self):
-        return _('clarification for %(score)s from %(creator)s') % (self.score, self.creator)
+        return _('clarification for %(score)s from %(creator)s') % \
+            {'score': self.score,
+             'creator': self.creator}
 
     class Meta:
         permissions = (("view_clarification", "Can view clarification"),)
@@ -1503,13 +1505,13 @@ class UserProfile(models.Model):
         if self.user.first_name and self.user.last_name:
             return u"{0} {1}".format(self.user.first_name, self.user.last_name)
         elif self.user.first_name:
-            return self.user.first_name
+            return u"{0}".format(self.user.first_name)
         elif self.user.last_name:
-            return self.user.last_name
+            return u"{0}".format(self.user.last_name)
         elif self.user.username:
-            return self.user.username
+            return u"{0}".format(self.user.username)
         else:
-            return self.user.email
+            return u"{0}".format(self.user.email)
 
     is_expert = property(_is_expert)
     is_expertB = property(_is_expertB)
@@ -1545,7 +1547,8 @@ class MonitoringInteractActivity(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.user.userprofile.legal_name, self.monitoring.name)
+        return u"%s (%s)" % (self.user.userprofile.legal_name,
+                             self.monitoring.name)
 
     class Meta:
         unique_together = ('user', 'monitoring')
