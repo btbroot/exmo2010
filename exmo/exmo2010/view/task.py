@@ -531,7 +531,7 @@ def task_mass_assign_tasks(request, id):
         except Exception, e:
           log.append(e)
         else:
-          log.append('%s: %s' % (user.username, organization.name))
+          log.append('%s: %s' % (user.userprofile.legal_name, organization.name))
   return render_to_response(
     'exmo2010/mass_assign_tasks.html', {
         'organizations': organizations,

@@ -41,7 +41,7 @@
 
 <form method="post">{% csrf_token %}
 <select multiple="multiple" name="users">
-  {% for user in users %}<option value="{{user.pk}}">{{user.username}}</option>{% endfor %}
+  {% for user in users %}<option value="{{user.pk}}">{{user.userprofile.legal_name}}</option>{% endfor %}
 </select>
 <select multiple="multiple" name="organizations">
   {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}

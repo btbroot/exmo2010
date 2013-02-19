@@ -2353,8 +2353,8 @@ msgid "Specify"
 msgstr "Уточнить"
 
 #: exmo/templates/exmo2010/score/comment.html:49
-msgid "Foundation Analyst"
-msgstr "Аналитик Фонда"
+msgid "Freedom Information Foundation Expert"
+msgstr "Эксперт Фонда Свободы Информации"
 
 #: exmo/templates/exmo2010/score/comment.html:66
 msgid "Peremptory day to answer your question is"

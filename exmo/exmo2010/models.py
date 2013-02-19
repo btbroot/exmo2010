@@ -1500,8 +1500,14 @@ class UserProfile(models.Model):
 
     @property
     def legal_name(self):
-        if self.user.first_name or self.user.last_name:
+        if self.user.first_name and self.user.last_name:
             return u"{0} {1}".format(self.user.first_name, self.user.last_name)
+        elif self.user.first_name:
+            return self.user.first_name
+        elif self.user.last_name:
+            return self.user.last_name
+        elif self.user.username:
+            return self.user.username
         else:
             return self.user.email
 
@@ -1539,7 +1545,7 @@ class MonitoringInteractActivity(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.user.username, self.monitoring.name)
+        return u"%s (%s)" % (self.user.userprofile.legal_name, self.monitoring.name)
 
     class Meta:
         unique_together = ('user', 'monitoring')

@@ -104,7 +104,7 @@
       </td>
       {% if perm_admin or user.userprofile.is_expertA %}
           <td>
-              {{ object.user.username }}
+              {{ object.user.userprofile.legal_name }}
           </td>
       {% endif %}
       {% if user.is_superuser or user.userprofile.is_expert %}

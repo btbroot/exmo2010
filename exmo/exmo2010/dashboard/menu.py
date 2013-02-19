@@ -96,7 +96,7 @@ class CustomMenu(Menu):
             if request.user.get_full_name():
                 welcome_msg = request.user.get_full_name()
             else:
-                welcome_msg = request.user.username
+                welcome_msg = request.user.userprofile.legal_name
             msg = _('Welcome') + ', ' + welcome_msg
         else:
             children += [
