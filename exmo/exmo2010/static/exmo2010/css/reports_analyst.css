@@ -85,12 +85,24 @@ td.report-title.open span
 
 .report-date
 {
-    width: 110px;
+    width: 120px;
 }
 
 .report-link
 {
-    width: 170px;
+    width: 180px;
+}
+
+.report-organization
+{
+
+}
+
+.heading td
+{
+    font-weight: bold;
+    font-size: 13px;
+    color: #000;
 }
 
 .hidden
@@ -101,4 +113,11 @@ td.report-title.open span
 .shown
 {
     display: block;
+}
+
+.first td
+{
+    padding: 0;
+    height: 1px;
+    border-bottom: 0px;
 }

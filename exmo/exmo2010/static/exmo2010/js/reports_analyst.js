@@ -22,7 +22,8 @@ $(document).ready(function() {
         $closed = $('.report-list-table.closed tbody'),
         $open = $('.report-list-table.open tbody'),
         url = $headingClosed.attr("rel"),
-        $indicator = $headingClosed.children('img');
+        $indicator = $headingClosed.children('img'),
+        init = false;
 
     $closed.hide();
     $indicator.hide();
@@ -31,26 +32,24 @@ $(document).ready(function() {
     $headingOpen.css('cursor','pointer');
 
     $headingClosed.click(function() {
-
-
-
-        if($closed.html() == "")
-        {
+        if(!init) {
             $indicator.show();
+            $closed.show();
 
-            $closed.load(url, function(){
-
+            $.get(url, function( data ) {
                 $indicator.hide();
-
+                $closed.append(data);
                 var $count = $("table.report-list-table.closed td.count"),
                     count = parseInt($count.html()),
                     $title = $('td.report-title.closed'),
                     txt = $title.html();
-
                 $title.html(txt+"("+count+")");
-            });
+                init = true;
+            },'html');
+
+        } else {
+            $closed.toggle();
         }
-        $closed.toggle();
     });
 
     $headingOpen.click(function() {
