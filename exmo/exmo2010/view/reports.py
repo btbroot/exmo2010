@@ -131,7 +131,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
             status=Monitoring.MONITORING_PUBLISH
         ).order_by('-publish_date')
     if monitoring_id:
-        monitorings = get_object_or_404(Monitoring,
+        monitorings = Monitoring.objects.filter(
             status=Monitoring.MONITORING_PUBLISH,
             pk=monitoring_id,
             hidden=False)
