@@ -1459,7 +1459,7 @@ class UserProfile(models.Model):
             content_type__model='score',
             status=CommentExmo.OPEN,
             user__groups__name=UserProfile.organization_group,
-            ).order_by('-submit_date')
+            ).order_by('submit_date')
         return comments
 
     def get_filtered_opened_clarifications(self):
@@ -1470,7 +1470,7 @@ class UserProfile(models.Model):
         clarifications = Clarification.objects.filter(
             score__task__user=self.user,
             score__in=self._get_my_filtered_scores("messages"),
-            close_date__isnull=True).order_by('-open_date')
+            close_date__isnull=True).order_by('open_date')
         return clarifications
 
     def get_filtered_opened_claims(self):
@@ -1481,7 +1481,7 @@ class UserProfile(models.Model):
         claims = Claim.objects.filter(
             score__task__user=self.user,
             score__in=self._get_my_filtered_scores("messages"),
-            close_date__isnull=True).order_by('-open_date')
+            close_date__isnull=True).order_by('open_date')
         return claims
 
 
