@@ -122,6 +122,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
+            status=Monitoring.MONITORING_PUBLISH,
             hidden=True,
         ).order_by('-rate_date')
     elif report_type == 'finished':
