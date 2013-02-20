@@ -65,7 +65,8 @@ def monitoring_permission(user, priv, monitoring):
                             organization__monitoring=monitoring,
                             organization__monitoring__status__in=(
                                 em.Monitoring.MONITORING_INTERACT,
-                                em.Monitoring.MONITORING_FINISHING
+                                em.Monitoring.MONITORING_FINISHING,
+                                em.Monitoring.MONITORING_PUBLISH,
                             ),
                             organization__in=profile.organization.all()).exists():
                 return True
