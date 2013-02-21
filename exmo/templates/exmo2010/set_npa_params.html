@@ -20,6 +20,21 @@
 {% endcomment %}
 {% load i18n %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("input[type='reset']").click(function( e ) {
+                $("input[type='checkbox']").attr('checked', false);
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+    </script>
+{% endblock %}
+
+
 {% block breadcrumbs %}
     <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
         <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;

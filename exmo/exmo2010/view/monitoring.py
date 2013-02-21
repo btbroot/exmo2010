@@ -53,12 +53,13 @@ from exmo2010.forms import ParameterTypeForm
 def set_npa_params(request, m_id):
     """Страница 'Выбрать согласованные параметры'."""
     # На админа проверять не надо. Они и так все is_expertA.
-    if not request.user.profile.is_expertA:
+    if not request.user.is_active or not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=m_id)
     parameters = monitoring.parameter_set.all()
-    ParameterTypeFormSet = modelformset_factory(Parameter, extra=0,
-        form=ParameterTypeForm)
+    ParameterTypeFormSet = modelformset_factory(Parameter,
+                                                extra=0,
+                                                form=ParameterTypeForm)
     if request.method == "POST":
         formset = ParameterTypeFormSet(request.POST, queryset=parameters)
         # Нельзя изменять опубликованные мониторинги.
