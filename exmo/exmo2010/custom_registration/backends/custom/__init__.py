@@ -104,10 +104,13 @@ class CustomBackend(object):
         # Сохраняем дополнительные поля модели User.
         user_changed = False
         first_name = kwargs.get("first_name", "").capitalize()
-        if first_name:
-            patronymic = kwargs.get("patronymic", "").capitalize()
-            if patronymic:
-                first_name = "%s %s" % (first_name, patronymic)
+        patronymic = kwargs.get("patronymic", "").capitalize()
+        if first_name and patronymic:
+            first_name = "%s %s" % (first_name, patronymic)
+            new_user.first_name = first_name
+            user_changed = True
+        elif first_name or patronymic:
+            first_name = "%s%s" % (first_name, patronymic)
             new_user.first_name = first_name
             user_changed = True
         last_name = kwargs.get("last_name", "").capitalize()

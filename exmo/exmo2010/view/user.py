@@ -75,7 +75,14 @@ def settings(request):
                 pers_inf_form_cd = pers_inf_form.cleaned_data
                 first_name = pers_inf_form_cd.get("first_name", "")
                 patronymic = pers_inf_form_cd.get("patronymic", "")
-                user.first_name = "%s %s".strip() % (first_name, patronymic)
+                if first_name and patronymic:
+                    user.first_name = "%s %s".strip() % (first_name,
+                                                         patronymic)
+                elif first_name or patronymic:
+                    user.first_name = "%s%s".strip() % (first_name,
+                                                        patronymic)
+                else:
+                    user.first_name = ""
                 user.last_name = pers_inf_form_cd.get("last_name", "")
                 if is_organization:
                     position = pers_inf_form_cd.get("position", "")
