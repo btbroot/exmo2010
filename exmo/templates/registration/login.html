@@ -39,6 +39,12 @@
             </ul>
         </noscript>
 
+        {% if resend_email %}
+            <ul class="errorlist">
+                <li>{% trans "This account is inactive. Did you recieve the letter containing a registration confirmation link?" %}</li>
+            </ul>
+        {% endif %}
+
         <div id="content-main">
             <form action="" method="post">
                 {% csrf_token %}
@@ -52,6 +58,15 @@
 
                 <table class="table-login">
                     <tbody>
+                    {% if resend_email %}
+                        <tr>
+                            <td colspan="2">
+                                <a href="{% url exmo2010:auth_resend_email %}">
+                                    {% trans 'Send the activation letter again' %}?
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
 
                     {% for field in form %}
 

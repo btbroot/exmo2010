@@ -45,6 +45,7 @@ from exmo2010.custom_registration.views import activate_redirect
 from exmo2010.custom_registration.views import password_reset_confirm
 from exmo2010.custom_registration.views import register_test_cookie
 from exmo2010.custom_registration.views import login_test_cookie
+from exmo2010.custom_registration.views import resend_email
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
 
@@ -78,6 +79,9 @@ urlpatterns = patterns('',
         login_test_cookie,
         {'template_name': 'registration/login.html'},
         name='auth_login'),
+    url(r'^resend_activation_email/$',
+        resend_email,
+        name='auth_resend_email'),
     url(r'^logout/$',
         auth_views.logout,
         {'next_page': reverse_lazy('exmo2010:index')},

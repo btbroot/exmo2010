@@ -20,9 +20,10 @@ import re
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Context, Template
-from django.utils.http import base36_to_int
+from django.utils.http import base36_to_int, is_safe_url
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
 from django.conf import settings
 from django.forms.fields import Field
 from django.views.csrf import CSRF_FAILRE_TEMPLATE
@@ -32,12 +33,14 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.sites.models import get_current_site
 from exmo2010.custom_registration.forms import SetPasswordForm
 from exmo2010.custom_registration.forms import RegistrationFormFull
 from exmo2010.custom_registration.forms import RegistrationFormShort
+from exmo2010.custom_registration.forms import ExmoAuthenticationForm
+from exmo2010.custom_registration.forms import ResendEmailForm
 from registration.backends import get_backend
-
+from registration.models import RegistrationProfile
 
 @never_cache
 def password_reset_confirm(request, uidb36=None, token=None,
@@ -138,29 +141,93 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
         {'form': form},
         context_instance=context)
 
-
+@csrf_protect
+@never_cache
 def login_test_cookie(request, template_name='registration/login.html',
-                       redirect_field_name=REDIRECT_FIELD_NAME,
-                       authentication_form=AuthenticationForm,
-                       current_app=None, extra_context=None):
+          redirect_field_name=REDIRECT_FIELD_NAME,
+          authentication_form=ExmoAuthenticationForm,
+          current_app=None, extra_context=None):
     """
     Проверяет работу cookie и возвращает стандартную вью для логина.
-    Тестовые cookies создаются в оригинальной auth_login.
+    Написан на основе оргинального auth_login.
     """
+
     # Перенаправление на главную залогиненных пользователей.
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
 
-    if request.method == 'POST':
+    redirect_to = request.REQUEST.get(redirect_field_name, '')
+
+    context = {}
+
+    if request.method == "POST":
+
+        if request.user.is_authenticated():
+            return redirect('exmo2010:index')
+
         if not request.session.test_cookie_worked():
             return render_to_response('cookies.html', RequestContext(request))
 
-    return auth_login(request,
-        template_name,
-        redirect_field_name,
-        authentication_form,
-        current_app,
-        extra_context)
+        form = authentication_form(data=request.POST)
+        if form.is_valid():
+            # Ensure the user-originating redirection url is safe.
+            if not is_safe_url(url=redirect_to, host=request.get_host()):
+                redirect_to = settings.LOGIN_REDIRECT_URL
+
+            user = form.get_user()
+
+            # Неактивные пользователи, присутствующие
+            # в модели RegistrationProfile, не подтвердили
+            # по почте свою регистрацию.
+            if not user.is_active:
+                if RegistrationProfile.objects.filter(user=user).exists():
+                    context.update({'resend_email': True})
+            else:
+                # Okay, security check complete. Log the user in.
+                auth_login(request, user)
+
+                if request.session.test_cookie_worked():
+                    request.session.delete_test_cookie()
+
+                return HttpResponseRedirect(redirect_to)
+    else:
+        form = authentication_form(request)
+
+    request.session.set_test_cookie()
+
+    current_site = get_current_site(request)
+
+    context.update({
+        'form': form,
+        redirect_field_name: redirect_to,
+        'site': current_site,
+        'site_name': current_site.name,
+        })
+    context.update(extra_context or {})
+    return render_to_response(template_name, context,
+                              context_instance=RequestContext(
+                                  request, current_app=current_app))
+
+
+def resend_email(request):
+    # Перенаправление на главную залогиненных пользователей.
+    if request.user.is_authenticated():
+        return redirect('exmo2010:index')
+
+    form = ResendEmailForm()
+    if request.method == "POST":
+        form = ResendEmailForm(request.POST)
+        if form.is_valid():
+            user = form.get_user
+            registration_profile = RegistrationProfile.objects.get(
+                user=user)
+            registration_profile.send_activation_email(get_current_site)
+            return HttpResponseRedirect(
+                reverse('exmo2010:registration_complete'))
+    context = {'form': form}
+    return render_to_response('registration/resend_email_form.html',
+                              context,
+                              context_instance=RequestContext(request))
 
 
 def csrf_failure(request, reason=""):

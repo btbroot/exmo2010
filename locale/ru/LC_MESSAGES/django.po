@@ -2714,3 +2714,23 @@ msgstr "В настоящее время нет текущих циклов мо
 msgid "There's no any finished monitoring."
 msgstr "Нет ни одного завершенного цикла мониторинга."
 
+msgid "This account is inactive. Did you recieve the letter containing a registration confirmation link?"
+msgstr "Эта учетная запись не активирована. Вы получили письмо со ссылкой для подтверждения регистрации?"
+
+msgid "Send the activation letter again"
+msgstr "Выслать письмо подтверждения повторно"
+
+msgid "Account activaion"
+msgstr "Активация учетной записи"
+
+msgid "In order to repeat the account activation fill your email. A letter cointaining an activation link will be sent."
+msgstr "Для повторной активации учетной записи введите ваш e-mail. Вам будет отправлено письмо со ссылкой, по которой нужно перейти для завершения активации."
+
+msgid "There's no user with that e-mail."
+msgstr "Пользователя с таким адресом электронной почты не существует."
+
+msgid "Account is activated already."
+msgstr "Учетная зпись уже активрована."
+
+msgid "Later you'll be able to log in here"
+msgstr "В дальнейшем для входа на сайт можно использовать ссылку:"
