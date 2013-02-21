@@ -43,6 +43,8 @@
     <span class="menuitem"><a href="{% url exmo2010:monitoring_report_type 'inprogress' %}">{% trans 'In progress' %}</a></span>
     <span class="menuitem">{% trans 'Finished' %}</span>
 
+    {% if monitorings %}
+
     <h3>{% trans 'Select monitoring' %}</h3>
 
     <p><select onchange="location = '{% url exmo2010:monitoring_report_type 'finished' %}' + this.options[this.selectedIndex].value;">
@@ -58,15 +60,20 @@
         {% endfor %}
     </select></p>
 
+    {% endif %}
+
 {% else %}
     <span class="menuitem">{% trans 'In progress' %}</span><span class="menuitem"><a href="{% url exmo2010:monitoring_report_type 'finished' %}">{% trans 'Finished' %}</a></span>
 {% endif %}
 
 </div>
-{% if paginator %}
-    {% include 'exmo2010/paginator_paginator.html' %}
+{% if monitorings %}
+    {% if paginator %}
+        {% include 'exmo2010/paginator_paginator.html' %}
+    {% endif %}
 {% endif %}
 
+{% if monitorings %}
 
 {% for monitoring in monitorings %}
 <h3 class="monitoring-name">{{ monitoring.name }}</h3>
@@ -174,4 +181,16 @@
 {% if paginator %}
     {% include 'exmo2010/paginator_paginator.html' %}
 {% endif %}
+
+{% else %}
+    {% if report_type == 'inprogress' %}
+        {% trans "There're no currently inprogress monitorings." %}
+    {% endif %}
+
+    {% if report_type == 'finished' %}
+        {% trans "There's no any finished monitoring." %}
+    {% endif %}
+{% endif %}
+
+
 {% endblock %}

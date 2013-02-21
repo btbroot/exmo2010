@@ -2708,3 +2708,9 @@ msgstr "Модули"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
+msgid "There're no currently inprogress monitorings."
+msgstr "В настоящее время нет текущих циклов мониторинга."
+
+msgid "There's no any finished monitoring."
+msgstr "Нет ни одного завершенного цикла мониторинга."
+
