@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2012, 2013 Institute for Information Freedom Development
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as

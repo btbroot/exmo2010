@@ -2,7 +2,7 @@ EXMO2010 is a web/database application for expert monitoring of Russian
 state official websites.
 
 Copyright 2010, 2011 Al Nikolov
-Copyright 2010, 2011, 2012 Foundation "Institute for Information Freedom Development"
+Copyright 2010, 2011, 2012, 2013 Foundation "Institute for Information Freedom Development"
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -61,7 +61,7 @@ exmo/exmo2010/static/exmo2010/icon_red.gif
 Copyright (c) Django Software Foundation and individual contributors.
 All rights reserved.
 Copyright 2010, 2011 Al Nikolov
-Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+Copyright 2010, 2011, 2012, 2013 Institute for Information Freedom Development
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -171,13 +171,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 --
 
-exmo/exmo2010/static/exmo2010/img/calendar.gif
+exmo/exmo2010/static/exmo2010/img/calendar.png
 
-Copyright (c) Gentleface.com
-http://www.gentleface.com/
+Copyright (c) Andrew Zhebrakov
+http://www.icojam.com/blog/?p=139
 
-License: Creative Commons Attribution Non-commercial (by-nc)
-http://creativecommons.org/licenses/by-nc/3.0/
+License: These icons are free to use in any kind of commercial or
+non-commercial project unlimited times.
 
 --
 
