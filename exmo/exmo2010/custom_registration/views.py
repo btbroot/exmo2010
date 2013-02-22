@@ -33,7 +33,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.models import RequestSite
+from django.contrib.sites.models import Site
 from exmo2010.custom_registration.forms import SetPasswordForm
 from exmo2010.custom_registration.forms import RegistrationFormFull
 from exmo2010.custom_registration.forms import RegistrationFormShort
@@ -195,7 +196,10 @@ def login_test_cookie(request, template_name='registration/login.html',
 
     request.session.set_test_cookie()
 
-    current_site = get_current_site(request)
+    if Site._meta.installed:
+        current_site = Site.objects.get_current()
+    else:
+        current_site = RequestSite(request)
 
     context.update({
         'form': form,
@@ -221,7 +225,11 @@ def resend_email(request):
             user = form.get_user
             registration_profile = RegistrationProfile.objects.get(
                 user=user)
-            registration_profile.send_activation_email(get_current_site)
+            if Site._meta.installed:
+                site = Site.objects.get_current()
+            else:
+                site = RequestSite(request)
+            registration_profile.send_activation_email(site)
             return HttpResponseRedirect(
                 reverse('exmo2010:registration_complete'))
     context = {'form': form}
