@@ -283,7 +283,6 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
       queryset = queryset.filter(organization = organization)
       headers = (
                 (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('complete, %'), None, None, None, None),
                 (_('openness, %'), None, None, None, None)
               )
     task_list = []
