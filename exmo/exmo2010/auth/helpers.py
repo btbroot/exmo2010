@@ -169,11 +169,12 @@ def score_permission(user, priv, score):
                 return True
 
     if priv == 'exmo2010.view_comment_score':
-        if user.is_active:
-            if (profile.is_expertA or profile.is_expertB or
-                profile.is_organization) and (monitoring.is_interact or
-                                              monitoring.is_finishing or
-                                              monitoring.is_publish):
+        if user.is_active and (monitoring.is_interact or
+                                   monitoring.is_finishing or
+                                   monitoring.is_publish):
+            if profile.is_expert: return True
+            if profile.is_organization and \
+                            score.task.organization in profile.organization.all():
                 return True
 
     if priv == 'exmo2010.close_comment_score':
