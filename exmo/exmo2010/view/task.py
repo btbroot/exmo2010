@@ -467,10 +467,12 @@ def tasks_by_monitoring(request, monitorgin_id):
         return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.filter(pk__in=task_list)
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        users = User.objects.filter(task__organization__monitoring = monitoring).distinct()
+        UserChoice = [(u.username, u.profile.legal_name) for u in users]
         headers = (
             (_('organization'), 'organization__name', 'organization__name',
              None, None),
-            (_('expert'), 'user__username', 'user__username', None, None),
+            (_('expert'), 'user__username', 'user__username', None, UserChoice),
             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
             (_('complete, %'), None, None, None, None),
             )

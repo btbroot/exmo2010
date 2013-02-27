@@ -47,6 +47,12 @@ class SortHeaders:
             parameters.
 
         headers
+            Список из пятиэлементных списков. Поля:
+            1 - заголовок в таблице
+            2 - ORM поле для сортировки
+            3 - ORM поле для фильтрации
+            4 - функция приведения строки в запросе фильтра к аргументу фильтра в ORM (например, int)
+            5 - задается для формирования конечного списка с выбором через select
             A list of two-tuples of header text and matching ordering
             criteria for use with the Django ORM's ``order_by``
             method. A criterion of ``None`` indicates that a header

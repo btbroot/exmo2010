@@ -38,19 +38,19 @@
     {% for object in object_list %}
       <tr>
       <td>
-        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.userprofile.legal_name }}">{{ object.userprofile.legal_name }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.userprofile.legal_name }}</a>
       </td>
       <td>
-        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.userprofile.legal_name }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.userprofile.legal_name }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.userprofile.legal_name }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
       </td>
       <td>
-        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.userprofile.legal_name }}">{{ object.all_tasks }}</a>
+        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
       </td>
       </tr>
     {% endfor %}
