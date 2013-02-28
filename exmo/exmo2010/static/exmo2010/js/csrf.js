@@ -1,6 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+// Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 // Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
