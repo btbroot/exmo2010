@@ -21,5 +21,5 @@
 
 
 # subscribes emails:
-INTERACTION = 'monitoring_interaction@svobodainfo.org'
-REPORT = 'monitoring-report@svobodainfo.org'
+NOTIFY_LIST_INTERACTION = 'monitoring_interaction@svobodainfo.org'
+NOTIFY_LIST_REPORT = 'monitoring-report@svobodainfo.org'

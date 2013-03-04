@@ -39,7 +39,7 @@ from django.contrib.sites import models as sitesModel
 from django.core.mail import send_mail
 from exmo2010.models import Monitoring
 from exmo2010.helpers import comment_report
-from project_settings import INTERACTION, REPORT
+from project_settings import NOTIFY_LIST_INTERACTION, NOTIFY_LIST_REPORT
 
 
 m_pk = sys.argv[1]
@@ -89,5 +89,5 @@ subject = "Comment report from {} to {} for {}"\
     .format(start_date, end_date, monitoring)
 
 rcpt = [x[1] for x in settings.ADMINS]
-rcpt.extend([INTERACTION, REPORT])
+rcpt.extend([NOTIFY_LIST_INTERACTION, NOTIFY_LIST_REPORT])
 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)
