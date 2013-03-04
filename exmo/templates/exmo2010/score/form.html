@@ -97,6 +97,7 @@
     </thead>
 
     <tbody>
+    {# Наличие #}
         <tr>
             <td>
                 <label>{{ form.found.label }}</label>
@@ -116,7 +117,7 @@
         </tr>
         {% endif %}
 
-    {# complete #}
+    {# Полнота #}
     {% if parameter.complete %}
         <tr>
             <td>
@@ -138,7 +139,7 @@
         {% endif %}
     {% endif %}
 
-    {# topical #}
+    {# Астуальность #}
     {% if parameter.topical %}
         <tr>
             <td>
@@ -160,7 +161,7 @@
         {% endif %}
     {% endif %}
 
-    {# accessible #}
+    {# Навигационная доступность #}
     {% if parameter.accessible %}
         <tr>
             <td>
@@ -182,29 +183,7 @@
         {% endif %}
     {% endif %}
 
-    {# document #}
-    {% if parameter.document %}
-        <tr>
-            <td>
-                <label>{{ form.document.label }}</label>
-            </td>
-            <td class="value">
-                {{ form.document }}
-            </td>
-            <td class="explanation">
-                {{ form.documentComment }}
-            </td>
-        </tr>
-        {% if form.document.errors %}
-            <tr>
-                <td colspan="3">
-                    {{ form.document.errors }}
-                </td>
-            </tr>
-        {% endif %}
-    {% endif %}
-
-    {# hypertext #}
+    {# HTML доступность #}
     {% if parameter.hypertext %}
         <tr>
             <td>
@@ -226,7 +205,29 @@
         {% endif %}
     {% endif %}
 
-    {# image #}
+    {# Файловая доступность #}
+    {% if parameter.document %}
+        <tr>
+            <td>
+                <label>{{ form.document.label }}</label>
+            </td>
+            <td class="value">
+                {{ form.document }}
+            </td>
+            <td class="explanation">
+                {{ form.documentComment }}
+            </td>
+        </tr>
+        {% if form.document.errors %}
+            <tr>
+                <td colspan="3">
+                    {{ form.document.errors }}
+                </td>
+            </tr>
+        {% endif %}
+    {% endif %}
+
+    {# Графическая доступость #}
     {% if parameter.image %}
         <tr>
             <td>
