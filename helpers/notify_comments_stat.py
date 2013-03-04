@@ -36,8 +36,11 @@ sys.path.append(os.path.realpath(path))
 from django.template import loader, Context
 from django.conf import settings
 from django.contrib.sites import models as sitesModel
+from django.core.mail import send_mail
 from exmo2010.models import Monitoring
 from exmo2010.helpers import comment_report
+from project_settings import INTERACTION, REPORT
+
 
 m_pk = sys.argv[1]
 monitoring = Monitoring.objects.get(pk=m_pk)
@@ -81,14 +84,10 @@ c = Context({
 })
 
 message = t.render(c)
-from django.core.mail import send_mail
 
-subject = "Comment report from %(start_date)s to %(end_date)s for %(monitoring)s" % {
-    'start_date': start_date,
-    'end_date': end_date,
-    'monitoring': monitoring,
-}
+subject = "Comment report from {} to {} for {}"\
+    .format(start_date, end_date, monitoring)
 
 rcpt = [x[1] for x in settings.ADMINS]
-rcpt.append('monitoring_interaction@svobodainfo.org')
+rcpt.extend([INTERACTION, REPORT])
 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, rcpt)
