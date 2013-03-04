@@ -94,16 +94,18 @@
 {% check_object_permission exmo2010.fill_task task as perm_fill_task %}
 
 <table>
-{% table_header headers %}
-<tbody>
-    <tr><td colspan=10>
-        {% with task.organization.monitoring as monitoring %}
-        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-        {%if perm%}
-            <a href="{% url exmo2010:parameter_add task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
-        {%endif%}
-        {% endwith %}
-    </td></tr>
+    {% table_header headers %}
+    <tbody>
+        <tr>
+            <td colspan=10>
+            {% with task.organization.monitoring as monitoring %}
+            {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+            {%if perm%}
+                <a href="{% url exmo2010:parameter_add task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
+            {%endif%}
+            {% endwith %}
+            </td>
+        </tr>
     {% if has_npa %}
         <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'NPA parameters' %}</td></tr>
         {% for parameter in parameters_npa %}
@@ -156,55 +158,60 @@
         {% endfor %}
         <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Other parameters' %}</td></tr>
     {% endif %}
-{% for parameter in parameters_other %}
-      <tr width=100% id='parameter_{{ parameter.code }}'>
-      <td width=4%>{{ parameter.code }}</td>
-      <td>
-      {% with score_dict|hash:parameter.pk as score %}
-       {% if score %}
-         {% check_object_permission exmo2010.view_claim score as perm %}
-         {% if perm %}
-             <div data-claimcolor="{{ score.pk }}" class="claim-color ajaxloader">
-                 <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
-             </div>
-         {% endif %}
-            <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
-       {% else %}
-         {% if perm_fill_task %}
-            <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
-         {% else %}
-            {{ parameter.name }}
-         {% endif %}
-       {% endif %}
-       {% with parameter.monitoring as monitoring %}
-       {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-       {% if perm %}
-            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
-        {%endif%}
-        {% if perm and not monitoring.is_publish %}
-            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
-       {% endif %}
-       {% endwith %}
-       {% if score %}
-         {% if user.profile.is_expert %}
-             <div data-commentunreaded="{{ score.pk }}" class="comment-unreaded ajaxloader">
-                 <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
-             </div>
-         {% endif %}
-       {% endif %}
-      </td>
-      {%if score %}
-      {% include "exmo2010/score_criteria_table.html" with score_interact=score_interact_dict|hash:parameter.pk %}
-      {%else%}
-        <td colspan=7></td>
-      {%endif%}
-      <td>
-        {{ parameter.weight }}
-      </td>
-      </tr>
-      {% endwith %}
-{% endfor %}
-    </tbody></table>
+
+    {% for parameter in parameters_other %}
+        {% with score_dict|hash:parameter.pk as score %}
+            <tr width=100% id='parameter_{{ parameter.code }}'>
+                <td width=4%>
+                    {{ parameter.code }}
+                </td>
+                <td>
+                    {% if score %}
+                        {% check_object_permission exmo2010.view_claim score as perm %}
+                        {% if perm %}
+                            <div data-claimcolor="{{ score.pk }}" class="claim-color ajaxloader">
+                            <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
+                            </div>
+                        {% endif %}
+                        <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                    {% else %}
+                        {% if perm_fill_task %}
+                            <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                        {% else %}
+                            {{ parameter.name }}
+                        {% endif %}
+                    {% endif %}
+
+                    {% with parameter.monitoring as monitoring %}
+                        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+                        {% if perm %}
+                            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+                        {%endif%}
+                        {% if perm and not monitoring.is_publish %}
+                            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>&nbsp;
+                        {% endif %}
+                    {% endwith %}
+                    {% if score %}
+                        {% if user.profile.is_expert %}
+                            <div data-commentunreaded="{{ score.pk }}" class="comment-unreaded ajaxloader">
+                            <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                {%if score %}
+                    {% include "exmo2010/score_criteria_table.html" with score_interact=score_interact_dict|hash:parameter.pk %}
+                {%else%}
+                    <td colspan=7></td>
+                {%endif%}
+                <td>
+                    {{ parameter.weight }}
+                </td>
+            </tr>
+        {% endwith %}
+    {% endfor %}
+    </tbody>
+</table>
 </div><br>
 {% if form %}
     <div id='fc_container'>

@@ -208,6 +208,11 @@ def score_permission(user, priv, score):
             if profile.is_expertA:
                 return True
 
+    if priv == 'exmo2010.view_claim':
+        if user.is_active:
+            if profile.is_expert and not monitoring.is_prepare:
+                return True
+
     if priv == 'exmo2010.view_clarification_score':
         if user.is_active:
             if profile.is_expert and not monitoring.is_prepare:
