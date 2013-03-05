@@ -154,6 +154,7 @@ class ScoreForm(forms.ModelForm):
             'document': forms.RadioSelect(),
             'hypertext': forms.RadioSelect(),
             'image': forms.RadioSelect(),
+            'foundComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
             'completeComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
             'topicalComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
             'accessibleComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),

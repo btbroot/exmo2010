@@ -735,6 +735,11 @@ class Score(models.Model):
         choices=((0, 0), (1, 1)),
         verbose_name=_('found'),
     )
+    foundComment = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('foundComment'),
+        )
     complete = models.IntegerField(
         null=True,
         blank=True,

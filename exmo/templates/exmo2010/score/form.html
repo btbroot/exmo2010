@@ -85,15 +85,17 @@
 
 <table class="score-form table-bordered">
     <thead>
-        <th>
-            {% trans "Criteria" %}
-        </th>
-        <th class="value">
-            {% trans "Value" %}
-        </th>
-        <th class="explanation">
-            {% trans "Explanation" %}
-        </th>
+        <tr>
+            <th>
+                {% trans "Criteria" %}
+            </th>
+            <th class="value">
+                {% trans "Value" %}
+            </th>
+            <th class="explanation">
+                {% trans "Explanation" %}
+            </th>
+        </tr>
     </thead>
 
     <tbody>
@@ -106,6 +108,7 @@
                 {{ form.found }}
             </td>
             <td class="explanation">
+                {{ form.foundComment }}
             </td>
         </tr>
 
