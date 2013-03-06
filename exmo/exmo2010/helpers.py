@@ -28,6 +28,7 @@ from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.comments import Comment
 from django.template import loader, Context
 from django.utils.translation import ugettext as _
 from django.utils.text import get_text_list
@@ -37,7 +38,6 @@ from reversion import revision
 from exmo2010.models import UserProfile, Score, Task
 from exmo2010.models import MonitoringInteractActivity, Organization
 from exmo2010.utils import disable_for_loaddata
-
 
 def construct_change_message(request, form, formsets):
         """
@@ -81,113 +81,130 @@ def _get_experts():
 
 def comment_notification(sender, **kwargs):
     """
-    Оповещение о комментариях
+    Comments notification
     """
-
     comment = kwargs['comment']
+    comments = [comment]
+    user = comment.user
+    email = user.email
     request = kwargs['request']
     score = comment.content_object
+    admin_rcpt, nonadmin_rcpt = [], []
+    admin_users = []
 
     # Update user.email
-    if not comment.user.email and comment.user_email:
-        comment.user.email = comment.user_email
-        comment.user.save()
+    if not user.email and comment.user_email:
+        user.email = comment.user_email
+        user.save()
 
     subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
-            'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.organization.monitoring,
-            'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.code,
-            }
-    admin_rcpt = []
-    nonadmin_rcpt = []
+        'prefix': settings.EMAIL_SUBJECT_PREFIX,
+        'monitoring': score.task.organization.monitoring,
+        'org': score.task.organization.name.split(':')[0],
+        'code': score.parameter.code,
+    }
 
     headers = {
         'X-iifd-exmo': 'comment_notification',
         'X-iifd-exmo-comment-organization-url': score.task.organization.url,
     }
 
-    if comment.user.profile.notify_comment_preference['self']:
-        admin_users = [comment.user,]
-    else:
-        admin_users = []
+    if user.profile.notify_comment_preference.get('self', False):
+        admin_users = [user]
 
     # experts A, experts B managers
-    if _get_experts(): admin_users.extend(_get_experts())
+    if _get_experts():
+        admin_users.extend(_get_experts())
 
     # experts B
-    if score.task.user.is_active: admin_users.extend([score.task.user,])
+    if score.task.user.is_active:
+        admin_users.extend([score.task.user])
 
     for user in admin_users:
         if user.is_active and user.email and \
-           user.profile.notify_comment_preference['type'] == \
-           UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            admin_rcpt.append(user.email)
+                user.profile.notify_comment_preference['type'] == \
+                UserProfile.NOTIFICATION_TYPE_ONEBYONE:
+            admin_rcpt.append(user)
 
-    # Get only unique emails
-    admin_rcpt=list(set(admin_rcpt))
+    admin_all_comments, admin_one_comment = comments_lists(admin_rcpt)
 
     # Organizations
     nonadmin_users = User.objects.filter(
-        userprofile__organization = score.task.organization,
-        email__isnull = False,
+        userprofile__organization=score.task.organization,
+        email__isnull=False,
     ).exclude(email__exact='').distinct('email')
 
     for user in nonadmin_users:
         if user.email and user.email not in admin_rcpt and \
-           user.profile.notify_comment_preference['type'] == \
-           UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            nonadmin_rcpt.append(user.email)
+                user.profile.notify_comment_preference['type'] == \
+                UserProfile.NOTIFICATION_TYPE_ONEBYONE:
+            nonadmin_rcpt.append(user)
 
-    # Get only unique emails
-    nonadmin_rcpt=list(set(nonadmin_rcpt))
+    nonadmin_all_comments, nonadmin_one_comment = comments_lists(nonadmin_rcpt)
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
                          request.get_host(),
                          reverse('exmo2010:score_view',
-                             args=[score.pk]))
+                         args=[score.pk]))
 
     t_plain = loader.get_template('exmo2010/emails/score_comment.txt')
     t_html = loader.get_template('exmo2010/emails/score_comment.html')
-    c = Context({'score': score,
-                 'user': comment.user,
-                 'admin': False,
-                 'comment':comment,
-                 'url': url,})
-    message_plain = t_plain.render(c)
-    message_html = t_html.render(c)
 
-    for rcpt_ in nonadmin_rcpt:
-        if  rcpt_ == comment.user.email:
+    context = {'score': score,
+               'user': user,
+               'comments': comments,
+               'url': url}
+
+    send_mails(t_plain, t_html, context, False, email,
+               subject, headers, nonadmin_one_comment)
+    send_mails(t_plain, t_html, context, True, email,
+               subject, headers, admin_one_comment)
+
+    context['comments'] = list(Comment.objects.filter(
+        object_pk=comment.object_pk
+    )) + comments
+
+    send_mails(t_plain, t_html, context, False, email,
+               subject, headers, nonadmin_all_comments)
+    send_mails(t_plain, t_html, context, True, email,
+               subject, headers, admin_all_comments)
+
+
+def comments_lists(rcpt):
+    """
+    Get emails lists for comments branch and single comment
+    """
+    branch, comment = [], []
+    for user in rcpt:
+        if user.profile.notify_comment_preference.get('self_all', False):
+            branch.append(user.email)
+        else:
+            comment.append(user.email)
+
+    return list(set(branch)), list(set(comment))
+
+
+def send_mails(plain, html, context, admin, email, subject, headers, rcpts):
+    """
+    Sending comments notification mails
+    """
+    context['admin'] = admin
+
+    c = Context(context)
+
+    message_plain = plain.render(c)
+    message_html = html.render(c)
+
+    for rcpt in rcpts:
+        if  rcpt == email:
             headers['X-iifd-exmo-comment-self'] = 'True'
         email = EmailMultiAlternatives(subject,
                                        message_plain,
                                        settings.DEFAULT_FROM_EMAIL,
-                                       [rcpt_],
+                                       [rcpt],
                                        [],
                                        headers=headers,)
         email.attach_alternative(message_html, "text/html")
-        email.send()
-
-    t_plain = loader.get_template('exmo2010/emails/score_comment.txt')
-    t_html = loader.get_template('exmo2010/emails/score_comment.html')
-    c = Context({'score': comment.content_object,
-                 'user': comment.user,
-                 'admin': True,
-                 'comment':comment,
-                 'url': url })
-    message_admin_plain = t_plain.render(c)
-    message_admin_html = t_html.render(c)
-    for rcpt_ in admin_rcpt:
-        if  rcpt_ == comment.user.email:
-            headers['X-iifd-exmo-comment-self'] = 'True'
-        email = EmailMultiAlternatives(subject,
-                                       message_admin_plain,
-                                       settings.DEFAULT_FROM_EMAIL,
-                                       [rcpt_],
-                                       [],
-                                       headers=headers,)
-        email.attach_alternative(message_admin_html, "text/html")
         email.send()
 
 

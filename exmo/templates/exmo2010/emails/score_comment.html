@@ -23,10 +23,26 @@
 
 {% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
 {% block content %}
-    <h3>{{ score.task.organization }}: {{ score.parameter }}</h3>
-    <p><b>{% trans 'Date' %}:</b> {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}</p>
-    <p><b>{% trans 'User' %}:</b> {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}{% if admin %}{{ comment.user }}{% else %}svobodainfo{% endif %}{% else %}{{ comment.user }}{% endif %}</p>
-    <p><b>{% trans 'Comment' %}:</b></p>
-    <p>{{ comment.comment|safe }}</p>
-    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
+    <div style="font-family: Arial; font-size: 18px; margin-bottom: 30px">{{ score.task.organization }}: {{ score.parameter }}</div>
+    <div style="font-family: Arial; font-size: 13px">
+    {% for comment in comments %}
+        <p>
+            <span style="font-weight: bold">
+            {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
+                {% if admin %}
+                    {{ comment.user }},
+                {% else %}
+                    svobodainfo,
+                {% endif %}
+            {% else %}
+                {{ comment.user }},
+            {% endif %}
+            </span>
+            {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
+        </p>
+        <p>{{ comment.comment|safe }}</p>
+        <hr />
+    {% endfor %}
+    <p><span style="font-weight: bold">{% trans 'Link' %}:</span> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
+    </div>
 {% endblock content %}

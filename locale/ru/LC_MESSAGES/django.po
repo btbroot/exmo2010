@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-18 12:47+0400\n"
+"POT-Creation-Date: 2013-03-06 18:38+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -29,116 +29,116 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
-"=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Lokalize 1.4\n"
 
-#: exmo/custom_comments/forms.py:30 exmo/custom_comments/models.py:40
-#: exmo/exmo2010/models.py:123 exmo/exmo2010/models.py:467
-#: exmo/exmo2010/view/monitoring.py:97 exmo/exmo2010/view/task.py:269
-#: exmo/exmo2010/view/task.py:277 exmo/exmo2010/view/task.py:474
-#: exmo/exmo2010/view/task.py:481
+#: exmo/custom_comments/forms.py:31 exmo/custom_comments/models.py:41
+#: exmo/exmo2010/models.py:122 exmo/exmo2010/models.py:466
+#: exmo/exmo2010/view/monitoring.py:99 exmo/exmo2010/view/task.py:270
+#: exmo/exmo2010/view/task.py:278 exmo/exmo2010/view/task.py:476
+#: exmo/exmo2010/view/task.py:483
 msgid "status"
 msgstr "статус"
 
-#: exmo/custom_comments/models.py:34
+#: exmo/custom_comments/models.py:35
 msgid "Comment is open"
 msgstr "Комментарий открыт"
 
-#: exmo/custom_comments/models.py:35
+#: exmo/custom_comments/models.py:36
 msgid "Comment is closed and answered"
 msgstr "Комментарий закрыт и отвечен"
 
-#: exmo/custom_comments/models.py:36
+#: exmo/custom_comments/models.py:37
 msgid "Comment is closed and not answered"
 msgstr "Комментарии закрыт не отвечен"
 
-#: exmo/digest_email/digest.py:75
+#: exmo/digest_email/digest.py:76
 #, python-format
 msgid "%(prefix)sEmail digest for %(digest)s"
 msgstr "%(prefix)sДайджест для %(digest)s"
 
-#: exmo/digest_email/models.py:35 exmo/exmo2010/models.py:88
-#: exmo/exmo2010/models.py:121 exmo/exmo2010/models.py:351
-#: exmo/exmo2010/models.py:388
+#: exmo/digest_email/models.py:36 exmo/exmo2010/models.py:87
+#: exmo/exmo2010/models.py:120 exmo/exmo2010/models.py:350
+#: exmo/exmo2010/models.py:387
 msgid "name"
 msgstr "наименование"
 
-#: exmo/digest_email/models.py:61
+#: exmo/digest_email/models.py:62
 msgid "send date"
 msgstr "Дата отправки"
 
-#: exmo/digest_email/models.py:64 exmo/digest_email/models.py:83
+#: exmo/digest_email/models.py:65 exmo/digest_email/models.py:84
 msgid "digest"
 msgstr "Дайджест"
 
-#: exmo/digest_email/models.py:68
+#: exmo/digest_email/models.py:69
 #, python-format
 msgid "%(date)s: %(digest)s for %(user)s"
 msgstr "%(date)s: %(digest)s для %(user)s"
 
-#: exmo/digest_email/models.py:80 exmo/exmo2010/models.py:462
+#: exmo/digest_email/models.py:81 exmo/exmo2010/models.py:461
 msgid "user"
 msgstr "пользователь"
 
-#: exmo/digest_email/models.py:86
+#: exmo/digest_email/models.py:87
 msgid "interval (hours)"
 msgstr "период (в часах)"
 
-#: exmo/digest_email/models.py:90
+#: exmo/digest_email/models.py:91
 #, python-format
 msgid "%(digest)s for %(user)s"
 msgstr "%(digest)s для %(user)s"
 
-#: exmo/digest_email/models.py:99
+#: exmo/digest_email/models.py:100
 msgid "Digest interval must be more than 1"
 msgstr "Период дайджеста должен быть больше или равен единице"
 
-#: exmo/exmo2010/forms.py:59 exmo/exmo2010/forms.py:65
+#: exmo/exmo2010/forms.py:60 exmo/exmo2010/forms.py:66
 msgid "do not send"
 msgstr "не присылать"
 
-#: exmo/exmo2010/forms.py:60
+#: exmo/exmo2010/forms.py:61
 msgid "one email per one comment"
 msgstr "о каждом новом комментарии"
 
-#: exmo/exmo2010/forms.py:61 exmo/exmo2010/forms.py:67
+#: exmo/exmo2010/forms.py:62 exmo/exmo2010/forms.py:68
 msgid "one email for all in time interval"
 msgstr "о всех за промежуток времени"
 
-#: exmo/exmo2010/forms.py:66
+#: exmo/exmo2010/forms.py:67
 msgid "one email per one change"
 msgstr "о каждом новом изменении"
 
-#: exmo/exmo2010/forms.py:71
+#: exmo/exmo2010/forms.py:72
 msgid "Yes"
 msgstr "Да"
 
-#: exmo/exmo2010/forms.py:72
+#: exmo/exmo2010/forms.py:73
 msgid "No"
 msgstr "Нет"
 
-#: exmo/exmo2010/forms.py:76
+#: exmo/exmo2010/forms.py:77
 msgid "once in 1 hour"
 msgstr "в 1 час"
 
-#: exmo/exmo2010/forms.py:77
+#: exmo/exmo2010/forms.py:78
 msgid "once in 3 hours"
 msgstr "в 3 часа"
 
-#: exmo/exmo2010/forms.py:78
+#: exmo/exmo2010/forms.py:79
 msgid "once in 6 hours"
 msgstr "в 6 часов"
 
-#: exmo/exmo2010/forms.py:79
+#: exmo/exmo2010/forms.py:80
 msgid "once in 12 hours"
 msgstr "в 12 часов"
 
-#: exmo/exmo2010/forms.py:80
+#: exmo/exmo2010/forms.py:81
 msgid "once in 24 hours"
 msgstr "в 24 часа"
 
-#: exmo/exmo2010/forms.py:98
+#: exmo/exmo2010/forms.py:99
 #, python-format
 msgid "%(count)d day"
 msgid_plural "%(count)d days"
@@ -146,164 +146,165 @@ msgstr[0] "%(count)d день"
 msgstr[1] "%(count)d дня"
 msgstr[2] "%(count)d дней"
 
-#: exmo/exmo2010/forms.py:191
+#: exmo/exmo2010/forms.py:193
 msgid "This user account is inactive"
 msgstr "Пользователь не активен"
 
-#: exmo/exmo2010/forms.py:201
+#: exmo/exmo2010/forms.py:203
 msgid "Illegal monitoring"
 msgstr "Неверный цикл мониторинга"
 
-#: exmo/exmo2010/forms.py:213 exmo/exmo2010/view/score.py:215
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:187
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:44
+#: exmo/exmo2010/forms.py:215 exmo/exmo2010/view/score.py:216
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:188
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:45
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo/exmo2010/forms.py:215 exmo/exmo2010/view/score.py:216
-#: exmo/templates/exmo2010/task_report.html:43
-#: exmo/templates/exmo2010/score/detail.html:66
+#: exmo/exmo2010/forms.py:217 exmo/exmo2010/view/score.py:217
+#: exmo/templates/exmo2010/task_report.html:44
+#: exmo/templates/exmo2010/score/detail.html:67
 msgid "Found"
 msgstr "Наличие"
 
-#: exmo/exmo2010/forms.py:217 exmo/exmo2010/view/score.py:217
-#: exmo/templates/exmo2010/task_report.html:44
-#: exmo/templates/exmo2010/score/detail.html:75
+#: exmo/exmo2010/forms.py:219 exmo/exmo2010/view/score.py:218
+#: exmo/templates/exmo2010/task_report.html:45
+#: exmo/templates/exmo2010/score/detail.html:76
 msgid "Complete"
 msgstr "Полнота"
 
-#: exmo/exmo2010/forms.py:219 exmo/exmo2010/view/score.py:218
-#: exmo/templates/exmo2010/task_report.html:45
-#: exmo/templates/exmo2010/score/detail.html:85
+#: exmo/exmo2010/forms.py:221 exmo/exmo2010/view/score.py:219
+#: exmo/templates/exmo2010/task_report.html:46
+#: exmo/templates/exmo2010/score/detail.html:86
 msgid "Topical"
 msgstr "Актуальность"
 
-#: exmo/exmo2010/forms.py:221 exmo/exmo2010/view/score.py:219
-#: exmo/templates/exmo2010/task_report.html:46
-#: exmo/templates/exmo2010/score/detail.html:95
+#: exmo/exmo2010/forms.py:223 exmo/exmo2010/view/score.py:220
+#: exmo/templates/exmo2010/task_report.html:47
+#: exmo/templates/exmo2010/score/detail.html:96
 msgid "Accessible"
 msgstr "Навигационная доступность"
 
-#: exmo/exmo2010/forms.py:223 exmo/templates/exmo2010/score/detail.html:105
+#: exmo/exmo2010/forms.py:225 exmo/templates/exmo2010/score/detail.html:106
 msgid "Hypertext"
 msgstr "HTML доступность"
 
-#: exmo/exmo2010/forms.py:225 exmo/exmo2010/view/score.py:221
-#: exmo/templates/exmo2010/task_report.html:48
-#: exmo/templates/exmo2010/score/detail.html:115
+#: exmo/exmo2010/forms.py:227 exmo/exmo2010/view/score.py:222
+#: exmo/templates/exmo2010/task_report.html:49
+#: exmo/templates/exmo2010/score/detail.html:116
 msgid "Document"
 msgstr "Файловая доступность"
 
-#: exmo/exmo2010/forms.py:227 exmo/exmo2010/view/score.py:222
-#: exmo/templates/exmo2010/task_report.html:49
-#: exmo/templates/exmo2010/score/detail.html:125
+#: exmo/exmo2010/forms.py:229 exmo/exmo2010/view/score.py:223
+#: exmo/templates/exmo2010/task_report.html:50
+#: exmo/templates/exmo2010/score/detail.html:126
 msgid "Image"
 msgstr "Графическая доступность"
 
-#: exmo/exmo2010/forms.py:229 exmo/exmo2010/models.py:457
+#: exmo/exmo2010/forms.py:231 exmo/exmo2010/models.py:456
 msgid "opened"
 msgstr "открыта"
 
-#: exmo/exmo2010/forms.py:231 exmo/exmo2010/models.py:458
+#: exmo/exmo2010/forms.py:233 exmo/exmo2010/models.py:457
 msgid "closed"
 msgstr "закрыта"
 
-#: exmo/exmo2010/forms.py:233 exmo/exmo2010/models.py:459
-#: exmo/templates/exmo2010/ajax/task_status.html:31
+#: exmo/exmo2010/forms.py:235 exmo/exmo2010/models.py:458
+#: exmo/templates/exmo2010/ajax/task_status.html:32
 msgid "check"
 msgstr "проверка"
 
-#: exmo/exmo2010/forms.py:235 exmo/exmo2010/models.py:460
+#: exmo/exmo2010/forms.py:237 exmo/exmo2010/models.py:459
 msgid "approved"
 msgstr "одобрена"
 
-#: exmo/exmo2010/forms.py:246
+#: exmo/exmo2010/forms.py:248
 msgid "Your claim"
 msgstr "Ваша претензия"
 
-#: exmo/exmo2010/forms.py:253
+#: exmo/exmo2010/forms.py:255
 msgid "Your clarification"
 msgstr "Ваше уточнение"
 
-#: exmo/exmo2010/forms.py:274 exmo/exmo2010/forms.py:299
+#: exmo/exmo2010/forms.py:276 exmo/exmo2010/forms.py:301
 msgid "all managers"
 msgstr "все руководители"
 
-#: exmo/exmo2010/forms.py:280 exmo/exmo2010/forms.py:305
+#: exmo/exmo2010/forms.py:282 exmo/exmo2010/forms.py:307
 msgid "all experts"
 msgstr "все аналитики"
 
-#: exmo/exmo2010/forms.py:318 exmo/exmo2010/custom_registration/forms.py:44
+#: exmo/exmo2010/forms.py:320 exmo/exmo2010/custom_registration/forms.py:48
 msgid "Status"
 msgstr "Статус"
 
-#: exmo/exmo2010/forms.py:320
+#: exmo/exmo2010/forms.py:322
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: exmo/exmo2010/forms.py:421 exmo/exmo2010/models.py:129
+#: exmo/exmo2010/forms.py:423 exmo/exmo2010/models.py:128
 msgid "Maximum time to answer"
 msgstr "Максимальное время ответа"
 
-#: exmo/exmo2010/forms.py:433
+#: exmo/exmo2010/forms.py:435
 msgid ""
 "Monitoring interact start date is missing. Check your monitoring calendar"
 msgstr ""
-"Не указана дата начала периода взаимодействия. Проверьте календарь мониторинга"
+"Не указана дата начала периода взаимодействия. Проверьте календарь "
+"мониторинга"
 
-#: exmo/exmo2010/forms.py:450 exmo/exmo2010/models.py:46
+#: exmo/exmo2010/forms.py:452 exmo/exmo2010/models.py:45
 msgid "Text"
 msgstr "Текст"
 
-#: exmo/exmo2010/forms.py:455 exmo/exmo2010/models.py:47
+#: exmo/exmo2010/forms.py:457 exmo/exmo2010/models.py:46
 msgid "Number"
 msgstr "Число"
 
-#: exmo/exmo2010/forms.py:469
+#: exmo/exmo2010/forms.py:471
 msgid "Cannot delete answer for approved task. Edit answer instead."
 msgstr "Нельзя удалить ответ для одобренной задачи. Отредактируйте ответ."
 
-#: exmo/exmo2010/forms.py:489 exmo/exmo2010/custom_registration/forms.py:45
+#: exmo/exmo2010/forms.py:491 exmo/exmo2010/custom_registration/forms.py:49
 msgid "First name"
 msgstr "Имя"
 
-#: exmo/exmo2010/forms.py:492 exmo/exmo2010/custom_registration/forms.py:50
+#: exmo/exmo2010/forms.py:494 exmo/exmo2010/custom_registration/forms.py:54
 msgid "Patronymic"
 msgstr "Отчество"
 
-#: exmo/exmo2010/forms.py:495 exmo/exmo2010/custom_registration/forms.py:55
+#: exmo/exmo2010/forms.py:497 exmo/exmo2010/custom_registration/forms.py:59
 msgid "Last name"
 msgstr "Фамилия"
 
-#: exmo/exmo2010/forms.py:506 exmo/exmo2010/models.py:1178
-#: exmo/exmo2010/custom_registration/forms.py:119
+#: exmo/exmo2010/forms.py:508 exmo/exmo2010/models.py:1185
+#: exmo/exmo2010/custom_registration/forms.py:123
 msgid "Seat"
 msgstr "Должность"
 
-#: exmo/exmo2010/forms.py:509 exmo/exmo2010/models.py:1180
-#: exmo/exmo2010/custom_registration/forms.py:122
+#: exmo/exmo2010/forms.py:511 exmo/exmo2010/models.py:1187
+#: exmo/exmo2010/custom_registration/forms.py:126
 msgid "Phone"
 msgstr "Контактный телефон"
 
-#: exmo/exmo2010/forms.py:519
+#: exmo/exmo2010/forms.py:521
 msgid "New code"
 msgstr "Новый код"
 
-#: exmo/exmo2010/forms.py:538
-#: exmo/templates/registration/password_change_form.html:60
+#: exmo/exmo2010/forms.py:540
+#: exmo/templates/registration/password_change_form.html:61
 msgid "Old password"
 msgstr "Старый пароль"
 
-#: exmo/exmo2010/forms.py:541 exmo/exmo2010/custom_registration/forms.py:158
-#: exmo/templates/registration/password_change_form.html:66
+#: exmo/exmo2010/forms.py:543 exmo/exmo2010/custom_registration/forms.py:162
+#: exmo/templates/registration/password_change_form.html:67
 msgid "New password"
 msgstr "Новый пароль"
 
-#: exmo/exmo2010/forms.py:551
+#: exmo/exmo2010/forms.py:553
 msgid "Failed to change password: submitted wrong current password"
 msgstr "Изменить пароль не удалось: указан неверный существующий пароль"
 
-#: exmo/exmo2010/forms.py:562
+#: exmo/exmo2010/forms.py:564
 msgid ""
 "Failed to change password: it can contain only latin characters (A-Z, a-z) "
 "and digits (0-9)"
@@ -311,541 +312,548 @@ msgstr ""
 "Изменить пароль не удалось: пароль может состоять только из латинских букв "
 "(A-Z, a-z) и цифр (0-9)"
 
-#: exmo/exmo2010/forms.py:579 exmo/exmo2010/models.py:1177
-#: exmo/exmo2010/custom_registration/forms.py:69
+#: exmo/exmo2010/forms.py:581 exmo/exmo2010/models.py:1184
+#: exmo/exmo2010/custom_registration/forms.py:73
 msgid "Subscribe to news e-mail notification"
 msgstr "Подписаться на рассылку новостей"
 
-#: exmo/exmo2010/forms.py:589
+#: exmo/exmo2010/forms.py:591
 msgid "Comment notification"
 msgstr "Уведомления о комментариях"
 
-#: exmo/exmo2010/forms.py:594
+#: exmo/exmo2010/forms.py:596
 msgid "Score change notification"
 msgstr "Уведомления об изменении оценок"
 
-#: exmo/exmo2010/forms.py:598
+#: exmo/exmo2010/forms.py:600
 msgid "Send to me my comments"
 msgstr "Присылать мои комментарии"
 
-#: exmo/exmo2010/forms.py:635
+#: exmo/exmo2010/forms.py:602
+msgid "Send to me all comments"
+msgstr "Присылать все комментарии"
+
+#: exmo/exmo2010/forms.py:639
 msgid "monitoring not select"
 msgstr "ни один цикл не выбран"
 
-#: exmo/exmo2010/helpers.py:46
+#: exmo/exmo2010/helpers.py:49
 #, python-format
 msgid "Changed %s."
 msgstr "Изменен %s."
 
-#: exmo/exmo2010/helpers.py:46 exmo/exmo2010/helpers.py:56
+#: exmo/exmo2010/helpers.py:49 exmo/exmo2010/helpers.py:59
 msgid "and"
 msgstr "и"
 
-#: exmo/exmo2010/helpers.py:51
+#: exmo/exmo2010/helpers.py:54
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
 msgstr "Добавлен %(name)s \"%(object)s\"."
 
-#: exmo/exmo2010/helpers.py:55
+#: exmo/exmo2010/helpers.py:58
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
 msgstr "Изменен %(list)s для %(name)s \"%(object)s\"."
 
-#: exmo/exmo2010/helpers.py:60
+#: exmo/exmo2010/helpers.py:63
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
 msgstr "Удален %(name)s \"%(object)s\"."
 
-#: exmo/exmo2010/helpers.py:64
+#: exmo/exmo2010/helpers.py:67
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
-#: exmo/exmo2010/helpers.py:222
+#: exmo/exmo2010/helpers.py:243
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
 
-#: exmo/exmo2010/helpers.py:273
+#: exmo/exmo2010/helpers.py:294
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новое уточнение"
 
-#: exmo/exmo2010/helpers.py:375
+#: exmo/exmo2010/helpers.py:396
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: exmo/exmo2010/models.py:48
+#: exmo/exmo2010/models.py:47
 msgid "Choose a variant"
 msgstr "Один из списка"
 
-#: exmo/exmo2010/models.py:91
+#: exmo/exmo2010/models.py:90
 #, python-format
 msgid "%(name)s (from EXMO2010 v%(code)d)"
 msgstr "%(name)s (из EXMO2010 v%(code)d)"
 
-#: exmo/exmo2010/models.py:103 exmo/exmo2010/models.py:111
+#: exmo/exmo2010/models.py:102 exmo/exmo2010/models.py:110
 msgid "prepare"
 msgstr "подготовка"
 
-#: exmo/exmo2010/models.py:104
+#: exmo/exmo2010/models.py:103
 msgid "initial rate"
 msgstr "первоначальная оценка"
 
-#: exmo/exmo2010/models.py:105
+#: exmo/exmo2010/models.py:104
 msgid "rates revision"
 msgstr "проверка оценок"
 
-#: exmo/exmo2010/models.py:106
+#: exmo/exmo2010/models.py:105
 msgid "result"
 msgstr "результаты"
 
-#: exmo/exmo2010/models.py:107
+#: exmo/exmo2010/models.py:106
 msgid "interact"
 msgstr "взаимодействие"
 
-#: exmo/exmo2010/models.py:108
+#: exmo/exmo2010/models.py:107
 msgid "finishing"
 msgstr "подведение итогов"
 
-#: exmo/exmo2010/models.py:109
+#: exmo/exmo2010/models.py:108
 msgid "published"
 msgstr "результаты опубликованы"
 
-#: exmo/exmo2010/models.py:114 exmo/exmo2010/models.py:143
-#: exmo/templates/exmo2010/monitoring_report.html:84
+#: exmo/exmo2010/models.py:113 exmo/exmo2010/models.py:142
+#: exmo/templates/exmo2010/monitoring_report.html:92
 msgid "Monitoring rate begin date"
 msgstr "Дата начала первоначальной оценки"
 
-#: exmo/exmo2010/models.py:115 exmo/exmo2010/models.py:153
-#: exmo/templates/exmo2010/monitoring_report.html:89
+#: exmo/exmo2010/models.py:114 exmo/exmo2010/models.py:152
+#: exmo/templates/exmo2010/monitoring_report.html:97
 msgid "Monitoring interact start date"
 msgstr "Дата начала этапа взаимодействия"
 
-#: exmo/exmo2010/models.py:116 exmo/exmo2010/models.py:168
-#: exmo/templates/exmo2010/monitoring_report.html:93
+#: exmo/exmo2010/models.py:115 exmo/exmo2010/models.py:167
+#: exmo/templates/exmo2010/monitoring_report.html:101
 msgid "Monitoring interact end date"
 msgstr "Дата окончания этапа взаимодействия"
 
-#: exmo/exmo2010/models.py:117 exmo/exmo2010/models.py:163
-#: exmo/templates/exmo2010/monitoring_report.html:98
+#: exmo/exmo2010/models.py:116 exmo/exmo2010/models.py:162
+#: exmo/templates/exmo2010/monitoring_report.html:106
 msgid "Monitoring publish date"
 msgstr "Дата публикации результатов мониторинга"
 
-#: exmo/exmo2010/models.py:125
+#: exmo/exmo2010/models.py:124
 msgid "openness expression"
 msgstr "формулы расчета Кид"
 
-#: exmo/exmo2010/models.py:131
+#: exmo/exmo2010/models.py:130
 msgid "No interact stage"
 msgstr "Без этапа взаимодействия"
 
-#: exmo/exmo2010/models.py:133
+#: exmo/exmo2010/models.py:132
 msgid "Hidden monitoring"
 msgstr "Скрытый цикл мониторинга"
 
-#: exmo/exmo2010/models.py:138
+#: exmo/exmo2010/models.py:137
 msgid "prepare date"
 msgstr "дата подготовки"
 
-#: exmo/exmo2010/models.py:148
+#: exmo/exmo2010/models.py:147
 msgid "revision date"
 msgstr "дата проверки"
 
-#: exmo/exmo2010/models.py:158
+#: exmo/exmo2010/models.py:157
 msgid "result date"
 msgstr "дата результатов"
 
-#: exmo/exmo2010/models.py:297 exmo/templates/msg.html:24
-#: exmo/templates/exmo2010/add_questionnaire.html:34
-#: exmo/templates/exmo2010/expert_list.html:24
-#: exmo/templates/exmo2010/mass_assign_tasks.html:24
-#: exmo/templates/exmo2010/monitoring_comment_report.html:51
-#: exmo/templates/exmo2010/monitoring_confirm_delete.html:24
-#: exmo/templates/exmo2010/monitoring_form.html:89
-#: exmo/templates/exmo2010/monitoring_form.html:117
-#: exmo/templates/exmo2010/monitoring_import_log.html:25
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:91
-#: exmo/templates/exmo2010/organization_confirm_delete.html:24
-#: exmo/templates/exmo2010/organization_form.html:31
-#: exmo/templates/exmo2010/organization_list.html:28
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:26
-#: exmo/templates/exmo2010/parameter_form.html:34
-#: exmo/templates/exmo2010/rating.html:29
+#: exmo/exmo2010/models.py:296 exmo/templates/msg.html:25
+#: exmo/templates/exmo2010/add_questionnaire.html:35
+#: exmo/templates/exmo2010/expert_list.html:25
+#: exmo/templates/exmo2010/mass_assign_tasks.html:25
+#: exmo/templates/exmo2010/monitoring_comment_report.html:52
+#: exmo/templates/exmo2010/monitoring_confirm_delete.html:25
+#: exmo/templates/exmo2010/monitoring_form.html:90
+#: exmo/templates/exmo2010/monitoring_form.html:118
+#: exmo/templates/exmo2010/monitoring_import_log.html:26
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:92
+#: exmo/templates/exmo2010/organization_confirm_delete.html:25
+#: exmo/templates/exmo2010/organization_form.html:32
+#: exmo/templates/exmo2010/organization_list.html:29
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:27
+#: exmo/templates/exmo2010/parameter_form.html:35
+#: exmo/templates/exmo2010/rating.html:30
 #: exmo/templates/exmo2010/rating_multiple.html:25
-#: exmo/templates/exmo2010/rating_report.html:28
-#: exmo/templates/exmo2010/score_comment_form.html:25
-#: exmo/templates/exmo2010/score_confirm_delete.html:24
-#: exmo/templates/exmo2010/score_list.html:50
-#: exmo/templates/exmo2010/set_npa_params.html:25
-#: exmo/templates/exmo2010/task_confirm_delete.html:24
-#: exmo/templates/exmo2010/task_form.html:25
-#: exmo/templates/exmo2010/task_import_log.html:25
-#: exmo/templates/exmo2010/task_list.html:57
-#: exmo/templates/exmo2010/reports/claim_report.html:45
-#: exmo/templates/exmo2010/reports/clarification_report.html:45
-#: exmo/templates/exmo2010/score/claim_form.html:28
-#: exmo/templates/exmo2010/score/clarification_form.html:28
-#: exmo/templates/exmo2010/score/detail.html:43
-#: exmo/templates/exmo2010/score/form.html:55
+#: exmo/templates/exmo2010/rating_report.html:29
+#: exmo/templates/exmo2010/score_comment_form.html:26
+#: exmo/templates/exmo2010/score_confirm_delete.html:25
+#: exmo/templates/exmo2010/score_list.html:51
+#: exmo/templates/exmo2010/set_npa_params.html:41
+#: exmo/templates/exmo2010/task_confirm_delete.html:25
+#: exmo/templates/exmo2010/task_form.html:26
+#: exmo/templates/exmo2010/task_import_log.html:26
+#: exmo/templates/exmo2010/task_list.html:58
+#: exmo/templates/exmo2010/reports/claim_report.html:46
+#: exmo/templates/exmo2010/reports/clarification_report.html:46
+#: exmo/templates/exmo2010/score/claim_form.html:29
+#: exmo/templates/exmo2010/score/clarification_form.html:29
+#: exmo/templates/exmo2010/score/detail.html:44
+#: exmo/templates/exmo2010/score/form.html:56
 msgid "Monitoring"
 msgstr "Цикл мониторинга"
 
-#: exmo/exmo2010/models.py:299
-#: exmo/templates/exmo2010/add_questionnaire.html:45
+#: exmo/exmo2010/models.py:298
+#: exmo/templates/exmo2010/add_questionnaire.html:46
 msgid "Questionnaire name"
 msgstr "Название анкеты"
 
-#: exmo/exmo2010/models.py:301
-#: exmo/templates/exmo2010/add_questionnaire.html:47
+#: exmo/exmo2010/models.py:300
+#: exmo/templates/exmo2010/add_questionnaire.html:48
 msgid "Questionnaire comment"
 msgstr "Примечание к анкете"
 
-#: exmo/exmo2010/models.py:311
+#: exmo/exmo2010/models.py:310
 msgid "Questionnaire"
 msgstr "Анкета"
 
-#: exmo/exmo2010/models.py:313
+#: exmo/exmo2010/models.py:312
 msgid "Question type"
 msgstr "Тип вопроса"
 
-#: exmo/exmo2010/models.py:314 exmo/exmo2010/models.py:324
-#: exmo/exmo2010/models.py:686
+#: exmo/exmo2010/models.py:313 exmo/exmo2010/models.py:323
+#: exmo/exmo2010/models.py:685
 msgid "Question"
 msgstr "Вопрос"
 
-#: exmo/exmo2010/models.py:315
+#: exmo/exmo2010/models.py:314
 msgid "Question comment"
 msgstr "Пояснение к вопросу"
 
-#: exmo/exmo2010/models.py:325
-#: exmo/templates/exmo2010/emails/score_claim.html:40
-#: exmo/templates/exmo2010/emails/score_claim.txt:32
-#: exmo/templates/exmo2010/emails/score_clarification.html:38
-#: exmo/templates/exmo2010/emails/score_clarification.txt:32
+#: exmo/exmo2010/models.py:324
+#: exmo/templates/exmo2010/emails/score_claim.html:41
+#: exmo/templates/exmo2010/emails/score_clarification.html:39
 msgid "Answer"
 msgstr "Ответ"
 
-#: exmo/exmo2010/models.py:352
+#: exmo/exmo2010/models.py:351
 msgid "url"
 msgstr "веб-адрес"
 
-#: exmo/exmo2010/models.py:353 exmo/exmo2010/models.py:395
+#: exmo/exmo2010/models.py:352 exmo/exmo2010/models.py:394
 msgid "keywords"
 msgstr "ключевые слова"
 
-#: exmo/exmo2010/models.py:354
+#: exmo/exmo2010/models.py:353
 msgid "comments"
 msgstr "комментарии"
 
-#: exmo/exmo2010/models.py:355 exmo/exmo2010/models.py:391
-#: exmo/exmo2010/view/monitoring.py:96
+#: exmo/exmo2010/models.py:354 exmo/exmo2010/models.py:390
+#: exmo/exmo2010/view/monitoring.py:98
 msgid "monitoring"
 msgstr "цикл мониторинга"
 
-#: exmo/exmo2010/models.py:356 exmo/exmo2010/custom_registration/forms.py:125
-#: exmo/templates/exmo2010/user_settings.html:85
-#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:35
+#: exmo/exmo2010/models.py:355 exmo/exmo2010/custom_registration/forms.py:129
+#: exmo/templates/exmo2010/user_settings.html:86
+#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr "Код приглашения"
 
-#: exmo/exmo2010/models.py:387
+#: exmo/exmo2010/models.py:386
 msgid "code"
 msgstr "код"
 
-#: exmo/exmo2010/models.py:390
+#: exmo/exmo2010/models.py:389
 msgid "description"
 msgstr "описание"
 
-#: exmo/exmo2010/models.py:393
+#: exmo/exmo2010/models.py:392
 msgid "excluded organizations"
 msgstr "исключенные органы/организации"
 
-#: exmo/exmo2010/models.py:394
+#: exmo/exmo2010/models.py:393
 msgid "weight"
 msgstr "Ксз"
 
-#: exmo/exmo2010/models.py:396 exmo/exmo2010/models.py:743
+#: exmo/exmo2010/models.py:395 exmo/exmo2010/models.py:747
 msgid "complete"
 msgstr "полнота"
 
-#: exmo/exmo2010/models.py:397 exmo/exmo2010/models.py:754
+#: exmo/exmo2010/models.py:396 exmo/exmo2010/models.py:758
 msgid "topical"
 msgstr "актуальность"
 
-#: exmo/exmo2010/models.py:399 exmo/exmo2010/models.py:765
+#: exmo/exmo2010/models.py:398 exmo/exmo2010/models.py:769
 msgid "accessible"
 msgstr "навигационная доступность"
 
-#: exmo/exmo2010/models.py:400 exmo/exmo2010/models.py:776
+#: exmo/exmo2010/models.py:399 exmo/exmo2010/models.py:780
 msgid "hypertext"
 msgstr "HTML доступность"
 
-#: exmo/exmo2010/models.py:401 exmo/exmo2010/models.py:787
+#: exmo/exmo2010/models.py:400 exmo/exmo2010/models.py:791
 msgid "document"
 msgstr "файловая доступность"
 
-#: exmo/exmo2010/models.py:402 exmo/exmo2010/models.py:798
+#: exmo/exmo2010/models.py:401 exmo/exmo2010/models.py:802
 msgid "image"
 msgstr "графическая доступность"
 
-#: exmo/exmo2010/models.py:403
+#: exmo/exmo2010/models.py:402
 msgid "coherent"
 msgstr "согласован"
 
-#: exmo/exmo2010/models.py:463 exmo/exmo2010/view/organization.py:41
-#: exmo/exmo2010/view/organization.py:52 exmo/exmo2010/view/task.py:267
-#: exmo/exmo2010/view/task.py:276 exmo/exmo2010/view/task.py:285
-#: exmo/exmo2010/view/task.py:471 exmo/exmo2010/view/task.py:479
-#: exmo/exmo2010/view/task.py:486
+#: exmo/exmo2010/models.py:462 exmo/exmo2010/view/organization.py:42
+#: exmo/exmo2010/view/organization.py:53 exmo/exmo2010/view/task.py:268
+#: exmo/exmo2010/view/task.py:277 exmo/exmo2010/view/task.py:286
+#: exmo/exmo2010/view/task.py:473 exmo/exmo2010/view/task.py:481
+#: exmo/exmo2010/view/task.py:488
 msgid "organization"
 msgstr "организация"
 
-#: exmo/exmo2010/models.py:474
+#: exmo/exmo2010/models.py:473
 msgid "openness first"
 msgstr "первичный Кид"
 
-#: exmo/exmo2010/models.py:560
+#: exmo/exmo2010/models.py:559
 msgid "Ready task must be 100 percent complete."
 msgstr "Готовая задача должна быть выполнена на 100 процентов."
 
-#: exmo/exmo2010/models.py:564
+#: exmo/exmo2010/models.py:563
 #, python-format
 msgid ""
-"Approved task for monitoring %(monitoring)s and organization %(organization)s "
-"already exist."
+"Approved task for monitoring %(monitoring)s and organization "
+"%(organization)s already exist."
 msgstr ""
 "Для мониторинга %(monitoring)s и органа/организации %(organization)s уже "
 "существует одобренная задача."
 
-#: exmo/exmo2010/models.py:687
+#: exmo/exmo2010/models.py:686
 msgid "Text answer"
 msgstr "Ответ текстом"
 
-#: exmo/exmo2010/models.py:689
+#: exmo/exmo2010/models.py:688
 msgid "Numerical answer"
 msgstr "Ответ числом"
 
-#: exmo/exmo2010/models.py:692
+#: exmo/exmo2010/models.py:691
 msgid "Variance choice"
 msgstr "Ответ-выбор варианта"
 
-#: exmo/exmo2010/models.py:723
+#: exmo/exmo2010/models.py:722
 msgid "default revision"
 msgstr "последняя ревизия"
 
-#: exmo/exmo2010/models.py:724
+#: exmo/exmo2010/models.py:723
 msgid "interact revision"
 msgstr "ревизия до взаимодействия"
 
-#: exmo/exmo2010/models.py:729
+#: exmo/exmo2010/models.py:728
 msgid "task"
 msgstr "задача"
 
-#: exmo/exmo2010/models.py:733
+#: exmo/exmo2010/models.py:732
 msgid "parameter"
 msgstr "Параметр"
 
-#: exmo/exmo2010/models.py:737
+#: exmo/exmo2010/models.py:736
 msgid "found"
 msgstr "Наличие"
 
-#: exmo/exmo2010/models.py:748 exmo/templates/exmo2010/task_report.html:64
+#: exmo/exmo2010/models.py:741
+msgid "foundComment"
+msgstr "комментарий к критерию 'Файловая доступность'"
+
+#: exmo/exmo2010/models.py:752 exmo/templates/exmo2010/task_report.html:65
 msgid "completeComment"
 msgstr "комментарий к критерию 'Полнота'"
 
-#: exmo/exmo2010/models.py:759 exmo/templates/exmo2010/task_report.html:65
+#: exmo/exmo2010/models.py:763 exmo/templates/exmo2010/task_report.html:66
 msgid "topicalComment"
 msgstr "комментарий к критерию 'Актуальность'"
 
-#: exmo/exmo2010/models.py:770 exmo/templates/exmo2010/task_report.html:66
+#: exmo/exmo2010/models.py:774 exmo/templates/exmo2010/task_report.html:67
 msgid "accessibleComment"
 msgstr "комментарий к критерию 'Навигационная доступность'"
 
-#: exmo/exmo2010/models.py:781 exmo/templates/exmo2010/task_report.html:67
+#: exmo/exmo2010/models.py:785 exmo/templates/exmo2010/task_report.html:68
 msgid "hypertextComment"
 msgstr "комментарий к критерию 'HTML доступность'"
 
-#: exmo/exmo2010/models.py:792 exmo/templates/exmo2010/task_report.html:68
+#: exmo/exmo2010/models.py:796 exmo/templates/exmo2010/task_report.html:69
 msgid "documentComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
-#: exmo/exmo2010/models.py:803
+#: exmo/exmo2010/models.py:807
 msgid "imageComment"
 msgstr "комментарий к критерию 'Графическая доступность'"
 
-#: exmo/exmo2010/models.py:808 exmo/templates/exmo2010/score/detail.html:138
+#: exmo/exmo2010/models.py:812 exmo/templates/exmo2010/score/detail.html:139
 msgid "Recomendations"
 msgstr "Рекомендации"
 
-#: exmo/exmo2010/models.py:841
+#: exmo/exmo2010/models.py:845
 msgid "Complete must be set"
 msgstr "Критерий Полнота не оценен"
 
-#: exmo/exmo2010/models.py:843
+#: exmo/exmo2010/models.py:847
 msgid "Topical must be set"
 msgstr "Критерий Актуальность не оценен"
 
-#: exmo/exmo2010/models.py:845
+#: exmo/exmo2010/models.py:849
 msgid "Accessible must be set"
 msgstr "Критерий Навигационная доступность не оценен"
 
-#: exmo/exmo2010/models.py:847
+#: exmo/exmo2010/models.py:851
 msgid "Hypertext must be set"
 msgstr "Критерий 'Html доступность' не оценен"
 
-#: exmo/exmo2010/models.py:849
+#: exmo/exmo2010/models.py:853
 msgid "Document must be set"
 msgstr "Критерий 'Файловая доступность' не оценен"
 
-#: exmo/exmo2010/models.py:851
+#: exmo/exmo2010/models.py:855
 msgid "Image must be set"
 msgstr "Критерий 'Графическая доступность' не оценен"
 
-#: exmo/exmo2010/models.py:866
+#: exmo/exmo2010/models.py:870
 msgid "Not found, but some excessive data persists"
 msgstr "Критерий Наличие не найден, но присутствуют оценки по другим критериям"
 
-#: exmo/exmo2010/models.py:974 exmo/exmo2010/models.py:1028
+#: exmo/exmo2010/models.py:979 exmo/exmo2010/models.py:1033
 msgid "score"
 msgstr "оценка"
 
-#: exmo/exmo2010/models.py:977
+#: exmo/exmo2010/models.py:982
 msgid "claim open"
 msgstr "претензия создана"
 
-#: exmo/exmo2010/models.py:980
+#: exmo/exmo2010/models.py:985
 msgid "claim close"
 msgstr "претензия закрыта"
 
-#: exmo/exmo2010/models.py:982 exmo/exmo2010/models.py:985
-#: exmo/exmo2010/models.py:1037 exmo/exmo2010/models.py:1043
-#: exmo/templates/exmo2010/task_report.html:69
+#: exmo/exmo2010/models.py:987 exmo/exmo2010/models.py:990
+#: exmo/exmo2010/models.py:1042 exmo/exmo2010/models.py:1048
+#: exmo/templates/exmo2010/task_report.html:70
 msgid "comment"
 msgstr "комментарий"
 
-#: exmo/exmo2010/models.py:989 exmo/exmo2010/models.py:1048
+#: exmo/exmo2010/models.py:994 exmo/exmo2010/models.py:1053
 msgid "user who close"
 msgstr "пользователь закрывший претензию"
 
-#: exmo/exmo2010/models.py:991 exmo/exmo2010/models.py:1033
+#: exmo/exmo2010/models.py:996 exmo/exmo2010/models.py:1038
 msgid "creator"
 msgstr "создатель"
 
-#: exmo/exmo2010/models.py:994
+#: exmo/exmo2010/models.py:999
 msgid "addressee"
 msgstr "кому выставили"
 
-#: exmo/exmo2010/models.py:1006
+#: exmo/exmo2010/models.py:1011
 #, python-format
 msgid "claim for %(score)s from %(creator)s"
 msgstr "претензия для %(score)s от %(creator)s"
 
-#: exmo/exmo2010/models.py:1031
+#: exmo/exmo2010/models.py:1036
 msgid "clarification open"
 msgstr "уточнение открыто"
 
-#: exmo/exmo2010/models.py:1041
+#: exmo/exmo2010/models.py:1046
 msgid "clarification close"
 msgstr "уточнение закрыто"
 
-#: exmo/exmo2010/models.py:1062
+#: exmo/exmo2010/models.py:1067
 #, python-format
 msgid "clarification for %(score)s from %(creator)s"
 msgstr "претензия для %(score)s от %(creator)s"
 
-#: exmo/exmo2010/models.py:1097
+#: exmo/exmo2010/models.py:1104
 msgid "not set"
 msgstr "не указан"
 
-#: exmo/exmo2010/models.py:1098
+#: exmo/exmo2010/models.py:1105
 msgid "male"
 msgstr "мужской"
 
-#: exmo/exmo2010/models.py:1099
+#: exmo/exmo2010/models.py:1106
 msgid "female"
 msgstr "женский"
 
-#: exmo/exmo2010/models.py:1161
+#: exmo/exmo2010/models.py:1168
 msgid "disabled"
 msgstr "отключено"
 
-#: exmo/exmo2010/models.py:1162
+#: exmo/exmo2010/models.py:1169
 msgid "one email per one comment/change"
 msgstr "одно уведомление на один комментарий/изменение"
 
-#: exmo/exmo2010/models.py:1163
+#: exmo/exmo2010/models.py:1170
 msgid "digest notification"
 msgstr "уведомления дайджестами"
 
-#: exmo/exmo2010/models.py:1172
+#: exmo/exmo2010/models.py:1179
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
 
-#: exmo/exmo2010/models.py:1173 exmo/exmo2010/dashboard/menu.py:93
-#: exmo/templates/exmo2010/user_settings.html:35
-#: exmo/templates/user_dashboard/modules/quicklinks.html:30
+#: exmo/exmo2010/models.py:1180 exmo/exmo2010/dashboard/menu.py:94
+#: exmo/templates/exmo2010/user_settings.html:36
+#: exmo/templates/user_dashboard/modules/quicklinks.html:31
 msgid "Preferences"
 msgstr "Настройки"
 
-#: exmo/exmo2010/models.py:1174
+#: exmo/exmo2010/models.py:1181
 msgid "Sex"
 msgstr "Пол"
 
-#: exmo/exmo2010/models.py:1236
+#: exmo/exmo2010/models.py:1243
 msgid "Digest duratation must be greater or equal than 1."
 msgstr "Период дайджеста должен быть больше или равен единице"
 
-#: exmo/exmo2010/models.py:1521
+#: exmo/exmo2010/models.py:1541
 msgid "user profile"
 msgstr "Профиль пользователя"
 
-#: exmo/exmo2010/sites.py:48 exmo/exmo2010/dashboard/menu.py:49
+#: exmo/exmo2010/sites.py:49 exmo/exmo2010/dashboard/menu.py:50
 msgid "Dashboard"
 msgstr "Главная"
 
-#: exmo/exmo2010/custom_registration/forms.py:32
+#: exmo/exmo2010/custom_registration/forms.py:36
 msgid "representative"
 msgstr "представитель организации"
 
-#: exmo/exmo2010/custom_registration/forms.py:33
+#: exmo/exmo2010/custom_registration/forms.py:37
 msgid "concerned person"
 msgstr "частное лицо"
 
-#: exmo/exmo2010/custom_registration/forms.py:46
+#: exmo/exmo2010/custom_registration/forms.py:50
 msgid "Enter your first name in order the system can address you with it"
 msgstr "Введите свое имя, чтобы система знала, как к вам обращаться"
 
-#: exmo/exmo2010/custom_registration/forms.py:51
+#: exmo/exmo2010/custom_registration/forms.py:55
 msgid "Enter your patronymic in order the system can address you with it"
 msgstr "Введите свое отчество, чтобы система знала, как к вам обращаться"
 
-#: exmo/exmo2010/custom_registration/forms.py:56
+#: exmo/exmo2010/custom_registration/forms.py:60
 msgid "Enter your last name in order the system can address you with it"
 msgstr "Введите свою фамилию, чтобы система знала, как к вам обращаться"
 
-#: exmo/exmo2010/custom_registration/forms.py:60
-#: exmo/templates/exmo2010/user_settings.html:56
+#: exmo/exmo2010/custom_registration/forms.py:64
+#: exmo/exmo2010/custom_registration/forms.py:214
+#: exmo/templates/exmo2010/user_settings.html:57
 msgid "E-mail"
 msgstr "Электронная почта"
 
-#: exmo/exmo2010/custom_registration/forms.py:61
+#: exmo/exmo2010/custom_registration/forms.py:65
 msgid "E-mail is required for confirming registration and loggin in"
 msgstr "Будет использована для подтверждения регистрации и входа в систему"
 
-#: exmo/exmo2010/custom_registration/forms.py:64
+#: exmo/exmo2010/custom_registration/forms.py:68
 msgid "Password"
 msgstr "Пароль"
 
-#: exmo/exmo2010/custom_registration/forms.py:66
+#: exmo/exmo2010/custom_registration/forms.py:70
 msgid ""
 "Create a complicated password using latin characters (A-Z, a-z) and digits "
 "(0-9)"
 msgstr ""
 "Создайте сложный пароль, используя латинские буквы (A-Z, a-z) и цифры (0-9)"
 
-#: exmo/exmo2010/custom_registration/forms.py:77
-#: exmo/exmo2010/custom_registration/forms.py:166
+#: exmo/exmo2010/custom_registration/forms.py:81
+#: exmo/exmo2010/custom_registration/forms.py:170
 msgid ""
 "Password contains unallowed characters. Please use only latin letters and "
 "digits."
@@ -853,395 +861,415 @@ msgstr ""
 "Пароль содержит недопустимые символы. Разрешены только латинские буквы (A-Z, "
 "a-z) и цифры (0-9)."
 
-#: exmo/exmo2010/custom_registration/forms.py:91
+#: exmo/exmo2010/custom_registration/forms.py:95
 msgid ""
-"This email address is already in use. Please supply a different email address."
+"This email address is already in use. Please supply a different email "
+"address."
 msgstr "Этот адрес эл. почты уже занят. Пожалуйста, укажите другой адрес."
 
-#: exmo/exmo2010/custom_registration/forms.py:103
+#: exmo/exmo2010/custom_registration/forms.py:107
 #, python-format
 msgid ""
-"Ensure invitation code has at least %(limit_value)d characters (it has %"
-"(show_value)d)."
+"Ensure invitation code has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
 msgstr ""
-"Код приглашения должен содержать не менее %(limit_value)d символов (сейчас %"
-"(show_value)d)."
+"Код приглашения должен содержать не менее %(limit_value)d символов (сейчас "
+"%(show_value)d)."
 
-#: exmo/exmo2010/custom_registration/forms.py:109
+#: exmo/exmo2010/custom_registration/forms.py:113
 #, python-format
 msgid ""
-"Ensure invitation code has at most %(limit_value)d characters (it has %"
-"(show_value)d)."
+"Ensure invitation code has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
 msgstr ""
-"Код приглашения должен содержать не более %(limit_value)d символов (сейчас %"
-"(show_value)d)."
+"Код приглашения должен содержать не более %(limit_value)d символов (сейчас "
+"%(show_value)d)."
 
-#: exmo/exmo2010/custom_registration/forms.py:126
+#: exmo/exmo2010/custom_registration/forms.py:130
 msgid "Required to get access to your organization scores"
 msgstr "Необходим для получения доступа к оценкам своей организации"
 
-#: exmo/exmo2010/custom_registration/forms.py:139
+#: exmo/exmo2010/custom_registration/forms.py:143
 msgid "Submitted invitation code does not exist. Please enter correct one"
 msgstr ""
 "Код приглашения, который вы ввели, не существует. Введите корректный код "
 "приглашения"
 
-#: exmo/exmo2010/dashboard/dashboard.py:74
+#: exmo/exmo2010/custom_registration/forms.py:199
+msgid ""
+"Please enter a correct username and password. Note that both fields are case-"
+"sensitive."
+msgstr ""
+
+#: exmo/exmo2010/custom_registration/forms.py:205
+#: exmo/exmo2010/custom_registration/forms.py:236
+msgid "This account is inactive."
+msgstr "Пользователь не активен"
+
+#: exmo/exmo2010/custom_registration/forms.py:226
+msgid "There's no user with that e-mail."
+msgstr "Пользователя с таким адресом электронной почты не существует."
+
+#: exmo/exmo2010/custom_registration/forms.py:232
+msgid "Account is activated already."
+msgstr "Учетная зпись уже активрована."
+
+#: exmo/exmo2010/dashboard/dashboard.py:75
 msgid "Quick links"
 msgstr "Быстрый доступ"
 
-#: exmo/exmo2010/dashboard/dashboard.py:87
-#: exmo/templates/exmo2010/monitoring_list.html:42
+#: exmo/exmo2010/dashboard/dashboard.py:88
+#: exmo/templates/exmo2010/monitoring_list.html:43
 msgid "Monitoring list"
 msgstr "Перечень циклов мониторинга"
 
-#: exmo/exmo2010/dashboard/dashboard.py:104 exmo/exmo2010/dashboard/menu.py:77
+#: exmo/exmo2010/dashboard/dashboard.py:105 exmo/exmo2010/dashboard/menu.py:78
 msgid "Messages"
 msgstr "Сообщения"
 
-#: exmo/exmo2010/dashboard/dashboard.py:107 exmo/exmo2010/dashboard/menu.py:60
-#: exmo/exmo2010/view/reports.py:57
-#: exmo/templates/exmo2010/monitoring_utility.html:28
-#: exmo/templates/exmo2010/score/detail.html:171
-#: exmo/templates/exmo2010/score/tabs.html:31
+#: exmo/exmo2010/dashboard/dashboard.py:108 exmo/exmo2010/dashboard/menu.py:61
+#: exmo/exmo2010/view/reports.py:53
+#: exmo/templates/exmo2010/monitoring_utility.html:29
+#: exmo/templates/exmo2010/score/detail.html:172
+#: exmo/templates/exmo2010/score/tabs.html:32
 msgid "Comments"
 msgstr "Комментарии"
 
-#: exmo/exmo2010/dashboard/dashboard.py:111 exmo/exmo2010/dashboard/menu.py:66
-#: exmo/exmo2010/view/reports.py:83
-#: exmo/templates/exmo2010/monitoring_utility.html:34
-#: exmo/templates/exmo2010/score/tabs.html:38
+#: exmo/exmo2010/dashboard/dashboard.py:112 exmo/exmo2010/dashboard/menu.py:67
+#: exmo/exmo2010/view/reports.py:79
+#: exmo/templates/exmo2010/monitoring_utility.html:35
+#: exmo/templates/exmo2010/score/tabs.html:39
 msgid "Clarifications"
 msgstr "Уточнения"
 
-#: exmo/exmo2010/dashboard/dashboard.py:116 exmo/exmo2010/dashboard/menu.py:72
-#: exmo/exmo2010/view/reports.py:109
-#: exmo/templates/exmo2010/monitoring_utility.html:35
+#: exmo/exmo2010/dashboard/dashboard.py:117 exmo/exmo2010/dashboard/menu.py:73
+#: exmo/exmo2010/view/reports.py:105
+#: exmo/templates/exmo2010/monitoring_utility.html:36
 msgid "Claims"
 msgstr "Претензии"
 
-#: exmo/exmo2010/dashboard/menu.py:86
-#: exmo/templates/user_dashboard/modules/quicklinks.html:26
+#: exmo/exmo2010/dashboard/menu.py:87
+#: exmo/templates/user_dashboard/modules/quicklinks.html:27
 msgid "Scores of my organisation"
 msgstr "Оценки моей организации"
 
-#: exmo/exmo2010/dashboard/menu.py:94
-#: exmo/templates/user_dashboard/modules/quicklinks.html:31
+#: exmo/exmo2010/dashboard/menu.py:95
+#: exmo/templates/user_dashboard/modules/quicklinks.html:32
 msgid "Log out"
 msgstr "Выйти"
 
-#: exmo/exmo2010/dashboard/menu.py:100 exmo/exmo2010/dashboard/menu.py:108
+#: exmo/exmo2010/dashboard/menu.py:101 exmo/exmo2010/dashboard/menu.py:109
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
-#: exmo/exmo2010/dashboard/menu.py:103
-#: exmo/templates/registration/registration_form.html:69
-#: exmo/templates/user_dashboard/modules/quicklinks.html:33
+#: exmo/exmo2010/dashboard/menu.py:104
+#: exmo/templates/registration/registration_form.html:70
+#: exmo/templates/user_dashboard/modules/quicklinks.html:34
 msgid "Registration"
 msgstr "Регистрация"
 
-#: exmo/exmo2010/dashboard/menu.py:105
-#: exmo/templates/registration/login.html:91
-#: exmo/templates/registration/password_reset_complete.html:43
-#: exmo/templates/user_dashboard/modules/quicklinks.html:34
+#: exmo/exmo2010/dashboard/menu.py:106
+#: exmo/templates/registration/login.html:107
+#: exmo/templates/registration/password_reset_complete.html:44
+#: exmo/templates/user_dashboard/modules/quicklinks.html:35
 msgid "Log in"
 msgstr "Войти"
 
-#: exmo/exmo2010/dashboard/menu.py:110 exmo/exmo2010/view/reports.py:203
+#: exmo/exmo2010/dashboard/menu.py:111 exmo/exmo2010/view/reports.py:201
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: exmo/exmo2010/dashboard/menu.py:112
-#: exmo/templates/exmo2010/monitoring_comment_report.html:73
+#: exmo/exmo2010/dashboard/menu.py:113
+#: exmo/templates/exmo2010/monitoring_comment_report.html:74
 msgid "Statistics"
 msgstr "Статистика"
 
-#: exmo/exmo2010/dashboard/menu.py:115 exmo/templates/exmo2010/help.html:30
+#: exmo/exmo2010/dashboard/menu.py:116 exmo/templates/exmo2010/help.html:31
 msgid "Help"
 msgstr "Помощь"
 
-#: exmo/exmo2010/dashboard/menu.py:116
+#: exmo/exmo2010/dashboard/menu.py:117
 msgid "Parameter lists"
 msgstr "Перечни параметров"
 
-#: exmo/exmo2010/dashboard/menu.py:119 exmo/templates/exmo2010/about.html:30
+#: exmo/exmo2010/dashboard/menu.py:120 exmo/templates/exmo2010/about.html:31
 msgid "About project"
 msgstr "О проекте"
 
-#: exmo/exmo2010/dashboard/menu.py:121
+#: exmo/exmo2010/dashboard/menu.py:122
 msgid "Information"
 msgstr "Справка"
 
-#: exmo/exmo2010/dashboard/modules.py:65
+#: exmo/exmo2010/dashboard/modules.py:66
 msgid "List"
 msgstr "Список"
 
-#: exmo/exmo2010/view/answers.py:41 exmo/exmo2010/view/claim.py:55
-#: exmo/exmo2010/view/claim.py:154 exmo/exmo2010/view/clarification.py:97
-#: exmo/exmo2010/view/monitoring.py:57 exmo/exmo2010/view/monitoring.py:113
-#: exmo/exmo2010/view/monitoring.py:139 exmo/exmo2010/view/monitoring.py:153
-#: exmo/exmo2010/view/monitoring.py:189 exmo/exmo2010/view/monitoring.py:220
-#: exmo/exmo2010/view/monitoring.py:252 exmo/exmo2010/view/monitoring.py:284
-#: exmo/exmo2010/view/monitoring.py:377 exmo/exmo2010/view/monitoring.py:433
-#: exmo/exmo2010/view/monitoring.py:454 exmo/exmo2010/view/monitoring.py:548
-#: exmo/exmo2010/view/monitoring.py:609 exmo/exmo2010/view/monitoring.py:655
-#: exmo/exmo2010/view/monitoring.py:694 exmo/exmo2010/view/monitoring.py:771
-#: exmo/exmo2010/view/monitoring.py:848 exmo/exmo2010/view/monitoring.py:1017
-#: exmo/exmo2010/view/monitoring.py:1019 exmo/exmo2010/view/monitoring.py:1049
-#: exmo/exmo2010/view/organization.py:32 exmo/exmo2010/view/organization.py:49
-#: exmo/exmo2010/view/organization.py:72 exmo/exmo2010/view/parameter.py:40
-#: exmo/exmo2010/view/parameter.py:55 exmo/exmo2010/view/parameter.py:61
-#: exmo/exmo2010/view/parameter.py:79 exmo/exmo2010/view/reports.py:46
-#: exmo/exmo2010/view/reports.py:72 exmo/exmo2010/view/reports.py:98
-#: exmo/exmo2010/view/score.py:59 exmo/exmo2010/view/score.py:94
-#: exmo/exmo2010/view/score.py:99 exmo/exmo2010/view/score.py:178
-#: exmo/exmo2010/view/score.py:209 exmo/exmo2010/view/score.py:271
-#: exmo/exmo2010/view/score.py:375 exmo/exmo2010/view/task.py:44
-#: exmo/exmo2010/view/task.py:153 exmo/exmo2010/view/task.py:261
-#: exmo/exmo2010/view/task.py:340 exmo/exmo2010/view/task.py:365
-#: exmo/exmo2010/view/task.py:381 exmo/exmo2010/view/task.py:393
-#: exmo/exmo2010/view/task.py:404 exmo/exmo2010/view/task.py:415
-#: exmo/exmo2010/view/task.py:426 exmo/exmo2010/view/task.py:442
-#: exmo/exmo2010/view/task.py:457 exmo/exmo2010/view/task.py:467
-#: exmo/exmo2010/view/task.py:508 exmo/exmo2010/view/user.py:241
+#: exmo/exmo2010/view/answers.py:42 exmo/exmo2010/view/claim.py:56
+#: exmo/exmo2010/view/claim.py:155 exmo/exmo2010/view/clarification.py:98
+#: exmo/exmo2010/view/monitoring.py:58 exmo/exmo2010/view/monitoring.py:115
+#: exmo/exmo2010/view/monitoring.py:141 exmo/exmo2010/view/monitoring.py:155
+#: exmo/exmo2010/view/monitoring.py:191 exmo/exmo2010/view/monitoring.py:222
+#: exmo/exmo2010/view/monitoring.py:254 exmo/exmo2010/view/monitoring.py:286
+#: exmo/exmo2010/view/monitoring.py:379 exmo/exmo2010/view/monitoring.py:435
+#: exmo/exmo2010/view/monitoring.py:456 exmo/exmo2010/view/monitoring.py:550
+#: exmo/exmo2010/view/monitoring.py:611 exmo/exmo2010/view/monitoring.py:657
+#: exmo/exmo2010/view/monitoring.py:696 exmo/exmo2010/view/monitoring.py:773
+#: exmo/exmo2010/view/monitoring.py:850 exmo/exmo2010/view/monitoring.py:930
+#: exmo/exmo2010/view/monitoring.py:932 exmo/exmo2010/view/monitoring.py:962
+#: exmo/exmo2010/view/organization.py:33 exmo/exmo2010/view/organization.py:50
+#: exmo/exmo2010/view/organization.py:73 exmo/exmo2010/view/parameter.py:41
+#: exmo/exmo2010/view/parameter.py:56 exmo/exmo2010/view/parameter.py:62
+#: exmo/exmo2010/view/parameter.py:80 exmo/exmo2010/view/reports.py:42
+#: exmo/exmo2010/view/reports.py:68 exmo/exmo2010/view/reports.py:94
+#: exmo/exmo2010/view/reports.py:188 exmo/exmo2010/view/score.py:60
+#: exmo/exmo2010/view/score.py:95 exmo/exmo2010/view/score.py:100
+#: exmo/exmo2010/view/score.py:179 exmo/exmo2010/view/score.py:210
+#: exmo/exmo2010/view/score.py:272 exmo/exmo2010/view/score.py:376
+#: exmo/exmo2010/view/task.py:45 exmo/exmo2010/view/task.py:154
+#: exmo/exmo2010/view/task.py:262 exmo/exmo2010/view/task.py:340
+#: exmo/exmo2010/view/task.py:365 exmo/exmo2010/view/task.py:381
+#: exmo/exmo2010/view/task.py:393 exmo/exmo2010/view/task.py:404
+#: exmo/exmo2010/view/task.py:415 exmo/exmo2010/view/task.py:426
+#: exmo/exmo2010/view/task.py:442 exmo/exmo2010/view/task.py:457
+#: exmo/exmo2010/view/task.py:467 exmo/exmo2010/view/task.py:510
+#: exmo/exmo2010/view/user.py:254
 msgid "Forbidden"
 msgstr "Запрещено"
 
-#: exmo/exmo2010/view/claim.py:50 exmo/exmo2010/view/claim.py:124
-#: exmo/exmo2010/view/clarification.py:82
+#: exmo/exmo2010/view/claim.py:51 exmo/exmo2010/view/claim.py:125
+#: exmo/exmo2010/view/clarification.py:83
 #, python-format
 msgid "Add new claim for %s"
 msgstr "Добавить претензию для %s"
 
-#: exmo/exmo2010/view/claim.py:156
+#: exmo/exmo2010/view/claim.py:157
 #, python-format
 msgid "Claims report for \"%(monitoring)s\""
 msgstr "Претензии по циклу мониторинга \"%(monitoring)s\""
 
-#: exmo/exmo2010/view/clarification.py:99
+#: exmo/exmo2010/view/clarification.py:100
 #, python-format
 msgid "Clarifications report for \"%(monitoring)s\""
 msgstr "Уточнения по циклу мониторинга \"%(monitoring)s\""
 
-#: exmo/exmo2010/view/monitoring.py:66
+#: exmo/exmo2010/view/monitoring.py:68
 msgid "Forbidden to modify already published monitorings."
 msgstr ""
 "Невозможно изменить выборку согласованных параметров в опубликованном цикле "
 "мониторинга."
 
-#: exmo/exmo2010/view/monitoring.py:71
+#: exmo/exmo2010/view/monitoring.py:73
 msgid "Changes have saved."
 msgstr "Изменения сохранены."
 
-#: exmo/exmo2010/view/monitoring.py:140
+#: exmo/exmo2010/view/monitoring.py:142
 #, python-format
 msgid "Delete monitoring %s"
 msgstr "Удалить цикл мониторинга %s"
 
-#: exmo/exmo2010/view/monitoring.py:154 exmo/exmo2010/view/monitoring.py:1051
+#: exmo/exmo2010/view/monitoring.py:156 exmo/exmo2010/view/monitoring.py:964
 #, python-format
 msgid "Edit monitoring %s"
 msgstr "Редактировать цикл мониторинга %s"
 
-#: exmo/exmo2010/view/monitoring.py:190
-#: exmo/templates/exmo2010/monitoring_list.html:50
-#: exmo/templates/user_dashboard/modules/monitoring_list.html:31
+#: exmo/exmo2010/view/monitoring.py:192
+#: exmo/templates/exmo2010/monitoring_list.html:51
+#: exmo/templates/user_dashboard/modules/monitoring_list.html:32
 msgid "Add new monitoring"
 msgstr "Добавить цикл мониторинга"
 
-#: exmo/exmo2010/view/monitoring.py:265
-#: exmo/templates/exmo2010/monitoring_utility.html:53
+#: exmo/exmo2010/view/monitoring.py:267
+#: exmo/templates/exmo2010/monitoring_utility.html:54
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: exmo/exmo2010/view/monitoring.py:379
+#: exmo/exmo2010/view/monitoring.py:381
 #, python-format
 msgid "Experts of monitoring %(name)s"
 msgstr "Эксперты мониторинга %(name)s"
 
-#: exmo/exmo2010/view/monitoring.py:408
+#: exmo/exmo2010/view/monitoring.py:410
 msgid "Expert"
 msgstr "Эксперт"
 
-#: exmo/exmo2010/view/monitoring.py:409
+#: exmo/exmo2010/view/monitoring.py:411
 msgid "Open tasks"
 msgstr "Открые задачи"
 
-#: exmo/exmo2010/view/monitoring.py:410
+#: exmo/exmo2010/view/monitoring.py:412
 msgid "Ready tasks"
 msgstr "Готовые задачи"
 
-#: exmo/exmo2010/view/monitoring.py:411
+#: exmo/exmo2010/view/monitoring.py:413
 msgid "Approved tasks"
 msgstr "Одобренные задачи"
 
-#: exmo/exmo2010/view/monitoring.py:412
+#: exmo/exmo2010/view/monitoring.py:414
 msgid "All tasks"
 msgstr "Все задачи"
 
-#: exmo/exmo2010/view/monitoring.py:549
+#: exmo/exmo2010/view/monitoring.py:551
 #, python-format
 msgid "Report for %(monitoring)s by parameter and found"
 msgstr "Отчёт для %(monitoring)s по параметру и наличию"
 
-#: exmo/exmo2010/view/monitoring.py:741
+#: exmo/exmo2010/view/monitoring.py:743
 #, python-format
 msgid "Import organization from CSV for monitoring %s"
 msgstr "Импортировать органы/организации из CSV для цикла мониторинга %s"
 
-#: exmo/exmo2010/view/monitoring.py:826
+#: exmo/exmo2010/view/monitoring.py:828
 #, python-format
 msgid "Import parameter from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для цикла мониторинга %s"
 
-#: exmo/exmo2010/view/monitoring.py:864
+#: exmo/exmo2010/view/monitoring.py:861
 msgid "Start date for interact not defined."
 msgstr "Дата взаимодействия не указана"
 
-#: exmo/exmo2010/view/monitoring.py:994
+#: exmo/exmo2010/view/monitoring.py:907
 #, python-format
 msgid "Comment report for %(monitoring)s"
 msgstr "Отчёт по комментариям для %(monitoring)s"
 
-#: exmo/exmo2010/view/organization.py:33
+#: exmo/exmo2010/view/organization.py:34
 #, python-format
 msgid "Organizations for monitoring %(name)s"
 msgstr "Органы/организации цикла мониторинга %(name)s"
 
-#: exmo/exmo2010/view/organization.py:42
+#: exmo/exmo2010/view/organization.py:43
 msgid "tasks"
 msgstr "задачи"
 
-#: exmo/exmo2010/view/organization.py:77
+#: exmo/exmo2010/view/organization.py:78
 #, python-format
 msgid "Add new organization for %s"
 msgstr "Добавить новый орган/организацию для %s"
 
-#: exmo/exmo2010/view/organization.py:83
+#: exmo/exmo2010/view/organization.py:84
 #, python-format
 msgid "Delete organization %s"
 msgstr "Удалить орган/организацию %s"
 
-#: exmo/exmo2010/view/organization.py:97
+#: exmo/exmo2010/view/organization.py:98
 #, python-format
 msgid "Edit organization %s"
 msgstr "Редактировать орган/организацию %s"
 
-#: exmo/exmo2010/view/parameter.py:41
+#: exmo/exmo2010/view/parameter.py:42
 #, python-format
 msgid "Delete parameter %s"
 msgstr "Удалить параметр %s"
 
-#: exmo/exmo2010/view/parameter.py:62
+#: exmo/exmo2010/view/parameter.py:63
 #, python-format
 msgid "Edit parameter %s"
 msgstr "Редактировать параметр %s"
 
-#: exmo/exmo2010/view/parameter.py:82
+#: exmo/exmo2010/view/parameter.py:83
 #, python-format
 msgid "Add parameter for %s"
 msgstr "Добавить параметр для %s"
 
-#: exmo/exmo2010/view/reports.py:168
-#: exmo/templates/user_dashboard/modules/quicklinks.html:28
+#: exmo/exmo2010/view/reports.py:164
+#: exmo/templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
 
-#: exmo/exmo2010/view/score.py:91
+#: exmo/exmo2010/view/score.py:92
 #, python-format
 msgid "Delete score %s"
 msgstr "Удалить оценку %s"
 
-#: exmo/exmo2010/view/score.py:118
+#: exmo/exmo2010/view/score.py:119
 #, python-format
 msgid "Edit score %s"
 msgstr "Редактировать оценку %s"
 
-#: exmo/exmo2010/view/score.py:133
+#: exmo/exmo2010/view/score.py:134
 msgid "Have active claim, but no data changed"
 msgstr "Нет изменённых данных при существующей претензии"
 
-#: exmo/exmo2010/view/score.py:153
+#: exmo/exmo2010/view/score.py:154
 #, python-format
 msgid "Score for parameter \"%s\""
 msgstr "Оценка параметра \"%s\""
 
-#: exmo/exmo2010/view/score.py:207
+#: exmo/exmo2010/view/score.py:208
 #, python-format
 msgid "Score list for %s"
 msgstr "Оценки для %s"
 
-#: exmo/exmo2010/view/score.py:214 exmo/templates/exmo2010/task_report.html:39
+#: exmo/exmo2010/view/score.py:215 exmo/templates/exmo2010/task_report.html:40
 msgid "Code"
 msgstr "Код"
 
-#: exmo/exmo2010/view/score.py:220 exmo/templates/exmo2010/task_report.html:47
+#: exmo/exmo2010/view/score.py:221 exmo/templates/exmo2010/task_report.html:48
 msgid "HTML"
 msgstr "Html доступность"
 
-#: exmo/exmo2010/view/score.py:223 exmo/templates/exmo2010/task_report.html:42
+#: exmo/exmo2010/view/score.py:224 exmo/templates/exmo2010/task_report.html:43
 msgid "Weight"
 msgstr "Ксз"
 
-#: exmo/exmo2010/view/score.py:371
+#: exmo/exmo2010/view/score.py:372
 msgid "Add new comment"
 msgstr "Добавить комментарий"
 
-#: exmo/exmo2010/view/task.py:164
+#: exmo/exmo2010/view/task.py:165
 #, python-format
 msgid "row %d. Starts with '#'. Skipped"
 msgstr "строка %d. Начинается с '#'. Пропуск"
 
-#: exmo/exmo2010/view/task.py:169
+#: exmo/exmo2010/view/task.py:170
 #, python-format
 msgid "row %(row)d (csv). Not a code: %(raw)s"
 msgstr "строка %(row)d (csv). Не код: %(raw)s"
 
-#: exmo/exmo2010/view/task.py:187
+#: exmo/exmo2010/view/task.py:188
 #, python-format
 msgid "row %(row)d (csv). Empty score: %(raw)s"
 msgstr "строка %(row)d (csv). Пустая оценка: %(raw)s"
 
-#: exmo/exmo2010/view/task.py:213
+#: exmo/exmo2010/view/task.py:214
 #, python-format
 msgid "row %(row)d (validation). %(raw)s"
 msgstr "строка %(row)d (валидация). %(raw)s"
 
-#: exmo/exmo2010/view/task.py:217 exmo/exmo2010/view/task.py:221
+#: exmo/exmo2010/view/task.py:218 exmo/exmo2010/view/task.py:222
 #, python-format
 msgid "row %(row)d. %(raw)s"
 msgstr "строка %(row)d. %(raw)s"
 
-#: exmo/exmo2010/view/task.py:219
+#: exmo/exmo2010/view/task.py:220
 msgid "Parameter matching query does not exist"
 msgstr "Параметр не найден"
 
-#: exmo/exmo2010/view/task.py:227
+#: exmo/exmo2010/view/task.py:228
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "строка %(row)d (csv). %(raw)s"
 
-#: exmo/exmo2010/view/task.py:228
+#: exmo/exmo2010/view/task.py:229
 #, python-format
 msgid "Import CSV for task %s"
 msgstr "Импортировать CSV для задачи %s"
 
-#: exmo/exmo2010/view/task.py:262
+#: exmo/exmo2010/view/task.py:263
 #, python-format
 msgid "Task list for %(org)s"
 msgstr "Задачи для %(org)s"
 
-#: exmo/exmo2010/view/task.py:268 exmo/exmo2010/view/task.py:473
+#: exmo/exmo2010/view/task.py:269 exmo/exmo2010/view/task.py:475
 msgid "expert"
 msgstr "эксперт"
 
-#: exmo/exmo2010/view/task.py:270 exmo/exmo2010/view/task.py:278
-#: exmo/exmo2010/view/task.py:286 exmo/exmo2010/view/task.py:475
-#: exmo/exmo2010/view/task.py:482
+#: exmo/exmo2010/view/task.py:271 exmo/exmo2010/view/task.py:279
+#: exmo/exmo2010/view/task.py:477 exmo/exmo2010/view/task.py:484
 msgid "complete, %"
 msgstr "выполнено, %"
 
-#: exmo/exmo2010/view/task.py:271 exmo/exmo2010/view/task.py:279
+#: exmo/exmo2010/view/task.py:272 exmo/exmo2010/view/task.py:280
 #: exmo/exmo2010/view/task.py:287
 msgid "openness, %"
 msgstr "кид, %"
@@ -1322,78 +1350,78 @@ msgstr "Задача  обновлена"
 msgid "Task list for %(monitoring)s"
 msgstr "Задачи для %(monitoring)s"
 
-#: exmo/exmo2010/view/task.py:541
+#: exmo/exmo2010/view/task.py:543
 msgid "Mass assign tasks"
 msgstr "Массовое назначение задач"
 
-#: exmo/exmo2010/view/user.py:100
+#: exmo/exmo2010/view/user.py:108
 msgid "You are associated with"
 msgstr "Сейчас вы привязаны к организации"
 
-#: exmo/exmo2010/view/user.py:105
+#: exmo/exmo2010/view/user.py:113
 msgid "Submitted invitation code does not exist"
 msgstr "Код приглашения, который вы ввели, не существует"
 
-#: exmo/exmo2010/view/user.py:115
+#: exmo/exmo2010/view/user.py:123
 msgid "Password changed"
 msgstr "Пароль изменен на новый"
 
-#: exmo/exmo2010/view/user.py:156
+#: exmo/exmo2010/view/user.py:166
 msgid "E-mail notification settings saved"
 msgstr "Параметры рассылки уведомлений сохранены"
 
-#: exmo/exmo2010/view/user.py:238
+#: exmo/exmo2010/view/user.py:251
 msgid "Dashboard preferences was reset."
 msgstr "Настройки главной страницы были сброшены."
 
-#: exmo/templates/403.html:23
+#: exmo/templates/403.html:24
 msgid "Permission denied"
 msgstr "Доступ запрещён"
 
-#: exmo/templates/403.html:25 exmo/templates/403.html.py:29
+#: exmo/templates/403.html:26 exmo/templates/403.html.py:30
 msgid "Forbidden."
 msgstr "Запрещено."
 
-#: exmo/templates/403.html:31
+#: exmo/templates/403.html:32
 msgid "We're sorry, you haven't permission for viewing this page."
 msgstr "Извините, но у Вас нет прав доступа для просмотра данной страницы"
 
-#: exmo/templates/403.html:34 exmo/templates/404.html:35
+#: exmo/templates/403.html:35 exmo/templates/404.html:36
 msgid "Go back or go <a href='/'>Dashboard</a>."
 msgstr "Вернитесь назад или перейдите на <a href='/'>Главную</a>."
 
-#: exmo/templates/404.html:23 exmo/templates/404.html.py:25
-#: exmo/templates/404.html:29
+#: exmo/templates/404.html:24 exmo/templates/404.html.py:26
+#: exmo/templates/404.html:30
 msgid "Page not found"
 msgstr "Страница не найдена"
 
-#: exmo/templates/404.html:31
+#: exmo/templates/404.html:32
 msgid "We're sorry, but the requested page could not be found."
 msgstr ""
 "Приносим свои извинения, но страница которую вы запросили не существует."
 
-#: exmo/templates/500.html:23
+#: exmo/templates/500.html:24
 msgid "Server error (500)"
 msgstr "Ошибка сервера (500)"
 
-#: exmo/templates/500.html:26
+#: exmo/templates/500.html:27
 msgid "Server Error <em>(500)</em>"
 msgstr "Ошибка сервера <em>(500)</em>"
 
-#: exmo/templates/500.html:27
+#: exmo/templates/500.html:28
 msgid ""
-"There's been an error. It's been reported to the site administrators via "
-"e-mail and should be fixed shortly. Thanks for your patience."
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
 "На сервере произошла ошибка. О ней было сообщено администратору по "
 "электронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за "
 "понимание."
 
-#: exmo/templates/cookies.html:23 exmo/templates/cookies.html.py:27
+#: exmo/templates/cookies.html:24 exmo/templates/cookies.html.py:28
 msgid "Error: cookies disabled in your browser!"
 msgstr "Ошибка: в вашем браузере отключены cookies!"
 
-#: exmo/templates/cookies.html:29
+#: exmo/templates/cookies.html:30
 msgid ""
 "Our site requires enabled cookies and JavaScript. Please enable them in your "
 "browser settings."
@@ -1401,210 +1429,203 @@ msgstr ""
 "Для правильной работы сайта необходимо разрешить хранение cookies в "
 "настройках вашего браузера."
 
-#: exmo/templates/msg.html:23
-#: exmo/templates/exmo2010/add_questionnaire.html:33
-#: exmo/templates/exmo2010/expert_list.html:23
-#: exmo/templates/exmo2010/mass_assign_tasks.html:23
-#: exmo/templates/exmo2010/monitoring_comment_report.html:50
-#: exmo/templates/exmo2010/monitoring_confirm_delete.html:23
-#: exmo/templates/exmo2010/monitoring_form.html:88
-#: exmo/templates/exmo2010/monitoring_import_log.html:24
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:90
-#: exmo/templates/exmo2010/organization_confirm_delete.html:23
-#: exmo/templates/exmo2010/organization_form.html:30
-#: exmo/templates/exmo2010/organization_list.html:27
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:25
-#: exmo/templates/exmo2010/parameter_form.html:33
-#: exmo/templates/exmo2010/rating.html:28
+#: exmo/templates/msg.html:24
+#: exmo/templates/exmo2010/add_questionnaire.html:34
+#: exmo/templates/exmo2010/expert_list.html:24
+#: exmo/templates/exmo2010/mass_assign_tasks.html:24
+#: exmo/templates/exmo2010/monitoring_comment_report.html:51
+#: exmo/templates/exmo2010/monitoring_confirm_delete.html:24
+#: exmo/templates/exmo2010/monitoring_form.html:89
+#: exmo/templates/exmo2010/monitoring_import_log.html:25
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:91
+#: exmo/templates/exmo2010/organization_confirm_delete.html:24
+#: exmo/templates/exmo2010/organization_form.html:31
+#: exmo/templates/exmo2010/organization_list.html:28
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:26
+#: exmo/templates/exmo2010/parameter_form.html:34
+#: exmo/templates/exmo2010/rating.html:29
 #: exmo/templates/exmo2010/rating_multiple.html:24
-#: exmo/templates/exmo2010/rating_report.html:27
-#: exmo/templates/exmo2010/score_comment_form.html:24
-#: exmo/templates/exmo2010/score_confirm_delete.html:23
-#: exmo/templates/exmo2010/score_list.html:49
-#: exmo/templates/exmo2010/set_npa_params.html:24
-#: exmo/templates/exmo2010/task_confirm_delete.html:23
-#: exmo/templates/exmo2010/task_form.html:24
-#: exmo/templates/exmo2010/task_import_log.html:24
-#: exmo/templates/exmo2010/task_list.html:56
-#: exmo/templates/exmo2010/reports/claim_report.html:44
-#: exmo/templates/exmo2010/reports/clarification_report.html:44
-#: exmo/templates/exmo2010/score/claim_form.html:27
-#: exmo/templates/exmo2010/score/clarification_form.html:27
-#: exmo/templates/exmo2010/score/detail.html:42
-#: exmo/templates/exmo2010/score/form.html:52
+#: exmo/templates/exmo2010/rating_report.html:28
+#: exmo/templates/exmo2010/score_comment_form.html:25
+#: exmo/templates/exmo2010/score_confirm_delete.html:24
+#: exmo/templates/exmo2010/score_list.html:50
+#: exmo/templates/exmo2010/set_npa_params.html:40
+#: exmo/templates/exmo2010/task_confirm_delete.html:24
+#: exmo/templates/exmo2010/task_form.html:25
+#: exmo/templates/exmo2010/task_import_log.html:25
+#: exmo/templates/exmo2010/task_list.html:57
+#: exmo/templates/exmo2010/reports/claim_report.html:45
+#: exmo/templates/exmo2010/reports/clarification_report.html:45
+#: exmo/templates/exmo2010/score/claim_form.html:28
+#: exmo/templates/exmo2010/score/clarification_form.html:28
+#: exmo/templates/exmo2010/score/detail.html:43
+#: exmo/templates/exmo2010/score/form.html:53
 msgid "Home"
 msgstr "Домой"
 
-#: exmo/templates/digest_email/digest.html:21
+#: exmo/templates/digest_email/digest.html:22
 msgid "Hello"
 msgstr "Здравствуйте"
 
-#: exmo/templates/digest_email/digest.html:22
+#: exmo/templates/digest_email/digest.html:23
 msgid "Digest from"
 msgstr "Дайджест с"
 
-#: exmo/templates/digest_email/digest.html:22
+#: exmo/templates/digest_email/digest.html:23
 msgid "till"
 msgstr "по"
 
-#: exmo/templates/digest_email/notify_comment.html:24
-#: exmo/templates/exmo2010/emails/score_claim.html:28
-#: exmo/templates/exmo2010/emails/score_claim.txt:24
-#: exmo/templates/exmo2010/emails/score_clarification.html:26
-#: exmo/templates/exmo2010/emails/score_clarification.txt:24
-#: exmo/templates/exmo2010/emails/score_comment.html:26
-#: exmo/templates/exmo2010/emails/score_comment.txt:22
+#: exmo/templates/digest_email/notify_comment.html:25
+#: exmo/templates/exmo2010/emails/score_claim.html:29
+#: exmo/templates/exmo2010/emails/score_clarification.html:27
 msgid "Date"
 msgstr "Дата"
 
-#: exmo/templates/digest_email/notify_comment.html:25
-#: exmo/templates/exmo2010/emails/score_comment.html:27
-#: exmo/templates/exmo2010/emails/score_comment.txt:23
+#: exmo/templates/digest_email/notify_comment.html:26
 msgid "User"
 msgstr "Пользователь"
 
-#: exmo/templates/digest_email/notify_comment.html:26
-#: exmo/templates/exmo2010/emails/score_comment.html:28
-#: exmo/templates/exmo2010/emails/score_comment.txt:24
+#: exmo/templates/digest_email/notify_comment.html:27
 msgid "Comment"
 msgstr "Комментарий"
 
-#: exmo/templates/exmo2010/add_questionnaire.html:36
-#: exmo/templates/exmo2010/add_questionnaire.html:42
+#: exmo/templates/exmo2010/add_questionnaire.html:37
+#: exmo/templates/exmo2010/add_questionnaire.html:43
 msgid "Create questionnaire"
 msgstr "Конструктор опросника анкеты"
 
-#: exmo/templates/exmo2010/add_questionnaire.html:51
+#: exmo/templates/exmo2010/add_questionnaire.html:52
 msgid "Add question"
 msgstr "Добавить вопрос"
 
-#: exmo/templates/exmo2010/add_questionnaire.html:55
+#: exmo/templates/exmo2010/add_questionnaire.html:56
 msgid "Save questionnaire"
 msgstr "Сохранить анкету"
 
-#: exmo/templates/exmo2010/base.html:25
-#: exmo/templates/exmo2010/base_site.html:31
-#: exmo/templates/registration/activation_complete.html:38
-#: exmo/templates/registration/password_change_done.html:38
-#: exmo/templates/registration/password_change_form.html:38
-#: exmo/templates/registration/password_reset_complete.html:38
+#: exmo/templates/exmo2010/base.html:26
+#: exmo/templates/exmo2010/base_site.html:32
+#: exmo/templates/registration/activation_complete.html:39
+#: exmo/templates/registration/password_change_done.html:39
+#: exmo/templates/registration/password_change_form.html:39
+#: exmo/templates/registration/password_reset_complete.html:39
 msgid "Exmo"
 msgstr "АИС EXMO"
 
-#: exmo/templates/exmo2010/base.html:50
-#: exmo/templates/exmo2010/base_site.html:34
+#: exmo/templates/exmo2010/base.html:51
+#: exmo/templates/exmo2010/base_site.html:35
 msgid "EXMO — expert monitoring system"
 msgstr "EXMO — система экспертного мониторинга"
 
-#: exmo/templates/exmo2010/base.html:50
-#: exmo/templates/exmo2010/base_site.html:34
+#: exmo/templates/exmo2010/base.html:51
+#: exmo/templates/exmo2010/base_site.html:35
 msgid "Admin"
 msgstr "Администрирование"
 
-#: exmo/templates/exmo2010/csv_import_log.html:21
+#: exmo/templates/exmo2010/csv_import_log.html:22
 msgid "Rows ok/all"
 msgstr "Строк успешно/обработано"
 
-#: exmo/templates/exmo2010/csv_import_log.html:23
+#: exmo/templates/exmo2010/csv_import_log.html:24
 msgid "Errors encountered"
 msgstr "Ошибки"
 
-#: exmo/templates/exmo2010/mass_assign_tasks.html:33
+#: exmo/templates/exmo2010/mass_assign_tasks.html:34
 msgid "Process log:"
 msgstr "Журнал обработки:"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:66
-#: exmo/templates/exmo2010/score_list.html:242
-#: exmo/templates/exmo2010/set_npa_params.html:43
-#: exmo/templates/exmo2010/user_settings.html:75
-#: exmo/templates/exmo2010/user_settings.html:214
-#: exmo/templates/exmo2010/score/form.html:257
+#: exmo/templates/exmo2010/monitoring_comment_report.html:67
+#: exmo/templates/exmo2010/score_list.html:250
+#: exmo/templates/exmo2010/set_npa_params.html:59
+#: exmo/templates/exmo2010/user_settings.html:76
+#: exmo/templates/exmo2010/user_settings.html:221
+#: exmo/templates/exmo2010/score/form.html:262
 msgid "Save"
 msgstr "Сохранить"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:72
+#: exmo/templates/exmo2010/monitoring_comment_report.html:73
 msgid "Report from"
 msgstr "Отчёт с"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:75
-#: exmo/templates/exmo2010/rating_color.html:50
-#: exmo/templates/exmo2010/rating_content.html:159
+#: exmo/templates/exmo2010/monitoring_comment_report.html:76
+#: exmo/templates/exmo2010/rating_color.html:51
+#: exmo/templates/exmo2010/rating_content.html:160
 msgid "Total organizations"
 msgstr "Всего органов/организаций"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:76
+#: exmo/templates/exmo2010/monitoring_comment_report.html:77
 msgid "Registered organizations"
 msgstr "Зарегистрированные органы/организации"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:77
+#: exmo/templates/exmo2010/monitoring_comment_report.html:78
 msgid "Organizations with comments from organization"
 msgstr "Органы/организации с комментариями от представителей"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:78
+#: exmo/templates/exmo2010/monitoring_comment_report.html:79
 msgid "Comments count from organizations"
 msgstr "Кол-во комментариев от органа/организации"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:79
+#: exmo/templates/exmo2010/monitoring_comment_report.html:80
 msgid "Comments count from organizations with reply date in limit"
 msgstr "Кол-во комментариев от организаций с ответами в срок"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:80
+#: exmo/templates/exmo2010/monitoring_comment_report.html:81
 msgid "Comments count from organizations with reply date out of limit"
 msgstr "Кол-во комментариев от организаций с ответами не в срок"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:81
+#: exmo/templates/exmo2010/monitoring_comment_report.html:82
 msgid "Comments count from organizations without reply and date in limit"
 msgstr "Кол-во комментариев от организаций без ответов"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:82
+#: exmo/templates/exmo2010/monitoring_comment_report.html:83
 msgid ""
 "Comments count from organizations without reply and should be answered today"
 msgstr ""
 "Кол-во комментариев от организаций на которые необходимо ответить сегодня"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:83
+#: exmo/templates/exmo2010/monitoring_comment_report.html:84
 msgid "Comments count from organizations without reply and date out of limit"
 msgstr "Кол-во комментариев от организаций без ответов в срок"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:87
+#: exmo/templates/exmo2010/monitoring_comment_report.html:88
 msgid "Statistics by organization"
 msgstr "Статистика по органу/организации"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:101
+#: exmo/templates/exmo2010/monitoring_comment_report.html:102
 msgid "Statistics by iifd employers"
 msgstr "Статистика по пользователям ИРСИ"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:117
+#: exmo/templates/exmo2010/monitoring_comment_report.html:118
 msgid "Comments list from organizations without reply and date out of limit"
 msgstr "Комментарии от организаций без ответов в срок"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:129
+#: exmo/templates/exmo2010/monitoring_comment_report.html:130
 msgid ""
-"Comments list from organization that needs to reply today (exclude list above)"
+"Comments list from organization that needs to reply today (exclude list "
+"above)"
 msgstr ""
 "Комментарии от организаций на которые необходимо ответить сегодня (за "
 "исключением списка выше)"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:141
+#: exmo/templates/exmo2010/monitoring_comment_report.html:142
 msgid ""
 "Comments list from organization that needs to reply (exclude list above)"
 msgstr ""
 "Комментарии от организаций на которые необходимо ответить (за исключением "
 "списка выше)"
 
-#: exmo/templates/exmo2010/monitoring_comment_report.html:154
+#: exmo/templates/exmo2010/monitoring_comment_report.html:155
 msgid "Haven't comments from organizations"
 msgstr "Нет комментариев от органов/организаций"
 
-#: exmo/templates/exmo2010/monitoring_confirm_delete.html:30
+#: exmo/templates/exmo2010/monitoring_confirm_delete.html:31
 msgid "When you delete monitoring you also delete this tasks:"
 msgstr "При удалении цикла мониторинга Вы так же удалите следующие задачи:"
 
-#: exmo/templates/exmo2010/monitoring_confirm_delete.html:36
+#: exmo/templates/exmo2010/monitoring_confirm_delete.html:37
 msgid "Delete this monitoring?"
 msgstr "Удалить цикл мониторинга?"
 
-#: exmo/templates/exmo2010/monitoring_form.html:52
+#: exmo/templates/exmo2010/monitoring_form.html:53
 msgid ""
 "You've chosen to delete monitoring's questionnaire. This will lead to "
 "removing all its questions and collected answers. Are you sure?"
@@ -1612,226 +1633,234 @@ msgstr ""
 "Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты "
 "и собранных данных. Желаете ли вы удалить анкету?"
 
-#: exmo/templates/exmo2010/monitoring_form.html:97
+#: exmo/templates/exmo2010/monitoring_form.html:98
 msgid "Export organizations"
 msgstr "Экспортировать органы/организации"
 
-#: exmo/templates/exmo2010/monitoring_form.html:98
+#: exmo/templates/exmo2010/monitoring_form.html:99
 msgid "Import organizations from CSV"
 msgstr "Импортировать органы/организации из CSV"
 
-#: exmo/templates/exmo2010/monitoring_form.html:98
-#: exmo/templates/exmo2010/monitoring_form.html:102
-#: exmo/templates/exmo2010/score_list.html:87
+#: exmo/templates/exmo2010/monitoring_form.html:99
+#: exmo/templates/exmo2010/monitoring_form.html:103
+#: exmo/templates/exmo2010/score_list.html:88
 msgid "Import"
 msgstr "Импорт"
 
-#: exmo/templates/exmo2010/monitoring_form.html:101
+#: exmo/templates/exmo2010/monitoring_form.html:102
 msgid "Export parameters"
 msgstr "Экспортировать параметры"
 
-#: exmo/templates/exmo2010/monitoring_form.html:102
+#: exmo/templates/exmo2010/monitoring_form.html:103
 msgid "Import parameters from CSV"
 msgstr "Импортировать параметры из CSV"
 
-#: exmo/templates/exmo2010/monitoring_form.html:106
-#: exmo/templates/exmo2010/monitoring_form.html:108
+#: exmo/templates/exmo2010/monitoring_form.html:107
+#: exmo/templates/exmo2010/monitoring_form.html:109
 msgid "Edit questionnaire"
 msgstr "Редактировать анкету"
 
-#: exmo/templates/exmo2010/monitoring_form.html:112
+#: exmo/templates/exmo2010/monitoring_form.html:113
 msgid ""
-"Questionnaire is already created. To delete it turn off \"Add questionnaire\" "
-"checkbox and save changes"
+"Questionnaire is already created. To delete it turn off \"Add questionnaire"
+"\" checkbox and save changes"
 msgstr ""
 "Анкета уже создана. Для её удаления снимите галочку напротив \"Добавить "
 "анкету в цикл\", и сохраните изменения"
 
-#: exmo/templates/exmo2010/monitoring_import_log.html:22
-#: exmo/templates/exmo2010/task_import_log.html:22
+#: exmo/templates/exmo2010/monitoring_import_log.html:23
+#: exmo/templates/exmo2010/task_import_log.html:23
 msgid "Import results"
 msgstr "Результаты импорта"
 
-#: exmo/templates/exmo2010/monitoring_import_log.html:26
+#: exmo/templates/exmo2010/monitoring_import_log.html:27
 msgid "Edit monitoring"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_import_log.html:34
+#: exmo/templates/exmo2010/monitoring_import_log.html:35
 msgid "Back to the monitoring"
 msgstr "Вернуться в цикл мониторинга "
 
-#: exmo/templates/exmo2010/monitoring_list.html:30
+#: exmo/templates/exmo2010/monitoring_list.html:31
 msgid "Active tasks"
 msgstr "Текущие задачи"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:92
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:102
-#: exmo/templates/exmo2010/monitoring_utility.html:26
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:93
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:103
+#: exmo/templates/exmo2010/monitoring_utility.html:27
 msgid "Parameter-criteria filter"
 msgstr "Фильтрация по параметру и критерию"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:119
-#: exmo/templates/exmo2010/score/detail.html:60
-#: exmo/templates/exmo2010/score/form.html:88
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:120
+#: exmo/templates/exmo2010/score/detail.html:61
+#: exmo/templates/exmo2010/score/form.html:90
 msgid "Criteria"
 msgstr "Критерий оценки"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:122
-#: exmo/templates/exmo2010/score/detail.html:61
-#: exmo/templates/exmo2010/score/form.html:91
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:123
+#: exmo/templates/exmo2010/score/detail.html:62
+#: exmo/templates/exmo2010/score/form.html:93
 msgid "Value"
 msgstr "Значение"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:152
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:153
 msgid "Task status"
 msgstr "Статус задачи"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:178
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:179
 msgid "Filter"
 msgstr "Отфильтровать"
 
-#: exmo/templates/exmo2010/monitoring_parameter_filter.html:187
+#: exmo/templates/exmo2010/monitoring_parameter_filter.html:188
 msgid "Task"
 msgstr "Задача"
 
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:25
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:38
-#: exmo/templates/exmo2010/monitoring_utility.html:56
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:26
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:39
+#: exmo/templates/exmo2010/monitoring_utility.html:57
 msgid "Parameter found report"
 msgstr "Отчёт по наличию параметра"
 
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:25
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:38
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:26
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:39
 msgid " of "
 msgstr " для "
 
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:45
-#: exmo/templates/exmo2010/monitoring_utility.html:23
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:46
+#: exmo/templates/exmo2010/monitoring_utility.html:24
 msgid "Organizations"
 msgstr "Органы/организации"
 
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:46
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:47
 msgid "Organizations with 'found=1'"
 msgstr "Органы/организации с найденным параметром"
 
-#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:60
+#: exmo/templates/exmo2010/monitoring_parameter_found_report.html:61
 msgid "Total"
 msgstr "Всего"
 
-#: exmo/templates/exmo2010/monitoring_report.html:43
-#: exmo/templates/exmo2010/monitoring_report.html:62
+#: exmo/templates/exmo2010/monitoring_report.html:44
+#: exmo/templates/exmo2010/monitoring_report.html:67
 msgid "In progress"
 msgstr "Текущие циклы мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_report.html:44
-#: exmo/templates/exmo2010/monitoring_report.html:62
+#: exmo/templates/exmo2010/monitoring_report.html:45
+#: exmo/templates/exmo2010/monitoring_report.html:67
 msgid "Finished"
 msgstr "Завершенные циклы мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_report.html:46
-#: exmo/templates/exmo2010/rating_content.html:31
+#: exmo/templates/exmo2010/monitoring_report.html:49
+#: exmo/templates/exmo2010/rating_content.html:32
 msgid "Select monitoring"
 msgstr "Выберите цикл мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_report.html:51
+#: exmo/templates/exmo2010/monitoring_report.html:54
 msgid "All finished monitorings"
 msgstr "Все завершенные циклы мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_report.html:79
+#: exmo/templates/exmo2010/monitoring_report.html:87
 msgid "Monitoring status"
 msgstr "Этап цикла мониторинга"
 
-#: exmo/templates/exmo2010/monitoring_report.html:109
+#: exmo/templates/exmo2010/monitoring_report.html:117
 msgid "Organization in monitoring"
 msgstr "Всего сайтов в цикле мониторинга "
 
-#: exmo/templates/exmo2010/monitoring_report.html:114
+#: exmo/templates/exmo2010/monitoring_report.html:122
 msgid "Rated organization"
 msgstr "Закончена оценка сайтов"
 
-#: exmo/templates/exmo2010/monitoring_report.html:119
+#: exmo/templates/exmo2010/monitoring_report.html:127
 msgid "Organization registered"
 msgstr "Зарегистрированных представителей организаций"
 
-#: exmo/templates/exmo2010/monitoring_report.html:125
+#: exmo/templates/exmo2010/monitoring_report.html:133
 msgid "Organization active"
 msgstr "Активных представителей организаций"
 
-#: exmo/templates/exmo2010/monitoring_report.html:132
+#: exmo/templates/exmo2010/monitoring_report.html:140
 msgid "Expert active"
 msgstr "Задействовано аналитиков"
 
-#: exmo/templates/exmo2010/monitoring_report.html:139
+#: exmo/templates/exmo2010/monitoring_report.html:147
 msgid "Organization comments"
 msgstr "Комментариев от представителей организаций"
 
-#: exmo/templates/exmo2010/monitoring_report.html:143
+#: exmo/templates/exmo2010/monitoring_report.html:151
 msgid "Expert comments"
 msgstr "Комментариев от аналитиков"
 
-#: exmo/templates/exmo2010/monitoring_report.html:148
+#: exmo/templates/exmo2010/monitoring_report.html:156
 msgid "Average openness first"
 msgstr "Среднее значение первичного Кид"
 
-#: exmo/templates/exmo2010/monitoring_report.html:155
+#: exmo/templates/exmo2010/monitoring_report.html:163
 msgid "Average openness"
 msgstr "Среднее значение актуального Кид"
 
-#: exmo/templates/exmo2010/monitoring_report.html:157
+#: exmo/templates/exmo2010/monitoring_report.html:165
 msgid "Average final openness"
 msgstr "Среднее значение итогового Кид"
 
-#: exmo/templates/exmo2010/monitoring_stats.html:22
+#: exmo/templates/exmo2010/monitoring_report.html:188
+msgid "There're no currently inprogress monitorings."
+msgstr "В настоящее время нет текущих циклов мониторинга."
+
+#: exmo/templates/exmo2010/monitoring_report.html:192
+msgid "There's no any finished monitoring."
+msgstr "Нет ни одного завершенного цикла мониторинга."
+
+#: exmo/templates/exmo2010/monitoring_stats.html:23
 msgid "Organizations count"
 msgstr "Всего органов/организаций"
 
-#: exmo/templates/exmo2010/monitoring_stats.html:23
+#: exmo/templates/exmo2010/monitoring_stats.html:24
 msgid "Organizations with task"
 msgstr "Органы/организации назначенные экспертам"
 
-#: exmo/templates/exmo2010/monitoring_stats.html:24
+#: exmo/templates/exmo2010/monitoring_stats.html:25
 msgid "Organizations with ready task"
 msgstr "Органы/организации с готовыми задачами"
 
-#: exmo/templates/exmo2010/monitoring_stats.html:25
+#: exmo/templates/exmo2010/monitoring_stats.html:26
 msgid "Organizations with approved task"
 msgstr "Органы/организации с одобренными задачами"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:24
+#: exmo/templates/exmo2010/monitoring_utility.html:25
 msgid "Tasks"
 msgstr "Задачи "
 
-#: exmo/templates/exmo2010/monitoring_utility.html:36
+#: exmo/templates/exmo2010/monitoring_utility.html:37
 msgid "Experts"
 msgstr "Эксперты"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:37
+#: exmo/templates/exmo2010/monitoring_utility.html:38
 msgid "Mass assign"
 msgstr "Массовое назначение"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:38
+#: exmo/templates/exmo2010/monitoring_utility.html:39
 msgid "Export by criteria"
 msgstr "Экспорт по критерию"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:44
+#: exmo/templates/exmo2010/monitoring_utility.html:45
 msgid "You must have approved task for export"
 msgstr "Для экспорта необходима одобренная задача"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:48
+#: exmo/templates/exmo2010/monitoring_utility.html:49
 msgid "Export answers"
 msgstr "Экспорт по анкетам"
 
-#: exmo/templates/exmo2010/monitoring_utility.html:59
-#: exmo/templates/exmo2010/set_npa_params.html:26
-#: exmo/templates/exmo2010/set_npa_params.html:35
+#: exmo/templates/exmo2010/monitoring_utility.html:60
+#: exmo/templates/exmo2010/set_npa_params.html:42
+#: exmo/templates/exmo2010/set_npa_params.html:51
 msgid "Choose coherent parameters"
 msgstr "Выбрать согласованные параметры"
 
-#: exmo/templates/exmo2010/org_user_info.html:28
+#: exmo/templates/exmo2010/org_user_info.html:29
 msgid "Registration's last step"
 msgstr "Окончание регистрации"
 
-#: exmo/templates/exmo2010/org_user_info.html:29
+#: exmo/templates/exmo2010/org_user_info.html:30
 msgid ""
 "Please enter your seat and phone. We need this info to make sure you're "
 "really its representative."
@@ -1839,119 +1868,119 @@ msgstr ""
 "Пожалуйста, укажите вашу должность и контактный телефон. Это необходимо, "
 "чтобы удостовериться, что вы являетесь представителем органа власти."
 
-#: exmo/templates/exmo2010/org_user_info.html:68
+#: exmo/templates/exmo2010/org_user_info.html:69
 msgid "Finish registration"
 msgstr "Завершить регистрацию"
 
-#: exmo/templates/exmo2010/organization_confirm_delete.html:31
+#: exmo/templates/exmo2010/organization_confirm_delete.html:32
 msgid "When you delete organization you also delete this tasks:"
 msgstr "При удалении органа/организации Вы так же удалите следующие задачи:"
 
-#: exmo/templates/exmo2010/organization_confirm_delete.html:38
+#: exmo/templates/exmo2010/organization_confirm_delete.html:39
 msgid "Delete this organization?"
 msgstr "Удалить орган/организацию?"
 
-#: exmo/templates/exmo2010/organization_list.html:44
+#: exmo/templates/exmo2010/organization_list.html:45
 msgid "Add new organization"
 msgstr "Добавить орган/организацию"
 
-#: exmo/templates/exmo2010/paginator.html:27
+#: exmo/templates/exmo2010/paginator.html:28
 msgid "Prev"
 msgstr "Пред."
 
-#: exmo/templates/exmo2010/paginator.html:48
+#: exmo/templates/exmo2010/paginator.html:49
 msgid "Next"
 msgstr "След."
 
-#: exmo/templates/exmo2010/paginator_paginator.html:28
+#: exmo/templates/exmo2010/paginator_paginator.html:29
 msgid "Page"
 msgstr "Страница"
 
-#: exmo/templates/exmo2010/paginator_paginator.html:28
+#: exmo/templates/exmo2010/paginator_paginator.html:29
 msgid "of"
 msgstr "из"
 
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:27
-#: exmo/templates/exmo2010/parameter_form.html:35
-#: exmo/templates/exmo2010/score_comment_form.html:26
-#: exmo/templates/exmo2010/score_confirm_delete.html:25
-#: exmo/templates/exmo2010/score_list.html:52
-#: exmo/templates/exmo2010/task_confirm_delete.html:25
-#: exmo/templates/exmo2010/task_form.html:27
-#: exmo/templates/exmo2010/task_import_log.html:26
-#: exmo/templates/exmo2010/task_list.html:59
-#: exmo/templates/exmo2010/score/claim_form.html:29
-#: exmo/templates/exmo2010/score/clarification_form.html:29
-#: exmo/templates/exmo2010/score/detail.html:44
-#: exmo/templates/exmo2010/score/form.html:58
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:28
+#: exmo/templates/exmo2010/parameter_form.html:36
+#: exmo/templates/exmo2010/score_comment_form.html:27
+#: exmo/templates/exmo2010/score_confirm_delete.html:26
+#: exmo/templates/exmo2010/score_list.html:53
+#: exmo/templates/exmo2010/task_confirm_delete.html:26
+#: exmo/templates/exmo2010/task_form.html:28
+#: exmo/templates/exmo2010/task_import_log.html:27
+#: exmo/templates/exmo2010/task_list.html:60
+#: exmo/templates/exmo2010/score/claim_form.html:30
+#: exmo/templates/exmo2010/score/clarification_form.html:30
+#: exmo/templates/exmo2010/score/detail.html:45
+#: exmo/templates/exmo2010/score/form.html:59
 msgid "Organizations for monitoring "
 msgstr "Органы/организации цикла мониторинга "
 
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:29
-#: exmo/templates/exmo2010/parameter_form.html:37
-#: exmo/templates/exmo2010/score_comment_form.html:28
-#: exmo/templates/exmo2010/task_import_log.html:28
-#: exmo/templates/exmo2010/score/claim_form.html:31
-#: exmo/templates/exmo2010/score/clarification_form.html:31
-#: exmo/templates/exmo2010/score/detail.html:46
-#: exmo/templates/exmo2010/score/form.html:64
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:30
+#: exmo/templates/exmo2010/parameter_form.html:38
+#: exmo/templates/exmo2010/score_comment_form.html:29
+#: exmo/templates/exmo2010/task_import_log.html:29
+#: exmo/templates/exmo2010/score/claim_form.html:32
+#: exmo/templates/exmo2010/score/clarification_form.html:32
+#: exmo/templates/exmo2010/score/detail.html:47
+#: exmo/templates/exmo2010/score/form.html:65
 msgid "Score list for"
 msgstr "Оценки для"
 
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:36
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:37
 msgid "When you delete parameter you also delete this scores:"
 msgstr "При удалении параметра Вы так же удалите следующие оценки:"
 
-#: exmo/templates/exmo2010/parameter_confirm_delete.html:42
+#: exmo/templates/exmo2010/parameter_confirm_delete.html:43
 msgid "Delete this parameter?"
 msgstr "Удалить параметр?"
 
-#: exmo/templates/exmo2010/rating_color.html:25
-#: exmo/templates/exmo2010/rating_color.html:34
+#: exmo/templates/exmo2010/rating_color.html:26
+#: exmo/templates/exmo2010/rating_color.html:35
 msgid "Rating "
 msgstr "Рейтинг "
 
-#: exmo/templates/exmo2010/rating_color.html:38
-#: exmo/templates/exmo2010/rating_common.html:23
-#: exmo/templates/exmo2010/rating_content.html:109
+#: exmo/templates/exmo2010/rating_color.html:39
+#: exmo/templates/exmo2010/rating_common.html:24
+#: exmo/templates/exmo2010/rating_content.html:110
 msgid "Position"
 msgstr "Позиция в рейтинге"
 
-#: exmo/templates/exmo2010/rating_color.html:38
-#: exmo/templates/exmo2010/rating_common.html:23
-#: exmo/templates/exmo2010/rating_content.html:110
-#: exmo/templates/exmo2010/reports/claim_list.html:44
-#: exmo/templates/exmo2010/reports/clarification_list.html:44
-#: exmo/templates/exmo2010/reports/comment_list.html:44
-#: exmo/templates/exmo2010/score/parameter_header.html:25
+#: exmo/templates/exmo2010/rating_color.html:39
+#: exmo/templates/exmo2010/rating_common.html:24
+#: exmo/templates/exmo2010/rating_content.html:111
+#: exmo/templates/exmo2010/reports/claim_list.html:62
+#: exmo/templates/exmo2010/reports/clarification_list.html:62
+#: exmo/templates/exmo2010/reports/comment_list.html:63
+#: exmo/templates/exmo2010/score/parameter_header.html:26
 msgid "Organization"
 msgstr "Организация"
 
-#: exmo/templates/exmo2010/rating_color.html:38
-#: exmo/templates/exmo2010/rating_common.html:23
-#: exmo/templates/exmo2010/rating_content.html:111
+#: exmo/templates/exmo2010/rating_color.html:39
+#: exmo/templates/exmo2010/rating_common.html:24
+#: exmo/templates/exmo2010/rating_content.html:112
 msgid "URL"
 msgstr "Веб-адрес"
 
-#: exmo/templates/exmo2010/rating_color.html:38
-#: exmo/templates/exmo2010/rating_common.html:23
-#: exmo/templates/exmo2010/task_report.html:41
+#: exmo/templates/exmo2010/rating_color.html:39
+#: exmo/templates/exmo2010/rating_common.html:24
+#: exmo/templates/exmo2010/task_report.html:42
 msgid "Openness"
 msgstr "Кид"
 
-#: exmo/templates/exmo2010/rating_color.html:49
-#: exmo/templates/exmo2010/rating_common.html:27
-#: exmo/templates/exmo2010/rating_content.html:140
+#: exmo/templates/exmo2010/rating_color.html:50
+#: exmo/templates/exmo2010/rating_common.html:28
+#: exmo/templates/exmo2010/rating_content.html:141
 msgid "Average"
 msgstr "Среднее значение"
 
-#: exmo/templates/exmo2010/rating_color.html:53
-#: exmo/templates/exmo2010/rating_common.html:30
-#: exmo/templates/exmo2010/rating_content.html:172
+#: exmo/templates/exmo2010/rating_color.html:54
+#: exmo/templates/exmo2010/rating_common.html:31
+#: exmo/templates/exmo2010/rating_content.html:173
 msgid "Empty list"
 msgstr "Список пуст"
 
-#: exmo/templates/exmo2010/rating_content.html:23
+#: exmo/templates/exmo2010/rating_content.html:24
 msgid ""
 "You can get rating with various parameters.\n"
 "1) all parameters\n"
@@ -1962,282 +1991,271 @@ msgstr ""
 "параметров; 2) параметров на основе нормативных правовых актов; 3) выбранных "
 "вами параметров."
 
-#: exmo/templates/exmo2010/rating_content.html:29
+#: exmo/templates/exmo2010/rating_content.html:30
 msgid "You can select rating type after monitoring selection"
 msgstr ""
 "Чтобы ознакомиться с рейтингом выберите цикл мониторинга. После вы сможете "
 "выбрать вид рейтинга"
 
-#: exmo/templates/exmo2010/rating_content.html:35
+#: exmo/templates/exmo2010/rating_content.html:36
 msgid "Select"
 msgstr "Выбрать"
 
-#: exmo/templates/exmo2010/rating_content.html:42
+#: exmo/templates/exmo2010/rating_content.html:43
 msgid "Rating view"
 msgstr "Вид рейтинга"
 
-#: exmo/templates/exmo2010/rating_content.html:44
-#: exmo/templates/exmo2010/rating_content.html:46
+#: exmo/templates/exmo2010/rating_content.html:45
+#: exmo/templates/exmo2010/rating_content.html:47
 msgid "all parameters"
 msgstr "все параметры"
 
-#: exmo/templates/exmo2010/rating_content.html:50
-#: exmo/templates/exmo2010/rating_content.html:52
+#: exmo/templates/exmo2010/rating_content.html:51
+#: exmo/templates/exmo2010/rating_content.html:53
 msgid "npa parameters"
 msgstr "параметры на основе НПА"
 
-#: exmo/templates/exmo2010/rating_content.html:55
-#: exmo/templates/exmo2010/rating_content.html:57
+#: exmo/templates/exmo2010/rating_content.html:56
+#: exmo/templates/exmo2010/rating_content.html:58
 msgid "other parameters"
 msgstr "дополнительные параметры"
 
-#: exmo/templates/exmo2010/rating_content.html:61
-#: exmo/templates/exmo2010/rating_content.html:63
+#: exmo/templates/exmo2010/rating_content.html:62
+#: exmo/templates/exmo2010/rating_content.html:64
 msgid "user selected"
 msgstr "пользовательский"
 
-#: exmo/templates/exmo2010/rating_content.html:69
+#: exmo/templates/exmo2010/rating_content.html:70
 msgid "Parameter list"
 msgstr "Список параметров"
 
-#: exmo/templates/exmo2010/rating_content.html:81
+#: exmo/templates/exmo2010/rating_content.html:82
 msgid "Get rating"
 msgstr "Сформировать рейтинг"
 
-#: exmo/templates/exmo2010/rating_content.html:89
-#: exmo/templates/exmo2010/rating_content.html:220
+#: exmo/templates/exmo2010/rating_content.html:90
+#: exmo/templates/exmo2010/rating_content.html:221
 msgid "Show parameter list"
 msgstr "Показать список параметров"
 
-#: exmo/templates/exmo2010/rating_content.html:95
+#: exmo/templates/exmo2010/rating_content.html:96
 msgid "generated by parameters based on normative-legal acts"
 msgstr "сформирован по параметрам на основе НПА"
 
-#: exmo/templates/exmo2010/rating_content.html:98
+#: exmo/templates/exmo2010/rating_content.html:99
 msgid "generated by other parameters"
 msgstr "сформирован по дополнительным параметрам"
 
-#: exmo/templates/exmo2010/rating_content.html:101
+#: exmo/templates/exmo2010/rating_content.html:102
 msgid "generated by parameters on user selected"
 msgstr "сформирован по выбранным параметрам"
 
-#: exmo/templates/exmo2010/rating_content.html:115
+#: exmo/templates/exmo2010/rating_content.html:116
 msgid "First openness"
 msgstr "Первичный Кид"
 
-#: exmo/templates/exmo2010/rating_content.html:118
+#: exmo/templates/exmo2010/rating_content.html:119
 msgid "Finally openness"
 msgstr "Итоговый Кид"
 
-#: exmo/templates/exmo2010/rating_content.html:120
+#: exmo/templates/exmo2010/rating_content.html:121
 msgid "Actualy openness"
 msgstr "Актуальный Кид"
 
-#: exmo/templates/exmo2010/rating_content.html:167
+#: exmo/templates/exmo2010/rating_content.html:168
 msgid "First openness &mdash; openness value before interact"
 msgstr ""
 "Первичный Кид &mdash; значение коэффициента информационной доступности до "
 "этапа взаимодействия с представителями организаций"
 
-#: exmo/templates/exmo2010/rating_content.html:214
+#: exmo/templates/exmo2010/rating_content.html:215
 msgid "Hide parameter list"
 msgstr "Скрыть список параметров"
 
-#: exmo/templates/exmo2010/score_comment_form.html:55
+#: exmo/templates/exmo2010/score_comment_form.html:56
 #: exmo/templates/exmo2010/score/comment.html:120
 msgid "Post"
 msgstr "Отправить"
 
-#: exmo/templates/exmo2010/score_confirm_delete.html:33
+#: exmo/templates/exmo2010/score_confirm_delete.html:34
 msgid "Delete this score?"
 msgstr "Удалить оценку?"
 
-#: exmo/templates/exmo2010/score_list.html:65
+#: exmo/templates/exmo2010/score_list.html:66
 msgid "Openness for all parameters"
 msgstr "Кид по всем параметрам"
 
-#: exmo/templates/exmo2010/score_list.html:66
-#: exmo/templates/exmo2010/score_list.html:70
-#: exmo/templates/exmo2010/score_list.html:72
+#: exmo/templates/exmo2010/score_list.html:67
+#: exmo/templates/exmo2010/score_list.html:71
+#: exmo/templates/exmo2010/score_list.html:73
 msgid "place"
 msgstr "место"
 
-#: exmo/templates/exmo2010/score_list.html:69
+#: exmo/templates/exmo2010/score_list.html:70
 msgid "Openness for npa parameters"
 msgstr "Кид по параметрам на основе нормативных правовых актов"
 
-#: exmo/templates/exmo2010/score_list.html:71
+#: exmo/templates/exmo2010/score_list.html:72
 msgid "Openness for other parameters"
 msgstr "Кид по дополнительным параметрам"
 
-#: exmo/templates/exmo2010/score_list.html:77
+#: exmo/templates/exmo2010/score_list.html:78
 msgid "Print"
 msgstr "Версия для печати"
 
-#: exmo/templates/exmo2010/score_list.html:78
+#: exmo/templates/exmo2010/score_list.html:79
 msgid "Print with comments"
 msgstr "Версия для печати с комментариями"
 
-#: exmo/templates/exmo2010/score_list.html:83
+#: exmo/templates/exmo2010/score_list.html:84
 msgid "Export task to CSV"
 msgstr "Экспортировать задачу в CSV"
 
-#: exmo/templates/exmo2010/score_list.html:87
+#: exmo/templates/exmo2010/score_list.html:88
 msgid "Import task from CSV"
 msgstr "Импортировать задачу из CSV"
 
-#: exmo/templates/exmo2010/score_list.html:102
+#: exmo/templates/exmo2010/score_list.html:104
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
-#: exmo/templates/exmo2010/score_list.html:107
+#: exmo/templates/exmo2010/score_list.html:110
 msgid "NPA parameters"
 msgstr "Параметры на основе нормативных правовых актов"
 
-#: exmo/templates/exmo2010/score_list.html:156
+#: exmo/templates/exmo2010/score_list.html:159
 msgid "Other parameters"
 msgstr "Дополнительные параметры"
 
-#: exmo/templates/exmo2010/set_npa_params.html:44
+#: exmo/templates/exmo2010/set_npa_params.html:60
 msgid "Reset Selection"
 msgstr "Сбросить выделение "
 
-#: exmo/templates/exmo2010/task_confirm_delete.html:32
+#: exmo/templates/exmo2010/task_confirm_delete.html:33
 msgid "When you delete task you also delete this scores:"
 msgstr "При удалении задачи Вы так же удалите следующие оценки:"
 
-#: exmo/templates/exmo2010/task_confirm_delete.html:38
+#: exmo/templates/exmo2010/task_confirm_delete.html:39
 msgid "Delete this task?"
 msgstr "Удалить задачу?"
 
-#: exmo/templates/exmo2010/task_form.html:30
+#: exmo/templates/exmo2010/task_form.html:31
 msgid "Task for monitoring "
 msgstr "Задачи цикла мониторинга "
 
-#: exmo/templates/exmo2010/task_import_log.html:36
+#: exmo/templates/exmo2010/task_import_log.html:37
 msgid "Back to the task"
 msgstr "Вернуться к задаче"
 
-#: exmo/templates/exmo2010/task_list.html:82
-#: exmo/templates/exmo2010/task_list.html:84
+#: exmo/templates/exmo2010/task_list.html:83
+#: exmo/templates/exmo2010/task_list.html:85
 msgid "Add new task"
 msgstr "Добавить задачу"
 
-#: exmo/templates/exmo2010/task_report.html:25
+#: exmo/templates/exmo2010/task_report.html:26
 msgid "Task "
 msgstr "Задача "
 
-#: exmo/templates/exmo2010/task_report.html:40
+#: exmo/templates/exmo2010/task_report.html:41
 msgid "Name"
 msgstr "Имя"
 
-#: exmo/templates/exmo2010/user_settings.html:36
+#: exmo/templates/exmo2010/user_settings.html:37
 msgid "Here you can change your account, password and notification settings."
 msgstr ""
 "На этой странице вы можете изменить настройки своего профиля, сменить пароль "
 "и настроить рассылку уведомлений."
 
-#: exmo/templates/exmo2010/user_settings.html:38
+#: exmo/templates/exmo2010/user_settings.html:39
 msgid "Personal info"
 msgstr "Личная информация"
 
-#: exmo/templates/exmo2010/user_settings.html:43
+#: exmo/templates/exmo2010/user_settings.html:44
 msgid "Personal info changed successfully"
 msgstr "Изменения личной информации сохранены"
 
-#: exmo/templates/exmo2010/user_settings.html:114
-#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:37
+#: exmo/templates/exmo2010/user_settings.html:115
+#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:38
+#: exmo/templates/registration/resend_email_form.html:62
 msgid "Send"
 msgstr "Отправить"
 
-#: exmo/templates/exmo2010/user_settings.html:124
+#: exmo/templates/exmo2010/user_settings.html:125
 msgid "Change password"
 msgstr "Сменить пароль"
 
-#: exmo/templates/exmo2010/user_settings.html:153
+#: exmo/templates/exmo2010/user_settings.html:154
 msgid "Apply password change"
 msgstr "Изменить пароль"
 
-#: exmo/templates/exmo2010/user_settings.html:162
+#: exmo/templates/exmo2010/user_settings.html:163
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
-#: exmo/templates/exmo2010/ajax/claim_image.html:22
+#: exmo/templates/exmo2010/ajax/claim_image.html:23
 msgid "claim"
 msgstr "претензия"
 
-#: exmo/templates/exmo2010/ajax/task_status.html:24
+#: exmo/templates/exmo2010/ajax/task_status.html:25
 msgid "close"
 msgstr "закрыть"
 
-#: exmo/templates/exmo2010/ajax/task_status.html:35
-#: exmo/templates/exmo2010/ajax/task_status.html:49
+#: exmo/templates/exmo2010/ajax/task_status.html:36
+#: exmo/templates/exmo2010/ajax/task_status.html:50
 msgid "open"
 msgstr "открыть"
 
-#: exmo/templates/exmo2010/ajax/task_status.html:42
+#: exmo/templates/exmo2010/ajax/task_status.html:43
 msgid "approve"
 msgstr "одобрить"
 
-#: exmo/templates/exmo2010/emails/score_claim.html:30
-#: exmo/templates/exmo2010/emails/score_claim.html:32
-#: exmo/templates/exmo2010/emails/score_claim.txt:24
-#: exmo/templates/exmo2010/emails/score_clarification.html:28
-#: exmo/templates/exmo2010/emails/score_clarification.html:30
-#: exmo/templates/exmo2010/emails/score_clarification.txt:24
-#: exmo/templates/exmo2010/emails/score_comment.html:26
-#: exmo/templates/exmo2010/emails/score_comment.txt:22
+#: exmo/templates/exmo2010/emails/score_claim.html:31
+#: exmo/templates/exmo2010/emails/score_claim.html:33
+#: exmo/templates/exmo2010/emails/score_clarification.html:29
+#: exmo/templates/exmo2010/emails/score_clarification.html:31
+#: exmo/templates/exmo2010/emails/score_comment.html:41
 msgid "at"
 msgstr "в"
 
-#: exmo/templates/exmo2010/emails/score_claim.html:35
-#: exmo/templates/exmo2010/emails/score_claim.txt:25
-#: exmo/templates/exmo2010/emails/score_clarification.html:33
-#: exmo/templates/exmo2010/emails/score_clarification.txt:25
+#: exmo/templates/exmo2010/emails/score_claim.html:36
+#: exmo/templates/exmo2010/emails/score_clarification.html:34
 msgid "From who"
 msgstr "От кого"
 
-#: exmo/templates/exmo2010/emails/score_claim.html:36
-#: exmo/templates/exmo2010/emails/score_claim.txt:26
-#: exmo/templates/exmo2010/emails/score_clarification.html:34
-#: exmo/templates/exmo2010/emails/score_clarification.txt:26
+#: exmo/templates/exmo2010/emails/score_claim.html:37
+#: exmo/templates/exmo2010/emails/score_clarification.html:35
 msgid "To whom"
 msgstr "Кому"
 
-#: exmo/templates/exmo2010/emails/score_claim.html:37
-#: exmo/templates/exmo2010/emails/score_claim.txt:28
+#: exmo/templates/exmo2010/emails/score_claim.html:38
 msgid "Claim"
 msgstr "Претензия"
 
-#: exmo/templates/exmo2010/emails/score_claim.html:43
-#: exmo/templates/exmo2010/emails/score_claim.txt:36
-#: exmo/templates/exmo2010/emails/score_clarification.html:41
-#: exmo/templates/exmo2010/emails/score_clarification.txt:36
-#: exmo/templates/exmo2010/emails/score_comment.html:30
-#: exmo/templates/exmo2010/emails/score_comment.txt:26
+#: exmo/templates/exmo2010/emails/score_claim.html:44
+#: exmo/templates/exmo2010/emails/score_clarification.html:42
+#: exmo/templates/exmo2010/emails/score_comment.html:46
 msgid "Link"
 msgstr "Ссылка"
 
-#: exmo/templates/exmo2010/emails/score_clarification.html:35
-#: exmo/templates/exmo2010/emails/score_clarification.txt:28
+#: exmo/templates/exmo2010/emails/score_clarification.html:36
 msgid "Clarification"
 msgstr "Уточнение"
 
-#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:26
+#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:27
 #, python-format
 msgid "Monitoring \"%(mname)s\" didn't started yet. You cannot leave comments."
 msgstr ""
 "Этап взаимодействия по циклу мониторинга \"%(mname)s\" еще не начался. Вы не "
 "можете оставлять комментарии."
 
-#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:29
+#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:30
 #, python-format
 msgid "Monitoring \"%(mname)s\" finished. You cannot leave comments any more."
 msgstr ""
 "Цикл мониторинга \"%(mname)s\" завершен. Вы больше не можете оставлять "
 "комментарии."
 
-#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:31
+#: exmo/templates/exmo2010/helpers/inv_code_bubble.html:32
 msgid ""
 "To access current monitoring, please enter invitation code sent to your "
 "organization."
@@ -2245,111 +2263,111 @@ msgstr ""
 "Для получения доступа к новому циклу мониторинга необходимо ввести код "
 "приглашения, который высылается организациям заблаговременно."
 
-#: exmo/templates/exmo2010/reports/claim_list.html:43
-#: exmo/templates/exmo2010/reports/clarification_list.html:43
-#: exmo/templates/exmo2010/reports/comment_list.html:43
+#: exmo/templates/exmo2010/reports/claim_list.html:61
+#: exmo/templates/exmo2010/reports/clarification_list.html:61
+#: exmo/templates/exmo2010/reports/comment_list.html:62
 msgid "Time and date"
 msgstr "Время и дата"
 
-#: exmo/templates/exmo2010/reports/claim_list.html:45
-#: exmo/templates/exmo2010/reports/claim_report.html:64
+#: exmo/templates/exmo2010/reports/claim_list.html:63
+#: exmo/templates/exmo2010/reports/claim_report.html:65
 msgid "Link to claim"
 msgstr "Ссылка на претензию"
 
-#: exmo/templates/exmo2010/reports/claim_list.html:55
-#: exmo/templates/exmo2010/reports/claim_report.html:74
-#: exmo/templates/exmo2010/reports/clarification_list.html:55
-#: exmo/templates/exmo2010/reports/clarification_report.html:74
-#: exmo/templates/exmo2010/reports/comment_list.html:55
+#: exmo/templates/exmo2010/reports/claim_list.html:73
+#: exmo/templates/exmo2010/reports/claim_report.html:75
+#: exmo/templates/exmo2010/reports/clarification_list.html:72
+#: exmo/templates/exmo2010/reports/clarification_report.html:75
+#: exmo/templates/exmo2010/reports/comment_list.html:73
 msgid "Without answer"
 msgstr "Без ответа"
 
-#: exmo/templates/exmo2010/reports/claim_list.html:72
-#: exmo/templates/exmo2010/reports/claim_report.html:102
-#: exmo/templates/exmo2010/reports/clarification_list.html:72
-#: exmo/templates/exmo2010/reports/clarification_report.html:102
-#: exmo/templates/exmo2010/reports/comment_list.html:72
+#: exmo/templates/exmo2010/reports/claim_list.html:98
+#: exmo/templates/exmo2010/reports/claim_report.html:103
+#: exmo/templates/exmo2010/reports/clarification_list.html:95
+#: exmo/templates/exmo2010/reports/clarification_report.html:103
+#: exmo/templates/exmo2010/reports/comment_list.html:96
 msgid "Processed"
 msgstr "Обработанные"
 
-#: exmo/templates/exmo2010/reports/claim_list_table.html:19
-#: exmo/templates/exmo2010/reports/claim_report.html:89
-#: exmo/templates/exmo2010/reports/claim_report.html:117
+#: exmo/templates/exmo2010/reports/claim_list_table.html:35
+#: exmo/templates/exmo2010/reports/claim_report.html:90
+#: exmo/templates/exmo2010/reports/claim_report.html:118
 msgid "go to claim"
 msgstr "перейти к претензии"
 
-#: exmo/templates/exmo2010/reports/claim_report.html:61
-#: exmo/templates/exmo2010/reports/clarification_report.html:61
+#: exmo/templates/exmo2010/reports/claim_report.html:62
+#: exmo/templates/exmo2010/reports/clarification_report.html:62
 msgid "Date and time"
 msgstr "Время и дата"
 
-#: exmo/templates/exmo2010/reports/claim_report.html:62
+#: exmo/templates/exmo2010/reports/claim_report.html:63
 msgid "Claim addressee"
 msgstr "Кому выставили"
 
-#: exmo/templates/exmo2010/reports/claim_report.html:63
+#: exmo/templates/exmo2010/reports/claim_report.html:64
 msgid "Claim creator"
 msgstr "Кто выставил"
 
-#: exmo/templates/exmo2010/reports/claim_report.html:126
-#: exmo/templates/exmo2010/score/claim.html:81
+#: exmo/templates/exmo2010/reports/claim_report.html:127
+#: exmo/templates/exmo2010/score/claim.html:82
 msgid "There are no claims"
 msgstr "Претензий нет"
 
-#: exmo/templates/exmo2010/reports/clarification_list.html:45
-#: exmo/templates/exmo2010/reports/clarification_report.html:64
+#: exmo/templates/exmo2010/reports/clarification_list.html:63
+#: exmo/templates/exmo2010/reports/clarification_report.html:65
 msgid "Link to clarification"
 msgstr "Ссылка на уточнение"
 
-#: exmo/templates/exmo2010/reports/clarification_list_table.html:19
-#: exmo/templates/exmo2010/reports/clarification_report.html:89
-#: exmo/templates/exmo2010/reports/clarification_report.html:117
+#: exmo/templates/exmo2010/reports/clarification_list_table.html:35
+#: exmo/templates/exmo2010/reports/clarification_report.html:90
+#: exmo/templates/exmo2010/reports/clarification_report.html:118
 msgid "go to clarification"
 msgstr "перейти к уточнению"
 
-#: exmo/templates/exmo2010/reports/clarification_report.html:62
+#: exmo/templates/exmo2010/reports/clarification_report.html:63
 msgid "Clarification addressee"
 msgstr "У кого уточняли"
 
-#: exmo/templates/exmo2010/reports/clarification_report.html:63
+#: exmo/templates/exmo2010/reports/clarification_report.html:64
 msgid "Clarification creator"
 msgstr "Кто уточнял"
 
-#: exmo/templates/exmo2010/reports/clarification_report.html:126
-#: exmo/templates/exmo2010/score/clarification.html:71
+#: exmo/templates/exmo2010/reports/clarification_report.html:127
+#: exmo/templates/exmo2010/score/clarification.html:72
 msgid "There are no clarifications"
 msgstr "Уточнений нет"
 
-#: exmo/templates/exmo2010/reports/comment_list.html:45
+#: exmo/templates/exmo2010/reports/comment_list.html:64
 msgid "Link to comment"
 msgstr "Ссылка на комментарий"
 
-#: exmo/templates/exmo2010/reports/comment_list_table.html:19
+#: exmo/templates/exmo2010/reports/comment_list_table.html:35
 msgid "go to comment"
 msgstr "перейти к комментарию"
 
-#: exmo/templates/exmo2010/score/claim.html:47
+#: exmo/templates/exmo2010/score/claim.html:48
 msgid "Delete claim"
 msgstr "Удалить претензию"
 
-#: exmo/templates/exmo2010/score/claim.html:71
+#: exmo/templates/exmo2010/score/claim.html:72
 msgid "Answer claim"
 msgstr "Ответить на претензию"
 
-#: exmo/templates/exmo2010/score/claim.html:100
-#: exmo/templates/exmo2010/score/clarification.html:91
+#: exmo/templates/exmo2010/score/claim.html:101
+#: exmo/templates/exmo2010/score/clarification.html:92
 msgid "Reply"
 msgstr "Ответить"
 
-#: exmo/templates/exmo2010/score/claim.html:100
+#: exmo/templates/exmo2010/score/claim.html:101
 msgid "Put forward"
 msgstr "Выставить"
 
-#: exmo/templates/exmo2010/score/clarification.html:61
+#: exmo/templates/exmo2010/score/clarification.html:62
 msgid "Answer clarification"
 msgstr "Ответить на уточнение"
 
-#: exmo/templates/exmo2010/score/clarification.html:91
+#: exmo/templates/exmo2010/score/clarification.html:92
 msgid "Specify"
 msgstr "Уточнить"
 
@@ -2362,12 +2380,12 @@ msgid "Peremptory day to answer your question is"
 msgstr "Крайний срок ответа на ваш комментарий:"
 
 #: exmo/templates/exmo2010/score/comment.html:78
-#: exmo/templates/exmo2010/score/messages_js.html:103
+#: exmo/templates/exmo2010/score/messages_js.html:104
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
 #: exmo/templates/exmo2010/score/comment.html:80
-#: exmo/templates/exmo2010/score/messages_js.html:107
+#: exmo/templates/exmo2010/score/messages_js.html:108
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
@@ -2379,52 +2397,52 @@ msgstr "Комментариев нет"
 msgid "Your comment"
 msgstr "Ваш комментарий"
 
-#: exmo/templates/exmo2010/score/detail.html:62
-#: exmo/templates/exmo2010/score/form.html:94
+#: exmo/templates/exmo2010/score/detail.html:63
+#: exmo/templates/exmo2010/score/form.html:96
 msgid "Explanation"
 msgstr "Пояснение"
 
-#: exmo/templates/exmo2010/score/form.html:261
+#: exmo/templates/exmo2010/score/form.html:266
 msgid "Reset"
 msgstr "Сбросить"
 
-#: exmo/templates/exmo2010/score/form.html:269
+#: exmo/templates/exmo2010/score/form.html:274
 msgid "Set non-relevant"
 msgstr "Признать нерелевантным"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:29
+#: exmo/templates/exmo2010/score/parameter_header.html:30
 msgid "Organization's website"
 msgstr "Сайт организации"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:33
+#: exmo/templates/exmo2010/score/parameter_header.html:34
 msgid "Social importance of the parameter"
 msgstr "Социальная значимость параметра"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:36
+#: exmo/templates/exmo2010/score/parameter_header.html:37
 msgid "high importance"
 msgstr "высокая"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:39
+#: exmo/templates/exmo2010/score/parameter_header.html:40
 msgid "middle importance"
 msgstr "средняя"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:42
+#: exmo/templates/exmo2010/score/parameter_header.html:43
 msgid "low importance"
 msgstr "низкая"
 
-#: exmo/templates/exmo2010/score/parameter_header.html:48
+#: exmo/templates/exmo2010/score/parameter_header.html:49
 msgid "Parameter description"
 msgstr "Описание параметра"
 
-#: exmo/templates/exmo2010/score/tabs.html:45
+#: exmo/templates/exmo2010/score/tabs.html:46
 msgid "Opened claims"
 msgstr "Претензии"
 
-#: exmo/templates/registration/activate.html:30
+#: exmo/templates/registration/activate.html:31
 msgid "Account activation error"
 msgstr "Ошибка активации аккаунта"
 
-#: exmo/templates/registration/activate.html:31
+#: exmo/templates/registration/activate.html:32
 msgid ""
 "\n"
 "        <p>Please make sure you properly copied activation link from our "
@@ -2435,24 +2453,24 @@ msgstr ""
 "\n"
 "        <p>Пожалуйста, убедитесь, что вы правильно открыли ссылку из "
 "полученного от нас письма.</p>\n"
-"        <p>Также, имейте ввиду, что эта ссылка действительна только в течение "
-"3 дней.</p>\n"
+"        <p>Также, имейте ввиду, что эта ссылка действительна только в "
+"течение 3 дней.</p>\n"
 "    "
 
-#: exmo/templates/registration/activate.html:35
+#: exmo/templates/registration/activate.html:36
 msgid "You also can"
 msgstr "Также вы можете"
 
-#: exmo/templates/registration/activate.html:35
+#: exmo/templates/registration/activate.html:36
 msgid "try to register again"
 msgstr "пройти регистрацию еще раз"
 
-#: exmo/templates/registration/activation_complete.html:38
-#: exmo/templates/registration/activation_complete.html:41
+#: exmo/templates/registration/activation_complete.html:39
+#: exmo/templates/registration/activation_complete.html:42
 msgid "Registration confirmed"
 msgstr "Регистрация подтверждена"
 
-#: exmo/templates/registration/activation_complete.html:44
+#: exmo/templates/registration/activation_complete.html:45
 #, python-format
 msgid ""
 "\n"
@@ -2465,124 +2483,119 @@ msgstr ""
 "используя email и пароль, указанные при регистрации.</p>\n"
 "        "
 
-#: exmo/templates/registration/activation_email.txt:19
-#: exmo/templates/registration/activation_email_subject.txt:21
-msgid "Registration on"
-msgstr "Регистрация на"
-
-#: exmo/templates/registration/activation_email.txt:21
-msgid "In order to activate your account you should follow the link ONCE"
-msgstr "Для активации вашего аккаунта необходимо перейти по ссылке ОДИН РАЗ"
-
-#: exmo/templates/registration/activation_email.txt:24
-msgid "Later you"
-msgstr ""
-
-#: exmo/templates/registration/activation_email.txt:27
-msgid "Thank you"
-msgstr "Спасибо"
-
-#: exmo/templates/registration/login.html:30
+#: exmo/templates/registration/login.html:31
 msgid "Log in the system"
 msgstr "Войти в систему"
 
-#: exmo/templates/registration/login.html:32
-#: exmo/templates/registration/registration_form.html:72
+#: exmo/templates/registration/login.html:33
+#: exmo/templates/registration/registration_form.html:73
 msgid "You are already logged in"
 msgstr "Вы уже авторизованы в системе"
 
-#: exmo/templates/registration/login.html:34
+#: exmo/templates/registration/login.html:35
 #, python-format
 msgid ""
-"If you really want to log in again, please <a href=\"%(auth_logout_url)s\">"
-"log out</a> first"
+"If you really want to log in again, please <a href=\"%(auth_logout_url)s"
+"\">log out</a> first"
 msgstr ""
-"Если вы хотите зайти под другой учетной записью, пожалуйста, сначала <a "
-"href=\"%(auth_logout_url)s\">выйдите</a> из системы"
+"Если вы хотите зайти под другой учетной записью, пожалуйста, сначала <a href="
+"\"%(auth_logout_url)s\">выйдите</a> из системы"
 
-#: exmo/templates/registration/login.html:38
-#: exmo/templates/registration/registration_form.html:85
+#: exmo/templates/registration/login.html:39
+#: exmo/templates/registration/registration_form.html:86
 msgid ""
 "In order for site to work correctly, turn Javascript in browser's settings."
 msgstr "Для правильной работы сайта включите JavaScript в настройках браузера."
 
-#: exmo/templates/registration/login.html:72
+#: exmo/templates/registration/login.html:45
+msgid ""
+"This account is inactive. Did you recieve the letter containing a "
+"registration confirmation link?"
+msgstr ""
+"Эта учетная запись не активирована. Вы получили письмо со ссылкой для "
+"подтверждения регистрации?"
+
+#: exmo/templates/registration/login.html:66
+msgid "Send the activation letter again"
+msgstr "Выслать письмо подтверждения повторно"
+
+#: exmo/templates/registration/login.html:88
 msgid "E-mail or username"
 msgstr "E-mail или логин"
 
-#: exmo/templates/registration/login.html:87
+#: exmo/templates/registration/login.html:103
 msgid "Forgot your password"
 msgstr "Забыли пароль"
 
-#: exmo/templates/registration/password_change_done.html:38
-#: exmo/templates/registration/password_change_done.html:41
+#: exmo/templates/registration/password_change_done.html:39
+#: exmo/templates/registration/password_change_done.html:42
 msgid "Password change successful"
 msgstr "Пароль успешно изменён"
 
-#: exmo/templates/registration/password_change_done.html:42
+#: exmo/templates/registration/password_change_done.html:43
 msgid "Your password was changed."
 msgstr "Ваш пароль был изменён."
 
-#: exmo/templates/registration/password_change_form.html:38
-#: exmo/templates/registration/password_change_form.html:51
+#: exmo/templates/registration/password_change_form.html:39
+#: exmo/templates/registration/password_change_form.html:52
 msgid "Password change"
 msgstr "Изменение пароля"
 
-#: exmo/templates/registration/password_change_form.html:47
+#: exmo/templates/registration/password_change_form.html:48
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] "Пожалуйста, исправьте найденную ошибку"
 msgstr[1] "Пожалуйста, исправьте найденные ошибки"
 msgstr[2] "Пожалуйста, исправьте найденные ошибки"
 
-#: exmo/templates/registration/password_change_form.html:53
+#: exmo/templates/registration/password_change_form.html:54
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
 "password twice so we can verify you typed it in correctly."
 msgstr ""
-"Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, чтобы быть "
-"уверенным, что вы не ошиблись при вводе."
+"Пожалуйста, сначала введите ваш старый пароль, затем новый дважды, чтобы "
+"быть уверенным, что вы не ошиблись при вводе."
 
-#: exmo/templates/registration/password_change_form.html:72
+#: exmo/templates/registration/password_change_form.html:73
 msgid "Password (again)"
 msgstr "Пароль (повтор)"
 
-#: exmo/templates/registration/password_change_form.html:79
+#: exmo/templates/registration/password_change_form.html:80
 msgid "Change my password"
 msgstr "Сменить пароль"
 
-#: exmo/templates/registration/password_reset_complete.html:38
-#: exmo/templates/registration/password_reset_complete.html:41
+#: exmo/templates/registration/password_reset_complete.html:39
+#: exmo/templates/registration/password_reset_complete.html:42
 msgid "Password reset complete"
 msgstr "Смена пароля завершена"
 
-#: exmo/templates/registration/password_reset_complete.html:42
+#: exmo/templates/registration/password_reset_complete.html:43
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr "Установлен новый пароль. Теперь можете войти в систему используя его."
 
-#: exmo/templates/registration/password_reset_confirm.html:32
+#: exmo/templates/registration/password_reset_confirm.html:33
 msgid "Enter new password"
 msgstr "Введите новый пароль"
 
-#: exmo/templates/registration/password_reset_confirm.html:34
+#: exmo/templates/registration/password_reset_confirm.html:35
 msgid "Please enter your new password."
 msgstr ""
-"Пожалуйста, введите новый пароль, который будет использоваться вами для входа "
-"в систему."
+"Пожалуйста, введите новый пароль, который будет использоваться вами для "
+"входа в систему."
 
-#: exmo/templates/registration/password_reset_confirm.html:35
+#: exmo/templates/registration/password_reset_confirm.html:36
 msgid "Use latin letters and digits combination as a password."
 msgstr "Для создания пароля используйте комбинацию из латинских букв и цифр."
 
-#: exmo/templates/registration/password_reset_confirm.html:60
+#: exmo/templates/registration/password_reset_confirm.html:61
 msgid "Save password"
 msgstr "Сохранить пароль"
 
-#: exmo/templates/registration/password_reset_confirm.html:65
+#: exmo/templates/registration/password_reset_confirm.html:66
 msgid "Password reset unsuccessful"
 msgstr "Не удалось изменить пароль"
 
-#: exmo/templates/registration/password_reset_confirm.html:67
+#: exmo/templates/registration/password_reset_confirm.html:68
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
@@ -2590,11 +2603,11 @@ msgstr ""
 "Неправильная ссылка для восстановление пароля. Возможно, потому, что она уже "
 "была использована. Пожалуйста, пройдите процедуру восстановления еще раз."
 
-#: exmo/templates/registration/password_reset_done.html:30
+#: exmo/templates/registration/password_reset_done.html:31
 msgid "Please check your email"
 msgstr "Пожалуйста, проверьте ваш e-mail"
 
-#: exmo/templates/registration/password_reset_done.html:31
+#: exmo/templates/registration/password_reset_done.html:32
 msgid ""
 "We've sent a message to your e-mail. In order to reset your password, please "
 "follow the link in the message. Then you'll be able to enter a new password "
@@ -2604,31 +2617,31 @@ msgstr ""
 "перейдите по ссылке внутри письма. После этого вы попадете на страницу ввода "
 "нового пароля, по которому сможете входить в систему EXMO."
 
-#: exmo/templates/registration/password_reset_done.html:33
-#: exmo/templates/registration/registration_complete.html:34
+#: exmo/templates/registration/password_reset_done.html:34
+#: exmo/templates/registration/registration_complete.html:35
 #, python-format
 msgid ""
 "<p>To get published monitorings info, <a href=\"%(index)s\">please go to the "
 "main page</a>.</p>"
 msgstr ""
-"<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s\">"
-"перейдите на главную страницу</a>.</p>"
+"<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s"
+"\">перейдите на главную страницу</a>.</p>"
 
-#: exmo/templates/registration/password_reset_email.html:19
+#: exmo/templates/registration/password_reset_email.html:20
 msgid "In order to reset your password, please follow the link:"
 msgstr "Для восстановления пароля, пожалуйста, перейдите по ссылке:"
 
-#: exmo/templates/registration/password_reset_email.html:23
+#: exmo/templates/registration/password_reset_email.html:24
 msgid "Then you'll be able to enter a new password for your account."
 msgstr ""
 "После этого вы попадете на страницу ввода нового пароля, по которому сможете "
 "входить в систему EXMO."
 
-#: exmo/templates/registration/password_reset_form.html:30
+#: exmo/templates/registration/password_reset_form.html:31
 msgid "Password reset"
 msgstr "Восстановление пароля"
 
-#: exmo/templates/registration/password_reset_form.html:32
+#: exmo/templates/registration/password_reset_form.html:33
 msgid ""
 "In order to reset your password enter your e-mail address below. We'll send "
 "you a message with a link which you should open and enter a new password."
@@ -2636,11 +2649,11 @@ msgstr ""
 "Для восстановления пароля введите ваш e-mail. Вам будет отправлено письмо с "
 "ссылкой, перейдя по которой вы сможете ввести новый пароль."
 
-#: exmo/templates/registration/password_reset_form.html:38
+#: exmo/templates/registration/password_reset_form.html:39
 msgid "Recover password"
 msgstr "Восстановить пароль"
 
-#: exmo/templates/registration/registration_closed.html:30
+#: exmo/templates/registration/registration_closed.html:31
 msgid ""
 "\n"
 "        <p>Registration is temporary disallowed.</p>\n"
@@ -2652,11 +2665,11 @@ msgstr ""
 "        <p>Пожалуйста, попробуйте зарегистрироваться немного позже.</p>\n"
 "    "
 
-#: exmo/templates/registration/registration_complete.html:30
+#: exmo/templates/registration/registration_complete.html:31
 msgid "Please, confirm your registration"
 msgstr "Пожалуйста, подтвердите регистрацию в системе EXMO"
 
-#: exmo/templates/registration/registration_complete.html:32
+#: exmo/templates/registration/registration_complete.html:33
 msgid ""
 "We have sent a message to your e-mail. To confirm your registration, please "
 "follow the link in the message. After confirmation you can log in the system."
@@ -2665,26 +2678,26 @@ msgstr ""
 "перейдите по ссылке внутри письма. После этого вы сможете использовать весь "
 "функционал системы EXMO."
 
-#: exmo/templates/registration/registration_form.html:76
+#: exmo/templates/registration/registration_form.html:77
 #, python-format
 msgid ""
-"If you really want to register again, please <a href=\"%(auth_logout_url)s\">"
-"log out</a> first"
+"If you really want to register again, please <a href=\"%(auth_logout_url)s"
+"\">log out</a> first"
 msgstr ""
-"Если вы хотите зарегистрироваться еще раз, пожалуйста, сначала <a href=\"%"
-"(auth_logout_url)s\">выйдите</a> из системы"
+"Если вы хотите зарегистрироваться еще раз, пожалуйста, сначала <a href="
+"\"%(auth_logout_url)s\">выйдите</a> из системы"
 
-#: exmo/templates/registration/registration_form.html:79
+#: exmo/templates/registration/registration_form.html:80
 msgid "In order to log in the system, please register first."
 msgstr ""
 "Для получения расширенного доступа к системе EXMO, пожалуйста, пройдите "
 "процедуру регистрации."
 
-#: exmo/templates/registration/registration_form.html:107
+#: exmo/templates/registration/registration_form.html:108
 msgid "is required field"
 msgstr "является обязательным полем"
 
-#: exmo/templates/registration/registration_form.html:141
+#: exmo/templates/registration/registration_form.html:142
 msgid ""
 "Enter your first name, patronymic, and last name in order the system can "
 "address you with it"
@@ -2693,45 +2706,43 @@ msgstr ""
 "также, в случае необходимости, для проверки являетесь ли вы сотрудником "
 "организации, которую представляете"
 
-#: exmo/templates/registration/registration_form.html:151
+#: exmo/templates/registration/registration_form.html:152
 msgid "required fields"
 msgstr "обязательны для заполнения"
 
-#: exmo/templates/registration/registration_form.html:168
+#: exmo/templates/registration/registration_form.html:169
 msgid "Register"
 msgstr "Зарегистрироваться"
 
-#: exmo/templates/user_dashboard/dashboard.html:82
-msgid "Modules"
-msgstr "Модули"
-
-#: exmo/templates/user_dashboard/menu.html:52
-msgid "Please enter a name for the bookmark"
-msgstr ""
-
-msgid "There're no currently inprogress monitorings."
-msgstr "В настоящее время нет текущих циклов мониторинга."
-
-msgid "There's no any finished monitoring."
-msgstr "Нет ни одного завершенного цикла мониторинга."
-
-msgid "This account is inactive. Did you recieve the letter containing a registration confirmation link?"
-msgstr "Эта учетная запись не активирована. Вы получили письмо со ссылкой для подтверждения регистрации?"
-
-msgid "Send the activation letter again"
-msgstr "Выслать письмо подтверждения повторно"
-
+#: exmo/templates/registration/resend_email_form.html:31
 msgid "Account activaion"
 msgstr "Активация учетной записи"
 
-msgid "In order to repeat the account activation fill your email. A letter cointaining an activation link will be sent."
-msgstr "Для повторной активации учетной записи введите ваш e-mail. Вам будет отправлено письмо со ссылкой, по которой нужно перейти для завершения активации."
+#: exmo/templates/registration/resend_email_form.html:33
+msgid ""
+"In order to repeat the account activation fill your email. A letter "
+"cointaining an activation link will be sent."
+msgstr ""
+"Для повторной активации учетной записи введите ваш e-mail. Вам будет "
+"отправлено письмо со ссылкой, по которой нужно перейти для завершения "
+"активации."
 
-msgid "There's no user with that e-mail."
-msgstr "Пользователя с таким адресом электронной почты не существует."
+#: exmo/templates/user_dashboard/dashboard.html:83
+msgid "Modules"
+msgstr "Модули"
 
-msgid "Account is activated already."
-msgstr "Учетная зпись уже активрована."
+#: exmo/templates/user_dashboard/menu.html:53
+msgid "Please enter a name for the bookmark"
+msgstr ""
 
-msgid "Later you'll be able to log in here"
-msgstr "В дальнейшем для входа на сайт можно использовать ссылку:"
+#~ msgid "Registration on"
+#~ msgstr "Регистрация на"
+
+#~ msgid "In order to activate your account you should follow the link ONCE"
+#~ msgstr "Для активации вашего аккаунта необходимо перейти по ссылке ОДИН РАЗ"
+
+#~ msgid "Thank you"
+#~ msgstr "Спасибо"
+
+#~ msgid "Later you'll be able to log in here"
+#~ msgstr "В дальнейшем для входа на сайт можно использовать ссылку:"

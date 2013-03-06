@@ -138,8 +138,10 @@ def settings(request):
                     cnt = int(send_notif_form_cd.get(
                         "comment_notification_type"))
                     nmc = bool(send_notif_form_cd.get("notify_on_my_comments",
-                        False))
-                    comment_pref = {"type": cnt, "self": nmc}
+                                                      False))
+                    nac = bool(send_notif_form_cd.get("notify_on_all_comments",
+                                                      False))
+                    comment_pref = {"type": cnt, "self": nmc, "self_all": nac}
                     if cnt == 2:
                         cnd = send_notif_form_cd.get(
                             "comment_notification_digest", 1)
@@ -202,16 +204,19 @@ def settings(request):
         if is_internal or is_organization:
             score_pref = profile.notify_score_preference
             comment_pref = profile.notify_comment_preference
+
             send_notif_form_indata["comment_notification_type"] = \
-            comment_pref['type']
+                comment_pref.get('type', 1)
             send_notif_form_indata["comment_notification_digest"] = \
-            comment_pref['digest_duratation']
+                comment_pref['digest_duratation']
             send_notif_form_indata["score_notification_type"] = \
-            score_pref['type']
+                score_pref['type']
             send_notif_form_indata["score_notification_digest"] = \
-            score_pref['digest_duratation']
+                score_pref['digest_duratation']
             send_notif_form_indata["notify_on_my_comments"] = \
-            comment_pref['self']
+                comment_pref.get('self', False)
+            send_notif_form_indata["notify_on_all_comments"] = \
+                comment_pref.get('self_all', False)
             send_notif_form = SettingsSendNotifFormFull(
                 initial=send_notif_form_indata)
         else:

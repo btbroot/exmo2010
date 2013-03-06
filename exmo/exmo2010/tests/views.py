@@ -33,8 +33,8 @@ class GeneralViewsTests(TestCase):
         response = self.client.get('/', follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/exmo2010/', status_code=301)
-        self.assertContains(response, '<p>Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development</p>')
+        self.assertContains(response, '''<p>Copyright 2010, 2011 Al Nikolov
+Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development</p>''')
 
 
 
