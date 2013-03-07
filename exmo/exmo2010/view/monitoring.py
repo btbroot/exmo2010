@@ -66,7 +66,7 @@ def set_npa_params(request, m_id):
         # Нельзя изменять опубликованные мониторинги.
         if monitoring.status == Monitoring.MONITORING_PUBLISH:
             messages.warning(request, _("Forbidden to modify already "
-                                        "published monitorings."))
+                                        "published monitorings."), 'warning')
         else:
             if formset.is_valid():
                 formset.save()

@@ -65,9 +65,13 @@
     {% block bubble %}{% endblock %}
     {% endif %}
 
-        {% if messages %}
-        <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
-        {% endif %}
+    {% for message in messages %}
+        <ul class="{% if message.extra_tags %}errorlist{% else %}messagelist{% endif %}">
+            <li>
+                {{ message }}
+            </li>
+        </ul>
+    {% endfor %}
 
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
