@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-12 17:24+0400\n"
+"POT-Creation-Date: 2013-03-12 18:24+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -789,8 +789,7 @@ msgstr "уведомления дайджестами"
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
 
-#: exmo/exmo2010/models.py:1180 exmo/exmo2010/dashboard/menu.py:94
-#: exmo/templates/exmo2010/user_settings.html:36
+#: exmo/exmo2010/models.py:1180 exmo/templates/exmo2010/user_settings.html:36
 #: exmo/templates/user_dashboard/menu.html:103
 #: exmo/templates/user_dashboard/modules/quicklinks.html:31
 msgid "Preferences"
@@ -924,11 +923,11 @@ msgstr "Быстрый доступ"
 msgid "Monitoring list"
 msgstr "Перечень циклов мониторинга"
 
-#: exmo/exmo2010/dashboard/dashboard.py:105 exmo/exmo2010/dashboard/menu.py:78
+#: exmo/exmo2010/dashboard/dashboard.py:105 exmo/exmo2010/dashboard/menu.py:77
 msgid "Messages"
 msgstr "Сообщения"
 
-#: exmo/exmo2010/dashboard/dashboard.py:108 exmo/exmo2010/dashboard/menu.py:61
+#: exmo/exmo2010/dashboard/dashboard.py:108 exmo/exmo2010/dashboard/menu.py:70
 #: exmo/exmo2010/view/reports.py:53
 #: exmo/templates/exmo2010/monitoring_utility.html:29
 #: exmo/templates/exmo2010/score/detail.html:172
@@ -936,70 +935,41 @@ msgstr "Сообщения"
 msgid "Comments"
 msgstr "Комментарии"
 
-#: exmo/exmo2010/dashboard/dashboard.py:112 exmo/exmo2010/dashboard/menu.py:67
+#: exmo/exmo2010/dashboard/dashboard.py:112 exmo/exmo2010/dashboard/menu.py:72
 #: exmo/exmo2010/view/reports.py:79
 #: exmo/templates/exmo2010/monitoring_utility.html:35
 #: exmo/templates/exmo2010/score/tabs.html:39
 msgid "Clarifications"
 msgstr "Уточнения"
 
-#: exmo/exmo2010/dashboard/dashboard.py:117 exmo/exmo2010/dashboard/menu.py:73
+#: exmo/exmo2010/dashboard/dashboard.py:117 exmo/exmo2010/dashboard/menu.py:74
 #: exmo/exmo2010/view/reports.py:105
 #: exmo/templates/exmo2010/monitoring_utility.html:36
 msgid "Claims"
 msgstr "Претензии"
 
-#: exmo/exmo2010/dashboard/menu.py:87
+#: exmo/exmo2010/dashboard/menu.py:55
+#: exmo/templates/exmo2010/base_site.html:35
+msgid "Admin"
+msgstr "Админ"
+
+#: exmo/exmo2010/dashboard/menu.py:62
 #: exmo/templates/user_dashboard/modules/quicklinks.html:27
 msgid "Scores of my organisation"
 msgstr "Оценки моей организации"
 
-#: exmo/exmo2010/dashboard/menu.py:95
-#: exmo/templates/user_dashboard/modules/quicklinks.html:32
-msgid "Log out"
-msgstr "Выйти"
-
-#: exmo/exmo2010/dashboard/menu.py:101 exmo/exmo2010/dashboard/menu.py:109
-msgid "Welcome"
-msgstr "Добро пожаловать"
-
-#: exmo/exmo2010/dashboard/menu.py:104
-#: exmo/templates/registration/registration_form.html:70
-#: exmo/templates/user_dashboard/modules/quicklinks.html:34
-msgid "Registration"
-msgstr "Регистрация"
-
-#: exmo/exmo2010/dashboard/menu.py:106
-#: exmo/templates/registration/login.html:107
-#: exmo/templates/registration/password_reset_complete.html:44
-#: exmo/templates/user_dashboard/modules/quicklinks.html:35
-msgid "Log in"
-msgstr "Войти"
-
-#: exmo/exmo2010/dashboard/menu.py:111 exmo/exmo2010/view/reports.py:201
+#: exmo/exmo2010/dashboard/menu.py:80 exmo/exmo2010/view/reports.py:201
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: exmo/exmo2010/dashboard/menu.py:113
+#: exmo/exmo2010/dashboard/menu.py:83
 #: exmo/templates/exmo2010/monitoring_comment_report.html:74
 msgid "Statistics"
 msgstr "Статистика"
 
-#: exmo/exmo2010/dashboard/menu.py:116 exmo/templates/exmo2010/help.html:31
+#: exmo/exmo2010/dashboard/menu.py:86 exmo/templates/exmo2010/help.html:31
 msgid "Help"
 msgstr "Помощь"
-
-#: exmo/exmo2010/dashboard/menu.py:117
-msgid "Parameter lists"
-msgstr "Перечни параметров"
-
-#: exmo/exmo2010/dashboard/menu.py:120 exmo/templates/exmo2010/about.html:31
-msgid "About project"
-msgstr "О проекте"
-
-#: exmo/exmo2010/dashboard/menu.py:122
-msgid "Information"
-msgstr "Справка"
 
 #: exmo/exmo2010/dashboard/modules.py:66
 msgid "List"
@@ -1492,6 +1462,10 @@ msgstr "Пользователь"
 msgid "Comment"
 msgstr "Комментарий"
 
+#: exmo/templates/exmo2010/about.html:31
+msgid "About project"
+msgstr "О проекте"
+
 #: exmo/templates/exmo2010/add_questionnaire.html:37
 #: exmo/templates/exmo2010/add_questionnaire.html:43
 msgid "Create questionnaire"
@@ -1518,10 +1492,6 @@ msgstr "АИС EXMO"
 #: exmo/templates/exmo2010/base_site.html:35
 msgid "EXMO — expert monitoring system"
 msgstr "EXMO — система экспертного мониторинга"
-
-#: exmo/templates/exmo2010/base_site.html:35
-msgid "Admin"
-msgstr "Администрирование"
 
 #: exmo/templates/exmo2010/csv_import_log.html:22
 msgid "Rows ok/all"
@@ -2558,6 +2528,12 @@ msgstr "E-mail или логин"
 msgid "Forgot your password"
 msgstr "Забыли пароль"
 
+#: exmo/templates/registration/login.html:107
+#: exmo/templates/registration/password_reset_complete.html:44
+#: exmo/templates/user_dashboard/modules/quicklinks.html:35
+msgid "Log in"
+msgstr "Войти"
+
 #: exmo/templates/registration/password_change_done.html:39
 #: exmo/templates/registration/password_change_done.html:42
 msgid "Password change successful"
@@ -2709,6 +2685,11 @@ msgstr ""
 "перейдите по ссылке внутри письма. После этого вы сможете использовать весь "
 "функционал системы EXMO."
 
+#: exmo/templates/registration/registration_form.html:70
+#: exmo/templates/user_dashboard/modules/quicklinks.html:34
+msgid "Registration"
+msgstr "Регистрация"
+
 #: exmo/templates/registration/registration_form.html:77
 #, python-format
 msgid ""
@@ -2769,3 +2750,7 @@ msgstr ""
 #: exmo/templates/user_dashboard/menu.html:105
 msgid "Exit"
 msgstr "Выход"
+
+#: exmo/templates/user_dashboard/modules/quicklinks.html:32
+msgid "Log out"
+msgstr "Выйти"

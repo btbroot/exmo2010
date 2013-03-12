@@ -40,87 +40,49 @@ class CustomMenu(Menu):
     class Media:
         js = (
             'admin_tools/js/jquery/jquery.cookie.min.js',
-            )
+        )
         css = (
             'dashboard/css/menu.css',
-            )
+        )
 
     def init_with_context(self, context):
         self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
         ]
         request = context['request']
-        children = []
+
+        if request.user.is_superuser:
+            self.children.append(items.MenuItem(_('Admin'),
+                                                reverse('admin:index')))
+
+        if request.user.is_authenticated() and request.user.profile.is_organization:
+            task_id = request.user.profile.get_task_review_id()
+            if task_id is not None:
+                self.children += [
+                    items.MenuItem(_('Scores of my organisation'),
+                                   reverse('exmo2010:score_list_by_task',
+                                           args=[task_id])),
+                    ]
 
         if request.user.is_active and request.user.profile.is_expertB \
-           and not request.user.profile.is_expertA:
-            communication_children = []
-
-            communication_children.append(
-                items.MenuItem(
-                    _('Comments'),
-                    reverse('exmo2010:comment_list')
-                )
-            )
-            communication_children.append(
-                items.MenuItem(
-                    _('Clarifications'),
-                    reverse('exmo2010:clarification_list')
-                )
-            )
-            communication_children.append(
-                items.MenuItem(
-                    _('Claims'),
-                    reverse('exmo2010:claim_list')
-                )
-            )
-
+            and not request.user.profile.is_expertA:
+            communication_children = [
+                items.MenuItem(_('Comments'),
+                               reverse('exmo2010:comment_list')),
+                items.MenuItem(_('Clarifications'),
+                               reverse('exmo2010:clarification_list')),
+                items.MenuItem(_('Claims'),
+                               reverse('exmo2010:claim_list'))
+            ]
             self.children.append(items.MenuItem(_('Messages'),
-                children=communication_children))
+                                                children=communication_children))
 
-
-        if request.user.is_authenticated():
-            if request.user.profile.is_organization:
-                task_id = request.user.profile.get_task_review_id()
-                if task_id != None:
-                    self.children += [
-                        items.MenuItem(_('Scores of my organisation'),
-                                        reverse('exmo2010:score_list_by_task',
-                                        args=[task_id])),
-                        ]
-
-        if request.user.is_active:
-            children += [
-                items.MenuItem(_('Preferences'), reverse('exmo2010:settings')),
-                items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout')),
-            ]
-            if request.user.get_full_name():
-                welcome_msg = request.user.get_full_name()
-            else:
-                welcome_msg = request.user.userprofile.legal_name
-            msg = _('Welcome') + ', ' + welcome_msg
-        else:
-            children += [
-                items.MenuItem(_('Registration'),
-                               reverse('exmo2010:registration_register')),
-                items.MenuItem(_('Log in'),
-                               reverse('exmo2010:auth_login')),
-            ]
-            msg = _('Welcome')
-        self.children.append(items.MenuItem(msg, children=children))
         self.children.append(items.MenuItem(_('Ratings'),
-                             reverse('exmo2010:ratings')))
+                                            reverse('exmo2010:ratings')))
+
         self.children.append(items.MenuItem(_('Statistics'),
-                             reverse('exmo2010:monitoring_report')))
-        inf_children = [
-            items.MenuItem(_('Help'), reverse('exmo2010:help')),
-            items.MenuItem(_('Parameter lists'),
-                           "http://www.svobodainfo.org/ru/node/1930",
-                           template='user_dashboard/item_target_blank.html'),
-            items.MenuItem(_('About project'), reverse('exmo2010:about')),
-            ]
-        self.children.append(items.MenuItem(_('Information'),
-            children=inf_children))
+                                            reverse('exmo2010:monitoring_report')))
 
-
+        self.children.append(items.MenuItem(_('Help'),
+                                            reverse('exmo2010:help')))
 
