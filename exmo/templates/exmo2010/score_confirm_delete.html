@@ -21,16 +21,16 @@
 {% endcomment %}
 {% load i18n %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-<a href="{% url exmo2010:organization_list object.task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{object.task.organization.monitoring}}</a>&rsaquo;
-<a href="{% url exmo2010:tasks_by_monitoring_and_organization object.task.organization.monitoring.pk, object.task.organization.pk %}">{{ object.task.organization.name }}</a>&rsaquo;
-<a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task.user }}</a>&rsaquo;
-{{title}}
+<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
+<a href="{% url exmo2010:organization_list object.task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{object.task.organization.monitoring}}</a><span>&rsaquo;</span>
+<a href="{% url exmo2010:tasks_by_monitoring_and_organization object.task.organization.monitoring.pk object.task.organization.pk %}">{{ object.task.organization.name }}</a><span>&rsaquo;</span>
+<a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task.user }}</a><span>&rsaquo;</span>
+<span class="title">{{ title }}</span>
 </div>
 {% endblock %}
 {% block content %}
-<form method="post" action="{% url exmo2010:score_manager object.pk,'delete' %}">{% csrf_token %}
+<form method="post" action="{% url exmo2010:score_manager object.pk 'delete' %}">{% csrf_token %}
   <p>{% trans 'Delete this score?' %}</p>
   <p><input type="submit" /></p>
 </form>

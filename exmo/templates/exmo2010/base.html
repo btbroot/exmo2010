@@ -26,6 +26,9 @@
 <title>{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'Exmo' %}{% endblock title %}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/patch.css" />
+
+
+<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dashboard/css/dropdown.css" /> -->
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
@@ -46,11 +49,6 @@
     {% if not is_popup %}
     <!-- Header -->
     <div id="header">
-        <div id="branding">
-            {% block branding %}
-                <h1 id="site-name" style="background-color: #3C78A7; color: white; margin: 5px 0px 14px 0px;">{% block brand_name %}{% trans 'EXMO — expert monitoring system' %} {% if user.is_superuser %}(<a href="{% url admin:index %}">{% trans "Admin" %}</a>){%endif%}{% endblock %}</h1>
-            {% endblock %}
-        </div>
         <div id="user-tools">
             {% block userwelcome %}
             {% endblock %}

@@ -37,9 +37,9 @@
 
 
 {% block breadcrumbs %}
-    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
-        {% trans 'Choose coherent parameters' %}
+    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
+        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
+        <span class="title">{% trans 'Choose coherent parameters' %}</span>
     </div>
 {% endblock %}
 

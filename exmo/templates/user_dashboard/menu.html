@@ -37,6 +37,10 @@
         {
             src : '{{ media_url }}/admin_tools/js/menu.js',
             test: function() { return true; }
+        },
+        {
+            src : '{{ media_url }}/dashboard/js/menu-extra-functionality.js',
+            test: function() { return true; }
         }{% for js in menu.Media.js %},
         {
             src : '{{ media_url }}/{{ js }}',
@@ -78,6 +82,29 @@ jQuery(document).ready(function() {
 
 {% endif %}
 <ul id="navigation-menu">
+    <li class="menu-item brand">
+        <a href="{% url exmo2010:index %}">
+            {% trans "Exmo" %}
+        </a>
+    </li>
+
     {% for item in menu.children %}{% admin_tools_render_menu_item item forloop.counter %}{% endfor %}
+
+    {# Закомментирован пункт меню "Блок авторизованного пользователя" #}
+
+    <li class="menu-item person">
+        <a href="{% url exmo2010:index %}">
+            <span class="icon"></span>
+            Ivan Ivanych Ivanov
+        </a>
+        <div id="userarea" class="hidden">
+            <div>
+                <img src="{{ media_url }}/dashboard/img/pinion.png" />
+                <a href="{% url exmo2010:index %}" class="settings">{% trans "Preferences" %}</a>
+                <img src="{{ media_url }}/dashboard/img/exit.png" />
+                <a href="{% url exmo2010:index %}">{% trans "Exit" %}</a>
+            </div>
+        </div>
+    </li>
 </ul>
 {% endif %}

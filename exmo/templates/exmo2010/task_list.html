@@ -54,12 +54,12 @@
     </script>
 {% endblock %}
 {% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a>&rsaquo;
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a>&rsaquo;
+<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
+<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
 {% if organization %}
-<a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a>&rsaquo;
+<a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a><span>&rsaquo;</span>
 {% endif %}
-{{ title }}
+<span class="title">{{ title }}</span>
 </div>
 {% endblock %}
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}

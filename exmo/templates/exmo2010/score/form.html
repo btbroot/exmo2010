@@ -51,20 +51,20 @@
 <div class="breadcrumbs">
     <a href="/">
         {% trans "Home" %}
-    </a>&rsaquo;
+    </a><span>&rsaquo;</span>
     <a href="{% url exmo2010:monitoring_list %}">
         {% trans 'Monitoring' %}
-    </a>&rsaquo;
+    </a><span>&rsaquo;</span>
     <a href="{% url exmo2010:organization_list task.organization.monitoring.pk %}">
         {% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}
-    </a>&rsaquo;
+    </a><span>&rsaquo;</span>
     <a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk, task.organization.pk %}">
         {{ task.organization.name }}
-    </a>&rsaquo;
+    </a><span>&rsaquo;</span>
     <a href="{% url exmo2010:score_list_by_task task.pk %}">
         {% trans 'Score list for' %}&nbsp;{{ task.organization.name }}
-    </a>&rsaquo;
-    {{ title }}
+    </a><span>&rsaquo;</span>
+    <span class="title">{{ title }}</span>
 </div>
 {% endblock %}
 
