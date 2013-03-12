@@ -956,7 +956,7 @@ msgstr "Админ"
 #: exmo/exmo2010/dashboard/menu.py:62
 #: exmo/templates/user_dashboard/modules/quicklinks.html:27
 msgid "Scores of my organisation"
-msgstr "Оценки моей организации"
+msgstr "Мои оценки"
 
 #: exmo/exmo2010/dashboard/menu.py:80 exmo/exmo2010/view/reports.py:201
 msgid "Ratings"
