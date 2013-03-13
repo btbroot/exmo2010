@@ -98,9 +98,11 @@ class CustomMenu(Menu):
                 welcome_msg = request.user.userprofile.legal_name
             msg = welcome_msg
             self.auth.append(items.MenuItem(msg, children=children_auth,
-                                            template='user_dashboard/item.html'))
+                                            template='user_dashboard/item_userarea.html'))
         else:
-            self.auth.append(items.MenuItem(_('Registration'),
-                                            reverse('exmo2010:registration_register')))
             self.auth.append(items.MenuItem(_('Log in'),
-                                            reverse('exmo2010:auth_login')))
+                                            reverse('exmo2010:auth_login'),
+                                            template='user_dashboard/item_auth.html'))
+            self.auth.append(items.MenuItem(_('Registration'),
+                                            reverse('exmo2010:registration_register'),
+                                            template='user_dashboard/item_auth.html'))

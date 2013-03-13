@@ -18,19 +18,31 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load admin_tools_menu_tags %}
-{% spaceless %}
-{% if not item.is_empty %}
-<li class="menu-item{% ifequal index 1 %} first{% endifequal %}{% if not item.enabled %} disabled{% endif %}{% if selected %} selected{% endif %}{% if item.css_classes %} {{ item.css_classes|join:' ' }}{% endif %}">
-<a target="_blank" href="{% if item.url and item.enabled %}{{ item.url }}{% else %}#{% endif %}"{% if item.description %} title="{{ item.description }}"{% endif %}{% if item.accesskey %} accesskey="{{ item.accesskey }}"{% endif %}>{% if item.children and item.enabled %}<span class="icon"></span>{% endif %}{{ item.title }}</a>
-    {% if item.children and item.enabled %}
-    <ul>
-        {% for child_item in item.children %}
-        {% admin_tools_render_menu_item child_item %}
-        {% endfor %}
-    </ul>
-    {% endif %}
-</li>
-{% endif %}
-{% endspaceless %}
+{% load i18n %}
+<ul id="errors-header">
+    <li class="brand">
+        <a href="{% url exmo2010:index %}">
+            {% trans 'Exmo' %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url exmo2010:index %}">
+            {% trans 'Dashboard' %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url exmo2010:ratings %}">
+            {% trans 'Rating' %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url exmo2010:monitoring_report %}">
+            {% trans 'Statistics' %}
+        </a>
+    </li>
+    <li>
+        <a href="{% url exmo2010:help %}">
+            {% trans 'Help' %}
+        </a>
+    </li>
+</ul>

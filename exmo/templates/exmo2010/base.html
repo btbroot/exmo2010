@@ -48,6 +48,7 @@
 
     {% if not is_popup %}
     <!-- Header -->
+    {% block header %}
     <div id="header">
         <div id="user-tools">
             {% block userwelcome %}
@@ -57,6 +58,7 @@
         </div>
         {% block nav-global %}{% endblock %}
     </div>
+    {% endblock header %}
     <!-- END Header -->
     {% block breadcrumbs %}
     {% endblock %}

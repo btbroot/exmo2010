@@ -25,6 +25,10 @@
 
 {% block brand_name %}{% trans 'Forbidden.' %}{% endblock %}
 
+{% block header %}
+    {% include 'errors_header.html' %}
+{% endblock %}
+
 {% block content %}
 
 <h2>{% trans 'Forbidden.' %}</h2>

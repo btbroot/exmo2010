@@ -91,10 +91,10 @@ jQuery(document).ready(function() {
     {% for item in menu.children %}
         {% admin_tools_render_menu_item item forloop.counter %}
     {% endfor %}
-    <span id="auth-menu">
-        {% for item in menu.auth %}
-            {% admin_tools_render_menu_item item forloop.counter %}
-        {% endfor %}
-    </span>
+
+    {% for item in menu.auth %}
+        {% admin_tools_render_menu_item item forloop.counter %}
+    {% endfor %}
+
 </ul>
 {% endif %}
