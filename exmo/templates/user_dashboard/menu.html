@@ -88,23 +88,13 @@ jQuery(document).ready(function() {
         </a>
     </li>
 
-    {% for item in menu.children %}{% admin_tools_render_menu_item item forloop.counter %}{% endfor %}
-
-    {# Закомментирован пункт меню "Блок авторизованного пользователя" #}
-
-    <li class="menu-item person">
-        <a href="{% url exmo2010:index %}">
-            <span class="icon"></span>
-            Ivan Ivanych Ivanov
-        </a>
-        <div id="userarea" class="hidden">
-            <div>
-                <img src="{{ media_url }}/dashboard/img/pinion.png" />
-                <a href="{% url exmo2010:index %}" class="settings">{% trans "Preferences" %}</a>
-                <img src="{{ media_url }}/dashboard/img/exit.png" />
-                <a href="{% url exmo2010:index %}">{% trans "Exit" %}</a>
-            </div>
-        </div>
-    </li>
+    {% for item in menu.children %}
+        {% admin_tools_render_menu_item item forloop.counter %}
+    {% endfor %}
+    <span id="auth-menu">
+        {% for item in menu.auth %}
+            {% admin_tools_render_menu_item item forloop.counter %}
+        {% endfor %}
+    </span>
 </ul>
 {% endif %}

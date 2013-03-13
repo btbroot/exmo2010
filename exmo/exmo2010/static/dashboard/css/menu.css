@@ -165,14 +165,19 @@
     color: #005C9C;
 }
 
-#header ul#navigation-menu div#userarea a.settings {
-    padding-right: 27px;
+#header ul#navigation-menu div#userarea div.auth a:first-child {
+    background: transparent url(../../dashboard/img/pinion.png) center left no-repeat;
+    padding-left: 20px;
+}
+
+#header ul#navigation-menu div#userarea div.auth a {
+    background: transparent url(../../dashboard/img/exit.png) center left no-repeat;
+    padding-left: 20px;
 }
 
 #header ul#navigation-menu div#userarea a:hover {
     text-decoration: underline;
 }
-
 
 #header ul#navigation-menu div#userarea img {
     display: inline;
@@ -186,4 +191,8 @@
 .hidden
 {
     display: none;
+}
+
+#auth-menu {
+    float: right;
 }

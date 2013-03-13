@@ -46,6 +46,7 @@ class CustomMenu(Menu):
         )
 
     def init_with_context(self, context):
+        self.auth = []
         self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
         ]
@@ -86,3 +87,20 @@ class CustomMenu(Menu):
         self.children.append(items.MenuItem(_('Help'),
                                             reverse('exmo2010:help')))
 
+        if request.user.is_authenticated():
+            children_auth = [
+                items.MenuItem(_('Preferences'), reverse('exmo2010:settings')),
+                items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout')),
+            ]
+            if request.user.get_full_name():
+                welcome_msg = request.user.get_full_name()
+            else:
+                welcome_msg = request.user.userprofile.legal_name
+            msg = welcome_msg
+            self.auth.append(items.MenuItem(msg, children=children_auth,
+                                            template='user_dashboard/item.html'))
+        else:
+            self.auth.append(items.MenuItem(_('Registration'),
+                                            reverse('exmo2010:registration_register')))
+            self.auth.append(items.MenuItem(_('Log in'),
+                                            reverse('exmo2010:auth_login')))
