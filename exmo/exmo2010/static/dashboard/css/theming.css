@@ -33,28 +33,29 @@ div.breadcrumbs {
 
 div.breadcrumbs a:first-child {
     background-image: url(../img/home_out.gif);
-    background-position: 1px 1px;
+    background-position: 1px 0px;
     background-repeat: no-repeat;
     display: inline;
     padding-left: 20px;
+    vertical-align: baseline;
 }
 
 div.breadcrumbs span {
     font-size: 20px;
     color: #999;
     padding-right: 4px;
-    vertical-align: middle;
+    vertical-align: baseline;
 }
 
 div.breadcrumbs span.title {
     font-size: 12px;
     color: #333;
     padding-right: 5px;
-    vertical-align: middle;
+    vertical-align: baseline;
 }
 
 div.breadcrumbs a {
     display: inline;
     padding-right: 5px;
-    vertical-align: middle;
+    vertical-align: baseline;
 }

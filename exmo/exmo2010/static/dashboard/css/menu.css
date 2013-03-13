@@ -34,6 +34,7 @@
 #header ul#navigation-menu li.brand a {
     font-family: Arial;
     font-size: 20px;
+    text-transform: uppercase;
 }
 
 #header ul#navigation-menu li.person {
@@ -119,7 +120,7 @@
     border: 1px solid #ededed;
     border-width: 0 1px;
     text-transform: none;
-    min-width: 180px;
+    min-width: 88px;
 }
 
 #header ul#navigation-menu li ul li a:hover,
@@ -132,6 +133,11 @@
 {
     background-color: #fff !important;
     color: #333 !important;
+}
+
+.menuitem-hover:hover
+{
+    color: #ccc !important;
 }
 
 .menuarrow-hover
@@ -195,4 +201,11 @@
 
 #auth-menu {
     float: right;
+}
+
+#header ul#navigation-menu li:hover ul,
+#header ul#navigation-menu li.over ul,
+#header ul#navigation-menu li ul li:hover ul,
+#header ul#navigation-menu li ul li.over ul {
+    display: none;
 }

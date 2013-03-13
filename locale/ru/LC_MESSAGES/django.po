@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-13 12:06+0400\n"
+"POT-Creation-Date: 2013-03-13 12:57+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -1503,8 +1503,7 @@ msgstr "Сохранить анкету"
 #: exmo/templates/registration/password_change_done.html:39
 #: exmo/templates/registration/password_change_form.html:39
 #: exmo/templates/registration/password_reset_complete.html:39
-#: exmo/templates/user_dashboard/menu.html:87
-msgid "Exmo"
+msgid "AIS Exmo"
 msgstr "АИС EXMO"
 
 #: exmo/templates/exmo2010/base_site.html:35
@@ -2753,3 +2752,7 @@ msgstr "Модули"
 #: exmo/templates/user_dashboard/menu.html:57
 msgid "Please enter a name for the bookmark"
 msgstr ""
+
+#: exmo/templates/user_dashboard/menu.html:87
+msgid "Exmo"
+msgstr "Эксмо"
