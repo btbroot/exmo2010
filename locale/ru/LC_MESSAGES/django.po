@@ -920,8 +920,8 @@ msgstr "Быстрый доступ"
 
 #: exmo/exmo2010/dashboard/dashboard.py:88
 #: exmo/templates/exmo2010/monitoring_list.html:43
-msgid "Monitoring list"
-msgstr "Перечень циклов мониторинга"
+msgid "Monitoring cycles"
+msgstr "Циклы мониторинга"
 
 #: exmo/exmo2010/dashboard/dashboard.py:105 exmo/exmo2010/dashboard/menu.py:78
 msgid "Messages"

@@ -85,7 +85,7 @@ class CustomIndexDashboard(UserDashboard):
 
         # append another link list module for "support".
         self.children.append(custom_modules.ObjectList(
-            _('Monitoring list'),
+            _('Monitoring cycles'),
             children=[
                 {
                     'title': None,
