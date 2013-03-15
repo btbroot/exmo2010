@@ -111,7 +111,7 @@ def settings(request):
                     is_organization = True
                 else:
                     inv_code_form_err = _("Submitted invitation code does not "
-                                          "exist")
+                                          "exist.")
                     inv_code_form_ready = True
         # Засабмитили форму смены пароля.
         elif request.POST.has_key("old_password"):

@@ -1348,8 +1348,8 @@ msgid "You are associated with"
 msgstr "Сейчас вы привязаны к организации"
 
 #: exmo/exmo2010/view/user.py:113
-msgid "Submitted invitation code does not exist"
-msgstr "Код приглашения, который вы ввели, не существует"
+msgid "Submitted invitation code does not exist."
+msgstr "Код приглашения, который вы ввели, не существует."
 
 #: exmo/exmo2010/view/user.py:123
 msgid "Password changed"
