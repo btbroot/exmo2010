@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
+
 .score-ok-nonzero{
     background: #80e580;
     text-align: center;
@@ -63,7 +64,7 @@
 }
 
 .score_interact {
-    font-size: 9px;
+    font-size: 12px;
     opacity: 0.5;
 }
 
