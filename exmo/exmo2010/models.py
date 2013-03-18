@@ -902,14 +902,6 @@ class Score(models.Model):
         claim.save()
         return claim
 
-    def close_claim(self, close_user):
-        #score has active claims and form cames to us with changed data. we expect that new data resolv claims.
-        for claim in Claim.objects.filter(score=self, close_date__isnull=True):
-            claim.close_date = datetime.datetime.now()
-            claim.close_user = close_user
-            claim.full_clean()
-            claim.save()
-
     def claim_count(self):
         return Claim.objects.filter(score=self, close_date__isnull=True).count()
 

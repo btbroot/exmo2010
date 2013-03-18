@@ -128,9 +128,7 @@ def score_view(request, score_id):
                     request = request,
                 )
             if score.active_claim:
-                if form.is_valid() and form.changed_data:
-                    score.close_claim(request.user)
-                else:
+                if not (form.is_valid() and form.changed_data):
                     return HttpResponse(_('Have active claim, but no data '
                                           'changed'))
         return update_object(
