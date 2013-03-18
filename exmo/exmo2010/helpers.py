@@ -449,14 +449,12 @@ def comment_report(monitoring):
 
     iifd_all_comments = CommentExmo.objects.filter(
         content_type__model='score',
-        submit_date__gte=start_date,
         object_pk__in=scores,
         user__in=User.objects.exclude(
             groups__name='organizations')).order_by('submit_date')
 
     org_all_comments = CommentExmo.objects.filter(
         content_type__model='score',
-        submit_date__gte=start_date,
         object_pk__in=scores,
         user__in=User.objects.filter(
             groups__name='organizations')).order_by('submit_date')

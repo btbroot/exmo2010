@@ -872,7 +872,6 @@ def monitoring_comment_report(request, id):
     from exmo2010.helpers import comment_report
     report = comment_report(monitoring)
 
-    end_date = report.get('end_date')
     comments_without_reply = report.get('comments_without_reply')
     fail_comments_without_reply = report.get('fail_comments_without_reply')
     fail_soon_comments_without_reply = report.get('fail_soon_comments_without_reply')
@@ -888,8 +887,6 @@ def monitoring_comment_report(request, id):
 
     return render_to_response('exmo2010/monitoring_comment_report.html', {
         'form': form,
-        'start_date': start_date,
-        'end_date': end_date,
         'comments_without_reply': comments_without_reply,
         'fail_comments_without_reply': fail_comments_without_reply,
         'fail_soon_comments_without_reply': fail_soon_comments_without_reply,
