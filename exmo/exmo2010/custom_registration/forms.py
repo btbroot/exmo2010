@@ -141,7 +141,7 @@ class RegistrationFormFull(RegistrationFormShort):
         except ObjectDoesNotExist:
             time.sleep(3)  # Чтобы усложнить перебор.
             raise forms.ValidationError(_("Submitted invitation code does not "
-                                          "exist. Please enter correct one"))
+                                          "exist. Please enter correct one."))
         else:
             return invitation_code
         

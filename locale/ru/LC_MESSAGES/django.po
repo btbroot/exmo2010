@@ -890,10 +890,10 @@ msgid "Required to get access to your organization scores"
 msgstr "Необходим для получения доступа к оценкам своей организации"
 
 #: exmo/exmo2010/custom_registration/forms.py:143
-msgid "Submitted invitation code does not exist. Please enter correct one"
+msgid "Submitted invitation code does not exist. Please enter correct one."
 msgstr ""
 "Код приглашения, который вы ввели, не существует. Введите корректный код "
-"приглашения"
+"приглашения."
 
 #: exmo/exmo2010/custom_registration/forms.py:199
 msgid ""
