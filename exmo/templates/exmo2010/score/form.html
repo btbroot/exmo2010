@@ -40,10 +40,11 @@
             $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
         });
     </script>
-
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/score.form.js"></script>
     {% if object %}
     {% include "exmo2010/score/tabs_js.html" %}
     {% include "exmo2010/score/messages_js.html" %}
+
     {% endif %}
 {% endblock %}
 
