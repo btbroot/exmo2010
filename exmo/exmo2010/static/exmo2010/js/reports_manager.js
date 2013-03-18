@@ -23,8 +23,8 @@ $(document).ready(function () {
     $('#id_creator').change(function () {
         $('#cform').submit();
     });
-    var $titleOpen = $('.title.open'),
-        $titleClosed = $('.title.closed'),
+    var $titleOpen = $('.title.open span'),
+        $titleClosed = $('.title.closed span'),
         $tableOpen = $('table.messages-report.open'),
         $tableClosed = $('table.messages-report.closed');
 
@@ -40,7 +40,45 @@ $(document).ready(function () {
     $titleOpen.click(function() {
         $tableOpen.toggle();
     });
-    $titleClosed.click(function() {
-        $tableClosed.toggle();
+
+    var init = false;
+    var $indicator = $titleClosed.siblings('img');
+
+    $indicator.hide();
+
+    var creator_id = parseInt($("#id_creator option:selected").val()),
+        addressee_id = parseInt($("#id_addressee option:selected").val()),
+        url = $titleClosed.parents("td").attr("rel"),
+        $closed = $(".messages-report.closed");
+
+    $titleClosed.click(function( e ) {
+        if (!init) {
+            $indicator.show();
+
+            $.get(url, { creator_id: creator_id, addressee_id: addressee_id }, function( data ) {
+                $indicator.hide();
+                $closed.append(data);
+                var $count = $(".messages-report.closed td.count"),
+                    count = parseInt($count.html());
+
+                if (!isNaN(count)) {
+                    $titleClosed.closest("td").append("("+count+")");
+                } else {
+                   $('.empty').show();
+                }
+
+                $('td.addressee').width($('th.addressee').width());
+                $('td.creator').width($('th.creator').width());
+
+                $closed.show();
+                init = true;
+            }, 'html');
+        } else {
+            $closed.toggle();
+        }
+
+        e.stopPropagation();
+        e.preventDefault();
     });
+
 });

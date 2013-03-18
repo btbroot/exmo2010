@@ -1,4 +1,5 @@
-/*
+{% spaceless %}
+    {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -17,39 +18,24 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-*/
-
-.messages-report th
-{
-    background: none;
-    font-weight: bold;
-    border-left: none;
-    border-bottom: 1px solid #eee;
-}
-
-
-table.messages-report td.title
-{
-    text-align: left;
-    font-weight: bold;
-}
-
-.title span
-{
-    border-bottom: 1px dashed;
-}
-
-.title.open
-{
-    color: red;
-}
-
-table.messages-report .date
-{
-    width: 110px;
-}
-
-table.messages-report .link
-{
-    width: 160px;
-}
+{% endcomment %}
+    {% load i18n %}
+    {% for c in claims %}
+        <tr>
+            <td class="date">{{ c.open_date|date:"H:i d.m.Y" }}</td>
+            <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
+            <td class="creator">{{ c.creator.profile.legal_name }}</td>
+            <td class="link">
+                <a href="{% url exmo2010:score_view c.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
+            </td>
+        </tr>
+        <tr style="display: none">
+            <td class="count">
+                {{ claims|length }}
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    {% endfor %}
+{% endspaceless %}

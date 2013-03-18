@@ -154,12 +154,31 @@ def claim_report(request, monitoring_id):
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
-    title = _('Claims report for "%(monitoring)s"') % {'monitoring':
-                                                       monitoring}
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
-    opened_claims = all_claims.filter(close_date__isnull=True)
-    closed_claims = all_claims.filter(close_date__isnull=False)
+
+    if request.is_ajax():
+        creator_id = request.REQUEST.get('creator_id')
+        addressee_id = request.REQUEST.get('addressee_id')
+        if creator_id is not None and addressee_id is not None:
+            creator_id = int(creator_id)
+            addressee_id = int(addressee_id)
+            claims = all_claims.filter(close_date__isnull=False)
+            if creator_id != 0:
+                claims = claims.filter(creator__id=creator_id)
+            if addressee_id != 0:
+                claims = claims.filter(addressee__id=addressee_id)
+            return render_to_response(
+                'exmo2010/reports/claim_report_table.html',
+                {'claims': claims},
+                context_instance=RequestContext(request))
+        else:
+            raise Http404
+
+    title = _('Claims report for "%(monitoring)s"') % {'monitoring': monitoring}
+
+    claims = all_claims.filter(close_date__isnull=True)
+
     addressee_id_list = all_claims.order_by().values_list(
         "addressee", flat=True).distinct()
     creator_id_list = all_claims.order_by().values_list(
@@ -174,13 +193,9 @@ def claim_report(request, monitoring_id):
             creator_id = int(cd["creator"])
             addressee_id = int(cd["addressee"])
             if creator_id != 0:
-                opened_claims = opened_claims.filter(creator__id=creator_id)
-                closed_claims = closed_claims.filter(creator__id=creator_id)
+                claims = claims.filter(creator__id=creator_id)
             if addressee_id != 0:
-                opened_claims = opened_claims.filter(
-                    addressee__id=addressee_id)
-                closed_claims = closed_claims.filter(
-                    addressee__id=addressee_id)
+                claims = claims.filter(addressee__id=addressee_id)
     else:
         form = ClaimReportForm(creator_id_list=creator_id_list,
                                addressee_id_list=addressee_id_list)
@@ -190,10 +205,8 @@ def claim_report(request, monitoring_id):
         {
             'monitoring': monitoring,
             'title': title,
-            'opened_claims': opened_claims,
-            'closed_claims': closed_claims,
+            'claims': claims,
             'form': form,
-            'all_claims': all_claims,
         },
         context_instance=RequestContext(request),
     )

@@ -31,12 +31,8 @@
     <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
     {{ media }}
 
-    {% if all_claims %}
-
-        <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/reports_manager.js"></script>
-
-    {% endif %}
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/reports_manager.js"></script>
 
 {% endblock %}
 
@@ -52,8 +48,6 @@
 {% endblock %}
 
 {% block content %}
-
-    {% if all_claims %}
         <form action="" method="post" id="cform">
             {% csrf_token %}
             <table class="messages-report">
@@ -67,13 +61,13 @@
                 </thead>
             </table>
 
-            {% if opened_claims %}
+            {% if claims %}
                 <table class="messages-report">
                     <tbody>
                     <tr>
                         <td class="title open">
-                            {% trans 'Without answer' %}
-                            ({{ opened_claims.count }})
+                            <span>{% trans 'Without answer' %}</span>
+                            ({{ claims.count }})
                         </td>
                     </tr>
                     </tbody>
@@ -81,27 +75,16 @@
 
                 <table class="messages-report open">
                     <tbody>
-                    {% for op in opened_claims %}
-                        <tr>
-                            <td class="date">{{ op.open_date|date:"H:i d.m.Y" }}</td>
-                            <td class="addressee">{{ op.addressee.profile.legal_name }}</td>
-                            <td class="creator">{{ op.creator.profile.legal_name }}</td>
-                            <td class="link">
-                                <a href="{% url exmo2010:score_view op.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
+                        {% include "exmo2010/reports/claim_report_table.html" %}
                     </tbody>
                 </table>
             {% endif %}
 
-            {% if closed_claims %}
                 <table class="messages-report">
                     <tbody>
                     <tr>
-                        <td class="title closed">
-                            {% trans 'Processed' %}
-                            ({{ closed_claims.count }})
+                        <td class="title closed" rel="{% url exmo2010:claim_report monitoring.pk %}">
+                            <span>{% trans 'Processed' %}</span>&nbsp;<img src="{{STATIC_URL}}exmo2010/img/ajax-loader.gif" />
                         </td>
                     </tr>
                     </tbody>
@@ -109,22 +92,12 @@
 
                 <table class="messages-report closed">
                     <tbody>
-                    {% for cp in closed_claims %}
                         <tr>
-                            <td class="date">{{ cp.open_date|date:"H:i d.m.Y" }}</td>
-                            <td class="addressee">{{ cp.addressee.profile.legal_name }}</td>
-                            <td class="creator">{{ cp.creator.profile.legal_name }}</td>
-                            <td class="link">
-                                <a href="{% url exmo2010:score_view cp.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
+                            <td colspan="4" class="empty" style="display: none">
+                                {% trans 'There are no claims' %}
                             </td>
                         </tr>
-                    {% endfor %}
                     </tbody>
                 </table>
-            {% endif %}
         </form>
-    {% else %}
-        <p>{% trans "There are no claims" %}</p>
-    {% endif %}
-
 {% endblock %}

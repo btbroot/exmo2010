@@ -97,12 +97,31 @@ def clarification_report(request, monitoring_id):
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
-    title = _('Clarifications report for "%(monitoring)s"') % {'monitoring':
-                                                               monitoring.name}
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
-    opened_clarifications = all_clarifications.filter(close_date__isnull=True)
-    closed_clarifications = all_clarifications.filter(close_date__isnull=False)
+
+    if request.is_ajax():
+        creator_id = request.REQUEST.get('creator_id')
+        addressee_id = request.REQUEST.get('addressee_id')
+        if creator_id is not None and addressee_id is not None:
+            creator_id = int(creator_id)
+            addressee_id = int(addressee_id)
+            clarifications = all_clarifications.filter(close_date__isnull=False)
+            if creator_id != 0:
+                clarifications = clarifications.filter(creator__id=creator_id)
+            if addressee_id != 0:
+                clarifications = clarifications.filter(score__task__user__id=addressee_id)
+            return render_to_response(
+                'exmo2010/reports/clarification_report_table.html',
+                {'clarifications': clarifications},
+                context_instance=RequestContext(request))
+        else:
+            raise Http404
+
+    title = _('Clarifications report for "%(monitoring)s"') % {'monitoring':
+                                                               monitoring.name}
+
+    clarifications = all_clarifications.filter(close_date__isnull=True)
 
     addressee_id_list = all_clarifications.order_by().values_list(
         'score__task__user', flat=True).distinct()
@@ -118,14 +137,10 @@ def clarification_report(request, monitoring_id):
             creator_id = int(cd["creator"])
             addressee_id = int(cd["addressee"])
             if creator_id != 0:
-                opened_clarifications = opened_clarifications.filter(
-                    creator__id=creator_id)
-                closed_clarifications = closed_clarifications.filter(
+                clarifications = clarifications.filter(
                     creator__id=creator_id)
             if addressee_id != 0:
-                opened_clarifications = opened_clarifications.filter(
-                    score__task__user__id=addressee_id)
-                closed_clarifications = closed_clarifications.filter(
+                clarifications = clarifications.filter(
                     score__task__user__id=addressee_id)
     else:
         form = ClarificationReportForm(creator_id_list=creator_id_list,
@@ -136,10 +151,8 @@ def clarification_report(request, monitoring_id):
         {
             'monitoring': monitoring,
             'title': title,
-            'opened_clarifications': opened_clarifications,
-            'closed_clarifications': closed_clarifications,
+            'clarifications': clarifications,
             'form': form,
-            'all_clarifications': all_clarifications,
             },
         context_instance=RequestContext(request),
     )

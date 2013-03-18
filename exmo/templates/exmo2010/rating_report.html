@@ -24,6 +24,13 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/rating.css"
           xmlns="http://www.w3.org/1999/html"/>
 {% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    {% include "exmo2010/rating_js.html" %}
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
 <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
