@@ -173,7 +173,7 @@ urlpatterns = patterns('',
         name='monitoring_report_finished'),
 
     url(r'^ratings/$', 'exmo2010.view.reports.ratings',
-            name='ratings'),
+        name='ratings'),
 
     url(r'^help/$', direct_to_template,
         {'template': 'exmo2010/help.html'},

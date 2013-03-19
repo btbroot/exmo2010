@@ -25,13 +25,15 @@ from django.core.urlresolvers import reverse
 from exmo2010.forms import OrganizationForm, SettingsInvCodeForm
 from exmo2010.models import Organization, Task
 from exmo2010.models import Monitoring
+from exmo2010.view.breadcrumbs import breadcrumbs
 from exmo2010.view.helpers import table
 
 
 def organization_list(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
-    if not request.user.has_perm('exmo2010.view_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-    title = _('Organizations for monitoring %(name)s') % {'name': monitoring}
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring = monitoring).extra(
             select = {
@@ -44,21 +46,30 @@ def organization_list(request, id):
                 )
     else:
         org_list = []
-        for task in Task.objects.filter(organization__monitoring = monitoring).select_related():
-            if request.user.has_perm('exmo2010.view_task', task): org_list.append(task.organization.pk)
+        for task in Task.objects.filter(organization__monitoring=monitoring).select_related():
+            if request.user.has_perm('exmo2010.view_task', task):org_list.append(task.organization.pk)
         org_list = list(set(org_list))
         if not org_list: return HttpResponseForbidden(_('Forbidden'))
-        queryset = Organization.objects.filter(pk__in = org_list)
+        queryset = Organization.objects.filter(pk__in=org_list)
         headers = (
-                (_('organization'), 'name', 'name', None, None),
-                )
+            (_('organization'), 'name', 'name', None, None),
+        )
+
+    crumbs = ['Home', 'Monitoring']
+    request = breadcrumbs(request, crumbs)
+
+    if request.expert:
+        title = _('Monitoring cycle')
+    else:
+        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+
     return table(
         request,
         headers,
         queryset = queryset,
         paginate_by = 50,
         extra_context = {
-            'title': title,
+            'current_title': title,
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
         },
@@ -75,34 +86,46 @@ def organization_manager(request, monitoring_id, org_id, method):
         args=[monitoring.pk,]), request.GET.urlencode())
     redirect = redirect.replace("%", "%%")
     if method == 'add':
-        title = _('Add new organization for %s') % monitoring
+
+        crumbs = ['Home', 'Monitoring', 'Organization']
+        request = breadcrumbs(request, crumbs, monitoring)
+        title = _('CHANGE:organization_manager')
+
         return create_object(request, form_class=OrganizationForm,
             post_save_redirect=redirect,
-            extra_context={'title': title, 'monitoring': monitoring,})
+            extra_context={'current_title': title, 'monitoring': monitoring,})
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk=org_id)
-        title = _('Delete organization %s') % monitoring
+
+        crumbs = ['Home', 'Monitoring', 'Organization']
+        request = breadcrumbs(request, crumbs, monitoring)
+        title = _('CHANGE:organization_manager')
+
         return delete_object(
             request,
             model=Organization,
             object_id=org_id,
             post_delete_redirect=redirect,
             extra_context={
-                'title': title,
+                'current_title': title,
                 'monitoring': monitoring,
                 'deleted_objects': Task.objects.filter(
                     organization=organization),
                 }
             )
     else: #update
-        title = _('Edit organization %s') % monitoring
+
+        crumbs = ['Home', 'Monitoring', 'Organization']
+        request = breadcrumbs(request, crumbs, monitoring)
+        title = _('CHANGE:organization_manager')
+
         return update_object(
             request,
             form_class=OrganizationForm,
             object_id=org_id,
             post_save_redirect=redirect,
             extra_context={
-                'title': title,
+                'current_title': title,
                 'monitoring': monitoring,
                 }
             )

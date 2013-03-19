@@ -36,6 +36,13 @@
 {% endblock %}
 
 {% block breadcrumbs %}
+    <div class="breadcrumbs">
+        {% for breadcrumb in request.breadcrumbs %}
+            <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
+            <span>&rsaquo;</span>
+        {% endfor %}
+        {{ current_title }}
+    </div>
 {% endblock %}
 
 {% block nav-global %}

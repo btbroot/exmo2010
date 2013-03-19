@@ -20,14 +20,7 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:organization_list monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{monitoring}}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk organization.pk %}">{{ organization.name }}</a><span>&rsaquo;</span>
-<span class="title">{{ title }}</span>
-</div>
-{% endblock %}
+
 {% block content %}
 {% if deleted_objects %}
 {% trans 'When you delete task you also delete this scores:'%}<br>

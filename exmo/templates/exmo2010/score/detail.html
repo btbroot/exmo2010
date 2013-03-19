@@ -39,15 +39,7 @@
 {% endif %}
 
 {% block title %}{{ parameter }}{% endblock %}
-{% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:organization_list task.organization.monitoring.pk %}">{% trans 'Organizations for monitoring ' %}{{task.organization.monitoring}}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:tasks_by_monitoring_and_organization task.organization.monitoring.pk task.organization.pk %}">{{ task.organization.name }}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:score_list_by_task task.pk %}">{% trans 'Score list for' %}&nbsp;{{ task.organization.name }}</a><span>&rsaquo;</span>
-<span class="title">{{ title }}</span>
-</div>
-{% endblock %}
+
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
 {% block content %}

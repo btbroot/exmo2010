@@ -28,9 +28,10 @@ from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import ugettext as _
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 
-from exmo2010.models import Monitoring
-from exmo2010.view.helpers import rating_type_parameter, rating
 from exmo2010.forms import MonitoringFilterForm
+from exmo2010.models import Monitoring
+from exmo2010.view.breadcrumbs import breadcrumbs
+from exmo2010.view.helpers import rating_type_parameter, rating
 
 
 def comment_list(request):
@@ -53,7 +54,7 @@ def comment_list(request):
         title = _('Comments')
         return render_to_response('exmo2010/reports/comment_list.html',
                                   {
-                                      'title': title,
+                                      'current_title': title,
                                       'comments': comments,
                                   },
                                   RequestContext(request))
@@ -79,7 +80,7 @@ def clarification_list(request):
         title = _('Clarifications')
         return render_to_response('exmo2010/reports/clarification_list.html',
                                   {
-                                      'title': title,
+                                      'current_title': title,
                                       'clarifications': clarifications,
                                   },
                                   RequestContext(request))
@@ -105,7 +106,7 @@ def claim_list(request):
         title = _('Claims')
         return render_to_response('exmo2010/reports/claim_list.html',
                                   {
-                                      'title': title,
+                                      'current_title': title,
                                       'claims': claims,
                                   },
                                   RequestContext(request))
@@ -156,12 +157,16 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
         monitorings = paginator_list.object_list
 
+    crumbs = ['Home']
+    request = breadcrumbs(request, crumbs)
+    title = _('CHANGE:monitoring_report')
+
     return render_to_response('exmo2010/monitoring_report.html',
                               {
                                   'paginator': paginator_list,
                                   'monitorings': monitorings,
                                   'report_type': report_type,
-                                  'title': _('Monitoring statistics'),
+                                  'current_title': title,
                                   'monitoring_id': monitoring_id,
                                   'all_monitorings': all_monitorings,
                               },
@@ -192,13 +197,17 @@ def ratings(request):
                                                                   has_npa)
         rating_list, avg = rating(monitoring, parameters=parameter_list)
 
+    crumbs = ['Home']
+    request = breadcrumbs(request, crumbs)
+    title = _('Ratings')
+
     return render_to_response('exmo2010/rating_report.html', {
         'monitoring': monitoring,
         'has_npa': has_npa,
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
-        'title': _('Ratings'),
+        'current_title': title,
         'form': form,
         'report': True,
         'mform': mform,

@@ -29,12 +29,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.http import HttpResponseForbidden
 from django.template import RequestContext
-from exmo2010 import signals
-from exmo2010.models import Score, Clarification
-from exmo2010.forms import ClarificationAddForm
-from exmo2010.models import Monitoring
-from exmo2010.forms import ClarificationReportForm
 
+from exmo2010 import signals
+from exmo2010.forms import ClarificationAddForm, ClarificationReportForm
+from exmo2010.models import Clarification, Monitoring, Score
+from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 @login_required
@@ -74,13 +73,18 @@ def clarification_create(request, score_id):
             return HttpResponseRedirect(redirect)
 
         else:
+
+            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
+            request = breadcrumbs(request, crumbs, score)
+            title = _('CHANGE:clarification_create')
+
             return render_to_response(
                 'exmo2010/score/clarification_form.html',
                 {
                     'monitoring': score.task.organization.monitoring,
                     'task': score.task,
                     'score': score,
-                    'title': _('Add new claim for %s') % score,
+                    'current_title': title,
                     'form': form,
                 },
                 context_instance=RequestContext(request),
@@ -118,9 +122,6 @@ def clarification_report(request, monitoring_id):
         else:
             raise Http404
 
-    title = _('Clarifications report for "%(monitoring)s"') % {'monitoring':
-                                                               monitoring.name}
-
     clarifications = all_clarifications.filter(close_date__isnull=True)
 
     addressee_id_list = all_clarifications.order_by().values_list(
@@ -146,11 +147,19 @@ def clarification_report(request, monitoring_id):
         form = ClarificationReportForm(creator_id_list=creator_id_list,
                                        addressee_id_list=addressee_id_list)
 
+    crumbs = ['Home', 'Monitoring']
+    request = breadcrumbs(request, crumbs)
+
+    if request.expert:
+        title = _('Monitoring cycle')
+    else:
+        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+
     return render_to_response(
         'exmo2010/reports/clarification_report.html',
         {
             'monitoring': monitoring,
-            'title': title,
+            'current_title': title,
             'clarifications': clarifications,
             'form': form,
             },

@@ -87,13 +87,6 @@
     </script>
 {% endblock %}
 
-{% block breadcrumbs %}
-    <div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
-        <a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
-        <span class="title">{% trans 'Parameter-criteria filter' %}</span>
-    </div>
-{% endblock %}
-
 {% block pretitle %}
     {% include "exmo2010/monitoring_utility.html" %}
 {% endblock %}

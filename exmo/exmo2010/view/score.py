@@ -38,6 +38,7 @@ from exmo2010.forms import ScoreForm, QuestionnaireDynForm, SettingsInvCodeForm
 from exmo2010.forms import ClaimAddForm, ClarificationAddForm
 from exmo2010.helpers import construct_change_message
 from exmo2010.helpers import log_monitoring_interact_activity
+from exmo2010.view.breadcrumbs import breadcrumbs
 from exmo2010.view.helpers import table_prepare_queryset
 from exmo2010.models import Parameter, Score, Task, QAnswer, QQuestion
 from exmo2010.models import Claim, Clarification, Monitoring
@@ -65,7 +66,11 @@ def score_add(request, task_id, parameter_id):
     # Форма с презаполненными task и parameter, при вовзвращении реквеста
     # в исходниках Джанго, extra_context добавляется после создания
     # экземпляра класса формы, и перезаписывает переменную формы.
-    form = ScoreForm(initial={'task': task,'parameter': parameter})
+    form = ScoreForm(initial={'task': task, 'parameter': parameter})
+
+    crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+    request = breadcrumbs(request, crumbs, task)
+    title = _('CHANGE:score_add')
 
     return create_object(
         request,
@@ -76,7 +81,7 @@ def score_add(request, task_id, parameter_id):
         extra_context = {
             'task': task,
             'parameter': parameter,
-            'title': parameter,
+            'current_title': title,
             'form': form,
             }
     )
@@ -91,7 +96,13 @@ def score_manager(request, score_id, method='update'):
     if method == 'delete':
         title = _('Delete score %s') % score.parameter
         if request.user.has_perm('exmo2010.delete_score', score):
-            return delete_object(request, model = Score, object_id = score.pk, post_delete_redirect = redirect, extra_context = {'title': title})
+            return delete_object(
+                request,
+                model=Score,
+                object_id=score.pk,
+                post_delete_redirect=redirect,
+                extra_context={'current_title': title}
+            )
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':
         return score_view(request, score.pk)
@@ -108,6 +119,7 @@ def score_view(request, score_id):
     user = request.user
     all_score_claims = Claim.objects.filter(score=score)
     all_score_clarifications = Clarification.objects.filter(score=score)
+    title = _('Parameter')
 
     if user.has_perm('exmo2010.edit_score', score):
         redirect = "%s?%s#parameter_%s" % (
@@ -116,7 +128,6 @@ def score_view(request, score_id):
             request.GET.urlencode(),
             score.parameter.code)
         redirect = redirect.replace("%","%%")
-        title = _('Edit score %s') % score.parameter
         if request.method == 'POST':
             form = ScoreForm(request.POST, instance=score)
             message = construct_change_message(request, form, None)
@@ -131,6 +142,10 @@ def score_view(request, score_id):
                 if not (form.is_valid() and form.changed_data):
                     return HttpResponse(_('Have active claim, but no data '
                                           'changed'))
+
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        request = breadcrumbs(request, crumbs, score.task)
+
         return update_object(
             request,
             template_name = 'exmo2010/score/form.html',
@@ -140,7 +155,7 @@ def score_view(request, score_id):
             extra_context = {
                 'task': score.task,
                 'parameter': score.parameter,
-                'title': title,
+                'current_title': title,
                 'claim_list': all_score_claims,
                 'clarification_list': all_score_clarifications,
                 'claim_form' : ClaimAddForm(prefix="claim"),
@@ -149,18 +164,21 @@ def score_view(request, score_id):
                 })
     elif user.has_perm('exmo2010.view_score', score):
         # Представители имеют права только на просмотр!
-        title = _('Score for parameter "%s"') % score.parameter.name
         time_to_answer = score.task.organization.monitoring.time_to_answer
         delta = datetime.timedelta(days=time_to_answer)
         today = datetime.date.today()
         peremptory_day = today + delta
+
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        request = breadcrumbs(request, crumbs, score.task)
+
         return object_detail(
             request,
             template_name='exmo2010/score/detail.html',
             queryset = Score.objects.all(),
             object_id = score.pk,
-            extra_context = {
-                'title': title,
+            extra_context={
+                'current_title': title,
                 'task': score.task,
                 'parameter': score.parameter,
                 'claim_list': all_score_claims,
@@ -203,7 +221,6 @@ def toggle_comment(request):
 
 def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk=task_id)
-    title = _('Score list for %s') % ( task.organization.name )
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = task.organization.monitoring
@@ -245,6 +262,7 @@ def score_list_by_task(request, task_id, report=None):
     for score in scores_interact:
         score_interact_dict[score.parameter.pk] = score
 
+    title = _('Organization')
     if report:
         # Print report
         extra_context.update(
@@ -252,10 +270,14 @@ def score_list_by_task(request, task_id, report=None):
                 'score_dict': score_dict,
                 'parameters': parameters,
                 'task': task,
-                'title': title,
+                'current_title': title,
                 'report': report,
             }
         )
+
+        crumbs = ['Home', 'Monitoring', 'Organization']
+        request = breadcrumbs(request, crumbs, task)
+
         return render_to_response(
             'exmo2010/task_report.html',
             extra_context,
@@ -342,7 +364,7 @@ def score_list_by_task(request, task_id, report=None):
                 'parameters_other': parameters_other,
                 'task': task,
                 'has_npa': has_npa,
-                'title': title,
+                'current_title': title,
                 'place': task.rating_place,
                 'place_npa': place_npa,
                 'place_other': place_other,
@@ -351,6 +373,10 @@ def score_list_by_task(request, task_id, report=None):
                 'show_link': show_link,
                 }
         )
+
+        crumbs = ['Home', 'Monitoring', 'Organization']
+        request = breadcrumbs(request, crumbs, task)
+
         return render_to_response(
             'exmo2010/score_list.html',
             extra_context,
@@ -363,11 +389,16 @@ def score_list_by_task(request, task_id, report=None):
 def score_add_comment(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
     if request.user.has_perm('exmo2010.add_comment_score', score):
+
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
+        request = breadcrumbs(request, crumbs, score)
+        title = _('CHANGE:score_add_comment')
+
         return render_to_response(
             'exmo2010/score_comment_form.html',
             {
                 'score': score,
-                'title': _('Add new comment'),
+                'current_title': title,
                 },
             context_instance=RequestContext(request),
         )

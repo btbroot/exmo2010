@@ -85,12 +85,6 @@
 </script>
 {% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
-{% block breadcrumbs %}
-<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a><span>&rsaquo;</span>
-<a href="{% url exmo2010:monitoring_list %}">{% trans 'Monitoring' %}</a><span>&rsaquo;</span>
-<span class="title">{{ title }}</span>
-</div>
-{% endblock %}
 
 {% block content %}
 {% if object %}

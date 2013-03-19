@@ -16,18 +16,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.shortcuts import get_object_or_404, render_to_response
-from django.views.generic.create_update import update_object, delete_object
-from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
-from exmo2010.models import Parameter, Task
-from exmo2010.models import Score
-from exmo2010.forms import ParameterForm, CORE_MEDIA
-from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
+from django.utils.translation import ugettext as _
+from django.views.generic.create_update import update_object, delete_object
 
+from exmo2010.models import Parameter, Score, Task
+from exmo2010.forms import ParameterForm, CORE_MEDIA
+from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 @login_required
@@ -39,14 +38,18 @@ def parameter_manager(request, task_id, id, method):
     if method == 'delete':
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
             return HttpResponseForbidden(_('Forbidden'))
-        title = _('Delete parameter %s') % parameter
+
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        request = breadcrumbs(request, crumbs, task)
+        title = _('CHANGE:parameter_manager')
+
         return delete_object(
             request,
             model = Parameter,
             object_id = id,
             post_delete_redirect = redirect,
             extra_context = {
-                'title': title,
+                'current_title': title,
                 'task': task,
                 'deleted_objects': Score.objects.filter(parameter = parameter),
                 }
@@ -60,14 +63,18 @@ def parameter_manager(request, task_id, id, method):
     else: #update
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
             return HttpResponseForbidden(_('Forbidden'))
-        title = _('Edit parameter %s') % parameter
+
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        request = breadcrumbs(request, crumbs, task)
+        title = _('CHANGE:parameter_manager')
+
         return update_object(
             request,
             form_class = ParameterForm,
             object_id = id,
             post_save_redirect = redirect,
             extra_context = {
-                'title': title,
+                'current_title': title,
                 'task': task,
                 'media': CORE_MEDIA + ParameterForm().media,
                 }
@@ -80,7 +87,6 @@ def parameter_add(request, task_id):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
-    title = _('Add parameter for %s') % task
     form = None
     if request.method == 'GET':
         form = ParameterForm(monitoring = task.organization.monitoring)
@@ -89,11 +95,16 @@ def parameter_add(request, task_id):
         if form.is_valid():
             parameter = form.save()
             return HttpResponseRedirect(redirect)
+
+    crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+    request = breadcrumbs(request, crumbs, task)
+    title = _('CHANGE:parameter_add')
+
     return render_to_response(
         'exmo2010/parameter_form.html',
         {
             'form': form,
-            'title': title,
+            'current_title': title,
             'task': task,
             'media': CORE_MEDIA + form.media,
         },
