@@ -34,10 +34,12 @@ from django.utils.translation import ugettext as _
 from django.utils.text import get_text_list
 from django.db import IntegrityError
 from django.db.models import Count
+from django.contrib.sites.models import Site
 from reversion import revision
-from exmo2010.models import UserProfile, Score, Task
 from exmo2010.models import MonitoringInteractActivity, Organization
+from exmo2010.models import UserProfile, Score, Task
 from exmo2010.utils import disable_for_loaddata
+
 
 def construct_change_message(request, form, formsets):
         """
@@ -532,3 +534,24 @@ def comment_report(monitoring):
     result['time_to_answer'] = time_to_answer
 
     return result
+
+
+def task_user_change_notify(sender, **kwargs):
+    task = sender
+    email = task.user.email
+    subject = _('You have an assigned task')
+    headers = {
+        'X-iifd-exmo': 'task_user_change_notification'
+    }
+    if Site._meta.installed:
+        site = Site.objects.get_current()
+        url = '%s://%s%s' % ('http', site, reverse('exmo2010:score_list_by_task', args=[task.pk]))
+    else:
+        url = None
+
+    t = loader.get_template('exmo2010/emails/task_user_changed.txt')
+    c = Context({'task': task, 'url': url, })
+    message = t.render(c)
+
+    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email], [], headers = headers)
+    email.send()

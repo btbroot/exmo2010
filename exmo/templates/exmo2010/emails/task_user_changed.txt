@@ -1,3 +1,4 @@
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -16,14 +17,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""
-Signals relating to claims.
-"""
-from django.dispatch import Signal
+{% endcomment %}
+{% load i18n %}
+{% trans 'You have an assigned task' %} {{ task }}
 
-# Sent just after a claim was posted. See above for how this differs
-# from the claim object's post-save signal.
-claim_was_posted = Signal(providing_args=["claim", "request"])
-clarification_was_posted = Signal(providing_args=["clarification", "request"])
-score_was_changed = Signal(providing_args=["form", "request"])
-task_user_changed = Signal()
+{% trans 'Link' %}: {{ url }}

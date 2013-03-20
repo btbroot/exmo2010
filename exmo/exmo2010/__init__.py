@@ -32,6 +32,7 @@ from exmo2010.helpers import post_save_model
 from exmo2010.helpers import create_profile
 from exmo2010.helpers import create_revision
 from exmo2010.helpers import score_change_notify
+from exmo2010.helpers import task_user_change_notify
 from exmo2010.models import Score
 from exmo2010.models import Monitoring
 from exmo2010.sites import site
@@ -43,6 +44,7 @@ if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
     signals.claim_was_posted.connect(claim_notification)
     signals.clarification_was_posted.connect(clarification_notification)
     signals.score_was_changed.connect(score_change_notify)
+    signals.task_user_changed.connect(task_user_change_notify)
 
 post_save.connect(post_save_model)
 #post_save.connect(create_profile, sender=User)

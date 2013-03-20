@@ -38,7 +38,7 @@ from exmo2010.fields import TagField
 from exmo2010.sql import sql_score_openness_v1
 from exmo2010.sql import sql_score_openness_v8
 from exmo2010.sql import sql_task_openness
-
+from exmo2010.signals import task_user_changed
 
 # Типы вопросов анкеты. Добавить переводы!
 QUESTION_TYPE_CHOICES = (
@@ -564,6 +564,13 @@ class Task(models.Model):
                     'monitoring': self.organization.monitoring,
                     'organization': self.organization,
                 })
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            task = Task.objects.get(pk=self.pk)
+            if task.user != self.user:
+                task_user_changed.send(sender=self)
+        super(Task, self).save(*args, **kwargs)
 
     def _get_open(self):
         if self.status == self.TASK_OPEN: return True
