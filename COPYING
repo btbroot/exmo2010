@@ -123,6 +123,18 @@ http://creativecommons.org/licenses/by-sa/3.0/
 
 --
 
+exmo/exmo2010/static/dashboard/img/breadcrumb_arrow.png
+exmo/exmo2010/static/dashboard/img/home_in.gif
+exmo/exmo2010/static/dashboard/img/home_out.gif
+
+Copyright (c) 2008 CompareNetworks Inc.
+http://www.comparenetworks.com/developers/jqueryplugins/jbreadcrumb.html
+
+License: MIT license
+http://www.opensource.org/licenses/mit-license.php
+
+--
+
 exmo/exmo2010/static/exmo2010/js/jquery/jquery.min.js
 exmo/exmo2010/static/exmo2010/js/jquery/jquery-ui.min.js
 

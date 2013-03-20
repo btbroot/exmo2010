@@ -38,10 +38,10 @@
 {% block breadcrumbs %}
     <div class="breadcrumbs">
         {% for breadcrumb in request.breadcrumbs %}
-            <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
-            <span>&rsaquo;</span>
+        <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
+        <span class="breadcrumb-arrow"></span>
         {% endfor %}
-        {{ current_title }}
+        <span class="title">{{ current_title }}</span>
     </div>
 {% endblock %}
 
