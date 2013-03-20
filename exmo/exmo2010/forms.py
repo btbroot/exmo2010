@@ -599,7 +599,7 @@ class SettingsSendNotifFormFull(SettingsSendNotifForm):
     notify_on_my_comments = forms.BooleanField(label="",
         help_text=_("Send to me my comments"), required=False)
     notify_on_all_comments = forms.BooleanField(label="",
-        help_text=_("Send to me all comments"), required=False)
+        help_text=_("Send whole comment thread"), required=False)
 
     def __init__(self, *args, **kwargs):
         super(SettingsSendNotifFormFull, self).__init__(*args, **kwargs)

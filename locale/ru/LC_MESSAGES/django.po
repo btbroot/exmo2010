@@ -329,8 +329,8 @@ msgid "Send to me my comments"
 msgstr "Присылать мои комментарии"
 
 #: exmo/exmo2010/forms.py:602
-msgid "Send to me all comments"
-msgstr "Присылать все комментарии"
+msgid "Send whole comment thread"
+msgstr "Присылать всю ветку комментариев"
 
 #: exmo/exmo2010/forms.py:639
 msgid "monitoring not select"
