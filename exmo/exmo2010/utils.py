@@ -150,3 +150,17 @@ class UnicodeWriter(object):
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
+
+
+import re
+from lxml.html.clean import Cleaner
+
+
+def clean_message(comment):
+    cleaner = Cleaner()
+    # prevent XSS-attacks
+    comment = cleaner.clean_html(comment)
+    # remove redundant lines
+    comment = re.sub(r'(<br>(?=(<br>){2,}))', '', comment)
+    comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,2}(?=(</span>)$)', '', comment)
+    return comment

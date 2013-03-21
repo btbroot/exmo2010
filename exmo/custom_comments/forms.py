@@ -22,9 +22,8 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.forms.widgets import HiddenInput
 from django.contrib.comments.forms import CommentForm
-from lxml.html.clean import Cleaner
 from custom_comments.models import CommentExmo
-
+from exmo2010.utils import clean_message
 
 class CustomCommentForm(CommentForm):
     status = forms.ChoiceField(choices=CommentExmo.STATUSES,
@@ -46,8 +45,6 @@ class CustomCommentForm(CommentForm):
 
     def get_comment_create_data(self):
         data = super(CustomCommentForm, self).get_comment_create_data()
-        # Очистка от XSS
-        cleaner = Cleaner()
-        data['comment'] = cleaner.clean_html(data['comment'])
+        data['comment'] = clean_message(data['comment'])
         return data
 

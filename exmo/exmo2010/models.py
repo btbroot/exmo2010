@@ -33,12 +33,13 @@ from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
-from lxml.html.clean import Cleaner
 from exmo2010.fields import TagField
 from exmo2010.sql import sql_score_openness_v1
 from exmo2010.sql import sql_score_openness_v8
 from exmo2010.sql import sql_task_openness
 from exmo2010.signals import task_user_changed
+from exmo2010.utils import clean_message
+
 
 # Типы вопросов анкеты. Добавить переводы!
 QUESTION_TYPE_CHOICES = (
@@ -894,6 +895,7 @@ class Score(models.Model):
         """
         Добавляет уточнение
         """
+        comment = clean_message(comment)
         clarification = Clarification(score=self,
                                       creator=creator,
                                       comment=comment)
@@ -901,6 +903,7 @@ class Score(models.Model):
         return clarification
 
     def add_claim(self, creator, comment):
+        comment = clean_message(comment)
         claim = Claim(score=self,
                       creator=creator,
                       comment=comment)
@@ -998,9 +1001,7 @@ class Claim(models.Model):
         verbose_name=_('addressee'), related_name='addressee')
 
     def add_answer(self, user, answer):
-        cleaner = Cleaner()
-        # Очистка html-текста от возможных XSS-атак
-        self.answer = cleaner.clean_html(answer)
+        self.answer = clean_message(answer)
         self.close_user = user
         self.close_date = datetime.datetime.now()
         self.save()
@@ -1053,9 +1054,7 @@ class Clarification(models.Model):
                                    related_name='clarification_close_user')
 
     def add_answer(self, user, answer):
-        cleaner = Cleaner()
-        # Очистка html-текста от возможных XSS-атак
-        self.answer = cleaner.clean_html(answer)
+        self.answer = clean_message(answer)
         self.close_user = user
         self.close_date = datetime.datetime.now()
         self.save()
