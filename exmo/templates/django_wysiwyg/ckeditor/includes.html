@@ -44,6 +44,7 @@
                 '/static/admin/css/base.css',
                 '/static/exmo2010/patch.css'
             ],
+            'enterMode' : CKEDITOR.ENTER_BR,
             'bodyClass': 'ck-contents'
         },
 
@@ -63,6 +64,7 @@
                 '/static/admin/css/base.css',
                 '/static/exmo2010/patch.css'
             ],
+            'enterMode' : CKEDITOR.ENTER_BR,
             'bodyClass': 'ck-contents'
         },
 
@@ -82,12 +84,20 @@
                 '/static/admin/css/base.css',
                 '/static/exmo2010/patch.css'
             ],
+            'enterMode' : CKEDITOR.ENTER_BR,
             'bodyClass': 'ck-contents'
         }
     };
 
     {% block django_wysiwyg_editor_config %}
-        var django_wysiwyg_editor_config = null;
+        var django_wysiwyg_editor_config = {
+            'enterMode' : CKEDITOR.ENTER_BR,
+            'contentsCss': [
+                '/static/admin/css/base.css',
+                '/static/exmo2010/patch.css'
+            ],
+            'bodyClass': 'ck-contents'
+        };
     {% endblock %}
 
     var django_wysiwyg =
