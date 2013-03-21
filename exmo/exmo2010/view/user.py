@@ -17,18 +17,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from exmo2010.forms import SettingsPersInfForm, SettingsPersInfFormFull
-from exmo2010.forms import SettingsInvCodeForm, SettingsChPassForm
-from exmo2010.forms import SettingsSendNotifForm, SettingsSendNotifFormFull
-from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User, Group
-from django.views.decorators.csrf import csrf_protect
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
 from django.contrib import messages
+from django.contrib.auth.models import User, Group
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
+
+from exmo2010.forms import SettingsInvCodeForm, SettingsChPassForm, SettingsPersInfForm
+from exmo2010.forms import SettingsPersInfFormFull, SettingsSendNotifForm, SettingsSendNotifFormFull
 from exmo2010.models import Organization, UserProfile
+from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 def settings(request):
@@ -223,8 +224,13 @@ def settings(request):
             send_notif_form = SettingsSendNotifForm(
                 initial=send_notif_form_indata)
 
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+    title = _('Settings')
+
     return render_to_response('exmo2010/user_settings.html',
         {"email": user.email,
+         "current_title": title,
          "is_organization": is_organization, "is_internal": is_internal,
          "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
          "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,

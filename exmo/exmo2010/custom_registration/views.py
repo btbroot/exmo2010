@@ -36,13 +36,14 @@ from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
-from exmo2010.custom_registration.forms import SetPasswordForm
-from exmo2010.custom_registration.forms import RegistrationFormFull
-from exmo2010.custom_registration.forms import RegistrationFormShort
-from exmo2010.custom_registration.forms import ExmoAuthenticationForm
-from exmo2010.custom_registration.forms import ResendEmailForm
+from django.utils.translation import ugettext as _
 from registration.backends import get_backend
 from registration.models import RegistrationProfile
+
+from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
+from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
+from exmo2010.view.breadcrumbs import breadcrumbs
+
 
 @never_cache
 def password_reset_confirm(request, uidb36=None, token=None,
@@ -75,11 +76,17 @@ def password_reset_confirm(request, uidb36=None, token=None,
     else:
         validlink = False
         form = None
+    title = _('Password reset confirm')
     context = {
         'form': form,
         'validlink': validlink,
+        'current_title': title,
         }
     context.update(extra_context or {})
+
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+
     return render_to_response(template_name, context,
         context_instance=RequestContext(request, current_app=current_app))
 
@@ -139,8 +146,12 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+    title = _('Registration')
+
     return render_to_response(template_name,
-        {'form': form},
+        {'form': form, 'current_title': title},
         context_instance=context)
 
 @csrf_protect
@@ -202,13 +213,19 @@ def login_test_cookie(request, template_name='registration/login.html',
     else:
         current_site = RequestSite(request)
 
+    title = _('Login')
     context.update({
         'form': form,
         redirect_field_name: redirect_to,
         'site': current_site,
         'site_name': current_site.name,
+        'current_title': title,
         })
     context.update(extra_context or {})
+
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+
     return render_to_response(template_name, context,
                               context_instance=RequestContext(
                                   request, current_app=current_app))

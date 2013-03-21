@@ -17,9 +17,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.core.urlresolvers import reverse
+from django.views.generic import TemplateView
 from django.utils.translation import ugettext as _
 
 from exmo2010.models import Monitoring, Score, Task
+
+
+class BreadcrumbsView(TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+        return super(BreadcrumbsView, self).get(request, *args, **kwargs)
 
 
 def breadcrumbs(request, items, obj=None):
@@ -60,11 +69,6 @@ def breadcrumbs(request, items, obj=None):
             reverse('exmo2010:tasks_by_monitoring',
                     args=[obj.pk])
         )
-        crumbs['MonitoringManagerUpdate'] = (
-            _('Edit monitoring ') + obj.name,
-            reverse('exmo2010:monitoring_manager',
-                    args=[obj.pk, 'update'])
-        )
 
     if obj:
         if request.user.profile.is_expert:
@@ -95,5 +99,3 @@ def breadcrumbs(request, items, obj=None):
     except:
         expert = False
     request.expert = expert
-
-    return request

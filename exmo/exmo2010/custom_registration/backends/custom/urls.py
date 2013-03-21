@@ -38,23 +38,24 @@ up your own URL patterns for these views instead.
 """
 
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
+from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
-from django.contrib.auth import views as auth_views
-from exmo2010.custom_registration.views import activate_redirect
-from exmo2010.custom_registration.views import password_reset_confirm
-from exmo2010.custom_registration.views import register_test_cookie
-from exmo2010.custom_registration.views import login_test_cookie
-from exmo2010.custom_registration.views import resend_email
+from django.utils.translation import ugettext as _
+
+from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
+from exmo2010.custom_registration.views import register_test_cookie, resend_email
+from exmo2010.view.breadcrumbs import BreadcrumbsView
+
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
 
 urlpatterns = patterns('',
-    url(r'^activate/complete/$',
-       direct_to_template,
-       {'template': 'registration/activation_complete.html'},
-       name='registration_activation_complete'),
+    url(r'^activate/complete/$', BreadcrumbsView.as_view(
+        template_name='registration/activation_complete.html',
+        get_context_data=lambda: {'current_title': _('Activation complete')}
+        ),
+        name='registration_activation_complete'),
     # Activation keys get matched by \w+ instead of the more specific
     # [a-fA-F0-9]{40} because a bad activation key should still get to the view;
     # that way it can return a sensible "invalid key" message instead of a
@@ -67,14 +68,16 @@ urlpatterns = patterns('',
         register_test_cookie,
        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
        name='registration_register'),
-    url(r'^register/complete/$',
-       direct_to_template,
-       {'template': 'registration/registration_complete.html'},
-       name='registration_complete'),
-    url(r'^register/closed/$',
-       direct_to_template,
-       {'template': 'registration/registration_closed.html'},
-       name='registration_disallowed'),
+    url(r'^register/complete/$', BreadcrumbsView.as_view(
+        template_name='registration/registration_complete.html',
+        get_context_data=lambda: {'current_title': _('Registration complete')}
+        ),
+        name='registration_complete'),
+    url(r'^register/closed/$', BreadcrumbsView.as_view(
+        template_name='registration/registration_closed.html',
+        get_context_data=lambda: {'current_title': _('Registration disallowed')}
+        ),
+        name='registration_disallowed'),
     # Auth urls.
     url(r'^login/$',
         login_test_cookie,

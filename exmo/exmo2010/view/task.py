@@ -223,10 +223,11 @@ def task_import(request, id):
                 rowOKCount += 1
     except csv.Error, e:
         errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
+    title = _('Import CSV for task %s') % task
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-    request = breadcrumbs(request, crumbs, task)
-    title = _('CHANGE:task_import')
+    breadcrumbs(request, crumbs, task)
+    current_title = _('Import task')
 
     return render_to_response(
         'exmo2010/task_import_log.html',
@@ -236,7 +237,8 @@ def task_import(request, id):
             'errLog': errLog,
             'rowOKCount': rowOKCount,
             'rowALLCount': rowALLCount,
-            'current_title': title
+            'current_title': current_title,
+            'title': title,
         },
         context_instance=RequestContext(request),
     )
@@ -262,6 +264,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     if user.is_active: profile = user.profile
     if not user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Task list for %s') % organization.name
     queryset = Task.objects.filter(organization = organization)
     # Or, filtered by user
     if user.has_perm('exmo2010.admin_monitoring', monitoring):
@@ -293,11 +296,16 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     queryset = Task.objects.filter(pk__in = task_list)
 
     crumbs = ['Home', 'Monitoring', 'Organization']
-    request = breadcrumbs(request, crumbs, monitoring)
-    title = _('CHANGE:tasks_by_monitoring_and_organization')
+    breadcrumbs(request, crumbs, monitoring)
+    current_title = _('CHANGE:tasks_by_monitoring_and_organization')
 
     return table(request, headers, queryset=queryset, paginate_by=15,
-                 extra_context={'monitoring': monitoring, 'organization': organization, 'current_title': title})
+                 extra_context={
+                     'monitoring': monitoring,
+                     'organization': organization,
+                     'current_title': current_title,
+                     'title': title,
+                 })
 
 
 
@@ -308,25 +316,28 @@ def task_add(request, monitoring_id, organization_id=None):
     if organization_id:
         organization = get_object_or_404(Organization, pk = organization_id)
         redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
+        title = _('Add new task for %s') % organization.name
     else:
         organization = None
         redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
+        title = _('Add new task for %s') % monitoring
 
     redirect = redirect.replace("%","%%")
-    title = _('CHANGE:task_add')
+    current_title = _('Add task')
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         if request.method == 'GET':
             form = TaskForm(initial={'organization': organization}, monitoring=monitoring)
 
             crumbs = ['Home', 'Monitoring', 'Organization']
-            request = breadcrumbs(request, crumbs, monitoring)
+            breadcrumbs(request, crumbs, monitoring)
 
             return render_to_response(
                 'exmo2010/task_form.html',
                 {
                     'monitoring': monitoring,
                     'organization': organization,
-                    'current_title': title,
+                    'current_title': current_title,
+                    'title': title,
                     'form': form
                 },
                 context_instance=RequestContext(request),
@@ -339,14 +350,15 @@ def task_add(request, monitoring_id, organization_id=None):
             else:
 
                 crumbs = ['Home', 'Monitoring', 'Organization']
-                request = breadcrumbs(request, crumbs, monitoring)
+                breadcrumbs(request, crumbs, monitoring)
 
                 return render_to_response(
                     'exmo2010/task_form.html',
                     {
                         'monitoring': monitoring,
                         'organization': organization,
-                        'current_title': title,
+                        'current_title': current_title,
+                        'title': title,
                         'form': form
                     },
                     context_instance=RequestContext(request),
@@ -377,12 +389,14 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
         ]
     if method not in valid_method:
         HttpResponseForbidden(_('Forbidden'))
+    current_title = _('Edit task')
     if method == 'delete':
+        title = _('Delete task %s') % task
         if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
 
             crumbs = ['Home', 'Monitoring', 'Organization']
-            request = breadcrumbs(request, crumbs, task)
-            title = _('CHANGE:task_manager')
+            breadcrumbs(request, crumbs, task)
+            current_title = _('Delete task')
 
             return delete_object(
                 request,
@@ -392,13 +406,14 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
                 extra_context={
                     'monitoring': monitoring,
                     'organization': organization,
-                    'current_title': title,
+                    'current_title': current_title,
+                    'title': title,
                     'deleted_objects': Score.objects.filter(task=task),
                 }
             )
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'close':
-        # title = _('Close task %s') % task
+        title = _('Close task %s') % task
         if request.user.has_perm('exmo2010.close_task', task):
             if task.open:
                 try:
@@ -410,6 +425,7 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
                 return HttpResponse(_('Already closed'))
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'approve':
+        title = _('Approve task for %s') % task
         if request.user.has_perm('exmo2010.approve_task', task):
             if not task.approved:
                 try:
@@ -420,6 +436,7 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
             else: return HttpResponse(_('Already approved'))
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'open':
+        title = _('Open task %s') % task
         if request.user.has_perm('exmo2010.open_task', task):
             if not task.open:
                 try:
@@ -430,6 +447,7 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
             else: return HttpResponse(_('Already open'))
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'check':
+        title = _('Check task %s') % task
         if request.user.has_perm('exmo2010.check_task', task):
             if task.ready:
                 try:
@@ -440,12 +458,12 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
             else: return HttpResponse(_('Already on check'))
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update': #update
+        title = _('Edit task %s') % task
         if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
             revision.comment = _('Task updated')
 
             crumbs = ['Home', 'Monitoring', 'Organization']
-            request = breadcrumbs(request, crumbs, task)
-            title = _('CHANGE:task_manager')
+            breadcrumbs(request, crumbs, task)
 
             return update_object(
                 request,
@@ -455,7 +473,8 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
                 extra_context={
                     'monitoring': monitoring,
                     'organization': organization,
-                    'current_title': title
+                    'current_title': current_title,
+                    'title': title,
                 }
             )
         else: return HttpResponseForbidden(_('Forbidden'))
@@ -474,6 +493,7 @@ def tasks_by_monitoring(request, monitorgin_id):
         profile = request.user.profile
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Task list for %(monitoring)s') % {'monitoring': monitoring}
     task_list = []
     queryset = Task.objects.filter(organization__monitoring=monitoring).\
     select_related()
@@ -508,12 +528,12 @@ def tasks_by_monitoring(request, monitorgin_id):
             )
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return table(
         request,
@@ -522,7 +542,8 @@ def tasks_by_monitoring(request, monitorgin_id):
         paginate_by = 50,
         extra_context = {
             'monitoring': monitoring,
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
             'invcodeform': SettingsInvCodeForm(),
             },
         template_name = "exmo2010/task_list.html",
@@ -535,6 +556,7 @@ def task_mass_assign_tasks(request, id):
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring = monitoring)
+    title = _('Mass assign tasks')
     groups = []
     for group_name in ['expertsA','expertsB','expertsB_manager']:
         group, created = Group.objects.get_or_create(name = group_name)
@@ -562,12 +584,12 @@ def task_mass_assign_tasks(request, id):
                     log.append('%s: %s' % (user.userprofile.legal_name, organization.name))
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response(
         'exmo2010/mass_assign_tasks.html', {
@@ -575,5 +597,6 @@ def task_mass_assign_tasks(request, id):
             'users': users,
             'monitoring': monitoring,
             'log': log,
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
         }, context_instance=RequestContext(request))

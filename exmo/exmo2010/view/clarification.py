@@ -45,6 +45,7 @@ def clarification_create(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
     redirect += '#clarifications' # Named Anchor для открытия нужной вкладки
+    title = _('Add new claim for %s') % score
     if request.method == 'POST' and (
         user.has_perm('exmo2010.add_clarification_score', score) or
         user.has_perm('exmo2010.answer_clarification_score', score)):
@@ -75,8 +76,8 @@ def clarification_create(request, score_id):
         else:
 
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-            request = breadcrumbs(request, crumbs, score)
-            title = _('CHANGE:clarification_create')
+            breadcrumbs(request, crumbs, score)
+            current_title = _('Create clarification')
 
             return render_to_response(
                 'exmo2010/score/clarification_form.html',
@@ -84,7 +85,8 @@ def clarification_create(request, score_id):
                     'monitoring': score.task.organization.monitoring,
                     'task': score.task,
                     'score': score,
-                    'current_title': title,
+                    'current_title': current_title,
+                    'title': title,
                     'form': form,
                 },
                 context_instance=RequestContext(request),
@@ -103,6 +105,7 @@ def clarification_report(request, monitoring_id):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
+    title = _('Clarifications report for "%s"') % monitoring.name
 
     if request.is_ajax():
         creator_id = request.REQUEST.get('creator_id')
@@ -148,18 +151,19 @@ def clarification_report(request, monitoring_id):
                                        addressee_id_list=addressee_id_list)
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response(
         'exmo2010/reports/clarification_report.html',
         {
             'monitoring': monitoring,
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
             'clarifications': clarifications,
             'form': form,
             },

@@ -35,13 +35,14 @@ def parameter_manager(request, task_id, id, method):
     parameter = get_object_or_404(Parameter, pk = id)
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
+    current_title = _('Edit parameter')
     if method == 'delete':
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
             return HttpResponseForbidden(_('Forbidden'))
+        title = _('Delete parameter %s') % parameter
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        request = breadcrumbs(request, crumbs, task)
-        title = _('CHANGE:parameter_manager')
+        breadcrumbs(request, crumbs, task)
 
         return delete_object(
             request,
@@ -49,7 +50,8 @@ def parameter_manager(request, task_id, id, method):
             object_id = id,
             post_delete_redirect = redirect,
             extra_context = {
-                'current_title': title,
+                'current_title': current_title,
+                'title': title,
                 'task': task,
                 'deleted_objects': Score.objects.filter(parameter = parameter),
                 }
@@ -63,10 +65,10 @@ def parameter_manager(request, task_id, id, method):
     else: #update
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
             return HttpResponseForbidden(_('Forbidden'))
+        title = _('Edit parameter %s') % parameter
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        request = breadcrumbs(request, crumbs, task)
-        title = _('CHANGE:parameter_manager')
+        breadcrumbs(request, crumbs, task)
 
         return update_object(
             request,
@@ -74,7 +76,8 @@ def parameter_manager(request, task_id, id, method):
             object_id = id,
             post_save_redirect = redirect,
             extra_context = {
-                'current_title': title,
+                'current_title': current_title,
+                'title': title,
                 'task': task,
                 'media': CORE_MEDIA + ParameterForm().media,
                 }
@@ -87,6 +90,7 @@ def parameter_add(request, task_id):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%","%%")
+    title = _('Add parameter for %s') % task
     form = None
     if request.method == 'GET':
         form = ParameterForm(monitoring = task.organization.monitoring)
@@ -97,14 +101,15 @@ def parameter_add(request, task_id):
             return HttpResponseRedirect(redirect)
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-    request = breadcrumbs(request, crumbs, task)
-    title = _('CHANGE:parameter_add')
+    breadcrumbs(request, crumbs, task)
+    current_title = _('Add parameter')
 
     return render_to_response(
         'exmo2010/parameter_form.html',
         {
             'form': form,
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
             'task': task,
             'media': CORE_MEDIA + form.media,
         },

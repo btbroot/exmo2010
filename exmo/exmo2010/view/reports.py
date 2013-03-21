@@ -51,10 +51,11 @@ def comment_list(request):
 
     else:
         comments = user.profile.get_filtered_not_answered_comments()
-        title = _('Comments')
+        title = current_title = _('Comments')
         return render_to_response('exmo2010/reports/comment_list.html',
                                   {
-                                      'current_title': title,
+                                      'current_title': current_title,
+                                      'title': title,
                                       'comments': comments,
                                   },
                                   RequestContext(request))
@@ -77,10 +78,11 @@ def clarification_list(request):
 
     else:
         clarifications = user.profile.get_filtered_opened_clarifications()
-        title = _('Clarifications')
+        title = current_title = _('Clarifications')
         return render_to_response('exmo2010/reports/clarification_list.html',
                                   {
-                                      'current_title': title,
+                                      'current_title': current_title,
+                                      'title': title,
                                       'clarifications': clarifications,
                                   },
                                   RequestContext(request))
@@ -103,10 +105,11 @@ def claim_list(request):
 
     else:
         claims = user.profile.get_filtered_opened_claims()
-        title = _('Claims')
+        title = current_title = _('Claims')
         return render_to_response('exmo2010/reports/claim_list.html',
                                   {
-                                      'current_title': title,
+                                      'current_title': current_title,
+                                      'title': title,
                                       'claims': claims,
                                   },
                                   RequestContext(request))
@@ -121,6 +124,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     all_monitorings = None
     paginator_list = None
+    title = _('Monitoring statistics')
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
@@ -158,15 +162,16 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         monitorings = paginator_list.object_list
 
     crumbs = ['Home']
-    request = breadcrumbs(request, crumbs)
-    title = _('CHANGE:monitoring_report')
+    breadcrumbs(request, crumbs)
+    current_title = _('Statistics')
 
     return render_to_response('exmo2010/monitoring_report.html',
                               {
                                   'paginator': paginator_list,
                                   'monitorings': monitorings,
                                   'report_type': report_type,
-                                  'current_title': title,
+                                  'current_title': current_title,
+                                  'title': title,
                                   'monitoring_id': monitoring_id,
                                   'all_monitorings': all_monitorings,
                               },
@@ -186,6 +191,7 @@ def ratings(request):
     avg = None
     form = None
     mform = MonitoringFilterForm(request.GET)
+    title = _('Ratings')
 
     if m_id:
         monitoring = get_object_or_404(Monitoring, pk=m_id)
@@ -198,8 +204,8 @@ def ratings(request):
         rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     crumbs = ['Home']
-    request = breadcrumbs(request, crumbs)
-    title = _('Ratings')
+    breadcrumbs(request, crumbs)
+    current_title = _('Ratings')
 
     return render_to_response('exmo2010/rating_report.html', {
         'monitoring': monitoring,
@@ -207,7 +213,8 @@ def ratings(request):
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
-        'current_title': title,
+        'current_title': current_title,
+        'title': title,
         'form': form,
         'report': True,
         'mform': mform,

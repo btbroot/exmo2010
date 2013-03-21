@@ -49,6 +49,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
     """
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
+    title = _('Add new claim for %s') % score
 
     if claim_id:
         claim = get_object_or_404(Claim, pk=claim_id)
@@ -74,8 +75,8 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                     return HttpResponseRedirect(redirect)
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-        request = breadcrumbs(request, crumbs, score)
-        title = _('CHANGE:claim_manager')
+        breadcrumbs(request, crumbs, score)
+        current_title = _('Edit claim')
 
         return render_to_response(
             'exmo2010/score/claim_form.html',
@@ -83,7 +84,8 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                 'monitoring': score.task.organization.monitoring,
                 'task': score.task,
                 'score': score,
-                'current_title': title,
+                'current_title': current_title,
+                'title': title,
                 'form': form,
             },
             context_instance=RequestContext(request),
@@ -99,6 +101,7 @@ def claim_create(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk, ])
     redirect += '#claims' # Named Anchor для открытия нужной вкладки
+    title = _('Add new claim for %s') % score
     if request.method == 'POST' and (
             user.has_perm('exmo2010.add_claim_score', score) or
             user.has_perm('exmo2010.answer_claim_score', score)):
@@ -124,8 +127,8 @@ def claim_create(request, score_id):
         else:
 
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-            request = breadcrumbs(request, crumbs, score)
-            title = _('CHANGE:claim_create')
+            breadcrumbs(request, crumbs, score)
+            current_title = _('Create claim')
 
             return render_to_response(
                 'exmo2010/score/claim_form.html',
@@ -133,7 +136,8 @@ def claim_create(request, score_id):
                     'monitoring': score.task.organization.monitoring,
                     'task': score.task,
                     'score': score,
-                    'current_title': title,
+                    'current_title': current_title,
+                    'title': title,
                     'form': form,
                 },
                 context_instance=RequestContext(request),
@@ -167,6 +171,7 @@ def claim_report(request, monitoring_id):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
+    title = _('Claims report for "%s"') % monitoring
 
     if request.is_ajax():
         creator_id = request.REQUEST.get('creator_id')
@@ -210,18 +215,19 @@ def claim_report(request, monitoring_id):
                                addressee_id_list=addressee_id_list)
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response(
         'exmo2010/reports/claim_report.html',
         {
             'monitoring': monitoring,
-            'curent_title': title,
+            'current_title': current_title,
+            'title': title,
             'claims': claims,
             'form': form,
         },

@@ -75,15 +75,15 @@ def set_npa_params(request, m_id):
         formset = ParameterTypeFormSet(queryset=parameters)
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response('exmo2010/set_npa_params.html',
-        {"formset": formset, "monitoring": monitoring, "current_title": title},
+        {"formset": formset, "monitoring": monitoring, "current_title": current_title},
         context_instance=RequestContext(request))
 
 
@@ -107,6 +107,7 @@ def monitoring_list(request):
                 (_('monitoring'), 'name', 'name', None, None),
                 (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS),
                 )
+    title = _('Monitoring list')
 
     #todo: remove this
     active_tasks = None
@@ -124,8 +125,8 @@ def monitoring_list(request):
         return HttpResponseForbidden(_('Forbidden'))
 
     crumbs = ['Home']
-    request = breadcrumbs(request, crumbs)
-    title = _('Monitoring cycles')
+    breadcrumbs(request, crumbs)
+    current_title = _('Monitoring cycles')
 
     return table(
         request,
@@ -133,7 +134,8 @@ def monitoring_list(request):
         queryset = queryset,
         paginate_by = 25,
         extra_context = {
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
             'fakeobject': Monitoring(),
             'active_tasks': active_tasks,
             'invcodeform': invcodeform,
@@ -153,20 +155,27 @@ def monitoring_manager(request, id, method):
     if method == 'delete':
         if not request.user.has_perm('exmo2010.delete_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
-        title = _('CHANGE:monitoring_manager')
+        title = _('Delete monitoring %s') % monitoring
+
+        crumbs = ['Home', 'Monitoring']
+        breadcrumbs(request, crumbs)
+        current_title = _('Delete monitoring cycle')
+
         return delete_object(
             request,
             model = Monitoring,
             object_id = id,
             post_delete_redirect = redirect,
             extra_context = {
-                'current_title': title,
+                'current_title': current_title,
+                'title': title,
                 'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
                 }
             )
     else: #update
         if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
+        title = _('Edit monitoring %s') % monitoring
         if request.method == 'POST':
             form = MonitoringForm(request.POST, instance=monitoring)
             if form.is_valid():
@@ -185,13 +194,14 @@ def monitoring_manager(request, id, method):
                 initial={"add_questionnaire": monitoring.has_questionnaire()})
 
         crumbs = ['Home', 'Monitoring']
-        request = breadcrumbs(request, crumbs)
-        title = _('CHANGE:monitoring_manager')
+        breadcrumbs(request, crumbs)
+        current_title = _('Edit monitoring cycle')
 
         return render_to_response(
             'exmo2010/monitoring_form.html',
             {
-                'current_title': title,
+                'current_title': current_title,
+                'title': title,
                 'form': form,
                 'media': form.media,
                 'object': monitoring,
@@ -205,6 +215,7 @@ def monitoring_add(request):
     """
     if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Add new monitoring')
     if request.method == 'POST':
         form = MonitoringForm(request.POST)
         if form.is_valid():
@@ -224,11 +235,11 @@ def monitoring_add(request):
         form.fields['status'].choices = Monitoring.MONITORING_STATUS_NEW
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
-    title = _('CHANGE:monitoring_add')
+    breadcrumbs(request, crumbs)
+    current_title = _('Add monitoring cycle')
 
     return render_to_response('exmo2010/monitoring_form.html',
-            {'current_title': title, 'media': form.media, 'form': form,
+            {'current_title': current_title, 'media': form.media, 'form': form, 'title': title,
              'formset': None,}, context_instance=RequestContext(request))
 
 
@@ -279,12 +290,12 @@ def monitoring_rating(request, m_id):
     rating_list, avg = rating(monitoring, parameters=parameter_list)
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
@@ -292,7 +303,7 @@ def monitoring_rating(request, m_id):
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
-        'current_title': title,
+        'current_title': current_title,
         'form': form,
     }, context_instance=RequestContext(request))
 
@@ -406,6 +417,7 @@ def monitoring_by_experts(request, id):
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     experts = Task.objects.filter(organization__monitoring = monitoring).values('user').annotate(cuser=Count('user'))
+    title = _('Experts of monitoring %s') % monitoring.name
     epk = [e['user'] for e in experts]
     org_list = "( %s )" % " ,".join([str(o.pk) for o in Organization.objects.filter(monitoring = monitoring)])
     queryset = User.objects.filter(pk__in = epk).extra(select = {
@@ -442,12 +454,12 @@ def monitoring_by_experts(request, id):
           )
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return table(
         request,
@@ -456,7 +468,8 @@ def monitoring_by_experts(request, id):
         paginate_by = 15,
         extra_context = {
             'monitoring': monitoring,
-            'current_title': title,
+            'current_title': current_title,
+            'title': title,
             },
         template_name = "exmo2010/expert_list.html",
     )
@@ -569,18 +582,18 @@ def monitoring_parameter_filter(request, m_id):
         hide = 1
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response('exmo2010/monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
         'monitoring': monitoring,
-        'current_title': title,
+        'current_title': current_title,
         'hide': hide
     }, context_instance=RequestContext(request))
 
@@ -593,7 +606,7 @@ def monitoring_parameter_found_report(request, id):
     monitoring = get_object_or_404(Monitoring, pk = id)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    title = _('Report for %(monitoring)s by parameter and found') % { 'monitoring': monitoring }
+    title = _('Report for %s by parameter and found') % monitoring
     queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
             'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s) -
                                     (select count(*) from %(parameterexclude_table)s where %(parameterexclude_table)s.parameter_id = %(parameter_table)s.id
@@ -637,7 +650,7 @@ def monitoring_parameter_found_report(request, id):
         score_per_organization_total = float(score_count_total) / organization_count_total * 100
     return render_to_response('exmo2010/monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
-        'current_title': title,
+        'title': title,
         'object_list': object_list,
         'score_count_total': score_count_total,
         'organization_count_total': organization_count_total,
@@ -785,13 +798,14 @@ def monitoring_organization_import(request, id):
                 rowOKCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
+    title = _('Import organization from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Organization)
 
-    crumbs = ['Home', 'Monitoring', 'MonitoringManagerUpdate']
-    request = breadcrumbs(request, crumbs, monitoring)
-    title = _('CHANGE:monitoring_organization_import')
+    crumbs = ['Home', 'Monitoring']
+    breadcrumbs(request, crumbs, monitoring)
+    current_title = _('Import organization')
 
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
@@ -799,7 +813,8 @@ def monitoring_organization_import(request, id):
       'errLog': errLog,
       'rowOKCount': rowOKCount,
       'rowALLCount': rowALLCount,
-      'current_title': title
+      'current_title': current_title,
+      'title': title,
     }, context_instance=RequestContext(request))
 
 
@@ -873,13 +888,14 @@ def monitoring_parameter_import(request, id):
                 rowOKCount += 1
     except csv.Error, e:
            errLog.append("row %d (csv). %s" % (reader.line_num, e))
+    title = _('Import parameter from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Parameter)
 
-    crumbs = ['Home', 'Monitoring', 'MonitoringManagerUpdate']
-    request = breadcrumbs(request, crumbs, monitoring)
-    title = _('CHANGE:monitoring_parameter_import')
+    crumbs = ['Home', 'Monitoring']
+    breadcrumbs(request, crumbs, monitoring)
+    current_title = _('Import parameter')
 
     return render_to_response('exmo2010/monitoring_import_log.html', {
       'monitoring': monitoring,
@@ -887,7 +903,8 @@ def monitoring_parameter_import(request, id):
       'errLog': errLog,
       'rowOKCount': rowOKCount,
       'rowALLCount': rowALLCount,
-      'current_title': title
+      'current_title': current_title,
+      'title': title,
     }, context_instance=RequestContext(request))
 
 
@@ -899,6 +916,7 @@ def monitoring_comment_report(request, id):
     time_to_answer = monitoring.time_to_answer
     if not (request.user.profile.is_expertA or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Comment report for %s') % monitoring
 
     form = MonitoringCommentStatForm(
         monitoring=monitoring,
@@ -908,7 +926,7 @@ def monitoring_comment_report(request, id):
     if not start_date:
 
         crumbs = ['Home', 'Monitoring']
-        request = breadcrumbs(request, crumbs)
+        breadcrumbs(request, crumbs)
 
         return render_to_response(
             "msg.html", {
@@ -939,12 +957,12 @@ def monitoring_comment_report(request, id):
     active_iifd_person_stats = report.get('active_iifd_person_stats')
 
     crumbs = ['Home', 'Monitoring']
-    request = breadcrumbs(request, crumbs)
+    breadcrumbs(request, crumbs)
 
     if request.expert:
-        title = _('Monitoring cycle')
+        current_title = _('Monitoring cycle')
     else:
-        title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response('exmo2010/monitoring_comment_report.html', {
         'form': form,
@@ -962,7 +980,8 @@ def monitoring_comment_report(request, id):
         'active_iifd_person_stats': active_iifd_person_stats,
         'time_to_answer': time_to_answer,
         'monitoring': monitoring,
-        'current_title': title,
+        'current_title': current_title,
+        'title': title,
         'media': CORE_MEDIA,
         }, context_instance=RequestContext(request))
 
@@ -1019,15 +1038,16 @@ def add_questionnaire(request, m_id):
         else:
             return HttpResponseForbidden(_('Forbidden'))
     else:
+        title = _('Edit monitoring %s') % monitoring
         # title0 - потому что переменную title ждет темплейт base.html и
         # использует не так, как мне тут нужно.
 
-        crumbs = ['Home', 'Monitoring', 'MonitoringManagerUpdate']
-        request = breadcrumbs(request, crumbs, monitoring)
-        title = _('CHANGE:add_questionnaire')
+        crumbs = ['Home', 'Monitoring']
+        breadcrumbs(request, crumbs, monitoring)
+        current_title = _('Add questionnaire')
 
         return render_to_response('exmo2010/add_questionnaire.html',
-            {"monitoring": monitoring, "current_title": title},
+            {"monitoring": monitoring, "current_title": current_title, "title0": title},
             context_instance=RequestContext(request))
 
 

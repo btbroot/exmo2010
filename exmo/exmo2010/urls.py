@@ -18,7 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
+from django.utils.translation import ugettext as _
+
+from exmo2010.view.breadcrumbs import BreadcrumbsView
+
 
 urlpatterns = patterns('',
     url(r'^score/(\d+)_(\d+)/$', 'exmo2010.view.score.score_add',
@@ -175,11 +178,12 @@ urlpatterns = patterns('',
     url(r'^ratings/$', 'exmo2010.view.reports.ratings',
         name='ratings'),
 
-    url(r'^help/$', direct_to_template,
-        {'template': 'exmo2010/help.html'},
+    url(r'^help/$', BreadcrumbsView.as_view(template_name='exmo2010/help.html',
+                                            get_context_data=lambda: {'current_title': _('Help')}),
         name='help'),
-    url(r'^about/$', direct_to_template,
-        {'template': 'exmo2010/about.html'},
+
+    url(r'^about/$', BreadcrumbsView.as_view(template_name='exmo2010/about.html',
+                                             get_context_data=lambda: {'current_title': _('About')}),
         name='about'),
 
     # Поддиректория `accounts`.
