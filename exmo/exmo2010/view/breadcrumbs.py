@@ -42,6 +42,11 @@ def breadcrumbs(request, items, obj=None):
         'Monitoring': (_('Monitoring cycles'), reverse('exmo2010:monitoring_list')),
     }
 
+    try:
+        expert = request.user.profile.is_expert
+    except:
+        expert = False
+
     if isinstance(obj, Score):
         crumbs['ScoreView'] = (
             _('Parameter'),
@@ -71,7 +76,7 @@ def breadcrumbs(request, items, obj=None):
         )
 
     if obj:
-        if request.user.profile.is_expert:
+        if expert:
             crumbs['Organization'] = (
                 _('Monitoring cycle'),
                 reverse('exmo2010:tasks_by_monitoring',
@@ -94,8 +99,4 @@ def breadcrumbs(request, items, obj=None):
     for item in items:
         request.breadcrumbs((crumbs[item],))
 
-    try:
-        expert = request.user.profile.is_expert
-    except:
-        expert = False
     request.expert = expert
