@@ -60,7 +60,7 @@
             <td class="value {{object|criteria_css_class:'found'}}">
                 {{ object.found|default_if_none:"—" }}
             </td>
-            <td></td>
+            <td>{% if object.foundComment %}{{ object.foundComment }}{% endif %}</td>
         </tr>
 
         {% if parameter.complete %}
