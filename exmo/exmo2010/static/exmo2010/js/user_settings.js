@@ -17,6 +17,13 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $("#id_comment_notification_type").live('change', function () {
+
+    if ($(this).val() == '0') {
+        $("#id_notify_on_all_comments, #id_notify_on_my_comments").attr("disabled", true).attr("checked", false);
+    } else {
+        $("#id_notify_on_all_comments, #id_notify_on_my_comments").removeAttr("disabled");
+    }
+
     if ($(this).val() == '2') {
         $("#cnd").show();
     }
