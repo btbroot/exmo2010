@@ -162,5 +162,6 @@ def clean_message(comment):
     comment = cleaner.clean_html(comment)
     # remove redundant lines
     comment = re.sub(r'(<br>(?=(<br>){2,}))', '', comment)
-    comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,2}(?=(</span>)$)', '', comment)
+    comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,4}(?=(</span>)$)', '', comment)
+    comment = re.sub(r'(<br>){1,2}(?=(</p>)$)', '', comment)
     return comment
