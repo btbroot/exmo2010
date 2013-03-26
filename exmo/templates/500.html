@@ -21,6 +21,14 @@
 {% endcomment %}
 {% load i18n %}
 
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}/static/admin/css/base.css{% endblock %}" />
+    <link rel="stylesheet" type="text/css" href="/static/exmo2010/patch.css" />
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}/static/admin/css/ie.css{% endblock %}" /><![endif]-->
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/static/admin/css/rtl.css{% endblock %}" />{% endif %}
+{% endblock %}
+
+
 {% block title %}{% trans 'Server error (500)' %}{% endblock %}
 
 {% block header %}
