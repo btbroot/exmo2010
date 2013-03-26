@@ -18,13 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% spaceless %}
-{% load i18n get_object_by_pk settings_value %}
-{% get_object_by_pk exmo2010.Score object.object_pk as score %}
-<p>{{ score.task.organization }}: {{ score.parameter }}</p>
-<p>{% trans 'Date' %}: {{ object.submit_date }}</p>
-<p>{% trans 'User' %}: {% if object.user.userprofile.is_expert or object.user.is_superuser %}{% if user.userprofile.is_expert or user.is_superuser %}{{ object.user.userprofile.legal_name }}{% else %}{% trans "Freedom Information Foundation Expert" %}{% endif %}{% else %}{{ object.user.userprofile.legal_name }}{% endif %}</p>
-<p>{% trans 'Comment' %}:</p>
-<p>{{ object.comment|safe }}</p>
-<p>URL: <a href="{% settings_value 'EXMO_BASE_URL' %}{{ score.get_absolute_url }}">{% settings_value 'EXMO_BASE_URL' %}{{ score.get_absolute_url }}</a></p>
-{% endspaceless %}
+{% load i18n %}
+{% trans 'Hello' %} {{ user.userprofile.legal_name }}!
+{% trans 'Digest from' %} {{ from }} {% trans 'till' %} {{ till }}
+{% for object in object_list %}----------{% include element_template %}{% endfor %}

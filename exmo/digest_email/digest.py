@@ -19,14 +19,13 @@
 #
 
 from digest_email.models import DigestJournal
-from digest_email.models import Digest
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.template import loader, Context
 from django.conf import settings
 from django.utils.translation import ugettext as _
-
+from django.utils import translation
 
 
 class DigestSend(object):
@@ -35,7 +34,9 @@ class DigestSend(object):
     digest = None
     users = None
     digest_template = "digest_email/digest.html"
+    digest_template_txt = "digest_email/digest.txt"
     element_template = ""
+    element_template_txt = ""
 
     def __init__(self, digest):
         "Принимает наименование дайджеста"
@@ -43,6 +44,7 @@ class DigestSend(object):
         #get all users for digest
         self.users = User.objects.filter(digestpreference__digest = self.digest, email__isnull = False).exclude(email__exact='').distinct('email')
         self.element_template = "digest_email/%s.html" % self.digest.name.replace(' ','_')
+        self.element_template_txt = "digest_email/%s.txt" % self.digest.name.replace(' ','_')
 
     def get_content(self, user, timestamp = datetime.now()):
         "Метод для формирования queryset объектов для отсылки"
@@ -52,12 +54,28 @@ class DigestSend(object):
         """Метод для формирования сообщения по шаблону и контексту. Принимает extra_context
            для передачи доп. контекста в шаблонизатор.
         """
+        translation.activate(settings.LANGUAGE_CODE)
         t = loader.get_template(self.digest_template)
         c = Context({
             'object_list': queryset,
             'element_template': self.element_template,
             'digest': self.digest,
         })
+        if context: c.update(context)
+        if extra_context: c.update(extra_context)
+        return t.render(c)
+
+    def render_txt(self, queryset, context, extra_context = {}):
+        """Метод для формирования сообщения по шаблону и контексту. Принимает extra_context
+           для передачи доп. контекста в шаблонизатор.
+        """
+        translation.activate(settings.LANGUAGE_CODE)
+        t = loader.get_template(self.digest_template_txt)
+        c = Context({
+            'object_list': queryset,
+            'element_template': self.element_template_txt,
+            'digest': self.digest,
+            })
         if context: c.update(context)
         if extra_context: c.update(extra_context)
         return t.render(c)
@@ -82,8 +100,15 @@ class DigestSend(object):
                 'from': self.digest.get_last(user),
                 'till': timestamp,
             }
-            email = EmailMessage(subject, self.render(qs, context, extra_context = {}), settings.DEFAULT_FROM_EMAIL, [user.email,], [], headers = headers)
+            email = EmailMultiAlternatives(subject,
+                                           self.render_txt(qs, context, extra_context={}),
+                                           settings.DEFAULT_FROM_EMAIL,
+                                           [user.email, ],
+                                           [],
+                                           headers=headers,)
+            email.attach_alternative(self.render(qs, context, extra_context={}), "text/html")
+
             if send:
                 email.send()
-                journal = DigestJournal(user = user, digest = self.digest)
+                journal = DigestJournal(user=user, digest=self.digest)
                 journal.save()

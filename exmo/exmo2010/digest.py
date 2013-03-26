@@ -23,7 +23,6 @@
 """
 
 from digest_email.digest import DigestSend
-from digest_email import models as digest_models
 from datetime import datetime
 from django.contrib.comments.models import Comment
 from exmo2010.models import Score
