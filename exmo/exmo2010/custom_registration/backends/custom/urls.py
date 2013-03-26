@@ -42,13 +42,13 @@ from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.utils.translation import ugettext as _
-
 from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
-from exmo2010.custom_registration.views import register_test_cookie, resend_email
+from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
 from exmo2010.view.breadcrumbs import BreadcrumbsView
 
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
+
 
 urlpatterns = patterns('',
     url(r'^activate/complete/$', BreadcrumbsView.as_view(
@@ -91,7 +91,7 @@ urlpatterns = patterns('',
         {'next_page': reverse_lazy('exmo2010:index')},
         name='auth_logout'),
     url(r'^password/reset/$',
-        auth_views.password_reset,
+        password_reset_redirect,
         {'post_reset_redirect':
              reverse_lazy('exmo2010:auth_password_reset_done')},
         name='auth_password_reset'),

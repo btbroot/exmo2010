@@ -34,15 +34,22 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
+from django.contrib.auth.views import password_reset
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 from registration.backends import get_backend
 from registration.models import RegistrationProfile
-
 from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
 from exmo2010.view.breadcrumbs import breadcrumbs
+
+
+@csrf_protect
+def password_reset_redirect(request, **kwargs):
+    if request.user.is_authenticated():
+        return redirect('exmo2010:index')
+    return password_reset(request, **kwargs)
 
 
 @never_cache
@@ -153,6 +160,7 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
     return render_to_response(template_name,
         {'form': form, 'current_title': title},
         context_instance=context)
+
 
 @csrf_protect
 @never_cache
