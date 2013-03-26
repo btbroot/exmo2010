@@ -21,43 +21,56 @@ jQuery(document).ready(function() {
     var $item = $('ul#navigation-menu .menu-item ul')
         .parent('li').children('a');
 
-    $item.toggle(
-        function ( e ) {
-            $(this).addClass('menuitem-hover');
-            $(this).children('span').addClass('menuarrow-hover');
-            $(this).siblings('ul').show();
-
-            e.preventDefault();
-            e.stopPropagation();
-        },
-        function ( e ) {
-            $(this).removeClass('menuitem-hover');
-            $(this).children('span').removeClass('menuarrow-hover');
-            $(this).siblings('ul').hide();
-
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    );
-
     var $person = $('ul#navigation-menu .menu-item.person > a'),
         $icon = $person.children('span'),
         $userArea = $person.siblings('#userarea');
 
-    $person.toggle(
+    function hideDropDown ($this) {
+        $this.removeClass('menuitem-hover');
+        $this.children('span').removeClass('menuarrow-hover');
+        $this.siblings('ul').hide();
+    }
+
+    function hideUserArea () {
+        $person.removeClass('menuitem-hover');
+        $icon.removeClass('menuarrow-hover');
+        $userArea.hide();
+    }
+
+    $item.click(
         function ( e ) {
-            $person.addClass('menuitem-hover');
-            $icon.addClass('menuarrow-hover');
-            $userArea.show();
-            e.preventDefault();
-            e.stopPropagation();
-        },
-        function ( e ) {
-            $person.removeClass('menuitem-hover');
-            $icon.removeClass('menuarrow-hover');
-            $userArea.hide();
+            if (!$(this).hasClass('menuitem-hover')) {
+                $(this).addClass('menuitem-hover');
+                $(this).children('span').addClass('menuarrow-hover');
+                $(this).siblings('ul').show();
+                hideUserArea();
+            } else {
+                hideDropDown($(this));
+            }
+
             e.preventDefault();
             e.stopPropagation();
         }
     );
+
+    $person.click(
+        function ( e ) {
+            if (!$person.hasClass('menuitem-hover')) {
+                $person.addClass('menuitem-hover');
+                $icon.addClass('menuarrow-hover');
+                $userArea.show();
+                hideDropDown($item);
+            } else {
+                hideUserArea();
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    );
+
+    $('html').click(function() {
+        hideDropDown($item);
+        hideUserArea();
+    });
 });
