@@ -26,6 +26,7 @@ $("#id_comment_notification_type").live('change', function () {
 
     if ($(this).val() == '2') {
         $("#cnd").show();
+        $("#id_notify_on_all_comments").attr("disabled", true).attr("checked", false);
     }
     else {
         $("#cnd").hide();
