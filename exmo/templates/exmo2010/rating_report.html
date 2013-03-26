@@ -20,7 +20,15 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% block extrastyle %}{{ block.super }}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    {% include "exmo2010/rating_js.html" %}
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/rating.css"
           xmlns="http://www.w3.org/1999/html"/>
 {% endblock %}
