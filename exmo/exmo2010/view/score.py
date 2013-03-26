@@ -71,7 +71,7 @@ def score_add(request, task_id, parameter_id):
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
     breadcrumbs(request, crumbs, task)
-    current_title = _('CHANGE:score_add')
+    current_title = _('Parameter')
 
     return create_object(
         request,

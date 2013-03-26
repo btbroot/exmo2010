@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-26 15:55+0400\n"
+"POT-Creation-Date: 2013-03-26 18:01+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -153,7 +153,8 @@ msgid "Illegal monitoring"
 msgstr "Неверный цикл мониторинга"
 
 #: exmo/exmo2010/forms.py:215 exmo/exmo2010/view/breadcrumbs.py:52
-#: exmo/exmo2010/view/score.py:124 exmo/exmo2010/view/score.py:237
+#: exmo/exmo2010/view/score.py:74 exmo/exmo2010/view/score.py:124
+#: exmo/exmo2010/view/score.py:237
 #: exmo/templates/exmo2010/monitoring_parameter_filter.html:181
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:45
 msgid "Parameter"
@@ -1013,9 +1014,9 @@ msgstr "Список"
 #: exmo/exmo2010/view/monitoring.py:918 exmo/exmo2010/view/monitoring.py:1007
 #: exmo/exmo2010/view/monitoring.py:1009 exmo/exmo2010/view/monitoring.py:1039
 #: exmo/exmo2010/view/organization.py:35 exmo/exmo2010/view/organization.py:53
-#: exmo/exmo2010/view/organization.py:86 exmo/exmo2010/view/parameter.py:41
+#: exmo/exmo2010/view/organization.py:86 exmo/exmo2010/view/parameter.py:40
 #: exmo/exmo2010/view/parameter.py:61 exmo/exmo2010/view/parameter.py:67
-#: exmo/exmo2010/view/parameter.py:90 exmo/exmo2010/view/reports.py:43
+#: exmo/exmo2010/view/parameter.py:91 exmo/exmo2010/view/reports.py:43
 #: exmo/exmo2010/view/reports.py:70 exmo/exmo2010/view/reports.py:97
 #: exmo/exmo2010/view/reports.py:199 exmo/exmo2010/view/score.py:62
 #: exmo/exmo2010/view/score.py:108 exmo/exmo2010/view/score.py:113
@@ -1236,26 +1237,30 @@ msgstr "Редактировать организацию"
 msgid "Edit organization %s"
 msgstr "Редактировать организацию %s"
 
-#: exmo/exmo2010/view/parameter.py:38
-msgid "Edit parameter"
-msgstr "Редактировать параметр"
-
-#: exmo/exmo2010/view/parameter.py:42
+#: exmo/exmo2010/view/parameter.py:41
 #, python-format
 msgid "Delete parameter %s"
 msgstr "Удалить параметр %s"
+
+#: exmo/exmo2010/view/parameter.py:42
+msgid "Delete parameter"
+msgstr "Удалить параметр"
 
 #: exmo/exmo2010/view/parameter.py:68
 #, python-format
 msgid "Edit parameter %s"
 msgstr "Редактировать параметр %s"
 
-#: exmo/exmo2010/view/parameter.py:93
+#: exmo/exmo2010/view/parameter.py:69
+msgid "Edit parameter"
+msgstr "Редактировать параметр"
+
+#: exmo/exmo2010/view/parameter.py:94
 #, python-format
 msgid "Add parameter for %s"
 msgstr "Добавить параметр для %s"
 
-#: exmo/exmo2010/view/parameter.py:105
+#: exmo/exmo2010/view/parameter.py:106
 msgid "Add parameter"
 msgstr "Добавить новый параметр"
 
@@ -1263,10 +1268,6 @@ msgstr "Добавить новый параметр"
 #: exmo/templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
-
-#: exmo/exmo2010/view/score.py:74
-msgid "CHANGE:score_add"
-msgstr ""
 
 #: exmo/exmo2010/view/score.py:99
 #, python-format
