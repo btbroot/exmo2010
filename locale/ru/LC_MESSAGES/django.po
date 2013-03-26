@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-22 11:22+0400\n"
+"POT-Creation-Date: 2013-03-26 15:55+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -51,7 +51,7 @@ msgstr "Комментарий закрыт и отвечен"
 msgid "Comment is closed and not answered"
 msgstr "Комментарии закрыт не отвечен"
 
-#: exmo/digest_email/digest.py:76
+#: exmo/digest_email/digest.py:94
 #, python-format
 msgid "%(prefix)sEmail digest for %(digest)s"
 msgstr "%(prefix)sДайджест для %(digest)s"
@@ -152,7 +152,7 @@ msgstr "Пользователь не активен"
 msgid "Illegal monitoring"
 msgstr "Неверный цикл мониторинга"
 
-#: exmo/exmo2010/forms.py:215 exmo/exmo2010/view/breadcrumbs.py:47
+#: exmo/exmo2010/forms.py:215 exmo/exmo2010/view/breadcrumbs.py:52
 #: exmo/exmo2010/view/score.py:124 exmo/exmo2010/view/score.py:237
 #: exmo/templates/exmo2010/monitoring_parameter_filter.html:181
 #: exmo/templates/exmo2010/monitoring_parameter_found_report.html:45
@@ -901,18 +901,18 @@ msgstr "Пользователя с таким адресом электронн
 msgid "Account is activated already."
 msgstr "Учетная зпись уже активрована."
 
-#: exmo/exmo2010/custom_registration/views.py:79
+#: exmo/exmo2010/custom_registration/views.py:86
 msgid "Password reset confirm"
 msgstr "Смена пароля завершена"
 
-#: exmo/exmo2010/custom_registration/views.py:151
+#: exmo/exmo2010/custom_registration/views.py:158
 #: exmo/exmo2010/dashboard/menu.py:106
 #: exmo/templates/registration/registration_form.html:70
 #: exmo/templates/user_dashboard/modules/quicklinks.html:34
 msgid "Registration"
 msgstr "Регистрация"
 
-#: exmo/exmo2010/custom_registration/views.py:216
+#: exmo/exmo2010/custom_registration/views.py:224
 msgid "Login"
 msgstr "Вход в систему"
 
@@ -1032,7 +1032,7 @@ msgstr "Список"
 msgid "Forbidden"
 msgstr "Запрещено"
 
-#: exmo/exmo2010/view/breadcrumbs.py:60 exmo/exmo2010/view/score.py:271
+#: exmo/exmo2010/view/breadcrumbs.py:65 exmo/exmo2010/view/score.py:271
 #: exmo/templates/exmo2010/rating_color.html:39
 #: exmo/templates/exmo2010/rating_common.html:24
 #: exmo/templates/exmo2010/rating_content.html:112
@@ -1043,11 +1043,11 @@ msgstr "Запрещено"
 msgid "Organization"
 msgstr "Организация"
 
-#: exmo/exmo2010/view/breadcrumbs.py:68
+#: exmo/exmo2010/view/breadcrumbs.py:73
 msgid "Task for monitoring "
 msgstr "Задачи цикла мониторинга "
 
-#: exmo/exmo2010/view/breadcrumbs.py:76 exmo/exmo2010/view/claim.py:221
+#: exmo/exmo2010/view/breadcrumbs.py:81 exmo/exmo2010/view/claim.py:221
 #: exmo/exmo2010/view/clarification.py:157 exmo/exmo2010/view/monitoring.py:81
 #: exmo/exmo2010/view/monitoring.py:296 exmo/exmo2010/view/monitoring.py:460
 #: exmo/exmo2010/view/monitoring.py:588 exmo/exmo2010/view/monitoring.py:963
@@ -1056,7 +1056,7 @@ msgstr "Задачи цикла мониторинга "
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
-#: exmo/exmo2010/view/breadcrumbs.py:83 exmo/exmo2010/view/claim.py:223
+#: exmo/exmo2010/view/breadcrumbs.py:88 exmo/exmo2010/view/claim.py:223
 #: exmo/exmo2010/view/clarification.py:159 exmo/exmo2010/view/monitoring.py:83
 #: exmo/exmo2010/view/monitoring.py:298 exmo/exmo2010/view/monitoring.py:462
 #: exmo/exmo2010/view/monitoring.py:590 exmo/exmo2010/view/monitoring.py:965
@@ -1066,7 +1066,7 @@ msgstr "Цикл мониторинга"
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: exmo/exmo2010/view/breadcrumbs.py:89 exmo/exmo2010/view/claim.py:223
+#: exmo/exmo2010/view/breadcrumbs.py:94 exmo/exmo2010/view/claim.py:223
 #: exmo/exmo2010/view/clarification.py:159 exmo/exmo2010/view/monitoring.py:83
 #: exmo/exmo2010/view/monitoring.py:298 exmo/exmo2010/view/monitoring.py:462
 #: exmo/exmo2010/view/monitoring.py:590 exmo/exmo2010/view/monitoring.py:965
@@ -1549,19 +1549,23 @@ msgstr ""
 msgid "Exmo"
 msgstr "Эксмо"
 
-#: exmo/templates/digest_email/digest.html:22
+#: exmo/templates/digest_email/digest.html:120
+#: exmo/templates/digest_email/digest.txt:22
 msgid "Hello"
 msgstr "Здравствуйте"
 
-#: exmo/templates/digest_email/digest.html:23
+#: exmo/templates/digest_email/digest.html:121
+#: exmo/templates/digest_email/digest.txt:23
 msgid "Digest from"
 msgstr "Дайджест с"
 
-#: exmo/templates/digest_email/digest.html:23
+#: exmo/templates/digest_email/digest.html:121
+#: exmo/templates/digest_email/digest.txt:23
 msgid "till"
 msgstr "по"
 
 #: exmo/templates/digest_email/notify_comment.html:25
+#: exmo/templates/digest_email/notify_comment.txt:25
 #: exmo/templates/exmo2010/emails/score_claim.html:29
 #: exmo/templates/exmo2010/emails/score_claim.txt:25
 #: exmo/templates/exmo2010/emails/score_clarification.html:27
@@ -1570,10 +1574,20 @@ msgid "Date"
 msgstr "Дата"
 
 #: exmo/templates/digest_email/notify_comment.html:26
+#: exmo/templates/digest_email/notify_comment.txt:26
 msgid "User"
 msgstr "Пользователь"
 
+#: exmo/templates/digest_email/notify_comment.html:26
+#: exmo/templates/digest_email/notify_comment.txt:26
+#: exmo/templates/exmo2010/emails/score_comment.html:35
+#: exmo/templates/exmo2010/emails/score_comment.txt:28
+#: exmo/templates/exmo2010/score/comment.html:49
+msgid "Freedom Information Foundation Expert"
+msgstr "Эксперт Фонда Свободы Информации"
+
 #: exmo/templates/digest_email/notify_comment.html:27
+#: exmo/templates/digest_email/notify_comment.txt:27
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -2411,10 +2425,6 @@ msgstr "Ответить на уточнение"
 #: exmo/templates/exmo2010/score/clarification.html:92
 msgid "Specify"
 msgstr "Уточнить"
-
-#: exmo/templates/exmo2010/score/comment.html:49
-msgid "Freedom Information Foundation Expert"
-msgstr "Эксперт Фонда Свободы Информации"
 
 #: exmo/templates/exmo2010/score/comment.html:66
 msgid "Peremptory day to answer your question is"

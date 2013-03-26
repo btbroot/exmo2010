@@ -30,12 +30,12 @@
             <span class="bold">
             {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
                 {% if admin %}
-                    {{ comment.user }},
+                    {{ comment.user.userprofile.legal_name }},
                 {% else %}
-                    svobodainfo,
+                    {% trans 'Freedom Information Foundation Expert' %},
                 {% endif %}
             {% else %}
-                {{ comment.user }},
+                {{ comment.user.userprofile.legal_name }},
             {% endif %}
             </span>
             {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
