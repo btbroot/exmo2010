@@ -52,6 +52,10 @@ def comment_list(request):
     else:
         comments = user.profile.get_filtered_not_answered_comments()
         title = current_title = _('Comments')
+
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+
         return render_to_response('exmo2010/reports/comment_list.html',
                                   {
                                       'current_title': current_title,
@@ -79,6 +83,10 @@ def clarification_list(request):
     else:
         clarifications = user.profile.get_filtered_opened_clarifications()
         title = current_title = _('Clarifications')
+
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+
         return render_to_response('exmo2010/reports/clarification_list.html',
                                   {
                                       'current_title': current_title,
@@ -106,6 +114,10 @@ def claim_list(request):
     else:
         claims = user.profile.get_filtered_opened_claims()
         title = current_title = _('Claims')
+
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+
         return render_to_response('exmo2010/reports/claim_list.html',
                                   {
                                       'current_title': current_title,
