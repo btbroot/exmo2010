@@ -16,39 +16,61 @@
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$("#id_comment_notification_type").live('change', function () {
+$(document).ready(function () {
 
-    if ($(this).val() == '0') {
-        $("#id_notify_on_all_comments, #id_notify_on_my_comments").attr("disabled", true).attr("checked", false);
-    } else {
-        $("#id_notify_on_all_comments, #id_notify_on_my_comments").removeAttr("disabled");
+    var $comment_type = $("#id_comment_notification_type");
+    var $score_type = $("#id_score_notification_type");
+    var $comments = $("#id_notify_on_all_comments, #id_notify_on_my_comments");
+    var $all_comments = $("#id_notify_on_all_comments");
+    var $cnd = $("#cnd");
+    var $snd = $("#snd");
+
+    switch($comment_type.val()){
+        case '0':
+            $comments.attr("disabled", true).attr("checked", false);
+            $cnd.hide();
+            break;
+        case '1':
+            $cnd.hide();
+            break;
+        case '2':
+            $all_comments.attr("disabled", true).attr("checked", false);
+            break;
     }
 
-    if ($(this).val() == '2') {
-        $("#cnd").show();
-        $("#id_notify_on_all_comments").attr("disabled", true).attr("checked", false);
+    if ($score_type.val() != '2') {
+        $snd.hide();
     }
-    else {
-        $("#cnd").hide();
-    }
-});
-$("#id_score_notification_type").live('change', function () {
-    if ($(this).val() == '2') {
-        $("#snd").show();
-    }
-    else {
-        $("#snd").hide();
-    }
-});
 
+    $comment_type.change(function () {
 
-$(function () {
-        if ($("#id_comment_notification_type").val() != '2') {
-            $("#cnd").hide();
+        switch($(this).val()){
+            case '0':
+                $comments.attr("disabled", true).attr("checked", false);
+                $cnd.hide();
+                break;
+            case '1':
+                $comments.removeAttr("disabled");
+                $cnd.hide();
+                break;
+            case '2':
+                $comments.removeAttr("disabled");
+                $all_comments.removeAttr("disabled").attr("disabled", true).attr("checked", false);
+                $cnd.show();
+                break;
         }
-        if ($("#id_score_notification_type").val() != '2') {
-            $("#snd").hide();
+
+    });
+
+    $score_type.change(function () {
+
+        if ($(this).val() == '2') {
+            $snd.show();
+        }
+        else {
+            $snd.hide();
         }
 
-    }
-);
+    });
+
+});
