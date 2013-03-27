@@ -382,7 +382,6 @@ msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка измене
 
 #: exmo/exmo2010/helpers.py:542
 #: exmo/templates/exmo2010/emails/task_user_changed.txt:22
-#, fuzzy
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
