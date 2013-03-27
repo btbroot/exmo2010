@@ -68,6 +68,8 @@ USE_I18N = True
 # Valid only with trailing slash.
 SITE_PREFIX = '/'
 
+USE_ETAGS = True
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
@@ -87,25 +89,30 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.eggs.Loader'
 )
 
-if not DEBUG:
-    MIDDLEWARE_CLASSES = (
-        'django.middleware.cache.UpdateCacheMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.cache.FetchFromCacheMiddleware',
-        )
-else:
-    MIDDLEWARE_CLASSES = ('django.middleware.common.CommonMiddleware',)
+MIDDLEWARE_CLASSES = ()
 
-MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+if not DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'django.middleware.cache.UpdateCacheMiddleware',
+    )
+
+MIDDLEWARE_CLASSES += (
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
-    'reversion.middleware.RevisionMiddleware',
     'django403.middleware.Django403Middleware',
     'breadcrumbs.middleware.BreadcrumbsMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 )
+
+if not DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'django.middleware.cache.FetchFromCacheMiddleware',
+    )
 
 ROOT_URLCONF = 'exmo.urls'
 
