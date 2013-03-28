@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-26 18:01+0400\n"
+"POT-Creation-Date: 2013-03-28 18:55+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -51,7 +51,7 @@ msgstr "Комментарий закрыт и отвечен"
 msgid "Comment is closed and not answered"
 msgstr "Комментарии закрыт не отвечен"
 
-#: exmo/digest_email/digest.py:94
+#: exmo/digest_email/digest.py:96
 #, python-format
 msgid "%(prefix)sEmail digest for %(digest)s"
 msgstr "%(prefix)sДайджест для %(digest)s"
@@ -766,7 +766,7 @@ msgstr "уведомления дайджестами"
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
 
-#: exmo/exmo2010/models.py:1178 exmo/exmo2010/dashboard/menu.py:92
+#: exmo/exmo2010/models.py:1178 exmo/exmo2010/dashboard/menu.py:93
 #: exmo/templates/exmo2010/user_settings.html:36
 #: exmo/templates/user_dashboard/modules/quicklinks.html:31
 msgid "Preferences"
@@ -789,7 +789,7 @@ msgstr "Профиль пользователя"
 msgid "Dashboard"
 msgstr "Главная"
 
-#: exmo/exmo2010/urls.py:182 exmo/exmo2010/dashboard/menu.py:87
+#: exmo/exmo2010/urls.py:182 exmo/exmo2010/dashboard/menu.py:88
 #: exmo/templates/errors_header.html:45 exmo/templates/exmo2010/help.html:31
 msgid "Help"
 msgstr "Помощь"
@@ -906,7 +906,7 @@ msgid "Password reset confirm"
 msgstr "Смена пароля завершена"
 
 #: exmo/exmo2010/custom_registration/views.py:158
-#: exmo/exmo2010/dashboard/menu.py:106
+#: exmo/exmo2010/dashboard/menu.py:107
 #: exmo/templates/registration/registration_form.html:70
 #: exmo/templates/user_dashboard/modules/quicklinks.html:34
 msgid "Registration"
@@ -951,14 +951,14 @@ msgid "Comments"
 msgstr "Комментарии"
 
 #: exmo/exmo2010/dashboard/dashboard.py:112 exmo/exmo2010/dashboard/menu.py:73
-#: exmo/exmo2010/view/reports.py:81
+#: exmo/exmo2010/view/reports.py:85
 #: exmo/templates/exmo2010/monitoring_utility.html:35
 #: exmo/templates/exmo2010/score/tabs.html:39
 msgid "Clarifications"
 msgstr "Уточнения"
 
 #: exmo/exmo2010/dashboard/dashboard.py:117 exmo/exmo2010/dashboard/menu.py:75
-#: exmo/exmo2010/view/reports.py:108
+#: exmo/exmo2010/view/reports.py:116
 #: exmo/templates/exmo2010/monitoring_utility.html:36
 msgid "Claims"
 msgstr "Претензии"
@@ -973,23 +973,23 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: exmo/exmo2010/dashboard/menu.py:81 exmo/exmo2010/view/reports.py:194
-#: exmo/exmo2010/view/reports.py:208
+#: exmo/exmo2010/dashboard/menu.py:82 exmo/exmo2010/view/reports.py:206
+#: exmo/exmo2010/view/reports.py:220
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: exmo/exmo2010/dashboard/menu.py:84 exmo/exmo2010/view/reports.py:166
+#: exmo/exmo2010/dashboard/menu.py:85 exmo/exmo2010/view/reports.py:178
 #: exmo/templates/errors_header.html:40
 #: exmo/templates/exmo2010/monitoring_comment_report.html:67
 msgid "Statistics"
 msgstr "Статистика"
 
-#: exmo/exmo2010/dashboard/menu.py:93
+#: exmo/exmo2010/dashboard/menu.py:94
 #: exmo/templates/user_dashboard/modules/quicklinks.html:32
 msgid "Log out"
 msgstr "Выйти"
 
-#: exmo/exmo2010/dashboard/menu.py:103
+#: exmo/exmo2010/dashboard/menu.py:104
 #: exmo/templates/registration/login.html:107
 #: exmo/templates/registration/password_reset_complete.html:44
 #: exmo/templates/user_dashboard/modules/quicklinks.html:35
@@ -1016,8 +1016,8 @@ msgstr "Список"
 #: exmo/exmo2010/view/organization.py:86 exmo/exmo2010/view/parameter.py:40
 #: exmo/exmo2010/view/parameter.py:61 exmo/exmo2010/view/parameter.py:67
 #: exmo/exmo2010/view/parameter.py:91 exmo/exmo2010/view/reports.py:43
-#: exmo/exmo2010/view/reports.py:70 exmo/exmo2010/view/reports.py:97
-#: exmo/exmo2010/view/reports.py:199 exmo/exmo2010/view/score.py:62
+#: exmo/exmo2010/view/reports.py:74 exmo/exmo2010/view/reports.py:105
+#: exmo/exmo2010/view/reports.py:211 exmo/exmo2010/view/score.py:62
 #: exmo/exmo2010/view/score.py:108 exmo/exmo2010/view/score.py:113
 #: exmo/exmo2010/view/score.py:200 exmo/exmo2010/view/score.py:231
 #: exmo/exmo2010/view/score.py:299 exmo/exmo2010/view/score.py:415
@@ -1263,7 +1263,7 @@ msgstr "Добавить параметр для %s"
 msgid "Add parameter"
 msgstr "Добавить новый параметр"
 
-#: exmo/exmo2010/view/reports.py:127
+#: exmo/exmo2010/view/reports.py:139
 #: exmo/templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
@@ -1515,15 +1515,15 @@ msgid "We're sorry, but the requested page could not be found."
 msgstr ""
 "Приносим свои извинения, но страница которую вы запросили не существует."
 
-#: exmo/templates/500.html:24
+#: exmo/templates/500.html:32
 msgid "Server error (500)"
 msgstr "Ошибка сервера (500)"
 
-#: exmo/templates/500.html:31
+#: exmo/templates/500.html:39
 msgid "Server Error <em>(500)</em>"
 msgstr "Ошибка сервера <em>(500)</em>"
 
-#: exmo/templates/500.html:32
+#: exmo/templates/500.html:40
 msgid ""
 "There's been an error. It's been reported to the site administrators via e-"
 "mail and should be fixed shortly. Thanks for your patience."
@@ -1590,6 +1590,18 @@ msgstr "Эксперт Фонда Свободы Информации"
 #: exmo/templates/digest_email/notify_comment.txt:27
 msgid "Comment"
 msgstr "Комментарий"
+
+#: exmo/templates/digest_email/notify_comment.html:29
+#: exmo/templates/digest_email/notify_comment.txt:30
+#: exmo/templates/exmo2010/emails/score_claim.html:44
+#: exmo/templates/exmo2010/emails/score_claim.txt:37
+#: exmo/templates/exmo2010/emails/score_clarification.html:42
+#: exmo/templates/exmo2010/emails/score_clarification.txt:37
+#: exmo/templates/exmo2010/emails/score_comment.html:46
+#: exmo/templates/exmo2010/emails/score_comment.txt:36
+#: exmo/templates/exmo2010/emails/task_user_changed.txt:24
+msgid "Link"
+msgstr "Ссылка"
 
 #: exmo/templates/exmo2010/about.html:31
 msgid "About project"
@@ -2282,16 +2294,6 @@ msgstr "Кому"
 #: exmo/templates/exmo2010/emails/score_claim.txt:29
 msgid "Claim"
 msgstr "Претензия"
-
-#: exmo/templates/exmo2010/emails/score_claim.html:44
-#: exmo/templates/exmo2010/emails/score_claim.txt:37
-#: exmo/templates/exmo2010/emails/score_clarification.html:42
-#: exmo/templates/exmo2010/emails/score_clarification.txt:37
-#: exmo/templates/exmo2010/emails/score_comment.html:46
-#: exmo/templates/exmo2010/emails/score_comment.txt:36
-#: exmo/templates/exmo2010/emails/task_user_changed.txt:24
-msgid "Link"
-msgstr "Ссылка"
 
 #: exmo/templates/exmo2010/emails/score_clarification.html:36
 #: exmo/templates/exmo2010/emails/score_clarification.txt:29

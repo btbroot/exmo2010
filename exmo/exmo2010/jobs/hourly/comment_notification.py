@@ -26,12 +26,13 @@ Can be run as a cronjob to send comment digest
 
 from django_extensions.management.jobs import HourlyJob
 
+from digest_email.models import Digest
+from exmo2010.digest import ScoreCommentDigest
+
 
 class Job(HourlyJob):
     help = "Comment daily digest notification"
 
     def execute(self):
-        from exmo2010.digest import ScoreCommentDigest
-        from digest_email.models import Digest
         digest = ScoreCommentDigest(Digest.objects.get(name = 'notify_comment'))
         digest.send()

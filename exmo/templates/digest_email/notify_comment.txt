@@ -27,4 +27,5 @@
 {% trans 'Comment' %}:
 {{ object.comment|striptags }}
 URL: {% settings_value 'EXMO_BASE_URL' %}{{ score.get_absolute_url }}
+{% trans 'Link' %}: http://{{ site }}{{ score.get_absolute_url }}
 {% endspaceless %}

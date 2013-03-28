@@ -20,6 +20,7 @@
 
 from digest_email.models import DigestJournal
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader, Context
@@ -91,6 +92,7 @@ class DigestSend(object):
             qs = self.get_content(user, timestamp)
             if not qs:
                 continue
+            current_site = Site.objects.get_current()
             subject = _("%(prefix)sEmail digest for %(digest)s") % {
                 'prefix': settings.EMAIL_SUBJECT_PREFIX,
                 'digest': self.digest,
@@ -99,6 +101,7 @@ class DigestSend(object):
                 'user': user,
                 'from': self.digest.get_last(user),
                 'till': timestamp,
+                'site': current_site,
             }
             email = EmailMultiAlternatives(subject,
                                            self.render_txt(qs, context, extra_context={}),
