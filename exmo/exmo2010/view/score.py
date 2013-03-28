@@ -401,7 +401,7 @@ def score_add_comment(request, score_id):
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
         breadcrumbs(request, crumbs, score)
-        current_title = _('CHANGE:score_add_comment')
+        current_title = _('Add comment')
 
         return render_to_response(
             'exmo2010/score_comment_form.html',

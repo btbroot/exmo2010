@@ -297,7 +297,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
 
     crumbs = ['Home', 'Monitoring', 'Organization']
     breadcrumbs(request, crumbs, monitoring)
-    current_title = _('CHANGE:tasks_by_monitoring_and_organization')
+    current_title = _('Organization')
 
     return table(request, headers, queryset=queryset, paginate_by=15,
                  extra_context={

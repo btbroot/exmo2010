@@ -283,6 +283,7 @@ def monitoring_rating(request, m_id):
     monitoring = get_object_or_404(Monitoring, pk=m_id)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Rating')
 
     has_npa = monitoring.has_npa
     rating_type, parameter_list, form = rating_type_parameter(request,
@@ -304,6 +305,7 @@ def monitoring_rating(request, m_id):
         'rating_type': rating_type,
         'average': avg,
         'current_title': current_title,
+        'title': title,
         'form': form,
     }, context_instance=RequestContext(request))
 
