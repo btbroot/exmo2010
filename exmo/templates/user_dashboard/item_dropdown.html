@@ -18,21 +18,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n admin_tools_menu_tags %}
+{% load admin_tools_menu_tags %}
 {% spaceless %}
     {% if not item.is_empty %}
-        <li class="menu-item person">
-            <a href="{{ item.url }}">
-                {{ item.title }}<span class="icon"></span>
-            </a>
-            <div id="userarea" class="hidden">
-                <div class="auth">
-                    {% for child in item.children %}
-                        <a href="{{ child.url }}">{{ child.title }}</a>
+        <li class="menu-item{% ifequal index 1 %} first{% endifequal %}{% if not item.enabled %} disabled{% endif %}{% if selected %} selected{% endif %}{% if item.css_classes %} {{ item.css_classes|join:' ' }}{% endif %}">
+            <a href="{% if item.url and item.enabled %}{{ item.url }}{% else %}#{% endif %}"{% if item.description %} title="{{ item.description }}"{% endif %}{% if item.accesskey %} accesskey="{{ item.accesskey }}"{% endif %}>{{ item.title }}{% if item.children and item.enabled %}<span class="icon"></span>{% endif %}</a>
+            {% if item.children and item.enabled %}
+                <ul>
+                    {% for child_item in item.children %}
+                        {% admin_tools_render_menu_item child_item %}
                     {% endfor %}
-                </div>
-            </div>
+                </ul>
+            {% endif %}
         </li>
     {% endif %}
 {% endspaceless %}

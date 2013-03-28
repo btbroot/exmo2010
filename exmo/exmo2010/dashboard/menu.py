@@ -76,7 +76,8 @@ class CustomMenu(Menu):
                                reverse('exmo2010:claim_list'))
             ]
             self.children.append(items.MenuItem(_('Messages'),
-                                                children=communication_children))
+                                                children=communication_children,
+                                                template='user_dashboard/item_dropdown.html'))
 
         self.children.append(items.MenuItem(_('Ratings'),
                                             reverse('exmo2010:ratings')))
