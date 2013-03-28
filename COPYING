@@ -323,9 +323,18 @@ exmo/exmo2010/static/exmo2010/ckeditor/
 Copyright (C) 2003 - 2013 CKSource - Frederico Knabben
 http://ckeditor.com/about/license
 
-CKEditor is distributed under the GPL, LGPL and MPL Open Source licenses.
-This triple copyleft licensing model is flexible and allows you
-to choose the license that is best suited for your needs.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 
