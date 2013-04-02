@@ -362,8 +362,7 @@ class MonitoringForm(forms.ModelForm):
         css = {
             'all': (
                 settings.STATIC_URL + 'exmo2010/css/jquery-ui.css',
-                settings.STATIC_URL + 'exmo2010/css/exmo2010-base.css',
-                )
+            )
         }
         js = (
             settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',

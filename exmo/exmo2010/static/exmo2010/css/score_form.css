@@ -172,7 +172,7 @@ span.non-relevant-button
 
 .reset-button input {
     cursor: pointer;
-    color: #5B80B2;
+    color: #005C9C;
     background-color: transparent;
     border: none;
     margin: 0;
@@ -180,7 +180,7 @@ span.non-relevant-button
 }
 
 .reset-button input:hover {
-    color: #036;
+    color: #005580;
 }
 
 h1

@@ -36,7 +36,7 @@ table.messages-report td.title
 
 .title span
 {
-    border-bottom: 1px dashed;
+    border-bottom: 1px dotted;
 }
 
 .title.open

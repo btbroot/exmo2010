@@ -42,7 +42,7 @@
                     {% if delete_claim %}
                     <div class="claim-delete-container">
                         {% url exmo2010:claim_delete as claim_delete_url %}
-                        <a class="delete-claim messages-pseudo"
+                        <a class="delete-claim pseudo"
                            href="{{ claim_delete_url }}"
                            rel="{{ c.pk }}">
                             {% trans "Delete claim" %}
@@ -66,7 +66,7 @@
 
                     {% if not request.user.is_superuser and c.creator != request.user and not c.answer and answer_claim %}
                     <div class="messages-reply">
-                        <a class="answer-claim messages-pseudo"
+                        <a class="answer-claim pseudo"
                            href="#"
                            rel="{{ c.pk }}">
                             {% trans "Answer claim" %}

@@ -43,26 +43,43 @@
         <p class="rating-menu">
             <b>{% trans 'Rating view' %}:</b>
             {% if rating_type == "all" %}
+            <span class="active">
                 <span>{% trans 'all parameters' %}</span>
+            </span>
             {% else %}
-                <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=all" class="pseudolink">{% trans 'all parameters' %}</a>
+            <span>
+                <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=all">{% trans 'all parameters' %}</a>
+            </span>
             {% endif %}
+
             {% if has_npa %}
                 {% if rating_type == "npa" %}
-                    <span>{% trans 'npa parameters' %}</span>
+                    <span class="active">
+                        <span>{% trans 'npa parameters' %}</span>
+                    </span>
                 {% else %}
-                    <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=npa" class="pseudolink">{% trans 'npa parameters' %}</a>
+                    <span>
+                        <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=npa">{% trans 'npa parameters' %}</a>
+                    </span>
                 {% endif %}
                 {% if rating_type == "other" %}
-                    <span>{% trans 'other parameters' %}</span>
+                    <span class="active">
+                        <span>{% trans 'other parameters' %}</span>
+                    </span>
                 {% else %}
-                    <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=other" class="pseudolink">{% trans 'other parameters' %}</a>
+                    <span>
+                        <a href="?{% if report %}monitoring={{ monitoring.pk }}&{% endif %}type=other">{% trans 'other parameters' %}</a>
+                    </span>
                 {% endif %}
             {% endif %}
             {% if rating_type == "user" %}
-                <span>{% trans 'user selected' %}</span>
+                <span class="active">
+                    <span>{% trans 'user selected' %}</span>
+                </span>
             {% else %}
-                <a id="user-selcted" href="#" class="pseudolink">{% trans 'user selected' %}</a>
+                <span>
+                    <a id="user-selcted" href="#" class="pseudo">{% trans 'user selected' %}</a>
+                </span>
             {% endif %}
         </p>
     </div>
@@ -86,7 +103,7 @@
 
     <p id="parameters-toggle" class="arrow-down" style="{% if rating_type != "user" %}display: none;{% endif %}">
         <a href="#"
-           class="pseudolink-toggle"
+           class="pseudo"
            style="float: right;">
             {% trans 'Show parameter list' %}
         </a>

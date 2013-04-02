@@ -57,26 +57,6 @@ td, th .rating_color {
     background-color: #f5f5f5;
 }
 
-a.pseudolink-toggle {
-    border-bottom: 1px dashed;
-    font-family:Verdana;
-    font-size: 12px;
-    font-weight:bold;
-    color: #333;
-    cursor: pointer;
-}
-
-.pseudolink {
-    border-bottom: 1px dashed;
-    color: #5B80B2 !important;
-    cursor: pointer;
-}
-
-.pseudolink-off {
-    color: #333 !important;
-    cursor: text !important;
-}
-
 div.scroll {
     height: 200px;
     overflow: auto;
@@ -89,9 +69,15 @@ div.scroll {
     font-size: 14px;
 }
 
-.rating-menu a, .rating-menu span
+.rating-menu > span.active
 {
-    margin-left: 20px;
+    background-color: #FFFFD6;
+}
+
+.rating-menu > span
+{
+    margin-left: 5px;
+    padding: 5px;
 }
 
 .parameter-list
@@ -129,10 +115,10 @@ div.scroll {
 
 .arrow-up
 {
-    background-image: url(img/arrow_up_parameters.png);
+    background-image: url(../img/arrow_up_parameters.png);
 }
 
 .arrow-down
 {
-    background-image: url(img/arrow_down_parameters.png);
+    background-image: url(../img/arrow_down_parameters.png);
 }

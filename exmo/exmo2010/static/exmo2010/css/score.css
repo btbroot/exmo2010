@@ -232,7 +232,6 @@ label
     float: left;
     display: block;
     margin-bottom: 5px;
-    line-height: 42px;
 }
 
 .score-header dt
@@ -294,19 +293,23 @@ ul.nav-tabs li
 {
     list-style-type: none;
     float: left;
-    padding-right: 25px;
+    padding-right: 10px;
     font-size: 15px;
-    font-weight: bold;
+}
+
+ul.nav-tabs li span
+{
+    padding: 5px;
+}
+
+ul.nav-tabs li.active span
+{
+    padding: 5px;
+    background-color: #FFFFD6;
 }
 
 ul.nav-tabs li.active a
 {
-    color: #333;
+    color: #222;
     border: 0;
-}
-
-ul.nav-tabs li > a
-{
-    border: 0;
-    border-bottom: 1px dashed;
 }

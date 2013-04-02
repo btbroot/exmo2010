@@ -3,6 +3,7 @@
  * http://twitter.github.com/bootstrap/javascript.html#tabs
  * ========================================================
  * Copyright 2012 Twitter, Inc.
+ * Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +48,7 @@
         selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
       }
 
-      if ( $this.parent('li').hasClass('active') ) return
+      if ( $this.closest('li').hasClass('active') ) return
 
       previous = $ul.find('.active:last a')[0]
 
@@ -61,7 +62,7 @@
 
       $target = $(selector)
 
-      this.activate($this.parent('li'), $ul)
+      this.activate($this.closest('li'), $ul)
       this.activate($target, $target.parent(), function () {
         $this.trigger({
           type: 'shown'
@@ -91,7 +92,7 @@
           element.removeClass('fade')
         }
 
-        if ( element.parent('.dropdown-menu') ) {
+        if ( element.closest('.dropdown-menu') ) {
           element.closest('li.dropdown').addClass('active')
         }
 
