@@ -26,43 +26,48 @@
 {% endblock %}
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
-{% block pretitle %}
-{% include "exmo2010/monitoring_utility.html" %}
+
+{% block nav_sidebar %}
+    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
 {% endblock %}
+
+{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+{% block content_title %}{% trans "Organizations" %}{% endblock %}
+{% block content_class %}sidebar-ident{% endblock %}
 {% block content %}
-<div id=organization_list>
-<table>
-  {% table_header headers %}
-  <tbody>
-    <tr><td>
-        {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-        {%if perm%}
-            <a href="{% url exmo2010:organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
-        {%endif%}</td></tr>
-    {% for object in object_list %}
-      <tr>
-      <td>
-      <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
-        {% if perm %}
-            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
-        {%endif%}
-        {% if perm and not monitoring.is_publish %}
-            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
-        {%endif%}
-      </td>
-      {% if perm %}
-      <td>
-        {{ object.task__count }}
-      </td>
-      {% endif %}
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% include "exmo2010/paginator.html" %}
-</div>
-{% if perm %}
-    <br />
-    {% monitoring_stats monitoring %}
-{% endif %}
+    <div id=organization_list>
+        <table>
+            {% table_header headers %}
+            <tbody>
+            <tr><td>
+                {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+                {%if perm%}
+                    <a href="{% url exmo2010:organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
+                {%endif%}</td></tr>
+            {% for object in object_list %}
+                <tr>
+                    <td>
+                        <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
+                        {% if perm %}
+                            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
+                        {%endif%}
+                        {% if perm and not monitoring.is_publish %}
+                            &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
+                        {%endif%}
+                    </td>
+                    {% if perm %}
+                        <td>
+                            {{ object.task__count }}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% include "exmo2010/paginator.html" %}
+    </div>
+    {% if perm %}
+        <br />
+        {% monitoring_stats monitoring %}
+    {% endif %}
 {%endblock%}

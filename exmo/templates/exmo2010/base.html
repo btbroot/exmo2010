@@ -19,77 +19,80 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n %}
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-<head>
-<title>{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'AIS Exmo' %}{% endblock title %}</title>
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/patch.css" />
+    {% load i18n %}
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+    <head>
+        <title>{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'AIS Exmo' %}{% endblock title %}</title>
+        <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
+        <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/patch.css" />
+        <!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dashboard/css/dropdown.css" /> -->
+        {% block extrastyle %}{% endblock %}
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
+        {% if LANGUAGE_BIDI %}
+            <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />
+        {% endif %}
+        <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
+        {% url django.views.i18n.javascript_catalog as jsi18nurl %}
+        <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+        {{ media|default:"" }}
+        {% block extrahead %}{% endblock %}
+        {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+    </head>
+    {% load i18n %}
 
+    <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
-<!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dashboard/css/dropdown.css" /> -->
-{% block extrastyle %}{% endblock %}
-<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
-{% url django.views.i18n.javascript_catalog as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
-{{ media|default:"" }}
-{% block extrahead %}{% endblock %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-</head>
-{% load i18n %}
+    <!-- Container -->
+    <div id="container">
+        {% if not is_popup %}
+            <!-- Header -->
+            {% block header %}
+                <div id="header">
+                    <div id="user-tools">
+                        {% block userwelcome %}{% endblock %}
+                        {% block userlinks %}{% endblock %}
+                    </div>
+                    {% block nav-global %}{% endblock %}
+                </div>
+            {% endblock header %}
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+            <!-- END Header -->
+            {% block breadcrumbs %}{% endblock %}
+        {% endif %}
 
-<!-- Container -->
-<div id="container">
+        <div id="content-container">
+            {% if not is_popup %}
+                {% for message in messages %}
+                    <ul class="{% if message.extra_tags %}errorlist{% else %}messagelist{% endif %}">
+                        <li>
+                            {{ message }}
+                        </li>
+                    </ul>
+                {% endfor %}
+                {% block bubble %}{% endblock %}
+            {% endif %}
 
-    {% if not is_popup %}
-    <!-- Header -->
-    {% block header %}
-    <div id="header">
-        <div id="user-tools">
-            {% block userwelcome %}
-            {% endblock %}
-            {% block userlinks %}
-            {% endblock %}
+            {% block nav_sidebar_title %}{% endblock %}
+            {% block nav_sidebar %}
+            {% endblock nav_sidebar %}
+
+            <!-- Content -->
+            <div id="content" class="{% block content_class %}{% endblock %}">
+                {% block pretitle %}{% endblock %}
+                <h1>{% block content_title %}{% if title %}{{ title }}{% endif %}{% endblock %}</h1>
+                {% block content %}
+                    {% block object-tools %}{% endblock %}
+                    {{ content }}
+                {% endblock content %}
+                {% block sidebar %}{% endblock %}
+                <br class="clear" />
+            </div>
+            <!-- END Content -->
         </div>
-        {% block nav-global %}{% endblock %}
+        {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
     </div>
-    {% endblock header %}
-    <!-- END Header -->
-    {% block breadcrumbs %}
-    {% endblock %}
-    {% block bubble %}{% endblock %}
-    {% endif %}
-
-    {% for message in messages %}
-        <ul class="{% if message.extra_tags %}errorlist{% else %}messagelist{% endif %}">
-            <li>
-                {{ message }}
-            </li>
-        </ul>
-    {% endfor %}
-
-    <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}{% endblock %}
-        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
-        {% block sidebar %}{% endblock %}
-        <br class="clear" />
-    </div>
-    <!-- END Content -->
-
-    {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
-</div>
-<!-- END Container -->
-
-</body>
-</html>
+    <!-- END Container -->
+    </body>
+    </html>
 {% endspaceless %}

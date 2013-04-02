@@ -87,9 +87,13 @@
     </script>
 {% endblock %}
 
-{% block pretitle %}
-    {% include "exmo2010/monitoring_utility.html" %}
+{% block nav_sidebar %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
+    {% endif %}
 {% endblock %}
+{% block nav_sidebar_title %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}<h1>{{ monitoring.name }}</h1>{% endif %}{% endblock %}
+{% block content_class %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}sidebar-ident{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -110,7 +114,7 @@
                 <table id="ftable" class="criteria">
                     <thead>
                     <th>
-                        {% trans "Criteria" %}
+                        {% trans "Evaluation criterion" %}
                     </th>
                     <th>
                         {% trans "Value" %}

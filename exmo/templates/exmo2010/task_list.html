@@ -56,12 +56,15 @@
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
-{% block pretitle %}
-{% if request.user.profile.is_internal %}
-{% include "exmo2010/monitoring_utility.html" %}
-{% endif %}
+{% block nav_sidebar %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
+    {% endif %}
 {% endblock %}
+{% block nav_sidebar_title %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}<h1>{{ monitoring.name }}</h1>{% endif %}{% endblock %}
+{% block content_class %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}sidebar-ident{% endif %}{% endblock %}
 
+{% block content_title %}{% trans "Tasks" %}{% endblock %}
 {% block content %}
 {% check_object_permission exmo2010.admin_monitoring monitoring as perm_admin %}
 <div id=task_list>

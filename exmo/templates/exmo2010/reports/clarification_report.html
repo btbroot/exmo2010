@@ -36,12 +36,13 @@
 
 {% endblock %}
 
-{% block pretitle %}
-    {% include "exmo2010/monitoring_utility.html" %}
+{% block nav_sidebar %}
+    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
 {% endblock %}
 
+{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+{% block content_class %}sidebar-ident{% endblock %}
 {% block content %}
-
     <form action="" method="post" id="cform">
         {% csrf_token %}
         <table class="messages-report">

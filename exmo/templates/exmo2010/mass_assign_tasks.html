@@ -21,30 +21,33 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block pretitle %}
-{% include "exmo2010/monitoring_utility.html" %}
+{% block nav_sidebar %}
+    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
 {% endblock %}
+
+{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+{% block content_title %}{% trans "Task assignment" %}{% endblock %}
+{% block content_class %}sidebar-ident{% endblock %}
 {% block content %}
-{% if log %}
-  <div id="failure">{% trans "Process log:" %}:
-  <ul>
-  {% for message in log %}
-    <li>{{message}}</li>
-  {% endfor %}
-  </ul>
-  </div>
-{% endif %}
+    {% if log %}
+        <div id="failure">{% trans "Process log:" %}:
+            <ul>
+                {% for message in log %}
+                    <li>{{message}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-<form method="post">{% csrf_token %}
-<select multiple="multiple" name="users">
-  {% for user in users %}<option value="{{user.pk}}">{{user.userprofile.legal_name}}</option>{% endfor %}
-</select>
-<select multiple="multiple" name="organizations">
-  {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}
-</select>
-<input type="submit">
-</form>
-
+    <form method="post">{% csrf_token %}
+        <select multiple="multiple" name="users">
+            {% for user in users %}<option value="{{user.pk}}">{{user.userprofile.legal_name}}</option>{% endfor %}
+        </select>
+        <select multiple="multiple" name="organizations">
+            {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}
+        </select>
+        <input type="submit">
+    </form>
 
 {% endblock %}
 {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}

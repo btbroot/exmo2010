@@ -1,4 +1,4 @@
-/*
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -17,52 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-*/
-
-div.breadcrumbs {
-    margin: 0;
-    padding-top: 8px;
-    padding-bottom: 0px;
-    padding-left: 20px;
-    display: block;
-    border: 0;
-    background-image: none;
-    background-color: #eee;
-    border-bottom: 1px solid #ddd;
-    height: 21px;
-}
-
-div.breadcrumbs a:first-child {
-    background-image: url(../img/home_out.gif);
-    background-position: 0px 0px;
-    background-repeat: no-repeat;
-    display: inline;
-    padding-left: 20px;
-}
-
-div.breadcrumbs a:first-child:hover {
-    background-image: url(../img/home_in.gif);
-}
-
-div.breadcrumbs span.breadcrumb-arrow {
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-
-    background-image: url(../img/breadcrumb_arrow.png);
-    background-repeat: no-repeat;
-
-    width: 10px;
-    height: 10px;
-}
-
-div.breadcrumbs span.title {
-    font-size: 12px;
-    color: #333;
-    padding-right: 5px;
-}
-
-div.breadcrumbs a {
-    display: inline;
-    padding-right: 5px;
-}
+{% endcomment %}
+{% load i18n %}
+<li{% ifequal request.get_full_path url %} class="selected"{% endifequal %}>
+    {% ifnotequal request.get_full_path url %}<a href="{{ url }}"{% if blank %} target="_blank"{% endif %}>{% endifnotequal %}
+    {% trans title %}
+    {% ifnotequal request.get_full_path url %}</a>{% endifnotequal %}
+</li>
