@@ -17,6 +17,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import csv
+import xlwt
+import xlrd
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.create_update import update_object, delete_object
 from django.contrib.auth.decorators import login_required
@@ -42,13 +44,14 @@ def task_export(request, id):
     task = get_object_or_404(Task, pk = id)
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
-    parameters = Parameter.objects.filter(monitoring = task.organization.monitoring).exclude(exclude = task.organization)
+    parameters = Parameter.objects.filter(monitoring=task.organization.monitoring).exclude(exclude=task.organization)
     scores = Score.objects.filter(task=id, revision=Score.REVISION_DEFAULT)
-    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
-    response.encoding = 'UTF-16'
-    writer = UnicodeWriter(response)
-    writer.writerow([
+    wbk = xlwt.Workbook()
+    sheet = wbk.add_sheet('Task')
+
+    # indexing is zero based, row then column
+
+    table_head = [
         '#Code',
         'Name',
         'Found',
@@ -65,10 +68,12 @@ def task_export(request, id):
         'Image',
         'ImageComment',
         'Comment'
-    ])
-    category = None
-    subcategory = None
-    for p in parameters:
+    ]
+
+    for i, c in enumerate(table_head):
+        sheet.write(0, i, c)
+
+    for i, p in enumerate(parameters):
         out = (
             p.code,
             p.name,
@@ -100,44 +105,50 @@ def task_export(request, id):
                     s.completeComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             if p.topical:
                 out += (
                     s.topical,
                     s.topicalComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             if p.accessible:
                 out += (
                     s.accessible,
                     s.accessibleComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             if p.hypertext:
                 out += (
                     s.hypertext,
                     s.hypertextComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             if p.document:
                 out += (
                     s.document,
                     s.documentComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             if p.image:
                 out += (
                     s.image,
                     s.imageComment
                     )
             else:
-                out += ('','')
+                out += ('', '')
             out += (s.comment,)
-        writer.writerow(out)
+
+        for e, c in enumerate(out):
+            sheet.write(i + 1, e, c)
+
+    response = HttpResponse(mimetype="application/ms-excel")
+    response['Content-Disposition'] = 'attachment; filename=task-%s.xls' % id
+    wbk.save(response)
     return response
 
 
@@ -151,20 +162,52 @@ def task_import(request, id):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
         return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[id]))
-    reader = UnicodeReader(request.FILES['taskfile'])
+
+    workbook = xlrd.open_workbook(request.FILES['taskfile'].temporary_file_path())
+    worksheet = workbook.sheet_by_index(0)
+    num_rows = worksheet.nrows - 1
+    num_cells = worksheet.ncols - 1
+    curr_row = -1
+
+    reader = []
+
+    while curr_row < num_rows:
+        curr_row += 1
+        curr_cell = -1
+        row = []
+        while curr_cell < num_cells:
+            curr_cell += 1
+            cell_value = worksheet.cell_value(curr_row, curr_cell)
+            if isinstance(cell_value, float) or isinstance(cell_value, int):
+                cell_value = str(cell_value)
+            row.append(cell_value)
+
+        reader.append(row)
+
     errLog = []
     rowOKCount = 0
     rowALLCount = 0
+
+    def to_int(val):
+        if val == "0.0":
+            return int(0)
+        elif val == '':
+            return int(0)
+        elif val == 'None':
+            return int(0)
+        else:
+            return int(float(val))
+
     try:
-        for row in reader:
+        for i, row in enumerate(reader):
             rowALLCount += 1
             if row[0].startswith('#'):
-                errLog.append(_("row %d. Starts with '#'. Skipped") % reader.line_num)
+                errLog.append(_("row %d. Starts with '#'. Skipped") % i)
                 continue
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                  errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
+                  errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': i, 'raw': row[0]})
                   continue
                 if (
                     row[2]  == '' and
@@ -182,47 +225,48 @@ def task_import(request, id):
                     row[14] == '' and
                     row[15] == ''
                   ):
-                    errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
+                    errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': i, 'raw': row[0]})
                     continue
                 parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
                 try:
                     score = Score.objects.get(task = task, parameter = parameter)
                 except Score.DoesNotExist:
                     score = Score()
+
                 score.task              = task
                 score.parameter         = parameter
-                score.found             = row[2]
-                score.complete          = row[3]
+                score.found             = to_int(row[2])
+                score.complete          = to_int(row[3])
                 score.completeComment   = row[4]
-                score.topical           = row[5]
+                score.topical           = to_int(row[5])
                 score.topicalComment    = row[6]
-                score.accessible        = row[7]
+                score.accessible        = to_int(row[7])
                 score.accessibleComment = row[8]
-                score.hypertext         = row[9]
+                score.hypertext         = to_int(row[9])
                 score.hypertextComment  = row[10]
-                score.document          = row[11]
+                score.document          = to_int(row[11])
                 score.documentComment   = row[12]
-                score.image             = row[13]
+                score.image             = to_int(row[13])
                 score.imageComment      = row[14]
-                score.comment           = row[15]
+                score.comment           = to_int(row[15])
                 score.full_clean()
                 score.save()
             except ValidationError, e:
                 errLog.append(_("row %(row)d (validation). %(raw)s") % {
-                    'row': reader.line_num,
+                    'row': i,
                     'raw': '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])})
             except Parameter.DoesNotExist:
                 errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row':reader.line_num,
+                    'row': i,
                     'raw': _('Parameter matching query does not exist')})
             except Exception, e:
                 errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row':reader.line_num,
+                    'row': i,
                     'raw': e})
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
+        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': 0, 'raw': e})
     title = _('Import CSV for task %s') % task
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']

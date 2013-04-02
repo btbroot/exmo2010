@@ -21,6 +21,8 @@ Pillow
 Django==1.3.6
 django-reversion==1.5.7
 south
+xlrd==0.9.0
+xlwt==0.7.4
 hg+https://bitbucket.org/bsavelev/django-admin-tools
 git+https://github.com/django-debug-toolbar/django-debug-toolbar.git
 git+https://github.com/playfire/django-debug-toolbar-user-panel.git
