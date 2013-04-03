@@ -143,6 +143,7 @@ def task_export(request, id):
 
 
 import re
+import string
 @revision.create_on_success
 @login_required
 def task_import(request, id):
@@ -213,12 +214,12 @@ def task_import(request, id):
                     'raw': '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])})
             except Parameter.DoesNotExist:
                 errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row':reader.line_num,
+                    'row': reader.line_num,
                     'raw': _('Parameter matching query does not exist')})
             except Exception, e:
                 errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row':reader.line_num,
-                    'raw': e})
+                    'row': reader.line_num,
+                    'raw': filter(lambda x: x in string.printable, e.__str__())})
             else:
                 rowOKCount += 1
     except csv.Error, e:
