@@ -153,7 +153,7 @@ def task_export(request, id):
 
 
 
-import re
+import string
 @revision.create_on_success
 @login_required
 def task_import(request, id):
@@ -178,34 +178,21 @@ def task_import(request, id):
         while curr_cell < num_cells:
             curr_cell += 1
             cell_value = worksheet.cell_value(curr_row, curr_cell)
-            if isinstance(cell_value, float) or isinstance(cell_value, int):
-                cell_value = str(cell_value)
             row.append(cell_value)
-
         reader.append(row)
 
     errLog = []
     rowOKCount = 0
     rowALLCount = 0
 
-    def to_int(val):
-        if val == "0.0":
-            return int(0)
-        elif val == '':
-            return int(0)
-        elif val == 'None':
-            return int(0)
-        else:
-            return int(float(val))
-
     try:
         for i, row in enumerate(reader):
             rowALLCount += 1
-            if row[0].startswith('#'):
+            if not isinstance(row[0], float) and row[0].startswith('#'):
                 errLog.append(_("row %d. Starts with '#'. Skipped") % i)
                 continue
             try:
-                code = to_int(row[0])
+                code = row[0]
                 if not code:
                   errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': i, 'raw': row[0]})
                   continue
@@ -235,20 +222,27 @@ def task_import(request, id):
 
                 score.task              = task
                 score.parameter         = parameter
-                score.found             = to_int(row[2])
-                score.complete          = to_int(row[3])
+                if row[2] != '':
+                    score.found             = row[2]
+                if row[3] != '':
+                    score.complete          = row[3]
                 score.completeComment   = row[4]
-                score.topical           = to_int(row[5])
+                if row[5] != '':
+                    score.topical           = row[5]
                 score.topicalComment    = row[6]
-                score.accessible        = to_int(row[7])
+                if row[7] != '':
+                    score.accessible        = row[7]
                 score.accessibleComment = row[8]
-                score.hypertext         = to_int(row[9])
+                if row[9] != '':
+                    score.hypertext         = row[9]
                 score.hypertextComment  = row[10]
-                score.document          = to_int(row[11])
+                if row[11] != '':
+                    score.document          = row[11]
                 score.documentComment   = row[12]
-                score.image             = to_int(row[13])
+                if row[13] != '':
+                    score.image             = row[13]
                 score.imageComment      = row[14]
-                score.comment           = to_int(row[15])
+                score.comment           = row[15]
                 score.full_clean()
                 score.save()
             except ValidationError, e:
@@ -260,9 +254,10 @@ def task_import(request, id):
                     'row': i,
                     'raw': _('Parameter matching query does not exist')})
             except Exception, e:
+                print(e.__str__().__class__)
                 errLog.append(_("row %(row)d. %(raw)s") % {
                     'row': i,
-                    'raw': e})
+                    'raw': filter(lambda x: x in string.printable, e.__str__())})
             else:
                 rowOKCount += 1
     except csv.Error, e:
