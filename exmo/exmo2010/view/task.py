@@ -205,7 +205,7 @@ def task_import(request, id):
                 errLog.append(_("row %d. Starts with '#'. Skipped") % i)
                 continue
             try:
-                code = re.match('^(\d+)$', row[0])
+                code = to_int(row[0])
                 if not code:
                   errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': i, 'raw': row[0]})
                   continue
@@ -227,7 +227,7 @@ def task_import(request, id):
                   ):
                     errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': i, 'raw': row[0]})
                     continue
-                parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
+                parameter = Parameter.objects.get(code=code, monitoring = task.organization.monitoring)
                 try:
                     score = Score.objects.get(task = task, parameter = parameter)
                 except Score.DoesNotExist:
