@@ -20,8 +20,8 @@
 $(document).ready(function() {
     var $headingClosed = $('td.report-title.closed'),
         $headingOpen = $('td.report-title.open'),
-        $closed = $('.report-list-table.closed tbody'),
-        $open = $('.report-list-table.open tbody'),
+        $closed = $('.base-table.closed tbody'),
+        $open = $('.base-table.open tbody'),
         url = $headingClosed.attr("rel"),
         $indicator = $headingClosed.children('img'),
         init = false;
@@ -40,7 +40,7 @@ $(document).ready(function() {
             $.get(url, function( data ) {
                 $indicator.hide();
                 $closed.append(data);
-                var $count = $("table.report-list-table.closed td.count"),
+                var $count = $("table.base-table.closed td.count"),
                     count = parseInt($count.html()),
                     $title = $('td.report-title.closed'),
                     txt = $title.html();

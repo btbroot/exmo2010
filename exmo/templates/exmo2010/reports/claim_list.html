@@ -38,7 +38,7 @@
 {% endblock %}
 
 {% block content %}
-<table class="report-list-table">
+<table class="base-table">
     <tbody>
         {% comment %}
         Китайский хак, в этой и остальных таблицах,
@@ -65,7 +65,7 @@
 </table>
 
 {% if claims %}
-<table class="report-list-table">
+<table class="base-table">
     <tbody>
     <tr>
         <td colspan="3" class="report-title open">
@@ -75,7 +75,7 @@
     </tbody>
 </table>
 
-<table class="report-list-table open">
+<table class="base-table open">
     <tbody>
         <tr class="first">
             <td class="report-date">
@@ -90,7 +90,7 @@
 </table>
 {% endif %}
 
-<table class="report-list-table">
+<table class="base-table">
     <tbody>
         <tr>
             <td colspan="3" class="report-title closed" rel="{% url exmo2010:claim_list %}">
@@ -100,7 +100,7 @@
     </tbody>
 </table>
 
-<table class="report-list-table closed">
+<table class="base-table closed">
     <tbody>
         <tr class="first">
             <td class="report-date">

@@ -31,9 +31,9 @@
     {% if report %}
         <p>{% trans 'You can select rating type after monitoring selection' %}.</p>
         <form action="." method="GET" id="mselect_form">
-            <b>{% trans 'Select monitoring' %}:</b>
+            <b>{% trans 'Select monitoring' %}:</b><br/><br/>
             {% for field in mform %}
-                <p>{{ field }}</p>
+                {{ field }}<br/><br/>
             {% endfor %}
             <input type="submit" value="{% trans "Select" %}">
         </form>

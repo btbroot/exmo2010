@@ -34,10 +34,14 @@ div.breadcrumbs {
 
 div.breadcrumbs a:first-child {
     background-image: url(../img/home_out.gif);
-    background-position: 0px 0px;
+    background-position: 0px 1px;
     background-repeat: no-repeat;
-    display: inline;
-    padding-left: 20px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 16px;
+    height: 14px;
+
 }
 
 div.breadcrumbs a:first-child:hover {
