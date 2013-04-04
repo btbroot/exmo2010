@@ -19,6 +19,7 @@
 #
 {% endcomment %}
 {% load i18n %}
+{% load pytils_numeral %}
 
 <div>
     <p>
@@ -164,20 +165,15 @@
                     {% endif %}
                     <td>{{ average.openness|floatformat:3 }}</td>
                 </tr>
-                <tr style="font-weight: bold">
+                <tr>
                     <td colspan="
-                                {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
-                                    {% if rating_type == "all" %}
-                                    4
-                                    {% else %}
-                                    3
-                                    {% endif %}
+                                {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 and rating_type == "all" %}
+                                    5
                                 {% else %}
-                                    3
+                                    4
                                 {% endif %}">
-                    {% trans 'Total organizations' %}
+                    {% trans 'Total in monitoring cycle' %} {{ average.total_tasks }} {{ average.total_tasks|choose_plural:organizations }}{% ifequal rating_type 'user'%}, {% trans 'from them' %} {{ object_list|length }} {{ object_list|length|choose_plural:have }} {% trans 'one or more relevant parameters from users retrieval' %}{% endifequal %}.
                     </td>
-                    <td>{{ object_list|length }}</td>
                 </tr>
             </table>
             {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
@@ -192,4 +188,3 @@
         {% endif %}
     </div>
 {% endif %}
-

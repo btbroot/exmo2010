@@ -52,7 +52,7 @@ def table(request, headers, **kwargs):
     return object_list(request, **kwargs)
 
 
-def rating(monitoring, parameters=None):
+def rating(monitoring, parameters=None, rating_type=None):
     """
     Генерация ретинга для мониторинга по выбранным параметрам
     Вернет tuple из отсортированного списка объектов рейинга
@@ -66,8 +66,9 @@ def rating(monitoring, parameters=None):
         extra_select = generic_task_qs[0]._sql_openness(parameters)
 
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)
+    total_tasks = tasks.count()
 
-    if parameters:
+    if parameters and rating_type == 'user':
         params_list = Parameter.objects.filter(pk__in=parameters)
         non_relevant = set(params_list[0].exclude.all())
         for item in params_list[1:]:
@@ -89,6 +90,7 @@ def rating(monitoring, parameters=None):
     avg = {
         'openness': 0,
         'openness_first': 0,
+        'total_tasks': total_tasks,
     }
     max_rating = 0
     if object_list:
@@ -145,4 +147,4 @@ def rating_type_parameter(request, monitoring, has_npa=False):
             if request.GET.get('parameter_%d' % parameter.pk):
                 parameter_list.append(parameter.pk)
 
-    return (rating_type, parameter_list, form)
+    return rating_type, parameter_list, form

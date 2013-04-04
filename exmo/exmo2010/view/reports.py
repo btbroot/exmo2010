@@ -188,7 +188,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
                                   'all_monitorings': all_monitorings,
                               },
                               RequestContext(request),
-    )
+                              )
 
 
 def ratings(request):
@@ -210,10 +210,8 @@ def ratings(request):
         if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         has_npa = monitoring.has_npa
-        rating_type, parameter_list, form = rating_type_parameter(request,
-                                                                  monitoring,
-                                                                  has_npa)
-        rating_list, avg = rating(monitoring, parameters=parameter_list)
+        rating_type, parameter_list, form = rating_type_parameter(request, monitoring, has_npa)
+        rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
@@ -225,6 +223,8 @@ def ratings(request):
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
+        'organizations': [_('organization'), _('2_organizations'), _('5_organizations')],
+        'have': [_('have'), _('haves'), _('haves')],
         'current_title': current_title,
         'title': title,
         'form': form,
