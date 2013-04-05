@@ -172,7 +172,7 @@
                                 {% else %}
                                     4
                                 {% endif %}">
-                    {% trans 'Total in monitoring cycle' %} {{ average.total_tasks }} {{ average.total_tasks|choose_plural:organizations }}{% ifequal rating_type 'user'%}, {% trans 'from them' %} {{ object_list|length }} {{ object_list|length|choose_plural:have }} {% trans 'one or more relevant parameters from users retrieval' %}{% endifequal %}.
+                        {{ total_orgs }}
                     </td>
                 </tr>
             </table>

@@ -21,9 +21,13 @@
 """
 Модуль вью для работы с мониторингами
 """
-
+import copy
 import csv
+import os
 import simplejson
+import tempfile
+import zipfile
+from cStringIO import StringIO
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count
@@ -49,6 +53,7 @@ from exmo2010.forms import CORE_MEDIA, MonitoringForm, MonitoringCommentStatForm
 from exmo2010.forms import ParamCritScoreFilterForm, ParameterTypeForm, SettingsInvCodeForm
 from exmo2010.helpers import comment_report
 from exmo2010.utils import UnicodeReader, UnicodeWriter
+from helpers import total_orgs_translate
 
 
 def set_npa_params(request, m_id):
@@ -87,7 +92,6 @@ def set_npa_params(request, m_id):
         context_instance=RequestContext(request))
 
 
-
 def _get_monitoring_list(request):
     monitorings_pk = []
     for m in Monitoring.objects.all().select_related():
@@ -96,6 +100,7 @@ def _get_monitoring_list(request):
     queryset = Monitoring.objects.filter(
         pk__in=monitorings_pk).order_by('-publish_date')
     return queryset
+
 
 def monitoring_list(request):
     """
@@ -141,7 +146,6 @@ def monitoring_list(request):
             'invcodeform': invcodeform,
         },
     )
-
 
 
 @login_required
@@ -208,6 +212,7 @@ def monitoring_manager(request, id, method):
             },
             context_instance=RequestContext(request))
 
+
 @login_required
 def monitoring_add(request):
     """
@@ -243,8 +248,6 @@ def monitoring_add(request):
              'formset': None,}, context_instance=RequestContext(request))
 
 
-
-from operator import itemgetter
 #update rating twice in a day
 #@cache_page(60 * 60 * 12)
 #todo: remove this
@@ -275,7 +278,6 @@ def monitoring_rating_color(request, id):
     }, context_instance=RequestContext(request))
 
 
-
 def monitoring_rating(request, m_id):
     """
     Вывод мониторинга
@@ -286,9 +288,8 @@ def monitoring_rating(request, m_id):
     title = _('Rating')
 
     has_npa = monitoring.has_npa
-    rating_type, parameter_list, form = rating_type_parameter(request,
-        monitoring, has_npa)
-    rating_list, avg = rating(monitoring, parameters=parameter_list)
+    rating_type, parameter_list, form = rating_type_parameter(request, monitoring, has_npa)
+    rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
 
     crumbs = ['Home', 'Monitoring']
     breadcrumbs(request, crumbs)
@@ -298,24 +299,21 @@ def monitoring_rating(request, m_id):
     else:
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
+    total_orgs = total_orgs_translate(avg, rating_list, rating_type)
+
     return render_to_response('exmo2010/rating.html', {
         'monitoring': monitoring,
         'has_npa': has_npa,
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
+        'total_orgs': total_orgs,
         'current_title': current_title,
         'title': title,
         'form': form,
     }, context_instance=RequestContext(request))
 
 
-
-import tempfile
-import copy
-import zipfile
-import os
-from cStringIO import StringIO
 @login_required
 def monitoring_by_criteria_mass_export(request, id):
     """
@@ -409,7 +407,6 @@ def monitoring_by_criteria_mass_export(request, id):
     return response
 
 
-
 @login_required
 def monitoring_by_experts(request, id):
     """
@@ -475,7 +472,6 @@ def monitoring_by_experts(request, id):
             },
         template_name = "exmo2010/expert_list.html",
     )
-
 
 
 #todo: remove

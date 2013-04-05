@@ -23,6 +23,7 @@
 """
 
 from django.http import Http404
+from django.utils.translation import ungettext
 from django.views.generic.list_detail import object_list
 
 from exmo2010.sort_headers import SortHeaders
@@ -148,3 +149,25 @@ def rating_type_parameter(request, monitoring, has_npa=False):
                 parameter_list.append(parameter.pk)
 
     return rating_type, parameter_list, form
+
+
+def total_orgs_translate(avg, rating_list, rating_type):
+    """
+    Display of the number of organizations in the rating
+
+    """
+    text = ungettext(
+        'Altogether, there is %(count)d organization in the monitoring cycle',
+        'Altogether, there are %(count)d organizations in the monitoring cycle',
+        avg['total_tasks']
+    ) % {'count': avg['total_tasks']}
+
+    if rating_type == 'user':
+        text_for_users = ungettext(
+            ', %(count)d of them has at least 1 relevant setting from users sample',
+            ', %(count)d of them have at least 1 relevant setting from users sample',
+            len(rating_list)
+        ) % {'count': len(rating_list)}
+        text += text_for_users
+    text += '.'
+    return text
