@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-05 12:33+0400\n"
+"POT-Creation-Date: 2013-04-05 15:53+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -1024,7 +1024,7 @@ msgstr "Список"
 #: exmo/exmo2010/view/task.py:427 exmo/exmo2010/view/task.py:438
 #: exmo/exmo2010/view/task.py:449 exmo/exmo2010/view/task.py:460
 #: exmo/exmo2010/view/task.py:481 exmo/exmo2010/view/task.py:496
-#: exmo/exmo2010/view/task.py:506 exmo/exmo2010/view/task.py:558
+#: exmo/exmo2010/view/task.py:506 exmo/exmo2010/view/task.py:559
 #: exmo/exmo2010/view/user.py:260
 msgid "Forbidden"
 msgstr "Запрещено"
@@ -1049,7 +1049,7 @@ msgstr "Задачи цикла мониторинга "
 #: exmo/exmo2010/view/monitoring.py:298 exmo/exmo2010/view/monitoring.py:459
 #: exmo/exmo2010/view/monitoring.py:586 exmo/exmo2010/view/monitoring.py:961
 #: exmo/exmo2010/view/organization.py:63 exmo/exmo2010/view/task.py:535
-#: exmo/exmo2010/view/task.py:591
+#: exmo/exmo2010/view/task.py:592
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
@@ -1058,7 +1058,7 @@ msgstr "Цикл мониторинга"
 #: exmo/exmo2010/view/monitoring.py:288 exmo/exmo2010/view/monitoring.py:300
 #: exmo/exmo2010/view/monitoring.py:461 exmo/exmo2010/view/monitoring.py:588
 #: exmo/exmo2010/view/monitoring.py:963 exmo/exmo2010/view/organization.py:65
-#: exmo/exmo2010/view/task.py:537 exmo/exmo2010/view/task.py:593
+#: exmo/exmo2010/view/task.py:537 exmo/exmo2010/view/task.py:594
 #: exmo/templates/errors_header.html:35
 msgid "Rating"
 msgstr "Рейтинг"
@@ -1068,7 +1068,7 @@ msgstr "Рейтинг"
 #: exmo/exmo2010/view/monitoring.py:300 exmo/exmo2010/view/monitoring.py:461
 #: exmo/exmo2010/view/monitoring.py:588 exmo/exmo2010/view/monitoring.py:963
 #: exmo/exmo2010/view/organization.py:65 exmo/exmo2010/view/task.py:537
-#: exmo/exmo2010/view/task.py:593 exmo/templates/exmo2010/task_list.html:67
+#: exmo/exmo2010/view/task.py:594 exmo/templates/exmo2010/task_list.html:67
 msgid "Tasks"
 msgstr "Задачи "
 
@@ -1114,9 +1114,15 @@ msgstr[2] "Всего в цикле мониторинга %(count)d орган�
 msgid ", %(count)d of them has at least 1 relevant setting from users sample"
 msgid_plural ""
 ", %(count)d of them have at least 1 relevant setting from users sample"
-msgstr[0] ", из них %(count)d имеет хотя бы один релевантный параметр из пользовательской выборки"
-msgstr[1] ", из них %(count)d имеют хотя бы один релевантный параметр из пользовательской выборки"
-msgstr[2] ", из них %(count)d имеют хотя бы один релевантный параметр из пользовательской выборки"
+msgstr[0] ""
+", из них %(count)d имеет хотя бы один релевантный параметр из "
+"пользовательской выборки"
+msgstr[1] ""
+", из них %(count)d имеют хотя бы один релевантный параметр из "
+"пользовательской выборки"
+msgstr[2] ""
+", из них %(count)d имеют хотя бы один релевантный параметр из "
+"пользовательской выборки"
 
 #: exmo/exmo2010/view/monitoring.py:73
 msgid "Forbidden to modify already published monitorings."
@@ -1471,7 +1477,7 @@ msgstr "Задача  обновлена"
 msgid "Task list for %(monitoring)s"
 msgstr "Список задач для %(monitoring)s"
 
-#: exmo/exmo2010/view/task.py:560
+#: exmo/exmo2010/view/task.py:561
 msgid "Mass assign tasks"
 msgstr "Массовое назначение"
 
@@ -1499,47 +1505,41 @@ msgstr "Настройки"
 msgid "Dashboard preferences was reset."
 msgstr "Настройки главной страницы были сброшены."
 
-#: exmo/templates/403.html:24
+#: exmo/templates/403.html:25
 msgid "Permission denied"
-msgstr "Доступ запрещён"
+msgstr "Страница недоступна"
 
-#: exmo/templates/403.html:26 exmo/templates/403.html.py:34
+#: exmo/templates/403.html:29
 msgid "Forbidden."
 msgstr "Запрещено."
 
-#: exmo/templates/403.html:36
+#: exmo/templates/403.html:33
 msgid "We're sorry, you haven't permission for viewing this page."
-msgstr "Извините, но у Вас нет прав доступа для просмотра данной страницы"
+msgstr "Извините, но у вас нет прав доступа к этой странице."
 
-#: exmo/templates/403.html:39 exmo/templates/404.html:42
-msgid "Go back or go <a href='/'>Dashboard</a>."
-msgstr "Вернитесь назад или перейдите на <a href='/'>Главную</a>."
+#: exmo/templates/403.html:34 exmo/templates/404.html:34
+msgid "Go back or use navigation menu at the top."
+msgstr "Вернитесь назад или воспользуйтесь навигационным меню вверху страницы."
 
-#: exmo/templates/404.html:24 exmo/templates/404.html.py:26
-#: exmo/templates/404.html:36
+#: exmo/templates/404.html:25 exmo/templates/404.html.py:29
 msgid "Page not found"
 msgstr "Страница не найдена"
 
-#: exmo/templates/404.html:38
+#: exmo/templates/404.html:33
 msgid "We're sorry, but the requested page could not be found."
-msgstr ""
-"Приносим свои извинения, но страница которую вы запросили не существует."
+msgstr "Извините, но страницы с таким адресом не существует."
 
-#: exmo/templates/500.html:32
-msgid "Server error (500)"
-msgstr "Ошибка сервера (500)"
+#: exmo/templates/500.html:25 exmo/templates/500.html.py:29
+msgid "Server error"
+msgstr "Ошибка сервера"
 
-#: exmo/templates/500.html:39
-msgid "Server Error <em>(500)</em>"
-msgstr "Ошибка сервера <em>(500)</em>"
-
-#: exmo/templates/500.html:40
+#: exmo/templates/500.html:33
 msgid ""
 "There's been an error. It's been reported to the site administrators via e-"
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
-"На сервере произошла ошибка. О ней было сообщено администратору по "
-"электронной почте.Ошибка будет исправлена в кратчайшие сроки. Спасибо за "
+"На сервере произошла ошибка, о ней было сообщено администратору по "
+"электронной почте. Ошибка будет исправлена в кратчайшие сроки. Спасибо за "
 "понимание."
 
 #: exmo/templates/cookies.html:24 exmo/templates/cookies.html.py:32

@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "errors_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,22 +21,14 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}/static/admin/css/base.css{% endblock %}" />
-    <link rel="stylesheet" type="text/css" href="/static/exmo2010/patch.css" />
-    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}/static/admin/css/ie.css{% endblock %}" /><![endif]-->
-    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/static/admin/css/rtl.css{% endblock %}" />{% endif %}
+{% block title %}
+    {% trans 'Server error' %}
 {% endblock %}
 
-
-{% block title %}{% trans 'Server error (500)' %}{% endblock %}
-
-{% block header %}
-    {% include 'errors_header.html' %}
-{% endblock %}
+{% block header_content %}
+    <h1>{% trans 'Server error' %}</h1>
+{% endblock header_content %}
 
 {% block content %}
-<h1>{% trans 'Server Error <em>(500)</em>' %}</h1>
-<p>{% trans "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience." %}</p>
-
+    <p>{% trans "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience." %}</p>
 {% endblock %}
