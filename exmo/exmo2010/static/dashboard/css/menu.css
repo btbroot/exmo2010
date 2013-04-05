@@ -173,7 +173,10 @@
     padding-right: 27px;
     padding-top: 2px;
     padding-bottom: 2px;
-    display: inline;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    height: 18px;
     background: none;
     font-family: Arial;
     font-size: 13px;
@@ -181,7 +184,7 @@
 }
 
 #header ul#navigation-menu div#userarea div.auth a:first-child {
-    background: transparent url(../../dashboard/img/pinion.png) no-repeat 10px 0px;
+    background: transparent url(../../dashboard/img/settings.png) no-repeat 10px 4px;
     padding-left: 30px;
 }
 

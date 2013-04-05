@@ -419,9 +419,7 @@ input, textarea, select, .form-row p {
     margin: 2px 0;
     padding: 2px 3px;
     vertical-align: middle;
-    font-family: "Lucida Grande", Verdana, Arial, sans-serif;
     font-weight: normal;
-    font-size: 11px;
 }
 
 textarea {
@@ -429,7 +427,7 @@ textarea {
 }
 
 input[type=text], input[type=password], textarea, select, .vTextField {
-    border: 1px solid #ccc;
+
 }
 
 /* FORM BUTTONS */
@@ -785,6 +783,23 @@ ul#errors-header li.brand a
     width: 150px;
     height: 20px;
 }
+
+/* Alerts */
+
+.alert-info {
+    background-color: #005C9C;
+    padding: 10px;
+    color: #fff;
+}
+
+.alert-info a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
+    border: none;
+}}
 
 /* ERRORS CONTENT */
 

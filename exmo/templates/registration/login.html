@@ -24,7 +24,7 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/login.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/auth.css"/>
 {% endblock %}
 
 {% block content %}
@@ -57,7 +57,7 @@
                     </ul>
                 {% endif %}
 
-                <table class="table-login">
+                <table class="table-login table-implicit">
                     <tbody>
                     {% if resend_email %}
                         <tr>
@@ -99,12 +99,10 @@
                     {% endfor %}
                     <tr>
                         <td>
-                            <a href="{% url exmo2010:auth_password_reset %}">
-                                {% trans 'Forgot your password' %}?
-                            </a>
                         </td>
                         <td class="login-submit">
                             <input type="submit" value="{% trans 'Log in' %}"/>
+                            <a href="{% url exmo2010:auth_password_reset %}" class="forgot-password">{% trans 'Forgot your password' %}?</a>
                         </td>
                     </tr>
                     </tbody>

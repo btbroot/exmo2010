@@ -19,17 +19,45 @@
 #
 */
 
-.table-login td
+.table-login label
+{
+    font-weight: normal;
+}
+
+.table-login td, .table-password-reset td
 {
     vertical-align: middle;
 }
-.table-login label
+
+.table-login tr td:first-child
 {
-    font-weight: bold;
+    text-align: right;
 }
+
+.table-login td input[type="text"], .table-login td input[type="password"],
+.table-password-reset td input[type="text"]
+{
+    width: 250px;
+}
+
+.table-login td input[type="submit"]
+{
+    width: 85px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    height: 24;
+}
+
 .forgot-password
 {
-    margin-top: 10px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    height: 24;
+    padding-left: 18px;
+    position: relative;
+    top: 2px;
 }
 .required
 {
@@ -42,8 +70,7 @@
 
 .login-submit
 {
-    float: right;
-    text-align: right;
+
 }
 
 .form-error

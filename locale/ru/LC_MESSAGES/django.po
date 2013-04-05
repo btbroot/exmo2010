@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-05 17:36+0400\n"
+"POT-Creation-Date: 2013-04-08 11:09+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -822,6 +822,7 @@ msgstr "Введите свою фамилию, чтобы система зна
 #: exmo/exmo2010/custom_registration/forms.py:64
 #: exmo/exmo2010/custom_registration/forms.py:214
 #: exmo/templates/exmo2010/user_settings.html:57
+#: exmo/templates/registration/password_reset_form.html:43
 msgid "E-mail"
 msgstr "Электронная почта"
 
@@ -902,30 +903,33 @@ msgstr "Пользователя с таким адресом электронн
 msgid "Account is activated already."
 msgstr "Учетная зпись уже активрована."
 
-#: exmo/exmo2010/custom_registration/views.py:86
-msgid "Password reset confirm"
-msgstr "Смена пароля завершена"
+#: exmo/exmo2010/custom_registration/views.py:53
+#: exmo/exmo2010/custom_registration/views.py:59
+#: exmo/exmo2010/custom_registration/views.py:96
+#, python-format
+msgid "Password reset (step %d from 3)"
+msgstr "Восстановление пароля (шаг %d из 3)"
 
-#: exmo/exmo2010/custom_registration/views.py:158
+#: exmo/exmo2010/custom_registration/views.py:168
 #: exmo/exmo2010/dashboard/menu.py:107
 #: exmo/templates/registration/registration_form.html:70
 #: exmo/templates/user_dashboard/modules/quicklinks.html:34
 msgid "Registration"
 msgstr "Регистрация"
 
-#: exmo/exmo2010/custom_registration/views.py:224
+#: exmo/exmo2010/custom_registration/views.py:234
 msgid "Login"
 msgstr "Вход в систему"
 
-#: exmo/exmo2010/custom_registration/backends/custom/urls.py:56
+#: exmo/exmo2010/custom_registration/backends/custom/urls.py:57
 msgid "Activation complete"
 msgstr "Активация завершена"
 
-#: exmo/exmo2010/custom_registration/backends/custom/urls.py:73
+#: exmo/exmo2010/custom_registration/backends/custom/urls.py:74
 msgid "Registration complete"
 msgstr "Регистрация подтверждена"
 
-#: exmo/exmo2010/custom_registration/backends/custom/urls.py:78
+#: exmo/exmo2010/custom_registration/backends/custom/urls.py:79
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
 
@@ -987,7 +991,7 @@ msgid "Log out"
 msgstr "Выйти"
 
 #: exmo/exmo2010/dashboard/menu.py:104
-#: exmo/templates/registration/login.html:107
+#: exmo/templates/registration/login.html:104
 #: exmo/templates/registration/password_reset_complete.html:44
 #: exmo/templates/user_dashboard/modules/quicklinks.html:35
 msgid "Log in"
@@ -1511,7 +1515,7 @@ msgstr "Страница недоступна"
 
 #: exmo/templates/403.html:33
 msgid "We're sorry, you haven't permission for viewing this page."
-msgstr "Извините, но у вас нет прав доступа к этой странице."
+msgstr "Извините, но у вас нет прав доступа к этой странице"
 
 #: exmo/templates/403.html:34 exmo/templates/404.html:34
 msgid "Go back or use navigation menu at the top."
@@ -1534,7 +1538,7 @@ msgid ""
 "There's been an error. It's been reported to the site administrators via e-"
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
-"На сервере произошла ошибка, о ней было сообщено администратору по "
+"На сервере произошла ошибка. О ней было сообщено администратору по "
 "электронной почте. Ошибка будет исправлена в кратчайшие сроки. Спасибо за "
 "понимание."
 
@@ -2600,7 +2604,7 @@ msgstr "Выслать письмо подтверждения повторно"
 msgid "E-mail or username"
 msgstr "E-mail или логин"
 
-#: exmo/templates/registration/login.html:103
+#: exmo/templates/registration/login.html:105
 msgid "Forgot your password"
 msgstr "Забыли пароль"
 
@@ -2650,29 +2654,25 @@ msgstr "Смена пароля завершена"
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr "Установлен новый пароль. Теперь можете войти в систему используя его."
 
-#: exmo/templates/registration/password_reset_confirm.html:33
-msgid "Enter new password"
-msgstr "Введите новый пароль"
-
-#: exmo/templates/registration/password_reset_confirm.html:35
-msgid "Please enter your new password."
+#: exmo/templates/registration/password_reset_confirm.html:34
+msgid ""
+"Please, create a new password which will be used by you for entering the "
+"system. For password creation, use latin characters (A-Z, a-z) and digits "
+"(0-9)."
 msgstr ""
-"Пожалуйста, введите новый пароль, который будет использоваться вами для "
-"входа в систему."
+"Пожалуйста, создайте новый пароль, который вы будете использовать для входа "
+"в систему. Для создания пароля используйте латинские буквы (A-Z, a-z) и "
+"цифры (0-9)."
 
-#: exmo/templates/registration/password_reset_confirm.html:36
-msgid "Use latin letters and digits combination as a password."
-msgstr "Для создания пароля используйте комбинацию из латинских букв и цифр."
-
-#: exmo/templates/registration/password_reset_confirm.html:61
+#: exmo/templates/registration/password_reset_confirm.html:63
 msgid "Save password"
 msgstr "Сохранить пароль"
 
-#: exmo/templates/registration/password_reset_confirm.html:66
+#: exmo/templates/registration/password_reset_confirm.html:69
 msgid "Password reset unsuccessful"
 msgstr "Не удалось изменить пароль"
 
-#: exmo/templates/registration/password_reset_confirm.html:68
+#: exmo/templates/registration/password_reset_confirm.html:70
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
@@ -2680,29 +2680,17 @@ msgstr ""
 "Неправильная ссылка для восстановление пароля. Возможно, потому, что она уже "
 "была использована. Пожалуйста, пройдите процедуру восстановления еще раз."
 
-#: exmo/templates/registration/password_reset_done.html:31
-msgid "Please check your email"
-msgstr "Пожалуйста, проверьте ваш e-mail"
-
-#: exmo/templates/registration/password_reset_done.html:32
+#: exmo/templates/registration/password_reset_done.html:28
 msgid ""
-"We've sent a message to your e-mail. In order to reset your password, please "
-"follow the link in the message. Then you'll be able to enter a new password "
-"for your account."
+"The letter have been sent to your e-mail. In order to restore the password "
+"follow, please, the link inside the letter. After that, you'll enter a "
+"creation new password page. The new password could be used to enter EXMO "
+"system."
 msgstr ""
-"На ваш e-mail отправлено письмо. Для восстановления пароля, пожалуйста, "
-"перейдите по ссылке внутри письма. После этого вы попадете на страницу ввода "
-"нового пароля, по которому сможете входить в систему EXMO."
-
-#: exmo/templates/registration/password_reset_done.html:34
-#: exmo/templates/registration/registration_complete.html:35
-#, python-format
-msgid ""
-"<p>To get published monitorings info, <a href=\"%(index)s\">please go to the "
-"main page</a>.</p>"
-msgstr ""
-"<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s"
-"\">перейдите на главную страницу</a>.</p>"
+"На вашу электронную почту отправлено письмо. Для восстановления пароля, "
+"пожалуйста, перейдите по ссылке внутри письма. После этого вы попадете на "
+"страницу создания нового пароля. Новый пароль вы сразу сможете использовать "
+"для входа в систему ЭКСМО."
 
 #: exmo/templates/registration/password_reset_email.html:20
 msgid "In order to reset your password, please follow the link:"
@@ -2714,19 +2702,17 @@ msgstr ""
 "После этого вы попадете на страницу ввода нового пароля, по которому сможете "
 "входить в систему EXMO."
 
-#: exmo/templates/registration/password_reset_form.html:31
-msgid "Password reset"
-msgstr "Восстановление пароля"
-
-#: exmo/templates/registration/password_reset_form.html:33
+#: exmo/templates/registration/password_reset_form.html:34
 msgid ""
-"In order to reset your password enter your e-mail address below. We'll send "
-"you a message with a link which you should open and enter a new password."
+"In order to restore the password enter e-mail used by you during "
+"registration. You'll recieve a letter conataining a link to follow to be "
+"able to create a new password."
 msgstr ""
-"Для восстановления пароля введите ваш e-mail. Вам будет отправлено письмо с "
-"ссылкой, перейдя по которой вы сможете ввести новый пароль."
+"Для восстановления пароля введите адрес электронной почты, использованный "
+"вами при регистрации. Вам будет отправлено письмо с ссылкой, перейдя по "
+"которой вы сможете создать новый пароль."
 
-#: exmo/templates/registration/password_reset_form.html:39
+#: exmo/templates/registration/password_reset_form.html:52
 msgid "Recover password"
 msgstr "Восстановить пароль"
 
@@ -2754,6 +2740,15 @@ msgstr ""
 "На ваш e-mail отправлено письмо. Для подтверждения регистрации, пожалуйста, "
 "перейдите по ссылке внутри письма. После этого вы сможете использовать весь "
 "функционал системы EXMO."
+
+#: exmo/templates/registration/registration_complete.html:35
+#, python-format
+msgid ""
+"<p>To get published monitorings info, <a href=\"%(index)s\">please go to the "
+"main page</a>.</p>"
+msgstr ""
+"<p>Для просмотра опубликованных циклов мониторинга <a href=\"%(index)s"
+"\">перейдите на главную страницу</a>.</p>"
 
 #: exmo/templates/registration/registration_form.html:77
 #, python-format

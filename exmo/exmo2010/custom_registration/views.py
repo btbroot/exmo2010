@@ -34,7 +34,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
-from django.contrib.auth.views import password_reset
+from django.contrib.auth.views import password_reset as auth_password_reset
+from django.contrib.auth.views import password_reset_done as auth_password_reset_done
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
@@ -49,7 +50,16 @@ from exmo2010.view.breadcrumbs import breadcrumbs
 def password_reset_redirect(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
-    return password_reset(request, **kwargs)
+    kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 1}
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+    return auth_password_reset(request, **kwargs)
+
+def password_reset_done(request, **kwargs):
+    kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 2}
+    crumbs = ['Home']
+    breadcrumbs(request, crumbs)
+    return auth_password_reset_done(request, **kwargs)
 
 
 @never_cache
@@ -83,7 +93,7 @@ def password_reset_confirm(request, uidb36=None, token=None,
     else:
         validlink = False
         form = None
-    title = _('Password reset confirm')
+    title = _('Password reset (step %d from 3)') % 3
     context = {
         'form': form,
         'validlink': validlink,

@@ -43,6 +43,7 @@ from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.utils.translation import ugettext as _
 from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
+from exmo2010.custom_registration.views import password_reset_done
 from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
 from exmo2010.view.breadcrumbs import BreadcrumbsView
 
@@ -99,6 +100,6 @@ urlpatterns = patterns('',
         password_reset_confirm,
         name='auth_password_reset_confirm'),
     url(r'^password/reset/done/$',
-        auth_views.password_reset_done,
+        password_reset_done,
         name='auth_password_reset_done'),
 )

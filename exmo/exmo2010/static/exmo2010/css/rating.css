@@ -107,7 +107,7 @@ div.scroll {
 
 [class^="arrow"]
 {
-    background-position: 100% 0%;
+    background-position: 100% 2px;
     background-repeat: no-repeat;
     padding-right: 22px;
     height: 20px;
