@@ -240,14 +240,15 @@ def claim_notification(sender, **kwargs):
 
     claim = kwargs['claim']
     request = kwargs['request']
+    creation = kwargs['creation']
     score = claim.score
 
     subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim') % {
-            'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.organization.monitoring,
-            'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.code,
-            }
+        'prefix': settings.EMAIL_SUBJECT_PREFIX,
+        'monitoring': score.task.organization.monitoring,
+        'org': score.task.organization.name.split(':')[0],
+        'code': score.parameter.code,
+    }
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
                          request.get_host(),
@@ -259,7 +260,10 @@ def claim_notification(sender, **kwargs):
 
     c = Context({'score': score,
                  'claim': claim,
-                 'url': url,})
+                 'url': url,
+                 'creation': creation,
+                 'current_user': request.user.get_full_name(),
+                 })
 
     message_plain = t_plain.render(c)
     message_html = t_html.render(c)

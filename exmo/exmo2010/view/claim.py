@@ -67,10 +67,11 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                     'creator'] == request.user:
                     claim = score.add_claim(request.user,
                                             form.cleaned_data['comment'])
-                    signals.claim_was_posted.send(
+                    signals.claim_was_posted_or_deleted.send(
                         sender=Claim.__class__,
                         claim=claim,
-                        request=request
+                        request=request,
+                        creation=True,
                     )
                     return HttpResponseRedirect(redirect)
 
@@ -118,10 +119,11 @@ def claim_create(request, score_id):
             # Если поле claim_id пустое, значит это выставление претензии
                 claim = score.add_claim(user, form.cleaned_data['comment'])
 
-            signals.claim_was_posted.send(
+            signals.claim_was_posted_or_deleted.send(
                 sender=Claim.__class__,
                 claim=claim,
                 request=request,
+                creation=True,
             )
             return HttpResponseRedirect(redirect)
         else:
@@ -157,6 +159,14 @@ def claim_delete(request):
             claim = get_object_or_404(Claim, pk=claim_id)
             claim.delete()
             result = simplejson.dumps({'success': True})
+
+            signals.claim_was_posted_or_deleted.send(
+                sender=Claim.__class__,
+                claim=claim,
+                request=request,
+                creation=False,
+            )
+
             return HttpResponse(result, mimetype='application/json')
     raise Http404
 

@@ -34,4 +34,8 @@
 {{ claim.answer|striptags }}
 {% endif %}
 
-{% trans 'Link' %}: {{ url }}#claims
+{% if creation %}
+    {% trans 'Link' %}: {{ url }}#claims
+{% else %}
+    {% trans 'Claim was deleted by' %}: {{ current_user }}
+{% endif %}

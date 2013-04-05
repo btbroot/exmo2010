@@ -23,7 +23,7 @@ from django.dispatch import Signal
 
 # Sent just after a claim was posted. See above for how this differs
 # from the claim object's post-save signal.
-claim_was_posted = Signal(providing_args=["claim", "request"])
+claim_was_posted_or_deleted = Signal(providing_args=["claim", "request", "creation"])
 clarification_was_posted = Signal(providing_args=["clarification", "request"])
 score_was_changed = Signal(providing_args=["form", "request"])
 task_user_changed = Signal()

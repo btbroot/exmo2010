@@ -41,7 +41,11 @@
         <p><b>{% trans 'Answer' %}:</b></p>
         <p>{{ claim.answer|safe }}</p>
     {% endif %}
-    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#claims">{{ url }}#claims</a></p>
+    {% if creation %}
+        <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#claims">{{ url }}#claims</a></p>
+    {% else %}
+        <p><b>{% trans 'Claim was deleted by' %}:</b> {{ current_user }}</p>
+    {% endif %}
 {% endblock content %}
 
 

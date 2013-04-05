@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-05 15:53+0400\n"
+"POT-Creation-Date: 2013-04-05 17:36+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -365,22 +365,22 @@ msgstr "Удален %(name)s \"%(object)s\"."
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
-#: exmo/exmo2010/helpers.py:245
+#: exmo/exmo2010/helpers.py:246
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новая претензия"
 
-#: exmo/exmo2010/helpers.py:296
+#: exmo/exmo2010/helpers.py:300
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новое уточнение"
 
-#: exmo/exmo2010/helpers.py:398
+#: exmo/exmo2010/helpers.py:402
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: exmo/exmo2010/helpers.py:542
+#: exmo/exmo2010/helpers.py:546
 #: exmo/templates/exmo2010/emails/task_user_changed.txt:22
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
@@ -998,7 +998,7 @@ msgid "List"
 msgstr "Список"
 
 #: exmo/exmo2010/view/answers.py:42 exmo/exmo2010/view/claim.py:58
-#: exmo/exmo2010/view/claim.py:170 exmo/exmo2010/view/clarification.py:104
+#: exmo/exmo2010/view/claim.py:180 exmo/exmo2010/view/clarification.py:104
 #: exmo/exmo2010/view/monitoring.py:63 exmo/exmo2010/view/monitoring.py:130
 #: exmo/exmo2010/view/monitoring.py:161 exmo/exmo2010/view/monitoring.py:181
 #: exmo/exmo2010/view/monitoring.py:222 exmo/exmo2010/view/monitoring.py:256
@@ -1024,7 +1024,7 @@ msgstr "Список"
 #: exmo/exmo2010/view/task.py:427 exmo/exmo2010/view/task.py:438
 #: exmo/exmo2010/view/task.py:449 exmo/exmo2010/view/task.py:460
 #: exmo/exmo2010/view/task.py:481 exmo/exmo2010/view/task.py:496
-#: exmo/exmo2010/view/task.py:506 exmo/exmo2010/view/task.py:559
+#: exmo/exmo2010/view/task.py:506 exmo/exmo2010/view/task.py:558
 #: exmo/exmo2010/view/user.py:260
 msgid "Forbidden"
 msgstr "Запрещено"
@@ -1044,49 +1044,49 @@ msgstr "Организация"
 msgid "Task for monitoring "
 msgstr "Задачи цикла мониторинга "
 
-#: exmo/exmo2010/view/breadcrumbs.py:81 exmo/exmo2010/view/claim.py:221
+#: exmo/exmo2010/view/breadcrumbs.py:81 exmo/exmo2010/view/claim.py:231
 #: exmo/exmo2010/view/clarification.py:157 exmo/exmo2010/view/monitoring.py:86
 #: exmo/exmo2010/view/monitoring.py:298 exmo/exmo2010/view/monitoring.py:459
 #: exmo/exmo2010/view/monitoring.py:586 exmo/exmo2010/view/monitoring.py:961
 #: exmo/exmo2010/view/organization.py:63 exmo/exmo2010/view/task.py:535
-#: exmo/exmo2010/view/task.py:592
+#: exmo/exmo2010/view/task.py:591
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
-#: exmo/exmo2010/view/breadcrumbs.py:88 exmo/exmo2010/view/claim.py:223
+#: exmo/exmo2010/view/breadcrumbs.py:88 exmo/exmo2010/view/claim.py:233
 #: exmo/exmo2010/view/clarification.py:159 exmo/exmo2010/view/monitoring.py:88
 #: exmo/exmo2010/view/monitoring.py:288 exmo/exmo2010/view/monitoring.py:300
 #: exmo/exmo2010/view/monitoring.py:461 exmo/exmo2010/view/monitoring.py:588
 #: exmo/exmo2010/view/monitoring.py:963 exmo/exmo2010/view/organization.py:65
-#: exmo/exmo2010/view/task.py:537 exmo/exmo2010/view/task.py:594
+#: exmo/exmo2010/view/task.py:537 exmo/exmo2010/view/task.py:593
 #: exmo/templates/errors_header.html:35
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: exmo/exmo2010/view/breadcrumbs.py:94 exmo/exmo2010/view/claim.py:223
+#: exmo/exmo2010/view/breadcrumbs.py:94 exmo/exmo2010/view/claim.py:233
 #: exmo/exmo2010/view/clarification.py:159 exmo/exmo2010/view/monitoring.py:88
 #: exmo/exmo2010/view/monitoring.py:300 exmo/exmo2010/view/monitoring.py:461
 #: exmo/exmo2010/view/monitoring.py:588 exmo/exmo2010/view/monitoring.py:963
 #: exmo/exmo2010/view/organization.py:65 exmo/exmo2010/view/task.py:537
-#: exmo/exmo2010/view/task.py:594 exmo/templates/exmo2010/task_list.html:67
+#: exmo/exmo2010/view/task.py:593 exmo/templates/exmo2010/task_list.html:67
 msgid "Tasks"
 msgstr "Задачи "
 
-#: exmo/exmo2010/view/claim.py:52 exmo/exmo2010/view/claim.py:104
+#: exmo/exmo2010/view/claim.py:52 exmo/exmo2010/view/claim.py:105
 #: exmo/exmo2010/view/clarification.py:48
 #, python-format
 msgid "Add new claim for %s"
 msgstr "Добавить претензию для %s"
 
-#: exmo/exmo2010/view/claim.py:79
+#: exmo/exmo2010/view/claim.py:80
 msgid "Edit claim"
 msgstr "Редактировать претензию"
 
-#: exmo/exmo2010/view/claim.py:131
+#: exmo/exmo2010/view/claim.py:133
 msgid "Create claim"
 msgstr "Создать претензию"
 
-#: exmo/exmo2010/view/claim.py:174
+#: exmo/exmo2010/view/claim.py:184
 #, python-format
 msgid "Claims report for \"%s\""
 msgstr "Отчет по претензиям для \"%s\""
@@ -1477,7 +1477,7 @@ msgstr "Задача  обновлена"
 msgid "Task list for %(monitoring)s"
 msgstr "Список задач для %(monitoring)s"
 
-#: exmo/exmo2010/view/task.py:561
+#: exmo/exmo2010/view/task.py:560
 msgid "Mass assign tasks"
 msgstr "Массовое назначение"
 
@@ -1505,13 +1505,9 @@ msgstr "Настройки"
 msgid "Dashboard preferences was reset."
 msgstr "Настройки главной страницы были сброшены."
 
-#: exmo/templates/403.html:25
+#: exmo/templates/403.html:25 exmo/templates/403.html.py:29
 msgid "Permission denied"
 msgstr "Страница недоступна"
-
-#: exmo/templates/403.html:29
-msgid "Forbidden."
-msgstr "Запрещено."
 
 #: exmo/templates/403.html:33
 msgid "We're sorry, you haven't permission for viewing this page."
@@ -1603,8 +1599,8 @@ msgstr "Комментарий"
 
 #: exmo/templates/digest_email/notify_comment.html:29
 #: exmo/templates/digest_email/notify_comment.txt:30
-#: exmo/templates/exmo2010/emails/score_claim.html:44
-#: exmo/templates/exmo2010/emails/score_claim.txt:37
+#: exmo/templates/exmo2010/emails/score_claim.html:45
+#: exmo/templates/exmo2010/emails/score_claim.txt:38
 #: exmo/templates/exmo2010/emails/score_clarification.html:42
 #: exmo/templates/exmo2010/emails/score_clarification.txt:37
 #: exmo/templates/exmo2010/emails/score_comment.html:46
@@ -2284,6 +2280,11 @@ msgstr "Кому"
 #: exmo/templates/exmo2010/emails/score_claim.txt:29
 msgid "Claim"
 msgstr "Претензия"
+
+#: exmo/templates/exmo2010/emails/score_claim.html:47
+#: exmo/templates/exmo2010/emails/score_claim.txt:40
+msgid "Claim was deleted by"
+msgstr "Претензию удалил руководитель цикла"
 
 #: exmo/templates/exmo2010/emails/score_clarification.html:36
 #: exmo/templates/exmo2010/emails/score_clarification.txt:29

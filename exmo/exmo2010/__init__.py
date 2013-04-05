@@ -21,27 +21,18 @@
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_save
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.comments.signals import comment_was_posted
-from exmo2010.helpers import comment_notification
-from exmo2010.helpers import comment_change_status
-from exmo2010.helpers import claim_notification
-from exmo2010.helpers import clarification_notification
-from exmo2010.helpers import post_save_model
-from exmo2010.helpers import create_profile
-from exmo2010.helpers import create_revision
-from exmo2010.helpers import score_change_notify
-from exmo2010.helpers import task_user_change_notify
-from exmo2010.models import Score
-from exmo2010.models import Monitoring
+
+from exmo2010.helpers import *
+from exmo2010.models import Monitoring, Score
 from exmo2010.sites import site
 from exmo2010 import signals
 
 
-if hasattr(settings,'USE_EMAIL') and settings.USE_EMAIL:
+if hasattr(settings, 'USE_EMAIL') and settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
-    signals.claim_was_posted.connect(claim_notification)
+    signals.claim_was_posted_or_deleted.connect(claim_notification)
     signals.clarification_was_posted.connect(clarification_notification)
     signals.score_was_changed.connect(score_change_notify)
     signals.task_user_changed.connect(task_user_change_notify)
@@ -53,4 +44,3 @@ pre_save.connect(create_revision, sender=Score)
 # Регистрация хэндлера для сигнала перед отправкой комментария,
 # хэндлер изменяет статус комментариев.
 comment_was_posted.connect(comment_change_status)
-
