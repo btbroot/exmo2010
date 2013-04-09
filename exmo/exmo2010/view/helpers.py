@@ -22,13 +22,19 @@
 Модуль помощников для вью
 """
 
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.utils.translation import ungettext
 from django.views.generic.list_detail import object_list
+from django.template import loader, Context
+from django.utils.translation import ugettext as _
 
-from exmo2010.sort_headers import SortHeaders
+from core.sort_headers import SortHeaders
 from exmo2010.models import Task, Parameter
 from exmo2010.forms import ParameterDynForm
+from exmo2010.models import Score, UserProfile
 
 
 def table_prepare_queryset(request, headers, queryset):
@@ -171,3 +177,53 @@ def total_orgs_translate(avg, rating_list, rating_type):
         text += text_for_users
     text += '.'
     return text
+
+
+def score_change_notify(sender, **kwargs):
+    """
+    Оповещение об измененях оценки.
+
+    """
+    form = kwargs['form']
+    score = form.instance
+    request = kwargs['request']
+    changes = []
+    if form.changed_data:
+        for change in form.changed_data:
+            change_dict = {'field': change,
+                           'was': form.initial.get(change, form.fields[change].initial),
+                           'now': form.cleaned_data[change]}
+            changes.append(change_dict)
+    if score.task.approved:
+        rcpt = []
+        for profile in UserProfile.objects.filter(organization=score.task.organization):
+            if profile.user.is_active and profile.user.email and \
+                            profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
+                rcpt.append(profile.user.email)
+        rcpt = list(set(rcpt))
+        subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
+            'prefix': settings.EMAIL_SUBJECT_PREFIX,
+            'monitoring': score.task.organization.monitoring,
+            'org': score.task.organization.name.split(':')[0],
+            'code': score.parameter.code,
+            }
+        headers = {
+            'X-iifd-exmo': 'score_changed_notification'
+        }
+        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
+                             reverse('exmo2010:score_view', args=[score.pk]))
+        t = loader.get_template('score_email.html')
+        c = Context({'score': score, 'url': url, 'changes': changes})
+        message = t.render(c)
+        for rcpt_ in rcpt:
+            email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers=headers)
+            email.send()
+
+
+def create_revision(sender, instance, using, **kwargs):
+    """
+    Сохранение ревизии оценки на стадии взаимодействия.
+
+    """
+    if instance.revision != Score.REVISION_INTERACT:
+        instance.create_revision(Score.REVISION_INTERACT)

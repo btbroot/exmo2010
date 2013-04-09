@@ -26,7 +26,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden, Http404
-from exmo2010.utils import UnicodeWriter
+from core.utils import UnicodeWriter
 from exmo2010.models import Monitoring, Task
 from exmo2010.models import Questionnaire, QQuestion
 

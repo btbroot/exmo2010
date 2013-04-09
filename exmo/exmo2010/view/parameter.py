@@ -23,10 +23,10 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.generic.create_update import update_object, delete_object
+from bread_crumbs.views import breadcrumbs
 
 from exmo2010.models import Parameter, Score, Task
 from exmo2010.forms import ParameterForm, CORE_MEDIA
-from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 @login_required

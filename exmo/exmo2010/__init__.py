@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.db.models.signals import post_save
 from django.db.models.signals import pre_save
 from django.conf import settings
@@ -26,19 +25,17 @@ from django.contrib.comments.signals import comment_was_posted
 
 from exmo2010.helpers import *
 from exmo2010.models import Monitoring, Score
-from exmo2010.sites import site
-from exmo2010 import signals
+from exmo2010.signals import score_was_changed, claim_was_posted_or_deleted, clarification_was_posted
+from exmo2010.view.helpers import create_revision, score_change_notify
 
 
 if hasattr(settings, 'USE_EMAIL') and settings.USE_EMAIL:
     comment_will_be_posted.connect(comment_notification)
-    signals.claim_was_posted_or_deleted.connect(claim_notification)
-    signals.clarification_was_posted.connect(clarification_notification)
-    signals.score_was_changed.connect(score_change_notify)
-    signals.task_user_changed.connect(task_user_change_notify)
+    score_was_changed.connect(score_change_notify)
+    claim_was_posted_or_deleted.connect(claim_notification)
+    clarification_was_posted.connect(clarification_notification)
 
 post_save.connect(post_save_model)
-#post_save.connect(create_profile, sender=User)
 pre_save.connect(create_revision, sender=Score)
 
 # Регистрация хэндлера для сигнала перед отправкой комментария,

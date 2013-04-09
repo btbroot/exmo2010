@@ -22,7 +22,6 @@
 Модуль для работы с претензиями
 """
 
-from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
@@ -32,13 +31,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.http import HttpResponseForbidden, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
-from exmo2010 import signals
+from bread_crumbs.views import breadcrumbs
+from exmo2010.signals import claim_was_posted_or_deleted
 from exmo2010.models import Score, Claim
 from exmo2010.models import Monitoring
 from exmo2010.forms import ClaimForm, ClaimAddForm
-from exmo2010.forms import ClaimReportForm, CORE_MEDIA
-from exmo2010.view.breadcrumbs import breadcrumbs
+from exmo2010.forms import ClaimReportForm
 
 
 @csrf_protect
@@ -67,7 +65,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
                     'creator'] == request.user:
                     claim = score.add_claim(request.user,
                                             form.cleaned_data['comment'])
-                    signals.claim_was_posted_or_deleted.send(
+                    claim_was_posted_or_deleted.send(
                         sender=Claim.__class__,
                         claim=claim,
                         request=request,
@@ -119,7 +117,7 @@ def claim_create(request, score_id):
             # Если поле claim_id пустое, значит это выставление претензии
                 claim = score.add_claim(user, form.cleaned_data['comment'])
 
-            signals.claim_was_posted_or_deleted.send(
+            claim_was_posted_or_deleted.send(
                 sender=Claim.__class__,
                 claim=claim,
                 request=request,
@@ -160,7 +158,7 @@ def claim_delete(request):
             claim.delete()
             result = simplejson.dumps({'success': True})
 
-            signals.claim_was_posted_or_deleted.send(
+            claim_was_posted_or_deleted.send(
                 sender=Claim.__class__,
                 claim=claim,
                 request=request,

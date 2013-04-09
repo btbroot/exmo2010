@@ -22,17 +22,11 @@
 Модуль отчётов
 """
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseForbidden, Http404
+from django.http import HttpResponseForbidden
 from django.utils.translation import ugettext as _
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-
-from exmo2010.forms import MonitoringFilterForm
-from exmo2010.models import Monitoring
-from exmo2010.view.breadcrumbs import breadcrumbs
-from exmo2010.view.helpers import rating_type_parameter, rating
-from helpers import total_orgs_translate
+from bread_crumbs.views import breadcrumbs
 
 
 def comment_list(request):
@@ -126,107 +120,3 @@ def claim_list(request):
                                       'claims': claims,
                                   },
                                   RequestContext(request))
-
-
-def monitoring_report(request, report_type='inprogress', monitoring_id=None):
-    """
-    Статистика по мониторингам
-    """
-    if report_type not in ['inprogress', 'finished']:
-        raise Http404
-
-    all_monitorings = None
-    paginator_list = None
-    title = _('Monitoring statistics')
-
-    if report_type == 'inprogress':
-        all_monitorings = Monitoring.objects.exclude(
-            status=Monitoring.MONITORING_PUBLISH
-        ).exclude(
-            hidden=True
-        ).order_by('-rate_date')
-    elif report_type == 'finished':
-        all_monitorings = Monitoring.objects.exclude(
-            hidden=True
-        ).filter(
-            status=Monitoring.MONITORING_PUBLISH
-        ).order_by('-publish_date')
-    if monitoring_id:
-        monitorings = Monitoring.objects.filter(
-            status=Monitoring.MONITORING_PUBLISH,
-            pk=monitoring_id,
-            hidden=False)
-    else:
-        monitorings = all_monitorings
-
-        paginator = Paginator(monitorings, 10)
-        try:
-            page = int(request.GET.get('page', '1'))
-            if page < 1:
-                page = 1
-        except ValueError:
-            page = 1
-
-        try:
-            paginator_list = paginator.page(page)
-        except (EmptyPage, InvalidPage):
-            paginator_list = paginator.page(1)
-
-        monitorings = paginator_list.object_list
-
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-    current_title = _('Statistics')
-
-    return render_to_response('exmo2010/monitoring_report.html',
-                              {
-                                  'paginator': paginator_list,
-                                  'monitorings': monitorings,
-                                  'report_type': report_type,
-                                  'current_title': current_title,
-                                  'title': title,
-                                  'monitoring_id': monitoring_id,
-                                  'all_monitorings': all_monitorings,
-                              },
-                              RequestContext(request),
-                              )
-
-
-def ratings(request):
-    """
-    Рейтинги
-    """
-    m_id = request.GET.get('monitoring')
-    mform = MonitoringFilterForm(request.GET)
-    title = _('Ratings')
-    current_title = _('Ratings')
-
-    context = {
-        'title': title,
-        'current_title': current_title,
-        'report': True,
-        'mform': mform,
-    }
-
-    if m_id:
-        monitoring = get_object_or_404(Monitoring, pk=m_id)
-        if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        has_npa = monitoring.has_npa
-        rating_type, parameter_list, form = rating_type_parameter(request, monitoring, has_npa)
-        rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
-        con = {
-            'monitoring': monitoring,
-            'has_npa': has_npa,
-            'object_list': rating_list,
-            'rating_type': rating_type,
-            'average': avg,
-            'form': form,
-        }
-        context.update(con)
-        context['total_orgs'] = total_orgs_translate(avg, rating_list, rating_type)
-
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-
-    return render_to_response('exmo2010/rating_report.html', context, context_instance=RequestContext(request))

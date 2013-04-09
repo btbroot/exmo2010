@@ -23,7 +23,7 @@ from django import forms
 from django.forms.widgets import HiddenInput
 from django.contrib.comments.forms import CommentForm
 from custom_comments.models import CommentExmo
-from exmo2010.utils import clean_message
+from core.utils import clean_message
 
 class CustomCommentForm(CommentForm):
     status = forms.ChoiceField(choices=CommentExmo.STATUSES,

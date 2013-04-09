@@ -29,11 +29,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.http import HttpResponseForbidden
 from django.template import RequestContext
+from bread_crumbs.views import breadcrumbs
 
-from exmo2010 import signals
+from exmo2010.signals import clarification_was_posted
 from exmo2010.forms import ClarificationAddForm, ClarificationReportForm
 from exmo2010.models import Clarification, Monitoring, Score
-from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 @login_required
@@ -65,7 +65,7 @@ def clarification_create(request, score_id):
                 clarification = score.add_clarification(
                     user, form.cleaned_data['comment'])
 
-            signals.clarification_was_posted.send(
+            clarification_was_posted.send(
                 sender=Clarification.__class__,
                 clarification=clarification,
                 request=request,

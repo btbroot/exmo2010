@@ -45,7 +45,7 @@ from django.utils.translation import ugettext as _
 from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
 from exmo2010.custom_registration.views import password_reset_done
 from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
-from exmo2010.view.breadcrumbs import BreadcrumbsView
+from bread_crumbs.views import BreadcrumbsView
 
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
@@ -65,10 +65,9 @@ urlpatterns = patterns('',
         activate_redirect,
        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
        name='registration_activate'),
-    url(r'^register/$',
-        register_test_cookie,
-       {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
-       name='registration_register'),
+    url(r'^register/$', register_test_cookie,
+        {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
+        name='registration_register'),
     url(r'^register/complete/$', BreadcrumbsView.as_view(
         template_name='registration/registration_complete.html',
         get_context_data=lambda: {'current_title': _('Registration complete')}
@@ -91,10 +90,8 @@ urlpatterns = patterns('',
         auth_views.logout,
         {'next_page': reverse_lazy('exmo2010:index')},
         name='auth_logout'),
-    url(r'^password/reset/$',
-        password_reset_redirect,
-        {'post_reset_redirect':
-             reverse_lazy('exmo2010:auth_password_reset_done')},
+    url(r'^password/reset/$', password_reset_redirect,
+        {'post_reset_redirect': reverse_lazy('exmo2010:auth_password_reset_done')},
         name='auth_password_reset'),
     url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
         password_reset_confirm,

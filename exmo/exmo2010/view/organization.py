@@ -22,10 +22,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden
 from django.core.urlresolvers import reverse
-from exmo2010.forms import OrganizationForm, SettingsInvCodeForm
+from bread_crumbs.views import breadcrumbs
+from exmo2010.forms import OrganizationForm
+from accounts.forms import SettingsInvCodeForm
 from exmo2010.models import Organization, Task
 from exmo2010.models import Monitoring
-from exmo2010.view.breadcrumbs import breadcrumbs
 from exmo2010.view.helpers import table
 
 

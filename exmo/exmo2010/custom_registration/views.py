@@ -41,9 +41,9 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 from registration.backends import get_backend
 from registration.models import RegistrationProfile
+from bread_crumbs.views import breadcrumbs
 from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
-from exmo2010.view.breadcrumbs import breadcrumbs
 
 
 @csrf_protect
@@ -54,6 +54,7 @@ def password_reset_redirect(request, **kwargs):
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
     return auth_password_reset(request, **kwargs)
+
 
 def password_reset_done(request, **kwargs):
     kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 2}
@@ -125,7 +126,6 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
             return render_to_response('cookies.html', RequestContext(request))
 
     request.session.set_test_cookie()
-
     backend = get_backend(backend)
     if not backend.registration_allowed(request):
         return redirect(disallowed_url)

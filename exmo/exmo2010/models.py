@@ -33,12 +33,12 @@ from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
-from exmo2010.fields import TagField
-from exmo2010.sql import sql_score_openness_v1
-from exmo2010.sql import sql_score_openness_v8
-from exmo2010.sql import sql_task_openness
+from core.fields import TagField
+from core.sql import sql_score_openness_v1
+from core.sql import sql_score_openness_v8
+from core.sql import sql_task_openness
 from exmo2010.signals import task_user_changed
-from exmo2010.utils import clean_message
+from core.utils import clean_message
 
 
 # Типы вопросов анкеты. Добавить переводы!

@@ -23,6 +23,7 @@
 """
 
 from datetime import timedelta, datetime
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
@@ -34,11 +35,11 @@ from django.utils.translation import ugettext as _
 from django.utils.text import get_text_list
 from django.db import IntegrityError
 from django.db.models import Count
-from django.contrib.sites.models import Site
-from reversion import revision
+
+from core.utils import disable_for_loaddata
 from exmo2010.models import MonitoringInteractActivity, Organization
 from exmo2010.models import UserProfile, Score, Task
-from exmo2010.utils import disable_for_loaddata
+from reversion import revision
 
 
 def construct_change_message(request, form, formsets):
@@ -359,64 +360,6 @@ def post_save_model(sender, instance, created, **kwargs):
         revision.register(instance.__class__)
 
 
-def create_profile(sender, instance, created, **kwargs):
-    """
-    post-save для модели User для создания профиля
-    """
-
-    if created:
-        from exmo2010 import models
-        profile = models.UserProfile(user = instance)
-        profile.save()
-
-
-def create_revision(sender, instance, using, **kwargs):
-    """
-    Сохранение ревизии оценки на стадии взаимодействия
-    """
-
-    if instance.revision != Score.REVISION_INTERACT:
-        instance.create_revision(Score.REVISION_INTERACT)
-
-
-def score_change_notify(sender, **kwargs):
-    """
-    Оповещение об измененях оценки
-    """
-
-    form = kwargs['form']
-    score = form.instance
-    request = kwargs['request']
-    changes = []
-    if form.changed_data:
-        for change in form.changed_data:
-            change_dict = {'field': change, 'was': form.initial.get(change, form.fields[change].initial), 'now': form.cleaned_data[change]}
-            changes.append(change_dict)
-    if score.task.approved:
-        from exmo2010 import models
-        rcpt = []
-        for profile in models.UserProfile.objects.filter(organization = score.task.organization):
-            if profile.user.is_active and profile.user.email and profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-                rcpt.append(profile.user.email)
-        rcpt = list(set(rcpt))
-        subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
-            'prefix': settings.EMAIL_SUBJECT_PREFIX,
-            'monitoring': score.task.organization.monitoring,
-            'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.code,
-        }
-        headers = {
-            'X-iifd-exmo': 'score_changed_notification'
-        }
-        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(), reverse('exmo2010:score_view', args=[score.pk]))
-        t = loader.get_template('exmo2010/score_email.html')
-        c = Context({ 'score': score, 'url': url, 'changes': changes, })
-        message = t.render(c)
-        for rcpt_ in rcpt:
-            email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers = headers)
-            email.send()
-
-
 def log_monitoring_interact_activity(monitoring, user):
     """
     Функция для ведения журнала посещений представителя организации
@@ -493,7 +436,7 @@ def comment_report(monitoring):
             comments_count=Count('comment_comments'))
 
     for org_comment in org_comments:
-        from exmo2010.utils import workday_count
+        from core.utils import workday_count
         delta = timedelta(days=1)
         #check time_to_answer
         if workday_count(org_comment.submit_date.date() + delta,
@@ -538,24 +481,3 @@ def comment_report(monitoring):
     result['time_to_answer'] = time_to_answer
 
     return result
-
-
-def task_user_change_notify(sender, **kwargs):
-    task = sender
-    email = task.user.email
-    subject = _('You have an assigned task')
-    headers = {
-        'X-iifd-exmo': 'task_user_change_notification'
-    }
-    if Site._meta.installed:
-        site = Site.objects.get_current()
-        url = '%s://%s%s' % ('http', site, reverse('exmo2010:score_list_by_task', args=[task.pk]))
-    else:
-        url = None
-
-    t = loader.get_template('exmo2010/emails/task_user_changed.txt')
-    c = Context({'task': task, 'url': url, })
-    message = t.render(c)
-
-    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email], [], headers = headers)
-    email.send()

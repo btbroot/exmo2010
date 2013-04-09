@@ -30,12 +30,13 @@ from annoying.decorators import autostrip
 from registration.models import RegistrationProfile
 from exmo2010.models import Organization
 
+
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
 STATUS_CHOICES = (
     (0, _('representative')),
     (1, _('concerned person')),
-    )
+)
 
 
 @autostrip
