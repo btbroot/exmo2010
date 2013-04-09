@@ -16,11 +16,3 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf import settings
-
-from tasks.views import task_user_change_notify
-from tasks.signals import task_user_changed
-
-
-if hasattr(settings, 'USE_EMAIL') and settings.USE_EMAIL:
-    task_user_changed.connect(task_user_change_notify)
