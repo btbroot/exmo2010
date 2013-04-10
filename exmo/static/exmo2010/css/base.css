@@ -37,8 +37,9 @@ h1
     color: #555;
     font-weight: normal;
     padding: 0;
-    margin: 0;
-    line-height: 140%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 30px;
 }
 
 h2
@@ -46,28 +47,19 @@ h2
     font-size: 18px;
     color: #333;
     font-weight: normal;
-}
-
-h2 {
+    line-height: 24px;
     padding: 0;
-    margin: 0;
-    line-height: 150%;
-}
-
-h2.subhead {
-    font-weight: normal;
-    margin-top: 0;
+    margin: 0 0 10px 0;
 }
 
 h3
 {
     font-size: 16px;
+    line-height: 22px;
     color: #222;
     font-weight: normal;
-}
-
-h3 {
-    margin: .8em 0 .3em 0;
+    padding: 0;
+    margin: 0 0 5px 0;
 }
 
 h4 {
@@ -110,6 +102,7 @@ a:hover, .dashboard-module-content a:hover
 
 .pseudo:hover, a.pseudo:hover {
     text-decoration: none;
+    color: #005580;
 }
 
 .pseudo-off {
@@ -131,7 +124,7 @@ a.section:link, a.section:visited {
 }
 
 
-p, ol, ul, dl {
+ol, ul, dl {
     margin: .2em 0 .8em 0;
 }
 
@@ -141,6 +134,7 @@ p img, h1 img, h2 img, h3 img, h4 img, td img {
 
 p {
     padding: 0;
+    margin: 0 0 10px 0;
     line-height: 18px;
 }
 
@@ -669,8 +663,8 @@ div.system-message p.system-message-title {
 #content-container > h1
 {
     margin-left: 20px;
-    padding-top: 15px;
-    margin-bottom: 10px;
+    padding-top: 20px;
+    margin-top: 0;
 }
 
 #content
@@ -802,11 +796,6 @@ ul#errors-header li.brand a
 }
 
 /* ERRORS CONTENT */
-
-#content h1
-{
-    padding: 5px 0 10px 0;
-}
 
 #int_content
 {
