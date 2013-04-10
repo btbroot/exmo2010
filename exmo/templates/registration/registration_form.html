@@ -24,50 +24,17 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/registration.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/auth.css"/>
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            if ($("#id_status").val() == '1') {
-                $("#id_err_position").hide();
-                $("#id_position").val("");
-                $("#id_row_position").hide();
-                $("#id_err_phone").hide();
-                $("#id_phone").val("");
-                $("#id_row_phone").hide();
-                $("#id_err_invitation_code").hide();
-                $("#id_invitation_code").val("");
-                $("#id_row_invitation_code").hide();
-            }
-
-            $('#id_status').change(function () {
-                if ($("#id_status").val() == '0') {
-                    $("#id_row_position").show();
-                    $("#id_row_phone").show();
-                    $("#id_row_invitation_code").show();
-                }
-                else {
-                    $("#id_err_position").hide();
-                    $("#id_position").val("");
-                    $("#id_row_position").hide();
-                    $("#id_err_phone").hide();
-                    $("#id_phone").val("");
-                    $("#id_row_phone").hide();
-                    $("#id_err_invitation_code").hide();
-                    $("#id_invitation_code").val("");
-                    $("#id_row_invitation_code").hide();
-                }
-            });
-        });
-    </script>
+    <script src="{{ STATIC_URL }}exmo2010/js/registration.js"></script>
 {% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Registration' %}</h1>
+    <h1>{{ current_title }}</h1>
     {% if request.user.is_authenticated %}
         <p>
             {% trans 'You are already logged in' %}.
@@ -77,7 +44,6 @@
             {% blocktrans %}If you really want to register again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.
         </p>
     {% else %}
-        <p>{% trans 'In order to log in the system, please register first.' %}</p>
         <div id="content-main">
             <form action="" method="post">
                 {% csrf_token %}
@@ -132,16 +98,6 @@
                             <td>
                                 {{ field }}
                             </td>
-                            {% if field.field != form.fields.first_name and field.field != form.fields.patronymic and field.field != form.fields.last_name  %}
-                            <td class="help-text-registration{% if field.help_text %} help-text{% endif %}">
-                                {{ field.help_text }}
-                            </td>
-                            {% endif %}
-                            {% if field.field == form.fields.first_name %}
-                            <td class="help-text-registration help-text" rowspan="3">
-                                {% trans 'Enter your first name, patronymic, and last name in order the system can address you with it' %}
-                            </td>
-                            {% endif %}
                         </tr>
                         {% endif %}
                     {% endfor %}
@@ -171,10 +127,27 @@
                         </tr>
                     </tbody>
                 </table>
+                <div id="help-text" style="display: none;">
+                    <p id="help-name" class="alert-info">
+                        {% trans "Enter your first name, patronymic, and last name in order the system can address you with it and to check are you an official of an organisation you represent." %}
+                    </p>
+                    <p id="help-status" class="alert-info">
+                        {% trans "Your position may be necessary for a verification of your belonging to organisation you represent." %}
+                    </p>
+                    <p id="help-phone" class="alert-info">
+                        {% trans "In order to solve problems you could meet, your contact phone is necessary." %}
+                    </p>
+                    <p id="help-email" class="alert-info">
+                        {% trans "Will be used to confirm the registration and to enter the system." %}
+                    </p>
+                    <p id="help-password" class="alert-info">
+                        {% trans "Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)." %}
+                    </p>
+                    <p id="help-code" class="alert-info">
+                        {% trans "Enter the code to get an access to scores of your organisation." %}
+                    </p>
+                </div>
             </form>
         </div>
-        <script type="text/javascript">
-            document.getElementById('id_first_name').focus()
-        </script>
     {% endif %}
 {% endblock %}

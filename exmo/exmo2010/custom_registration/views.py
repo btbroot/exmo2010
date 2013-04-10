@@ -165,7 +165,7 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
-    title = _('Registration')
+    title = _('Registration (step %(step)s from %(steps)s)') % {'step': 1, 'steps': 2}
 
     return render_to_response(template_name,
         {'form': form, 'current_title': title},

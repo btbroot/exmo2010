@@ -77,3 +77,108 @@
 {
     color: red;
 }
+
+.table-registration td
+{
+    vertical-align: middle;
+    border-bottom-color: #fff;
+    padding: 4px 6px;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.table-registration td:first-child
+{
+    padding-left: 0px;
+    text-align: right;
+    width: 127px;
+}
+
+.label-registration label
+{
+    color: #333;
+}
+
+td input[type="text"]
+{
+    width: 300px;
+    font-size: 13px;
+}
+
+td select
+{
+    width: 308px;
+    font-size: 13px;
+}
+
+.table-registration ul
+{
+    padding-left: 0;
+}
+
+.table-registration ul > li
+{
+    list-style: none;
+}
+
+.required
+{
+    color: red;
+}
+
+td.subscribe
+{
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.subscribe input
+{
+    position: relative;
+    bottom: 2px;
+}
+
+#help-text
+{
+    position: absolute;
+    width: 450px;
+    left: 475px;
+    background-image: url(../img/registration-triangle.png);
+    background-position: 0px 15px;
+    background-repeat: no-repeat;
+    padding-left: 9px;
+}
+
+.form-errors
+{
+    margin-left: 5px;
+    padding-left: 28px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: #fecdcd;
+    border: #fe9898 1px solid;
+    color: #000000;
+}
+
+ul.form-errors
+{
+    padding-left: 28px;
+}
+
+ul.form-errors li
+{
+    list-style: disc;
+}
+
+.form-errors li
+{
+    padding-left: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 13px;
+}
+
+span.form-error
+{
+    font-size: 13px;
+}

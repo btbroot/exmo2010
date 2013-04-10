@@ -24,14 +24,12 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/auth.css"/>
 {% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Please, confirm your registration' %}</h1>
-    <div id="content-main">
-        <p>{% trans 'We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can log in the system.' %}</p>
-        {% url exmo2010:index as index %}
-        {% blocktrans %}<p>To get published monitorings info, <a href="{{ index }}">please go to the main page</a>.</p>{% endblocktrans %}
-    </div>
+    <h1>{{ current_title }}</h1>
+    <p class="alert-info">
+        {% trans 'We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can use full advantage of EXMO system.' %}
+    </p>
 {% endblock %}

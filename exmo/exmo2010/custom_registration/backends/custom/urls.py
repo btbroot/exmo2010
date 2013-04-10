@@ -70,7 +70,8 @@ urlpatterns = patterns('',
         name='registration_register'),
     url(r'^register/complete/$', BreadcrumbsView.as_view(
         template_name='registration/registration_complete.html',
-        get_context_data=lambda: {'current_title': _('Registration complete')}
+        get_context_data=lambda: {'current_title': _('Registration (step %(step)s from %(steps)s)') % {'step': 2,
+                                                                                                       'steps': 2}}
         ),
         name='registration_complete'),
     url(r'^register/closed/$', BreadcrumbsView.as_view(
