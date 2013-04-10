@@ -86,11 +86,7 @@
     <tr id="task{{ object.pk }}">
 
       <td>
-        <a 
-        {% if object.organization.monitoring.is_revision and object.user != user and user.profile.is_expertB and not user.profile.is_expertA %}
-        style="color:red"
-        {% endif %}
-         href="{% url exmo2010:score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
+        <a href="{% url exmo2010:score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {% if perm_admin %}
             &nbsp;<a href="{% url exmo2010:task_manager object.pk 'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
         {% endif %}

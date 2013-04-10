@@ -566,9 +566,6 @@ def monitoring_parameter_filter(request, m_id):
             t_closed = cd.get("t_closed")
             if t_closed:
                 t_st_list.append(Task.TASK_CLOSED)
-            t_check = cd.get("t_check")
-            if t_check:
-                t_st_list.append(Task.TASK_CHECKED)
             t_approved = cd.get("t_approved")
             if t_approved:
                 t_st_list.append(Task.TASK_APPROVED)

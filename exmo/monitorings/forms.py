@@ -49,7 +49,6 @@ class MonitoringForm(forms.ModelForm):
         model = Monitoring
         exclude = ('time_to_answer',
                    'prepare_date',
-                   'revision_date',
                    'result_date',
                    )
         widgets = {

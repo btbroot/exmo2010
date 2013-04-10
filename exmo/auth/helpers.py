@@ -86,8 +86,6 @@ def task_permission(user, priv, task):
             profile = user.profile
             if profile.is_expert and task.user == user: return True
             if profile.is_expert:
-                if task.organization.monitoring.is_revision and task.checked:
-                    return True
                 return user.has_perm('exmo2010.fill_task', task)
             elif profile.is_organization or profile.is_customer:
                 if task.organization in profile.organization.all() \
@@ -102,18 +100,13 @@ def task_permission(user, priv, task):
         if task.open and task.user == user \
             and task.organization.monitoring.is_rate:
             return True
-    elif priv == 'exmo2010.check_task':
-        if task.ready and task.user == user \
-            and task.organization.monitoring.is_rate:
-            return True
     elif priv == 'exmo2010.open_task':
         if task.ready and task.user == user \
             and task.organization.monitoring.is_rate:
             return True
     elif priv == 'exmo2010.fill_task':  # create_score
-        if (task.open or task.checked) and task.user == user and \
-                (task.organization.monitoring.is_rate or
-                     task.organization.monitoring.is_revision):
+        if task.open and task.user == user and \
+                task.organization.monitoring.is_rate:
             return True
         if task.user == user and (task.organization.monitoring.is_interact or
                                       task.organization.monitoring.is_finishing):

@@ -309,7 +309,9 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                      'organization': organization,
                      'current_title': current_title,
                      'title': title,
-                 })
+                 },
+                 template_name="task_list.html",)
+
 
 
 @revision.create_on_success
@@ -388,7 +390,7 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
     redirect = redirect.replace("%", "%%")
     valid_method = [
         'delete', 'approve', 'close',
-        'open', 'check', 'update', 'get',
+        'open', 'update', 'get',
         ]
     if method not in valid_method:
         HttpResponseForbidden(_('Forbidden'))
@@ -448,17 +450,6 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
                 except ValidationError, e:
                     return HttpResponse('%s' % e.message_dict.get('__all__')[0])
             else: return HttpResponse(_('Already open'))
-        else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'check':
-        title = _('Check task %s') % task
-        if request.user.has_perm('exmo2010.check_task', task):
-            if task.ready:
-                try:
-                    revision.comment = _('Task on check')
-                    task.checked = True
-                except ValidationError, e:
-                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            else: return HttpResponse(_('Already on check'))
         else: return HttpResponseForbidden(_('Forbidden'))
     elif method == 'update':  # update
         title = _('Edit task %s') % task

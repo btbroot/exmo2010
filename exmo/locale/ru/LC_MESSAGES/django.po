@@ -532,10 +532,6 @@ msgstr "подготовка"
 msgid "initial rate"
 msgstr "первоначальная оценка"
 
-#: exmo2010/models.py:105
-msgid "rates revision"
-msgstr "проверка оценок"
-
 #: exmo2010/models.py:106
 msgid "result"
 msgstr "результаты"
@@ -587,10 +583,6 @@ msgstr "Скрытый цикл мониторинга"
 #: exmo2010/models.py:138
 msgid "prepare date"
 msgstr "дата подготовки"
-
-#: exmo2010/models.py:148
-msgid "revision date"
-msgstr "дата проверки"
 
 #: exmo2010/models.py:158
 msgid "result date"
@@ -701,11 +693,6 @@ msgstr "открыта"
 #: exmo2010/models.py:458 parameters/forms.py:67
 msgid "closed"
 msgstr "закрыта"
-
-#: exmo2010/models.py:459 parameters/forms.py:69
-#: tasks/templates/task_status.html:32
-msgid "check"
-msgstr "проверка"
 
 #: exmo2010/models.py:460 parameters/forms.py:71
 msgid "approved"

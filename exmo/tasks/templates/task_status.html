@@ -26,21 +26,14 @@
     {% endif %}
 {% endif %}
 {% if object.ready %}
-    {% check_object_permission exmo2010.check_task object as perm %}
-    {% task_status object.status %}
-    {% if perm %}
-        : <a href="#task{{ object.pk }}" onclick="change_status('{{ object.pk }}', 'check')">{% trans 'check' %}</a>
-    {% endif %}
-    {% check_object_permission exmo2010.open_task object as perm %}
-    {% if perm %}
-        / <a href="#task{{ object.pk }}" onclick="change_status('{{ object.pk }}', 'open')">{% trans 'open' %}</a>
-    {% endif %}
-{% endif %}
-{% if object.checked %}
     {% check_object_permission exmo2010.approve_task object as perm %}
     {% task_status object.status %}
     {% if perm %}
         : <a href="#task{{ object.pk }}" onclick="change_status('{{ object.pk }}', 'approve')">{% trans 'approve' %}</a>
+    {% endif %}
+    {% check_object_permission exmo2010.open_task object as perm %}
+    {% if perm %}
+        / <a href="#task{{ object.pk }}" onclick="change_status('{{ object.pk }}', 'open')">{% trans 'open' %}</a>
     {% endif %}
 {% endif %}
 {% if object.approved %}

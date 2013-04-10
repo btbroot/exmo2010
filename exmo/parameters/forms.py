@@ -66,8 +66,6 @@ class ParamCritScoreFilterForm(forms.Form):
                                   initial=True)
     t_closed = forms.BooleanField(label=_('closed'), required=False,
                                   initial=True)
-    t_check = forms.BooleanField(label=_('check'), required=False,
-                                 initial=True)
     t_approved = forms.BooleanField(label=_('approved'), required=False,
                                     initial=True)
 

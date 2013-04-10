@@ -102,7 +102,6 @@ class Monitoring(models.Model):
     MONITORING_STATUS = (
         (MONITORING_PREPARE, _('prepare')),
         (MONITORING_RATE, _('initial rate')),
-        (MONITORING_REVISION, _('rates revision')),
         (MONITORING_RESULT, _('result')),
         (MONITORING_INTERACT, _('interact')),
         (MONITORING_FINISHING, _('finishing')),
@@ -142,11 +141,6 @@ class Monitoring(models.Model):
             blank=True,
             verbose_name=_('Monitoring rate begin date'),
         )
-    revision_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('revision date'),
-        )
     interact_date = models.DateField(
             null=True,
             blank=True,
@@ -181,9 +175,6 @@ class Monitoring(models.Model):
 
     def _get_rate(self):
         return self.status == self.MONITORING_RATE
-
-    def _get_revision(self):
-        return self.status == self.MONITORING_REVISION
 
     def _get_interact(self):
         return self.status == self.MONITORING_INTERACT
@@ -281,7 +272,6 @@ class Monitoring(models.Model):
 
     is_prepare = property(_get_prepare)
     is_rate = property(_get_rate)
-    is_revision = property(_get_revision)
     is_interact = property(_get_interact)
     is_result = property(_get_result)
     is_finishing = property(_get_finishing)
@@ -456,7 +446,6 @@ class Task(models.Model):
     TASK_STATUS = (
         (TASK_OPEN, _('opened')),
         (TASK_CLOSE, _('closed')),
-        (TASK_CHECK, _('check')),
         (TASK_APPROVE, _('approved'))
     )
     user = models.ForeignKey(User, verbose_name=_('user'))
@@ -585,10 +574,6 @@ class Task(models.Model):
         if self.status == self.TASK_APPROVED: return True
         else: return False
 
-    def _get_checked(self):
-        if self.status == self.TASK_CHECK: return True
-        else: return False
-
     def _set_open(self, val):
         if val:
             self.status = self.TASK_OPEN
@@ -604,12 +589,6 @@ class Task(models.Model):
     def _set_approved(self, val):
         if val:
             self.status = self.TASK_APPROVED
-            self.full_clean()
-            self.save()
-
-    def _set_checked(self, val):
-        if val:
-            self.status = self.TASK_CHECKED
             self.full_clean()
             self.save()
 
@@ -683,7 +662,6 @@ class Task(models.Model):
 
     open = property(_get_open, _set_open)
     ready = property(_get_ready, _set_ready)
-    checked = property(_get_checked, _set_checked)
     approved = property(_get_approved, _set_approved)
 
 
@@ -1332,7 +1310,6 @@ class UserProfile(models.Model):
                     monitoring_name = o.monitoring.name
             if not monitoring_running and \
                o.monitoring.status in (Monitoring.MONITORING_RATE,
-                                       Monitoring.MONITORING_REVISION,
                                        Monitoring.MONITORING_RESULT,
                                        Monitoring.MONITORING_PREPARE):
                 monitoring_running = True
@@ -1352,7 +1329,6 @@ class UserProfile(models.Model):
             statuses=[Monitoring.MONITORING_PREPARE,
                       Monitoring.MONITORING_PUBLISH,
                       Monitoring.MONITORING_RATE,
-                      Monitoring.MONITORING_REVISION,
                       Monitoring.MONITORING_RESULT,]
 
         return Score.objects.filter(task__user=self.user).exclude(
