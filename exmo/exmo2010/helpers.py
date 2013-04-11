@@ -263,7 +263,7 @@ def claim_notification(sender, **kwargs):
                  'claim': claim,
                  'url': url,
                  'creation': creation,
-                 'current_user': request.user.get_full_name(),
+                 'current_user': request.user.userprofile.legal_name,
                  })
 
     message_plain = t_plain.render(c)
