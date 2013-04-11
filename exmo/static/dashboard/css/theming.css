@@ -29,19 +29,21 @@ div.breadcrumbs {
     background-image: none;
     background-color: #eee;
     border-bottom: 1px solid #ddd;
-    height: 21px;
+    height: 22px;
 }
+
+div.breadcrumbs a, div.breadcrumbs span {
+    display: block;
+    float: left;
+    height: 14px;
+}
+
 
 div.breadcrumbs a:first-child {
     background-image: url(../img/home_out.gif);
-    background-position: 0px 1px;
+    background-position: 0px 0px;
     background-repeat: no-repeat;
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
     width: 16px;
-    height: 14px;
-
 }
 
 div.breadcrumbs a:first-child:hover {
@@ -49,15 +51,10 @@ div.breadcrumbs a:first-child:hover {
 }
 
 div.breadcrumbs span.breadcrumb-arrow {
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-
     background-image: url(../img/breadcrumb_arrow.png);
+    background-position: 0px 3px;
     background-repeat: no-repeat;
-
     width: 10px;
-    height: 10px;
 }
 
 div.breadcrumbs span.title {
@@ -67,6 +64,5 @@ div.breadcrumbs span.title {
 }
 
 div.breadcrumbs a {
-    display: inline;
     padding-right: 5px;
 }

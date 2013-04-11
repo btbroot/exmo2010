@@ -23,7 +23,7 @@
     background-image: none;
     background-color: #3678A2;
     height: 40px;
-    padding-right: 10px;
+    padding-right: 20px;
 }
 
 #header ul#navigation-menu li {
@@ -163,8 +163,8 @@
     background-color: #ffffff;
     border: 1px solid #ddd;
     border-width: 0 0 1px 1px;
-    padding-top: 5px;
-    padding-bottom: 6px;
+    padding-top: 3px;
+    padding-bottom: 5px;
     padding-left: 7px;
 }
 
@@ -184,12 +184,12 @@
 }
 
 #header ul#navigation-menu div#userarea div.auth a:first-child {
-    background: transparent url(../img/settings.png) no-repeat 10px 4px;
+    background: transparent url(../img/settings.png) no-repeat 10px 3px;
     padding-left: 30px;
 }
 
 #header ul#navigation-menu div#userarea div.auth a {
-    background: transparent url(../img/exit.png) center left no-repeat;
+    background: transparent url(../img/exit.png) no-repeat 0px 3px;
     padding-left: 20px;
 }
 
