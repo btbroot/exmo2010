@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-11 13:32+0400\n"
+"POT-Creation-Date: 2013-04-11 16:54+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -171,9 +171,9 @@ msgstr "Настройки главной страницы были сброше
 #: monitorings/views.py:130 monitorings/views.py:162 monitorings/views.py:182
 #: monitorings/views.py:223 monitorings/views.py:257 monitorings/views.py:289
 #: monitorings/views.py:328 monitorings/views.py:421 monitorings/views.py:486
-#: monitorings/views.py:507 monitorings/views.py:608 monitorings/views.py:668
-#: monitorings/views.py:714 monitorings/views.py:753 monitorings/views.py:835
-#: monitorings/views.py:916 monitorings/views.py:1072
+#: monitorings/views.py:507 monitorings/views.py:608 monitorings/views.py:676
+#: monitorings/views.py:722 monitorings/views.py:761 monitorings/views.py:843
+#: monitorings/views.py:924 monitorings/views.py:1080
 #: organizations/views.py:36 organizations/views.py:57
 #: organizations/views.py:89 parameters/views.py:45 parameters/views.py:66
 #: parameters/views.py:72 parameters/views.py:97 questionnaire/views.py:55
@@ -252,7 +252,7 @@ msgstr "Циклы мониторинга"
 
 #: bread_crumbs/views.py:52
 #: monitorings/templates/monitoring_parameter_filter.html:179
-#: monitorings/templates/monitoring_parameter_found_report.html:45
+#: monitorings/templates/monitoring_parameter_found_report.html:63
 #: parameters/forms.py:49 scores/views.py:76 scores/views.py:130
 #: scores/views.py:243
 msgid "Parameter"
@@ -276,15 +276,15 @@ msgstr "Задачи цикла мониторинга "
 #: bread_crumbs/views.py:81 exmo2010/view/claim.py:229
 #: exmo2010/view/clarification.py:157 exmo2010/view/organization.py:64
 #: monitorings/views.py:85 monitorings/views.py:300 monitorings/views.py:463
-#: monitorings/views.py:587 monitorings/views.py:961 organizations/views.py:67
-#: tasks/views.py:546 tasks/views.py:602
+#: monitorings/views.py:587 monitorings/views.py:653 monitorings/views.py:969
+#: organizations/views.py:67 tasks/views.py:546 tasks/views.py:602
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
 #: bread_crumbs/views.py:88 exmo2010/view/claim.py:231
 #: exmo2010/view/clarification.py:159 exmo2010/view/organization.py:66
 #: monitorings/views.py:87 monitorings/views.py:290 monitorings/views.py:302
-#: monitorings/views.py:465 monitorings/views.py:589 monitorings/views.py:963
+#: monitorings/views.py:465 monitorings/views.py:589 monitorings/views.py:971
 #: organizations/views.py:69 tasks/views.py:548 tasks/views.py:604
 #: templates/errors_header.html:35
 msgid "Rating"
@@ -293,7 +293,7 @@ msgstr "Рейтинг"
 #: bread_crumbs/views.py:94 exmo2010/view/claim.py:231
 #: exmo2010/view/clarification.py:159 exmo2010/view/organization.py:66
 #: monitorings/views.py:87 monitorings/views.py:302 monitorings/views.py:465
-#: monitorings/views.py:589 monitorings/views.py:963 organizations/views.py:69
+#: monitorings/views.py:589 monitorings/views.py:971 organizations/views.py:69
 #: tasks/views.py:548 tasks/views.py:604 tasks/templates/task_list.html:67
 msgid "Tasks"
 msgstr "Задачи "
@@ -352,11 +352,11 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: dashboard/menu.py:82 monitorings/views.py:1059 monitorings/views.py:1060
+#: dashboard/menu.py:82 monitorings/views.py:1067 monitorings/views.py:1068
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: dashboard/menu.py:85 monitorings/views.py:1036
+#: dashboard/menu.py:85 monitorings/views.py:1044
 #: monitorings/templates/monitoring_comment_report.html:69
 #: templates/errors_header.html:40
 msgid "Statistics"
@@ -1240,34 +1240,39 @@ msgstr "Все задачи"
 msgid "Report for %s by parameter and found"
 msgstr "Отчёт для %s по параметру и наличию"
 
-#: monitorings/views.py:800
+#: monitorings/views.py:652
+#, python-format
+msgid "Parameter found report of %(monitoring)s"
+msgstr "Отчёт по наличию параметра для %(monitoring)s"
+
+#: monitorings/views.py:808
 #, python-format
 msgid "Import organization from CSV for monitoring %s"
 msgstr "Импортировать органы/организации из CSV для %s"
 
-#: monitorings/views.py:807
+#: monitorings/views.py:815
 msgid "Import organization"
 msgstr "Импортировать органы/организации"
 
-#: monitorings/views.py:890
+#: monitorings/views.py:898
 #, python-format
 msgid "Import parameter from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для %s"
 
-#: monitorings/views.py:897
+#: monitorings/views.py:905
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: monitorings/views.py:917
+#: monitorings/views.py:925
 #, python-format
 msgid "Comment report for %s"
 msgstr "Отчет по комментариям для %s"
 
-#: monitorings/views.py:931
+#: monitorings/views.py:939
 msgid "Start date for interact not defined."
 msgstr "Дата взаимодействия не указана"
 
-#: monitorings/views.py:997
+#: monitorings/views.py:1005
 #: templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
@@ -1420,26 +1425,16 @@ msgstr "Отфильтровать"
 msgid "Task"
 msgstr "Задача"
 
-#: monitorings/templates/monitoring_parameter_found_report.html:26
-#: monitorings/templates/monitoring_parameter_found_report.html:39
-msgid "Parameter found report"
-msgstr "Отчёт по наличию параметра"
-
-#: monitorings/templates/monitoring_parameter_found_report.html:26
-#: monitorings/templates/monitoring_parameter_found_report.html:39
-msgid " of "
-msgstr " для "
-
-#: monitorings/templates/monitoring_parameter_found_report.html:46
+#: monitorings/templates/monitoring_parameter_found_report.html:64
 #: templates/exmo2010/organization_list.html:35
 msgid "Organizations"
 msgstr "Организации"
 
-#: monitorings/templates/monitoring_parameter_found_report.html:47
+#: monitorings/templates/monitoring_parameter_found_report.html:65
 msgid "Organizations with 'found=1'"
 msgstr "Органы/организации с найденным параметром"
 
-#: monitorings/templates/monitoring_parameter_found_report.html:61
+#: monitorings/templates/monitoring_parameter_found_report.html:79
 msgid "Total"
 msgstr "Всего"
 

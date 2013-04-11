@@ -1,3 +1,4 @@
+{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,54 +19,69 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% spaceless %}
-{% load i18n %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-<head>
-<title>{% trans "Parameter found report" %} {% trans " of " %} {{ monitoring }}</title>
-<link rel="stylesheet" type="text/css"
-      href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/patch.css" />
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-<style>
-.parameter_found_report_total_tr {
-    font-weight: bold
-}
-</style>
-</head>
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-<h1>{% trans "Parameter found report" %} {% trans " of " %} {{ monitoring }}</h1>
+{% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
 
-<div id=organization_list>
-<table>
-<thead>
-    <tr>
-        <td>{% trans 'Parameter' %}</td>
-        <td>{% trans 'Organizations' %}</td>
-        <td>{% trans "Organizations with 'found=1'" %}</td>
-        <td>%</td>
-    </tr>
-</thead>
-<tbody>
-{% for object in object_list %}
-    <tr>
-        <td>{{ object.parameter }}</td>
-        <td>{{ object.organization_count }}</td>
-        <td>{{ object.score_count }}</td>
-        <td>{{ object.score_per_organization|floatformat:3 }}</td>
-    </tr>
-{% endfor %}
-    <tr class='parameter_found_report_total_tr'>
-        <td><b>{% trans 'Total' %}:</b></td>
-        <td>{{ organization_count_total }}</td>
-        <td>{{ score_count_total }}</td>
-        <td>{{ score_per_organization_total|floatformat:3 }}</td>
-    </tr>
-</tbody>
-</table>
-</div>
-{% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
-</body></html>
-{% endspaceless %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+{% endblock %}
+{% block extrahead %}
+    {{ block.super }}
+{% endblock %}
+
+{% block bubble %}
+    {% include "exmo2010/helpers/inv_code_bubble.html" %}
+{% endblock %}
+
+{% block nav_sidebar %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block nav_sidebar_title %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        <h1>{{ monitoring.name }}</h1>
+    {% endif %}
+{% endblock %}
+
+{% block content_class %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        sidebar-ident
+    {% endif %}
+{% endblock %}
+
+{% block content_title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    <div id=organization_list>
+        <table class="base-table">
+            <thead>
+            <tr>
+                <td>{% trans 'Parameter' %}</td>
+                <td>{% trans 'Organizations' %}</td>
+                <td>{% trans "Organizations with 'found=1'" %}</td>
+                <td>%</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in object_list %}
+                <tr>
+                    <td>{{ object.parameter }}</td>
+                    <td>{{ object.organization_count }}</td>
+                    <td>{{ object.score_count }}</td>
+                    <td>{{ object.score_per_organization|floatformat:3 }}</td>
+                </tr>
+            {% endfor %}
+            <tr class='parameter_found_report_total_tr'>
+                <td><b>{% trans 'Total' %}:</b></td>
+                <td>{{ organization_count_total }}</td>
+                <td>{{ score_count_total }}</td>
+                <td>{{ score_per_organization_total|floatformat:3 }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{%endblock%}

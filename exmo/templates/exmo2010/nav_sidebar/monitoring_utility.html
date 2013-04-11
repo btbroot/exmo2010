@@ -79,7 +79,7 @@
                 {% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
                 {% if perm %}
                     {% url exmo2010:monitoring_parameter_found_report monitoring.pk as url %}
-                    {% include "exmo2010/nav_sidebar/item.html" with url=url title="Presence of the parameter" blank=1 %}
+                    {% include "exmo2010/nav_sidebar/item.html" with url=url title="Presence of the parameter" %}
                 {% endif %}
             {% endif %}
 

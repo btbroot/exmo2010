@@ -648,8 +648,16 @@ def monitoring_parameter_found_report(request, id):
         object_list.append(obj)
     if organization_count_total:
         score_per_organization_total = float(score_count_total) / organization_count_total * 100
+
+    title = _('Parameter found report of %(monitoring)s') % {'monitoring': monitoring}
+    current_title = _('Monitoring cycle')
+
+    crumbs = ['Home', 'Monitoring']
+    breadcrumbs(request, crumbs)
+
     return render_to_response('monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
+        'current_title': current_title,
         'title': title,
         'object_list': object_list,
         'score_count_total': score_count_total,
