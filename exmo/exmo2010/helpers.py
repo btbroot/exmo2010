@@ -244,11 +244,14 @@ def claim_notification(sender, **kwargs):
     creation = kwargs['creation']
     score = claim.score
 
-    subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - New claim') % {
+    theme = _('New claim') if creation else _('Delete claim')
+
+    subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s') % {
         'prefix': settings.EMAIL_SUBJECT_PREFIX,
         'monitoring': score.task.organization.monitoring,
         'org': score.task.organization.name.split(':')[0],
         'code': score.parameter.code,
+        'theme': theme,
     }
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
