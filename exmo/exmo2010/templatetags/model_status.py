@@ -23,11 +23,12 @@
 """
 
 from exmo2010.models import Task
-from exmo2010.models import Monitoring
+from exmo2010.models import MONITORING_STATUS
 from django import template
 from django.utils.translation import ugettext as _
 
 register = template.Library()
+
 
 def model_status(choices, status):
     for code, text in choices:
@@ -38,8 +39,10 @@ def model_status(choices, status):
     else:
         return ""
 
+
 def monitoring_status(status):
-    return model_status(Monitoring.MONITORING_STATUS, status)
+    return model_status(MONITORING_STATUS, status)
+
 
 def task_status(status):
     return model_status(Task.TASK_STATUS, status)

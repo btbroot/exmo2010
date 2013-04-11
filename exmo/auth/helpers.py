@@ -22,7 +22,7 @@
  Помощники для бекенда. По помощнику на каждый класс модели.
 """
 
-from exmo2010.models import Monitoring, Task
+from exmo2010.models import Task, MONITORING_INTERACT, MONITORING_FINISHING, MONITORING_PUBLISH
 
 
 def monitoring_permission(user, priv, monitoring):
@@ -65,9 +65,9 @@ def monitoring_permission(user, priv, monitoring):
                 and Task.approved_tasks.filter(
                             organization__monitoring=monitoring,
                             organization__monitoring__status__in=(
-                                Monitoring.MONITORING_INTERACT,
-                                Monitoring.MONITORING_FINISHING,
-                                Monitoring.MONITORING_PUBLISH,
+                                MONITORING_INTERACT,
+                                MONITORING_FINISHING,
+                                MONITORING_PUBLISH,
                             ),
                             organization__in=profile.organization.all()).exists():
                 return True

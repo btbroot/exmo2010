@@ -71,8 +71,23 @@ MONITORING_STAT_DICT = {
     'avg_openness_first': 0,
 }
 
-
 INV_CODE_CHARS = string.ascii_uppercase + string.digits
+
+MONITORING_PREPARE = 0
+MONITORING_RATE = 1
+MONITORING_REVISION = 2
+MONITORING_INTERACT = 3
+MONITORING_RESULT = 4
+MONITORING_PUBLISH = 5
+MONITORING_FINISHING = 7
+MONITORING_STATUS = (
+    (MONITORING_PREPARE, _('prepare')),
+    (MONITORING_RATE, _('initial rate')),
+    (MONITORING_RESULT, _('result')),
+    (MONITORING_INTERACT, _('interact')),
+    (MONITORING_FINISHING, _('finishing')),
+    (MONITORING_PUBLISH, _('published')),
+)
 
 
 def generate_inv_code(ch_nr):
@@ -92,21 +107,7 @@ class OpennessExpression(models.Model):
 
 
 class Monitoring(models.Model):
-    MONITORING_PREPARE = 0
-    MONITORING_RATE = 1
-    MONITORING_REVISION = 2
-    MONITORING_INTERACT = 3
-    MONITORING_RESULT = 4
-    MONITORING_PUBLISH = 5
-    MONITORING_FINISHING = 7
-    MONITORING_STATUS = (
-        (MONITORING_PREPARE, _('prepare')),
-        (MONITORING_RATE, _('initial rate')),
-        (MONITORING_RESULT, _('result')),
-        (MONITORING_INTERACT, _('interact')),
-        (MONITORING_FINISHING, _('finishing')),
-        (MONITORING_PUBLISH, _('published')),
-    )
+
     MONITORING_STATUS_NEW = ((MONITORING_PREPARE, _('prepare')),)
 
     MONITORING_EDIT_STATUSES = {
@@ -116,52 +117,59 @@ class Monitoring(models.Model):
         MONITORING_PUBLISH: _('Monitoring publish date'),
     }
 
-    name = models.CharField(max_length=255, default="-",
+    name = models.CharField(
+        max_length=255,
+        default="-",
         verbose_name=_('name'))
-    status = models.PositiveIntegerField(choices=MONITORING_STATUS,
-        default=MONITORING_PREPARE, verbose_name=_('status'))
+    status = models.PositiveIntegerField(
+        choices=MONITORING_STATUS,
+        default=MONITORING_PREPARE,
+        verbose_name=_('status')
+    )
     openness_expression = models.ForeignKey(OpennessExpression,
-        default=8, verbose_name=_('openness expression'))
+                                            default=8, verbose_name=_('openness expression'))
     # Максимальное время ответа в днях.
     time_to_answer = models.PositiveSmallIntegerField(
         default=3,
         verbose_name=_('Maximum time to answer'))
-    no_interact = models.BooleanField(default=False,
-                                      verbose_name=_('No interact stage'))
-    hidden = models.BooleanField(default=False,
-                                      verbose_name=_('Hidden monitoring'))
-
+    no_interact = models.BooleanField(
+        default=False,
+        verbose_name=_('No interact stage')
+    )
+    hidden = models.BooleanField(
+        default=False,
+        verbose_name=_('Hidden monitoring')
+    )
     prepare_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('prepare date'),
-        )
+        null=True,
+        blank=True,
+        verbose_name=_('prepare date'),
+    )
     rate_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('Monitoring rate begin date'),
-        )
+        null=True,
+        blank=True,
+        verbose_name=_('Monitoring rate begin date'),
+    )
     interact_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('Monitoring interact start date'),
-        )
+        null=True,
+        blank=True,
+        verbose_name=_('Monitoring interact start date'),
+    )
     result_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('result date'),
-        )
+        null=True,
+        blank=True,
+        verbose_name=_('result date'),
+    )
     publish_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('Monitoring publish date'),
-        )
+        null=True,
+        blank=True,
+        verbose_name=_('Monitoring publish date'),
+    )
     finishing_date = models.DateField(
-            null=True,
-            blank=True,
-            verbose_name=_('Monitoring interact end date'),
-        )
-
+        null=True,
+        blank=True,
+        verbose_name=_('Monitoring interact end date'),
+    )
 
     def __unicode__(self):
         return '%s' % self.name
@@ -171,22 +179,22 @@ class Monitoring(models.Model):
         return ('exmo2010:tasks_by_monitoring', [str(self.id)])
 
     def _get_prepare(self):
-        return self.status == self.MONITORING_PREPARE
+        return self.status == MONITORING_PREPARE
 
     def _get_rate(self):
-        return self.status == self.MONITORING_RATE
+        return self.status == MONITORING_RATE
 
     def _get_interact(self):
-        return self.status == self.MONITORING_INTERACT
+        return self.status == MONITORING_INTERACT
 
     def _get_result(self):
-        return self.status == self.MONITORING_RESULT
+        return self.status == MONITORING_RESULT
 
     def _get_finishing(self):
-        return self.status == self.MONITORING_FINISHING
+        return self.status == MONITORING_FINISHING
 
     def _get_publish(self):
-        return self.status == self.MONITORING_PUBLISH
+        return self.status == MONITORING_PUBLISH
 
     def _get_active(self):
         return not self.is_prepare
@@ -663,6 +671,26 @@ class Task(models.Model):
     open = property(_get_open, _set_open)
     ready = property(_get_ready, _set_ready)
     approved = property(_get_approved, _set_approved)
+
+
+class TaskHistory(models.Model):
+    """
+    History of monitoring task.
+
+    """
+    task = models.ForeignKey(Task, verbose_name=_('task'))
+    user = models.ForeignKey(User, verbose_name=_('user'))
+    status = models.PositiveSmallIntegerField(
+        choices=MONITORING_STATUS,
+        default=MONITORING_PREPARE,
+        verbose_name=_('status')
+    )
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('time'))
+
+    class Meta:
+        ordering = (
+            'timestamp',
+        )
 
 
 class QAnswer(models.Model):
@@ -1302,16 +1330,16 @@ class UserProfile(models.Model):
         monitoring_running = False
         monitoring_name = None
         for o in self.organization.order_by("-id"):
-            if o.monitoring.status in (Monitoring.MONITORING_INTERACT,
-                                       Monitoring.MONITORING_FINISHING):
+            if o.monitoring.status in (MONITORING_INTERACT,
+                                       MONITORING_FINISHING):
                 show_bubble = False
             else:
                 if not monitoring_running:
                     monitoring_name = o.monitoring.name
             if not monitoring_running and \
-               o.monitoring.status in (Monitoring.MONITORING_RATE,
-                                       Monitoring.MONITORING_RESULT,
-                                       Monitoring.MONITORING_PREPARE):
+               o.monitoring.status in (MONITORING_RATE,
+                                       MONITORING_RESULT,
+                                       MONITORING_PREPARE):
                 monitoring_running = True
                 monitoring_name = o.monitoring.name
         return show_bubble, monitoring_running, monitoring_name
@@ -1323,13 +1351,13 @@ class UserProfile(models.Model):
     def _get_my_filtered_scores(self, enum="messages"):
         statuses = []
         if enum == "messages":
-            statuses=[Monitoring.MONITORING_PREPARE,
-                      Monitoring.MONITORING_PUBLISH,]
+            statuses = [MONITORING_PREPARE,
+                        MONITORING_PUBLISH]
         elif enum == "comments":
-            statuses=[Monitoring.MONITORING_PREPARE,
-                      Monitoring.MONITORING_PUBLISH,
-                      Monitoring.MONITORING_RATE,
-                      Monitoring.MONITORING_RESULT,]
+            statuses = [MONITORING_PREPARE,
+                        MONITORING_PUBLISH,
+                        MONITORING_RATE,
+                        MONITORING_RESULT]
 
         return Score.objects.filter(task__user=self.user).exclude(
                 task__organization__monitoring__status__in=statuses)
@@ -1464,12 +1492,11 @@ class UserProfile(models.Model):
             close_date__isnull=True).order_by('open_date')
         return claims
 
-
     def get_task_review_id(self):
         organizations = self.organization.filter(
-            monitoring__status__in=[Monitoring.MONITORING_INTERACT,
-                                    Monitoring.MONITORING_FINISHING,
-                                    Monitoring.MONITORING_PUBLISH])\
+            monitoring__status__in=[MONITORING_INTERACT,
+                                    MONITORING_FINISHING,
+                                    MONITORING_PUBLISH])\
         .order_by("-id")
         if organizations:
             organization = organizations[0]

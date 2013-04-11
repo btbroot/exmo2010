@@ -21,7 +21,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from exmo2010.models import Monitoring
+from exmo2010.models import Monitoring, MONITORING_STATUS, MONITORING_PUBLISH
 
 
 class MonitoringForm(forms.ModelForm):
@@ -29,7 +29,7 @@ class MonitoringForm(forms.ModelForm):
     Форма редактирования/создания мониторинга.
 
     """
-    status = forms.ChoiceField(choices=Monitoring.MONITORING_STATUS,
+    status = forms.ChoiceField(choices=MONITORING_STATUS,
                                label=_('Status'))
     add_questionnaire = forms.BooleanField(required=False,
                                            label=_('Add questionnaire'))
@@ -89,7 +89,7 @@ class MonitoringFilterForm(forms.Form):
     """
     monitoring = forms.ModelChoiceField(
         queryset=Monitoring.objects.exclude(hidden=True).filter(
-            status=Monitoring.MONITORING_PUBLISH
+            status=MONITORING_PUBLISH
         ).order_by('-publish_date'),
         required=False,
         empty_label=_('monitoring not select'),

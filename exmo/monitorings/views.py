@@ -68,7 +68,7 @@ def set_npa_params(request, m_id):
     if request.method == "POST":
         formset = ParameterTypeFormSet(request.POST, queryset=parameters)
         # Нельзя изменять опубликованные мониторинги.
-        if monitoring.status == Monitoring.MONITORING_PUBLISH:
+        if monitoring.status == MONITORING_PUBLISH:
             messages.warning(request, _("Forbidden to modify already "
                                         "published monitorings."), 'warning')
         else:
@@ -110,7 +110,7 @@ def monitoring_list(request):
 
     headers =   (
                 (_('monitoring'), 'name', 'name', None, None),
-                (_('status'), 'status', 'status', int, Monitoring.MONITORING_STATUS),
+                (_('status'), 'status', 'status', int, MONITORING_STATUS),
                 )
     title = _('Monitoring list')
 
@@ -118,9 +118,9 @@ def monitoring_list(request):
     active_tasks = None
     if request.user.is_active and request.user.userprofile.is_organization:
         active_tasks = Task.objects.filter(
-            organization__monitoring__status = Monitoring.MONITORING_INTERACT,
-            organization__in = request.user.profile.organization.all(),
-            status = Task.TASK_APPROVED,
+            organization__monitoring__status=MONITORING_INTERACT,
+            organization__in=request.user.profile.organization.all(),
+            status=Task.TASK_APPROVED,
         )
         invcodeform = SettingsInvCodeForm()
     else:
@@ -998,7 +998,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
-            status=Monitoring.MONITORING_PUBLISH
+            status=MONITORING_PUBLISH
         ).exclude(
             hidden=True
         ).order_by('-rate_date')
@@ -1006,11 +1006,11 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         all_monitorings = Monitoring.objects.exclude(
             hidden=True
         ).filter(
-            status=Monitoring.MONITORING_PUBLISH
+            status=MONITORING_PUBLISH
         ).order_by('-publish_date')
     if monitoring_id:
         monitorings = Monitoring.objects.filter(
-            status=Monitoring.MONITORING_PUBLISH,
+            status=MONITORING_PUBLISH,
             pk=monitoring_id,
             hidden=False)
     else:

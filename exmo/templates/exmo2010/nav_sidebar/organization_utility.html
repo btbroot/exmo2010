@@ -24,7 +24,7 @@
         {% url exmo2010:score_list_by_task task.pk as url %}
         {% include "exmo2010/nav_sidebar/item.html" with url=url title="Scores" %}
 
-        {% url '#' as url %}
+        {% url exmo2010:task_history task.pk as url %}
         {% include "exmo2010/nav_sidebar/item.html" with url=url title="History" %}
     </ul>
 </div>

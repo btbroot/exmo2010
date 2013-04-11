@@ -38,7 +38,7 @@ from django.views.generic.create_update import update_object, delete_object
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from core.utils import UnicodeReader, UnicodeWriter
-from exmo2010.models import Monitoring, Organization, Parameter, Score, Task
+from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory
 from exmo2010.view.helpers import table
 from tasks.forms import TaskForm
 
@@ -313,7 +313,6 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                  template_name="task_list.html",)
 
 
-
 @revision.create_on_success
 @login_required
 def task_add(request, monitoring_id, organization_id=None):
@@ -477,6 +476,26 @@ def task_manager(request, task_id, method, monitoring_id=None, organization_id=N
       'task_status.html', {
         'object': task,
       }, context_instance=RequestContext(request))
+
+
+def task_history(request, task_id):
+
+    task = Task.objects.get(pk=task_id)
+    history = TaskHistory.objects.filter(task=task_id)
+
+    crumbs = ['Home', 'Monitoring', 'Organization']
+    breadcrumbs(request, crumbs, task)
+
+    return render_to_response(
+        'task_history.html',
+        {
+            'task': task,
+            'history': history,
+            'current_title': _('Organization'),
+            'title': _('%s') % task.organization.name,
+        },
+        context_instance=RequestContext(request),
+    )
 
 
 def tasks_by_monitoring(request, monitorgin_id):

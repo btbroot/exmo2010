@@ -1,0 +1,107 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load table_header i18n adminmedia check_object_permission hash %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_analyst.css"/>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+{% endblock %}
+
+{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
+
+
+{% block nav_sidebar %}
+    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+        {% include "exmo2010/nav_sidebar/organization_utility.html" %}
+    {% endif %}
+{% endblock %}
+
+{% block nav_sidebar_title %}
+    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+        <h1>{{ task.organization.name }}</h1>
+    {% endif %}
+{% endblock %}
+
+{% block content_class %}
+    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+        sidebar-ident
+    {% endif %}
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+
+    <table class="base-table">
+        <tbody>
+
+        <tr class="first">
+            <td class="report-date">
+            </td>
+            <td class="report-organization">
+            </td>
+            <td class="report-link">
+            </td>
+        </tr>
+        <tr class="heading">
+            <td>{% trans 'Time and date' %} <span class="arrow">↓</span></td>
+            <td>{% trans 'Expert' %}</td>
+            <td>{% trans 'Stage' %}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="base-table open">
+        <tbody>
+        <tr class="first">
+            <td class="report-date">
+            </td>
+            <td class="report-organization">
+            </td>
+            <td class="report-link">
+            </td>
+        </tr>
+
+        {% for item in history %}
+            <tr>
+                <td>
+                    {{ item.timestamp|date:"d.m.Y, H:i" }}
+                </td>
+
+                <td>
+                    {{ item.user.userprofile.legal_name }}
+                </td>
+
+                <td>
+                    {{ item.get_status_display }}
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endblock %}

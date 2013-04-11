@@ -41,7 +41,7 @@ from bread_crumbs.views import breadcrumbs
 from custom_comments.models import CommentExmo
 from exmo2010.forms import ClaimAddForm, ClarificationAddForm
 from exmo2010.helpers import construct_change_message, log_monitoring_interact_activity
-from exmo2010.models import Claim, Clarification, Monitoring, Parameter, Score, Task, QAnswer, QQuestion
+from exmo2010.models import Claim, Clarification, Parameter, Score, Task, QAnswer, QQuestion, MONITORING_PUBLISH
 from exmo2010.signals import score_was_changed
 from exmo2010.view.helpers import table_prepare_queryset
 from scores.forms import ScoreForm
@@ -362,7 +362,7 @@ def score_list_by_task(request, task_id, report=None):
         if (not user.is_active or
             (user.profile.is_expertB and not user.profile.is_expertA) or
             user.profile.is_organization) and \
-           (monitoring.status != Monitoring.MONITORING_PUBLISH) and not user.is_superuser:
+           (monitoring.status != MONITORING_PUBLISH) and not user.is_superuser:
             show_link = False
         else:
             show_link = True

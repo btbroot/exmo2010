@@ -35,8 +35,9 @@ from django.contrib.comments.models import Comment
 import exmo2010.models as em
 from copy import deepcopy
 
-NEED_COMMENT=True
-NEED_COMMENT=False
+NEED_COMMENT = True
+NEED_COMMENT = False
+
 
 def copy_monitoring(monitoring_pk):
     m_src = em.Monitoring.objects.get(pk = monitoring_pk)
@@ -45,7 +46,7 @@ def copy_monitoring(monitoring_pk):
     m = deepcopy(m_src)
     m.pk = None
     m.name = m_name
-    m.status = em.Monitoring.MONITORING_RATE
+    m.status = em.MONITORING_RATE
     m.save()
     print m.pk
 
