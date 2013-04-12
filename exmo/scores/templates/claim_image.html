@@ -19,6 +19,6 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% if score.claim_color %}
+{% if request.user.profile.is_expertB and score.task.user_id == request.user.id and score.claim_color %}
     <img src="{{ STATIC_URL }}exmo2010/icon_{{ score.claim_color }}.gif" alt="{% trans 'claim' %}" />
 {% endif %}
