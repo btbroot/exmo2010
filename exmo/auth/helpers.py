@@ -134,7 +134,8 @@ def task_permission(user, priv, task):
 
 
 def score_permission(user, priv, score):
-    monitoring = score.task.organization.monitoring
+    task = score.task
+    monitoring = task.organization.monitoring
 
     if user.is_authenticated():
         profile = user.profile
@@ -161,10 +162,11 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.view_comment_score':
         if user.is_active and (monitoring.is_interact or monitoring.is_finishing or monitoring.is_publish):
-            if profile.is_expert:
+            if profile.is_expertA:
                 return True
-            if profile.is_organization and \
-                            score.task.organization in profile.organization.all():
+            if profile.is_expertB and task.user_id == user.id:
+                return True
+            if profile.is_organization and task.organization in profile.organization.all():
                 return True
 
     if priv == 'exmo2010.close_comment_score':
@@ -173,8 +175,10 @@ def score_permission(user, priv, score):
                 return True
 
     if priv == 'exmo2010.view_claim_score':
-        if user.is_active:
-            if profile.is_expert and not monitoring.is_prepare:
+        if user.is_active and not monitoring.is_prepare:
+            if profile.is_expertA:
+                return True
+            if profile.is_expertB and task.user_id == user.id:
                 return True
 
     if priv == 'exmo2010.add_claim_score':
@@ -198,8 +202,10 @@ def score_permission(user, priv, score):
                 return True
 
     if priv == 'exmo2010.view_clarification_score':
-        if user.is_active:
-            if profile.is_expert and not monitoring.is_prepare:
+        if user.is_active and not monitoring.is_prepare:
+            if profile.is_expertA:
+                return True
+            if profile.is_expertB and task.user_id == user.id:
                 return True
 
     if priv == 'exmo2010.add_clarification_score':
@@ -209,8 +215,7 @@ def score_permission(user, priv, score):
 
     if priv == 'exmo2010.answer_clarification_score':
         if user.is_active:
-            if (profile.is_expertB and not
-            profile.is_expertA) and not (monitoring.is_prepare or monitoring.is_publish):
+            if (profile.is_expertB and not profile.is_expertA) and not (monitoring.is_prepare or monitoring.is_publish):
                 return True
 
     return False
