@@ -68,7 +68,11 @@
     {% endif %}
 {% endblock %}
 
-{% block content_title %}{% endblock %}
+{% block content_title %}
+    {% if not request.user.userprofile.is_expertA and not request.user.is_superuser %}
+        {{ title }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div id=score_list>
