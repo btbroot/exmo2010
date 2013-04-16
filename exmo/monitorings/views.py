@@ -712,22 +712,24 @@ def monitoring_parameter_export(request, id):
 
 
 @login_required
-def monitoring_organization_export(request, id):
+def monitoring_organization_export(request, monitoring_id):
     """
     Экспорт организаций в CSV.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    organizations = Organization.objects.filter(monitoring = monitoring)
-    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
+    organizations = Organization.objects.filter(monitoring=monitoring)
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
         '#Name',
         'Url',
+        'Email',
+        'Phone',
         'Comments',
         'Keywords',
     ])
@@ -735,6 +737,8 @@ def monitoring_organization_export(request, id):
         out = (
             o.name,
             o.url,
+            o.email,
+            o.phone,
             o.comments,
         )
         keywords = ", ".join([k.name for k in o.tags])
@@ -745,7 +749,7 @@ def monitoring_organization_export(request, id):
 
 @login_required
 @csrf_protect
-def monitoring_organization_import(request, id):
+def monitoring_organization_import(request, monitoring_id):
     """
     Импорт организаций из CSV.
 
@@ -756,55 +760,63 @@ def monitoring_organization_import(request, id):
         revision.unregister(Organization)
         must_register = True
 
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    if not request.FILES.has_key('orgfile'):
+    if not 'orgfile' in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
     reader = UnicodeReader(request.FILES['orgfile'])
     errLog = []
+    indexes = {}
     rowOKCount = 0
     rowALLCount = 0
+
     try:
         for row in reader:
+            if rowALLCount == 0 and row[0].startswith('#'):
+                for key in ['name', 'url', 'email', 'phone', 'comments', 'keywords']:
+                    for item in row:
+                        if key in item.lower():
+                            indexes[key] = row.index(item)
+                continue
+
+            if not 'name' in indexes:
+                errLog.append("header row (csv). Field 'Name' does not exist")
+                break
+
             rowALLCount += 1
+
             if row[0].startswith('#'):
-                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                errLog.append("row %d. Starts with '#'. Skipped" % rowALLCount)
                 continue
-            if row[0] == '':
-                errLog.append("row %d (csv). Empty organization name" % reader.line_num)
-                continue
-            if row[1]  == '':
-                errLog.append("row %d (csv). Empty organization url" % reader.line_num)
+            if row[indexes['name']] == '':
+                errLog.append("row %d (csv). Empty organization name" % rowALLCount)
                 continue
             try:
-                name = row[0]
-                organization = Organization.objects.get(monitoring=monitoring,
-                    name=name)
+                organization = Organization.objects.get(monitoring=monitoring, name=row[indexes['name']])
             except Organization.DoesNotExist:
                 organization = Organization()
                 organization.monitoring = monitoring
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errLog.append("row %d. %s" % (rowALLCount, e))
                 continue
             try:
-                organization.name = name.strip()
-                organization.url = row[1].strip()
-                organization.comments = row[2]
-                organization.keywords = row[3]
+                for key in indexes.keys():
+                    cell = row[indexes[key]]
+                    setattr(organization, key, cell.strip() if cell else '')
                 organization.inv_code = generate_inv_code(6)
                 organization.full_clean()
                 organization.save()
             except ValidationError, e:
                 errLog.append("row %d (validation). %s" % (
-                    reader.line_num,
+                    rowALLCount,
                     '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errLog.append("row %d. %s" % (rowALLCount, e))
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append("row %d (csv). %s" % (reader.line_num, e))
+        errLog.append("row %d (csv). %s" % (rowALLCount, e))
     title = _('Import organization from CSV for monitoring %s') % monitoring
 
     if must_register:
@@ -815,19 +827,19 @@ def monitoring_organization_import(request, id):
     current_title = _('Import organization')
 
     return render_to_response('monitoring_import_log.html', {
-      'monitoring': monitoring,
-      'file': request.FILES['orgfile'],
-      'errLog': errLog,
-      'rowOKCount': rowOKCount,
-      'rowALLCount': rowALLCount,
-      'current_title': current_title,
-      'title': title,
+        'monitoring': monitoring,
+        'file': request.FILES['orgfile'],
+        'errLog': errLog,
+        'rowOKCount': rowOKCount,
+        'rowALLCount': rowALLCount,
+        'current_title': current_title,
+        'title': title,
     }, context_instance=RequestContext(request))
 
 
 @login_required
 @csrf_protect
-def monitoring_parameter_import(request, id):
+def monitoring_parameter_import(request, monitoring_id):
     """
     Импорт параметров из CSV.
 
@@ -838,10 +850,10 @@ def monitoring_parameter_import(request, id):
         revision.unregister(Parameter)
         must_register = True
 
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    if not request.FILES.has_key('paramfile'):
+    if not 'paramfile' in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
     reader = UnicodeReader(request.FILES['paramfile'])
     errLog = []

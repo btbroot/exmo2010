@@ -342,17 +342,20 @@ class Organization(models.Model):
     """ Fields:
     name -- Uniq organization name
     url -- Internet site URL
-    keywords -- Keywords for autocomplete and search
-    comments -- Additional comment
-    """
+    email -- list of emails
+    phone -- list of phones
+    keywords -- Keywords for autocomplete and search (not used)
+    comments -- Additional comment (not used)
 
-    name         = models.CharField(max_length = 255, verbose_name=_('name'))
-    url          = models.URLField(max_length = 255, null = True, blank = True, verify_exists = False, verbose_name=_('url'))
-    keywords     = TagField(null = True, blank = True, verbose_name = _('keywords'))
-    comments     = models.TextField(null = True, blank = True, verbose_name=_('comments'))
-    monitoring   = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
-    inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True,
-        max_length=6, unique=True)
+    """
+    name = models.CharField(max_length=255, verbose_name=_('name'))
+    url = models.URLField(max_length=255, null=True, blank=True, verify_exists=False, verbose_name=_('url'))
+    keywords = TagField(null=True, blank=True, verbose_name=_('keywords'))
+    email = models.TextField(null=True, blank=True, verbose_name=_('email'))
+    phone = models.TextField(null=True, blank=True, verbose_name=_('phone'))
+    comments = models.TextField(null=True, blank=True, verbose_name=_('comments'))
+    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True)
 
     objects = OrganizationMngr()
 
@@ -361,9 +364,8 @@ class Organization(models.Model):
             self.inv_code = generate_inv_code(6)
         super(Organization, self).save(*args, **kwargs)
 
-    #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
-        return '%s(%s)' % (self.name, self.monitoring.name[:24])
+        return self.name
 
     def _get_tags(self):
         return Tag.objects.get_for_object(self)

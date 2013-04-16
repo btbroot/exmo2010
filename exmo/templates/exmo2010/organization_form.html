@@ -35,6 +35,6 @@
     {% csrf_token %}
     {{ form.as_p }}
     <p><input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" /></p>
-    <p><input type="submit" /><input class="button" type="reset" /></p>
+    <p><input type="submit" /></p>
 </form>
 {% endblock %}

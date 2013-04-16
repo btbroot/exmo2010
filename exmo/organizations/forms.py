@@ -20,14 +20,12 @@
 from django import forms
 
 from exmo2010.models import Organization
-from exmo2010.widgets import TagAutocomplete
 
 
 class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
-        exclude = ("inv_code",)
+        exclude = ('keywords', 'comments', 'inv_code')
         widgets = {
-            'keywords': TagAutocomplete,
             'monitoring': forms.HiddenInput,
         }
