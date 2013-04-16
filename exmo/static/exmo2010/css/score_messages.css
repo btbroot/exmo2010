@@ -52,12 +52,6 @@
     font-weight: bold;
 }
 
-.heading-yourmessage-parameter
-{
-    font-size: 13px;
-    color: #333;
-}
-
 .messages-date
 {
     float: right;
@@ -165,4 +159,22 @@ a.messages-pseudo-off:hover
 .reply-form-tweak
 {
     padding-top: 5px;
+}
+
+div.comment-form > p {
+    width: 112px;
+    float: left;
+}
+
+div.comment-form > p, div.comment-form > form {
+    display: block;
+}
+
+div.comment-form > form {
+    margin-left: 122px;
+}
+
+div.comment-form > form input[type="submit"] {
+    width: 160px;
+    font-size: 13px; /* Firefox fix */
 }

@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-11 16:54+0400\n"
+"POT-Creation-Date: 2013-04-16 11:06+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -217,7 +217,7 @@ msgstr "Электронная почта"
 #: accounts/templates/user_settings.html:221
 #: monitorings/templates/monitoring_comment_report.html:63
 #: monitorings/templates/set_npa_params.html:54 scores/templates/form.html:242
-#: scores/templates/score_list.html:261
+#: scores/templates/score_list.html:265
 msgid "Save"
 msgstr "Сохранить"
 
@@ -1215,7 +1215,7 @@ msgstr "Цикл мониторинга"
 msgid "Experts of monitoring %s"
 msgstr "Эксперты цикла мониторинга %s"
 
-#: monitorings/views.py:452 tasks/templates/task_history.html:71
+#: monitorings/views.py:452 tasks/templates/task_history.html:73
 msgid "Expert"
 msgstr "Эксперт"
 
@@ -1365,7 +1365,7 @@ msgstr "Импортировать органы/организации из CSV"
 
 #: monitorings/templates/monitoring_form.html:93
 #: monitorings/templates/monitoring_form.html:97
-#: scores/templates/score_list.html:99
+#: scores/templates/score_list.html:103
 msgid "Import"
 msgstr "Импорт"
 
@@ -1661,52 +1661,51 @@ msgid "Set non-relevant"
 msgstr "Признать нерелевантным"
 
 #: scores/templates/score_comment_form.html:47
-#: templates/exmo2010/score/comment.html:120
 msgid "Post"
 msgstr "Отправить"
 
-#: scores/templates/score_list.html:77
+#: scores/templates/score_list.html:81
 msgid "Openness for all parameters"
 msgstr "Кид по всем параметрам"
 
-#: scores/templates/score_list.html:78 scores/templates/score_list.html:82
-#: scores/templates/score_list.html:84
+#: scores/templates/score_list.html:82 scores/templates/score_list.html:86
+#: scores/templates/score_list.html:88
 msgid "place"
 msgstr "место"
 
-#: scores/templates/score_list.html:81
+#: scores/templates/score_list.html:85
 msgid "Openness for npa parameters"
 msgstr "Кид по параметрам на основе нормативных правовых актов"
 
-#: scores/templates/score_list.html:83
+#: scores/templates/score_list.html:87
 msgid "Openness for other parameters"
 msgstr "Кид по дополнительным параметрам"
 
-#: scores/templates/score_list.html:89
+#: scores/templates/score_list.html:93
 msgid "Print"
 msgstr "Версия для печати"
 
-#: scores/templates/score_list.html:90
+#: scores/templates/score_list.html:94
 msgid "Print with comments"
 msgstr "Версия для печати с комментариями"
 
-#: scores/templates/score_list.html:95
+#: scores/templates/score_list.html:99
 msgid "Export task to CSV"
 msgstr "Экспортировать задачу в CSV"
 
-#: scores/templates/score_list.html:99
+#: scores/templates/score_list.html:103
 msgid "Import task from CSV"
 msgstr "Импортировать задачу из CSV"
 
-#: scores/templates/score_list.html:115
+#: scores/templates/score_list.html:119
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
-#: scores/templates/score_list.html:121
+#: scores/templates/score_list.html:125
 msgid "NPA parameters"
 msgstr "Параметры на основе нормативных правовых актов"
 
-#: scores/templates/score_list.html:170
+#: scores/templates/score_list.html:174
 msgid "Other parameters"
 msgstr "Дополнительные параметры"
 
@@ -1877,14 +1876,18 @@ msgstr "Назначение задач"
 msgid "Process log:"
 msgstr "Журнал обработки:"
 
-#: tasks/templates/task_history.html:70
+#: tasks/templates/task_history.html:58
+msgid "History"
+msgstr ""
+
+#: tasks/templates/task_history.html:72
 #: templates/exmo2010/reports/claim_list.html:61
 #: templates/exmo2010/reports/clarification_list.html:61
 #: templates/exmo2010/reports/comment_list.html:62
 msgid "Time and date"
 msgstr "Время и дата"
 
-#: tasks/templates/task_history.html:72
+#: tasks/templates/task_history.html:74
 msgid "Stage"
 msgstr "Этап"
 
@@ -2408,9 +2411,13 @@ msgstr "Открыть комментарий"
 msgid "There are no comments"
 msgstr "Комментариев нет"
 
-#: templates/exmo2010/score/comment.html:96
+#: templates/exmo2010/score/comment.html:97
 msgid "Your comment"
 msgstr "Ваш комментарий"
+
+#: templates/exmo2010/score/comment.html:121
+msgid "Post comment"
+msgstr "Оставить комментарий"
 
 #: templates/exmo2010/score/parameter_header.html:30
 msgid "Organization's website"
