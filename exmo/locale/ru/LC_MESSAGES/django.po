@@ -2310,18 +2310,19 @@ msgstr ""
 
 #: templates/exmo2010/helpers/inv_code_bubble.html:30
 #, python-format
-msgid "Monitoring \"%(mname)s\" finished. You cannot leave comments any more."
+msgid "Monitoring \"%(mname)s\" is finished and published. You can watch it "
+"but cannot leave comments."
 msgstr ""
-"Цикл мониторинга \"%(mname)s\" завершен. Вы больше не можете оставлять "
-"комментарии."
+"Цикл мониторинга \"%(mname)s\" завершен и опубликован. Вы можете просматривать "
+"его, но не можете более оставлять комментарии."
 
 #: templates/exmo2010/helpers/inv_code_bubble.html:32
 msgid ""
-"To access current monitoring, please enter invitation code sent to your "
-"organization."
+"When new monitoring will start, you'll recieve invitation code which "
+"is needed to be entered here."
 msgstr ""
-"Для получения доступа к новому циклу мониторинга необходимо ввести код "
-"приглашения, который высылается организациям заблаговременно."
+"Когда начнется новый цикл мониторинга, вам будет выслано приглашение "
+"приглашения, с новым кодом, который нужно будет ввести здесь:"
 
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:28
 msgid "Cycle management"

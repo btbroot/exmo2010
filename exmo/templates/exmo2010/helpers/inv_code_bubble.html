@@ -27,9 +27,9 @@
                     <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" didn't started yet. You cannot leave comments.{% endblocktrans %}</p>
                 {% else %}
                     <p>
-                        {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" finished. You cannot leave comments any more.{% endblocktrans %}
+                        {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" is finished and published. You can watch it but cannot leave comments.{% endblocktrans %}
                         <br />
-                        {% trans "To access current monitoring, please enter invitation code sent to your organization." %}
+                        {% trans "When new monitoring will start, you'll recieve invitation code which is needed to be entered here." %}
                     </p>
                     <form action="{% url exmo2010:settings %}" method="post">
                         {% csrf_token %}
