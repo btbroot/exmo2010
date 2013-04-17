@@ -61,6 +61,10 @@
             {% block breadcrumbs %}{% endblock %}
         {% endif %}
 
+        {% block nav_sidebar_title %}{% endblock %}
+        {% block nav_sidebar %}
+        {% endblock nav_sidebar %}
+
         <div id="content-container">
             {% if not is_popup %}
                 {% for message in messages %}
@@ -72,10 +76,6 @@
                 {% endfor %}
                 {% block bubble %}{% endblock %}
             {% endif %}
-
-            {% block nav_sidebar_title %}{% endblock %}
-            {% block nav_sidebar %}
-            {% endblock nav_sidebar %}
 
             <!-- Content -->
             <div id="content" class="{% block content_class %}{% endblock %}">
@@ -89,10 +89,13 @@
                 <br class="clear" />
             </div>
             <!-- END Content -->
+
         </div>
-        {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
+        <div id="push">
+        </div>
     </div>
     <!-- END Container -->
+    {% block footer %}{% include "exmo2010/footer.html" %}{% endblock %}
     </body>
     </html>
 {% endspaceless %}
