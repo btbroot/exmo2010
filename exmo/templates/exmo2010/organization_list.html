@@ -19,10 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats check_object_permission %}
+{% load table_header i18n adminmedia monitoring_stats check_object_permission first_element %}
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_analyst.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/rating.css"/>
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js" ></script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.placeholder.min.js"></script>
+    <script type="text/javascript">jQuery('input[placeholder], textarea[placeholder]').placeholder();</script>
 {% endblock %}
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
@@ -32,22 +40,98 @@
 {% endblock %}
 
 {% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-{% block content_title %}{% trans "Organizations" %}{% endblock %}
+
+
+{% block content_title %}
+    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+
+    <div id="top_menu">
+        <h2>{% trans "Organizations" %}</h2>
+
+        <span class="rating-menu">
+            {% if org_type == "all" %}
+                <span class="active">
+                    <span>{% trans 'all' %}</span>
+                </span>
+            {% else %}
+                <span>
+                    <a href="#">{% trans 'all' %}</a>
+                </span>
+            {% endif %}
+
+            {% if org_type == "invite" %}
+                <span class="active">
+                    <span>{% trans 'invite' %}</span>
+                </span>
+            {% else %}
+                <span>
+                    <a href="#">{% trans 'invite' %}</a>
+                </span>
+            {% endif %}
+
+            {% if org_type == "history" %}
+                <span class="active">
+                    <span>{% trans 'history' %}</span>
+                </span>
+            {% else %}
+                <span>
+                    <a href="#">{% trans 'history' %}</a>
+                </span>
+            {% endif %}
+
+            {%if perm%}
+                {% if org_type == "add" %}
+                    <span class="active">
+                        <span>{% trans 'add' %}</span>
+                    </span>
+                {% else %}
+                    <span>
+                        <a href="{% url exmo2010:organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'add' %}</a>
+                    </span>
+                {% endif %}
+            {%endif%}
+        </span>
+    </div>
+{% endblock %}
+
 {% block content_class %}sidebar-ident{% endblock %}
+
 {% block content %}
-    <div id=organization_list>
-        <table>
+    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+
+
+        <form id="search_form" action="." method="GET">
+            <table>
+                <tr>
+                    <td>
+                        <input id="name_filter" name="name_filter" value="" placeholder="{% trans 'Organization' %}">
+                    </td>
+
+                    {% if sent %}
+                        <td>
+                            <select name="invite_filter">
+                                <option value="ALL">{% trans 'All invites' %}</option>
+                                {% for status in inv_status %}
+                                    <option value="{{ status.0 }}">{{ status.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    {% endif %}
+
+                    <td>
+                        <input type="submit" id="search_button" value="{% trans 'Find' %}" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+        <table class="base-table">
             {% table_header headers %}
             <tbody>
-            <tr><td>
-                {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-                {%if perm%}
-                    <a href="{% url exmo2010:organization_manager monitoring.pk, 0,'add' %}?{{ request.GET.urlencode }}">{% trans 'Add new organization' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>&nbsp;
-                {%endif%}</td></tr>
             {% for object in object_list %}
                 <tr>
                     <td>
-                        <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name }}</a>
+                        <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
                         {% if perm %}
                             &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>
                         {%endif%}
@@ -55,17 +139,36 @@
                             &nbsp;<a href="{% url exmo2010:organization_manager monitoring.pk, object.pk,'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" ></a>
                         {%endif%}
                     </td>
+
+                    <td>
+                        {{ object.email|default_if_none:''|first_element }}
+                    </td>
+
+                    <td>
+                        {{ object.phone|default_if_none:''|first_element }}
+                    </td>
+
+                    <td>
+                        {{ object.inv_code|default_if_none:'' }}
+                    </td>
+
                     {% if perm %}
                         <td>
                             {{ object.task__count }}
                         </td>
                     {% endif %}
+
+                    {% with object.inv_status as status %}
+                        <td style="color: {% if status == 'NTS' %}#FF6262{% endif %}{% if status == 'RD' %}#FFB76F{% endif %}{% if status == 'ACT' or status == 'REG' %}#54A754{% endif %}">
+                            {{ object.get_inv_status_display|default_if_none:'' }}
+                        </td>
+                    {% endwith %}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
         {% include "exmo2010/paginator.html" %}
-    </div>
+
     {% if perm %}
         <br />
         {% monitoring_stats monitoring %}

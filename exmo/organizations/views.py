@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -25,19 +26,26 @@ from django.core.urlresolvers import reverse
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
-from exmo2010.models import Monitoring, Organization, Task
+from exmo2010.models import Monitoring, Organization, Task, INV_STATUS
 from exmo2010.view.helpers import table
 from organizations.forms import OrganizationForm
 
 
 def organization_list(request, id):
+    name_filter = invite_filter = None
+    if request.method == "GET":
+        name_filter = request.GET.get('name_filter', False)
+        invite_filter = request.GET.get('invite_filter', False)
+
     monitoring = get_object_or_404(Monitoring, pk=id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring
 
+    sent = Organization.objects.filter(monitoring=monitoring, inv_status='SNT')
+
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        queryset = Organization.objects.filter(monitoring = monitoring).extra(
+        queryset = Organization.objects.filter(monitoring=monitoring).extra(
             select={
                 'task__count': 'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (
                     Task._meta.db_table,
@@ -46,19 +54,34 @@ def organization_list(request, id):
             }
         )
         headers = (
-                (_('organization'), 'name', 'name', None, None),
-                (_('tasks'), 'task__count', None, None, None),
+            (_('organization'), 'name', None, None, None),
+            (_('email'), 'email', None, None, None),
+            (_('phone'), 'phone', None, None, None),
+            (_('invitation code'), 'inv_code', None, None, None),
+            (_('tasks'), 'task__count', None, None, None),
+            (_('invitation'), 'inv_status', None, None, None),
         )
     else:
         org_list = []
         for task in Task.objects.filter(organization__monitoring=monitoring).select_related():
-            if request.user.has_perm('exmo2010.view_task', task):org_list.append(task.organization.pk)
+            if request.user.has_perm('exmo2010.view_task', task):
+                org_list.append(task.organization.pk)
         org_list = list(set(org_list))
-        if not org_list: return HttpResponseForbidden(_('Forbidden'))
+        if not org_list:
+            return HttpResponseForbidden(_('Forbidden'))
         queryset = Organization.objects.filter(pk__in=org_list)
         headers = (
-            (_('organization'), 'name', 'name', None, None),
+            (_('organization'), 'name', None, None, None),
+            (_('email'), 'email', None, None, None),
+            (_('phone'), 'phone', None, None, None),
+            (_('invitation code'), 'inv_code', None, None, None),
+            (_('invitation'), 'inv_status', None, None, None),
         )
+
+    if name_filter:
+        queryset = queryset.filter(name__icontains=name_filter)
+    if invite_filter and invite_filter != 'ALL':
+        queryset = queryset.filter(inv_status=invite_filter)
 
     crumbs = ['Home', 'Monitoring']
     breadcrumbs(request, crumbs)
@@ -72,10 +95,13 @@ def organization_list(request, id):
         request,
         headers,
         queryset=queryset,
-        paginate_by=50,
+        paginate_by=100,
         extra_context={
             'current_title': current_title,
             'title': title,
+            'sent': sent,
+            'org_type': 'all',
+            'inv_status': INV_STATUS,
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
         },
@@ -98,7 +124,12 @@ def organization_manager(request, monitoring_id, org_id, method):
 
         return create_object(request, form_class=OrganizationForm,
                              post_save_redirect=redirect,
-                             extra_context={'current_title': current_title, 'title': title, 'monitoring': monitoring})
+                             extra_context={
+                                 'current_title': current_title,
+                                 'title': title,
+                                 'org_type': 'all',
+                                 'monitoring': monitoring
+                             })
     elif method == 'delete':
         organization = get_object_or_404(Organization, pk=org_id)
         title = _('Delete organization %s') % monitoring

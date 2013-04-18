@@ -73,6 +73,14 @@ MONITORING_STAT_DICT = {
 
 INV_CODE_CHARS = string.ascii_uppercase + string.digits
 
+INV_STATUS = (
+    ('NTS', _('Not sent')),
+    ('SNT', _('Sent')),
+    ('RD', _('Read')),
+    ('RGS', _('Registered')),
+    ('ACT', _('Activated')),
+)
+
 MONITORING_PREPARE = 0
 MONITORING_RATE = 1
 MONITORING_REVISION = 2
@@ -356,6 +364,10 @@ class Organization(models.Model):
     comments = models.TextField(null=True, blank=True, verbose_name=_('comments'))
     monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
     inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True)
+    inv_status = models.CharField(max_length=3,
+                                  null=True, blank=True,
+                                  choices=INV_STATUS, default='NTS',
+                                  verbose_name=_('Invitation status'))
 
     objects = OrganizationMngr()
 

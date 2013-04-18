@@ -88,6 +88,18 @@ td.report-title.open span
     background-color: #fff;
 }
 
+.heading td a
+{
+    color: #222;
+    border-bottom: 1px #222 dotted;
+}
+
+.heading td a:hover
+{
+    text-decoration: none;
+    border-bottom: none;
+}
+
 .hidden
 {
     display: none;

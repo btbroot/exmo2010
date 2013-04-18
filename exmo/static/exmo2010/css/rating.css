@@ -38,10 +38,6 @@
     background: #54A754;
 }
 
-td, th .rating_color {
-    border-bottom: none;
-}
-
 .rating-top-border {
     border-top: solid;
     border-color: #d7d7d7;
@@ -121,4 +117,9 @@ div.scroll {
 .arrow-down
 {
     background-image: url(../img/arrow_down_parameters.png);
+}
+
+#top_menu h2,span {
+    line-height: normal;
+    display: inline-block;
 }
