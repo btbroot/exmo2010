@@ -864,3 +864,28 @@ ul#errors-header li.brand a
     background-color: #666;
     padding: 10px 10px 5px 10px;
 }
+
+/* SEARCH FORM */
+
+#search_form table {
+    margin: 20px 0 20px 0;
+    width:100%;
+}
+
+#search_form td {
+    width:100%;
+    border: none;
+    padding: 0 5px 0 5px;
+}
+
+#name_filter {
+    width:99%;
+}
+
+#search_form select {
+    width: 190px;
+}
+
+#search_button {
+    width: 80px;
+}
