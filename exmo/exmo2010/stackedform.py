@@ -22,9 +22,9 @@
 http://djangosnippets.org/snippets/1783/
 """
 
-from django import forms
 from django.template import loader, Context
 from django.core.context_processors import media as media_processor
+
 
 class StackedItem(object):
     """ 
@@ -65,6 +65,7 @@ class StackedItem(object):
         
         return unicode(self.form[self.stackitem])
 
+
 class FieldStack(object):
     """
     A stack of fields yielded by ``StackedForm``
@@ -83,6 +84,7 @@ class FieldStack(object):
             
     def __getattr__(self, name):
         return self.stack.get(name, None)
+
 
 class StackedForm(object):
     """

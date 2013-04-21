@@ -17,15 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Модуль описания моделей для contrib.admin
-"""
-
-import exmo2010.models
 from django.contrib import admin
 
+from exmo2010.models import OpennessExpression
 
-admin.site.register(exmo2010.models.Claim)
-admin.site.register(exmo2010.models.Clarification)
-admin.site.register(exmo2010.models.OpennessExpression)
+
+admin.site.register(OpennessExpression)

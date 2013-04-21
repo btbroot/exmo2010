@@ -1,4 +1,4 @@
-{% extends "exmo2010/emails/generic.html" %}
+{% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -23,26 +23,21 @@
 
 {% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
 {% block content %}
-    <h2>{{ score.task.organization }}: {{ score.parameter }}</h2>
-    <div>
-    {% for comment in comments %}
-        <p>
-            <span class="bold">
-            {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
-                {% if admin %}
-                    {{ comment.user.userprofile.legal_name }},
-                {% else %}
-                    {% trans 'Freedom Information Foundation Expert' %},
-                {% endif %}
-            {% else %}
-                {{ comment.user.userprofile.legal_name }},
-            {% endif %}
-            </span>
-            {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
-        </p>
-        <p>{{ comment.comment|safe }}</p>
-        <hr />
-    {% endfor %}
-    <p><span class="bold">{% trans 'Link' %}:</span> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
-    </div>
+    <h3>{{ score.task.organization }}: {{ score.parameter }}</h3>
+    <p><b>{% trans 'Date' %}:</b>
+        {% if clarification.close_date %}
+            {{ clarification.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.close_date|date:"G:i" }}
+        {% else %}
+            {{ clarification.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.open_date|date:"G:i" }}
+        {% endif %}
+    </p>
+    <p><b>{% trans 'From who' %}:</b> {{ clarification.creator }}</p>
+    <p><b>{% trans 'To whom' %}:</b> {{ clarification.addressee }}</p>
+    <p><b>{% trans 'Clarification' %}:</b></p>
+    <p>{{ clarification.comment|safe }}</p>
+    {% if clarification.close_date %}
+        <p><b>{% trans 'Answer' %}:</b></p>
+        <p>{{ clarification.answer|safe }}</p>
+    {% endif %}
+    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#clarifications">{{ url }}#clarifications</a></p>
 {% endblock content %}

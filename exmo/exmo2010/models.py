@@ -22,9 +22,10 @@
 EXMO2010 Models module
 """
 
+import datetime
 import string
 import random
-import datetime
+
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
@@ -33,12 +34,12 @@ from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
 from tagging.models import Tag
+
 from core.fields import TagField
-from core.sql import sql_score_openness_v1
-from core.sql import sql_score_openness_v8
-from core.sql import sql_task_openness
-from exmo2010.signals import task_user_changed
+from core.sql import *
 from core.utils import clean_message
+from exmo import config
+from exmo2010.signals import task_user_changed
 
 
 # Типы вопросов анкеты. Добавить переводы!
@@ -273,7 +274,7 @@ class Monitoring(models.Model):
                 task__organization__monitoring=self),
             user__in=User.objects.exclude(groups__name='organizations')
         ).count()
-        from exmo2010.view.helpers import rating
+        from core.helpers import rating
         rating_list, avg = rating(self)
         stat['avg_openness'] = avg['openness']
         stat['avg_openness_first'] = avg['openness_first']
@@ -638,7 +639,7 @@ class Task(models.Model):
         Если задача в рейтинге (одобрена), то вернет место в
         рейтинге относительно прочих задач
         """
-        from exmo2010.view.helpers import rating
+        from core.helpers import rating
         place = None
         rating_list, avg = rating(self.organization.monitoring, parameters)
         for rating_object in rating_list:

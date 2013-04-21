@@ -17,16 +17,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-from digest_email.models import DigestJournal
-from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from datetime import datetime, timedelta
+
+from django.contrib.auth.models import User
+from django.contrib.comments.models import Comment
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader, Context
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.utils import translation
+from livesettings import config_value
+
+from digest_email.models import DigestJournal
+from exmo2010.models import Score
 
 
 class DigestSend(object):
@@ -94,7 +98,7 @@ class DigestSend(object):
                 continue
             current_site = Site.objects.get_current()
             subject = _("%(prefix)sEmail digest for %(digest)s") % {
-                'prefix': settings.EMAIL_SUBJECT_PREFIX,
+                'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
                 'digest': self.digest,
             }
             context = {
@@ -105,7 +109,7 @@ class DigestSend(object):
             }
             email = EmailMultiAlternatives(subject,
                                            self.render_txt(qs, context, extra_context={}),
-                                           settings.DEFAULT_FROM_EMAIL,
+                                           config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
                                            [user.email, ],
                                            [],
                                            headers=headers,)
@@ -115,3 +119,30 @@ class DigestSend(object):
                 email.send()
                 journal = DigestJournal(user=user, digest=self.digest)
                 journal.save()
+
+
+class ScoreCommentDigest(DigestSend):
+
+    def get_content(self, user, timestamp = datetime.now()):
+        "Собираем комментарии для отправления с момента последней отправки дайджеста по timestamp"
+
+        if user.userprofile.is_expertA or user.userprofile.is_manager_expertB:
+            score_pk = Score.objects.all()
+        elif user.userprofile.is_expertB:
+            score_pk = Score.objects.filter(task__user = user)
+        elif user.userprofile.is_organization:
+            score_pk = Score.objects.filter(task__organization__in = user.userprofile.organization.all())
+        else:
+            score_pk = Score.objects.none()
+
+        last_digest_date = self.digest.get_last(user)
+        qs = Comment.objects.filter(
+            content_type__model = 'score',
+            object_pk__in = score_pk.values_list('id', flat=True),
+        ).order_by('submit_date')
+
+        if last_digest_date:
+            qs = qs.filter(submit_date__gte = last_digest_date)
+        if not user.userprofile.notify_comment_preference['self']:
+            qs = qs.exclude(user = user)
+        return qs

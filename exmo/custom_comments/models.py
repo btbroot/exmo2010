@@ -22,11 +22,12 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.comments.models import Comment
 
+
 class CommentExmo(Comment):
     """
     Кастомная модель комментария, добавлено поле "status".
-    """
 
+    """
     OPEN = 0
     ANSWERED = 1
     NOT_ANSWERED = 2
@@ -35,7 +36,6 @@ class CommentExmo(Comment):
         (OPEN, _('Comment is open')),
         (ANSWERED, _('Comment is closed and answered')),
         (NOT_ANSWERED, _('Comment is closed and not answered')),
-        )
+    )
 
-    status = models.PositiveIntegerField(choices=STATUSES, default=OPEN,
-        verbose_name=_('status'))
+    status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))

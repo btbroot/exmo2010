@@ -28,7 +28,6 @@ path_to_project = lambda *a: os.path.join(PROJECT_DIR, *a)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-TEMPLATE_STRING_IF_INVALID = ''
 
 ADMINS = (
     ('Your Name', ''),
@@ -56,8 +55,6 @@ LANGUAGE_CODE = 'ru-RU'
 SITE_ID = 1
 
 USE_I18N = True
-
-SITE_PREFIX = '/'
 
 USE_ETAGS = True
 
@@ -111,13 +108,11 @@ ROOT_URLCONF = 'exmo.urls'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    # 'django.template.loaders.eggs.Loader'
 )
 
 TEMPLATE_DIRS = (
     os.path.join(os.path.abspath(os.path.dirname(__file__)), '../templates'),
 )
-
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -144,10 +139,13 @@ INSTALLED_APPS = (
     'admin_tools.theming',
     'admin_tools.menu',
     'admin_tools.dashboard',
+    'livesettings',
+    'keyedcache',
     'pytils',
     'reversion',
     'south',
     'django403',
+    'django_extensions',
     'tagging',
     'tagging_autocomplete',
     'registration',
@@ -158,6 +156,8 @@ INSTALLED_APPS = (
     'accounts',
     'auth',
     'breadcrumbs',
+    'claims',
+    'clarifications',
     'core',
     'custom_comments',
     'dashboard',
@@ -178,27 +178,12 @@ CSRF_FAILURE_VIEW = 'exmo2010.custom_registration.views.csrf_failure'
 DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 
-try:
-    import django_extensions
-    INSTALLED_APPS = INSTALLED_APPS + ('django_extensions',)
-except ImportError:
-    pass
-
-if DEBUG:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', 'debug_toolbar_user_panel',)
-    INTERNAL_IPS = ('127.0.0.1',)
-else:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + ('django.middleware.gzip.GZipMiddleware',)
-
 
 LOCALE_PATHS = (path_to_project('locale'),)
 
 # email server
 USE_EMAIL = True
 SERVER_EMAIL = 'www-data@svobodainfo.org'
-DEFAULT_FROM_EMAIL = SERVER_EMAIL
-EMAIL_SUBJECT_PREFIX = '[exmo] '
 FORCE_SCRIPT_NAME = ""
 
 # registration
@@ -221,9 +206,10 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 # cache
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 CACHE_PATH = path_to_project('../cache')
-CACHE_TIMEOUT = '3600'
+CACHE_PREFIX = 'Cache'
+CACHE_TIMEOUT = 600
 #old variant
-CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + CACHE_TIMEOUT
+CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + str(CACHE_TIMEOUT)
 #new variant
 CACHES = {
     'default': {
@@ -263,8 +249,6 @@ DEBUG_TOOLBAR_PANELS = (
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
-
-EXMO_PAGINATEBY = 20
 
 DATE_INPUT_FORMATS = (
     '%d.%m.%Y',

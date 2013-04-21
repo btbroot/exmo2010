@@ -27,17 +27,17 @@ from django.core.urlresolvers import reverse
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Monitoring, Organization, Task, INV_STATUS
-from exmo2010.view.helpers import table
+from core.helpers import table
 from organizations.forms import OrganizationForm
 
 
-def organization_list(request, id):
+def organization_list(request, monitoring_id):
     name_filter = invite_filter = None
     if request.method == "GET":
         name_filter = request.GET.get('name_filter', False)
         invite_filter = request.GET.get('invite_filter', False)
 
-    monitoring = get_object_or_404(Monitoring, pk=id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring

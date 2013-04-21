@@ -185,7 +185,7 @@
                         {% check_object_permission exmo2010.view_claim score as perm %}
                         {% if perm %}
                             <div data-claimcolor="{{ score.pk }}" class="claim-color ajaxloader">
-                            <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
+                                <img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
                             </div>
                         {% endif %}
                         <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>

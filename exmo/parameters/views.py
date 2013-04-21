@@ -35,9 +35,9 @@ from parameters.forms import ParameterForm
 
 
 @login_required
-def parameter_manager(request, task_id, id, method):
+def parameter_manager(request, task_id, parameter_id, method):
     task = get_object_or_404(Task, pk=task_id)
-    parameter = get_object_or_404(Parameter, pk=id)
+    parameter = get_object_or_404(Parameter, pk=parameter_id)
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
     redirect = redirect.replace("%", "%%")
     if method == 'delete':
@@ -52,7 +52,7 @@ def parameter_manager(request, task_id, id, method):
         return delete_object(
             request,
             model=Parameter,
-            object_id=id,
+            object_id=parameter_id,
             post_delete_redirect=redirect,
             extra_context={
                 'current_title': current_title,
@@ -67,7 +67,7 @@ def parameter_manager(request, task_id, id, method):
         if task.organization not in parameter.exclude.all():
             parameter.exclude.add(task.organization)
         return HttpResponseRedirect(redirect)
-    else: #update
+    else:  # update
         if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         title = _('Edit parameter %s') % parameter
@@ -78,10 +78,10 @@ def parameter_manager(request, task_id, id, method):
 
         return update_object(
             request,
-            form_class = ParameterForm,
-            object_id = id,
-            post_save_redirect = redirect,
-            extra_context = {
+            form_class=ParameterForm,
+            object_id=parameter_id,
+            post_save_redirect=redirect,
+            extra_context={
                 'current_title': current_title,
                 'title': title,
                 'task': task,
@@ -92,19 +92,19 @@ def parameter_manager(request, task_id, id, method):
 
 @login_required
 def parameter_add(request, task_id):
-    task = get_object_or_404(Task, pk = task_id)
+    task = get_object_or_404(Task, pk=task_id)
     if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%","%%")
+    redirect = redirect.replace("%", "%%")
     title = _('Add parameter for %s') % task
     form = None
     if request.method == 'GET':
-        form = ParameterForm(monitoring = task.organization.monitoring)
+        form = ParameterForm(monitoring=task.organization.monitoring)
     elif request.method == 'POST':
         form = ParameterForm(request.POST)
         if form.is_valid():
-            parameter = form.save()
+            form.save()
             return HttpResponseRedirect(redirect)
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']

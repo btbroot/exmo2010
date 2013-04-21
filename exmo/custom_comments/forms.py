@@ -18,12 +18,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.forms.widgets import HiddenInput
 from django.contrib.comments.forms import CommentForm
-from custom_comments.models import CommentExmo
+from django.forms.widgets import HiddenInput
+from django.utils.translation import ungettext
+from django.utils.translation import ugettext_lazy as _
+
 from core.utils import clean_message
+from custom_comments.models import CommentExmo
+
+
+ANSWER_TIME_CHOICES = [(d, ungettext('%(count)d day', '%(count)d days', d) % {"count": d}) for d in range(1, 11)]
+
 
 class CustomCommentForm(CommentForm):
     status = forms.ChoiceField(choices=CommentExmo.STATUSES,
@@ -37,6 +43,7 @@ class CustomCommentForm(CommentForm):
         В оргинальной функции возвращает старый коментарий,
         если он повторяется. Переопределена, чтобы пользователи могли
         оставлять повторяющиеся комментарии.
+
         """
         return new
 
@@ -48,3 +55,28 @@ class CustomCommentForm(CommentForm):
         data['comment'] = clean_message(data['comment'])
         return data
 
+
+class MonitoringCommentStatForm(forms.Form):
+    """
+    Форма отчета по комментариям.
+
+    """
+    time_to_answer = forms.ChoiceField(
+        choices=ANSWER_TIME_CHOICES,
+        label=_('Maximum time to answer'))
+
+    def __init__(self, *args, **kwargs):
+        self.monitoring = kwargs.pop('monitoring', None)
+        super(MonitoringCommentStatForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        """
+        Проверяем что поле начала периода взаимодействия в календаре заполнено.
+
+        """
+        cleaned_data = self.cleaned_data
+        if not self.monitoring.interact_date:
+            raise forms.ValidationError(_('Monitoring interact start '
+                                          'date is missing. '
+                                          'Check your monitoring calendar'))
+        return cleaned_data

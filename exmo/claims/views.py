@@ -17,33 +17,30 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Модуль для работы с претензиями
-"""
-
-from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import loader, Context, RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import HttpResponseForbidden, Http404
-from django.template import RequestContext
-from django.core.urlresolvers import reverse
+from livesettings import config_value
+
 from bread_crumbs.views import breadcrumbs
+from claims.forms import *
+from core.helpers import get_experts
+from exmo2010.models import Claim, Monitoring, Score
 from exmo2010.signals import claim_was_posted_or_deleted
-from exmo2010.models import Score, Claim
-from exmo2010.models import Monitoring
-from exmo2010.forms import ClaimForm, ClaimAddForm
-from exmo2010.forms import ClaimReportForm
 
 
 @csrf_protect
 @login_required
 def claim_manager(request, score_id, claim_id=None, method=None):
     """
-    Вью для манипуляции с претензиями
+    Вью для манипуляции с претензиями.
+
     """
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
@@ -51,7 +48,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
 
     if claim_id:
         claim = get_object_or_404(Claim, pk=claim_id)
-    elif not method: #create new
+    elif not method:  # create new
         if not request.user.has_perm('exmo2010.add_claim', score):
             return HttpResponseForbidden(_('Forbidden'))
         if request.method == 'GET':
@@ -61,8 +58,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
         elif request.method == 'POST':
             form = ClaimForm(request.POST)
             if form.is_valid():
-                if form.cleaned_data['score'] == score and form.cleaned_data[
-                    'creator'] == request.user:
+                if form.cleaned_data['score'] == score and form.cleaned_data['creator'] == request.user:
                     claim = score.add_claim(request.user,
                                             form.cleaned_data['comment'])
                     claim_was_posted_or_deleted.send(
@@ -78,7 +74,7 @@ def claim_manager(request, score_id, claim_id=None, method=None):
         current_title = _('Edit claim')
 
         return render_to_response(
-            'exmo2010/score/claim_form.html',
+            'claim_form.html',
             {
                 'monitoring': score.task.organization.monitoring,
                 'task': score.task,
@@ -94,12 +90,13 @@ def claim_manager(request, score_id, claim_id=None, method=None):
 @login_required
 def claim_create(request, score_id):
     """
-    Добавление претензии на странице параметра
+    Добавление претензии на странице параметра.
+
     """
     user = request.user
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk, ])
-    redirect += '#claims' # Named Anchor для открытия нужной вкладки
+    redirect += '#claims'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
     if request.method == 'POST' and (
             user.has_perm('exmo2010.add_claim_score', score) or
@@ -107,8 +104,7 @@ def claim_create(request, score_id):
         form = ClaimAddForm(request.POST, prefix="claim")
         if form.is_valid():
             # Если заполнено поле claim_id, значит это ответ на претензию
-            if (form.cleaned_data['claim_id'] is not None
-                and user.has_perm('exmo2010.answer_claim_score', score)):
+            if form.cleaned_data['claim_id'] is not None and user.has_perm('exmo2010.answer_claim_score', score):
                 claim_id = form.cleaned_data['claim_id']
                 claim = get_object_or_404(Claim, pk=claim_id)
                 answer = form.cleaned_data['comment']
@@ -131,7 +127,7 @@ def claim_create(request, score_id):
             current_title = _('Create claim')
 
             return render_to_response(
-                'exmo2010/score/claim_form.html',
+                'claim_form.html',
                 {
                     'monitoring': score.task.organization.monitoring,
                     'task': score.task,
@@ -149,7 +145,8 @@ def claim_create(request, score_id):
 @login_required
 def claim_delete(request):
     """
-    Удаление претензии (AJAX)
+    Удаление претензии (AJAX).
+
     """
     if request.is_ajax() and request.method == 'POST':
         claim_id = request.POST.get('pk')
@@ -173,6 +170,7 @@ def claim_delete(request):
 def claim_report(request, monitoring_id):
     """
     Отчёт по претензиям.
+
     """
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
@@ -193,7 +191,7 @@ def claim_report(request, monitoring_id):
             if addressee_id != 0:
                 claims = claims.filter(addressee__id=addressee_id)
             return render_to_response(
-                'exmo2010/reports/claim_report_table.html',
+                'claim_report_table.html',
                 {'claims': claims},
                 context_instance=RequestContext(request))
         else:
@@ -231,7 +229,7 @@ def claim_report(request, monitoring_id):
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response(
-        'exmo2010/reports/claim_report.html',
+        'claim_report.html',
         {
             'monitoring': monitoring,
             'current_title': current_title,
@@ -241,3 +239,94 @@ def claim_report(request, monitoring_id):
         },
         context_instance=RequestContext(request),
     )
+
+
+def claim_list(request):
+    """
+    Страница сводного списка претензий для аналитиков.
+
+    """
+    user = request.user
+    if not (user.is_active and user.profile.is_expert):
+        return HttpResponseForbidden(_('Forbidden'))
+
+    if request.is_ajax():
+        claims = user.profile.get_closed_claims()
+        return render_to_response(
+            'claim_list_table.html',
+            {'claims': claims},
+            context_instance=RequestContext(request))
+
+    else:
+        claims = user.profile.get_filtered_opened_claims()
+        title = current_title = _('Claims')
+
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+
+        return render_to_response('claim_list.html',
+                                  {
+                                      'current_title': current_title,
+                                      'title': title,
+                                      'claims': claims,
+                                  },
+                                  RequestContext(request))
+
+
+def claim_notification(sender, **kwargs):
+    """
+    Оповещение о претензиях.
+
+    """
+
+    claim = kwargs['claim']
+    request = kwargs['request']
+    creation = kwargs['creation']
+    score = claim.score
+
+    theme = _('New claim') if creation else _('Delete claim')
+
+    subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s') % {
+        'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
+        'monitoring': score.task.organization.monitoring,
+        'org': score.task.organization.name.split(':')[0],
+        'code': score.parameter.code,
+        'theme': theme,
+    }
+
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
+                         request.get_host(),
+                         reverse('exmo2010:score_view',
+                                 args=[score.pk]))
+
+    t_plain = loader.get_template('score_claim.txt')
+    t_html = loader.get_template('score_claim.html')
+
+    c = Context({'score': score,
+                 'claim': claim,
+                 'url': url,
+                 'creation': creation,
+                 'current_user': request.user.userprofile.legal_name,
+                 })
+
+    message_plain = t_plain.render(c)
+    message_html = t_html.render(c)
+
+    headers = {
+        'X-iifd-exmo': 'claim_notification'
+    }
+
+    recipients = list(get_experts().values_list('email', flat=True))
+
+    if score.task.user.email and score.task.user.email not in recipients:
+        recipients.append(score.task.user.email)
+
+    for r in recipients:
+        email = EmailMultiAlternatives(subject,
+                                       message_plain,
+                                       config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
+                                       [r],
+                                       [],
+                                       headers=headers,)
+        email.attach_alternative(message_html, "text/html")
+        email.send()

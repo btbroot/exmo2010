@@ -20,9 +20,7 @@
 import csv
 import re
 import string
-from reversion import revision
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.contrib.sites.models import Site
@@ -34,12 +32,14 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
 from django.utils.translation import ugettext as _
 from django.views.generic.create_update import update_object, delete_object
+from livesettings import config_value
+from reversion import revision
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from core.utils import UnicodeReader, UnicodeWriter
 from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory
-from exmo2010.view.helpers import table
+from core.helpers import table
 from tasks.forms import TaskForm
 
 
@@ -635,5 +635,5 @@ def task_user_change_notify(sender, **kwargs):
     c = Context({'task': task, 'url': url, })
     message = t.render(c)
 
-    email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [email], [], headers=headers)
+    email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'), [email], [], headers=headers)
     email.send()

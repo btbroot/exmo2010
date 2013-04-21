@@ -17,9 +17,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Django settings for exmo project.
+from django.conf.urls.defaults import *
 
 
-# subscribes emails:
-NOTIFY_LIST_INTERACTION = 'monitoring_interaction@svobodainfo.org'
-NOTIFY_LIST_REPORT = 'monitoring-report@svobodainfo.org'
+urlpatterns = \
+    patterns('tasks.views',
+             url(r'^$', 'tasks'),
+             url(r'^task/(\d+)_(\w+)/$', 'task_manager', name='task_manager'),
+             url(r'^taskexport/(\d+)/$', 'task_export', name='task_export'),
+             url(r'^taskimport/(\d+)/$', 'task_import', name='task_import'),
+             )
+
+urlpatterns += \
+    patterns('parameters.views',
+             url(r'^task/(\d+)/parameter/(\d+)_(\w+)/$', 'parameter_manager', name='parameter_manager'),
+             url(r'^task/(\d+)/parameter/add/$', 'parameter_add', name='parameter_add'),
+             )

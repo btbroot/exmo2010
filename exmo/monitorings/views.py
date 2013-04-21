@@ -39,17 +39,19 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.views.generic.create_update import delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext
 from django.forms.models import modelformset_factory
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
-from exmo2010.forms import CORE_MEDIA, MonitoringCommentStatForm
-from exmo2010.helpers import comment_report
+from custom_comments.forms import MonitoringCommentStatForm
+from custom_comments.views import comment_report
+from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from core.utils import UnicodeReader, UnicodeWriter
-from exmo2010.view.helpers import *
+from core.helpers import *
 from monitorings.forms import MonitoringForm, MonitoringFilterForm
-from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
+from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
 
 def set_npa_params(request, m_id):
@@ -290,7 +292,7 @@ def monitoring_rating(request, m_id):
     title = _('Rating')
 
     has_npa = monitoring.has_npa
-    rating_type, parameter_list, form = rating_type_parameter(request, monitoring, has_npa)
+    rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
     rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
 
     crumbs = ['Home', 'Monitoring']
@@ -301,7 +303,7 @@ def monitoring_rating(request, m_id):
     else:
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
-    total_orgs = total_orgs_translate(avg, rating_list, rating_type)
+    total_orgs = _total_orgs_translate(avg, rating_list, rating_type)
 
     return render_to_response('rating.html', {
         'monitoring': monitoring,
@@ -1091,7 +1093,7 @@ def ratings(request):
         if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         has_npa = monitoring.has_npa
-        rating_type, parameter_list, form = rating_type_parameter(request, monitoring, has_npa)
+        rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
         rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
         con = {
             'monitoring': monitoring,
@@ -1102,9 +1104,65 @@ def ratings(request):
             'form': form,
         }
         context.update(con)
-        context['total_orgs'] = total_orgs_translate(avg, rating_list, rating_type)
+        context['total_orgs'] = _total_orgs_translate(avg, rating_list, rating_type)
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
 
     return render_to_response('rating_report.html', context, context_instance=RequestContext(request))
+
+
+def _total_orgs_translate(avg, rating_list, rating_type):
+    """
+    Display of the number of organizations in the rating.
+
+    """
+    text = ungettext(
+        'Altogether, there is %(count)d organization in the monitoring cycle',
+        'Altogether, there are %(count)d organizations in the monitoring cycle',
+        avg['total_tasks']
+    ) % {'count': avg['total_tasks']}
+
+    if rating_type == 'user':
+        text_for_users = ungettext(
+            ', %(count)d of them has at least 1 relevant setting from users sample',
+            ', %(count)d of them have at least 1 relevant setting from users sample',
+            len(rating_list)
+        ) % {'count': len(rating_list)}
+        text += text_for_users
+    text += '.'
+    return text
+
+
+def _rating_type_parameter(request, monitoring, has_npa=False):
+    """
+    Функция подготовки списка параметров и формы выбора параметров.
+
+    """
+    if has_npa:
+        rating_type_list = ('all', 'npa', 'user', 'other')
+    else:
+        rating_type_list = ('all', 'user')
+    rating_type = request.GET.get('type', 'all')
+    if rating_type not in rating_type_list:
+        raise Http404
+
+    form = ParameterDynForm(monitoring=monitoring)
+    parameter_list = []
+    if rating_type == 'npa':
+        parameter_list = Parameter.objects.filter(
+            monitoring=monitoring,
+            npa=True,
+        )
+    elif rating_type == 'other':
+        parameter_list = Parameter.objects.filter(
+            monitoring=monitoring,
+            npa=False,
+        )
+    elif rating_type == 'user':
+        form = ParameterDynForm(request.GET, monitoring=monitoring)
+        for parameter in Parameter.objects.filter(monitoring=monitoring):
+            if request.GET.get('parameter_%d' % parameter.pk):
+                parameter_list.append(parameter.pk)
+
+    return rating_type, parameter_list, form

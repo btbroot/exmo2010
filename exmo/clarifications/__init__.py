@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -17,22 +16,3 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Задача для рассылки дайджестов
-
-Can be run as a cronjob to send comment digest
-"""
-
-from django_extensions.management.jobs import HourlyJob
-
-from digest_email.digest import ScoreCommentDigest
-from digest_email.models import Digest
-
-
-class Job(HourlyJob):
-    help = "Comment daily digest notification"
-
-    def execute(self):
-        digest = ScoreCommentDigest(Digest.objects.get(name = 'notify_comment'))
-        digest.send()

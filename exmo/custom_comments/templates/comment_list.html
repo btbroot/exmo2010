@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block pretitle %}
-    {% include "exmo2010/reports/menu_interaction.html" with active_item="3" %}
+    {% include "menu_interaction.html" with active_item="1" %}
 {% endblock %}
 
 {% block content %}
@@ -44,9 +44,10 @@
         Китайский хак, в этой и остальных таблицах,
         чтобы дополнительные ячейки (td) подгружались без классов и
         выравнивались в ширину по первой пустой строке (first)
-        с нулевой высотой и бордером по ячейкам с css-классами.
+        с нулевой высотой и нулевым бордером по ячейкам с css-классами.
         Решает проблему неправильного рендера таблицы, когда аякс-запросом
-        загружается 1000 строк.
+        загружается 1000 строк. И spaceless в ajax-шаблоне,
+        чтобы не сбивалась таблица в IE после загрузки.
         {% endcomment %}
         <tr class="first">
             <td class="report-date">
@@ -59,22 +60,20 @@
         <tr class="heading">
             <td>{% trans 'Time and date' %}</td>
             <td>{% trans 'Organization' %}</td>
-            <td>{% trans 'Link to claim' %}</td>
+            <td>{% trans 'Link to comment' %}</td>
         </tr>
     </tbody>
 </table>
-
-{% if claims %}
+{% if comments %}
 <table class="base-table">
     <tbody>
-    <tr>
-        <td colspan="3" class="report-title open">
-            <span>{% trans 'Without answer' %}</span> ({{ claims|length }})
-        </td>
-    </tr>
+        <tr>
+            <td colspan="3" class="report-title open">
+                <span>{% trans 'Without answer' %}</span> ({{ comments|length }})
+            </td>
+        </tr>
     </tbody>
 </table>
-
 <table class="base-table open">
     <tbody>
         <tr class="first">
@@ -85,21 +84,19 @@
             <td class="report-link">
             </td>
         </tr>
-        {% include "exmo2010/reports/claim_list_table.html" %}
+    {% include "comment_list_table.html" %}
     </tbody>
 </table>
 {% endif %}
-
 <table class="base-table">
     <tbody>
         <tr>
-            <td colspan="3" class="report-title closed" rel="{% url exmo2010:claim_list %}">
+            <td colspan="3" class="report-title closed" rel="{% url exmo2010:comment_list %}">
                 <span>{% trans 'Processed' %}</span>&nbsp;<img src="{{STATIC_URL}}exmo2010/img/ajax-loader.gif" />
             </td>
         </tr>
     </tbody>
 </table>
-
 <table class="base-table closed">
     <tbody>
         <tr class="first">

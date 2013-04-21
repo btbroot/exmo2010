@@ -64,13 +64,13 @@
 
     {% if view_clarification %}
     <div class="tab-pane{% if not view_comment %} active{% endif %}" id="clarifications">
-        {% include "exmo2010/score/clarification.html" %}
+        {% include "clarification.html" %}
     </div>
     {% endif %}
 
     {% if view_claim %}
         <div class="tab-pane{% if not view_comment and not view_clarification %} active{% endif %}" id="claims">
-            {% include "exmo2010/score/claim.html" %}
+            {% include "claim.html" %}
         </div>
     {% endif %}
 </div>

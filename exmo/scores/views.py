@@ -21,29 +21,32 @@
 import datetime
 from reversion import revision
 
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import simplejson
-from django.contrib.comments.signals import comment_was_posted
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.http import HttpResponse
+from django.contrib.comments.signals import comment_was_posted
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import EmailMessage
+from django.core.urlresolvers import reverse
+from django.db import IntegrityError
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.template import loader, Context, RequestContext
+from django.utils import simplejson
+from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic.create_update import create_object, delete_object, update_object
 from django.views.generic.list_detail import object_detail
-from django.views.generic.create_update import update_object, create_object
-from django.views.generic.create_update import delete_object
+from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from custom_comments.models import CommentExmo
-from exmo2010.forms import ClaimAddForm, ClarificationAddForm
-from exmo2010.helpers import construct_change_message, log_monitoring_interact_activity
-from exmo2010.models import Claim, Clarification, Parameter, Score, Task, QAnswer, QQuestion, MONITORING_PUBLISH
+from claims.forms import ClaimAddForm
+from clarifications.forms import ClarificationAddForm
+from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter
+from exmo2010.models import QAnswer, QQuestion, Score, Task, UserProfile, MONITORING_PUBLISH
 from exmo2010.signals import score_was_changed
-from exmo2010.view.helpers import table_prepare_queryset
+from core.helpers import table_prepare_queryset
 from scores.forms import ScoreForm
 from questionnaire.forms import QuestionnaireDynForm
 
@@ -58,12 +61,11 @@ def score_add(request, task_id, parameter_id):
     except Score.DoesNotExist:
         pass
     else:
-        return HttpResponseRedirect(reverse('exmo2010:score_view',
-            args=(score.pk,)))
+        return HttpResponseRedirect(reverse('exmo2010:score_view', args=(score.pk,)))
     if not request.user.has_perm('exmo2010.fill_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-        args=(task.pk,)), request.GET.urlencode(), parameter.code)
+                                               args=(task.pk,)), request.GET.urlencode(), parameter.code)
     redirect = redirect.replace("%", "%%")
 
     # Форма с презаполненными task и parameter, при вовзвращении реквеста
@@ -139,7 +141,7 @@ def score_view(request, score_id):
         title = _('%s') % score.parameter
         if request.method == 'POST':
             form = ScoreForm(request.POST, instance=score)
-            message = construct_change_message(request, form, None)
+            message = _construct_change_message(request, form, None)
             revision.comment = message
             if form.is_valid() and form.changed_data:
                 score_was_changed.send(
@@ -236,8 +238,7 @@ def score_list_by_task(request, task_id, report=None):
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = task.organization.monitoring
-    parameters = Parameter.objects.filter(monitoring=monitoring).exclude\
-        (exclude=task.organization)
+    parameters = Parameter.objects.filter(monitoring=monitoring).exclude(exclude=task.organization)
     headers = (
         (_('Code'), None, None, None, None),
         (_('Parameter'), 'name', 'name', None, None),
@@ -317,8 +318,7 @@ def score_list_by_task(request, task_id, report=None):
                             except (ValueError, ObjectDoesNotExist):
                                 continue
                             if answ[1]:  # Непустое значение ответа.
-                                answer = QAnswer.objects.get_or_create(task=\
-                                task, question=question_obj)[0]
+                                answer = QAnswer.objects.get_or_create(task=task, question=question_obj)[0]
                                 if question_obj.qtype == 0:
                                     answer.text_answer = answ[1]
                                     answer.save()
@@ -342,8 +342,7 @@ def score_list_by_task(request, task_id, report=None):
                 initial_data = {}
                 for a in existing_answers:
                     initial_data["q_%s" % a.question.pk] = a.answer(True)
-                form = QuestionnaireDynForm(questions=questions,
-                    initial=initial_data)
+                form = QuestionnaireDynForm(questions=questions, initial=initial_data)
         else:
             form = None
         has_npa = task.organization.monitoring.has_npa
@@ -427,11 +426,102 @@ def log_user_activity(**kwargs):
     comment = kwargs['comment']
     if comment.content_type.model == 'score':
         score = Score.objects.get(pk=comment.object_pk)
-        log_monitoring_interact_activity(score.task.organization.monitoring, comment.user)
+        _log_monitoring_interact_activity(score.task.organization.monitoring, comment.user)
 
 
-# Регистрируем обработчик сигнала.
-comment_was_posted.connect(log_user_activity)
+def score_change_notify(sender, **kwargs):
+    """
+    Оповещение об измененях оценки.
+
+    """
+    form = kwargs['form']
+    score = form.instance
+    request = kwargs['request']
+    changes = []
+    if form.changed_data:
+        for change in form.changed_data:
+            change_dict = {'field': change,
+                           'was': form.initial.get(change, form.fields[change].initial),
+                           'now': form.cleaned_data[change]}
+            changes.append(change_dict)
+    if score.task.approved:
+        rcpt = []
+        for profile in UserProfile.objects.filter(organization=score.task.organization):
+            if profile.user.is_active and profile.user.email and \
+                    profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
+                rcpt.append(profile.user.email)
+        rcpt = list(set(rcpt))
+        subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
+            'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
+            'monitoring': score.task.organization.monitoring,
+            'org': score.task.organization.name.split(':')[0],
+            'code': score.parameter.code,
+        }
+        headers = {
+            'X-iifd-exmo': 'score_changed_notification'
+        }
+        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
+                             reverse('exmo2010:score_view', args=[score.pk]))
+        t = loader.get_template('score_email.html')
+        c = Context({'score': score, 'url': url, 'changes': changes})
+        message = t.render(c)
+        for rcpt_ in rcpt:
+            email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
+                                 [rcpt_], [], headers=headers)
+            email.send()
+
+
+def create_revision(sender, instance, using, **kwargs):
+    """
+    Сохранение ревизии оценки на стадии взаимодействия.
+
+    """
+    if instance.revision != Score.REVISION_INTERACT:
+        instance.create_revision(Score.REVISION_INTERACT)
+
+
+def _construct_change_message(request, form, formsets):
+        """
+        Construct a change message from a changed object. Можно использовать для reversion.
+
+        """
+        change_message = []
+        if form.changed_data:
+            change_message.append(_('Changed %s.') % get_text_list(form.changed_data, _('and')))
+
+        if formsets:
+            for formset in formsets:
+                for added_object in formset.new_objects:
+                    change_message.append(_('Added %(name)s "%(object)s".')
+                                          % {'name': force_unicode(added_object._meta.verbose_name),
+                                             'object': force_unicode(added_object)})
+                for changed_object, changed_fields in formset.changed_objects:
+                    change_message.append(_('Changed %(list)s for %(name)s "%(object)s".')
+                                          % {'list': get_text_list(changed_fields, _('and')),
+                                             'name': force_unicode(changed_object._meta.verbose_name),
+                                             'object': force_unicode(changed_object)})
+                for deleted_object in formset.deleted_objects:
+                    change_message.append(_('Deleted %(name)s "%(object)s".')
+                                          % {'name': force_unicode(deleted_object._meta.verbose_name),
+                                             'object': force_unicode(deleted_object)})
+        change_message = ' '.join(change_message)
+        return change_message or _('No fields changed.')
+
+
+def _log_monitoring_interact_activity(monitoring, user):
+    """
+    Функция для ведения журнала посещений представителя организации на стадии взаимодействия.
+
+    """
+    if (monitoring.is_interact and user.profile.is_organization
+            and not user.is_superuser):
+        if not MonitoringInteractActivity.objects.filter(monitoring=monitoring,
+                                                         user=user).exists():
+            log = MonitoringInteractActivity(monitoring=monitoring, user=user)
+            try:
+                log.save()
+            except IntegrityError:
+                pass
 
 
 @login_required
@@ -443,10 +533,8 @@ def score_claim_color(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
     if request.method == "GET" and request.is_ajax():
         return render_to_response('claim_image.html',
-            {
-                'score': score,
-            },
-            context_instance=RequestContext(request))
+                                  {'score': score},
+                                  context_instance=RequestContext(request))
     else:
         raise Http404
 
@@ -466,51 +554,5 @@ def score_comment_unreaded(request, score_id):
         raise Http404
 
 
-# def score_change_notify(sender, **kwargs):
-#     """
-#     Оповещение об измененях оценки.
-#
-#     """
-#     form = kwargs['form']
-#     score = form.instance
-#     request = kwargs['request']
-#     changes = []
-#     if form.changed_data:
-#         for change in form.changed_data:
-#             change_dict = {'field': change,
-#                            'was': form.initial.get(change, form.fields[change].initial),
-#                            'now': form.cleaned_data[change]}
-#             changes.append(change_dict)
-#     if score.task.approved:
-#         rcpt = []
-#         for profile in UserProfile.objects.filter(organization=score.task.organization):
-#             if profile.user.is_active and profile.user.email and \
-#                     profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-#                 rcpt.append(profile.user.email)
-#         rcpt = list(set(rcpt))
-#         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
-#             'prefix': settings.EMAIL_SUBJECT_PREFIX,
-#             'monitoring': score.task.organization.monitoring,
-#             'org': score.task.organization.name.split(':')[0],
-#             'code': score.parameter.code,
-#         }
-#         headers = {
-#             'X-iifd-exmo': 'score_changed_notification'
-#         }
-#         url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
-#                              reverse('exmo2010:score_view', args=[score.pk]))
-#         t = loader.get_template('score_email.html')
-#         c = Context({'score': score, 'url': url, 'changes': changes})
-#         message = t.render(c)
-#         for rcpt_ in rcpt:
-#             email = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [rcpt_], [], headers=headers)
-#             email.send()
-#
-#
-# def create_revision(sender, instance, using, **kwargs):
-#     """
-#     Сохранение ревизии оценки на стадии взаимодействия.
-#
-#     """
-#     if instance.revision != Score.REVISION_INTERACT:
-#         instance.create_revision(Score.REVISION_INTERACT)
+# Регистрируем обработчик сигнала.
+comment_was_posted.connect(log_user_activity)

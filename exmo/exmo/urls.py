@@ -28,6 +28,7 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comments/', include('django.contrib.comments.urls')),
     url(r'^$', lambda request: HttpResponsePermanentRedirect(

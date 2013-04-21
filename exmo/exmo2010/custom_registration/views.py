@@ -280,15 +280,14 @@ def csrf_failure(request, reason=""):
     Cross Site Request Forgery protection. Переписана для того,
     чтобы объясняла пользователю о выключенных cookies в браузере.
     """
-    if (reason == REASON_NO_COOKIE or
-        reason == REASON_NO_CSRF_COOKIE):
+    if reason == REASON_NO_COOKIE or reason == REASON_NO_CSRF_COOKIE:
         return render_to_response('cookies.html', RequestContext(request))
     else:
         t = Template(CSRF_FAILRE_TEMPLATE)
         c = Context({'DEBUG': settings.DEBUG,
                      'reason': reason,
                      'no_referer': reason == REASON_NO_REFERER
-        })
+                     })
         return HttpResponseForbidden(t.render(c), mimetype='text/html')
 
 

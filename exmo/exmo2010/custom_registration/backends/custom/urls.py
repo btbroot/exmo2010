@@ -52,6 +52,10 @@ reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
 
 
 urlpatterns = patterns('',
+
+    url(r'^settings/$', 'accounts.views.settings', name='settings'),
+    url(r'^dashboard_reset/$', 'accounts.views.user_reset_dashboard', name='user_reset_dashboard'),
+
     url(r'^activate/complete/$', BreadcrumbsView.as_view(
         template_name='registration/activation_complete.html',
         get_context_data=lambda: {'current_title': _('Activation complete')}

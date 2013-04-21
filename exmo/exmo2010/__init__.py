@@ -23,10 +23,13 @@ from django.conf import settings
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.comments.signals import comment_was_posted
 
+from claims.views import claim_notification
+from clarifications.views import clarification_notification
+from custom_comments.views import comment_change_status, comment_notification
 from exmo2010.helpers import *
 from exmo2010.models import Monitoring, Score
 from exmo2010.signals import *
-from exmo2010.view.helpers import create_revision, score_change_notify
+from scores.views import create_revision, score_change_notify
 from tasks.views import task_user_change_notify
 
 

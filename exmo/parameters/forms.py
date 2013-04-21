@@ -21,8 +21,8 @@ from django import forms
 from django.contrib.admin import widgets
 from django.utils.translation import ugettext as _
 
+from exmo2010.forms import TagAutocomplete
 from exmo2010.models import Organization, Parameter
-from exmo2010.widgets import TagAutocomplete
 
 
 SCORE_CHOICES1 = (

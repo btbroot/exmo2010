@@ -17,44 +17,42 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Модуль для работы с уточнениями
-"""
-
-from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
-from django.http import HttpResponseForbidden
-from django.template import RequestContext
-from bread_crumbs.views import breadcrumbs
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import loader, Context, RequestContext
+from django.utils.translation import ugettext as _
+from livesettings import config_value
 
-from exmo2010.signals import clarification_was_posted
-from exmo2010.forms import ClarificationAddForm, ClarificationReportForm
+from bread_crumbs.views import breadcrumbs
+from clarifications.forms import *
+from core.helpers import get_experts
 from exmo2010.models import Clarification, Monitoring, Score
+from exmo2010.signals import clarification_was_posted
 
 
 @login_required
 def clarification_create(request, score_id):
     """
-    Добавление уточнения на странице параметра
+    Добавление уточнения на странице параметра.
+
     """
     user = request.user
     score = get_object_or_404(Score, pk=score_id)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
-    redirect += '#clarifications' # Named Anchor для открытия нужной вкладки
+    redirect += '#clarifications'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
     if request.method == 'POST' and (
         user.has_perm('exmo2010.add_clarification_score', score) or
-        user.has_perm('exmo2010.answer_clarification_score', score)):
+            user.has_perm('exmo2010.answer_clarification_score', score)):
         form = ClarificationAddForm(request.POST, prefix="clarification")
         if form.is_valid():
             # Если заполнено поле clarification_id,
             # значит это ответ на уточнение
-            if (form.cleaned_data['clarification_id'] is not None and
-                user.has_perm('exmo2010.answer_clarification_score', score)):
+            if form.cleaned_data['clarification_id'] is not None and \
+                    user.has_perm('exmo2010.answer_clarification_score', score):
                 clarification_id = form.cleaned_data['clarification_id']
                 clarification = get_object_or_404(Clarification,
                                                   pk=clarification_id)
@@ -80,7 +78,7 @@ def clarification_create(request, score_id):
             current_title = _('Create clarification')
 
             return render_to_response(
-                'exmo2010/score/clarification_form.html',
+                'clarification_form.html',
                 {
                     'monitoring': score.task.organization.monitoring,
                     'task': score.task,
@@ -99,6 +97,7 @@ def clarification_create(request, score_id):
 def clarification_report(request, monitoring_id):
     """
     Отчёт по уточнениям.
+
     """
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
@@ -119,7 +118,7 @@ def clarification_report(request, monitoring_id):
             if addressee_id != 0:
                 clarifications = clarifications.filter(score__task__user__id=addressee_id)
             return render_to_response(
-                'exmo2010/reports/clarification_report_table.html',
+                'clarification_report_table.html',
                 {'clarifications': clarifications},
                 context_instance=RequestContext(request))
         else:
@@ -159,13 +158,97 @@ def clarification_report(request, monitoring_id):
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response(
-        'exmo2010/reports/clarification_report.html',
+        'clarification_report.html',
         {
             'monitoring': monitoring,
             'current_title': current_title,
             'title': title,
             'clarifications': clarifications,
             'form': form,
-            },
+        },
         context_instance=RequestContext(request),
     )
+
+
+def clarification_list(request):
+    """
+    Страница сводного списка уточнений для аналитиков.
+
+    """
+    user = request.user
+    if not (user.is_active and user.profile.is_expert):
+        return HttpResponseForbidden(_('Forbidden'))
+
+    if request.is_ajax():
+        clarifications = user.profile.get_closed_clarifications()
+        return render_to_response(
+            'clarification_list_table.html',
+            {'clarifications': clarifications},
+            context_instance=RequestContext(request))
+
+    else:
+        clarifications = user.profile.get_filtered_opened_clarifications()
+        title = current_title = _('Clarifications')
+
+        crumbs = ['Home']
+        breadcrumbs(request, crumbs)
+
+        return render_to_response('clarification_list.html',
+                                  {
+                                      'current_title': current_title,
+                                      'title': title,
+                                      'clarifications': clarifications,
+                                  },
+                                  RequestContext(request))
+
+
+def clarification_notification(sender, **kwargs):
+    """
+    Оповещение о претензиях.
+
+    """
+    clarification = kwargs['clarification']
+    request = kwargs['request']
+    score = clarification.score
+
+    subject = _(
+        '%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification'
+    ) % {
+        'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
+        'monitoring': score.task.organization.monitoring,
+        'org': score.task.organization.name.split(':')[0],
+        'code': score.parameter.code,
+    }
+
+    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
+                         request.get_host(),
+                         reverse('exmo2010:score_view', args=[score.pk]))
+
+    t_plain = loader.get_template('score_clarification.txt')
+    t_html = loader.get_template('score_clarification.html')
+
+    c = Context({'score': score,
+                 'clarification': clarification,
+                 'url': url})
+
+    message_plain = t_plain.render(c)
+    message_html = t_html.render(c)
+
+    headers = {
+        'X-iifd-exmo': 'clarification_notification'
+    }
+
+    recipients = list(get_experts().values_list('email', flat=True))
+
+    if score.task.user.email and score.task.user.email not in recipients:
+        recipients.append(score.task.user.email)
+
+    for r in recipients:
+        email = EmailMultiAlternatives(subject,
+                                       message_plain,
+                                       config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
+                                       [r],
+                                       [],
+                                       headers=headers,)
+        email.attach_alternative(message_html, "text/html")
+        email.send()

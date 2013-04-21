@@ -1,4 +1,4 @@
-{% extends "exmo2010/emails/generic.html" %}
+{% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,25 +19,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n pytils_dt %}
 
 {% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
 {% block content %}
     <h3>{{ score.task.organization }}: {{ score.parameter }}</h3>
+
     <p><b>{% trans 'Date' %}:</b>
-        {% if clarification.close_date %}
-            {{ clarification.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.close_date|date:"G:i" }}
+        {% if claim.close_date %}
+            {{ claim.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.close_date|date:"G:i" }}
         {% else %}
-            {{ clarification.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ clarification.open_date|date:"G:i" }}
+            {{ claim.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.open_date|date:"G:i" }}
         {% endif %}
     </p>
-    <p><b>{% trans 'From who' %}:</b> {{ clarification.creator }}</p>
-    <p><b>{% trans 'To whom' %}:</b> {{ clarification.addressee }}</p>
-    <p><b>{% trans 'Clarification' %}:</b></p>
-    <p>{{ clarification.comment|safe }}</p>
-    {% if clarification.close_date %}
+    <p><b>{% trans 'From who' %}:</b> {{ claim.creator }}</p>
+    <p><b>{% trans 'To whom' %}:</b> {{ claim.addressee }}</p>
+    <p><b>{% trans 'Claim' %}:</b></p>
+    <p>{{ claim.comment|safe }}</p>
+    {% if claim.close_date %}
         <p><b>{% trans 'Answer' %}:</b></p>
-        <p>{{ clarification.answer|safe }}</p>
+        <p>{{ claim.answer|safe }}</p>
     {% endif %}
-    <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#clarifications">{{ url }}#clarifications</a></p>
+    {% if creation %}
+        <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#claims">{{ url }}#claims</a></p>
+    {% else %}
+        <p><b>{% trans 'Claim was deleted by' %}:</b> {{ current_user }}</p>
+    {% endif %}
 {% endblock content %}
+
+
