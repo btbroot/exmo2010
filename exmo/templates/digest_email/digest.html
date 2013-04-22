@@ -121,6 +121,7 @@
     <p>{% trans 'Digest from' %} {{from}} {% trans 'till' %} {{till}}</p>
     {% for object in object_list %}<p>----------</p>{% include element_template %}{% endfor %}
 {% endblock %}
+{% include "exmo2010/email_footer.html" %}
 </body>
 </html>
 

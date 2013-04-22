@@ -18,14 +18,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% spaceless %}
-{% load i18n get_object_by_pk settings_value %}
-{% get_object_by_pk exmo2010.Score object.object_pk as score %}
-<p>{{ score.task.organization }}: {{ score.parameter }}</p>
-<p>{% trans 'Date' %}: {{ object.submit_date }}</p>
-<p>{% trans 'User' %}: {% if object.user.userprofile.is_expert or object.user.is_superuser %}{% if user.userprofile.is_expert or user.is_superuser %}{{ object.user.userprofile.legal_name }}{% else %}{% trans "Freedom Information Foundation Expert" %}{% endif %}{% else %}{{ object.user.userprofile.legal_name }}{% endif %}</p>
-<p>{% trans 'Comment' %}:</p>
-<p>{{ object.comment|safe }}</p>
-<p>{% trans 'Link' %}: <a href="http://{{ site }}{{ score.get_absolute_url }}">{{ site }}{{ score.get_absolute_url }}</a></p>
-{% include "exmo2010/email_footer.html" %}
-{% endspaceless %}
+{% load i18n %}
+
+<div>
+    <hr />
+    <p>
+        {% trans 'This is an automatically generated email, please do not reply.' %}<br />
+        {% trans 'If you have any issue with EXMO, please contact the technical support:' %}
+        <a href="mailto:tsupport@svobodainfo.org">tsupport@svobodainfo.org</a>
+    </p>
+</div>

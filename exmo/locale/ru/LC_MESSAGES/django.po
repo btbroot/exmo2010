@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-21 21:29+0400\n"
+"POT-Creation-Date: 2013-04-22 17:18+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -166,8 +166,8 @@ msgstr "Настройки главной страницы были сброше
 #: monitorings/views.py:225 monitorings/views.py:259 monitorings/views.py:291
 #: monitorings/views.py:330 monitorings/views.py:423 monitorings/views.py:488
 #: monitorings/views.py:509 monitorings/views.py:610 monitorings/views.py:678
-#: monitorings/views.py:724 monitorings/views.py:767 monitorings/views.py:857
-#: monitorings/views.py:938 monitorings/views.py:1094
+#: monitorings/views.py:724 monitorings/views.py:767 monitorings/views.py:867
+#: monitorings/views.py:948 monitorings/views.py:1104
 #: organizations/views.py:42 organizations/views.py:71
 #: organizations/views.py:115 parameters/views.py:45 parameters/views.py:66
 #: parameters/views.py:72 parameters/views.py:97 questionnaire/views.py:55
@@ -270,14 +270,14 @@ msgstr "Задачи цикла мониторинга "
 
 #: bread_crumbs/views.py:81 claims/views.py:227 clarifications/views.py:156
 #: monitorings/views.py:87 monitorings/views.py:302 monitorings/views.py:465
-#: monitorings/views.py:589 monitorings/views.py:655 monitorings/views.py:983
+#: monitorings/views.py:589 monitorings/views.py:655 monitorings/views.py:993
 #: organizations/views.py:90 tasks/views.py:546 tasks/views.py:602
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
 #: bread_crumbs/views.py:88 claims/views.py:229 clarifications/views.py:158
 #: monitorings/views.py:89 monitorings/views.py:292 monitorings/views.py:304
-#: monitorings/views.py:467 monitorings/views.py:591 monitorings/views.py:985
+#: monitorings/views.py:467 monitorings/views.py:591 monitorings/views.py:995
 #: organizations/views.py:92 tasks/views.py:548 tasks/views.py:604
 #: templates/errors_header.html:35
 msgid "Rating"
@@ -285,7 +285,7 @@ msgstr "Рейтинг"
 
 #: bread_crumbs/views.py:94 claims/views.py:229 clarifications/views.py:158
 #: monitorings/views.py:89 monitorings/views.py:304 monitorings/views.py:467
-#: monitorings/views.py:591 monitorings/views.py:985 organizations/views.py:92
+#: monitorings/views.py:591 monitorings/views.py:995 organizations/views.py:92
 #: tasks/views.py:548 tasks/views.py:604 tasks/templates/task_list.html:67
 msgid "Tasks"
 msgstr "Задачи "
@@ -590,11 +590,11 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: dashboard/menu.py:82 monitorings/views.py:1081 monitorings/views.py:1082
+#: dashboard/menu.py:82 monitorings/views.py:1091 monitorings/views.py:1092
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: dashboard/menu.py:85 monitorings/views.py:1058
+#: dashboard/menu.py:85 monitorings/views.py:1068
 #: monitorings/templates/monitoring_comment_report.html:69
 #: templates/errors_header.html:40
 msgid "Statistics"
@@ -1327,39 +1327,39 @@ msgstr "Отчёт для %s по параметру и наличию"
 msgid "Parameter found report of %(monitoring)s"
 msgstr "Отчёт по наличию параметра для %(monitoring)s"
 
-#: monitorings/views.py:822
+#: monitorings/views.py:832
 #, python-format
 msgid "Import organization from CSV for monitoring %s"
 msgstr "Импортировать органы/организации из CSV для %s"
 
-#: monitorings/views.py:829
+#: monitorings/views.py:839
 msgid "Import organization"
 msgstr "Импортировать органы/организации"
 
-#: monitorings/views.py:912
+#: monitorings/views.py:922
 #, python-format
 msgid "Import parameter from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для %s"
 
-#: monitorings/views.py:919
+#: monitorings/views.py:929
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: monitorings/views.py:939
+#: monitorings/views.py:949
 #, python-format
 msgid "Comment report for %s"
 msgstr "Отчет по комментариям для %s"
 
-#: monitorings/views.py:953
+#: monitorings/views.py:963
 msgid "Start date for interact not defined."
 msgstr "Дата взаимодействия не указана"
 
-#: monitorings/views.py:1019
+#: monitorings/views.py:1029
 #: templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
 
-#: monitorings/views.py:1121
+#: monitorings/views.py:1131
 #, python-format
 msgid "Altogether, there is %(count)d organization in the monitoring cycle"
 msgid_plural ""
@@ -1368,7 +1368,7 @@ msgstr[0] "Всего в цикле мониторинга %(count)d орган�
 msgstr[1] "Всего в цикле мониторинга %(count)d организации"
 msgstr[2] "Всего в цикле мониторинга %(count)d организаций"
 
-#: monitorings/views.py:1128
+#: monitorings/views.py:1138
 #, python-format
 msgid ", %(count)d of them has at least 1 relevant setting from users sample"
 msgid_plural ""
@@ -1850,8 +1850,7 @@ msgstr "Удален %(name)s \"%(object)s\"."
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
-#: scores/templates/claim_image.html:24 scores/templates/score_list.html:135
-#: scores/templates/score_list.html:188
+#: scores/templates/claim_image.html:24
 msgid "claim"
 msgstr "претензия"
 
@@ -2213,6 +2212,14 @@ msgstr "Строк успешно/обработано"
 #: templates/exmo2010/csv_import_log.html:24
 msgid "Errors encountered"
 msgstr "Ошибки"
+
+#: templates/exmo2010/email_footer.html:26
+msgid "This is an automatically generated email, please do not reply."
+msgstr "Это автоматическое письмо, отвечать на него не нужно."
+
+#: templates/exmo2010/email_footer.html:27
+msgid "If you have any issue with EXMO, please contact the technical support:"
+msgstr "По вопросам работы в системе ЭКСМО обращайтесь в техподдержку:"
 
 #: templates/exmo2010/footer.html:26
 msgid "Methodology"
