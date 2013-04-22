@@ -724,7 +724,7 @@ def monitoring_organization_export(request, monitoring_id):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring=monitoring)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=monitoring-orgaization-%s.csv' % id
+    response['Content-Disposition'] = 'attachment; filename=monitoring-organization-%s.csv' % monitoring_id
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
@@ -778,7 +778,7 @@ def monitoring_organization_import(request, monitoring_id):
             if rowALLCount == 0 and row[0].startswith('#'):
                 for key in ['name', 'url', 'email', 'phone', 'comments', 'keywords']:
                     for item in row:
-                        if key in item.lower():
+                        if item and key in item.lower():
                             indexes[key] = row.index(item)
                 continue
 
@@ -788,7 +788,7 @@ def monitoring_organization_import(request, monitoring_id):
 
             rowALLCount += 1
 
-            if row[0].startswith('#'):
+            if row[0] and row[0].startswith('#'):
                 errLog.append("row %d. Starts with '#'. Skipped" % rowALLCount)
                 continue
             if row[indexes['name']] == '':
@@ -805,6 +805,16 @@ def monitoring_organization_import(request, monitoring_id):
             try:
                 for key in indexes.keys():
                     cell = row[indexes[key]]
+                    if key in ['email', 'phone'] and cell:
+                        cell = cell.replace(';', ',')
+                        cell = cell.replace(', ', ',')
+                        cell = cell.replace(',\n', ',')
+                        cell = cell.replace(',\t', ',')
+                        cell = cell.replace('\t', ',')
+                        tmp = []
+                        for item in cell.split(','):
+                            tmp.append(item.strip())
+                        cell = ', '.join(tmp)
                     setattr(organization, key, cell.strip() if cell else '')
                 organization.inv_code = generate_inv_code(6)
                 organization.full_clean()
