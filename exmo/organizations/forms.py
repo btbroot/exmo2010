@@ -20,9 +20,23 @@
 from django import forms
 
 from exmo2010.models import Organization
+from monitorings.views import replace_string
 
 
 class OrganizationForm(forms.ModelForm):
+
+    def save(self, *args, **kwargs):
+        """
+        Validate email and phone fields before saving the form.
+
+        """
+        for name in ['email', 'phone']:
+            cell = getattr(self.instance, name)
+            cell = replace_string(cell)
+            setattr(self.instance, name, cell)
+
+        return super(OrganizationForm, self).save(*args, **kwargs)
+
     class Meta:
         model = Organization
         exclude = ('keywords', 'comments', 'inv_code')

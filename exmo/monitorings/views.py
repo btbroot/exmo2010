@@ -775,7 +775,7 @@ def monitoring_organization_import(request, monitoring_id):
 
     try:
         for row in reader:
-            if rowALLCount == 0 and row[0].startswith('#'):
+            if rowALLCount == 0 and row[0] and row[0].startswith('#'):
                 for key in ['name', 'url', 'email', 'phone', 'comments', 'keywords']:
                     for item in row:
                         if item and key in item.lower():
@@ -806,15 +806,7 @@ def monitoring_organization_import(request, monitoring_id):
                 for key in indexes.keys():
                     cell = row[indexes[key]]
                     if key in ['email', 'phone'] and cell:
-                        cell = cell.replace(';', ',')
-                        cell = cell.replace(', ', ',')
-                        cell = cell.replace(',\n', ',')
-                        cell = cell.replace(',\t', ',')
-                        cell = cell.replace('\t', ',')
-                        tmp = []
-                        for item in cell.split(','):
-                            tmp.append(item.strip())
-                        cell = ', '.join(tmp)
+                        cell = replace_string(cell)
                     setattr(organization, key, cell.strip() if cell else '')
                 organization.inv_code = generate_inv_code(6)
                 organization.full_clean()
@@ -1120,6 +1112,19 @@ def ratings(request):
     breadcrumbs(request, crumbs)
 
     return render_to_response('rating_report.html', context, context_instance=RequestContext(request))
+
+
+def replace_string(cell):
+    cell = cell.replace(';', ',')
+    cell = cell.replace(', ', ',')
+    cell = cell.replace(',\n', ',')
+    cell = cell.replace(',\t', ',')
+    cell = cell.replace('\t', ',')
+    tmp = []
+    for item in cell.split(','):
+        tmp.append(item.strip())
+    cell = ', '.join(tmp)
+    return cell
 
 
 def _total_orgs_translate(avg, rating_list, rating_type):
