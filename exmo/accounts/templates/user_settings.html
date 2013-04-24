@@ -39,11 +39,9 @@
     <h2>{% trans 'Personal info' %}</h2>
 
     {% if pers_inf_form_mess %}
-        <ul class="form-success">
-            <li>
-                {% trans 'Personal info changed successfully' %}
-            </li>
-        </ul>
+        <p class="alert-success">
+            {% trans 'Personal info changed successfully' %}
+        </p>
     {% endif %}
 
     {% include "exmo2010/helpers/form_errors.html" with form=pers_inf_form %}
@@ -86,11 +84,9 @@
     <h2>{% trans 'Invitation code' %}</h2>
 
     {% if inv_code_form_mess %}
-        <ul class="form-success">
-            <li>
-                {{ inv_code_form_mess }}
-            </li>
-        </ul>
+        <p class="alert-success">
+            {{ inv_code_form_mess }}
+        </p>
     {% endif %}
 
     {% include "exmo2010/helpers/form_errors.html" with extra_error=inv_code_form_err %}
@@ -127,11 +123,9 @@
     {% include "exmo2010/helpers/form_errors.html" with form=ch_pass_form %}
 
     {% if ch_pass_form_mess %}
-        <ul class="form-success">
-            <li>
-                {{ ch_pass_form_mess }}
-            </li>
-        </ul>
+        <p class="alert-success">
+            {{ ch_pass_form_mess }}
+        </p>
     {% endif %}
 
     <form action="" method="post">
@@ -163,11 +157,9 @@
     <h2>{% trans 'E-mail notifications' %}</h2>
 
     {% if send_notif_form_mess %}
-        <ul class="form-success">
-            <li>
-                {{ send_notif_form_mess }}
-            </li>
-        </ul>
+        <p class="alert-success">
+            {{ send_notif_form_mess }}
+        </p>
     {% endif %}
 
     {% include "exmo2010/helpers/form_errors.html" with form=send_notif_form %}

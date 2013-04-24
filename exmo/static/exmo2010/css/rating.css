@@ -119,7 +119,7 @@ div.scroll {
     background-image: url(../img/arrow_down_parameters.png);
 }
 
-#top_menu h2,span {
-    line-height: normal;
-    display: inline-block;
+#mselect_form
+{
+    margin-bottom: 20px;
 }

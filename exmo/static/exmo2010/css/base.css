@@ -373,6 +373,11 @@ table.base-table tr:nth-child(even) {
     background: #F5F5F5;
 }
 
+.table-implicit {
+    border-bottom-color: #fff;
+}
+
+
 /* SORTABLE TABLES */
 
 thead th a:link, thead th a:visited {
@@ -841,9 +846,12 @@ ul#errors-header li.brand a
 
 /* Alerts */
 
+.alert-info, .alert-success {
+    padding: 10px;
+}
+
 .alert-info {
     background-color: #005C9C;
-    padding: 10px;
     color: #fff;
 }
 
@@ -854,6 +862,13 @@ ul#errors-header li.brand a
 
 .table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
     border: none;
+}
+
+.alert-success
+{
+    background-color: #d6f5d6;
+    border: #80e580 1px solid;
+    color: #000000;
 }
 
 /* ERRORS CONTENT */
@@ -888,4 +903,101 @@ ul#errors-header li.brand a
 
 #search_button {
     width: 80px;
+}
+
+
+/* Tabs header */
+
+#top-menu h2, #top-menu ul
+{
+    float: left;
+}
+
+#top-menu h2
+{
+    margin-right: 12px;
+    margin-top: -3px;
+}
+
+/* Tabs */
+
+.tab-content
+{
+    width: 100%;
+    float: left;
+    padding-top: 2px;
+}
+
+.tab-pane
+{
+    display: none;
+}
+
+.tab-pane.active
+{
+    display: block;
+}
+
+ul.nav-tabs
+{
+    display: block;
+    float: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+ul.nav-tabs li
+{
+    list-style-type: none;
+    float: left;
+    padding-right: 10px;
+}
+
+ul.nav-tabs li span
+{
+    padding: 5px;
+}
+
+ul.nav-tabs li.active span
+{
+    padding: 5px;
+    background-color: #FFFFD6;
+}
+
+ul.nav-tabs li.active a
+{
+    color: #222;
+    border: 0;
+}
+
+/* UTILS */
+
+/**
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.clearfix {
+    *zoom: 1;
 }

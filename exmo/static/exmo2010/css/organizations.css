@@ -18,57 +18,54 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-#id_email
-{
-    margin-top: 1px;
-    margin-bottom: 5px;
-}
 
-.table-setings td
-{
-    vertical-align: middle;
-    border-bottom-color: #fff;
-    padding: 4px 6px;
-    font-size: 13px;
-    font-family: Arial;
-    line-height: 18px;
-}
-
-.table-setings td:first-child
-{
-    text-align: right;
-    width: 215px;
-}
-
-.table-setings td input[type="text"], .table-setings td input[type="password"]
-{
-    width: 300px;
-    font-size: 13px;
-}
-
-.table-setings td > select
-{
-    width: 308px;
-    font-size: 13px;
-}
-
-.table-setings td span > select
-{
-    font-size: 13px;
-}
-
-.fc_field_header
+.table-invitations td.comment
 {
     padding-left: 10px;
 }
 
-h2
+.clearfix
 {
-    font-weight: bold;
-    color: #333;
+    float: left;
 }
 
-hr
+.clearfix div
 {
-    margin-top: 12px;
+    float: left;
+    padding: 0 0 3px 0;
+}
+
+.clearfix div.title
+{
+    width: 90px;
+    padding: 3px 10px 0 0;
+    text-align: right;
+}
+
+.clearfix div.content
+{
+    width: 600px;
+}
+
+.clearfix div.content select
+{
+    width: 200px;
+}
+
+.clearfix div.content input[type="submit"]
+{
+    width: 100px;
+}
+
+.clearfix div.notification
+{
+    float: none;
+    margin-left: 700px;
+    padding-left: 10px;
+}
+
+.clearfix div.content textarea
+{
+    width: 100%;
+    height: 300px;
 }

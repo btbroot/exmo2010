@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-22 17:18+0400\n"
+"POT-Creation-Date: 2013-04-24 14:55+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -196,46 +196,46 @@ msgstr ""
 msgid "Personal info"
 msgstr "Личная информация"
 
-#: accounts/templates/user_settings.html:44
+#: accounts/templates/user_settings.html:43
 msgid "Personal info changed successfully"
 msgstr "Изменения личной информации сохранены"
 
-#: accounts/templates/user_settings.html:57
+#: accounts/templates/user_settings.html:55
 #: exmo2010/custom_registration/forms.py:65
 #: exmo2010/custom_registration/forms.py:215
 #: templates/registration/password_reset_form.html:43
 msgid "E-mail"
 msgstr "Электронная почта"
 
-#: accounts/templates/user_settings.html:76
-#: accounts/templates/user_settings.html:221
+#: accounts/templates/user_settings.html:74
+#: accounts/templates/user_settings.html:213
 #: monitorings/templates/monitoring_comment_report.html:63
 #: monitorings/templates/set_npa_params.html:54 scores/templates/form.html:242
 #: scores/templates/score_list.html:265
 msgid "Save"
 msgstr "Сохранить"
 
-#: accounts/templates/user_settings.html:86 exmo2010/models.py:367
+#: accounts/templates/user_settings.html:84 exmo2010/models.py:367
 #: exmo2010/custom_registration/forms.py:130
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr "Код приглашения"
 
-#: accounts/templates/user_settings.html:115
+#: accounts/templates/user_settings.html:111
 #: templates/exmo2010/helpers/inv_code_bubble.html:38
 #: templates/registration/resend_email_form.html:62
 msgid "Send"
 msgstr "Отправить"
 
-#: accounts/templates/user_settings.html:125
+#: accounts/templates/user_settings.html:121
 msgid "Change password"
 msgstr "Сменить пароль"
 
-#: accounts/templates/user_settings.html:154
+#: accounts/templates/user_settings.html:148
 msgid "Apply password change"
 msgstr "Изменить пароль"
 
-#: accounts/templates/user_settings.html:163
+#: accounts/templates/user_settings.html:157
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
@@ -255,9 +255,9 @@ msgstr "Параметр"
 #: bread_crumbs/views.py:65 claims/templates/claim_list.html:62
 #: clarifications/templates/clarification_list.html:62
 #: custom_comments/templates/comment_list.html:63
-#: monitorings/templates/rating_color.html:39 scores/views.py:277
+#: monitorings/templates/rating_color.html:39
+#: organizations/templates/organizations/all.html:28 scores/views.py:277
 #: tasks/views.py:304 tasks/views.py:494
-#: templates/exmo2010/organization_list.html:107
 #: templates/exmo2010/rating_common.html:24
 #: templates/exmo2010/rating_content.html:130
 #: templates/exmo2010/score/parameter_header.html:26
@@ -1532,7 +1532,7 @@ msgid "Task"
 msgstr "Задача"
 
 #: monitorings/templates/monitoring_parameter_found_report.html:64
-#: templates/exmo2010/organization_list.html:49
+#: templates/exmo2010/organization_list.html:59
 msgid "Organizations"
 msgstr "Организации"
 
@@ -1697,6 +1697,26 @@ msgstr "Редактировать организацию"
 #, python-format
 msgid "Edit organization %s"
 msgstr "Редактировать организацию %s"
+
+#: organizations/templates/organizations/all.html:34
+msgid "All invites"
+msgstr "все статусы приглашения"
+
+#: organizations/templates/organizations/all.html:43
+msgid "Find"
+msgstr "Найти"
+
+#: organizations/templates/organizations/invite.html:34
+msgid "Letter content"
+msgstr "Текст письма"
+
+#: organizations/templates/organizations/invite.html:48
+msgid "Invitation"
+msgstr "Приглашение"
+
+#: organizations/templates/organizations/invite.html:71
+msgid "Invite"
+msgstr "Пригласить"
 
 #: parameters/forms.py:51 scores/views.py:245 scores/templates/detail.html:59
 #: scores/templates/task_report.html:44
@@ -2309,33 +2329,13 @@ msgstr "При удалении органа/организации Вы так 
 msgid "Delete this organization?"
 msgstr "Удалить орган/организацию?"
 
-#: templates/exmo2010/organization_list.html:54
-#: templates/exmo2010/organization_list.html:58
+#: templates/exmo2010/organization_list.html:65
 msgid "all"
 msgstr "все"
 
-#: templates/exmo2010/organization_list.html:64
-#: templates/exmo2010/organization_list.html:68
+#: templates/exmo2010/organization_list.html:73
 msgid "invite"
 msgstr "пригласить"
-
-#: templates/exmo2010/organization_list.html:74
-#: templates/exmo2010/organization_list.html:78
-msgid "history"
-msgstr "история приглашений"
-
-#: templates/exmo2010/organization_list.html:85
-#: templates/exmo2010/organization_list.html:89
-msgid "add"
-msgstr "добавить"
-
-#: templates/exmo2010/organization_list.html:113
-msgid "All invites"
-msgstr "все статусы приглашения"
-
-#: templates/exmo2010/organization_list.html:122
-msgid "Find"
-msgstr "Найти"
 
 #: templates/exmo2010/paginator.html:28
 msgid "Prev"
@@ -2876,6 +2876,12 @@ msgstr "Модули"
 #: templates/user_dashboard/menu.html:57
 msgid "Please enter a name for the bookmark"
 msgstr ""
+
+msgid "history"
+msgstr "история приглашений"
+
+msgid "add"
+msgstr "добавить"
 
 msgid "Coherent parameters"
 msgstr "Согласованные параметры"
