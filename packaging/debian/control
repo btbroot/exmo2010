@@ -1,0 +1,11 @@
+Source: exmo2010
+Maintainer: Alexander Mishurov <amishurov@svobodainfo.org>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Homepage: http://www.svobodainfo.org/exmo
+
+Package: exmo2010
+Architecture: all
+Depends: python-django, python-imaging, python-dateutil, python-simplejson, python-lxml, python-pytils, python-xlrd, python-xlwt, python-feedparser, python-django-reversion, python-django-south, python-django-extensions, python-django-registration, python-django-debug-toolbar, python-django-tagging, debconf, python-django-admin-tools, python-django-annoying, python-django-breadcrumbs, python-django-ckeditor, python-django-debug-toolbar-user-panel, python-django-tagging-autocomplete, python-django-wysiwyg, python-django-keyedcache, python-django-livesettings
+Description: State websites quality observation application
+ EXMO2010 is a web/database application for expert monitoring of Russian state official websites.
