@@ -39,7 +39,7 @@ class OrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        exclude = ('keywords', 'comments', 'inv_code')
+        exclude = ('keywords', 'comments', 'inv_code', 'inv_status')
         widgets = {
             'monitoring': forms.HiddenInput,
         }

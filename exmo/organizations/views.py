@@ -91,6 +91,24 @@ def organization_list(request, monitoring_id):
     else:
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
+    form = OrganizationForm()
+    if request.method == "POST":
+        form = OrganizationForm(request.POST)
+        if form.is_valid():
+            form.save()
+        else:
+            redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
+            redirect = redirect.replace("%", "%%")
+            return create_object(request, form_class=OrganizationForm,
+                             post_save_redirect=redirect,
+                             extra_context={
+                                 'current_title': current_title,
+                                 'title': title,
+                                 'org_type': 'add',
+                                 'monitoring': monitoring,
+                                 'form': form,
+                             })
+
     return table(
         request,
         headers,
@@ -104,6 +122,7 @@ def organization_list(request, monitoring_id):
             'inv_status': INV_STATUS,
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
+            'form': form,
         },
     )
 
@@ -127,7 +146,7 @@ def organization_manager(request, monitoring_id, org_id, method):
                              extra_context={
                                  'current_title': current_title,
                                  'title': title,
-                                 'org_type': 'all',
+                                 'org_type': 'add',
                                  'monitoring': monitoring
                              })
     elif method == 'delete':

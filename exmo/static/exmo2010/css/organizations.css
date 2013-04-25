@@ -19,11 +19,6 @@
 #
 */
 
-.table-invitations td.comment
-{
-    padding-left: 10px;
-}
-
 .clearfix
 {
     float: left;
@@ -68,4 +63,37 @@
 {
     width: 100%;
     height: 300px;
+}
+
+.table-implicit td:first-child
+{
+    text-align: right;
+}
+
+.table-implicit td textarea
+{
+    width: 250px;
+    height: 85px;
+}
+
+.table-implicit td input[type="text"]
+{
+    width: 250px;
+}
+
+.table-implicit td input[type="text"]#id_name
+{
+    width: 600px;
+}
+
+.heading td a
+{
+    color: #222;
+    border-bottom: 1px #222 dotted;
+}
+
+.heading td a:hover
+{
+    text-decoration: none;
+    border-bottom: none;
 }

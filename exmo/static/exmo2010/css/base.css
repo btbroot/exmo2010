@@ -378,6 +378,11 @@ table.base-table tr:nth-child(even) {
 }
 
 
+.table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
+    border: none;
+}
+
+
 /* SORTABLE TABLES */
 
 thead th a:link, thead th a:visited {
@@ -860,10 +865,6 @@ ul#errors-header li.brand a
     text-decoration: underline;
 }
 
-.table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
-    border: none;
-}
-
 .alert-success
 {
     background-color: #d6f5d6;
@@ -970,6 +971,13 @@ ul.nav-tabs li.active a
 {
     color: #222;
     border: 0;
+}
+
+/* Misc */
+
+.required
+{
+    color: red;
 }
 
 /* UTILS */

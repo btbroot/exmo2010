@@ -80,6 +80,8 @@
                 </span>
             </li>
 
+            {% endcomment %}
+
             {% if perm %}
                 <li{% if org_type == "add" %} class="active"{% endif %}>
                     <span>
@@ -89,8 +91,6 @@
                     </span>
                 </li>
             {% endif %}
-
-            {% endcomment %}
         </ul>
     </div>
 
@@ -109,7 +109,7 @@
 
         {% if perm %}
             <div class="tab-pane{% if org_type == "add" %} active{% endif %}" id="add">
-
+                {% include "organizations/form.html" %}
             </div>
         {% endif %}
     </div>

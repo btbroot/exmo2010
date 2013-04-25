@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 14:55+0400\n"
+"POT-Creation-Date: 2013-04-25 19:01+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -169,7 +169,7 @@ msgstr "Настройки главной страницы были сброше
 #: monitorings/views.py:724 monitorings/views.py:767 monitorings/views.py:867
 #: monitorings/views.py:948 monitorings/views.py:1104
 #: organizations/views.py:42 organizations/views.py:71
-#: organizations/views.py:115 parameters/views.py:45 parameters/views.py:66
+#: organizations/views.py:134 parameters/views.py:45 parameters/views.py:66
 #: parameters/views.py:72 parameters/views.py:97 questionnaire/views.py:55
 #: questionnaire/views.py:57 questionnaire/views.py:87
 #: questionnaire/views.py:111 scores/views.py:66 scores/views.py:114
@@ -837,7 +837,7 @@ msgstr "электронная почта"
 
 #: exmo2010/models.py:364 organizations/views.py:59 organizations/views.py:76
 msgid "phone"
-msgstr "контактный телефон"
+msgstr "телефон"
 
 #: exmo2010/models.py:365
 msgid "comments"
@@ -1675,25 +1675,25 @@ msgstr "задачи"
 msgid "invitation"
 msgstr "Приглашение"
 
-#: organizations/views.py:119
+#: organizations/views.py:138
 #, python-format
 msgid "Add new organization for %s"
 msgstr "Добавить новую организацию для %s"
 
-#: organizations/views.py:123
+#: organizations/views.py:142
 msgid "Add organization"
 msgstr "Добавить орган/организацию"
 
-#: organizations/views.py:135
+#: organizations/views.py:154
 #, python-format
 msgid "Delete organization %s"
 msgstr "Удалить орган/организацию %s"
 
-#: organizations/views.py:139 organizations/views.py:159
+#: organizations/views.py:158 organizations/views.py:178
 msgid "Edit organization"
 msgstr "Редактировать организацию"
 
-#: organizations/views.py:155
+#: organizations/views.py:174
 #, python-format
 msgid "Edit organization %s"
 msgstr "Редактировать организацию %s"
@@ -1706,15 +1706,23 @@ msgstr "все статусы приглашения"
 msgid "Find"
 msgstr "Найти"
 
+#: organizations/templates/organizations/form.html:45
+msgid "Website"
+msgstr "Cайт"
+
+#: organizations/templates/organizations/form.html:59
+msgid "Add"
+msgstr "Добавить"
+
 #: organizations/templates/organizations/invite.html:34
 msgid "Letter content"
 msgstr "Текст письма"
 
-#: organizations/templates/organizations/invite.html:48
+#: organizations/templates/organizations/invite.html:49
 msgid "Invitation"
 msgstr "Приглашение"
 
-#: organizations/templates/organizations/invite.html:71
+#: organizations/templates/organizations/invite.html:70
 msgid "Invite"
 msgstr "Пригласить"
 
@@ -2329,13 +2337,17 @@ msgstr "При удалении органа/организации Вы так 
 msgid "Delete this organization?"
 msgstr "Удалить орган/организацию?"
 
-#: templates/exmo2010/organization_list.html:65
+#: templates/exmo2010/organization_list.html:63
 msgid "all"
 msgstr "все"
 
-#: templates/exmo2010/organization_list.html:73
+#: templates/exmo2010/organization_list.html:69
 msgid "invite"
 msgstr "пригласить"
+
+#: templates/exmo2010/organization_list.html:90
+msgid "add"
+msgstr "добавить"
 
 #: templates/exmo2010/paginator.html:28
 msgid "Prev"
@@ -2879,9 +2891,6 @@ msgstr ""
 
 msgid "history"
 msgstr "история приглашений"
-
-msgid "add"
-msgstr "добавить"
 
 msgid "Coherent parameters"
 msgstr "Согласованные параметры"
