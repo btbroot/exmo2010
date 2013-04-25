@@ -1,5 +1,7 @@
 Source: exmo2010
 Maintainer: Alexander Mishurov <amishurov@svobodainfo.org>
+Section: misc
+Priority: extra
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.3
 Homepage: http://www.svobodainfo.org/exmo
