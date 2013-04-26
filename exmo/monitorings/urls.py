@@ -57,6 +57,7 @@ urlpatterns += \
     patterns('organizations.views',
              url(r'^(\d+)/organization/(\d+)_(\w+)/$', 'organization_manager', name='organization_manager'),
              url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
+             url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
              )
 
 urlpatterns += \

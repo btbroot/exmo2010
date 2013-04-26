@@ -851,7 +851,7 @@ ul#errors-header li.brand a
 
 /* Alerts */
 
-.alert-info, .alert-success {
+.alert-info, .alert-success, .alert-fail {
     padding: 10px;
 }
 
@@ -869,6 +869,13 @@ ul#errors-header li.brand a
 {
     background-color: #d6f5d6;
     border: #80e580 1px solid;
+    color: #000000;
+}
+
+.alert-fail
+{
+    background-color: #f5d2cc;
+    border: #e58a83 1px solid;
     color: #000000;
 }
 

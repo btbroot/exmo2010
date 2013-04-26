@@ -24,23 +24,18 @@
 {% wysiwyg_setup %}
 <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
 
-<p class="alert-success">
-    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-</p>
-
-<form>
+<form action="" method="post">
+{% csrf_token %}
 
 <div class="clearfix">
     <div class="title">{% trans 'Letter content' %}</div>
     <div class="content">
-         {# желательно это поле назвать comment, чтобы настройки тулбара для wysiwyg не прописывать еще раз #}
-            <textarea id="id_comment">
-            </textarea>
-            {% wysiwyg_editor "id_comment" %}
+        {{ inv_form.comment }}
+        {% wysiwyg_editor "id_comment" %}
     </div>
     <div class="notification">
         <p class="alert-info">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            %code% - {% trans 'use this keyword for invitation addition in email.' %}
         </p>
     </div>
 </div>
@@ -49,25 +44,17 @@
         {% trans 'Invitation' %}
     </div>
     <div class="content">
-        <select>
-                <option>
-                    Lorem ipsum
-                </option>
-                <option>
-                    Dolor sit amet
-                </option>
-                <option>
-                    Consectetur
-                </option>
-            </select>
+        {{ inv_form.inv_status }}
     </div>
 </div>
+
+{{ inv_form.monitoring }}
 
 <div class="clearfix">
     <div class="title">
     </div>
     <div class="content">
-        <input type="submit" value="{% trans 'Invite' %}"/>
+        <input type="submit" name="submit_invite" value="{% trans 'Invite' %}"/>
     </div>
 </div>
 

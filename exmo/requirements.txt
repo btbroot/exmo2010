@@ -27,6 +27,7 @@ git+https://github.com/playfire/django-debug-toolbar-user-panel.git
 git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
+django-celery==3.0.17
 django-extensions==1.0.3
 django-keyedcache==1.4-6
 django-livesettings==1.4-12

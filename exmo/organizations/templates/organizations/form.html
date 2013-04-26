@@ -53,10 +53,11 @@
         {% endfor %}
         <tr>
             <td>
-                <input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" />
+                {{ form.monitoring }}
+{#                <input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" />#}
             </td>
             <td>
-                <input type="submit" value="{% trans "Add" %}"/>
+                <input type="submit" name="submit_add" value="{% trans "Add" %}"/>
             </td>
         </tr>
     </table>

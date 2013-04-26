@@ -74,13 +74,15 @@ MONITORING_STAT_DICT = {
 
 INV_CODE_CHARS = string.ascii_uppercase + string.digits
 
-INV_STATUS = (
+INV_STATUS = [
     ('NTS', _('Not sent')),
     ('SNT', _('Sent')),
     ('RD', _('Read')),
     ('RGS', _('Registered')),
     ('ACT', _('Activated')),
-)
+]
+
+INV_STATUS_ALL = [('ALL', _('All invitations'))] + INV_STATUS
 
 MONITORING_PREPARE = 0
 MONITORING_RATE = 1
@@ -366,7 +368,6 @@ class Organization(models.Model):
     monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
     inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True)
     inv_status = models.CharField(max_length=3,
-                                  null=True, blank=True,
                                   choices=INV_STATUS, default='NTS',
                                   verbose_name=_('Invitation status'))
 
@@ -393,6 +394,19 @@ class Organization(models.Model):
         unique_together = (
             ('name', 'monitoring'),
         )
+
+
+class InviteOrgs(models.Model):
+    """
+    Invites organizations history.
+
+    """
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('date and time'))
+    monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
+    comment = models.TextField(verbose_name=_('comment'))
+    inv_status = models.CharField(max_length=3,
+                                  choices=INV_STATUS_ALL, default='ALL',
+                                  verbose_name=_('Invitation status'))
 
 
 class Parameter(models.Model):

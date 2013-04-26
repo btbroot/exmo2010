@@ -20,6 +20,8 @@
 # Django settings for exmo project.
 
 import os
+import djcelery
+djcelery.setup_loader()
 
 
 PROJECT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
@@ -144,6 +146,7 @@ INSTALLED_APPS = (
     'pytils',
     'reversion',
     'south',
+    'djcelery',
     'django403',
     'django_extensions',
     'tagging',
@@ -257,6 +260,10 @@ DATE_INPUT_FORMATS = (
     '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
 )
 
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_ALWAYS_EAGER = False
 
 try:
     from local_settings import *

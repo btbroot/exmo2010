@@ -21,18 +21,20 @@ from django.shortcuts import get_object_or_404
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Monitoring, Organization, Task, INV_STATUS
 from core.helpers import table
-from organizations.forms import OrganizationForm
+from core.utils import send_email
+from organizations.forms import OrganizationForm, InviteOrgsForm
 
 
 def organization_list(request, monitoring_id):
     name_filter = invite_filter = None
+    alert = request.GET.get('alert', False)
     if request.method == "GET":
         name_filter = request.GET.get('name_filter', False)
         invite_filter = request.GET.get('invite_filter', False)
@@ -42,7 +44,33 @@ def organization_list(request, monitoring_id):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring
 
-    sent = Organization.objects.filter(monitoring=monitoring, inv_status='SNT')
+    orgs = Organization.objects.filter(monitoring=monitoring)
+    sent = orgs.filter(inv_status='SNT')
+
+    initial = {'monitoring': monitoring}
+
+    if request.method == "POST" and "submit_invite" in request.POST:
+        inv_form = InviteOrgsForm(request.POST)
+        comment = inv_form.data['comment']
+        inv_status = inv_form.data['inv_status']
+        if inv_form.is_valid():
+            inv_form.save()
+
+            if inv_status != 'ALL':
+                orgs = orgs.filter(inv_status=inv_status)
+
+            for item in orgs:
+                message = comment.replace('%code%', item.inv_code)
+                emails = filter(None, item.email.split(', '))
+                send_email.delay(emails, _('Email Subject'), message)
+
+            redirect = reverse('exmo2010:organization_list', args=[monitoring_id])+"?alert=success"
+            return HttpResponseRedirect(redirect)
+        else:
+            initial.update({'comment': comment, 'inv_status': inv_status})
+            alert = 'fail'
+
+    inv_form = InviteOrgsForm(initial=initial)
 
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring=monitoring).extra(
@@ -91,8 +119,9 @@ def organization_list(request, monitoring_id):
     else:
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
-    form = OrganizationForm()
-    if request.method == "POST":
+    initial = {'monitoring': monitoring}
+    form = OrganizationForm(initial=initial)
+    if request.method == "POST" and "submit_add" in request.POST:
         form = OrganizationForm(request.POST)
         if form.is_valid():
             form.save()
@@ -118,6 +147,8 @@ def organization_list(request, monitoring_id):
             'current_title': current_title,
             'title': title,
             'sent': sent,
+            'inv_form': inv_form,
+            'alert': alert,
             'org_type': 'all',
             'inv_status': INV_STATUS,
             'monitoring': monitoring,

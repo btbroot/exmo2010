@@ -21,6 +21,8 @@ WSGI config for exmo project.
 
 """
 import os
+import djcelery
+djcelery.setup_loader()
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exmo.exmo.settings")
 

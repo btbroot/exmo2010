@@ -19,11 +19,15 @@
 #
 from django import forms
 
-from exmo2010.models import Organization
+from exmo2010.models import Organization, InviteOrgs
 from monitorings.views import replace_string
 
 
 class OrganizationForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizationForm, self).__init__(*args, **kwargs)
+        self.prefix = 'org'
 
     def save(self, *args, **kwargs):
         """
@@ -40,6 +44,23 @@ class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
         exclude = ('keywords', 'comments', 'inv_code', 'inv_status')
+        widgets = {
+            'monitoring': forms.HiddenInput,
+        }
+
+
+class InviteOrgsForm(forms.ModelForm):
+
+    def is_valid(self):
+
+        if '%code%' not in self.data['comment']:
+            return False
+
+        return super(InviteOrgsForm, self).save()
+
+    class Meta:
+        model = InviteOrgs
+        exclude = ('timestamp',)
         widgets = {
             'monitoring': forms.HiddenInput,
         }
