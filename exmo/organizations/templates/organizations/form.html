@@ -57,7 +57,7 @@
 {#                <input type="hidden" name="monitoring" id="id_monitoring" value="{{monitoring.pk}}" />#}
             </td>
             <td>
-                <input type="submit" name="submit_add" value="{% trans "Add" %}"/>
+                <input type="submit" name="submit_add" value="{% if org_type == "add" or org_type == "all" %}{% trans "Add" %}{% else %}{% trans "Save" %}{% endif %}"/>
             </td>
         </tr>
     </table>

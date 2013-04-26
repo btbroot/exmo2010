@@ -97,3 +97,58 @@
     text-decoration: none;
     border-bottom: none;
 }
+
+.heading td
+{
+    font-weight: bold;
+}
+
+.base-table.history
+{
+    width: 100%;
+}
+
+.base-table.history td:first-child
+{
+    width: 120px;
+}
+
+.base-table.history td.invitation
+{
+    width: 190px;
+}
+
+.base-table.history td.comment
+{
+    cursor: pointer;
+}
+
+.base-table.history td input[name="date_filter_history"]
+{
+    width: 140px;
+}
+
+.base-table.history td select[name="invite_filter_history"]
+{
+    width: 190px;
+}
+
+.base-table.history form > * {
+    display: block;
+    float: left;
+}
+
+.base-table.history form > img {
+    position: relative;
+    top: 7px;
+}
+
+.base-table.history form > select, .base-table.history form > input[type="submit"] {
+    position: relative;
+    top: 1px;
+}
+
+.base-table.history form > select {
+    margin-left: 4px;
+    margin-right: 4px;
+}

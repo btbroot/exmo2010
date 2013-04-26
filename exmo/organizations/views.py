@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
@@ -26,7 +27,7 @@ from django.core.urlresolvers import reverse
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
-from exmo2010.models import Monitoring, Organization, Task, INV_STATUS
+from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from core.helpers import table
 from core.utils import send_email
 from organizations.forms import OrganizationForm, InviteOrgsForm
@@ -138,6 +139,21 @@ def organization_list(request, monitoring_id):
                                  'form': form,
                              })
 
+    inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
+
+    if request.method == "GET":
+        date_filter_history = request.GET.get('date_filter_history', False)
+        invite_filter_history = request.GET.get('invite_filter_history', False)
+
+        if date_filter_history:
+            start_datetime = datetime.strptime("%s 00:00:00" % date_filter_history, '%d.%m.%Y %H:%M:%S')
+            finish_datetime = datetime.strptime("%s 23:59:59" % date_filter_history, '%d.%m.%Y %H:%M:%S')
+            inv_history = inv_history.filter(timestamp__gt=start_datetime,
+                                             timestamp__lt=finish_datetime)
+        if invite_filter_history and invite_filter_history != 'ALL':
+            inv_history = inv_history.filter(inv_status=invite_filter_history)
+
+
     return table(
         request,
         headers,
@@ -154,6 +170,7 @@ def organization_list(request, monitoring_id):
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
             'form': form,
+            'inv_history': inv_history,
         },
     )
 

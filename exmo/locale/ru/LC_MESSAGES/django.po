@@ -632,7 +632,7 @@ msgstr "%(prefix)sДайджест для %(digest)s"
 #: digest_email/models.py:36 exmo2010/models.py:114 exmo2010/models.py:134
 #: exmo2010/models.py:362 exmo2010/models.py:415
 msgid "name"
-msgstr "наименование"
+msgstr "название"
 
 #: digest_email/models.py:62
 msgid "send date"

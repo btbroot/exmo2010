@@ -1,0 +1,38 @@
+// This file is part of EXMO2010 software.
+// Copyright 2010, 2011 Al Nikolov
+// Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+$(document).ready(function () {
+    $("td.comment").click(function( e ) {
+        $(this).children('span.pseudo').toggle();
+        $(this).children('span.full').toggle();
+    });
+
+    $(function() {
+        $( ".jdatefield" ).datepicker({
+            showOn: "button",
+            buttonImage: "/static/exmo2010/img/calendar.png",
+            buttonImageOnly: true,
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+
+    return $('a[data-toggle="tab"]').on('shown', function(e) {
+      return location.hash = $(e.target).attr('href').substr(1);
+    });
+});

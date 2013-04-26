@@ -1,0 +1,69 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n %}
+
+<table class="base-table history">
+    <tbody>
+            <tr>
+                <td colspan="3">
+                    <form action="" method="GET">
+                        <input name="date_filter_history" class="jdatefield" maxlength="300" type="text" />
+
+                        <select name="invite_filter_history">
+                            <option value="ALL">{% trans 'All invitations' %}</option>
+                            {% for status in inv_status %}
+                                <option value="{{ status.0 }}">{{ status.1 }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <input type="submit" value="{% trans 'Find' %}" />
+                    </form>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td>
+                    {% trans "Date and time" %} <span class="arrow">↓</span>
+                </td>
+                <td>
+                    {% trans "Letter content" %}
+                </td>
+                <td class="invitation">
+                    {% trans "Invitation" %}
+                </td>
+            </tr>
+        {% for h in inv_history %}
+            <tr>
+                <td>
+                    {{ h.timestamp|date:"d.m.Y" }} {% trans "at" %} {{ h.timestamp|date:"H:i" }}
+                </td>
+                <td class="comment">
+                    <span class="pseudo">{{ h.comment|striptags|slice:":110" }}...</span>
+                    <span class="full" style="display: none">{{ h.comment|striptags }}</span>
+                </td>
+                <td>
+                    {{ h.get_inv_status_display|default_if_none:'' }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
