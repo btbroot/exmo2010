@@ -22,36 +22,30 @@
 {% load i18n %}
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
-
-    <head>
-
-        <title>
-            {% block title %}{% endblock title %}
-        </title>
-
-        <link rel="stylesheet" type="text/css" href="/static/exmo2010/css/base.css" />
-        <link rel="stylesheet" type="text/css" href="/static/exmo2010/patch.css" />
-        <!--[if lte IE 7]>
-            <link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" />
-        <![endif]-->
-
-    </head>
-
-    <body>
-
+<head>
+    <title>
+        {% block title %}{% endblock title %}
+    </title>
+    <link rel="stylesheet" type="text/css" href="/static/exmo2010/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="/static/exmo2010/patch.css" />
+    <!--[if lte IE 7]>
+        <link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" />
+    <![endif]-->
+</head>
+<body>
+    <div id="container">
         {% include 'errors_header.html' %}
+        {% block header_content %}{% endblock header_content %}
 
-        <div id="content">
-            {% block header_content %}{% endblock header_content %}
-            <div id="int_content">
-                {% block content %}{% endblock content %}
+            <div id="content">
+                <div id="int_content">
+                    {% block content %}{% endblock content %}
+                </div>
             </div>
-            <br class="clear" />
-        </div>
 
-        {% include "exmo2010/footer.html" %}
-
+        <div id="push"></div>
+    </div>
+    {% include "exmo2010/footer.html" %}
     </body>
-
 </html>
 {% endspaceless %}
