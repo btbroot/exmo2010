@@ -133,6 +133,10 @@
     width: 190px;
 }
 
+.base-table.history form {
+    width: 500px;
+}
+
 .base-table.history form > * {
     display: block;
     float: left;
@@ -151,4 +155,11 @@
 .base-table.history form > select {
     margin-left: 4px;
     margin-right: 4px;
+}
+
+td.comment .preview-container {
+    display: block;
+    width: 100%;
+    height: 17px;
+    overflow: hidden;
 }

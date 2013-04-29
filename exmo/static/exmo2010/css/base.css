@@ -438,6 +438,12 @@ input[type=text], input[type=password], textarea, select, .vTextField {
 
 }
 
+input.date-picker {
+    background-image: url(../img/calendar.png);
+    background-repeat: no-repeat;
+    background-position: 127px 4px;
+}
+
 /* FORM BUTTONS */
 
 .button, input[type=submit], input[type=button], .submit-row input {

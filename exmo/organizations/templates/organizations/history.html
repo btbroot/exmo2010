@@ -26,15 +26,13 @@
             <tr>
                 <td colspan="3">
                     <form action="" method="GET">
-                        <input name="date_filter_history" class="jdatefield" maxlength="300" type="text" />
-
+                        <input name="date_filter_history" class="jdatefield date-picker" maxlength="300" type="text"{% if date_filter_history %} value="{{ date_filter_history }}"{% endif %}/>
                         <select name="invite_filter_history">
                             <option value="ALL">{% trans 'All invitations' %}</option>
                             {% for status in inv_status %}
-                                <option value="{{ status.0 }}">{{ status.1 }}</option>
+                                <option value="{{ status.0 }}"{% if status.0 == invite_filter_history %} selected="selected"{% endif %}>{{ status.1 }}</option>
                             {% endfor %}
                         </select>
-
                         <input type="submit" value="{% trans 'Find' %}" />
                     </form>
                 </td>
@@ -57,8 +55,10 @@
                     {{ h.timestamp|date:"d.m.Y" }} {% trans "at" %} {{ h.timestamp|date:"H:i" }}
                 </td>
                 <td class="comment">
-                    <span class="pseudo">{{ h.comment|striptags|slice:":110" }}...</span>
-                    <span class="full" style="display: none">{{ h.comment|striptags }}</span>
+                    <div class="preview-container">
+                        <a class="pseudo">{{ h.comment|striptags }}</a>
+                    </div>
+                    <div class="full" style="display: none">{{ h.comment|striptags }}</div>
                 </td>
                 <td>
                     {{ h.get_inv_status_display|default_if_none:'' }}

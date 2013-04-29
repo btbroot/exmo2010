@@ -17,15 +17,12 @@
 
 $(document).ready(function () {
     $("td.comment").click(function( e ) {
-        $(this).children('span.pseudo').toggle();
-        $(this).children('span.full').toggle();
+        $(this).children('div.preview-container').toggle();
+        $(this).children('div.full').toggle();
     });
 
     $(function() {
         $( ".jdatefield" ).datepicker({
-            showOn: "button",
-            buttonImage: "/static/exmo2010/img/calendar.png",
-            buttonImageOnly: true,
             dateFormat: "dd.mm.yy",
             changeMonth: true,
             changeYear: true

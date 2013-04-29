@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
+
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
@@ -171,9 +172,10 @@ def organization_list(request, monitoring_id):
             'invcodeform': SettingsInvCodeForm(),
             'form': form,
             'inv_history': inv_history,
+            'date_filter_history': date_filter_history,
+            'invite_filter_history': invite_filter_history,
         },
     )
-
 
 @login_required
 def organization_manager(request, monitoring_id, org_id, method):
