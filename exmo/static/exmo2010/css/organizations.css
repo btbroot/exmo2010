@@ -157,6 +157,15 @@
     margin-right: 4px;
 }
 
+.notification .alert-info
+{
+    width: 270px;
+}
+
+.clearfix.invite-form {
+    width: 100%;
+}
+
 td.comment .preview-container {
     display: block;
     width: 100%;

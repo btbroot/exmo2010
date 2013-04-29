@@ -27,7 +27,7 @@
 <form action="" method="post">
 {% csrf_token %}
 
-<div class="clearfix">
+<div class="clearfix invite-form">
     <div class="title">{% trans 'Letter content' %}</div>
     <div class="content">
         {{ inv_form.comment }}
@@ -39,7 +39,7 @@
         </p>
     </div>
 </div>
-<div class="clearfix">
+<div class="clearfix invite-form">
     <div class="title">
         {% trans 'Invitation' %}
     </div>
@@ -48,14 +48,16 @@
     </div>
 </div>
 
-{{ inv_form.monitoring }}
-
-<div class="clearfix">
+<div class="clearfix invite-form">
     <div class="title">
     </div>
     <div class="content">
         <input type="submit" name="submit_invite" value="{% trans 'Invite' %}"/>
     </div>
+</div>
+
+<div style="display: none">
+{{ inv_form.monitoring }}
 </div>
 
 </form>
