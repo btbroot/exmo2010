@@ -1022,3 +1022,7 @@ ul.nav-tabs li.active a
 .clearfix {
     *zoom: 1;
 }
+
+.hidden {
+    display: none;
+}

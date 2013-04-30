@@ -74,4 +74,13 @@ config_register_list(
         default='monitoring-report@svobodainfo.org',
         help_text=_('Notify list report'),
     ),
+
+    StringValueWidget(
+        EMAIL_GROUP,
+        'DEFAULT_SUPPORT_EMAIL',
+        description=_('Email'),
+        ordering=0,
+        default='tsupport@svobodainfo.org',
+        help_text=_('Default support email address'),
+    ),
 )

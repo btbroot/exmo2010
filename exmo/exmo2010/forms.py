@@ -29,7 +29,7 @@ from django.forms.widgets import Textarea
 from django.utils import formats
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-
+from django.utils.translation import ugettext as _
 
 DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
 
@@ -101,3 +101,8 @@ class TagAutocomplete(Textarea):
             '%sjs/jquery.js' % settings.ADMIN_MEDIA_PREFIX,
             '%s/jquery.autocomplete.js' % js_base_url,
         )
+
+
+class FeedbackForm(forms.Form):
+    email = forms.EmailField(label=_("E-mail"), required=True)
+    comment = forms.CharField(widget=forms.Textarea, label=_('Your problem'), required=True)

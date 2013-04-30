@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-30 12:47+0400\n"
+"POT-Creation-Date: 2013-05-06 10:41+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -200,7 +200,7 @@ msgstr "Личная информация"
 msgid "Personal info changed successfully"
 msgstr "Изменения личной информации сохранены"
 
-#: accounts/templates/user_settings.html:55
+#: accounts/templates/user_settings.html:55 exmo2010/forms.py:107
 #: exmo2010/custom_registration/forms.py:67
 #: exmo2010/custom_registration/forms.py:217
 #: templates/registration/password_reset_form.html:43
@@ -223,6 +223,7 @@ msgid "Invitation code"
 msgstr "Код приглашения"
 
 #: accounts/templates/user_settings.html:111
+#: exmo2010/templates/exmo2010/feedback.html:78
 #: templates/exmo2010/helpers/inv_code_bubble.html:38
 #: templates/registration/resend_email_form.html:62
 msgid "Send"
@@ -261,6 +262,8 @@ msgstr "Параметр"
 #: bread_crumbs/views.py:65 claims/templates/claim_list.html:62
 #: clarifications/templates/clarification_list.html:62
 #: custom_comments/templates/comment_list.html:63
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating_color.html:39
 #: organizations/templates/organizations/all.html:38 scores/views.py:277
 #: tasks/views.py:304 tasks/views.py:494
@@ -591,7 +594,7 @@ msgstr "Быстрый доступ"
 msgid "Messages"
 msgstr "Сообщения"
 
-#: dashboard/menu.py:57 templates/exmo2010/base_site.html:35
+#: dashboard/menu.py:57 exmo2010/templates/exmo2010/base_site.html:35
 msgid "Admin"
 msgstr "Админ"
 
@@ -609,8 +612,8 @@ msgstr "Рейтинги"
 msgid "Statistics"
 msgstr "Статистика"
 
-#: dashboard/menu.py:88 exmo2010/urls.py:51 templates/errors_header.html:45
-#: templates/exmo2010/help.html:31
+#: dashboard/menu.py:88 exmo2010/urls.py:51
+#: exmo2010/templates/exmo2010/help.html:31 templates/errors_header.html:45
 msgid "Help"
 msgstr "Помощь"
 
@@ -676,7 +679,9 @@ msgstr "Период дайджеста должен быть больше ил�
 msgid "Email Server Settings"
 msgstr "Конфигурация почтового сервера"
 
-#: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72
+#: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.html:30
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:29
 msgid "Email"
 msgstr "Электронная почта"
 
@@ -699,6 +704,14 @@ msgstr ""
 #: exmo/config.py:75
 msgid "Notify list report"
 msgstr ""
+
+#: exmo/config.py:84
+msgid "Default support email address"
+msgstr "Адрес с которого осуществляется отправка всех писем по умолчанию"
+
+#: exmo2010/forms.py:108
+msgid "Your problem"
+msgstr "Ваша проблема"
 
 #: exmo2010/models.py:47 questionnaire/forms.py:38
 msgid "Text"
@@ -1133,9 +1146,14 @@ msgstr "Период дайджеста должен быть больше ил�
 msgid "user profile"
 msgstr "Профиль пользователя"
 
-#: exmo2010/urls.py:54 templates/exmo2010/footer.html:25
+#: exmo2010/urls.py:54 exmo2010/templates/exmo2010/footer.html:25
 msgid "About"
 msgstr "О проекте"
+
+#: exmo2010/views.py:65 exmo2010/views.py:78
+#: exmo2010/templates/exmo2010/footer.html:27
+msgid "Feedback"
+msgstr "Обратная связь"
 
 #: exmo2010/custom_registration/forms.py:39
 msgid "representative"
@@ -1262,6 +1280,98 @@ msgstr "Активация завершена"
 #: exmo2010/custom_registration/backends/custom/urls.py:83
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
+
+#: exmo2010/templates/exmo2010/base.html:26
+#: exmo2010/templates/exmo2010/base_site.html:32
+#: templates/registration/activation_complete.html:39
+#: templates/registration/password_change_done.html:39
+#: templates/registration/password_change_form.html:39
+#: templates/registration/password_reset_complete.html:39
+msgid "AIS Exmo"
+msgstr "АИС EXMO"
+
+#: exmo2010/templates/exmo2010/base_site.html:35
+msgid "EXMO — expert monitoring system"
+msgstr "EXMO — система экспертного мониторинга"
+
+#: exmo2010/templates/exmo2010/feedback.html:34
+#: exmo2010/templates/exmo2010/emails/feedback_creator.html:24
+#: exmo2010/templates/exmo2010/emails/feedback_creator.txt:23
+msgid ""
+"You've sent the letter to EXMO maintenance staff. You'll recieve an answer "
+"in 3 buisness days."
+msgstr ""
+"Вы отправили письмо специалистам обслуживающим ЭКСМО. Вам ответят в течение "
+"3-х рабочих дней."
+
+#: exmo2010/templates/exmo2010/feedback.html:40
+#, python-format
+msgid ""
+"\n"
+"If you've got troubles using system, please, check <a href=\"%(url)s\">Help "
+"page</a> out. If you didn't find an answer for your question, ask our "
+"specialists.\n"
+msgstr ""
+"\n"
+"Если у вас возникли проблемы при использовании системы, пожалуйста, ознакомьтесь "
+"с разделом <a href=\"%(url)s\">Помощь</a>. Если вы не нашли ответа на свой вопрос, задайте "
+"его нашим специалистам.\n"
+
+#: exmo2010/templates/exmo2010/feedback.html:45
+msgid "Please, describe your problem with as much detail as possible."
+msgstr "Пожалуйста, опишите вашу проблему как можно подробнее."
+
+#: exmo2010/templates/exmo2010/footer.html:26
+msgid "Methodology"
+msgstr "Методика"
+
+#: exmo2010/templates/exmo2010/footer.html:30
+#, python-format
+msgid ""
+"Copyright 2012, 2013 Foundation \"<a href=\"%(url)s\">Institute for "
+"Information Freedom Development</a>\""
+msgstr ""
+"© Фонд \"<a href=\"%(url)s\">Институт Развития Свободы Информации</a>\", "
+"2012–2013"
+
+#: exmo2010/templates/exmo2010/footer.html:31
+msgid ""
+"Copyright 2010, 2011 Non-profit Partnership \"Institute of Information "
+"Freedom Development\""
+msgstr "© НП \"Институт Развития Свободы Информации\", 2010-2012"
+
+#: exmo2010/templates/exmo2010/footer.html:32
+msgid "Copyright 2010, 2011 Al Nikolov"
+msgstr "© Al Nikolov, 2010-2011"
+
+#: exmo2010/templates/exmo2010/footer.html:33
+#, python-format
+msgid ""
+"<a href=\"%(url)s\">This program</a> is free software: you can redistribute "
+"it and/or modify it under the terms of the GNU Affero General Public License "
+"as published by the Free Software Foundation, either version 3 of the "
+"License, or (at your option) any later version."
+msgstr ""
+"<a href=\"%(url)s\">Данная программа</a> является свободным программным "
+"обеспечением, вы имеете право распространять ее и/ли вносить в нее изменения "
+"на условиях лицензии GNU AGPL либо версии 3, либо (по вашему выбору) любой "
+"последующей версии."
+
+#: exmo2010/templates/exmo2010/emails/feedback_creator.html:26
+#: exmo2010/templates/exmo2010/emails/feedback_creator.txt:25
+msgid "Your trouble"
+msgstr "Ваша проблема"
+
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.html:25
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:24
+#: scores/templates/task_report.html:41
+msgid "Name"
+msgstr "Имя"
+
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.html:32
+#: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:31
+msgid "Trouble"
+msgstr "Проблема"
 
 #: monitorings/forms.py:35 questionnaire/views.py:95
 msgid "Add questionnaire"
@@ -1984,10 +2094,6 @@ msgstr "Дополнительные параметры"
 msgid "Task "
 msgstr "Задача "
 
-#: scores/templates/task_report.html:41
-msgid "Name"
-msgstr "Имя"
-
 #: tasks/forms.py:54
 msgid "This user account is inactive"
 msgstr "Пользователь не активен"
@@ -2258,18 +2364,6 @@ msgstr "Комментарий"
 msgid "About project"
 msgstr "О проекте"
 
-#: templates/exmo2010/base.html:26 templates/exmo2010/base_site.html:32
-#: templates/registration/activation_complete.html:39
-#: templates/registration/password_change_done.html:39
-#: templates/registration/password_change_form.html:39
-#: templates/registration/password_reset_complete.html:39
-msgid "AIS Exmo"
-msgstr "АИС EXMO"
-
-#: templates/exmo2010/base_site.html:35
-msgid "EXMO — expert monitoring system"
-msgstr "EXMO — система экспертного мониторинга"
-
 #: templates/exmo2010/csv_import_log.html:22
 msgid "Rows ok/all"
 msgstr "Строк успешно/обработано"
@@ -2278,49 +2372,13 @@ msgstr "Строк успешно/обработано"
 msgid "Errors encountered"
 msgstr "Ошибки"
 
-#: templates/exmo2010/email_base.html:126
+#: templates/exmo2010/email_base.html:126 templates/exmo2010/email_base.txt:23
 msgid "This is an automatically generated email, please do not reply."
 msgstr "Это автоматическое письмо, отвечать на него не нужно."
 
-#: templates/exmo2010/email_base.html:127
+#: templates/exmo2010/email_base.html:127 templates/exmo2010/email_base.txt:24
 msgid "If you have any issue with EXMO, please contact the technical support:"
 msgstr "По вопросам работы в системе ЭКСМО обращайтесь в техподдержку:"
-
-#: templates/exmo2010/footer.html:26
-msgid "Methodology"
-msgstr "Методика"
-
-#: templates/exmo2010/footer.html:29
-#, python-format
-msgid ""
-"Copyright 2012, 2013 Foundation \"<a href=\"%(url)s\">Institute for "
-"Information Freedom Development</a>\""
-msgstr ""
-"© Фонд \"<a href=\"%(url)s\">Институт Развития Свободы Информации</a>\", "
-"2012–2013"
-
-#: templates/exmo2010/footer.html:30
-msgid ""
-"Copyright 2010, 2011 Non-profit Partnership \"Institute of Information "
-"Freedom Development\""
-msgstr "© НП \"Институт Развития Свободы Информации\", 2010-2012"
-
-#: templates/exmo2010/footer.html:31
-msgid "Copyright 2010, 2011 Al Nikolov"
-msgstr "© Al Nikolov, 2010-2011"
-
-#: templates/exmo2010/footer.html:32
-#, python-format
-msgid ""
-"<a href=\"%(url)s\">This program</a> is free software: you can redistribute "
-"it and/or modify it under the terms of the GNU Affero General Public License "
-"as published by the Free Software Foundation, either version 3 of the "
-"License, or (at your option) any later version."
-msgstr ""
-"<a href=\"%(url)s\">Данная программа</a> является свободным программным "
-"обеспечением, вы имеете право распространять ее и/ли вносить в нее изменения "
-"на условиях лицензии GNU AGPL либо версии 3, либо (по вашему выбору) любой "
-"последующей версии."
 
 #: templates/exmo2010/monitoring_confirm_delete.html:26
 msgid "When you delete monitoring you also delete this tasks:"
@@ -2934,20 +2992,20 @@ msgstr "Модули"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
-msgid "Coherent parameters"
-msgstr "Согласованные параметры"
+#~ msgid "Coherent parameters"
+#~ msgstr "Согласованные параметры"
 
-msgid "Task filtering"
-msgstr "Фильтрация задач"
+#~ msgid "Task filtering"
+#~ msgstr "Фильтрация задач"
 
-msgid "Experts"
-msgstr "Эксперты"
+#~ msgid "Experts"
+#~ msgstr "Эксперты"
 
-msgid "Presence of the parameter"
-msgstr "Наличие параметра"
+#~ msgid "Presence of the parameter"
+#~ msgstr "Наличие параметра"
 
-msgid "Criterion"
-msgstr "Критерий"
+#~ msgid "Criterion"
+#~ msgstr "Критерий"
 
-msgid "Scores"
-msgstr "Оценки"
+#~ msgid "Scores"
+#~ msgstr "Оценки"
