@@ -19,6 +19,7 @@
 #
 import string
 import time
+
 from django import forms
 from django.core.validators import BaseValidator
 from django.contrib.auth import authenticate
@@ -27,7 +28,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from annoying.decorators import autostrip
-from registration.models import RegistrationProfile
+
+from exmo2010.custom_registration.models import CustomRegistrationProfile
 from exmo2010.models import Organization
 
 
@@ -201,7 +203,7 @@ class ExmoAuthenticationForm(AuthenticationForm):
             elif not self.user_cache.is_active:
                 # Прошедшие активацию пользователи отсутствуют
                 # в модели RegistrationProfile
-                if not RegistrationProfile.objects.filter(
+                if not CustomRegistrationProfile.objects.filter(
                         user=self.user_cache).exists():
                     raise forms.ValidationError(_("This account is inactive."))
         self.check_for_test_cookie()
@@ -232,7 +234,7 @@ class ResendEmailForm(forms.Form):
                     raise forms.ValidationError(
                         _("Account is activated already.")
                     )
-                elif not RegistrationProfile.objects.filter(
+                elif not CustomRegistrationProfile.objects.filter(
                         user=user).exists():
                     raise forms.ValidationError(_("This account is inactive."))
                 return self.cleaned_data

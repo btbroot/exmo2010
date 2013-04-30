@@ -1,3 +1,4 @@
+{% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,10 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n %}
-{{ score.task.organization }}: {{ score.parameter }}
-{% for change in changes %}
-    {%trans change.field %}: "{{ change.was }}" => "{{ change.now }}"
-{% endfor %}
-URL: {{ url }}
-{% include "exmo2010/email_footer.html" %}
+
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
+
+    <p>{{ score.task.organization }}: {{ score.parameter }}</p>
+    <p>
+        {% for change in changes %}
+            {%trans change.field %}: "{{ change.was }}" => "{{ change.now }}"
+        {% endfor %}
+    </p>
+    <p>URL: {{ url }}</p>
+
+{% endblock content %}

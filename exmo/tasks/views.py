@@ -631,9 +631,11 @@ def task_user_change_notify(sender, **kwargs):
     else:
         url = None
 
-    t = loader.get_template('task_user_changed.txt')
-    c = Context({'task': task, 'url': url, })
+    t = loader.get_template('task_user_changed.html')
+    c = Context({'task': task, 'url': url, 'subject': subject})
     message = t.render(c)
 
-    email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'), [email], [], headers=headers)
+    email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'), [email], headers=headers)
+    email.encoding = "utf-8"
+    email.content_subtype = "html"
     email.send()

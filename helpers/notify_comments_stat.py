@@ -86,8 +86,11 @@ c = Context({
 
 message = t.render(c)
 
-subject = "Comment report from {} to {} for {}"\
-    .format(start_date, end_date, monitoring)
+subject = "Comment report from %(start_date)s to %(end_date)s for %(monitoring)s" % {
+    'start_date': start_date,
+    'end_date': end_date,
+    'monitoring': monitoring,
+}
 
 rcpt = [x[1] for x in settings.ADMINS]
 rcpt.extend([config_value('EmailServer', 'NOTIFY_LIST_INTERACTION'),

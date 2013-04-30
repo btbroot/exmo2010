@@ -1,3 +1,4 @@
+{% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,13 +19,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+
 {% load i18n %}
 
-<div class="footer">
-    <hr />
+{% block title %}{% endblock %}
+{% block content %}
+
+    <p>{% trans 'Registration on' %} {{ site }}</p>
     <p>
-        {% trans 'This is an automatically generated email, please do not reply.' %}<br />
-        {% trans 'If you have any issue with EXMO, please contact the technical support:' %}
-        <a href="mailto:tsupport@svobodainfo.org">tsupport@svobodainfo.org</a>
+        {% trans 'In order to activate your account you should follow the link ONCE' %}:
+        http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/
     </p>
-</div>
+    <p>
+        {% trans "Later you'll be able to log in here" %}
+        http://{{ site }}/exmo2010/accounts/login/
+    </p>
+    <p>{% trans 'Thank you' %}!</p>
+
+{% endblock content %}

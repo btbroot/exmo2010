@@ -114,15 +114,19 @@
         .bold {
             font-weight: bold;
         }
-
-        .footer {
-            color: #999
-        }
     </style>
 </head>
 
 <body>
     {% block content %}{% endblock %}
-    {% include "exmo2010/email_footer.html" %}
+
+    <div style="color: #999">
+        <hr />
+        <p>
+            {% trans 'This is an automatically generated email, please do not reply.' %}<br />
+            {% trans 'If you have any issue with EXMO, please contact the technical support:' %}
+            <a href="mailto:tsupport@svobodainfo.org">tsupport@svobodainfo.org</a>
+        </p>
+    </div>
 </body>
 </html>

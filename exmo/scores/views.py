@@ -463,11 +463,13 @@ def score_change_notify(sender, **kwargs):
         url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
                              reverse('exmo2010:score_view', args=[score.pk]))
         t = loader.get_template('score_email.html')
-        c = Context({'score': score, 'url': url, 'changes': changes})
+        c = Context({'score': score, 'url': url, 'changes': changes, 'subject': subject})
         message = t.render(c)
         for rcpt_ in rcpt:
             email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                 [rcpt_], [], headers=headers)
+                                 [rcpt_], headers=headers)
+            email.encoding = "utf-8"
+            email.content_subtype = "html"
             email.send()
 
 

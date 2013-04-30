@@ -23,11 +23,10 @@ from django.contrib.sites.models import Site
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-
 from registration import signals
-from registration.models import RegistrationProfile
 
 from exmo2010.custom_registration.forms import RegistrationFormFull
+from exmo2010.custom_registration.models import CustomRegistrationProfile
 from exmo2010.models import UserProfile, Organization
 
 
@@ -54,7 +53,7 @@ class CustomBackend(object):
 
     * The creation of the templates
       ``registration/activation_email_subject.txt`` and
-      ``registration/activation_email.txt``, which will be used for
+      ``registration/activation_email.html``, which will be used for
       the activation email. See the notes for this backends
       ``register`` method for details regarding these templates.
 
@@ -100,7 +99,7 @@ class CustomBackend(object):
             site = Site.objects.get_current()
         else:
             site = RequestSite(request)
-        new_user = RegistrationProfile.objects.create_inactive_user(username,
+        new_user = CustomRegistrationProfile.objects.create_inactive_user(username,
             email, password, site)
         # Сохраняем дополнительные поля модели User.
         user_changed = False
@@ -167,7 +166,7 @@ class CustomBackend(object):
         the class of this backend as the sender.
         
         """
-        activated = RegistrationProfile.objects.activate_user(activation_key)
+        activated = CustomRegistrationProfile.objects.activate_user(activation_key)
         if activated:
             activated.backend='django.contrib.auth.backends.ModelBackend'
             login(request, activated)

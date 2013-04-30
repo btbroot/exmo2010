@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import re
+
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext, Context, Template
@@ -40,10 +41,12 @@ from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext as _
 from registration.backends import get_backend
-from registration.models import RegistrationProfile
+
+from auth.forms import CustomPasswordResetForm
 from bread_crumbs.views import breadcrumbs
 from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
+from exmo2010.custom_registration.models import CustomRegistrationProfile
 
 
 @csrf_protect
@@ -51,6 +54,7 @@ def password_reset_redirect(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
     kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 1}
+    kwargs['password_reset_form'] = CustomPasswordResetForm
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
     return auth_password_reset(request, **kwargs)
@@ -211,7 +215,7 @@ def login_test_cookie(request, template_name='registration/login.html',
             # в модели RegistrationProfile, не подтвердили
             # по почте свою регистрацию.
             if not user.is_active:
-                if RegistrationProfile.objects.filter(user=user).exists():
+                if CustomRegistrationProfile.objects.filter(user=user).exists():
                     context.update({'resend_email': True})
             else:
                 # Okay, security check complete. Log the user in.
@@ -259,7 +263,7 @@ def resend_email(request):
         form = ResendEmailForm(request.POST)
         if form.is_valid():
             user = form.get_user
-            registration_profile = RegistrationProfile.objects.get(
+            registration_profile = CustomRegistrationProfile.objects.get(
                 user=user)
             if Site._meta.installed:
                 site = Site.objects.get_current()

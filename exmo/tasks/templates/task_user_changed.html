@@ -1,3 +1,4 @@
+{% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -18,7 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
-{% trans 'You have an assigned task' %} {{ task }}
 
-{% trans 'Link' %}: {{ url }}
+{% load i18n %}
+
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
+
+    <p>{% trans 'You have an assigned task' %} {{ task }}</p>
+    <p>{% trans 'Link' %}: {{ url }}</p>
+
+{% endblock content %}

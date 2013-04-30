@@ -27,5 +27,4 @@
 <p>{% trans 'Comment' %}:</p>
 <p>{{ object.comment|safe }}</p>
 <p>{% trans 'Link' %}: <a href="http://{{ site }}{{ score.get_absolute_url }}">{{ site }}{{ score.get_absolute_url }}</a></p>
-{% include "exmo2010/email_footer.html" %}
 {% endspaceless %}
