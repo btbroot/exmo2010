@@ -142,10 +142,10 @@ def organization_list(request, monitoring_id):
 
     inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
 
-    if request.method == "GET":
-        date_filter_history = request.GET.get('date_filter_history', False)
-        invite_filter_history = request.GET.get('invite_filter_history', False)
+    date_filter_history = request.GET.get('date_filter_history', False)
+    invite_filter_history = request.GET.get('invite_filter_history', False)
 
+    if request.method == "GET":
         if date_filter_history:
             start_datetime = datetime.strptime("%s 00:00:00" % date_filter_history, '%d.%m.%Y %H:%M:%S')
             finish_datetime = datetime.strptime("%s 23:59:59" % date_filter_history, '%d.%m.%Y %H:%M:%S')
