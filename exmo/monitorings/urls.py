@@ -18,7 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.conf.urls.defaults import *
-
+from monitorings.views import MonitoringManagerView
+from organizations.views import OrganizationManagerView
+from tasks.views import TaskManagerView
 
 urlpatterns = \
     patterns('monitorings.views',
@@ -39,14 +41,14 @@ urlpatterns = \
              url(r'^(\d+)/parameter_import/$', 'monitoring_parameter_import', name='monitoring_parameter_import'),
              url(r'^(\d+)/rating/$', 'monitoring_rating', name='monitoring_rating'),
              url(r'^(\d+)/set_npa_params/$', 'set_npa_params', name='set_npa_params'),
-             url(r'^(\d+)_(\w+)/$', 'monitoring_manager', name='monitoring_manager'),
+             url(r'^(?P<pk>\d+)_(?P<method>\w+)/$', MonitoringManagerView.as_view(), name='monitoring_manager'),
              )
 
 urlpatterns += \
     patterns('tasks.views',
              url(r'^(\d+)/mass_assign_tasks/$', 'task_mass_assign_tasks', name='task_mass_assign_tasks'),
              url(r'^(\d+)/organization/(\d+)/task/add/$', 'task_add', name='task_add'),
-             url(r'^(\d+)/organization/(\d+)/task/(\d+)_(\w+)/$', 'task_manager', name='task_manager'),
+             url(r'^(?P<monitoring_id>\d+)/organization/(?P<organization_id>\d+)/task/(?P<pk>\d+)_(?P<method>\w+)/$', TaskManagerView.as_view(), name='task_manager'),
              url(r'^(\d+)/organization/(\d+)/tasks/$', 'tasks_by_monitoring_and_organization',
                  name='tasks_by_monitoring_and_organization'),
              url(r'^(\d+)/task/add/$', 'task_add', name='task_add'),
@@ -55,7 +57,9 @@ urlpatterns += \
 
 urlpatterns += \
     patterns('organizations.views',
-             url(r'^(\d+)/organization/(\d+)_(\w+)/$', 'organization_manager', name='organization_manager'),
+             url(r'^(?P<monitoring_id>\d+)/organization/(?P<pk>\d+)_(?P<method>\w+)/$',
+                 OrganizationManagerView.as_view(),
+                 name='organization_manager'),
              url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
              url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
              )

@@ -36,7 +36,9 @@ from django.template import RequestContext
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
-from django.views.generic.create_update import delete_object
+from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
@@ -89,8 +91,8 @@ def set_npa_params(request, m_id):
         current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     return render_to_response('set_npa_params.html',
-        {"formset": formset, "monitoring": monitoring, "current_title": current_title},
-        context_instance=RequestContext(request))
+                              {"formset": formset, "monitoring": monitoring, "current_title": current_title},
+                              context_instance=RequestContext(request))
 
 
 def _get_monitoring_list(request):
@@ -150,70 +152,83 @@ def monitoring_list(request):
     )
 
 
-@login_required
-def monitoring_manager(request, id, method):
+class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     """
-    Удаление/редактирование/пересчет мониторинга.
-
+    Generic view to edit or delete monitoring
     """
-    redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
-    redirect = redirect.replace("%","%%")
-    monitoring = get_object_or_404(Monitoring, pk=id)
-    if method == 'delete':
-        if not request.user.has_perm('exmo2010.delete_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        title = _('Delete monitoring %s') % monitoring
 
-        crumbs = ['Home', 'Monitoring']
-        breadcrumbs(request, crumbs)
-        current_title = _('Delete monitoring cycle')
+    model = Monitoring
+    context_object_name = "object"
+    form_class = MonitoringForm
+    template_name = "monitoring_form.html"
+    extra_context = {}
 
-        return delete_object(
-            request,
-            model = Monitoring,
-            object_id = id,
-            post_delete_redirect = redirect,
-            extra_context = {
+    def get_redirect(self, request):
+        redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
+        redirect = redirect.replace("%", "%%")
+        return redirect
+
+    def get_context_data(self, **kwargs):
+        context = super(MonitoringManagerView, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.success_url = self.get_redirect(request)
+        self.object = self.get_object()
+        if self.kwargs["method"] == 'delete':
+            if not request.user.has_perm('exmo2010.delete_monitoring', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+
+            title = _('Delete monitoring %s') % self.object
+            crumbs = ['Home', 'Monitoring']
+            breadcrumbs(request, crumbs)
+            current_title = _('Delete monitoring cycle')
+            self.template_name = "exmo2010/monitoring_confirm_delete.html"
+            self.extra_context = {
                 'current_title': current_title,
                 'title': title,
-                'deleted_objects': Task.objects.filter(organization__monitoring = monitoring),
-                }
-            )
-    else: #update
-        if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        title = _('Edit monitoring %s') % monitoring
-        if request.method == 'POST':
-            form = MonitoringForm(request.POST, instance=monitoring)
-            if form.is_valid():
-                cd = form.cleaned_data
-                m = form.save()
-                questionnaire = m.get_questionnaire()
-                # Удаление опроса.
-                if cd.get("add_questionnaire") == False and questionnaire:
-                    questionnaire.delete()
-                elif cd.get("add_questionnaire") == True and not questionnaire:
-                    questionnaire = Questionnaire(monitoring=m)
-                    questionnaire.save()
-                return HttpResponseRedirect(redirect)
-        else:
-            form = MonitoringForm(instance=monitoring,
-                initial={"add_questionnaire": monitoring.has_questionnaire()})
+                'deleted_objects': Task.objects.filter(organization__monitoring=self.object),
+            }
 
-        crumbs = ['Home', 'Monitoring']
-        breadcrumbs(request, crumbs)
-        current_title = _('Edit monitoring cycle')
-
-        return render_to_response(
-            'monitoring_form.html',
-            {
+        if self.kwargs["method"] == 'update':
+            if not request.user.has_perm('exmo2010.edit_monitoring', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+            title = _('Edit monitoring %s') % self.object
+            crumbs = ['Home', 'Monitoring']
+            breadcrumbs(request, crumbs)
+            current_title = _('Edit monitoring cycle')
+            self.extra_context = {
                 'current_title': current_title,
                 'title': title,
-                'form': form,
-                'media': form.media,
-                'object': monitoring,
-            },
-            context_instance=RequestContext(request))
+            }
+
+        return super(MonitoringManagerView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.success_url = self.get_redirect(request)
+        self.object = self.get_object()
+        if self.kwargs["method"] == 'delete':
+            self.object = self.get_object()
+            self.object.delete()
+            return HttpResponseRedirect(self.get_success_url())
+        elif self.kwargs["method"] == 'update':
+            return super(MonitoringManagerView, self).post(request, *args, **kwargs)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MonitoringManagerView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        cd = form.cleaned_data
+        m = form.save()
+        questionnaire = m.get_questionnaire()
+        if cd.get("add_questionnaire") and questionnaire:
+            questionnaire.delete()
+        elif cd.get("add_questionnaire") and not questionnaire:
+            questionnaire = Questionnaire(monitoring=m)
+            questionnaire.save()
+        return super(MonitoringManagerView, self).form_valid(form)
 
 
 @login_required
@@ -248,7 +263,7 @@ def monitoring_add(request):
 
     return render_to_response('monitoring_form.html',
             {'current_title': current_title, 'media': form.media, 'form': form, 'title': title,
-             'formset': None,}, context_instance=RequestContext(request))
+             'formset': None, }, context_instance=RequestContext(request))
 
 
 #update rating twice in a day

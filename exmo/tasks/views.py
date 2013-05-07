@@ -22,6 +22,7 @@ import re
 import string
 
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group, User
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
@@ -31,7 +32,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidde
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
 from django.utils.translation import ugettext as _
-from django.views.generic.create_update import update_object, delete_object
+from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from livesettings import config_value
 from reversion import revision
 
@@ -371,111 +373,139 @@ def task_add(request, monitoring_id, organization_id=None):
         return HttpResponseForbidden(_('Forbidden'))
 
 
-@revision.create_on_success
-@login_required
-def task_manager(request, task_id, method, monitoring_id=None, organization_id=None):
-    task = get_object_or_404(Task, pk=task_id)
-    organization = task.organization
-    monitoring = organization.monitoring
-    organization_from_get = request.GET.get('organization', '')
-    if organization_id or organization_from_get:
-        q = request.GET.copy()
-        if organization_from_get:
-            q.pop('organization')
-        redirect = '%s?%s' % (
-        reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), q.urlencode())
-    else:
-        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%", "%%")
-    valid_method = [
-        'delete', 'approve', 'close',
-        'open', 'update', 'get',
-        ]
-    if method not in valid_method:
-        HttpResponseForbidden(_('Forbidden'))
-    current_title = _('Edit task')
-    if method == 'delete':
-        title = _('Delete task %s') % task
-        if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+    model = Task
+    context_object_name = "object"
+    form_class = TaskForm
+    template_name = "task_status.html"
+    extra_context = {}
 
-            crumbs = ['Home', 'Monitoring', 'Organization']
-            breadcrumbs(request, crumbs, task)
-            current_title = _('Delete task')
-
-            return delete_object(
-                request,
-                model=Task,
-                object_id=task_id,
-                post_delete_redirect=redirect,
-                extra_context={
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'current_title': current_title,
-                    'title': title,
-                    'deleted_objects': Score.objects.filter(task=task),
-                }
-            )
-        else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'close':
-        title = _('Close task %s') % task
-        if request.user.has_perm('exmo2010.close_task', task):
-            if task.open:
-                try:
-                    revision.comment = _('Task ready')
-                    task.ready = True
-                except ValidationError, e:
-                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            else:
-                return HttpResponse(_('Already closed'))
-        else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'approve':
-        title = _('Approve task for %s') % task
-        if request.user.has_perm('exmo2010.approve_task', task):
-            if not task.approved:
-                try:
-                    revision.comment = _('Task approved')
-                    task.approved = True
-                except ValidationError, e:
-                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            else: return HttpResponse(_('Already approved'))
-        else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'open':
-        title = _('Open task %s') % task
-        if request.user.has_perm('exmo2010.open_task', task):
-            if not task.open:
-                try:
-                    revision.comment = _('Task openned')
-                    task.open = True
-                except ValidationError, e:
-                    return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-            else: return HttpResponse(_('Already open'))
-        else: return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'update':  # update
-        title = _('Edit task %s') % task
-        if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-            revision.comment = _('Task updated')
-
-            crumbs = ['Home', 'Monitoring', 'Organization']
-            breadcrumbs(request, crumbs, task)
-
-            return update_object(
-                request,
-                form_class=TaskForm,
-                object_id=task.pk,
-                post_save_redirect=redirect,
-                extra_context={
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'current_title': current_title,
-                    'title': title,
-                }
-            )
+    def get_redirect(self, request, monitoring, organization, organization_id=None):
+        organization_from_get = request.GET.get('organization', '')
+        if organization_id or organization_from_get:
+            q = request.GET.copy()
+            if organization_from_get:
+                q.pop('organization')
+            redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization',
+                                  args=[monitoring.pk, organization.pk]), q.urlencode())
         else:
-            return HttpResponseForbidden(_('Forbidden'))
-    return render_to_response(
-      'task_status.html', {
-        'object': task,
-      }, context_instance=RequestContext(request))
+            redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring',
+                                          args=[monitoring.pk]), request.GET.urlencode())
+        redirect = redirect.replace("%", "%%")
+        return redirect
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskManagerView, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        organization = self.object.organization
+        monitoring = organization.monitoring
+        organization_id = self.kwargs.get('organization_id')
+        self.success_url = self.get_redirect(request, monitoring, organization, organization_id)
+
+        valid_methods = ['delete', 'approve', 'close',
+                         'open', 'update', 'get', ]
+        if self.kwargs["method"] not in valid_methods:
+            HttpResponseForbidden(_('Forbidden'))
+
+        current_title = title = _('Edit task')
+
+        if self.kwargs["method"] == 'delete':
+            title = _('Delete task %s') % self.object
+            if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+                return HttpResponseForbidden(_('Forbidden'))
+            else:
+                self.template_name = "exmo2010/task_confirm_delete.html"
+                crumbs = ['Home', 'Monitoring', 'Organization']
+                breadcrumbs(request, crumbs, self.object)
+                current_title = _('Delete task')
+                self.extra_context = {'monitoring': monitoring,
+                                      'organization': organization,
+                                      'current_title': current_title,
+                                      'title': title,
+                                      'deleted_objects': Score.objects.filter(task=self.object), }
+
+        if self.kwargs["method"] == 'close':
+            title = _('Close task %s') % self.object
+            if not request.user.has_perm('exmo2010.close_task', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+            else:
+                if self.object.open:
+                    try:
+                        revision.comment = _('Task ready')
+                        self.object.ready = True
+                    except ValidationError, e:
+                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+                else:
+                    return HttpResponse(_('Already closed'))
+
+        if self.kwargs["method"] == 'approve':
+            title = _('Approve task for %s') % self.object
+            if not request.user.has_perm('exmo2010.approve_task', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+            else:
+                if not self.object.approved:
+                    try:
+                        revision.comment = _('Task approved')
+                        self.object.approved = True
+                    except ValidationError, e:
+                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+                else:
+                    return HttpResponse(_('Already approved'))
+        if self.kwargs["method"] == 'open':
+            title = _('Open task %s') % self.object
+            if not request.user.has_perm('exmo2010.open_task', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+            else:
+                if not self.object.open:
+                    try:
+                        revision.comment = _('Task openned')
+                        self.object.open = True
+                    except ValidationError, e:
+                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
+                else:
+                    return HttpResponse(_('Already open'))
+        if self.kwargs["method"] == 'update':
+            title = _('Edit task %s') % self.object
+            self.template_name = "exmo2010/task_form.html"
+            if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+                return HttpResponseForbidden(_('Forbidden'))
+            else:
+                revision.comment = _('Task updated')
+                crumbs = ['Home', 'Monitoring', 'Organization']
+                breadcrumbs(request, crumbs, self.object)
+                self.extra_context = {
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'current_title': current_title,
+                    'title': title,
+                }
+
+        self.extra_context['title'] = title
+        self.extra_context['current_title'] = current_title
+
+        return super(TaskManagerView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        organization = self.object.organization
+        monitoring = organization.monitoring
+        organization_id = self.kwargs.get('organization_id')
+        self.success_url = self.get_redirect(request, monitoring, organization, organization_id)
+        if self.kwargs["method"] == 'delete':
+            self.object = self.get_object()
+            self.object.delete()
+            return HttpResponseRedirect(self.get_success_url())
+        elif self.kwargs["method"] == 'update':
+            return super(TaskManagerView, self).post(request, *args, **kwargs)
+
+    @method_decorator(revision.create_on_success)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TaskManagerView, self).dispatch(*args, **kwargs)
 
 
 def task_history(request, task_id):

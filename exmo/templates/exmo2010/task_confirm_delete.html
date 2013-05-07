@@ -28,7 +28,7 @@
 <a href="{% url exmo2010:score_view do.pk %}">{{ do }}</a><br>
 {% endfor %}
 {% endif %}
-<form method="post" action="{% url exmo2010:task_manager object.pk,'delete' %}?{{ request.GET.urlencode }}">{% csrf_token %}
+<form method="post" action="{% url exmo2010:task_manager object.pk 'delete' %}?{{ request.GET.urlencode }}">{% csrf_token %}
   <p>{% trans 'Delete this task?' %}</p>
   <p><input type="submit" /></p>
 </form>

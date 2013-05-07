@@ -19,13 +19,13 @@
 #
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-from django.views.generic.create_update import update_object, create_object, delete_object
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
-
+from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
@@ -50,6 +50,8 @@ def organization_list(request, monitoring_id):
     sent = orgs.filter(inv_status='SNT')
 
     initial = {'monitoring': monitoring}
+
+    org_type = 'all'
 
     if request.method == "POST" and "submit_invite" in request.POST:
         inv_form = InviteOrgsForm(request.POST)
@@ -128,24 +130,17 @@ def organization_list(request, monitoring_id):
         if form.is_valid():
             form.save()
         else:
-            redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
-            redirect = redirect.replace("%", "%%")
-            return create_object(request, form_class=OrganizationForm,
-                             post_save_redirect=redirect,
-                             extra_context={
-                                 'current_title': current_title,
-                                 'title': title,
-                                 'org_type': 'add',
-                                 'monitoring': monitoring,
-                                 'form': form,
-                             })
+            org_type = 'add'
 
     inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
 
-    date_filter_history = request.GET.get('date_filter_history', False)
-    invite_filter_history = request.GET.get('invite_filter_history', False)
+    date_filter_history = None
+    invite_filter_history = None
 
     if request.method == "GET":
+        date_filter_history = request.GET.get('date_filter_history', False)
+        invite_filter_history = request.GET.get('invite_filter_history', False)
+
         if date_filter_history:
             start_datetime = datetime.strptime("%s 00:00:00" % date_filter_history, '%d.%m.%Y %H:%M:%S')
             finish_datetime = datetime.strptime("%s 23:59:59" % date_filter_history, '%d.%m.%Y %H:%M:%S')
@@ -153,7 +148,6 @@ def organization_list(request, monitoring_id):
                                              timestamp__lt=finish_datetime)
         if invite_filter_history and invite_filter_history != 'ALL':
             inv_history = inv_history.filter(inv_status=invite_filter_history)
-
 
     return table(
         request,
@@ -166,7 +160,7 @@ def organization_list(request, monitoring_id):
             'sent': sent,
             'inv_form': inv_form,
             'alert': alert,
-            'org_type': 'all',
+            'org_type': org_type,
             'inv_status': INV_STATUS,
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
@@ -177,64 +171,88 @@ def organization_list(request, monitoring_id):
         },
     )
 
-@login_required
-def organization_manager(request, monitoring_id, org_id, method):
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%", "%%")
-    if method == 'add':
-        title = _('Add new organization for %s') % monitoring
 
+class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+    """
+    Generic view to edit or delete monitoring
+    """
+    model = Organization
+    form_class = OrganizationForm
+    template_name = "exmo2010/organization_form.html"
+    context_object_name = "object"
+    extra_context = {}
+
+    def add(self, request, monitoring):
+        self.object = None
+        title = _('Add new organization for %s') % monitoring
         crumbs = ['Home', 'Monitoring', 'Organization']
         breadcrumbs(request, crumbs, monitoring)
         current_title = _('Add organization')
+        self.extra_context = {'current_title': current_title,
+                              'title': title,
+                              'org_type': 'add',
+                              'monitoring': monitoring}
 
-        return create_object(request, form_class=OrganizationForm,
-                             post_save_redirect=redirect,
-                             extra_context={
-                                 'current_title': current_title,
-                                 'title': title,
-                                 'org_type': 'add',
-                                 'monitoring': monitoring
-                             })
-    elif method == 'delete':
-        organization = get_object_or_404(Organization, pk=org_id)
-        title = _('Delete organization %s') % monitoring
-
-        crumbs = ['Home', 'Monitoring', 'Organization']
-        breadcrumbs(request, crumbs, monitoring)
-        current_title = _('Edit organization')
-
-        return delete_object(
-            request,
-            model=Organization,
-            object_id=org_id,
-            post_delete_redirect=redirect,
-            extra_context={
-                'current_title': current_title,
-                'title': title,
-                'monitoring': monitoring,
-                'deleted_objects': Task.objects.filter(
-                    organization=organization),
-            }
-        )
-    else:  # update
+    def update(self, request, monitoring):
+        self.object = self.get_object()
         title = _('Edit organization %s') % monitoring
-
         crumbs = ['Home', 'Monitoring', 'Organization']
         breadcrumbs(request, crumbs, monitoring)
         current_title = _('Edit organization')
+        self.extra_context = {'current_title': current_title,
+                              'title': title,
+                              'monitoring': monitoring, }
 
-        return update_object(
-            request,
-            form_class=OrganizationForm,
-            object_id=org_id,
-            post_save_redirect=redirect,
-            extra_context={
-                'current_title': current_title,
-                'title': title,
-                'monitoring': monitoring,
-            }
-        )
+    def get_redirect(self, request, monitoring):
+        redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
+        redirect = redirect.replace("%", "%%")
+        return redirect
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganizationManagerView, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_id"])
+        if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
+        self.success_url = self.get_redirect(request, monitoring)
+        self.initial = {'monitoring': monitoring}
+
+        if self.kwargs["method"] == 'add':
+            self.add(request, monitoring)
+
+        if self.kwargs["method"] == 'delete':
+            self.object = self.get_object()
+            self.template_name = "exmo2010/organization_confirm_delete.html"
+            title = _('Delete organization %s') % monitoring
+            crumbs = ['Home', 'Monitoring', 'Organization']
+            breadcrumbs(request, crumbs, monitoring)
+            current_title = _('Edit organization')
+            self.extra_context = {'current_title': current_title,
+                                  'title': title,
+                                  'monitoring': monitoring,
+                                  'deleted_objects': Task.objects.filter(organization=self.object), }
+        if self.kwargs["method"] == 'update':
+            self.update(request, monitoring)
+
+        return super(OrganizationManagerView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_id"])
+        self.success_url = self.get_redirect(request, monitoring)
+        if self.kwargs["method"] == 'add':
+            self.add(request, monitoring)
+            return super(OrganizationManagerView, self).post(request, *args, **kwargs)
+        if self.kwargs["method"] == 'delete':
+            self.object = self.get_object()
+            self.object.delete()
+            return HttpResponseRedirect(self.get_success_url())
+        elif self.kwargs["method"] == 'update':
+            self.update(request, monitoring)
+            return super(OrganizationManagerView, self).post(request, *args, **kwargs)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OrganizationManagerView, self).dispatch(*args, **kwargs)

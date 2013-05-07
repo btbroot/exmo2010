@@ -20,71 +20,79 @@
 #
 {% endcomment %}
 {% load i18n adminmedia %}
-{% block extrahead %}{{ block.super }}
-<script type="text/javascript">
-    $(document).ready(function () {
-        if ($("#id_no_interact").is(':checked')) {
-            $("#id_interact_date").closest("tr").hide();
-            $("#id_finishing_date").closest("tr").hide();
-        }
 
-        $('#id_no_interact').change(function () {
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
             if ($("#id_no_interact").is(':checked')) {
                 $("#id_interact_date").closest("tr").hide();
                 $("#id_finishing_date").closest("tr").hide();
             }
-            else {
-                $("#id_interact_date").closest("tr").show();
-                $("#id_finishing_date").closest("tr").show();
-            }
-        });
 
-        $("#main_form").submit(function(e) {
-            if ($("#id_no_interact").is(':checked')) {
-                $("#id_interact_date").val($("#id_rate_date").val());
-                $("#id_finishing_date").val($("#id_rate_date").val());
-            }
-        });
-
-
-        if ($("#id_add_questionnaire").is(':checked')) {
-            $('#id_add_questionnaire').change(function () {
-                if (!$("#id_add_questionnaire").is(':checked')) {
-                    if (confirm("{% trans "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?" %}")) {
-                        $("#id_add_questionnaire").attr('checked', false);
-                    }
-                    else {
-                        $("#id_add_questionnaire").attr('checked', true);
-                    }
-                }
-            });
-        }
-        else {
-            $('#id_add_questionnaire').change(function () {
-                if ($("#id_add_questionnaire").is(':checked')) {
-                    $("#addqa").show();
+            $('#id_no_interact').change(function () {
+                if ($("#id_no_interact").is(':checked')) {
+                    $("#id_interact_date").closest("tr").hide();
+                    $("#id_finishing_date").closest("tr").hide();
                 }
                 else {
-                    $("#addqa").hide();
+                    $("#id_interact_date").closest("tr").show();
+                    $("#id_finishing_date").closest("tr").show();
                 }
             });
-        }
-    });
 
-    $(function() {
-        $( ".jdatefield" ).datepicker({
-            showOn: "button",
-            buttonImage: "{{STATIC_URL}}exmo2010/img/calendar.png",
-            buttonImageOnly: true,
-            dateFormat: "dd.mm.yy",
-            changeMonth: true,
-            changeYear: true
+            $("#main_form").submit(function(e) {
+                if ($("#id_no_interact").is(':checked')) {
+                    $("#id_interact_date").val($("#id_rate_date").val());
+                    $("#id_finishing_date").val($("#id_rate_date").val());
+                }
+            });
+
+
+            if ($("#id_add_questionnaire").is(':checked')) {
+                $('#id_add_questionnaire').change(function () {
+                    if (!$("#id_add_questionnaire").is(':checked')) {
+                        if (confirm("{% trans "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?" %}")) {
+                            $("#id_add_questionnaire").attr('checked', false);
+                        }
+                        else {
+                            $("#id_add_questionnaire").attr('checked', true);
+                        }
+                    }
+                });
+            }
+            else {
+                $('#id_add_questionnaire').change(function () {
+                    if ($("#id_add_questionnaire").is(':checked')) {
+                        $("#addqa").show();
+                    }
+                    else {
+                        $("#addqa").hide();
+                    }
+                });
+            }
         });
-    });
 
-</script>
+        $(function() {
+            $( ".jdatefield" ).datepicker({
+                showOn: "button",
+                buttonImage: "{{STATIC_URL}}exmo2010/img/calendar.png",
+                buttonImageOnly: true,
+                dateFormat: "dd.mm.yy",
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+    </script>
 {% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/jquery-ui.css" />
+{% endblock %}
 
 {% block content %}
 {% if object %}

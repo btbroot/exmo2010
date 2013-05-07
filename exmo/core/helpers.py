@@ -23,8 +23,12 @@
 """
 
 from django.contrib.auth.models import User
-from django.views.generic.list_detail import object_list
-
+from django.template import loader, RequestContext
+from django.http import Http404, HttpResponse
+from django.views.generic.base import View
+from django.core.paginator import Paginator, InvalidPage
+from django.template.response import TemplateResponse
+from django.core.exceptions import ImproperlyConfigured
 from core.sort_headers import SortHeaders
 from exmo2010.models import Parameter, Task, UserProfile
 
@@ -42,10 +46,106 @@ def table_prepare_queryset(request, headers, queryset):
     return queryset, extra_context
 
 
+def object_list(request, queryset, paginate_by=None, page=None,
+        allow_empty=True, template_name=None, template_loader=loader,
+        extra_context=None, context_processors=None, template_object_name='object',
+        mimetype=None):
+    """
+    Generic list of objects.
+
+    Templates: ``<app_label>/<model_name>_list.html``
+    Context:
+        object_list
+            list of objects
+        is_paginated
+            are the results paginated?
+        results_per_page
+            number of objects per page (if paginated)
+        has_next
+            is there a next page?
+        has_previous
+            is there a prev page?
+        page
+            the current page
+        next
+            the next page
+        previous
+            the previous page
+        pages
+            number of pages, total
+        hits
+            number of objects, total
+        last_on_page
+            the result number of the last of object in the
+            object_list (1-indexed)
+        first_on_page
+            the result number of the first object in the
+            object_list (1-indexed)
+        page_range:
+            A list of the page numbers (1-indexed).
+    """
+    if extra_context is None: extra_context = {}
+    queryset = queryset._clone()
+    if paginate_by:
+        paginator = Paginator(queryset, paginate_by, allow_empty_first_page=allow_empty)
+        if not page:
+            page = request.GET.get('page', 1)
+        try:
+            page_number = int(page)
+        except ValueError:
+            if page == 'last':
+                page_number = paginator.num_pages
+            else:
+                # Page is not 'last', nor can it be converted to an int.
+                raise Http404
+        try:
+            page_obj = paginator.page(page_number)
+        except InvalidPage:
+            raise Http404
+        c = RequestContext(request, {
+            '%s_list' % template_object_name: page_obj.object_list,
+            'paginator': paginator,
+            'page_obj': page_obj,
+            'is_paginated': page_obj.has_other_pages(),
+
+            # Legacy template context stuff. New templates should use page_obj
+            # to access this instead.
+            'results_per_page': paginator.per_page,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+            'page': page_obj.number,
+            'next': page_obj.next_page_number(),
+            'previous': page_obj.previous_page_number(),
+            'first_on_page': page_obj.start_index(),
+            'last_on_page': page_obj.end_index(),
+            'pages': paginator.num_pages,
+            'hits': paginator.count,
+            'page_range': paginator.page_range,
+        }, context_processors)
+    else:
+        c = RequestContext(request, {
+            '%s_list' % template_object_name: queryset,
+            'paginator': None,
+            'page_obj': None,
+            'is_paginated': False,
+        }, context_processors)
+        if not allow_empty and len(queryset) == 0:
+            raise Http404
+    for key, value in extra_context.items():
+        if callable(value):
+            c[key] = value()
+        else:
+            c[key] = value
+    if not template_name:
+        model = queryset.model
+        template_name = "%s/%s_list.html" % (model._meta.app_label, model._meta.object_name.lower())
+    t = template_loader.get_template(template_name)
+    return HttpResponse(t.render(c), mimetype=mimetype)
+
+
 def table(request, headers, **kwargs):
     """
     Generic sortable table view.
-
     """
     kwargs['queryset'], extra_context = table_prepare_queryset(request, headers, kwargs['queryset'])
     if 'extra_context' not in kwargs:
@@ -130,3 +230,62 @@ def get_experts():
                                is_active=True,
                                email__isnull=False)\
         .exclude(email__exact='').distinct()
+
+
+class TemplateResponseMixin(object):
+    """
+    A mixin that can be used to render a template.
+    """
+    template_name = None
+    response_class = TemplateResponse
+    content_type = None
+
+    def render_to_response(self, context, **response_kwargs):
+        """
+        Returns a response, using the `response_class` for this
+        view, with a template rendered with the given context.
+
+        If any keyword arguments are provided, they will be
+        passed to the constructor of the response class.
+        """
+        response_kwargs.setdefault('content_type', self.content_type)
+        return self.response_class(
+            request = self.request,
+            template = self.get_template_names(),
+            context = context,
+            **response_kwargs
+        )
+
+    def get_template_names(self):
+        """
+        Returns a list of template names to be used for the request. Must return
+        a list. May not be called if render_to_response is overridden.
+        """
+        if self.template_name is None:
+            raise ImproperlyConfigured(
+                "TemplateResponseMixin requires either a definition of "
+                "'template_name' or an implementation of 'get_template_names()'")
+        else:
+            return [self.template_name]
+
+
+class ContextMixin(object):
+    """
+    A default context mixin that passes the keyword arguments received by
+    get_context_data as the template context.
+    """
+
+    def get_context_data(self, **kwargs):
+        if 'view' not in kwargs:
+            kwargs['view'] = self
+        return kwargs
+
+
+class TemplateView(TemplateResponseMixin, ContextMixin, View):
+    """
+    A view that renders a template.  This view will also pass into the context
+    any keyword arguments passed by the url conf.
+    """
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)

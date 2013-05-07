@@ -22,6 +22,7 @@ import datetime
 from reversion import revision
 
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.comments.signals import comment_was_posted
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
@@ -34,10 +35,9 @@ from django.utils import simplejson
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic.create_update import create_object, delete_object, update_object
-from django.views.generic.list_detail import object_detail
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.detail import DetailView
 from livesettings import config_value
-
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from custom_comments.models import CommentExmo
@@ -51,161 +51,209 @@ from scores.forms import ScoreForm
 from questionnaire.forms import QuestionnaireDynForm
 
 
-@login_required
-def score_add(request, task_id, parameter_id):
-    task = get_object_or_404(Task, pk=task_id)
-    parameter = get_object_or_404(Parameter, pk=parameter_id)
-    title = parameter
-    try:
-        score = Score.objects.get(parameter=parameter, task=task)
-    except Score.DoesNotExist:
-        pass
-    else:
-        return HttpResponseRedirect(reverse('exmo2010:score_view', args=(score.pk,)))
-    if not request.user.has_perm('exmo2010.fill_task', task):
-        return HttpResponseForbidden(_('Forbidden'))
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-                                               args=(task.pk,)), request.GET.urlencode(), parameter.code)
-    redirect = redirect.replace("%", "%%")
+class ScoreMixin(object):
+    model = Score
+    form_class = ScoreForm
+    context_object_name = "object"
+    extra_context = {}
 
-    # Форма с презаполненными task и parameter, при вовзвращении реквеста
-    # в исходниках Джанго, extra_context добавляется после создания
-    # экземпляра класса формы, и перезаписывает переменную формы.
-    form = ScoreForm(initial={'task': task, 'parameter': parameter})
+    def get_context_data(self, **kwargs):
+        context = super(ScoreMixin, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
 
-    crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-    breadcrumbs(request, crumbs, task)
-    current_title = _('Parameter')
-
-    return create_object(
-        request,
-        template_name='form.html',
-        form_class=ScoreForm,
-        model=Score,
-        post_save_redirect=redirect,
-        extra_context={
-            'task': task,
-            'parameter': parameter,
-            'current_title': current_title,
-            'title': title,
-            'form': form,
-        }
-    )
+    def get_redirect(self, request):
+        redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
+                                           args=[self.object.task.pk]),
+                                           request.GET.urlencode(),
+                                           self.object.parameter.code)
+        return redirect.replace("%", "%%")
 
 
-@revision.create_on_success
-@login_required
-def score_manager(request, score_id, method='update'):
-    score = get_object_or_404(Score, pk=score_id)
-    redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task', args=[score.task.pk]),
-                                       request.GET.urlencode(), score.parameter.code)
-    redirect = redirect.replace("%", "%%")
-    if method == 'delete':
-        title = _('Delete score %s') % score.parameter
-        if request.user.has_perm('exmo2010.delete_score', score):
-            return delete_object(
-                request,
-                model=Score,
-                object_id=score.pk,
-                post_delete_redirect=redirect,
-                extra_context={'current_title': title}
-            )
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class LoginRequiredRevisionOnSuccessMixin(object):
+    @method_decorator(revision.create_on_success)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredRevisionOnSuccessMixin, self).dispatch(*args, **kwargs)
+
+
+class ScoreAddView(ScoreMixin, CreateView):
+    template_name = "form.html"
+
+    def get_redirect(self, request, task, parameter):
+        redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
+                                           args=(task.pk,)),
+                                           request.GET.urlencode(),
+                                           parameter.code)
+        redirect = redirect.replace("%", "%%")
+        return redirect
+
+    def get(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=args[0])
+        parameter = get_object_or_404(Parameter, pk=args[1])
+        title = parameter
+
+        try:
+            score = Score.objects.get(parameter=parameter, task=task)
+        except Score.DoesNotExist:
+            pass
         else:
+            return HttpResponseRedirect(reverse('exmo2010:score_view', args=(score.pk,)))
+
+        if not request.user.has_perm('exmo2010.fill_task', task):
             return HttpResponseForbidden(_('Forbidden'))
-    elif method == 'update':
-        return score_view(request, score.pk)
-    elif method == 'view':
-        return score_view(request, score.pk)
-    else:
-        return HttpResponseForbidden(_('Forbidden'))
 
+        self.success_url = self.get_redirect(request, task, parameter)
 
-def score_view(request, score_id):
-    """
-    Generic view для просмотра или изменения параметра, в зависимости от прав.
-
-    """
-    score = get_object_or_404(Score, pk=score_id)
-    user = request.user
-    all_score_claims = Claim.objects.filter(score=score)
-    all_score_clarifications = Clarification.objects.filter(score=score)
-    current_title = _('Parameter')
-
-    if user.has_perm('exmo2010.edit_score', score):
-        redirect = "%s?%s#parameter_%s" % (
-            reverse('exmo2010:score_list_by_task',
-                args=[score.task.pk]),
-            request.GET.urlencode(),
-            score.parameter.code)
-        redirect = redirect.replace("%","%%")
-        title = _('%s') % score.parameter
-        if request.method == 'POST':
-            form = ScoreForm(request.POST, instance=score)
-            message = _construct_change_message(request, form, None)
-            revision.comment = message
-            if form.is_valid() and form.changed_data:
-                score_was_changed.send(
-                    sender = Score.__class__,
-                    form = form,
-                    request = request,
-                )
-            if score.active_claim:
-                if not (form.is_valid() and form.changed_data):
-                    return HttpResponse(_('Have active claim, but no data changed'))
+        self.initial = {'task': task, 'parameter': parameter}
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, score.task)
+        breadcrumbs(request, crumbs, task)
+        current_title = _('Parameter')
 
-        return update_object(
-            request,
-            template_name = 'form.html',
-            form_class = ScoreForm,
-            object_id = score.pk,
-            post_save_redirect = redirect,
-            extra_context = {
-                'task': score.task,
-                'parameter': score.parameter,
+        self.extra_context = {'task': task,
+                              'parameter': parameter,
+                              'current_title': current_title,
+                              'title': title, }
+
+        return super(ScoreAddView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=args[0])
+        parameter = get_object_or_404(Parameter, pk=args[1])
+        self.success_url = self.get_redirect(request, task, parameter)
+        return super(ScoreAddView, self).post(request, *args, **kwargs)
+
+
+class ScoreDeleteView(LoginRequiredRevisionOnSuccessMixin, ScoreMixin, DeleteView):
+    template_name = "exmo2010/score_confirm_delete.html"
+
+    def get(self, request, *args, **kwargs):
+        title = _('Delete score %s') % self.object.parameter
+        if not request.user.has_perm('exmo2010.delete_score', self.object):
+            return HttpResponseForbidden(_('Forbidden'))
+        else:
+            self.extra_context = {'current_title': title}
+        return super(ScoreDeleteView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.success_url = self.get_redirect(request)
+        return super(ScoreDeleteView, self).post(request, *args, **kwargs)
+
+
+class ScoreEditView(LoginRequiredRevisionOnSuccessMixin, ScoreMixin, UpdateView):
+    template_name = "form.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.user.has_perm('exmo2010.edit_score', self.object):
+            current_title = _('Parameter')
+            all_score_claims = Claim.objects.filter(score=self.object)
+            all_score_clarifications = Clarification.objects.filter(score=self.object)
+            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+            breadcrumbs(request, crumbs, self.object.task)
+
+            title = _('%s') % self.object.parameter
+            self.extra_context = {
+                'task': self.object.task,
+                'parameter': self.object.parameter,
                 'current_title': current_title,
                 'title': title,
                 'claim_list': all_score_claims,
                 'clarification_list': all_score_clarifications,
-                'claim_form' : ClaimAddForm(prefix="claim"),
-                'clarification_form' : ClarificationAddForm(
-                    prefix="clarification"),
-                })
-    elif user.has_perm('exmo2010.view_score', score):
-        # Представители имеют права только на просмотр!
-        title = _('Score for parameter "%s"') % score.parameter.name
-        time_to_answer = score.task.organization.monitoring.time_to_answer
-        delta = datetime.timedelta(days=time_to_answer)
-        today = datetime.date.today()
-        peremptory_day = today + delta
-
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, score.task)
-
-        return object_detail(
-            request,
-            template_name='detail.html',
-            queryset = Score.objects.all(),
-            object_id = score.pk,
-            extra_context={
-                'current_title': current_title,
-                'title': title,
-                'task': score.task,
-                'parameter': score.parameter,
-                'claim_list': all_score_claims,
-                'clarification_list': all_score_clarifications,
-                'peremptory_day' : peremptory_day,
-                'view': True,
-                'invcodeform': SettingsInvCodeForm(),
-                'claim_form': ClaimAddForm(
-                    prefix="claim"),
+                'claim_form': ClaimAddForm(prefix="claim"),
                 'clarification_form': ClarificationAddForm(
                     prefix="clarification"),
-                })
-    else:
-        return HttpResponseForbidden(_('Forbidden'))
+            }
+        else:
+            return HttpResponseForbidden(_('Forbidden'))
+
+        return super(ScoreEditView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ScoreForm(request.POST, instance=self.object)
+        message = _construct_change_message(request, form, None)
+        revision.comment = message
+        if form.is_valid() and form.changed_data:
+            score_was_changed.send(
+                sender=Score.__class__,
+                form=form,
+                request=request,
+            )
+        if self.object.active_claim:
+            if not (form.is_valid() and form.changed_data):
+                return HttpResponse(_('Have active claim, but no data changed'))
+
+        self.success_url = self.get_redirect(request)
+        return super(ScoreEditView, self).post(request, *args, **kwargs)
+
+
+class ScoreDetailView(ScoreMixin, DetailView):
+    template_name = "detail.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.success_url = self.get_redirect(request)
+
+        if request.user.has_perm('exmo2010.view_score', self.object):
+            current_title = _('Parameter')
+            all_score_claims = Claim.objects.filter(score=self.object)
+            all_score_clarifications = Clarification.objects.filter(score=self.object)
+            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+            breadcrumbs(request, crumbs, self.object.task)
+
+            self.template_name = "detail.html"
+            title = _('Score for parameter "%s"') % self.object.parameter.name
+            time_to_answer = self.object.task.organization.monitoring.time_to_answer
+            delta = datetime.timedelta(days=time_to_answer)
+            today = datetime.date.today()
+            peremptory_day = today + delta
+
+            self.extra_context = {'current_title': current_title,
+                                  'title': title,
+                                  'task': self.object.task,
+                                  'parameter': self.object.parameter,
+                                  'claim_list': all_score_claims,
+                                  'clarification_list': all_score_clarifications,
+                                  'peremptory_day' : peremptory_day,
+                                  'view': True,
+                                  'invcodeform': SettingsInvCodeForm(),
+                                  'claim_form': ClaimAddForm(prefix="claim"),
+                                  'clarification_form': ClarificationAddForm(prefix="clarification"), }
+
+        return super(ScoreDetailView, self).get(request, *args, **kwargs)
+
+
+def score_manager(request, score_id, method='update'):
+    if method == 'delete':
+        redirect_url = reverse('exmo2010:score_delete', args=[score_id])
+        return HttpResponseRedirect(redirect_url)
+    elif method == 'update':
+        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
+        return HttpResponseRedirect(redirect_url)
+    elif method == 'view':
+        redirect_url = reverse('exmo2010:score_detail', args=[score_id])
+        return HttpResponseRedirect(redirect_url)
+
+    return HttpResponseForbidden(_('Forbidden'))
+
+def score_view(request, score_id):
+    score = get_object_or_404(Score, pk=score_id)
+    if request.user.has_perm('exmo2010.edit_score', score):
+        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
+        return HttpResponseRedirect(redirect_url)
+    if request.user.has_perm('exmo2010.view_score', score):
+        redirect_url = reverse('exmo2010:score_detail', args=[score_id])
+        return HttpResponseRedirect(redirect_url)
+
+    return HttpResponseForbidden(_('Forbidden'))
 
 
 def _save_comment(comment):

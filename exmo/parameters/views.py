@@ -20,74 +20,94 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.create_update import update_object, delete_object
+from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
 import simplejson
-
 from bread_crumbs.views import breadcrumbs
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import Parameter, Score, Task
 from parameters.forms import ParameterForm
 
 
-@login_required
-def parameter_manager(request, task_id, parameter_id, method):
-    task = get_object_or_404(Task, pk=task_id)
-    parameter = get_object_or_404(Parameter, pk=parameter_id)
-    redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%", "%%")
-    if method == 'delete':
-        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        title = _('Delete parameter %s') % parameter
-        current_title = _('Delete parameter')
+class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+    model = Parameter
+    form_class = ParameterForm
+    template_name = "parameter_form.html"
+    context_object_name = "object"
+    extra_context = {}
 
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, task)
-
-        return delete_object(
-            request,
-            model=Parameter,
-            object_id=parameter_id,
-            post_delete_redirect=redirect,
-            extra_context={
-                'current_title': current_title,
-                'title': title,
-                'task': task,
-                'deleted_objects': Score.objects.filter(parameter=parameter),
-            }
-        )
-    elif method == 'exclude':
-        if not request.user.has_perm('exmo2010.exclude_parameter', parameter):
-            return HttpResponseForbidden(_('Forbidden'))
-        if task.organization not in parameter.exclude.all():
-            parameter.exclude.add(task.organization)
-        return HttpResponseRedirect(redirect)
-    else:  # update
-        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        title = _('Edit parameter %s') % parameter
+    def update(self, request, task):
+        title = _('Edit parameter %s') % self.object
         current_title = _('Edit parameter')
-
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
         breadcrumbs(request, crumbs, task)
+        self.extra_context = {'current_title': current_title,
+                              'title': title,
+                              'task': task,
+                              'media': CORE_MEDIA + ParameterForm().media, }
 
-        return update_object(
-            request,
-            form_class=ParameterForm,
-            object_id=parameter_id,
-            post_save_redirect=redirect,
-            extra_context={
-                'current_title': current_title,
-                'title': title,
-                'task': task,
-                'media': CORE_MEDIA + ParameterForm().media,
-            }
-        )
+    def get_redirect(self, request, task):
+        redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
+        redirect = redirect.replace("%", "%%")
+        return redirect
+
+    def get_context_data(self, **kwargs):
+        context = super(ParameterManagerView, self).get_context_data(**kwargs)
+        context.update(self.extra_context)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=self.kwargs["task_id"])
+        self.success_url = self.get_redirect(request, task)
+        self.object = self.get_object()
+
+        if self.kwargs["method"] == 'delete':
+            if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+                return HttpResponseForbidden(_('Forbidden'))
+            self.template_name = "exmo2010/parameter_confirm_delete.html"
+            title = _('Delete parameter %s') % self.object
+            current_title = _('Delete parameter')
+            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+            breadcrumbs(request, crumbs, task)
+            self.extra_context = {'current_title': current_title,
+                                  'title': title,
+                                  'task': task,
+                                  'deleted_objects': Score.objects.filter(parameter=self.object), }
+
+        if self.kwargs["method"] == 'exclude':
+            if not request.user.has_perm('exmo2010.exclude_parameter', self.object):
+                return HttpResponseForbidden(_('Forbidden'))
+            if task.organization not in self.object.exclude.all():
+                self.object.exclude.add(task.organization)
+            return HttpResponseRedirect(self.success_url)
+
+        if self.kwargs["method"] == 'update':
+            if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+                return HttpResponseForbidden(_('Forbidden'))
+            self.update(request, task)
+
+        return super(ParameterManagerView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        task = get_object_or_404(Task, pk=self.kwargs["task_id"])
+        self.success_url = self.get_redirect(request, task)
+        self.object = self.get_object()
+        if self.kwargs["method"] == 'delete':
+            self.object.delete()
+            return HttpResponseRedirect(self.get_success_url())
+        elif self.kwargs["method"] == 'update':
+            self.update(request, task)
+            return super(ParameterManagerView, self).post(request, *args, **kwargs)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ParameterManagerView, self).dispatch(*args, **kwargs)
 
 
 @login_required
