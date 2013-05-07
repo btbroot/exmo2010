@@ -24,7 +24,7 @@
 {% if user %}
 <b>{% trans "Name" %}:</b> {{ user.first_name }} {{ user.last_name }}<br />
 {% if user.profile.organization.all %}
-<b>{% trans "Organization" %}:</b> {% for o in user.profile.organization.all %}{{ o }}{% endfor %}<br />
+<b>{% trans "Organization" %}:</b> {% for o in user.profile.organization.all %}{{ o }}{% if not forloop.last %}, {% endif %}{% endfor %}<br />
 {% endif %}
 {% endif %}
 <b>{% trans "Email" %}:</b> <a href="mailto:{{ email }}">{{ email }}</a><br />

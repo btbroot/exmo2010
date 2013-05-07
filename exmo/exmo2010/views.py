@@ -57,7 +57,6 @@ def feedback(request):
                                 "exmo2010/emails/feedback_creator.html",
                                 user=user)
             success = True
-            form = FeedbackForm(initial={'email': request.user.email})
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
