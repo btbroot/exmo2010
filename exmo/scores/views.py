@@ -21,6 +21,7 @@
 import datetime
 from reversion import revision
 
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.comments.signals import comment_was_posted
@@ -76,13 +77,6 @@ class LoginRequiredMixin(object):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
-class LoginRequiredRevisionOnSuccessMixin(object):
-    @method_decorator(revision.create_on_success)
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoginRequiredRevisionOnSuccessMixin, self).dispatch(*args, **kwargs)
-
-
 class ScoreAddView(ScoreMixin, CreateView):
     template_name = "form.html"
 
@@ -131,7 +125,7 @@ class ScoreAddView(ScoreMixin, CreateView):
         return super(ScoreAddView, self).post(request, *args, **kwargs)
 
 
-class ScoreDeleteView(LoginRequiredRevisionOnSuccessMixin, ScoreMixin, DeleteView):
+class ScoreDeleteView(LoginRequiredMixin, ScoreMixin, DeleteView):
     template_name = "exmo2010/score_confirm_delete.html"
 
     def get(self, request, *args, **kwargs):
@@ -147,7 +141,7 @@ class ScoreDeleteView(LoginRequiredRevisionOnSuccessMixin, ScoreMixin, DeleteVie
         return super(ScoreDeleteView, self).post(request, *args, **kwargs)
 
 
-class ScoreEditView(LoginRequiredRevisionOnSuccessMixin, ScoreMixin, UpdateView):
+class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
     template_name = "form.html"
 
     def get(self, request, *args, **kwargs):

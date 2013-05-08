@@ -20,11 +20,14 @@
 from django.conf.urls.defaults import *
 from parameters.views import ParameterManagerView
 from tasks.views import TaskManagerView
+import reversion
 
 urlpatterns = \
     patterns('tasks.views',
              url(r'^$', 'tasks'),
-             url(r'^task/(?P<pk>\d+)_(?P<method>\w+)/$', TaskManagerView.as_view(), name='task_manager'),
+             url(r'^task/(?P<pk>\d+)_(?P<method>\w+)/$',
+                 reversion.create_revision(TaskManagerView.as_view()),
+                 name='task_manager'),
              url(r'^taskexport/(\d+)/$', 'task_export', name='task_export'),
              url(r'^taskimport/(\d+)/$', 'task_import', name='task_import'),
              )

@@ -35,7 +35,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from livesettings import config_value
-from reversion import revision
+import reversion
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
@@ -148,7 +148,7 @@ def task_export(request, id):
     return response
 
 
-@revision.create_on_success
+@reversion.create_revision
 @login_required
 def task_import(request, id):
     task = get_object_or_404(Task, pk=id)
@@ -315,7 +315,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                  template_name="task_list.html",)
 
 
-@revision.create_on_success
+@reversion.create_revision
 @login_required
 def task_add(request, monitoring_id, organization_id=None):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
@@ -435,7 +435,7 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
             else:
                 if self.object.open:
                     try:
-                        revision.comment = _('Task ready')
+                        reversion.set_comment(_('Task ready'))
                         self.object.ready = True
                     except ValidationError, e:
                         return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -449,7 +449,7 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
             else:
                 if not self.object.approved:
                     try:
-                        revision.comment = _('Task approved')
+                        reversion.set_comment(_('Task approved'))
                         self.object.approved = True
                     except ValidationError, e:
                         return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -462,7 +462,7 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
             else:
                 if not self.object.open:
                     try:
-                        revision.comment = _('Task openned')
+                        reversion.set_comment(_('Task openned'))
                         self.object.open = True
                     except ValidationError, e:
                         return HttpResponse('%s' % e.message_dict.get('__all__')[0])
@@ -474,7 +474,7 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
             if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
                 return HttpResponseForbidden(_('Forbidden'))
             else:
-                revision.comment = _('Task updated')
+                reversion.set_comment(_('Task updated'))
                 crumbs = ['Home', 'Monitoring', 'Organization']
                 breadcrumbs(request, crumbs, self.object)
                 self.extra_context = {
@@ -502,7 +502,6 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
         elif self.kwargs["method"] == 'update':
             return super(TaskManagerView, self).post(request, *args, **kwargs)
 
-    @method_decorator(revision.create_on_success)
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(TaskManagerView, self).dispatch(*args, **kwargs)
