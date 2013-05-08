@@ -32,7 +32,6 @@
         {% endif %}
         {% block extrastyle %}{% endblock %}
 
-        <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{{STATIC_URL}}admin/{% endfilter %}";</script>
         {% url django.views.i18n.javascript_catalog as jsi18nurl %}
         <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
         {{ media|default:"" }}

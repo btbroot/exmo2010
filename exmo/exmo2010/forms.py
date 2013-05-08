@@ -35,11 +35,11 @@ DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.
 
 # основные JS ресурсы для форм с виджетами из админки
 CORE_JS = (
-    settings.ADMIN_MEDIA_PREFIX + 'js/core.js',
-    settings.ADMIN_MEDIA_PREFIX + 'js/admin/RelatedObjectLookups.js',
+    settings.STATIC_URL + 'admin/js/core.js',
+    settings.STATIC_URL + 'admin/js/admin/RelatedObjectLookups.js',
     settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
-    settings.ADMIN_MEDIA_PREFIX + 'js/jquery.init.js',
-    settings.ADMIN_MEDIA_PREFIX + 'js/actions.min.js',
+    settings.STATIC_URL + 'admin/js/jquery.init.js',
+    settings.STATIC_URL + 'admin/js/actions.min.js',
 )
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
@@ -98,7 +98,7 @@ class TagAutocomplete(Textarea):
             'all': ('%s/jquery.autocomplete.css' % js_base_url,)
         }
         js = (
-            '%sjs/jquery.js' % settings.ADMIN_MEDIA_PREFIX,
+            '%sadmin/js/jquery.js' % settings.STATIC_URL,
             '%s/jquery.autocomplete.js' % js_base_url,
         )
 

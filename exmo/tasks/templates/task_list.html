@@ -75,9 +75,9 @@
         <tr>
             <td colspan=5>
             {% if organization %}
-                <a href="{% url exmo2010:task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo2010:task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>
             {% else %}
-                <a href="{% url exmo2010:task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a>
+                <a href="{% url exmo2010:task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>
             {% endif %}
             </td>
         </tr>
@@ -88,10 +88,10 @@
       <td>
         <a href="{% url exmo2010:score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
         {% if perm_admin %}
-            &nbsp;<a href="{% url exmo2010:task_manager object.pk 'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" ></a>&nbsp;
+            &nbsp;<a href="{% url exmo2010:task_manager object.pk 'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
         {% endif %}
         {% if perm_admin and not monitoring.is_publish %}
-            <a href="{% url exmo2010:task_manager object.pk 'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif"></a>
+            <a href="{% url exmo2010:task_manager object.pk 'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif"></a>
         {% endif %}
       </td>
       {% if perm_admin or user.userprofile.is_expertA %}

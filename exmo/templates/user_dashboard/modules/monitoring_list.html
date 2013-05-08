@@ -29,7 +29,7 @@
         {% with obj=child.object_list|first %}
             {% check_object_permission exmo2010.create_monitoring obj as perm %}
         {% if perm %}
-            <li><a href="{% url exmo2010:monitoring_add %}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"></a></li>
+            <li><a href="{% url exmo2010:monitoring_add %}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a></li>
         {% endif %}
         {% endwith %}
         {% endif %}
@@ -45,14 +45,14 @@
                 {% if perm %}
                     &nbsp;
                     <a href="{% url exmo2010:monitoring_manager object.pk 'update' %}">
-                        <img src="{{STATIC_URL}}admin/img/admin/icon_changelink.gif" >
+                        <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" >
                     </a>
                 {% endif %}
                 {% check_object_permission exmo2010.delete_monitoring object as perm %}
                 {% if perm %}
                     &nbsp;
                     <a href="{% url exmo2010:monitoring_manager object.pk 'delete' %}">
-                        <img src="{{STATIC_URL}}admin/img/admin/icon_deletelink.gif" >
+                        <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" >
                     </a>
                 {% endif %}
             {% endif %}

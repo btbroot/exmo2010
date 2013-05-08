@@ -306,7 +306,7 @@ th.table-headers
 thead th,
 tfoot td {
     padding: 2px 5px;
-    background: #e1e1e1 url(../../admin/img/admin/nav-bg.gif) top left repeat-x;
+    background: #e1e1e1 url(../../admin/img/nav-bg.gif) top left repeat-x;
     border-left: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
 }
@@ -398,11 +398,11 @@ table thead th.sorted a {
 }
 
 table thead th.ascending a {
-    background: url(../../admin/img/admin/arrow-up.gif) right .4em no-repeat;
+    background: url(../../admin/img/arrow-up.gif) right .4em no-repeat;
 }
 
 table thead th.descending a {
-    background: url(../../admin/img/admin/arrow-down.gif) right .4em no-repeat;
+    background: url(../../admin/img/arrow-down.gif) right .4em no-repeat;
 }
 
 /* ORDERABLE TABLES */
@@ -413,7 +413,7 @@ table.orderable tbody tr td:hover {
 
 table.orderable tbody tr td:first-child {
     padding-left: 14px;
-    background-image: url(../../admin/img/admin/nav-bg-grabber.gif);
+    background-image: url(../../admin/img/nav-bg-grabber.gif);
     background-repeat: repeat-y;
 }
 
@@ -447,7 +447,7 @@ input.date-picker {
 /* FORM BUTTONS */
 
 .button, input[type=submit], input[type=button], .submit-row input {
-    background: white url(../../admin/img/admin/nav-bg.gif) bottom repeat-x;
+    background: white url(../../admin/img/nav-bg.gif) bottom repeat-x;
     padding: 3px 5px;
     color: black;
     border: 1px solid #bbb;
@@ -455,31 +455,31 @@ input.date-picker {
 }
 
 .button:active, input[type=submit]:active, input[type=button]:active {
-    background-image: url(../../admin/img/admin/nav-bg-reverse.gif);
+    background-image: url(../../admin/img/nav-bg-reverse.gif);
     background-position: top;
 }
 
 .button[disabled], input[type=submit][disabled], input[type=button][disabled] {
-    background-image: url(../../admin/img/admin/nav-bg.gif);
+    background-image: url(../../admin/img/nav-bg.gif);
     background-position: bottom;
     opacity: 0.4;
 }
 
 .button.default, input[type=submit].default, .submit-row input.default {
     border: 2px solid #5b80b2;
-    background: #7CA0C7 url(../../admin/img/admin/default-bg.gif) bottom repeat-x;
+    background: #7CA0C7 url(../../admin/img/default-bg.gif) bottom repeat-x;
     font-weight: bold;
     color: white;
     float: right;
 }
 
 .button.default:active, input[type=submit].default:active {
-    background-image: url(../../admin/img/admin/default-bg-reverse.gif);
+    background-image: url(../../admin/img/default-bg-reverse.gif);
     background-position: top;
 }
 
 .button[disabled].default, input[type=submit][disabled].default, input[type=button][disabled].default {
-    background-image: url(../../admin/img/admin//default-bg.gif);
+    background-image: url(../../admin/img//default-bg.gif);
     background-position: bottom;
     opacity: 0.4;
 }
@@ -515,7 +515,7 @@ input.date-picker {
     font-size: 11px;
     text-align: left;
     font-weight: bold;
-    background: #7CA0C7 url(../../admin/img/admin/default-bg.gif) top left repeat-x;
+    background: #7CA0C7 url(../../admin/img/default-bg.gif) top left repeat-x;
     color: white;
 }
 
@@ -537,15 +537,15 @@ ul.messagelist li {
     margin: 0 0 3px 0;
     border-bottom: 1px solid #ddd;
     color: #666;
-    background: #ffc url(../../admin/img/admin/icon_success.gif) 5px .3em no-repeat;
+    background: #ffc url(../../admin/img/icon_success.gif) 5px .3em no-repeat;
 }
 
 ul.messagelist li.warning{
-    background-image: url(../../admin/img/admin/icon_alert.gif);
+    background-image: url(../../admin/img/icon_alert.gif);
 }
 
 ul.messagelist li.error{
-    background-image: url(../../admin/img/admin/icon_error.gif);
+    background-image: url(../../admin/img/icon_error.gif);
 }
 
 .errornote {
@@ -555,7 +555,7 @@ ul.messagelist li.error{
     margin: 0 0 3px 0;
     border: 1px solid red;
     color: red;
-    background: #ffc url(../../admin/img/admin/icon_error.gif) 5px .3em no-repeat;
+    background: #ffc url(../../admin/img/icon_error.gif) 5px .3em no-repeat;
 }
 
 ul.errorlist {
@@ -570,7 +570,7 @@ ul.errorlist {
     margin: 0 0 3px 0;
     border: 1px solid red;
     color: white;
-    background: red url(../../admin/img/admin/icon_alert.gif) 5px .3em no-repeat;
+    background: red url(../../admin/img/icon_alert.gif) 5px .3em no-repeat;
 }
 
 .errorlist li a {
@@ -606,7 +606,7 @@ div.system-message p.system-message-title {
     padding: 4px 5px 4px 25px;
     margin: 0;
     color: red;
-    background: #ffc url(../../admin/img/admin/icon_error.gif) 5px .3em no-repeat;
+    background: #ffc url(../../admin/img/icon_error.gif) 5px .3em no-repeat;
 }
 
 .description {

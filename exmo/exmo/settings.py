@@ -62,7 +62,6 @@ USE_ETAGS = True
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # path to project media and static files:
 MEDIA_ROOT = path_to_project('../media')

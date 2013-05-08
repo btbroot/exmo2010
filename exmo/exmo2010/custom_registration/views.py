@@ -28,9 +28,9 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.conf import settings
 from django.forms.fields import Field
-from django.views.csrf import CSRF_FAILRE_TEMPLATE
+from django.views.csrf import CSRF_FAILURE_TEMPLATE
 from django.middleware.csrf import REASON_NO_CSRF_COOKIE
-from django.middleware.csrf import REASON_NO_COOKIE, REASON_NO_REFERER
+from django.middleware.csrf import REASON_NO_REFERER
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
@@ -284,10 +284,10 @@ def csrf_failure(request, reason=""):
     Cross Site Request Forgery protection. Переписана для того,
     чтобы объясняла пользователю о выключенных cookies в браузере.
     """
-    if reason == REASON_NO_COOKIE or reason == REASON_NO_CSRF_COOKIE:
+    if reason == REASON_NO_CSRF_COOKIE:
         return render_to_response('cookies.html', RequestContext(request))
     else:
-        t = Template(CSRF_FAILRE_TEMPLATE)
+        t = Template(CSRF_FAILURE_TEMPLATE)
         c = Context({'DEBUG': settings.DEBUG,
                      'reason': reason,
                      'no_referer': reason == REASON_NO_REFERER
