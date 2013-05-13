@@ -2992,20 +2992,20 @@ msgstr "Модули"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
-#~ msgid "Coherent parameters"
-#~ msgstr "Согласованные параметры"
+msgid "Coherent parameters"
+msgstr "Согласованные параметры"
 
-#~ msgid "Task filtering"
-#~ msgstr "Фильтрация задач"
+msgid "Task filtering"
+msgstr "Фильтрация задач"
 
-#~ msgid "Experts"
-#~ msgstr "Эксперты"
+msgid "Experts"
+msgstr "Эксперты"
 
-#~ msgid "Presence of the parameter"
-#~ msgstr "Наличие параметра"
+msgid "Presence of the parameter"
+msgstr "Наличие параметра"
 
-#~ msgid "Criterion"
-#~ msgstr "Критерий"
+msgid "Criterion"
+msgstr "Критерий"
 
-#~ msgid "Scores"
-#~ msgstr "Оценки"
+msgid "Scores"
+msgstr "Оценки"
