@@ -148,7 +148,7 @@ def task_export(request, id):
     return response
 
 
-@reversion.create_revision
+@reversion.create_revision()
 @login_required
 def task_import(request, id):
     task = get_object_or_404(Task, pk=id)
@@ -315,7 +315,7 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
                  template_name="task_list.html",)
 
 
-@reversion.create_revision
+@reversion.create_revision()
 @login_required
 def task_add(request, monitoring_id, organization_id=None):
     monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
