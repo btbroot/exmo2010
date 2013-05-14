@@ -27,14 +27,24 @@
         {{ hidden }}
     {% endfor %}
 
+    {% if form.non_field_errors %}
+        <ul class="errorlist">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <table class="table-implicit">
          {% for field in form %}
             {% if field.errors %}
                 <tr>
                     <td colspan="2">
+                        <ul class="errorlist">
                         {% for error in field.errors %}
-                            <span class="form-error">{{ error }}</span>{% if not forloop.last %}, {% endif %}
+                           <li>{{ error }}</li>
                         {% endfor %}
+                        </ul>
                     </td>
                 </tr>
             {% endif %}
@@ -61,4 +71,12 @@
             </td>
         </tr>
     </table>
+    <div id="help-text" style="display: none">
+        <p id="help-emails" class="alert-info">
+            {% trans "Enter a list of emails separating them by commas, spaces or newlines." %}
+        </p>
+        <p id="help-phones" class="alert-info">
+            {% trans "Enter a list of phone numbers separating them by commas, spaces or newlines." %}
+        </p>
+    </div>
 </form>

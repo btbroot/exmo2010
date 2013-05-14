@@ -172,3 +172,13 @@ td.comment .preview-container {
     height: 17px;
     overflow: hidden;
 }
+
+#help-text
+{
+    position: absolute;
+    width: 450px;
+    background-image: url(../img/registration-triangle.png);
+    background-position: 0px 10px;
+    background-repeat: no-repeat;
+    padding-left: 9px;
+}

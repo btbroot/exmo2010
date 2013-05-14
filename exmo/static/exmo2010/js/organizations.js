@@ -29,6 +29,23 @@ $(document).ready(function () {
         });
     });
 
+    function helptextHandler( e ) {
+        var top = $(e.target).position().top;
+        var left = $(e.target).position().left + $(e.target).width() + 15;
+        $('#help-text').show();
+        $('#help-text').css('top', top);
+        $('#help-text').css('left', left);
+        $('.alert-info').hide();
+        $(e.data.p).show();
+    }
+
+    $("#id_org-email").focusin({p: '#help-emails'}, helptextHandler);
+    $("#id_org-phone").focusin({p: '#help-phones'}, helptextHandler);
+
+    $("input[type='text']").focusout(function(){
+        $('#help-text').hide();
+    });
+
     return $('a[data-toggle="tab"]').on('shown', function(e) {
       return location.hash = $(e.target).attr('href').substr(1);
     });

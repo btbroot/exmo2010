@@ -20,12 +20,19 @@
 #
 {% endcomment %}
 {% load i18n adminmedia %}
-{% block extrahead %}{{ block.super }}
-{% url django.views.i18n.javascript_catalog as jsi18nurl %}
-<script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
-{{ media }}
-{{ form.media }}
+
+{% block extrahead %}
+    {{ block.super }}
+    {% url django.views.i18n.javascript_catalog as jsi18nurl %}
+    <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+    {{ media }}
+    {{ form.media }}
+
+    <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery-ui.min.js" ></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/organizations.js"></script>
 {% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/organizations.css"/>

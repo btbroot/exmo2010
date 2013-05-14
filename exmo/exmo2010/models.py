@@ -25,6 +25,7 @@ EXMO2010 Models module
 import datetime
 import string
 import random
+import re
 
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
@@ -33,6 +34,7 @@ from django.db import models, IntegrityError
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
+from django.utils.encoding import smart_unicode
 from tagging.models import Tag
 
 from core.fields import TagField
@@ -349,9 +351,46 @@ class OrganizationMngr(models.Manager):
             o.save()
 
 
+phone_re = re.compile(r'([+]?[78]+)?[- ]?[(]?(\d{3})?[)]?[-\. ]?(\d{2,3})[-\. ]?(\d{2})[-\. ]?(\d{2})')
+email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})')
+delimiters_re = re.compile(r',|\s|$')
+
+
+class EmailsField(models.TextField):
+    def to_python(self, value):
+        sub_emails = re.sub(email_re, '', value)
+        sub_emails = re.sub(delimiters_re, '', sub_emails)
+        if sub_emails:
+            raise ValidationError(_('Illegal symbols in email'))
+        emails = re.findall(email_re, value)
+        addresses = ""
+        for e in emails:
+            email = e[0] + ", "
+            addresses += email
+        return addresses.rstrip(", ")
+
+
+class PhonesField(models.TextField):
+    def to_python(self, value):
+        value = re.sub('(\(|\)|\s+)', '', smart_unicode(value))
+        sub_phones = re.sub(phone_re, '', value)
+        sub_phones = re.sub(delimiters_re, '', sub_phones)
+        if sub_phones:
+            raise ValidationError(_('Illegal symbols in phone'))
+        phones = re.findall(phone_re, value)
+        numbers = ""
+        for p in phones:
+            number = ""
+            if p[0] or p[1]:
+                number = p[0] + "(" + p[1] + ")"
+            number += p[2] + "-" + p[3] + "-" + p[4] + ", "
+            numbers += number
+        return numbers.rstrip(", ")
+
+
 class Organization(models.Model):
     """ Fields:
-    name -- Uniq organization name
+    name -- Unique organization name
     url -- Internet site URL
     email -- list of emails
     phone -- list of phones
@@ -362,8 +401,8 @@ class Organization(models.Model):
     name = models.CharField(max_length=255, verbose_name=_('name'))
     url = models.URLField(max_length=255, null=True, blank=True, verify_exists=False, verbose_name=_('url'))
     keywords = TagField(null=True, blank=True, verbose_name=_('keywords'))
-    email = models.TextField(null=True, blank=True, verbose_name=_('email'))
-    phone = models.TextField(null=True, blank=True, verbose_name=_('phone'))
+    email = EmailsField(null=True, blank=True, verbose_name=_('email'))
+    phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
     comments = models.TextField(null=True, blank=True, verbose_name=_('comments'))
     monitoring = models.ForeignKey(Monitoring, verbose_name=_('monitoring'))
     inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True)
