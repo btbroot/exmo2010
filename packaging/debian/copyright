@@ -21,7 +21,7 @@ Files: debian/exmo/exmo2010/static/exmo2010/img/arrow_down_parameters.png
        debian/exmo/exmo2010/static/exmo2010/img/arrow_up_parameters.png
        debian/exmo/exmo2010/static/exmo2010/img/settings.png
        debian/exmo/exmo2010/static/exmo2010/img/exit.png
-Copyright: 2013, Aha-Soft
+Copyright: 2009, Aha-Soft <http://www.small-icons.com/stock-icons/16x16-free-application-icons.htm>
 License: CC-BY-SA
 
 Files: debian/exmo/exmo2010/static/dashboard/img/breadcrumb_arrow.png
