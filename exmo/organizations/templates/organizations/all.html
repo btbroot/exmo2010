@@ -88,12 +88,13 @@
                             {{ object.task__count }}
                         </td>
                     {% endif %}
-
-                    {% with object.inv_status as status %}
-                        <td style="color: {% if status == 'NTS' %}#FF6262{% endif %}{% if status == 'RD' %}#FFB76F{% endif %}{% if status == 'ACT' or status == 'REG' %}#54A754{% endif %}">
-                            {{ object.get_inv_status_display|default_if_none:'' }}
-                        </td>
-                    {% endwith %}
+                    {% if sent %}
+                        {% with object.inv_status as status %}
+                            <td style="color: {% if status == 'NTS' %}#FF6262{% endif %}{% if status == 'RD' %}#FFB76F{% endif %}{% if status == 'ACT' or status == 'REG' %}#54A754{% endif %}">
+                                {{ object.get_inv_status_display|default_if_none:'' }}
+                            </td>
+                        {% endwith %}
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>

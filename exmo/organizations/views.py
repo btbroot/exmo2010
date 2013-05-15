@@ -85,6 +85,7 @@ def organization_list(request, monitoring_id):
                 ),
             }
         )
+
         headers = (
             (_('organization'), 'name', None, None, None),
             (_('email'), 'email', None, None, None),
@@ -109,6 +110,11 @@ def organization_list(request, monitoring_id):
             (_('invitation code'), 'inv_code', None, None, None),
             (_('invitation'), 'inv_status', None, None, None),
         )
+
+    if not sent:
+        headers_list = list(headers)
+        headers_list.pop()
+        headers = tuple(headers_list)
 
     if name_filter:
         queryset = queryset.filter(name__icontains=name_filter)
