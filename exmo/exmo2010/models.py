@@ -351,9 +351,11 @@ class OrganizationMngr(models.Manager):
             o.save()
 
 
-phone_re = re.compile(r'([+][0-9\-]+)?[- ]?([0-9,(,) ]{4,13})?[-\. ]?(\d{2})[-\. ]?(\d{2})')
+phone_re = re.compile(r'([+])?([\d()\s\-]+)[-\.\s]?(\d{2})[-\.\s]?(\d{2})')
+phone_re_reverse = re.compile(r'(\d{2})[-\.\s]?(\d{2})[-\.\s]?([\d()\s\-]+)([+])?')
 email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})')
-delimiters_re = re.compile(r',|\s|$')
+delimiters_re = re.compile(r',|\s||(,\s)|\n|(,\n)')
+
 
 
 class EmailsField(models.TextField):
@@ -376,7 +378,21 @@ class PhonesField(models.TextField):
         sub_phones = re.sub(delimiters_re, '', sub_phones)
         if sub_phones:
             raise ValidationError(_('Illegal symbols in phone'))
-        return value
+        phones = re.split(r',|\n', value)
+        numbers = ""
+        for p in phones:
+            p = p.rstrip()
+            p = p.lstrip()
+            if " " in p or "-" in p:
+                number = p
+            else:
+                ntmp = re.findall(phone_re_reverse, p[::-1])[0]
+                print(ntmp)
+                number = ntmp[3][::-1] + ntmp[2][::-1] + "-" + ntmp[1][::-1] + "-" + ntmp[0][::-1]
+
+            number += ", "
+            numbers += number
+        return numbers.rstrip(", ")
 
 
 class Organization(models.Model):

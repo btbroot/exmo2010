@@ -1872,9 +1872,11 @@ msgstr "Введите список адресов, разделяя их зап
 
 #: organizations/templates/organizations/form.html:79
 msgid ""
-"Enter a list of phone numbers separating them by commas, spaces or newlines."
+"Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating "
+"them by commas or newlines."
 msgstr ""
-"Введите список телефонов, разделяя их запятыми, пробелами или переносами строки."
+"Введите список телефонов в формате +x(xxx)xxx-xx-xx, разделяя их "
+"запятыми или переносами строки."
 
 #: organizations/templates/organizations/history.html:46
 #: organizations/templates/organizations/invite.html:31
