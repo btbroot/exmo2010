@@ -18,19 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import datetime
-from django.shortcuts import get_object_or_404
+
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from django.views.generic.edit import ProcessFormView, ModelFormMixin
+
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
-from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from core.helpers import table
-from core.utils import send_email
+from core.tasks import send_email
+from exmo2010.models import EmailTasks, Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from organizations.forms import OrganizationForm, InviteOrgsForm
 
 
@@ -47,7 +49,7 @@ def organization_list(request, monitoring_id):
     title = _('Organizations for monitoring %s') % monitoring
 
     orgs = Organization.objects.filter(monitoring=monitoring)
-    sent = orgs.filter(inv_status='SNT')
+    sent = orgs.exclude(inv_status='NTS')
 
     initial = {'monitoring': monitoring}
 
@@ -63,10 +65,23 @@ def organization_list(request, monitoring_id):
             if inv_status != 'ALL':
                 orgs = orgs.filter(inv_status=inv_status)
 
-            for item in orgs:
-                message = comment.replace('%code%', item.inv_code)
-                emails = filter(None, item.email.split(', '))
-                send_email.delay(emails, _('Email Subject'), message)
+            for org in orgs:
+                subject = _('Email Subject')
+                message = comment.replace('%code%', org.inv_code)
+                context = {
+                    'subject': subject,
+                    'message': message
+                }
+                if org.email:
+                    emails = filter(None, org.email.split(', '))
+                else:
+                    continue
+                task_id = send_email.delay(emails, subject, 'organizations/invitation_email', context=context, mdn=True)
+
+                task = EmailTasks()
+                task.task_id = task_id
+                task.organization = org
+                task.save()
 
             redirect = reverse('exmo2010:organization_list', args=[monitoring_id])+"?alert=success"
             return HttpResponseRedirect(redirect)

@@ -17,8 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.db.models.signals import post_save
-from django.db.models.signals import pre_save
+from django.db.models.signals import *
 from django.conf import settings
 from django.contrib.comments.signals import comment_will_be_posted
 from django.contrib.comments.signals import comment_was_posted
@@ -27,7 +26,7 @@ from claims.views import claim_notification
 from clarifications.views import clarification_notification
 from custom_comments.views import comment_change_status, comment_notification
 from exmo2010.helpers import *
-from exmo2010.models import Monitoring, Score
+from exmo2010.models import Monitoring, Score, UserProfile
 from exmo2010.signals import *
 from scores.views import create_revision, score_change_notify
 from tasks.views import task_user_change_notify
@@ -46,3 +45,6 @@ pre_save.connect(create_revision, sender=Score)
 # Регистрация хэндлера для сигнала перед отправкой комментария,
 # хэндлер изменяет статус комментариев.
 comment_was_posted.connect(comment_change_status)
+
+# invoke signal when 'organization' field at UserProfile was changed
+m2m_changed.connect(org_changed, sender=UserProfile.organization.through)

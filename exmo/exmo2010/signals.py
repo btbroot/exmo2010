@@ -27,3 +27,15 @@ claim_was_posted_or_deleted = Signal(providing_args=["claim", "request", "creati
 clarification_was_posted = Signal(providing_args=["clarification", "request"])
 score_was_changed = Signal(providing_args=["form", "request"])
 task_user_changed = Signal()
+
+
+def org_changed(sender, instance, action, **kwargs):
+    """
+    Change organization`s invitation status if current user is the first member of this organization.
+
+    """
+    if action == 'post_add':
+        for org in instance.organization.all():
+            if org.userprofile_set.count():
+                org.inv_status = 'RGS'
+                org.save()

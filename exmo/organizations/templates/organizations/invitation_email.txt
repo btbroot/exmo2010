@@ -1,3 +1,4 @@
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -16,41 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+{% endcomment %}
 
-Django==1.4.5
-MySQL-python==1.2.3
-Pillow==1.7.8
-South==0.7.5
-amqp==1.0.11
-amqplib==1.0.2
-anyjson==0.3.3
-argparse==1.2.1
-celery==2.5.2
-distribute==0.6.38
-django-annoying==0.7.6
-django-breadcrumbs==1.1.3-p1
-django-celery==2.5.5
-django-celery-with-mongodb==2.5
-django-ckeditor==3.6.2.1
-django-extensions==0.6
-django-keyedcache==1.4-6
-django-livesettings==1.4-12
-django-picklefield==0.3.0
-django-registration==0.8
-django-reversion==1.6.0
-django-tagging==0.3.1
-django-tagging-autocomplete==0.3.1
-django-wysiwyg==0.5
-feedparser==5.1.2
-kombu==2.5.10
-lxml==2.3.5
-mercurial==2.6-rc
-pymongo==2.1
-python-dateutil==1.5
-pytils==0.2.3
-pytz==2013b
-simplejson==2.6.2
-git+https://github.com/bsavelev/django403.git
-git+https://github.com/bsavelev/django-tagging.git
-git+https://github.com/bsavelev/django-tagging-autocomplete.git
-hg+https://bitbucket.org/bsavelev/django-admin-tools
+{% load i18n %}
+
+{{ subject }}
+
+{{ message }}

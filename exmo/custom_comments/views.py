@@ -121,7 +121,7 @@ def comment_notification(sender, **kwargs):
     nonadmin_users = User.objects.filter(
         userprofile__organization=score.task.organization,
         email__isnull=False,
-    ).exclude(email__exact='').distinct('email')
+    ).exclude(email__exact='').distinct()
 
     for user in nonadmin_users:
         if user.email and user.email not in admin_rcpt and \

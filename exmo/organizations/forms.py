@@ -51,13 +51,6 @@ class OrganizationForm(forms.ModelForm):
 
 class InviteOrgsForm(forms.ModelForm):
 
-    def is_valid(self):
-
-        if '%code%' not in self.data['comment']:
-            return False
-
-        return super(InviteOrgsForm, self).save()
-
     class Meta:
         model = InviteOrgs
         exclude = ('timestamp',)

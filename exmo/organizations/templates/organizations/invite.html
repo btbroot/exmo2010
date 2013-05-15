@@ -21,6 +21,16 @@
 
 {% load i18n wysiwyg %}
 
+{% if alert %}
+        <p class="alert-{{ alert }}">
+            {% ifequal alert 'success' %}
+                {% trans 'Invitations was sent.' %}
+            {% else %}
+                {% trans 'Invitations was failed.' %}
+            {% endifequal %}
+        </p>
+{% endif %}
+
 {% wysiwyg_setup %}
 <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
 

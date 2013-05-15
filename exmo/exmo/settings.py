@@ -188,6 +188,11 @@ USE_EMAIL = True
 SERVER_EMAIL = 'www-data@svobodainfo.org'
 FORCE_SCRIPT_NAME = ""
 
+# imap server:
+IMAP_SERVER = 'imap.example.com'
+IMAP_LOGIN = 'example@example.com'
+IMAP_PASSWORD = 'password'
+
 # registration
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -209,15 +214,11 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 CACHE_PATH = path_to_project('../cache')
 CACHE_PREFIX = 'Cache'
-CACHE_TIMEOUT = 600
-#old variant
-CACHE_BACKEND = 'file://' + CACHE_PATH + '?timeout=' + str(CACHE_TIMEOUT)
-#new variant
+CACHE_TIMEOUT = 0
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': CACHE_PATH,
-        'TIMEOUT': CACHE_TIMEOUT,
     }
 }
 
@@ -235,23 +236,6 @@ ADMIN_TOOLS_MENU = {
 
 ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
 
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-    'debug_toolbar_user_panel.panels.UserPanel',
-)
-
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-}
-
 DATE_INPUT_FORMATS = (
     '%d.%m.%Y',
     '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
@@ -259,10 +243,13 @@ DATE_INPUT_FORMATS = (
     '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
 )
 
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+BROKER_URL = 'mongodb://user:password@hostname:port/database_name'
+CELERY_RESULT_BACKEND = 'database'
 
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_ALWAYS_EAGER = False
+CELERY_TASK_RESULT_EXPIRES = 18000
+CELERND_TASK_ERROR_EMAILS = True
 
 try:
     from local_settings import *

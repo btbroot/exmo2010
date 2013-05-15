@@ -455,6 +455,15 @@ class InviteOrgs(models.Model):
                                   verbose_name=_('Invitation status'))
 
 
+class EmailTasks(models.Model):
+    """
+    Model with tasks ids for each organization (used by celery).
+
+    """
+    organization = models.ForeignKey(Organization, verbose_name=_('organization'))
+    task_id = models.CharField(max_length=60, verbose_name=_('task id'), db_index=True)
+
+
 class Parameter(models.Model):
     """Параметр."""
     code = models.PositiveIntegerField(verbose_name=_('code'))

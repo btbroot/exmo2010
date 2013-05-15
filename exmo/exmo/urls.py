@@ -17,13 +17,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls.defaults import *
-from django.contrib import admin
+from django.conf.urls import *
 from django.conf import settings
-from django.http import HttpResponsePermanentRedirect
+from django.contrib import admin
 from django.core.urlresolvers import reverse
-from core.helpers import TemplateView
+from django.http import HttpResponsePermanentRedirect
+
 from core import site as exmo
+from core.helpers import TemplateView
 admin.autodiscover()
 
 
@@ -41,5 +42,5 @@ urlpatterns = patterns('',
     url(r'^ckeditor/', include('ckeditor.urls')),
 )
 
-if settings.DEBUG:
+if 'debug_toolbar' in settings.INSTALLED_APPS:
     urlpatterns += (url(r'', include('debug_toolbar_user_panel.urls')),)

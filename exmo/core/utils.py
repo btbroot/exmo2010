@@ -26,15 +26,10 @@ import codecs
 import csv
 import cStringIO
 import inspect
-import os
 import re
 from dateutil import rrule
 from dateutil.rrule import DAILY
 from lxml.html.clean import Cleaner
-from celery.task import task
-from django.core.mail import send_mail
-from django.conf import settings
-from livesettings import config_value
 
 
 def disable_for_loaddata(signal_handler):
@@ -167,50 +162,3 @@ def clean_message(comment):
     comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,4}(?=(</span>)$)', '', comment)
     comment = re.sub(r'(<br>){1,2}(?=(</p>)$)', '', comment)
     return comment
-
-
-@task(default_retry_delay=10 * 60, max_retries=5, rate_limit="500/h", ignore_result=True)
-def send_email(rcpt, subject, message, **kwargs):
-    if not isinstance(rcpt, (tuple, list)):
-        rcpt = [rcpt, ]
-
-    use_html = kwargs.get("use_html", False)
-    alternative = kwargs.get("alternative", "")
-    insert_logo = kwargs.get("insert_logo", "")
-    attachments = kwargs.get("attachments", {})
-
-    if use_html:
-        strFrom = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
-
-        from django.core.mail import EmailMultiAlternatives
-        from email.MIMEImage import MIMEImage
-
-        msg = EmailMultiAlternatives(subject, alternative, strFrom, rcpt)
-        msg.attach_alternative(message, "text/html")
-
-        if insert_logo:
-            fp = open(os.path.join(settings.STATIC_ROOT, "img", insert_logo), 'rb')
-            msgImage = MIMEImage(fp.read())
-            fp.close()
-
-            msgImage.add_header('Content-ID', '<logo>')
-            msgImage.add_header('Content-Disposition', 'inline')
-
-            msg.attach(msgImage)
-
-        for cid in attachments:
-            try:
-                fp = open(os.path.join(settings.STATIC_ROOT, attachments[cid]), 'rb')
-            except:
-                continue
-            msgImage = MIMEImage(fp.read())
-            fp.close()
-
-            msgImage.add_header('Content-ID', '<%s>' % cid)
-            msgImage.add_header('Content-Disposition', 'inline')
-
-            msg.attach(msgImage)
-
-        msg.send()
-    else:
-        send_mail(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'), rcpt)
