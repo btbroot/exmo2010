@@ -351,7 +351,7 @@ class OrganizationMngr(models.Manager):
             o.save()
 
 
-phone_re = re.compile(r'([+]?[78]+)?[- ]?[(]?(\d{3})?[)]?[-\. ]?(\d{2,3})[-\. ]?(\d{2})[-\. ]?(\d{2})')
+phone_re = re.compile(r'([+][0-9\-]+)?[- ]?([0-9,(,) ]{4,13})?[-\. ]?(\d{2})[-\. ]?(\d{2})')
 email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})')
 delimiters_re = re.compile(r',|\s|$')
 
@@ -372,20 +372,11 @@ class EmailsField(models.TextField):
 
 class PhonesField(models.TextField):
     def to_python(self, value):
-        value = re.sub('(\(|\)|\s+)', '', smart_unicode(value))
         sub_phones = re.sub(phone_re, '', value)
         sub_phones = re.sub(delimiters_re, '', sub_phones)
         if sub_phones:
             raise ValidationError(_('Illegal symbols in phone'))
-        phones = re.findall(phone_re, value)
-        numbers = ""
-        for p in phones:
-            number = ""
-            if p[0] or p[1]:
-                number = p[0] + "(" + p[1] + ")"
-            number += p[2] + "-" + p[3] + "-" + p[4] + ", "
-            numbers += number
-        return numbers.rstrip(", ")
+        return value
 
 
 class Organization(models.Model):
