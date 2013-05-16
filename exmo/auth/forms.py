@@ -29,8 +29,10 @@ from livesettings import config_value
 
 class CustomPasswordResetForm(PasswordResetForm):
 
-    def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
-             use_https=False, token_generator=default_token_generator, from_email=None, request=None):
+    def save(self, domain_override=None,
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None, **kwargs):
         """
         Sending emails with html content only.
 
