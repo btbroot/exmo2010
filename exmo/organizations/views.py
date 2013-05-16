@@ -19,6 +19,7 @@
 #
 from datetime import datetime
 
+from celery.result import AsyncResult
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -48,8 +49,20 @@ def organization_list(request, monitoring_id):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring
 
-    orgs = Organization.objects.filter(monitoring=monitoring)
-    sent = orgs.exclude(inv_status='NTS')
+    all_orgs = Organization.objects.filter(monitoring=monitoring)
+    orgs = all_orgs.filter(inv_status='NTS')
+
+    for org in orgs:
+        org_tasks = org.emailtasks_set.all()
+
+        for task in org_tasks:
+            res = AsyncResult(task.task_id)
+            if res.successful():
+                org.inv_status = 'SNT'
+                org.save()
+                break
+
+    sent = all_orgs.exclude(inv_status='NTS')
 
     initial = {'monitoring': monitoring}
 
