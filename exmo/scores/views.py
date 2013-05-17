@@ -19,8 +19,6 @@
 #
 
 import datetime
-from reversion import revision
-
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -39,6 +37,8 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.detail import DetailView
 from livesettings import config_value
+from reversion import revision
+
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from custom_comments.models import CommentExmo
@@ -119,10 +119,17 @@ class ScoreAddView(ScoreMixin, CreateView):
         return super(ScoreAddView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=args[0])
-        parameter = get_object_or_404(Parameter, pk=args[1])
-        self.success_url = self.get_redirect(request, task, parameter)
+        self.task = get_object_or_404(Task, pk=args[0])
+        self.parameter = get_object_or_404(Parameter, pk=args[1])
+        self.success_url = self.get_redirect(request, self.task, self.parameter)
         return super(ScoreAddView, self).post(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        self.extra_context = {
+            'task': self.task,
+            'parameter': self.parameter,
+        }
+        return super(ScoreAddView, self).form_invalid(form)
 
 
 class ScoreDeleteView(LoginRequiredMixin, ScoreMixin, DeleteView):
@@ -187,6 +194,13 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
 
         self.success_url = self.get_redirect(request)
         return super(ScoreEditView, self).post(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        self.extra_context = {
+            'task': self.object.task,
+            'parameter': self.object.parameter,
+        }
+        return super(ScoreEditView, self).form_invalid(form)
 
 
 class ScoreDetailView(ScoreMixin, DetailView):
