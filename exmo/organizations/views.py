@@ -79,7 +79,7 @@ def organization_list(request, monitoring_id):
                 orgs = orgs.filter(inv_status=inv_status)
 
             for org in orgs:
-                subject = _('Email Subject')
+                subject = _('Invitation to interact with EXMO system')
                 message = comment.replace('%code%', org.inv_code)
                 context = {
                     'subject': subject,
