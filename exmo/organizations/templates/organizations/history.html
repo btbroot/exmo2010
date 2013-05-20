@@ -23,6 +23,7 @@
 
 <table class="base-table history">
     <tbody>
+            {% if sent %}
             <tr>
                 <td colspan="3">
                     <form action="" method="GET">
@@ -37,7 +38,7 @@
                     </form>
                 </td>
             </tr>
-
+            {% endif %}
             <tr class="heading">
                 <td>
                     {% trans "Date and time" %} <span class="arrow">↓</span>
