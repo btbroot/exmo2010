@@ -21,17 +21,17 @@ from datetime import timedelta, datetime
 
 from django.contrib.auth.models import User
 from django.contrib.comments import Comment
-from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
 from bread_crumbs.views import breadcrumbs
 from core.helpers import get_experts
+from core.tasks import send_email
 from exmo2010.models import Organization, Score, Task, UserProfile
 
 
@@ -75,7 +75,6 @@ def comment_notification(sender, **kwargs):
     comment = kwargs['comment']
     comments = [comment]
     user = comment.user
-    email = user.email
     request = kwargs['request']
     score = comment.content_object
     admin_rcpt, nonadmin_rcpt = [], []
@@ -91,11 +90,6 @@ def comment_notification(sender, **kwargs):
         'monitoring': score.task.organization.monitoring,
         'org': score.task.organization.name.split(':')[0],
         'code': score.parameter.code,
-    }
-
-    headers = {
-        'X-iifd-exmo': 'comment_notification',
-        'X-iifd-exmo-comment-organization-url': score.task.organization.url,
     }
 
     if user.profile.notify_comment_preference.get('self', False):
@@ -136,33 +130,25 @@ def comment_notification(sender, **kwargs):
                          reverse('exmo2010:score_view',
                          args=[score.pk]))
 
-    t_plain = loader.get_template('score_comment.txt')
-    t_html = loader.get_template('score_comment.html')
-
     context = {'score': score,
                'user': user,
                'comments': comments,
                'url': url}
 
-    _send_mails(t_plain, t_html, context, False, email,
-                subject, headers, nonadmin_one_comment)
-    _send_mails(t_plain, t_html, context, True, email,
-                subject, headers, admin_one_comment)
+    _send_mails(context, False, subject, nonadmin_one_comment)
+    _send_mails(context, True, subject, admin_one_comment)
 
     context['comments'] = list(Comment.objects.filter(
         object_pk=comment.object_pk
     )) + comments
 
-    _send_mails(t_plain, t_html, context, False, email,
-                subject, headers, nonadmin_all_comments)
-    _send_mails(t_plain, t_html, context, True, email,
-                subject, headers, admin_all_comments)
+    _send_mails(context, False, subject, nonadmin_all_comments)
+    _send_mails(context, True, subject, admin_all_comments)
 
 
 def _comments_lists(rcpt):
     """
     Get emails lists for comments branch and single comment.
-
     """
     branch, comment = [], []
     for user in rcpt:
@@ -174,29 +160,15 @@ def _comments_lists(rcpt):
     return list(set(branch)), list(set(comment))
 
 
-def _send_mails(plain, html, context, admin, email, subject, headers, rcpts):
+def _send_mails(context, admin, subject, rcpts):
     """
     Sending comments notification mails.
-
     """
     context['admin'] = admin
 
-    c = Context(context)
-
-    message_plain = plain.render(c)
-    message_html = html.render(c)
-
     for rcpt in rcpts:
-        if rcpt == email:
-            headers['X-iifd-exmo-comment-self'] = 'True'
-        email = EmailMultiAlternatives(subject,
-                                       message_plain,
-                                       config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                       [rcpt],
-                                       [],
-                                       headers=headers,)
-        email.attach_alternative(message_html, "text/html")
-        email.send()
+        "".join(rcpt.split())
+        send_email.delay(rcpt, subject, 'score_comment', context=context)
 
 
 def comment_change_status(sender, **kwargs):

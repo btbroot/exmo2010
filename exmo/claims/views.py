@@ -18,11 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib.auth.decorators import login_required
-from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
@@ -31,6 +30,7 @@ from livesettings import config_value
 from bread_crumbs.views import breadcrumbs
 from claims.forms import *
 from core.helpers import get_experts
+from core.tasks import send_email
 from exmo2010.models import Claim, Monitoring, Score
 from exmo2010.signals import claim_was_posted_or_deleted
 
@@ -274,11 +274,6 @@ def claim_list(request):
 
 
 def claim_notification(sender, **kwargs):
-    """
-    Оповещение о претензиях.
-
-    """
-
     claim = kwargs['claim']
     request = kwargs['request']
     creation = kwargs['creation']
@@ -299,22 +294,12 @@ def claim_notification(sender, **kwargs):
                          reverse('exmo2010:score_view',
                                  args=[score.pk]))
 
-    t_plain = loader.get_template('score_claim.txt')
-    t_html = loader.get_template('score_claim.html')
-
-    c = Context({'score': score,
-                 'claim': claim,
-                 'url': url,
-                 'creation': creation,
-                 'current_user': request.user.userprofile.legal_name,
-                 })
-
-    message_plain = t_plain.render(c)
-    message_html = t_html.render(c)
-
-    headers = {
-        'X-iifd-exmo': 'claim_notification'
-    }
+    c = {'score': score,
+         'claim': claim,
+         'url': url,
+         'creation': creation,
+         'current_user': request.user.userprofile.legal_name,
+         }
 
     recipients = list(get_experts().values_list('email', flat=True))
 
@@ -322,11 +307,5 @@ def claim_notification(sender, **kwargs):
         recipients.append(score.task.user.email)
 
     for r in recipients:
-        email = EmailMultiAlternatives(subject,
-                                       message_plain,
-                                       config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                       [r],
-                                       [],
-                                       headers=headers,)
-        email.attach_alternative(message_html, "text/html")
-        email.send()
+        send_email.delay(r, subject, 'score_claim', context=c)
+

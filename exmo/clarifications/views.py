@@ -18,17 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib.auth.decorators import login_required
-from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
 from bread_crumbs.views import breadcrumbs
 from clarifications.forms import *
 from core.helpers import get_experts
+from core.tasks import send_email
 from exmo2010.models import Clarification, Monitoring, Score
 from exmo2010.signals import clarification_was_posted
 
@@ -203,10 +203,6 @@ def clarification_list(request):
 
 
 def clarification_notification(sender, **kwargs):
-    """
-    Оповещение о претензиях.
-
-    """
     clarification = kwargs['clarification']
     request = kwargs['request']
     score = clarification.score
@@ -224,19 +220,9 @@ def clarification_notification(sender, **kwargs):
                          request.get_host(),
                          reverse('exmo2010:score_view', args=[score.pk]))
 
-    t_plain = loader.get_template('score_clarification.txt')
-    t_html = loader.get_template('score_clarification.html')
-
-    c = Context({'score': score,
-                 'clarification': clarification,
-                 'url': url})
-
-    message_plain = t_plain.render(c)
-    message_html = t_html.render(c)
-
-    headers = {
-        'X-iifd-exmo': 'clarification_notification'
-    }
+    c = {'score': score,
+         'clarification': clarification,
+         'url': url}
 
     recipients = list(get_experts().values_list('email', flat=True))
 
@@ -244,11 +230,5 @@ def clarification_notification(sender, **kwargs):
         recipients.append(score.task.user.email)
 
     for r in recipients:
-        email = EmailMultiAlternatives(subject,
-                                       message_plain,
-                                       config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                       [r],
-                                       [],
-                                       headers=headers,)
-        email.attach_alternative(message_html, "text/html")
-        email.send()
+        send_email.delay(r, subject, 'score_clarification', context=c)
+
