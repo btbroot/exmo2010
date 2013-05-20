@@ -17,9 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import email
 import imaplib
 import os
+import re
 import sys
 from email.mime.image import MIMEImage
 
@@ -97,7 +97,7 @@ def send_email(recipients, subject, template_name, **kwargs):
 @periodic_task(run_every=crontab(minute="*/30"))
 def check_mdn_emails():
     """
-    Check unseen emails for MDS (Message Disposition Notification).
+    Check unseen emails for MDN (Message Disposition Notification).
 
     """
     try:
@@ -117,21 +117,25 @@ def check_mdn_emails():
 
     if items[0]:
         for email_id in items[0].split():
-            resp, data = m.fetch(email_id, "(RFC822)")  # fetching the mail, "`(RFC822)`" means "get the whole stuff",
-                                                        # but you can ask for headers only, etc
-            email_body = data[0][1]  # getting the mail content
-            msg = email.message_from_string(email_body)  # parsing the mail content to get a mail object
+            try:
+                resp, data = m.fetch(email_id, "(RFC822)")  # fetching the mail, "(RFC822)" means "get the whole stuff"
+                email_body = data[0][1]  # getting the mail content
 
-            if (msg.is_multipart() and len(msg.get_payload()) > 1 and
-                    msg.get_payload(1).get_content_type() == 'message/disposition-notification'):
-                # email is MDN
-                m.store(email_id, '+FLAGS', '\\Deleted')  # add 'delete' flag
-                task_id = str(msg['References'])[1:-1].split('@')[0]
-                task = EmailTasks.objects.get(task_id=task_id)
-                org = Organization.objects.get(pk=task.organization_id)
-                if org.inv_status in ['SNT', 'NTS']:
-                    org.inv_status = 'RD'
-                    org.save()
+                if email_body.find('message/disposition-notification') != -1:
+                    # email is MDN
+                    match = re.search("Original-Message-ID: <(?P<task>[\w\d.-]+)@(?P<host>[\w\d.-]+)>", email_body)
+
+                    if match:
+                        task_id = match.group('task')
+
+                        task = EmailTasks.objects.get(task_id=task_id)
+                        m.store(email_id, '+FLAGS', '\\Deleted')  # add 'delete' flag
+                        org = Organization.objects.get(pk=task.organization_id)
+                        if org.inv_status in ['SNT', 'NTS']:
+                            org.inv_status = 'RD'
+                            org.save()
+            except:
+                continue
         m.expunge()
 
 

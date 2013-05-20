@@ -76,7 +76,7 @@ def organization_list(request, monitoring_id):
             inv_form.save()
 
             if inv_status != 'ALL':
-                orgs = orgs.filter(inv_status=inv_status)
+                orgs = all_orgs.filter(inv_status=inv_status)
 
             for org in orgs:
                 subject = _('Invitation to interact with EXMO system')
