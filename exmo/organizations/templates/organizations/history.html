@@ -56,9 +56,9 @@
                 </td>
                 <td class="comment">
                     <div class="preview-container">
-                        <a class="pseudo">{{ h.comment|striptags }}</a>
+                        <a class="pseudo">{{ h.comment|safe }}</a>
                     </div>
-                    <div class="full" style="display: none">{{ h.comment|striptags }}</div>
+                    <div class="full" style="display: none">{{ h.comment|safe }}</div>
                 </td>
                 <td>
                     {{ h.get_inv_status_display|default_if_none:'' }}
