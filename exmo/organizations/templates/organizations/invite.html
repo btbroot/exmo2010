@@ -22,13 +22,11 @@
 {% load i18n wysiwyg %}
 
 {% if alert %}
+    {% ifnotequal alert 'success' %}
         <p class="alert-{{ alert }}">
-            {% ifequal alert 'success' %}
-                {% trans 'Invitations was sent.' %}
-            {% else %}
-                {% trans 'Invitations was failed.' %}
-            {% endifequal %}
+            {% trans 'Invitations was failed.' %}
         </p>
+    {% endifnotequal %}
 {% endif %}
 
 {% wysiwyg_setup %}

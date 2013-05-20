@@ -19,8 +19,8 @@
 #
 {% endcomment %}
 {% load i18n %}
-<li{% ifequal request.get_full_path url %} class="selected"{% endifequal %}>
-    {% ifnotequal request.get_full_path url %}<a href="{{ url }}"{% if blank %} target="_blank"{% endif %}>{% endifnotequal %}
+<li{% ifequal request.path url %} class="selected"{% endifequal %}>
+    {% ifnotequal request.path url %}<a href="{{ url }}"{% if blank %} target="_blank"{% endif %}>{% endifnotequal %}
     {% trans title %}
-    {% ifnotequal request.get_full_path url %}</a>{% endifnotequal %}
+    {% ifnotequal request.path url %}</a>{% endifnotequal %}
 </li>
