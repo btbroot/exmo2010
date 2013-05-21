@@ -26,16 +26,25 @@ jQuery.expr[':'].regex = function(elem, index, match) {
         regexFlags = 'ig',
         regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
     return regex.test(jQuery(elem)[attr.method](attr.property));
-}
+};
 
-$(document).ready(function(){
+$(document).ready(function() {
     var $foundDash = $("#id_score-found_0"),
         $foundZero = $("#id_score-found_1"),
         $foundOne = $("#id_score-found_2"),
         $radiosDashes = $("input:not(#id_score-found_0):regex(id, id_score-.+_0)"),
         $radiosExceptFound = $("input[type='radio']:not(#id_score-found_0):not(#id_score-found_1):not(#id_score-found_2)"),
         $inputCommentFound = $("#id_score-foundComment"),
-        $inputCommentsExceptFound = $("textarea:not(#id_score-foundComment):regex(id, id_score-.+Comment)");
+        $inputCommentsExceptFound = $("textarea:not(#id_score-foundComment):regex(id, id_score-.+Comment)"),
+        $inputComments = $("textarea:regex(id, id_score-.+Comment)"),
+        $radios = $("input[type='radio']"),
+        comments = [],
+        commentStatuses = [],
+        radioStatuses = [];
+
+    $inputComments.each(function() {
+        comments.push($(this).html());
+    });
 
     function setScoreValues(){
         var foundDashChecked = $foundDash.prop("checked"),
@@ -65,4 +74,22 @@ $(document).ready(function(){
 
     $radiosFound.change(setScoreValues);
     setScoreValues();
+
+    $inputComments.each(function() {
+        commentStatuses.push($(this).is(':disabled'));
+    });
+
+    $radios.each(function() {
+        radioStatuses.push($(this).is(':disabled'));
+    });
+
+    $('input[type="reset"]').click(function() {
+        $inputComments.each(function( i ) {
+            $(this).html(comments[i]);
+            $(this).attr('disabled', commentStatuses[i]);
+        });
+        $radios.each(function( i ) {
+            $(this).attr('disabled', radioStatuses[i]);
+        });
+    });
 });
