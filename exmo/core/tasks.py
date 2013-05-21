@@ -32,9 +32,11 @@ from django.template import loader, Context
 from livesettings import config_value
 
 from exmo2010.models import Organization, EmailTasks
+from core.helpers import use_locale
 
 
 @task(default_retry_delay=10 * 60, max_retries=5, rate_limit="500/h")
+@use_locale
 def send_email(recipients, subject, template_name, **kwargs):
     """
     Generic function for sending emails.

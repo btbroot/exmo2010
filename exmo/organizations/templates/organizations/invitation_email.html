@@ -25,6 +25,6 @@
 {% block title %}{{ subject }}{% endblock %}
 {% block content %}
 
-    <p>{{ message }}</p>
+    <p>{{ message|safe }}</p>
 
 {% endblock content %}

@@ -22,13 +22,17 @@
 Модуль помощников для вью
 """
 
+from django.conf import settings
 from django.contrib.auth.models import User
-from django.template import loader, RequestContext
-from django.http import Http404, HttpResponse
-from django.views.generic.base import View
-from django.core.paginator import Paginator, InvalidPage
-from django.template.response import TemplateResponse
 from django.core.exceptions import ImproperlyConfigured
+from django.core.paginator import Paginator, InvalidPage
+from django.http import Http404, HttpResponse
+from django.template import loader, RequestContext
+from django.template.response import TemplateResponse
+from django.views.generic.base import View
+from django.utils import translation
+from django.utils.functional import wraps
+
 from core.sort_headers import SortHeaders
 from exmo2010.models import Parameter, Task, UserProfile
 
@@ -289,3 +293,33 @@ class TemplateView(TemplateResponseMixin, ContextMixin, View):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+def use_locale(func):
+    """
+    Decorator for tasks with respect to site's current language.
+    e.g.:
+        @task
+        @use_locale
+        def my_task(**kwargs):
+            pass
+
+    """
+    def wrapper(*args, **kwargs):
+        try:
+            lang = settings.LANGUAGE_CODE
+        except AttributeError:
+            lang = None
+        language = kwargs.pop('language', lang)
+        prev_language = translation.get_language()
+        if language:
+            translation.activate(language)
+        try:
+            return func(*args, **kwargs)
+        finally:
+            translation.activate(prev_language)
+
+    wrapper.__doc__ = func.__doc__
+    wrapper.__name__ = func.__name__
+    wrapper.__module__ = func.__module__
+    return wraps(func)(wrapper)

@@ -23,4 +23,4 @@
 
 {{ subject }}
 
-{{ message }}
+{{ message|safe }}
