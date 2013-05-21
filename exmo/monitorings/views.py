@@ -835,7 +835,11 @@ def monitoring_organization_import(request, monitoring_id):
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append("row %d (csv). %s" % (rowALLCount, e))
+        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+    except UnicodeError:
+        errLog.append(_("File, you are loading is not valid CSV."))
+    except Exception, e:
+        errLog.append(_("Import error: %s." % e))
     title = _('Import organization from CSV for monitoring %s') % monitoring
 
     if must_register:
@@ -925,7 +929,11 @@ def monitoring_parameter_import(request, monitoring_id):
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append("row %d (csv). %s" % (reader.line_num, e))
+           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+    except UnicodeError:
+        errLog.append(_("File, you are loading is not valid CSV."))
+    except Exception, e:
+        errLog.append(_("Import error: %s." % e))
     title = _('Import parameter from CSV for monitoring %s') % monitoring
 
     if must_register:

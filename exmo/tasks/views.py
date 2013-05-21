@@ -227,7 +227,11 @@ def task_import(request, id):
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row':reader.line_num, 'raw':e})
+        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+    except UnicodeError:
+        errLog.append(_("File, you are loading is not valid CSV."))
+    except Exception, e:
+        errLog.append(_("Import error: %s." % e))
     title = _('Import CSV for task %s') % task
 
     crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
