@@ -258,3 +258,11 @@ label
     margin-top: 1px;
     line-height: 21px;
 }
+
+form.score {
+    margin-bottom: 20px;
+}
+
+ul.nav-tabs a {
+    font-size: 18px;
+}
