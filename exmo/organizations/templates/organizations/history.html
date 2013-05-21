@@ -57,7 +57,7 @@
                 </td>
                 <td class="comment">
                     <div class="preview-container">
-                        <a class="pseudo">{{ h.comment|safe }}</a>
+                        <a class="pseudo">{{ h.comment|cut:"&nbsp;"|striptags|safe }}</a>
                     </div>
                     <div class="full" style="display: none">{{ h.comment|safe }}</div>
                 </td>
