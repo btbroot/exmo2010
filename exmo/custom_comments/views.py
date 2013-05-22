@@ -20,7 +20,7 @@
 from datetime import timedelta, datetime
 
 from django.contrib.auth.models import User
-from django.contrib.comments import Comment
+from custom_comments.models import CommentExmo
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseForbidden
@@ -141,7 +141,7 @@ def comment_notification(sender, **kwargs):
     _send_mails(context, False, subject, nonadmin_one_comment)
     _send_mails(context, True, subject, admin_one_comment)
 
-    context['comments'] = list(Comment.objects.filter(
+    context['comments'] = list(CommentExmo.objects.filter(
         object_pk=comment.object_pk
     )) + comments
 
