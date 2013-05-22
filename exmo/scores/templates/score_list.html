@@ -100,7 +100,7 @@
 {% endif %}
 {% if import_perm %}
    <form action="{% url exmo2010:task_import task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
-     <label>{% trans "Import task from CSV" %}: <input type="file" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
+     <label>{% trans "Import task from CSV" %}: <input type="file" accept=".csv" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    {% if importLog %}<div>{{importLog}}</div>{% endif %}
 {% endif %}

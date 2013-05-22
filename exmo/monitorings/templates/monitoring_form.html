@@ -98,11 +98,11 @@
 {% if object %}
    <form action="{% url exmo2010:monitoring_organization_import object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
      <a href="{% url exmo2010:monitoring_organization_export object.pk %}">{% trans 'Export organizations' %}</a> /
-     <label>{% trans "Import organizations from CSV" %}: <input type="file" name="orgfile"></label><input type="submit" value="{% trans 'Import' %}" />
+     <label>{% trans "Import organizations from CSV" %}: <input type="file" accept=".csv" name="orgfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    <form action="{% url exmo2010:monitoring_parameter_import object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
      <a href="{% url exmo2010:monitoring_parameter_export object.pk %}">{% trans 'Export parameters' %}</a> /
-     <label>{% trans "Import parameters from CSV" %}: <input type="file" name="paramfile"></label><input type="submit" value="{% trans 'Import' %}" />
+     <label>{% trans "Import parameters from CSV" %}: <input type="file" accept=".csv" name="paramfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    {% if not object.has_questions %}
        {% if object.has_questionnaire %}
