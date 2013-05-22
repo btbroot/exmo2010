@@ -92,4 +92,8 @@ $(document).ready(function() {
             $(this).attr('disabled', radioStatuses[i]);
         });
     });
+
+    $("form.score").submit(function() {
+      $("#submit_score").prop('disabled',true);
+    });
 });
