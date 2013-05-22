@@ -1119,7 +1119,7 @@ msgstr "уточнение закрыто"
 #: exmo2010/models.py:1155
 #, python-format
 msgid "clarification for %(score)s from %(creator)s"
-msgstr "претензия для %(score)s от %(creator)s"
+msgstr "уточнение для %(score)s от %(creator)s"
 
 #: exmo2010/models.py:1192
 msgid "not set"
@@ -1448,7 +1448,7 @@ msgstr "Эксперт"
 
 #: monitorings/views.py:470
 msgid "Open tasks"
-msgstr "Открые задачи"
+msgstr "Открытые задачи"
 
 #: monitorings/views.py:471
 msgid "Ready tasks"
@@ -2251,7 +2251,7 @@ msgstr "Задача уже одобрена"
 #: tasks/views.py:463
 #, python-format
 msgid "Open task %s"
-msgstr "Открые задачи %s"
+msgstr "Открытые задачи %s"
 
 #: tasks/views.py:469
 msgid "Task openned"
@@ -2635,8 +2635,8 @@ msgid ""
 "When new monitoring will start, you'll recieve invitation code which is "
 "needed to be entered here."
 msgstr ""
-"Когда начнется новый цикл мониторинга, вам будет выслано приглашение "
-"приглашения, с новым кодом, который нужно будет ввести здесь:"
+"Когда начнется новый цикл мониторинга, вам будет выслано приглашение, "
+"с новым кодом, который нужно будет ввести здесь:"
 
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:28
 msgid "Cycle management"
@@ -2971,13 +2971,9 @@ msgstr "Зарегистрироваться"
 
 #: templates/registration/registration_form.html:132
 msgid ""
-"Enter your first name, patronymic, and last name in order the system can "
-"address you with it and to check are you an official of an organisation you "
-"represent."
+"Please, enter your name for us to know how to address you."
 msgstr ""
-"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться, а "
-"также, в случае необходимости, для проверки являетесь ли вы сотрудником "
-"организации, которую представляете."
+"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться."
 
 #: templates/registration/registration_form.html:135
 msgid ""
