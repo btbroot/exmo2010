@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import admin
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.db import models
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -32,14 +33,13 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__username', )
     formfield_overrides = {
         models.ManyToManyField: {
-            'widget': admin.widgets.FilteredSelectMultiple('',
-                                                           is_stacked=False)
+            'widget': FilteredSelectMultiple('', is_stacked=False)
         },
     }
 
     class Media:
         css = {
-            "all": ("exmo2010/selector.css",)
+            "all": ("exmo2010/css/selector.css",)
         }
 
 
@@ -49,14 +49,13 @@ class UserProfileInline(admin.StackedInline):
     max_num = 1
     formfield_overrides = {
         models.ManyToManyField: {
-            'widget': admin.widgets.FilteredSelectMultiple('',
-                                                           is_stacked=False)
+            'widget': FilteredSelectMultiple('', is_stacked=False)
         },
     }
 
     class Media:
         css = {
-            "all": ("exmo2010/selector.css",)
+            "all": ("exmo2010/css/selector.css",)
         }
 
 
