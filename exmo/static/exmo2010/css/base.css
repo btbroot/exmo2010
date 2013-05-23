@@ -628,27 +628,22 @@ div.system-message p.system-message-title {
     margin: 0;
     padding: 0;
     list-style: none;
+    line-height: 18px;
 }
 
 #nav-sidebar ul li
 {
     padding-left: 20px;
-    padding-right: 10px;
+    padding-right: 20px;
     list-style: none;
     font-family:Arial;
     font-weight: bold;
     color: #222;
     font-size:13px;
-    line-height: 120%;
     padding-top: 5px;
     padding-bottom: 5px;
 }
 
-#nav-sidebar ul li.nav-group
-{
-    padding-top: 10px;
-    padding-bottom: 0px;
-}
 
 #nav-sidebar ul li.selected
 {
