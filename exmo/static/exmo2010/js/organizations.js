@@ -25,7 +25,9 @@ $(document).ready(function () {
         $( ".jdatefield" ).datepicker({
             dateFormat: "dd.mm.yy",
             changeMonth: true,
-            changeYear: true
+            changeYear: true,
+            numberOfMonths: 3,
+            maxDate: "0m 0w 0d"
         });
     });
 
