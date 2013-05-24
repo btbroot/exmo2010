@@ -1493,7 +1493,7 @@ class UserProfile(models.Model):
         """
         Возвращает queryset из закрытых претензий
         """
-        claims = Claim.objects.filter(score__task__user=self.user,
+        claims = Claim.objects.filter(addressee=self.user,
             close_date__isnull=False).order_by('-open_date')
 
         return claims
@@ -1571,7 +1571,7 @@ class UserProfile(models.Model):
         этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
         """
         claims = Claim.objects.filter(
-            score__task__user=self.user,
+            addressee=self.user,
             score__in=self._get_my_filtered_scores("messages"),
             close_date__isnull=True).order_by('open_date')
         return claims
