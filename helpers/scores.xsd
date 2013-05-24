@@ -1,0 +1,102 @@
+{#This file is part of EXMO2010 software.#}
+{#Copyright 2010, 2011 Al Nikolov#}
+{#Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development#}
+{#Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"#}
+{##}
+{#   This program is free software: you can redistribute it and/or modify#}
+{#   it under the terms of the GNU Affero General Public License as#}
+{#   published by the Free Software Foundation, either version 3 of the#}
+{#   License, or (at your option) any later version.#}
+{##}
+{#   This program is distributed in the hope that it will be useful,#}
+{#   but WITHOUT ANY WARRANTY; without even the implied warranty of#}
+{#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the#}
+{#   GNU Affero General Public License for more details.#}
+{##}
+{#   You should have received a copy of the GNU Affero General Public License#}
+{#   along with this program.  If not, see <http://www.gnu.org/licenses/>.#}
+{##}
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="root">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="sites"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sites">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="site"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="site">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rating"/>
+        <xs:element ref="url"/>
+        <xs:element ref="name"/>
+        <xs:element ref="place"/>
+        <xs:element ref="edited"/>
+        <xs:element ref="questions"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rating" type="xs:decimal"/>
+  <xs:element name="url" type="xs:anyURI"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="place" type="xs:integer"/>
+  <xs:element name="questions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="question"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="question">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="text"/>
+        <xs:element ref="code"/>
+        <xs:element ref="edited"/>
+        <xs:element ref="value"/>
+        <xs:element ref="found"/>
+        <xs:element ref="comment"/>
+        <xs:element ref="complete"/>
+        <xs:element ref="completeComment"/>
+        <xs:element ref="topical"/>
+        <xs:element ref="topicalComment"/>
+        <xs:element ref="accessible"/>
+        <xs:element ref="accessibleComment"/>
+        <xs:element ref="hypertext"/>
+        <xs:element ref="hypertextComment"/>
+        <xs:element ref="document"/>
+        <xs:element ref="documentComment"/>
+        <xs:element ref="image"/>
+        <xs:element ref="imageComment"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="text" type="xs:string"/>
+  <xs:element name="code" type="xs:integer"/>
+  <xs:element name="value" type="xs:integer"/>
+  <xs:element name="found" type="xs:integer"/>
+  <xs:element name="comment" type="xs:string"/>
+  <xs:element name="complete" type="xs:integer"/>
+  <xs:element name="completeComment" type="xs:string"/>
+  <xs:element name="topical" type="xs:integer"/>
+  <xs:element name="topicalComment" type="xs:string"/>
+  <xs:element name="accessible" type="xs:integer"/>
+  <xs:element name="accessibleComment" type="xs:string"/>
+  <xs:element name="hypertext" type="xs:integer"/>
+  <xs:element name="hypertextComment" type="xs:string"/>
+  <xs:element name="document" type="xs:integer"/>
+  <xs:element name="documentComment" type="xs:string"/>
+  <xs:element name="image" type="xs:integer"/>
+  <xs:element name="imageComment" type="xs:string"/>
+  <xs:element name="edited" type="xs:integer"/>
+</xs:schema>
