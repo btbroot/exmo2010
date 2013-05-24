@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-21 17:42+0400\n"
+"POT-Creation-Date: 2013-05-24 17:14+0400\n"
 "PO-Revision-Date: 2013-02-18 12:54+0400\n"
 "Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
 "Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
@@ -177,8 +177,8 @@ msgstr "Настройки главной страницы были сброше
 #: scores/views.py:295 scores/views.py:361 scores/views.py:474
 #: tasks/views.py:51 tasks/views.py:156 tasks/views.py:276 tasks/views.py:377
 #: tasks/views.py:416 tasks/views.py:423 tasks/views.py:438 tasks/views.py:452
-#: tasks/views.py:465 tasks/views.py:479 tasks/views.py:540 tasks/views.py:550
-#: tasks/views.py:602
+#: tasks/views.py:465 tasks/views.py:479 tasks/views.py:541 tasks/views.py:551
+#: tasks/views.py:617
 msgid "Forbidden"
 msgstr "Запрещено"
 
@@ -281,14 +281,14 @@ msgstr "Задачи цикла мониторинга "
 #: bread_crumbs/views.py:81 claims/views.py:227 clarifications/views.py:156
 #: monitorings/views.py:89 monitorings/views.py:317 monitorings/views.py:480
 #: monitorings/views.py:604 monitorings/views.py:670 monitorings/views.py:1008
-#: organizations/views.py:156 tasks/views.py:579 tasks/views.py:635
+#: organizations/views.py:156 tasks/views.py:594 tasks/views.py:650
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
 #: bread_crumbs/views.py:88 claims/views.py:229 clarifications/views.py:158
 #: monitorings/views.py:91 monitorings/views.py:307 monitorings/views.py:319
 #: monitorings/views.py:482 monitorings/views.py:606 monitorings/views.py:1010
-#: organizations/views.py:158 tasks/views.py:581 tasks/views.py:637
+#: organizations/views.py:158 tasks/views.py:596 tasks/views.py:652
 #: templates/errors_header.html:35
 msgid "Rating"
 msgstr "Рейтинг"
@@ -296,7 +296,7 @@ msgstr "Рейтинг"
 #: bread_crumbs/views.py:94 claims/views.py:229 clarifications/views.py:158
 #: monitorings/views.py:91 monitorings/views.py:319 monitorings/views.py:482
 #: monitorings/views.py:606 monitorings/views.py:1010
-#: organizations/views.py:158 tasks/views.py:581 tasks/views.py:637
+#: organizations/views.py:158 tasks/views.py:596 tasks/views.py:652
 #: tasks/templates/task_list.html:67
 msgid "Tasks"
 msgstr "Задачи "
@@ -539,7 +539,7 @@ msgstr[2] "%(count)d дней"
 #: custom_comments/forms.py:36 custom_comments/models.py:41
 #: exmo2010/models.py:140 exmo2010/models.py:548 exmo2010/models.py:770
 #: monitorings/views.py:117 tasks/views.py:284 tasks/views.py:292
-#: tasks/views.py:559 tasks/views.py:566
+#: tasks/views.py:560 tasks/views.py:574 tasks/views.py:581
 msgid "status"
 msgstr "статус"
 
@@ -902,7 +902,8 @@ msgstr "комментарий"
 
 #: exmo2010/models.py:463 exmo2010/models.py:544 organizations/views.py:118
 #: organizations/views.py:135 tasks/views.py:282 tasks/views.py:291
-#: tasks/views.py:300 tasks/views.py:556 tasks/views.py:564 tasks/views.py:571
+#: tasks/views.py:300 tasks/views.py:557 tasks/views.py:572 tasks/views.py:579
+#: tasks/views.py:586
 msgid "organization"
 msgstr "организация"
 
@@ -2188,11 +2189,12 @@ msgstr "Импортировать задачу"
 msgid "Task list for %s"
 msgstr "Список задач для %s"
 
-#: tasks/views.py:283 tasks/views.py:558
+#: tasks/views.py:283 tasks/views.py:559
 msgid "expert"
 msgstr "эксперт"
 
-#: tasks/views.py:285 tasks/views.py:293 tasks/views.py:560 tasks/views.py:567
+#: tasks/views.py:285 tasks/views.py:293 tasks/views.py:561 tasks/views.py:575
+#: tasks/views.py:582
 msgid "complete, %"
 msgstr "выполнено, %"
 
@@ -2270,16 +2272,16 @@ msgstr "Редактировать задачу %s"
 msgid "Task updated"
 msgstr "Задача  обновлена"
 
-#: tasks/views.py:541
+#: tasks/views.py:542
 #, python-format
 msgid "Task list for %(monitoring)s"
 msgstr "Список задач для %(monitoring)s"
 
-#: tasks/views.py:604
+#: tasks/views.py:619
 msgid "Mass assign tasks"
 msgstr "Массовое назначение"
 
-#: tasks/views.py:657 tasks/templates/task_user_changed.html:28
+#: tasks/views.py:672 tasks/templates/task_user_changed.html:28
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
@@ -2635,8 +2637,8 @@ msgid ""
 "When new monitoring will start, you'll recieve invitation code which is "
 "needed to be entered here."
 msgstr ""
-"Когда начнется новый цикл мониторинга, вам будет выслано приглашение, "
-"с новым кодом, который нужно будет ввести здесь:"
+"Когда начнется новый цикл мониторинга, вам будет выслано приглашение, с "
+"новым кодом, который нужно будет ввести здесь:"
 
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:28
 msgid "Cycle management"
@@ -2970,12 +2972,19 @@ msgid "Register"
 msgstr "Зарегистрироваться"
 
 #: templates/registration/registration_form.html:132
-msgid ""
-"Please, enter your name for us to know how to address you."
-msgstr ""
-"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться."
+msgid "Please, enter your name for us to know how to address you."
+msgstr "Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться."
 
 #: templates/registration/registration_form.html:135
+msgid ""
+"Please, enter your name for us to know how to address you and to check "
+"whether you are an organisations representative."
+msgstr ""
+"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться, "
+"а также, в случае необходимости, для проверки являетесь ли вы сотрудником "
+"организации, которую представляете."
+
+#: templates/registration/registration_form.html:138
 msgid ""
 "Your position may be necessary for a verification of your belonging to "
 "organisation you represent."
@@ -2983,25 +2992,25 @@ msgstr ""
 "Ваша должность может потребоваться для проверки, являетесь ли вы сотрудником "
 "организации, которую представляете."
 
-#: templates/registration/registration_form.html:138
+#: templates/registration/registration_form.html:141
 msgid ""
 "In order to solve problems you could meet, your contact phone is necessary."
 msgstr ""
 "Для оперативного решения проблем, которые могут у вас возникнуть, требуется "
 "ваш контактный телефон."
 
-#: templates/registration/registration_form.html:141
+#: templates/registration/registration_form.html:144
 msgid "Will be used to confirm the registration and to enter the system."
 msgstr "Будет использована для подтверждения регистрации и входа в систему."
 
-#: templates/registration/registration_form.html:144
+#: templates/registration/registration_form.html:147
 msgid ""
 "Create a complicated password using latin characters (A-Z, a-z) and digits "
 "(0-9)."
 msgstr ""
 "Создайте сложный пароль, используя латинские буквы (A-Z, a-z) и цифры (0-9)."
 
-#: templates/registration/registration_form.html:147
+#: templates/registration/registration_form.html:150
 msgid "Enter the code to get an access to scores of your organisation."
 msgstr "Введите код для получения доступа к оценкам своей организации."
 

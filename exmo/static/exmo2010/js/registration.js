@@ -48,22 +48,33 @@ $(document).ready(function () {
         }
     });
 
-    function helptextHandler( e ) {
+    function helptextHandlerA( e ) {
         var top = $(e.target).position().top - 8;
-        $('#help-text').show();
-        $('#help-text').css('top', top);
+        $('#help-text').show().css('top', top);
+        $('.alert-info').hide();
+        if ($("#id_status").val() == "0") {
+            $(e.data.o).show();
+        }
+        else {
+            $(e.data.p).show();
+        }
+    }
+
+    function helptextHandlerB( e ) {
+        var top = $(e.target).position().top - 8;
+        $('#help-text').show().css('top', top);
         $('.alert-info').hide();
         $(e.data.p).show();
     }
 
-    $("#id_first_name").focusin({p: '#help-name'}, helptextHandler);
-    $("#id_patronymic").focusin({p: '#help-name'}, helptextHandler);
-    $("#id_last_name").focusin({p: '#help-name'}, helptextHandler);
-    $("#id_position").focusin({p: '#help-status'}, helptextHandler);
-    $("#id_phone").focusin({p: '#help-phone'}, helptextHandler);
-    $("#id_email").focusin({p: '#help-email'}, helptextHandler);
-    $("#id_password").focusin({p: '#help-password'}, helptextHandler);
-    $("#id_invitation_code").focusin({p: '#help-code'}, helptextHandler);
+    $("#id_first_name").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
+    $("#id_patronymic").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
+    $("#id_last_name").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
+    $("#id_position").focusin({p: '#help-status'}, helptextHandlerB);
+    $("#id_phone").focusin({p: '#help-phone'}, helptextHandlerB);
+    $("#id_email").focusin({p: '#help-email'}, helptextHandlerB);
+    $("#id_password").focusin({p: '#help-password'}, helptextHandlerB);
+    $("#id_invitation_code").focusin({p: '#help-code'}, helptextHandlerB);
 
     $("input[type='text']").focusout(function(){
         $('#help-text').hide();
