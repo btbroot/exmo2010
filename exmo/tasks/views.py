@@ -530,6 +530,7 @@ def task_history(request, task_id):
         context_instance=RequestContext(request),
     )
 
+from django.http import QueryDict
 
 def tasks_by_monitoring(request, monitorgin_id):
     monitoring = get_object_or_404(Monitoring, pk=monitorgin_id)
@@ -558,6 +559,20 @@ def tasks_by_monitoring(request, monitorgin_id):
             (_('expert'), 'user__username', 'user__username', None, UserChoice),
             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
             (_('complete, %'), None, None, None, None),
+            )
+    elif profile and profile.is_expertB and not profile.is_expertA:
+        filter1 = request.GET.get('filter1')
+        if filter1:
+            try:
+                int(filter1)
+            except ValueError:
+                q = QueryDict('')
+                request.GET = q
+        headers = (
+            (_('organization'), 'organization__name', 'organization__name',
+             None, None),
+             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+             (_('complete, %'), None, None, None, None),
             )
     elif profile and profile.is_expert:
         headers = (
