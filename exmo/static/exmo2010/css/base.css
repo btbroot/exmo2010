@@ -428,6 +428,7 @@ input, textarea, select, .form-row p {
 }
 
 textarea {
+    font-family: Arial, "Helvetica Neue", Helvetica, Verdana, sans-serif;
     vertical-align: top !important;
 }
 
