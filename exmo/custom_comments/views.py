@@ -92,9 +92,6 @@ def comment_notification(sender, **kwargs):
         'code': score.parameter.code,
     }
 
-    if user.profile.notify_comment_preference.get('self', False):
-        admin_users = [user]
-
     # experts A, experts B managers
     if get_experts():
         admin_users.extend(get_experts())
@@ -115,7 +112,13 @@ def comment_notification(sender, **kwargs):
     nonadmin_users = User.objects.filter(
         userprofile__organization=score.task.organization,
         email__isnull=False,
-    ).exclude(email__exact='').distinct()
+    ).exclude(email__exact='')
+
+    if len(nonadmin_users) > 1:
+        # in PostgreSQL = .distinct('email'), but for MySQL it look like this:
+        nonadmin_users = User.objects.filter(email__in=nonadmin_users.values_list('email', flat=True)
+                                                                     .order_by('email')
+                                                                     .distinct())
 
     for user in nonadmin_users:
         if user.email and user.email not in admin_rcpt and \
