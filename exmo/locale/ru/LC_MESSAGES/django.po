@@ -1,5 +1,5 @@
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -15,14 +15,15 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-24 17:14+0400\n"
-"PO-Revision-Date: 2013-02-18 12:54+0400\n"
-"Last-Translator: Boris Savelev <boris.savelev@gmail.com>\n"
-"Language-Team: Russian <exmo-devel@svobodainfo.org>\n"
+"Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
+"Language-Team: \n"
+"POT-Creation-Date: 2013-05-27 18:29+0300\n"
+"PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -260,9 +261,9 @@ msgstr "Циклы мониторинга"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: bread_crumbs/views.py:65 claims/templates/claim_list.html:62
-#: clarifications/templates/clarification_list.html:62
-#: custom_comments/templates/comment_list.html:63
+#: bread_crumbs/views.py:65 claims/templates/claim_list.html:61
+#: clarifications/templates/clarification_list.html:61
+#: custom_comments/templates/comment_list.html:62
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating_color.html:39
@@ -365,28 +366,28 @@ msgstr "Ответить"
 msgid "Put forward"
 msgstr "Выставить"
 
-#: claims/templates/claim_list.html:61
-#: clarifications/templates/clarification_list.html:61
-#: custom_comments/templates/comment_list.html:62
+#: claims/templates/claim_list.html:60
+#: clarifications/templates/clarification_list.html:60
+#: custom_comments/templates/comment_list.html:61
 #: tasks/templates/task_history.html:72
 msgid "Time and date"
 msgstr "Время и дата"
 
-#: claims/templates/claim_list.html:63 claims/templates/claim_report.html:54
+#: claims/templates/claim_list.html:62 claims/templates/claim_report.html:54
 msgid "Link to claim"
 msgstr "Ссылка на претензию"
 
-#: claims/templates/claim_list.html:73 claims/templates/claim_report.html:64
-#: clarifications/templates/clarification_list.html:72
+#: claims/templates/claim_list.html:72 claims/templates/claim_report.html:64
+#: clarifications/templates/clarification_list.html:71
 #: clarifications/templates/clarification_report.html:64
-#: custom_comments/templates/comment_list.html:73
+#: custom_comments/templates/comment_list.html:72
 msgid "Without answer"
 msgstr "Без ответа"
 
-#: claims/templates/claim_list.html:98 claims/templates/claim_report.html:82
-#: clarifications/templates/clarification_list.html:95
+#: claims/templates/claim_list.html:97 claims/templates/claim_report.html:82
+#: clarifications/templates/clarification_list.html:94
 #: clarifications/templates/clarification_report.html:82
-#: custom_comments/templates/comment_list.html:96
+#: custom_comments/templates/comment_list.html:95
 msgid "Processed"
 msgstr "Обработанные"
 
@@ -501,7 +502,7 @@ msgstr "Уточнений нет"
 msgid "Specify"
 msgstr "Уточнить"
 
-#: clarifications/templates/clarification_list.html:63
+#: clarifications/templates/clarification_list.html:62
 #: clarifications/templates/clarification_report.html:54
 msgid "Link to clarification"
 msgstr "Ссылка на уточнение"
@@ -571,7 +572,7 @@ msgstr "Комментарии закрыт не отвечен"
 msgid "Comments"
 msgstr "Комментарии"
 
-#: custom_comments/templates/comment_list.html:64
+#: custom_comments/templates/comment_list.html:63
 msgid "Link to comment"
 msgstr "Ссылка на комментарий"
 
@@ -1357,8 +1358,8 @@ msgid ""
 msgstr "© НП \"Институт Развития Свободы Информации\", 2010-2012"
 
 #: exmo2010/templates/exmo2010/footer.html:32
-msgid "Copyright 2010, 2011 Al Nikolov"
-msgstr "© Al Nikolov, 2010-2011"
+msgid "Copyright 2010, 2011, 2013 Al Nikolov"
+msgstr "© Al Nikolov, 2010, 2011, 2013"
 
 #: exmo2010/templates/exmo2010/footer.html:33
 #, python-format
@@ -2980,8 +2981,8 @@ msgid ""
 "Please, enter your name for us to know how to address you and to check "
 "whether you are an organisations representative."
 msgstr ""
-"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться, "
-"а также, в случае необходимости, для проверки являетесь ли вы сотрудником "
+"Введите имя, отчество и фамилию, чтобы мы знали, как к вам обращаться, а "
+"также, в случае необходимости, для проверки являетесь ли вы сотрудником "
 "организации, которую представляете."
 
 #: templates/registration/registration_form.html:138
@@ -3035,20 +3036,20 @@ msgstr "Модули"
 msgid "Please enter a name for the bookmark"
 msgstr ""
 
-msgid "Coherent parameters"
-msgstr "Согласованные параметры"
+#~ msgid "Coherent parameters"
+#~ msgstr "Согласованные параметры"
 
-msgid "Task filtering"
-msgstr "Фильтрация задач"
+#~ msgid "Task filtering"
+#~ msgstr "Фильтрация задач"
 
-msgid "Experts"
-msgstr "Эксперты"
+#~ msgid "Experts"
+#~ msgstr "Эксперты"
 
-msgid "Presence of the parameter"
-msgstr "Наличие параметра"
+#~ msgid "Presence of the parameter"
+#~ msgstr "Наличие параметра"
 
-msgid "Criterion"
-msgstr "Критерий"
+#~ msgid "Criterion"
+#~ msgstr "Критерий"
 
-msgid "Scores"
-msgstr "Оценки"
+#~ msgid "Scores"
+#~ msgstr "Оценки"
