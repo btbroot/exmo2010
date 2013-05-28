@@ -69,6 +69,33 @@ Files: debian/exmo/exmo2010/static/exmo2010/js/jquery/jquery.placeholder.min.js
 Copyright: 2010, Daniel Stocks
 License: MIT or BSD or GPL
 
+Files: debian/exmo/exmo2010/static/exmo2010/js/jquery/jquery-ui.min.js
+Copyright: 2012, Brandon Aaro
+           2012, Paul Bakaus <paulbakaus.com>
+           2012, David Bolter
+           2012, Rich Caloggero
+           2012, Chi Cheng <cloudream@gmail.com>
+           2012, Colin Clark <http://colin.atrc.utoronto.ca/>
+           2012, Michelle D'Souza
+           2012, Aaron Eisenberger <aaronchi@gmail.com>
+           2012, Ariel Flesler
+           2012, Bohdan Ganicky
+           2012, Scott González
+           2012, Marc Grabanski <m@marcgrabanski.com>
+           2012, Klaus Hartl <stilbuero.de>
+           2012, Scott Jehl
+           2012, Cody Lindley
+           2012, Eduardo Lundgren <eduardolundgren@gmail.com>
+           2012, Todd Parker
+           2012, John Resig
+           2012, Patty Toland
+           2012, Ca-Phun Ung <yelotofu.com>
+           2012, Keith Wood <kbwood@virginbroadband.com.au>
+           2012, Maggie Costello Wachs
+           2012, Richard D. Worth <rdworth.org>
+           2012, Jörn Zaefferer <bassistance.de>
+License: MIT or GPL
+
 License: GNU AGPL
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
