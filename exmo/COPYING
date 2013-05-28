@@ -397,3 +397,12 @@ choice:
   http://www.gnu.org/licenses/lgpl.html
 - Mozilla Public License Version 1.1 or later (the "MPL")
   http://www.mozilla.org/MPL/MPL-1.1.html
+
+--
+
+exmo/exmo2010/static/exmo2010/ckeditor/ckeditor/plugins/uicolor/yui/yui.js
+
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+Copyright (c) 2001 Robert Penner. All rights reserved
+
+Code licensed under the BSD License
