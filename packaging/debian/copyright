@@ -17,8 +17,8 @@ Files: debian/exmo/exmo2010/static/exmo2010/icon_newcomment.png
 Copyright: 2008, Delacro <delacro@gmail.com>
 License: All 72 icons,PNG format.Feel free to use them without any permission.Hope you like them
 
-Files: debian/exmo/exmo2010/static/exmo2010/img/arrow_down_parameters.png
-       debian/exmo/exmo2010/static/exmo2010/img/arrow_up_parameters.png
+Files: debian/exmo/exmo2010/static/exmo2010/img/menu_arrow_down.png
+       debian/exmo/exmo2010/static/exmo2010/img/menu_arrow_up.png
        debian/exmo/exmo2010/static/exmo2010/img/settings.png
        debian/exmo/exmo2010/static/exmo2010/img/exit.png
 Copyright: 2009, Aha-Soft <http://www.small-icons.com/stock-icons/16x16-free-application-icons.htm>
