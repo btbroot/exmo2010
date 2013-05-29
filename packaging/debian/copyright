@@ -105,6 +105,10 @@ Copyright: 2009, Yahoo! Inc.
            2011, Robert Penner
 License: BSD
 
+Files: debian/exmo/exmo2010/static/dashboard/js/jquery.dashboard.js
+Copyright: 2010, David Jean Louis <izimobil@gmail.com>
+License: MIT
+
 License: GNU AGPL
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
