@@ -163,7 +163,7 @@ def organization_list(request, monitoring_id):
         form = OrganizationForm(request.POST)
         if form.is_valid():
             form.save()
-            form = OrganizationForm()
+            form = OrganizationForm(initial=initial)
         else:
             org_type = 'add'
 
