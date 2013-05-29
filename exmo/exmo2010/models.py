@@ -1003,15 +1003,17 @@ class Score(models.Model):
         return claim
 
     def claim_count(self):
-        return Claim.objects.filter(score=self, close_date__isnull=True).count()
+        return Claim.objects.filter(score=self, close_date__isnull=True, addressee=self.task.user).count()
 
     def claim_color(self):
         color = None
         if self.active_claim:
             color = 'red'
-        elif not self.active_claim and Claim.objects.filter(score=self).count() > 0:
+        elif not self.active_claim and Claim.objects.filter(score=self, addressee=self.task.user).count() > 0:
             color = 'green'
-        elif not self.active_claim and Claim.objects.filter(score=self).exclude(close_user=self.task.user).count() > 0:
+        elif not self.active_claim and \
+                Claim.objects.filter(score=self,
+                                     addressee=self.task.user).exclude(close_user=self.task.user).count() > 0:
             color = 'yellow'
         return color
 
@@ -1572,7 +1574,6 @@ class UserProfile(models.Model):
         """
         claims = Claim.objects.filter(
             addressee=self.user,
-            score__in=self._get_my_filtered_scores("messages"),
             close_date__isnull=True).order_by('open_date')
         return claims
 

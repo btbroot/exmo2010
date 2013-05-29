@@ -155,7 +155,10 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
         self.object = self.get_object()
         if request.user.has_perm('exmo2010.edit_score', self.object):
             current_title = _('Parameter')
-            all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
+            if request.user.is_active and request.user.profile.is_expertA:
+                all_score_claims = Claim.objects.filter(score=self.object)
+            else:
+                all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
             all_score_clarifications = Clarification.objects.filter(score=self.object)
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
             breadcrumbs(request, crumbs, self.object.task)
@@ -212,7 +215,10 @@ class ScoreDetailView(ScoreMixin, DetailView):
 
         if request.user.has_perm('exmo2010.view_score', self.object):
             current_title = _('Parameter')
-            all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
+            if request.user.is_active and request.user.profile.is_expertA:
+                all_score_claims = Claim.objects.filter(score=self.object)
+            else:
+                all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
             all_score_clarifications = Clarification.objects.filter(score=self.object)
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
             breadcrumbs(request, crumbs, self.object.task)
