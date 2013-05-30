@@ -92,11 +92,14 @@ def comment_notification(sender, **kwargs):
         'code': score.parameter.code,
     }
 
-    # experts A, experts B managers
-    if get_experts():
-        admin_users.extend(get_experts())
+    # get superusers:
+    superusers = User.objects.filter(is_superuser=True, email__isnull=False).exclude(email__exact='')
+    admin_users.extend(superusers)
 
-    # experts B
+    # get experts A, experts B managers:
+    admin_users.extend(get_experts())
+
+    # get experts B:
     if score.task.user.is_active:
         admin_users.extend([score.task.user])
 
@@ -108,7 +111,7 @@ def comment_notification(sender, **kwargs):
 
     admin_all_comments, admin_one_comment = _comments_lists(admin_rcpt)
 
-    # Organizations
+    # get organizations:
     nonadmin_users = User.objects.filter(
         userprofile__organization=score.task.organization,
         email__isnull=False,
@@ -138,20 +141,25 @@ def comment_notification(sender, **kwargs):
                'comments': comments,
                'url': url}
 
-    _send_mails(context, False, subject, nonadmin_one_comment)
-    _send_mails(context, True, subject, admin_one_comment)
+    if nonadmin_one_comment:
+        _send_mails(context, False, subject, nonadmin_one_comment)
+    if admin_one_comment:
+        _send_mails(context, True, subject, admin_one_comment)
 
     context['comments'] = list(CommentExmo.objects.filter(
         object_pk=comment.object_pk
     )) + comments
 
-    _send_mails(context, False, subject, nonadmin_all_comments)
-    _send_mails(context, True, subject, admin_all_comments)
+    if nonadmin_all_comments:
+        _send_mails(context, False, subject, nonadmin_all_comments)
+    if admin_all_comments:
+        _send_mails(context, True, subject, admin_all_comments)
 
 
 def _comments_lists(rcpt):
     """
     Get emails lists for comments branch and single comment.
+
     """
     branch, comment = [], []
     for user in rcpt:
@@ -166,7 +174,9 @@ def _comments_lists(rcpt):
 def _send_mails(context, admin, subject, rcpts):
     """
     Sending comments notification mails.
+
     """
+    # True if superusers, experts A, B, B managers, False if organizations
     context['admin'] = admin
 
     for rcpt in rcpts:

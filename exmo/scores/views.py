@@ -489,13 +489,23 @@ def score_add_comment(request, score_id):
 
 def log_user_activity(**kwargs):
     """
-    Функция - обработчик сигнала при создании нового комментария.
+    Oбработчик сигнала при создании нового комментария. Функция для ведения журнала посещений представителя
+    организации на стадии взаимодействия.
 
     """
     comment = kwargs['comment']
     if comment.content_type.model == 'score':
         score = Score.objects.get(pk=comment.object_pk)
-        _log_monitoring_interact_activity(score.task.organization.monitoring, comment.user)
+        monitoring = score.task.organization.monitoring
+        user = comment.user
+        if monitoring.is_interact and user.profile.is_organization and not user.is_superuser:
+            activity = MonitoringInteractActivity.objects.filter(monitoring=monitoring, user=user).exists()
+            if activity:
+                log = MonitoringInteractActivity(monitoring=monitoring, user=user)
+                try:
+                    log.save()
+                except IntegrityError:
+                    pass
 
 
 def score_change_notify(sender, **kwargs):
@@ -577,22 +587,6 @@ def _construct_change_message(request, form, formsets):
                                              'object': force_unicode(deleted_object)})
         change_message = ' '.join(change_message)
         return change_message or _('No fields changed.')
-
-
-def _log_monitoring_interact_activity(monitoring, user):
-    """
-    Функция для ведения журнала посещений представителя организации на стадии взаимодействия.
-
-    """
-    if (monitoring.is_interact and user.profile.is_organization
-            and not user.is_superuser):
-        if not MonitoringInteractActivity.objects.filter(monitoring=monitoring,
-                                                         user=user).exists():
-            log = MonitoringInteractActivity(monitoring=monitoring, user=user)
-            try:
-                log.save()
-            except IntegrityError:
-                pass
 
 
 @login_required
