@@ -199,6 +199,9 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
         return super(ScoreEditView, self).post(request, *args, **kwargs)
 
     def form_invalid(self, form):
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        breadcrumbs(self.request, crumbs, self.object.task)
+
         self.extra_context = {
             'task': self.object.task,
             'parameter': self.object.parameter,
