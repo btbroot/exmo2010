@@ -81,7 +81,7 @@
     width: 250px;
 }
 
-.table-implicit td input[type="text"]#id_name
+.table-implicit td input[type="text"]#id_org-name
 {
     width: 600px;
 }
