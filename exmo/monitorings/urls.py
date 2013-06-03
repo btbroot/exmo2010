@@ -61,7 +61,6 @@ urlpatterns += \
                  OrganizationManagerView.as_view(),
                  name='organization_manager'),
              url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
-             url(r'^(\d+)/organizations/$', 'organization_list', name='organization_list'),
              )
 
 urlpatterns += \

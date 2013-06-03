@@ -86,6 +86,11 @@
     width: 600px;
 }
 
+.errorlist
+{
+    text-align: left;
+}
+
 .heading td a
 {
     color: #222;

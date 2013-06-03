@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-30 17:30+0400\n"
+"POT-Creation-Date: 2013-06-03 11:34+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -174,8 +174,8 @@ msgstr "Настройки главной страницы были сброше
 #: parameters/views.py:92 parameters/views.py:117 questionnaire/views.py:55
 #: questionnaire/views.py:57 questionnaire/views.py:87
 #: questionnaire/views.py:111 scores/views.py:104 scores/views.py:141
-#: scores/views.py:179 scores/views.py:259 scores/views.py:270
-#: scores/views.py:301 scores/views.py:367 scores/views.py:480
+#: scores/views.py:179 scores/views.py:266 scores/views.py:277
+#: scores/views.py:308 scores/views.py:374 scores/views.py:487
 #: tasks/views.py:51 tasks/views.py:156 tasks/views.py:276 tasks/views.py:377
 #: tasks/views.py:416 tasks/views.py:423 tasks/views.py:438 tasks/views.py:452
 #: tasks/views.py:465 tasks/views.py:479 tasks/views.py:541 tasks/views.py:551
@@ -205,6 +205,7 @@ msgstr "Изменения личной информации сохранены"
 #: accounts/templates/user_settings.html:55 exmo2010/forms.py:107
 #: exmo2010/custom_registration/forms.py:67
 #: exmo2010/custom_registration/forms.py:217
+#: templates/registration/login.html:88
 #: templates/registration/password_reset_form.html:43
 msgid "E-mail"
 msgstr "Электронная почта"
@@ -257,7 +258,7 @@ msgstr "Циклы мониторинга"
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
 #: parameters/forms.py:49 scores/views.py:112 scores/views.py:157
-#: scores/views.py:217 scores/views.py:306
+#: scores/views.py:205 scores/views.py:224 scores/views.py:313
 msgid "Parameter"
 msgstr "Параметр"
 
@@ -267,7 +268,7 @@ msgstr "Параметр"
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating_color.html:39
-#: organizations/templates/organizations/all.html:36 scores/views.py:339
+#: organizations/templates/organizations/all.html:36 scores/views.py:346
 #: tasks/views.py:310 tasks/views.py:527
 #: templates/exmo2010/rating_common.html:24
 #: templates/exmo2010/rating_content.html:130
@@ -853,12 +854,12 @@ msgid "Question comment"
 msgstr "Пояснение к вопросу"
 
 #: exmo2010/models.py:366
-msgid "Illegal symbols in email"
-msgstr "Недопустимые символы в поле Email"
+msgid "Illegal symbols in email field."
+msgstr "Недопустимые символы в поле Электронная почта."
 
 #: exmo2010/models.py:380
-msgid "Illegal symbols in phone"
-msgstr "Недопустимые символы в поле Phone"
+msgid "Illegal symbols in phone field."
+msgstr "Недопустимые символы в поле Телефон."
 
 #: exmo2010/models.py:409
 msgid "url"
@@ -1918,22 +1919,22 @@ msgstr ""
 msgid "Invite"
 msgstr "Пригласить"
 
-#: parameters/forms.py:51 scores/views.py:307 scores/templates/detail.html:59
+#: parameters/forms.py:51 scores/views.py:314 scores/templates/detail.html:59
 #: scores/templates/task_report.html:44
 msgid "Found"
 msgstr "Наличие"
 
-#: parameters/forms.py:53 scores/views.py:308 scores/templates/detail.html:68
+#: parameters/forms.py:53 scores/views.py:315 scores/templates/detail.html:68
 #: scores/templates/task_report.html:45
 msgid "Complete"
 msgstr "Полнота"
 
-#: parameters/forms.py:55 scores/views.py:309 scores/templates/detail.html:78
+#: parameters/forms.py:55 scores/views.py:316 scores/templates/detail.html:78
 #: scores/templates/task_report.html:46
 msgid "Topical"
 msgstr "Актуальность"
 
-#: parameters/forms.py:57 scores/views.py:310 scores/templates/detail.html:88
+#: parameters/forms.py:57 scores/views.py:317 scores/templates/detail.html:88
 #: scores/templates/task_report.html:47
 msgid "Accessible"
 msgstr "Навигационная доступность"
@@ -1942,12 +1943,12 @@ msgstr "Навигационная доступность"
 msgid "Hypertext"
 msgstr "HTML доступность"
 
-#: parameters/forms.py:61 scores/views.py:312 scores/templates/detail.html:108
+#: parameters/forms.py:61 scores/views.py:319 scores/templates/detail.html:108
 #: scores/templates/task_report.html:49
 msgid "Document"
 msgstr "Файловая доступность"
 
-#: parameters/forms.py:63 scores/views.py:313 scores/templates/detail.html:118
+#: parameters/forms.py:63 scores/views.py:320 scores/templates/detail.html:118
 #: scores/templates/task_report.html:50
 msgid "Image"
 msgstr "Графическая доступность"
@@ -2003,7 +2004,8 @@ msgstr "Сохранить анкету"
 msgid "Delete score %s"
 msgstr "Удалить оценку %s"
 
-#: scores/views.py:166 scores/views.py:299 tasks/views.py:528
+#: scores/views.py:166 scores/views.py:204 scores/views.py:306
+#: tasks/views.py:528
 #, python-format
 msgid "%s"
 msgstr "%s"
@@ -2012,61 +2014,61 @@ msgstr "%s"
 msgid "Have active claim, but no data changed"
 msgstr "Нет изменённых данных при существующей претензии"
 
-#: scores/views.py:227
+#: scores/views.py:234
 #, python-format
 msgid "Score for parameter \"%s\""
 msgstr "Оценка параметра %s"
 
-#: scores/views.py:305 scores/templates/task_report.html:40
+#: scores/views.py:312 scores/templates/task_report.html:40
 msgid "Code"
 msgstr "Код"
 
-#: scores/views.py:311 scores/templates/task_report.html:48
+#: scores/views.py:318 scores/templates/task_report.html:48
 msgid "HTML"
 msgstr "Html доступность"
 
-#: scores/views.py:314 scores/templates/task_report.html:43
+#: scores/views.py:321 scores/templates/task_report.html:43
 msgid "Weight"
 msgstr "Ксз"
 
-#: scores/views.py:463
+#: scores/views.py:470
 msgid "Add new comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:468
+#: scores/views.py:475
 msgid "Add comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:516
+#: scores/views.py:533
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: scores/views.py:554
+#: scores/views.py:571
 #, python-format
 msgid "Changed %s."
 msgstr "Изменен %s."
 
-#: scores/views.py:554 scores/views.py:564
+#: scores/views.py:571 scores/views.py:581
 msgid "and"
 msgstr "и"
 
-#: scores/views.py:559
+#: scores/views.py:576
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
 msgstr "Добавлен %(name)s \"%(object)s\"."
 
-#: scores/views.py:563
+#: scores/views.py:580
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
 msgstr "Изменен %(list)s для %(name)s \"%(object)s\"."
 
-#: scores/views.py:568
+#: scores/views.py:585
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
 msgstr "Удален %(name)s \"%(object)s\"."
 
-#: scores/views.py:572
+#: scores/views.py:589
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
@@ -2812,10 +2814,6 @@ msgstr ""
 #: templates/registration/login.html:66
 msgid "Send the activation letter again"
 msgstr "Выслать письмо подтверждения повторно"
-
-#: templates/registration/login.html:88
-msgid "E-mail or username"
-msgstr "E-mail или логин"
 
 #: templates/registration/login.html:105
 msgid "Forgot your password"

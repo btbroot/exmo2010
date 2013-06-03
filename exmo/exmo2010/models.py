@@ -363,7 +363,7 @@ class EmailsField(models.TextField):
         sub_emails = re.sub(email_re, '', value)
         sub_emails = re.sub(delimiters_re, '', sub_emails)
         if sub_emails:
-            raise ValidationError(_('Illegal symbols in email'))
+            raise ValidationError(_('Illegal symbols in email field.'))
         emails = re.findall(email_re, value)
         addresses = ""
         for e in emails:
@@ -377,7 +377,7 @@ class PhonesField(models.TextField):
         sub_phones = re.sub(phone_re, '', value)
         sub_phones = re.sub(delimiters_re, '', sub_phones)
         if sub_phones:
-            raise ValidationError(_('Illegal symbols in phone'))
+            raise ValidationError(_('Illegal symbols in phone field.'))
         phones = re.split(r',|\n', value)
         numbers = ""
         for p in phones:
