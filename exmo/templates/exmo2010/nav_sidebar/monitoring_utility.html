@@ -83,8 +83,10 @@
                 {% endif %}
             {% endif %}
 
-            {% url exmo2010:monitoring_rating monitoring.pk as url %}
-            {% include "exmo2010/nav_sidebar/item.html" with url=url title="Rating" %}
+            {% if not request.user.profile.is_expertB or request.user.is_superuser or monitoring.status == 5 %}
+                {% url exmo2010:monitoring_rating monitoring.pk as url %}
+                {% include "exmo2010/nav_sidebar/item.html" with url=url title="Rating" %}
+            {% endif %}
 
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
             {% if perm %}

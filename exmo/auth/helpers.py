@@ -50,26 +50,26 @@ def monitoring_permission(user, priv, monitoring):
         if user.is_active:
             if user.profile.is_expertA or user.profile.is_manager_expertB:
                 return True
-            #monitoring have one approved task for anonymous and publish and not hidden
-        if Task.approved_tasks.filter(
-                organization__monitoring=monitoring).exists() \
-            and monitoring.is_publish and not monitoring.hidden:
+        # monitoring have one approved task for anonymous and publish and not hidden
+        if Task.approved_tasks.filter(organization__monitoring=monitoring).exists() \
+                and monitoring.is_publish \
+                and not monitoring.hidden:
             return True
         if user.is_active:  # minimaze query
             profile = user.profile
-            if profile.is_expert and Task.objects.filter(
-                    organization__monitoring=monitoring, user=user).exists() \
-                and monitoring.is_active:
+            if profile.is_expert \
+                    and Task.objects.filter(organization__monitoring=monitoring, user=user).exists() \
+                    and monitoring.is_active:
                 return True
             elif profile.is_organization \
                 and Task.approved_tasks.filter(
-                            organization__monitoring=monitoring,
-                            organization__monitoring__status__in=(
-                                MONITORING_INTERACT,
-                                MONITORING_FINISHING,
-                                MONITORING_PUBLISH,
-                            ),
-                            organization__in=profile.organization.all()).exists():
+                    organization__monitoring=monitoring,
+                    organization__monitoring__status__in=(
+                        MONITORING_INTERACT,
+                        MONITORING_FINISHING,
+                        MONITORING_PUBLISH,
+                    ),
+                    organization__in=profile.organization.all()).exists():
                 return True
 
     return False

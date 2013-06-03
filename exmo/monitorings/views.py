@@ -234,7 +234,8 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
 @login_required
 def monitoring_add(request):
     """
-    Создание мониторинга
+    Create monitoring.
+
     """
     if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
@@ -250,8 +251,7 @@ def monitoring_add(request):
                 if cd.get("add_questionnaire"):
                     questionnaire = Questionnaire(monitoring=monitoring_instance)
                     questionnaire.save()
-            redirect = reverse('exmo2010:monitoring_manager',
-                args=[monitoring_instance.pk, 'update'])
+            redirect = reverse('exmo2010:monitoring_manager', args=[monitoring_instance.pk, 'update'])
             return HttpResponseRedirect(redirect)
     else:
         form = MonitoringForm()
@@ -262,8 +262,12 @@ def monitoring_add(request):
     current_title = _('Add monitoring cycle')
 
     return render_to_response('monitoring_form.html',
-            {'current_title': current_title, 'media': form.media, 'form': form, 'title': title,
-             'formset': None, }, context_instance=RequestContext(request))
+                              {'current_title': current_title,
+                               'media': form.media,
+                               'form': form,
+                               'title': title,
+                               'formset': None},
+                              context_instance=RequestContext(request))
 
 
 #update rating twice in a day
@@ -298,11 +302,12 @@ def monitoring_rating_color(request, id):
 
 def monitoring_rating(request, m_id):
     """
-    Вывод мониторинга.
+    Display monitoring.
 
     """
     monitoring = get_object_or_404(Monitoring, pk=m_id)
-    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring) \
+            or request.user.profile.is_expertB and not request.user.is_superuser and monitoring.status != 5:
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Rating')
 
