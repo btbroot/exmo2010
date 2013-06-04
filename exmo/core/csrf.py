@@ -21,8 +21,6 @@ from django.middleware.csrf import *
 from django.utils.http import same_origin
 from django.utils.crypto import constant_time_compare
 
-from core.tasks import send_email
-
 
 def _sanitize_token(token):
     if len(token) > CSRF_KEY_LENGTH:
@@ -113,6 +111,8 @@ class CsrfViewMiddlewareCustom(CsrfViewMiddleware):
 
 
 def _send_email_about_cookies(request, subj):
+
+    from core.tasks import send_email
 
     req = []
     req.append('Method:  %s;' % request.method)
