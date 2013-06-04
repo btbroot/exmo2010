@@ -1,3 +1,5 @@
+{% extends "exmo2010/email_base.html" %}
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -16,26 +18,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-"""
-WSGI config for exmo project.
+{% endcomment %}
 
-"""
-import os
-import djcelery
-djcelery.setup_loader()
+{% load i18n %}
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exmo.exmo.settings")
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
 
-from django.core.handlers.wsgi import WSGIHandler
+    {% for req in request %}
+        {{ req }}
+    {% endfor %}
 
-
-class ForcePostHandler(WSGIHandler):
-    """
-    Workaround for: http://lists.unbit.it/pipermail/uwsgi/2011-February/001395.html.
-
-    """
-    def get_response(self, request):
-        request.POST  # force reading of POST data
-        return super(ForcePostHandler, self).get_response(request)
-
-application = ForcePostHandler()
+{% endblock content %}
