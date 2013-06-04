@@ -307,7 +307,8 @@ def monitoring_rating(request, m_id):
     """
     monitoring = get_object_or_404(Monitoring, pk=m_id)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring) \
-            or request.user.profile.is_expertB and not request.user.is_superuser and monitoring.status != 5:
+            or not request.user.is_anonymous() and request.user.profile.is_expertB \
+            and not request.user.is_superuser and monitoring.status != 5:
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Rating')
 
