@@ -698,7 +698,7 @@ div.system-message p.system-message-title {
     background-color: #fff;
     border: none;
     margin: 0;
-    padding: 15px 20px;
+    padding: 0 20px 15px 20px;
     z-index: 0;
 
     /* IE7 min-height hack*/
