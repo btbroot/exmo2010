@@ -1,6 +1,7 @@
 *.pyc
 *.db
 local_settings.py
+analytics.html
 *~
 *.mo
 *.egg

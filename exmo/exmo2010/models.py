@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,11 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-EXMO2010 Models module
-"""
-
 import datetime
 import string
 import random
@@ -34,7 +29,7 @@ from django.db import models, IntegrityError
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
-from django.utils.encoding import smart_unicode
+from south.modelsinspector import add_introspection_rules
 from tagging.models import Tag
 
 from core.fields import TagField
@@ -357,7 +352,6 @@ email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-
 delimiters_re = re.compile(r',|\s||(,\s)|\n|(,\n)')
 
 
-
 class EmailsField(models.TextField):
     def to_python(self, value):
         sub_emails = re.sub(email_re, '', value)
@@ -370,6 +364,8 @@ class EmailsField(models.TextField):
             email = e[0] + ", "
             addresses += email
         return addresses.rstrip(", ")
+
+add_introspection_rules([], ["^exmo2010\.models\.EmailsField"])
 
 
 class PhonesField(models.TextField):
@@ -393,6 +389,8 @@ class PhonesField(models.TextField):
             number += ", "
             numbers += number
         return numbers.rstrip(", ")
+
+add_introspection_rules([], ["^exmo2010\.models\.PhonesField"])
 
 
 class Organization(models.Model):
@@ -1065,7 +1063,6 @@ class Score(models.Model):
             'task__organization__name',
             'parameter__code'
         )
-
 
 
 class Claim(models.Model):

@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,14 +19,14 @@
 #
 {% endcomment %}
 {% spaceless %}
-    {% load i18n %}
+    {% load i18n adminmedia %}
     <!DOCTYPE html>
     <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
     <head>
         <title>{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'AIS Exmo' %}{% endblock title %}</title>
         <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/base.css" />
         <!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dashboard/css/dropdown.css" /> -->
-        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->
         {% if LANGUAGE_BIDI %}
             <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />
         {% endif %}
@@ -36,9 +36,9 @@
         <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
         {{ media|default:"" }}
         {% block extrahead %}{% endblock %}
+        {% include "analytics.html" %}
         {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
     </head>
-    {% load i18n %}
 
     <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
