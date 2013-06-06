@@ -18,7 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import timedelta, datetime
+from functools import wraps
 
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
 from custom_comments.models import CommentExmo
 from django.core.urlresolvers import reverse
@@ -26,6 +28,7 @@ from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
@@ -315,3 +318,38 @@ def comment_report(monitoring):
     result['time_to_answer'] = time_to_answer
 
     return result
+
+
+def comments_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+    """
+    Custom decorator with redirecting to specific path.
+
+    """
+    actual_decorator = _user_passes_test(
+        lambda u: u.is_authenticated(),
+        login_url=login_url,
+        redirect_field_name=redirect_field_name
+    )
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+
+def _user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
+
+    def decorator(view_func):
+        @wraps(view_func, assigned=available_attrs(view_func))
+        def _wrapped_view(request, *args, **kwargs):
+            if test_func(request.user):
+                return view_func(request, *args, **kwargs)
+            path = request.build_absolute_uri()
+
+            from django.contrib.auth.views import redirect_to_login
+            try:
+                score_id = request.POST['object_pk']
+                path = '%s' % reverse('exmo2010:score_detail', args=[score_id])
+            except AttributeError:
+                pass
+            return redirect_to_login(path, login_url, redirect_field_name)
+        return _wrapped_view
+    return decorator
