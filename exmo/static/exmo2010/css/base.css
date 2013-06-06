@@ -702,9 +702,9 @@ div.system-message p.system-message-title {
     z-index: 0;
 
     /* IE7 min-height hack*/
-    min-height: 370px;
+    min-height: 410px;
     height: auto !important;
-    height: 370px;
+    height: 410px;
 }
 
 #content.sidebar-ident
@@ -716,7 +716,7 @@ div.system-message p.system-message-title {
 #content-container
 {
     height: 100%;
-    padding: 0px;
+    padding: 0;
     background-color: #f8f8f8;
     z-index: 0;
 }
