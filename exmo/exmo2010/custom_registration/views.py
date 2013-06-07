@@ -53,7 +53,10 @@ from exmo2010.custom_registration.models import CustomRegistrationProfile
 def password_reset_redirect(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
-    kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 1}
+    kwargs['extra_context'] = {
+        'current_title': _('Password reset (step %d from 3)') % 1,
+        'required_error': Field.default_error_messages['required']
+    }
     kwargs['password_reset_form'] = CustomPasswordResetForm
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
