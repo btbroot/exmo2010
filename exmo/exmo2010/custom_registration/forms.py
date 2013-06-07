@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -192,6 +192,8 @@ class ExmoAuthenticationForm(AuthenticationForm):
     для тех неактивных пользователей, которые
     не подтвердили письмо активации.
     """
+    username = forms.CharField(label=_("E-mail"), max_length=30)
+
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
