@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -40,10 +40,19 @@ class MonitoringForm(forms.ModelForm):
         self.fields['interact_date'].required = True
         self.fields['finishing_date'].required = True
         self.fields['publish_date'].required = True
-        self.fields.keyOrder = ['name', 'status', 'openness_expression',
-                                'add_questionnaire', 'no_interact', 'hidden',
-                                'rate_date', 'interact_date',
-                                'finishing_date', 'publish_date']
+        self.fields.keyOrder = [
+            'name',
+            'status',
+            'openness_expression',
+            'map_link',
+            'add_questionnaire',
+            'no_interact',
+            'hidden',
+            'rate_date',
+            'interact_date',
+            'finishing_date',
+            'publish_date',
+        ]
 
     class Meta:
         model = Monitoring

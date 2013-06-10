@@ -136,6 +136,11 @@ class Monitoring(models.Model):
     )
     openness_expression = models.ForeignKey(OpennessExpression,
                                             default=8, verbose_name=_('openness expression'))
+    map_link = models.URLField(
+        null=True,
+        blank=True,
+        verbose_name=_('Link to map')
+    )
     # Максимальное время ответа в днях.
     time_to_answer = models.PositiveSmallIntegerField(
         default=3,
