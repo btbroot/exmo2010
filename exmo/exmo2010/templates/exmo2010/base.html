@@ -31,9 +31,7 @@
             <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />
         {% endif %}
         {% block extrastyle %}{% endblock %}
-
-        {% url django.views.i18n.javascript_catalog as jsi18nurl %}
-        <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
+        <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
         {{ media|default:"" }}
         {% block extrahead %}{% endblock %}
         {% include "analytics.html" %}

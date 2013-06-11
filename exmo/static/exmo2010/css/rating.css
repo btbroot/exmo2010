@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -41,6 +41,16 @@
 .rating-top-border {
     border-top: solid;
     border-color: #d7d7d7;
+    vertical-align:middle;
+    background: none repeat scroll 0 0 white;
+}
+
+#first_column {
+    text-align: center;
+}
+
+#average {
+    font-weight: bold;
 }
 
 .rating-bottom-border {
@@ -76,8 +86,39 @@ div.scroll {
     padding: 5px;
 }
 
+
+#table_string
+{
+    margin-bottom: 10px;
+}
+
+#table_string td
+{
+    border: none;
+}
+
+#map
+{
+    float: right;
+    background: url(../img/earth.gif) no-repeat;
+    padding-left: 20px;
+}
+
+#pselect_div {
+    display: none;
+}
+
+#pselect_div > div {
+    height: 30px;
+}
+
+#parameters-toggle > a {
+    float: right;
+}
+
 .parameter-list
 {
+    display: inline;
     font-size: 14px;
     font-weight: bold;
     color: #333;

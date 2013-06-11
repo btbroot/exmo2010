@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -21,8 +21,6 @@
 {% endcomment %}
 {% load i18n adminmedia %}
 {% block extrahead %}{{ block.super }}
-    {% url django.views.i18n.javascript_catalog as jsi18nurl %}
-    <script type="text/javascript" src="{{ jsi18nurl|default:"/jsi18n/" }}"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.json-2.3.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/questionnaire.js"></script>

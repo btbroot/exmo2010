@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-10 22:38+0400\n"
+"POT-Creation-Date: 2013-06-12 11:31+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -213,7 +213,7 @@ msgstr "Электронная почта"
 
 #: accounts/templates/user_settings.html:74
 #: accounts/templates/user_settings.html:213
-#: monitorings/templates/monitoring_comment_report.html:63
+#: monitorings/templates/monitoring_comment_report.html:61
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/organizations/form.html:70
 #: scores/templates/form.html:242 scores/templates/score_list.html:265
@@ -272,7 +272,7 @@ msgstr "Параметр"
 #: organizations/templates/organizations/all.html:36 scores/views.py:346
 #: tasks/views.py:310 tasks/views.py:527
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:134
+#: templates/exmo2010/rating_content.html:141
 #: templates/exmo2010/score/parameter_header.html:26
 msgid "Organization"
 msgstr "Организация"
@@ -355,7 +355,7 @@ msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s"
 msgid "Answer claim"
 msgstr "Ответить на претензию"
 
-#: claims/templates/claim.html:82 claims/templates/claim_report.html:92
+#: claims/templates/claim.html:82 claims/templates/claim_report.html:90
 msgid "There are no claims"
 msgstr "Претензий нет"
 
@@ -375,20 +375,20 @@ msgstr "Выставить"
 msgid "Time and date"
 msgstr "Время и дата"
 
-#: claims/templates/claim_list.html:63 claims/templates/claim_report.html:54
+#: claims/templates/claim_list.html:63 claims/templates/claim_report.html:52
 msgid "Link to claim"
 msgstr "Ссылка на претензию"
 
-#: claims/templates/claim_list.html:73 claims/templates/claim_report.html:64
+#: claims/templates/claim_list.html:73 claims/templates/claim_report.html:62
 #: clarifications/templates/clarification_list.html:72
-#: clarifications/templates/clarification_report.html:64
+#: clarifications/templates/clarification_report.html:62
 #: custom_comments/templates/comment_list.html:73
 msgid "Without answer"
 msgstr "Без ответа"
 
-#: claims/templates/claim_list.html:98 claims/templates/claim_report.html:82
+#: claims/templates/claim_list.html:98 claims/templates/claim_report.html:80
 #: clarifications/templates/clarification_list.html:95
-#: clarifications/templates/clarification_report.html:82
+#: clarifications/templates/clarification_report.html:80
 #: custom_comments/templates/comment_list.html:96
 msgid "Processed"
 msgstr "Обработанные"
@@ -398,17 +398,17 @@ msgstr "Обработанные"
 msgid "go to claim"
 msgstr "перейти к претензии"
 
-#: claims/templates/claim_report.html:51
-#: clarifications/templates/clarification_report.html:51
+#: claims/templates/claim_report.html:49
+#: clarifications/templates/clarification_report.html:49
 #: organizations/templates/organizations/history.html:44
 msgid "Date and time"
 msgstr "Время и дата"
 
-#: claims/templates/claim_report.html:52
+#: claims/templates/claim_report.html:50
 msgid "Claim addressee"
 msgstr "Кому выставили"
 
-#: claims/templates/claim_report.html:53
+#: claims/templates/claim_report.html:51
 msgid "Claim creator"
 msgstr "Кто выставил"
 
@@ -496,7 +496,7 @@ msgid "Answer clarification"
 msgstr "Ответить на уточнение"
 
 #: clarifications/templates/clarification.html:72
-#: clarifications/templates/clarification_report.html:92
+#: clarifications/templates/clarification_report.html:90
 msgid "There are no clarifications"
 msgstr "Уточнений нет"
 
@@ -505,7 +505,7 @@ msgid "Specify"
 msgstr "Уточнить"
 
 #: clarifications/templates/clarification_list.html:63
-#: clarifications/templates/clarification_report.html:54
+#: clarifications/templates/clarification_report.html:52
 msgid "Link to clarification"
 msgstr "Ссылка на уточнение"
 
@@ -514,11 +514,11 @@ msgstr "Ссылка на уточнение"
 msgid "go to clarification"
 msgstr "перейти к уточнению"
 
-#: clarifications/templates/clarification_report.html:52
+#: clarifications/templates/clarification_report.html:50
 msgid "Clarification addressee"
 msgstr "У кого уточняли"
 
-#: clarifications/templates/clarification_report.html:53
+#: clarifications/templates/clarification_report.html:51
 msgid "Clarification creator"
 msgstr "Кто уточнял"
 
@@ -611,7 +611,7 @@ msgid "Ratings"
 msgstr "Рейтинги"
 
 #: dashboard/menu.py:85 monitorings/views.py:1089
-#: monitorings/templates/monitoring_comment_report.html:69
+#: monitorings/templates/monitoring_comment_report.html:67
 #: templates/errors_header.html:40
 msgid "Statistics"
 msgstr "Статистика"
@@ -831,13 +831,13 @@ msgstr "дата результатов"
 msgid "Monitoring"
 msgstr "Цикл мониторинга"
 
-#: exmo2010/models.py:310 questionnaire/templates/add_questionnaire.html:39
-#: templates/exmo2010/add_questionnaire.html:39
+#: exmo2010/models.py:310 questionnaire/templates/add_questionnaire.html:37
+#: templates/exmo2010/add_questionnaire.html:37
 msgid "Questionnaire name"
 msgstr "Название анкеты"
 
-#: exmo2010/models.py:312 questionnaire/templates/add_questionnaire.html:41
-#: templates/exmo2010/add_questionnaire.html:41
+#: exmo2010/models.py:312 questionnaire/templates/add_questionnaire.html:39
+#: templates/exmo2010/add_questionnaire.html:39
 msgid "Questionnaire comment"
 msgstr "Примечание к анкете"
 
@@ -1400,7 +1400,7 @@ msgstr "Проблема"
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: monitorings/forms.py:94
+#: monitorings/forms.py:104
 msgid "monitoring not select"
 msgstr "ни один цикл не выбран"
 
@@ -1550,58 +1550,58 @@ msgstr[2] ""
 ", из них %(count)d имеют хотя бы один релевантный параметр из "
 "пользовательской выборки"
 
-#: monitorings/templates/monitoring_comment_report.html:71
+#: monitorings/templates/monitoring_comment_report.html:69
 #: monitorings/templates/rating_color.html:51
 msgid "Total organizations"
 msgstr "Всего органов/организаций"
 
-#: monitorings/templates/monitoring_comment_report.html:72
+#: monitorings/templates/monitoring_comment_report.html:70
 msgid "Registered organizations"
 msgstr "Зарегистрированные органы/организации"
 
-#: monitorings/templates/monitoring_comment_report.html:73
+#: monitorings/templates/monitoring_comment_report.html:71
 msgid "Organizations with comments from organization"
 msgstr "Органы/организации с комментариями от представителей"
 
-#: monitorings/templates/monitoring_comment_report.html:74
+#: monitorings/templates/monitoring_comment_report.html:72
 msgid "Comments count from organizations"
 msgstr "Кол-во комментариев от органа/организации"
 
-#: monitorings/templates/monitoring_comment_report.html:75
+#: monitorings/templates/monitoring_comment_report.html:73
 msgid "Comments count from organizations with reply date in limit"
 msgstr "Кол-во комментариев от организаций с ответами в срок"
 
-#: monitorings/templates/monitoring_comment_report.html:76
+#: monitorings/templates/monitoring_comment_report.html:74
 msgid "Comments count from organizations with reply date out of limit"
 msgstr "Кол-во комментариев от организаций с ответами не в срок"
 
-#: monitorings/templates/monitoring_comment_report.html:77
+#: monitorings/templates/monitoring_comment_report.html:75
 msgid "Comments count from organizations without reply and date in limit"
 msgstr "Кол-во комментариев от организаций без ответов"
 
-#: monitorings/templates/monitoring_comment_report.html:78
+#: monitorings/templates/monitoring_comment_report.html:76
 msgid ""
 "Comments count from organizations without reply and should be answered today"
 msgstr ""
 "Кол-во комментариев от организаций на которые необходимо ответить сегодня"
 
-#: monitorings/templates/monitoring_comment_report.html:79
+#: monitorings/templates/monitoring_comment_report.html:77
 msgid "Comments count from organizations without reply and date out of limit"
 msgstr "Кол-во комментариев от организаций без ответов в срок"
 
-#: monitorings/templates/monitoring_comment_report.html:83
+#: monitorings/templates/monitoring_comment_report.html:81
 msgid "Statistics by organization"
 msgstr "Статистика по органу/организации"
 
-#: monitorings/templates/monitoring_comment_report.html:97
+#: monitorings/templates/monitoring_comment_report.html:95
 msgid "Statistics by iifd employers"
 msgstr "Статистика по пользователям ИРСИ"
 
-#: monitorings/templates/monitoring_comment_report.html:112
+#: monitorings/templates/monitoring_comment_report.html:110
 msgid "Comments list from organizations without reply and date out of limit"
 msgstr "Комментарии от организаций без ответов в срок"
 
-#: monitorings/templates/monitoring_comment_report.html:124
+#: monitorings/templates/monitoring_comment_report.html:122
 msgid ""
 "Comments list from organization that needs to reply today (exclude list "
 "above)"
@@ -1609,14 +1609,14 @@ msgstr ""
 "Комментарии от организаций на которые необходимо ответить сегодня (за "
 "исключением списка выше)"
 
-#: monitorings/templates/monitoring_comment_report.html:136
+#: monitorings/templates/monitoring_comment_report.html:134
 msgid ""
 "Comments list from organization that needs to reply (exclude list above)"
 msgstr ""
 "Комментарии от организаций на которые необходимо ответить (за исключением "
 "списка выше)"
 
-#: monitorings/templates/monitoring_comment_report.html:149
+#: monitorings/templates/monitoring_comment_report.html:147
 msgid "Haven't comments from organizations"
 msgstr "Нет комментариев от органов/организаций"
 
@@ -1789,13 +1789,13 @@ msgstr "Рейтинг "
 
 #: monitorings/templates/rating_color.html:39
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:133
+#: templates/exmo2010/rating_content.html:140
 msgid "Position"
 msgstr "Позиция в рейтинге"
 
 #: monitorings/templates/rating_color.html:39
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:135
+#: templates/exmo2010/rating_content.html:142
 msgid "URL"
 msgstr "Веб-адрес"
 
@@ -1807,13 +1807,13 @@ msgstr "Кид"
 
 #: monitorings/templates/rating_color.html:50
 #: templates/exmo2010/rating_common.html:28
-#: templates/exmo2010/rating_content.html:164
+#: templates/exmo2010/rating_content.html:172
 msgid "Average"
 msgstr "Среднее значение"
 
 #: monitorings/templates/rating_color.html:54
 #: templates/exmo2010/rating_common.html:31
-#: templates/exmo2010/rating_content.html:191
+#: templates/exmo2010/rating_content.html:199
 msgid "Empty list"
 msgstr "Список пуст"
 
@@ -1989,18 +1989,18 @@ msgstr "Добавить новый параметр"
 msgid "Cannot delete answer for approved task. Edit answer instead."
 msgstr "Нельзя удалить ответ для одобренной задачи. Отредактируйте ответ."
 
-#: questionnaire/templates/add_questionnaire.html:36
-#: templates/exmo2010/add_questionnaire.html:36
+#: questionnaire/templates/add_questionnaire.html:34
+#: templates/exmo2010/add_questionnaire.html:34
 msgid "Create questionnaire"
 msgstr "Конструктор опросника анкеты"
 
-#: questionnaire/templates/add_questionnaire.html:45
-#: templates/exmo2010/add_questionnaire.html:45
+#: questionnaire/templates/add_questionnaire.html:43
+#: templates/exmo2010/add_questionnaire.html:43
 msgid "Add question"
 msgstr "Добавить вопрос"
 
-#: questionnaire/templates/add_questionnaire.html:49
-#: templates/exmo2010/add_questionnaire.html:49
+#: questionnaire/templates/add_questionnaire.html:47
+#: templates/exmo2010/add_questionnaire.html:47
 msgid "Save questionnaire"
 msgstr "Сохранить анкету"
 
@@ -2541,80 +2541,75 @@ msgstr ""
 msgid "Select"
 msgstr "Выбрать"
 
-#: templates/exmo2010/rating_content.html:45
+#: templates/exmo2010/rating_content.html:48
 msgid "Rating view"
 msgstr "Вид рейтинга"
 
-#: templates/exmo2010/rating_content.html:48
-#: templates/exmo2010/rating_content.html:52
+#: templates/exmo2010/rating_content.html:51
+#: templates/exmo2010/rating_content.html:55
 msgid "all parameters"
 msgstr "все параметры"
 
-#: templates/exmo2010/rating_content.html:59
-#: templates/exmo2010/rating_content.html:63
+#: templates/exmo2010/rating_content.html:62
+#: templates/exmo2010/rating_content.html:66
 msgid "npa parameters"
 msgstr "параметры на основе НПА"
 
-#: templates/exmo2010/rating_content.html:68
-#: templates/exmo2010/rating_content.html:72
+#: templates/exmo2010/rating_content.html:71
+#: templates/exmo2010/rating_content.html:75
 msgid "other parameters"
 msgstr "дополнительные параметры"
 
-#: templates/exmo2010/rating_content.html:78
-#: templates/exmo2010/rating_content.html:82
+#: templates/exmo2010/rating_content.html:81
+#: templates/exmo2010/rating_content.html:85
 msgid "user selected"
 msgstr "пользовательский"
 
-#: templates/exmo2010/rating_content.html:87
+#: templates/exmo2010/rating_content.html:93
 msgid "Map"
 msgstr "Карта"
 
-#: templates/exmo2010/rating_content.html:93
+#: templates/exmo2010/rating_content.html:102
 msgid "Parameter list"
 msgstr "Список параметров"
 
-#: templates/exmo2010/rating_content.html:105
+#: templates/exmo2010/rating_content.html:114
 msgid "Get rating"
 msgstr "Сформировать рейтинг"
 
-#: templates/exmo2010/rating_content.html:113
-#: templates/exmo2010/rating_js.html:46
+#: templates/exmo2010/rating_content.html:120
 msgid "Show parameter list"
 msgstr "Показать список параметров"
 
-#: templates/exmo2010/rating_content.html:119
+#: templates/exmo2010/rating_content.html:126
 msgid "generated by parameters based on normative-legal acts"
 msgstr "сформирован по параметрам на основе НПА"
 
-#: templates/exmo2010/rating_content.html:122
+#: templates/exmo2010/rating_content.html:129
 msgid "generated by other parameters"
 msgstr "сформирован по дополнительным параметрам"
 
-#: templates/exmo2010/rating_content.html:125
+#: templates/exmo2010/rating_content.html:132
 msgid "generated by parameters on user selected"
 msgstr "сформирован по выбранным параметрам"
 
-#: templates/exmo2010/rating_content.html:139
+#: templates/exmo2010/rating_content.html:146
 msgid "First openness"
 msgstr "Первичный Кид"
 
-#: templates/exmo2010/rating_content.html:142
+#: templates/exmo2010/rating_content.html:149
 msgid "Finally openness"
 msgstr "Итоговый Кид"
 
-#: templates/exmo2010/rating_content.html:144
+#: templates/exmo2010/rating_content.html:151
 msgid "Actualy openness"
 msgstr "Актуальный Кид"
 
-#: templates/exmo2010/rating_content.html:186
+#: templates/exmo2010/rating_content.html:194
 msgid "First openness &mdash; openness value before interact"
 msgstr ""
 "Первичный Кид &mdash; значение коэффициента информационной доступности до "
 "этапа взаимодействия с представителями организаций"
-
-#: templates/exmo2010/rating_js.html:41
-msgid "Hide parameter list"
-msgstr "Скрыть список параметров"
 
 #: templates/exmo2010/score_confirm_delete.html:26
 msgid "Delete this score?"
