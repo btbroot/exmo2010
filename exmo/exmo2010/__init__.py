@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,34 +17,3 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.db.models.signals import *
-from django.conf import settings
-from django.contrib.comments.signals import comment_will_be_posted
-from django.contrib.comments.signals import comment_was_posted
-
-from exmo2010.helpers import *
-from exmo2010.models import Monitoring, Score, UserProfile
-from exmo2010.signals import *
-from scores.views import create_revision, score_change_notify
-from tasks.views import task_user_change_notify
-from custom_comments.views import comment_change_status, comment_notification
-from claims.views import claim_notification
-from clarifications.views import clarification_notification
-
-
-if hasattr(settings, 'USE_EMAIL') and settings.USE_EMAIL:
-    comment_will_be_posted.connect(comment_notification)
-    score_was_changed.connect(score_change_notify)
-    claim_was_posted_or_deleted.connect(claim_notification)
-    clarification_was_posted.connect(clarification_notification)
-    task_user_changed.connect(task_user_change_notify)
-
-post_save.connect(post_save_model)
-pre_save.connect(create_revision, sender=Score)
-
-# Регистрация хэндлера для сигнала перед отправкой комментария,
-# хэндлер изменяет статус комментариев.
-comment_was_posted.connect(comment_change_status)
-
-# invoke signal when 'organization' field at UserProfile was changed
-m2m_changed.connect(org_changed, sender=UserProfile.organization.through)

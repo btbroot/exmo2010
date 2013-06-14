@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,6 +19,7 @@
 #
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.dispatch import Signal
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -30,7 +31,6 @@ from clarifications.forms import *
 from core.helpers import get_experts
 from core.tasks import send_email
 from exmo2010.models import Clarification, Monitoring, Score
-from exmo2010.signals import clarification_was_posted
 
 
 @login_required
@@ -232,3 +232,6 @@ def clarification_notification(sender, **kwargs):
     for r in recipients:
         send_email.delay(r, subject, 'score_clarification', context=c)
 
+
+clarification_was_posted = Signal(providing_args=["clarification", "request"])
+clarification_was_posted.connect(clarification_notification)
