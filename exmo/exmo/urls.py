@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -40,6 +40,7 @@ urlpatterns = patterns('',
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^license.txt$', TemplateView.as_view(template_name='license.txt', content_type='text/plain'), name='license'),
     url(r'^ckeditor/', include('ckeditor.urls')),
+    url(r'^release$', TemplateView.as_view(template_name='release', content_type='text/plain'), name='release'),
 )
 
 if 'debug_toolbar' in settings.INSTALLED_APPS:
