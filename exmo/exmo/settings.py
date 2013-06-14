@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -184,7 +184,6 @@ CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 LOCALE_PATHS = (path_to_project('locale'),)
 
 # email server
-USE_EMAIL = True
 SERVER_EMAIL = 'www-data@svobodainfo.org'
 FORCE_SCRIPT_NAME = ""
 

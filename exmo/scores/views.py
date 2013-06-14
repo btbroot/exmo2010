@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -27,6 +27,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
+from django.db.models.signals import pre_save
+from django.dispatch import Signal
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
@@ -46,7 +48,6 @@ from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter
 from exmo2010.models import QAnswer, QQuestion, Score, Task, UserProfile, MONITORING_PUBLISH
-from exmo2010.signals import score_was_changed
 from core.helpers import table_prepare_queryset
 from scores.forms import ScoreForm
 from questionnaire.forms import QuestionnaireDynForm
@@ -552,6 +553,10 @@ def score_change_notify(sender, **kwargs):
             email.send()
 
 
+score_was_changed = Signal(providing_args=["form", "request"])
+score_was_changed.connect(score_change_notify)
+
+
 def create_revision(sender, instance, using, **kwargs):
     """
     Сохранение ревизии оценки на стадии взаимодействия.
@@ -559,6 +564,9 @@ def create_revision(sender, instance, using, **kwargs):
     """
     if instance.revision != Score.REVISION_INTERACT:
         instance.create_revision(Score.REVISION_INTERACT)
+
+
+pre_save.connect(create_revision, sender=Score)
 
 
 def _construct_change_message(request, form, formsets):

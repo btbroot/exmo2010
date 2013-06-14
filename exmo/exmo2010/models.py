@@ -36,7 +36,6 @@ from core.fields import TagField
 from core.sql import *
 from core.utils import clean_message
 from exmo import config
-from exmo2010.signals import task_user_changed
 
 
 # Типы вопросов анкеты. Добавить переводы!
@@ -1641,3 +1640,25 @@ class MonitoringInteractActivity(models.Model):
 
     class Meta:
         unique_together = ('user', 'monitoring')
+
+
+from django.db.models.signals import m2m_changed
+from django.dispatch import Signal
+from tasks.views import task_user_change_notify
+
+def org_changed(sender, instance, action, **kwargs):
+    """
+    Change organization`s invitation status if current user is the first member of this organization.
+
+    """
+    if action == 'post_add':
+        for org in instance.organization.all():
+            if org.userprofile_set.count():
+                org.inv_status = 'RGS'
+                org.save()
+
+# invoke signal when 'organization' field at UserProfile was changed
+m2m_changed.connect(org_changed, sender=UserProfile.organization.through)
+
+task_user_changed = Signal()
+task_user_changed.connect(task_user_change_notify)

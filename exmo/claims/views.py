@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,6 +19,7 @@
 #
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.dispatch import Signal
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -32,7 +33,6 @@ from claims.forms import *
 from core.helpers import get_experts
 from core.tasks import send_email
 from exmo2010.models import Claim, Monitoring, Score
-from exmo2010.signals import claim_was_posted_or_deleted
 
 
 @csrf_protect
@@ -309,3 +309,6 @@ def claim_notification(sender, **kwargs):
     for r in recipients:
         send_email.delay(r, subject, 'score_claim', context=c)
 
+
+claim_was_posted_or_deleted = Signal(providing_args=["claim", "request", "creation"])
+claim_was_posted_or_deleted.connect(claim_notification)

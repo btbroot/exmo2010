@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -22,6 +22,7 @@ from functools import wraps
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
+from django.contrib.comments.signals import comment_was_posted, comment_will_be_posted
 from custom_comments.models import CommentExmo
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -159,6 +160,9 @@ def comment_notification(sender, **kwargs):
         _send_mails(context, True, subject, admin_all_comments)
 
 
+comment_will_be_posted.connect(comment_notification)
+
+
 def _comments_lists(rcpt):
     """
     Get emails lists for comments branch and single comment.
@@ -209,6 +213,9 @@ def comment_change_status(sender, **kwargs):
                     c.save()
                 elif c.user.profile.is_expert:
                     break
+
+
+comment_was_posted.connect(comment_change_status)
 
 
 def comment_report(monitoring):

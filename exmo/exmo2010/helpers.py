@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.db.models.signals import post_save
 from reversion import revision
 
 from core.utils import disable_for_loaddata
@@ -40,3 +41,6 @@ def post_save_model(sender, instance, created, **kwargs):
             task.update_openness()
     if must_register:
         revision.register(instance.__class__)
+
+
+post_save.connect(post_save_model)
