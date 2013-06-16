@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect
 
 from core import site as exmo
-from core.helpers import TemplateView
+from core.views import TemplateView
 admin.autodiscover()
 
 
