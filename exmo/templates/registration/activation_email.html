@@ -28,11 +28,17 @@
     <p>{% trans 'Registration on' %} {{ site }}</p>
     <p>
         {% trans 'In order to activate your account you should follow the link ONCE' %}:
-        http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/
+        <br />
+        <a href="http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/">
+            http://{{ site }}/exmo2010/accounts/activate/{{ activation_key }}/
+        </a>
     </p>
     <p>
         {% trans "Later you'll be able to log in here" %}
-        http://{{ site }}/exmo2010/accounts/login/
+        <br />
+        <a href="http://{{ site }}/exmo2010/accounts/login/">
+            http://{{ site }}/exmo2010/accounts/login/
+        </a>
     </p>
     <p>{% trans 'Thank you' %}!</p>
 
