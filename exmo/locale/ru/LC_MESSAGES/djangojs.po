@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-12 20:02+0400\n"
+"POT-Creation-Date: 2013-06-20 00:37+0400\n"
 "PO-Revision-Date: 2013-06-11 21:54+0400\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -37,3 +37,7 @@ msgstr "Скрыть список параметров"
 #: static/exmo2010/js/rating.js:50
 msgid "Show parameter list"
 msgstr "Показать список параметров"
+
+#: static/exmo2010/js/scores.js:34
+msgid "place"
+msgstr "место"

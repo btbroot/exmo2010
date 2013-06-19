@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -68,12 +68,25 @@
     opacity: 0.5;
 }
 
-.ajaxloader {
+.comment-unreaded, .claim-color, .rating-ajax {
     display: inline-block;
+    content: url("../img/ajax-loader.gif");
+}
+
+.comment-unreaded, .claim-color {
+    height: 8px;
 }
 
 .comment-unreaded {
     float: right;
+}
+
+.rating-ajax {
+    height: 14px;
+}
+
+.get-rating a, .get-rating span {
+    color: red;
 }
 
 /*Styles for ankete*/

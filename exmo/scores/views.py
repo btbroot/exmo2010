@@ -52,6 +52,11 @@ from core.helpers import table_prepare_queryset
 from scores.forms import ScoreForm
 from questionnaire.forms import QuestionnaireDynForm
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 
 class ScoreMixin(object):
     model = Score
@@ -417,12 +422,9 @@ def score_list_by_task(request, task_id, report=None):
             form = None
         has_npa = task.organization.monitoring.has_npa
         if has_npa:
-            place_npa = task.rating_place_npa
-            place_other = task.rating_place_other
             parameters_npa = parameters.filter(npa=True)
             parameters_other = parameters.filter(npa=False)
         else:
-            place_npa = place_other = None
             parameters_npa = None
             parameters_other = parameters
         # Не показываем ссылку экспертам B или предатвителям, если статус
@@ -441,13 +443,11 @@ def score_list_by_task(request, task_id, report=None):
                 'score_interact_dict': score_interact_dict,
                 'parameters_npa': parameters_npa,
                 'parameters_other': parameters_other,
+                'monitoring': monitoring,
                 'task': task,
                 'has_npa': has_npa,
                 'current_title': current_title,
                 'title': title,
-                'place': task.rating_place,
-                'place_npa': place_npa,
-                'place_other': place_other,
                 'form': form,
                 'invcodeform': SettingsInvCodeForm(),
                 'show_link': show_link,
@@ -623,6 +623,30 @@ def score_comment_unreaded(request, score_id):
         return render_to_response('commentunread_image.html',
                                   {'score': score},
                                   context_instance=RequestContext(request))
+    else:
+        raise Http404
+
+
+@login_required
+def ratingUpdate(request):
+    """
+    AJAX-view for rating counting.
+
+    """
+    rating = {}
+    if request.method == "GET" and request.is_ajax():
+
+        task_id = json.loads(request.GET['task_id'])
+
+        if task_id:
+            task = get_object_or_404(Task, pk=task_id)
+            rating_names = dict(request.GET)['rating_names']
+
+            for item in rating_names:
+                attr = 'rating_' + item
+                rating[item] = getattr(task, attr)
+
+            return HttpResponse(json.dumps(rating), mimetype='application/json')
     else:
         raise Http404
 

@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -90,7 +90,7 @@
         {% if perm_admin %}
             &nbsp;<a href="{% url exmo2010:task_manager object.pk 'update' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
         {% endif %}
-        {% if perm_admin and not monitoring.is_publish %}
+        {% if perm_admin and not monitoring.is_published %}
             <a href="{% url exmo2010:task_manager object.pk 'delete' %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif"></a>
         {% endif %}
       </td>

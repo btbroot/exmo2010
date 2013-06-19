@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -596,7 +596,7 @@ def monitoring_parameter_filter(request, m_id):
             queryset = queryset.filter(task__status__in=t_st_list)
 
             if request.user.profile.is_expertB and not (request.user.has_perm('exmo2010.admin_monitoring',
-                monitoring) or request.user.profile.is_expertA or monitoring.is_publish):
+                monitoring) or request.user.profile.is_expertA or monitoring.is_published):
                 queryset = queryset.filter(task__user=request.user)
 
     else:

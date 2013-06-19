@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -33,6 +33,7 @@ urlpatterns = \
              url(r'^(\d+)/claimstatus/$', 'score_claim_color', name='score_claim_color'),
              url(r'^(\d+)/comment/add/$', 'score_add_comment', name='score_add_comment'),
              url(r'^(\d+)/commentunreaded/$', 'score_comment_unreaded', name='score_commentunreaded'),
+             url(r'^rating_update$', 'ratingUpdate'),
              )
 
 urlpatterns += \

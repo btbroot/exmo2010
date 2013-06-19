@@ -205,7 +205,7 @@ class Monitoring(models.Model):
     def _get_finishing(self):
         return self.status == MONITORING_FINISHING
 
-    def _get_publish(self):
+    def _get_published(self):
         return self.status == MONITORING_PUBLISH
 
     def _get_active(self):
@@ -295,7 +295,7 @@ class Monitoring(models.Model):
     is_interact = property(_get_interact)
     is_result = property(_get_result)
     is_finishing = property(_get_finishing)
-    is_publish = property(_get_publish)
+    is_published = property(_get_published)
     is_active = property(_get_active)
 
     class Meta:
@@ -387,7 +387,6 @@ class PhonesField(models.TextField):
                 number = p
             else:
                 ntmp = re.findall(phone_re_reverse, p[::-1])[0]
-                print(ntmp)
                 number = ntmp[3][::-1] + ntmp[2][::-1] + "-" + ntmp[1][::-1] + "-" + ntmp[0][::-1]
 
             number += ", "

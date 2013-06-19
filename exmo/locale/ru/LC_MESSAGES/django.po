@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-12 11:31+0400\n"
+"POT-Creation-Date: 2013-06-20 00:38+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -173,9 +173,9 @@ msgstr "Настройки главной страницы были сброше
 #: organizations/views.py:256 parameters/views.py:72 parameters/views.py:85
 #: parameters/views.py:92 parameters/views.py:117 questionnaire/views.py:55
 #: questionnaire/views.py:57 questionnaire/views.py:87
-#: questionnaire/views.py:111 scores/views.py:104 scores/views.py:141
-#: scores/views.py:179 scores/views.py:266 scores/views.py:277
-#: scores/views.py:308 scores/views.py:374 scores/views.py:487
+#: questionnaire/views.py:111 scores/views.py:109 scores/views.py:146
+#: scores/views.py:184 scores/views.py:271 scores/views.py:282
+#: scores/views.py:313 scores/views.py:379 scores/views.py:488
 #: tasks/views.py:51 tasks/views.py:156 tasks/views.py:276 tasks/views.py:377
 #: tasks/views.py:416 tasks/views.py:423 tasks/views.py:438 tasks/views.py:452
 #: tasks/views.py:465 tasks/views.py:479 tasks/views.py:541 tasks/views.py:551
@@ -216,7 +216,7 @@ msgstr "Электронная почта"
 #: monitorings/templates/monitoring_comment_report.html:61
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/organizations/form.html:70
-#: scores/templates/form.html:242 scores/templates/score_list.html:265
+#: scores/templates/form.html:242 scores/templates/score_list.html:274
 msgid "Save"
 msgstr "Сохранить"
 
@@ -258,8 +258,8 @@ msgstr "Циклы мониторинга"
 #: bread_crumbs/views.py:52
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
-#: parameters/forms.py:49 scores/views.py:112 scores/views.py:157
-#: scores/views.py:205 scores/views.py:224 scores/views.py:313
+#: parameters/forms.py:49 scores/views.py:117 scores/views.py:162
+#: scores/views.py:210 scores/views.py:229 scores/views.py:318
 msgid "Parameter"
 msgstr "Параметр"
 
@@ -269,7 +269,7 @@ msgstr "Параметр"
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating_color.html:39
-#: organizations/templates/organizations/all.html:36 scores/views.py:346
+#: organizations/templates/organizations/all.html:36 scores/views.py:351
 #: tasks/views.py:310 tasks/views.py:527
 #: templates/exmo2010/rating_common.html:24
 #: templates/exmo2010/rating_content.html:141
@@ -1638,7 +1638,7 @@ msgstr "Импортировать органы/организации из CSV"
 
 #: monitorings/templates/monitoring_form.html:101
 #: monitorings/templates/monitoring_form.html:105
-#: scores/templates/score_list.html:103
+#: scores/templates/score_list.html:118
 msgid "Import"
 msgstr "Импорт"
 
@@ -1924,22 +1924,22 @@ msgstr ""
 msgid "Invite"
 msgstr "Пригласить"
 
-#: parameters/forms.py:51 scores/views.py:314 scores/templates/detail.html:59
+#: parameters/forms.py:51 scores/views.py:319 scores/templates/detail.html:59
 #: scores/templates/task_report.html:44
 msgid "Found"
 msgstr "Наличие"
 
-#: parameters/forms.py:53 scores/views.py:315 scores/templates/detail.html:68
+#: parameters/forms.py:53 scores/views.py:320 scores/templates/detail.html:68
 #: scores/templates/task_report.html:45
 msgid "Complete"
 msgstr "Полнота"
 
-#: parameters/forms.py:55 scores/views.py:316 scores/templates/detail.html:78
+#: parameters/forms.py:55 scores/views.py:321 scores/templates/detail.html:78
 #: scores/templates/task_report.html:46
 msgid "Topical"
 msgstr "Актуальность"
 
-#: parameters/forms.py:57 scores/views.py:317 scores/templates/detail.html:88
+#: parameters/forms.py:57 scores/views.py:322 scores/templates/detail.html:88
 #: scores/templates/task_report.html:47
 msgid "Accessible"
 msgstr "Навигационная доступность"
@@ -1948,12 +1948,12 @@ msgstr "Навигационная доступность"
 msgid "Hypertext"
 msgstr "HTML доступность"
 
-#: parameters/forms.py:61 scores/views.py:319 scores/templates/detail.html:108
+#: parameters/forms.py:61 scores/views.py:324 scores/templates/detail.html:108
 #: scores/templates/task_report.html:49
 msgid "Document"
 msgstr "Файловая доступность"
 
-#: parameters/forms.py:63 scores/views.py:320 scores/templates/detail.html:118
+#: parameters/forms.py:63 scores/views.py:325 scores/templates/detail.html:118
 #: scores/templates/task_report.html:50
 msgid "Image"
 msgstr "Графическая доступность"
@@ -2004,76 +2004,76 @@ msgstr "Добавить вопрос"
 msgid "Save questionnaire"
 msgstr "Сохранить анкету"
 
-#: scores/views.py:139
+#: scores/views.py:144
 #, python-format
 msgid "Delete score %s"
 msgstr "Удалить оценку %s"
 
-#: scores/views.py:166 scores/views.py:204 scores/views.py:306
+#: scores/views.py:171 scores/views.py:209 scores/views.py:311
 #: tasks/views.py:528
 #, python-format
 msgid "%s"
 msgstr "%s"
 
-#: scores/views.py:196
+#: scores/views.py:201
 msgid "Have active claim, but no data changed"
 msgstr "Нет изменённых данных при существующей претензии"
 
-#: scores/views.py:234
+#: scores/views.py:239
 #, python-format
 msgid "Score for parameter \"%s\""
 msgstr "Оценка параметра %s"
 
-#: scores/views.py:312 scores/templates/task_report.html:40
+#: scores/views.py:317 scores/templates/task_report.html:40
 msgid "Code"
 msgstr "Код"
 
-#: scores/views.py:318 scores/templates/task_report.html:48
+#: scores/views.py:323 scores/templates/task_report.html:48
 msgid "HTML"
 msgstr "Html доступность"
 
-#: scores/views.py:321 scores/templates/task_report.html:43
+#: scores/views.py:326 scores/templates/task_report.html:43
 msgid "Weight"
 msgstr "Ксз"
 
-#: scores/views.py:470
+#: scores/views.py:471
 msgid "Add new comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:475
+#: scores/views.py:476
 msgid "Add comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:533
+#: scores/views.py:534
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: scores/views.py:571
+#: scores/views.py:572
 #, python-format
 msgid "Changed %s."
 msgstr "Изменен %s."
 
-#: scores/views.py:571 scores/views.py:581
+#: scores/views.py:572 scores/views.py:582
 msgid "and"
 msgstr "и"
 
-#: scores/views.py:576
+#: scores/views.py:577
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
 msgstr "Добавлен %(name)s \"%(object)s\"."
 
-#: scores/views.py:580
+#: scores/views.py:581
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
 msgstr "Изменен %(list)s для %(name)s \"%(object)s\"."
 
-#: scores/views.py:585
+#: scores/views.py:586
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
 msgstr "Удален %(name)s \"%(object)s\"."
 
-#: scores/views.py:589
+#: scores/views.py:590
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 
@@ -2097,48 +2097,43 @@ msgstr "Признать нерелевантным"
 msgid "Post"
 msgstr "Отправить"
 
-#: scores/templates/score_list.html:81
+#: scores/templates/score_list.html:68
 msgid "Openness for all parameters"
 msgstr "Кид по всем параметрам"
 
-#: scores/templates/score_list.html:82 scores/templates/score_list.html:86
-#: scores/templates/score_list.html:88
-msgid "place"
-msgstr "место"
-
-#: scores/templates/score_list.html:85
+#: scores/templates/score_list.html:83
 msgid "Openness for npa parameters"
 msgstr "Кид по параметрам на основе нормативных правовых актов"
 
-#: scores/templates/score_list.html:87
+#: scores/templates/score_list.html:94
 msgid "Openness for other parameters"
 msgstr "Кид по дополнительным параметрам"
 
-#: scores/templates/score_list.html:93
+#: scores/templates/score_list.html:108
 msgid "Print"
 msgstr "Версия для печати"
 
-#: scores/templates/score_list.html:94
+#: scores/templates/score_list.html:109
 msgid "Print with comments"
 msgstr "Версия для печати с комментариями"
 
-#: scores/templates/score_list.html:99
+#: scores/templates/score_list.html:114
 msgid "Export task to CSV"
 msgstr "Экспортировать задачу в CSV"
 
-#: scores/templates/score_list.html:103
+#: scores/templates/score_list.html:118
 msgid "Import task from CSV"
 msgstr "Импортировать задачу из CSV"
 
-#: scores/templates/score_list.html:119
+#: scores/templates/score_list.html:133
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
-#: scores/templates/score_list.html:125
+#: scores/templates/score_list.html:138
 msgid "NPA parameters"
 msgstr "Параметры на основе нормативных правовых актов"
 
-#: scores/templates/score_list.html:174
+#: scores/templates/score_list.html:184
 msgid "Other parameters"
 msgstr "Дополнительные параметры"
 
