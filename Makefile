@@ -20,8 +20,8 @@
 OBJECT := HEAD
 NAME := exmo2010
 PREFIX := $(NAME)/
-RELEASE := $(shell git describe $(OBJECT))
-RELEASE_ALL := $(shell git describe --all $(OBJECT))
+RELEASE := $(shell git describe --tags $(OBJECT))
+RELEASE_ALL := $(shell git describe --long --all $(OBJECT))
 RELEASE_FILE := exmo/templates/release
 TARBALL := $(NAME)-$(RELEASE)
 TARBALL_FILE := $(TARBALL).tar
