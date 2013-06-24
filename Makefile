@@ -30,15 +30,20 @@ ifeq ($(RELEASE),)
 $(error OBJECT $(OBJECT) is unknown)
 endif
 
-dist:
-	echo $(RELEASE) $(RELEASE_ALL) > $(RELEASE_FILE)
+dist: releaseinfo
 	git archive --format tar --prefix $(PREFIX) $(OBJECT) -o $(TARBALL_FILE)
 	tar -r $(RELEASE_FILE) --xform 's,^,$(PREFIX),S' -f $(TARBALL_FILE)
 	gzip -f $(TARBALL_FILE)
 
-dist-clean:
-	$(RM) $(RELEASE_FILE) $(TARBALL_FILE) $(TARBALL_FILE).gz
+dist-clean: releaseinfo-clean
+	$(RM) $(TARBALL_FILE) $(TARBALL_FILE).gz
+
+releaseinfo:
+	echo $(RELEASE) $(RELEASE_ALL) > $(RELEASE_FILE)
+
+releaseinfo-clean:
+	$(RM) $(RELEASE_FILE)
 
 clean: dist-clean
 
-.PHONY: clean dist-clean dist
+.PHONY: dist dist-clean releaseinfo releaseinfo-clean clean
