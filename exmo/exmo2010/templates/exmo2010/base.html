@@ -36,7 +36,6 @@
         <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
         {% block extrahead %}{% endblock %}
         {% include "analytics.html" %}
-        {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
     </head>
 
     <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">

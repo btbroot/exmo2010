@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -27,7 +27,6 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/rating.css" />
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
