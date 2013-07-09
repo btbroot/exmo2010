@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,7 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n get_object_by_pk settings_value %}
 {% trans 'Hello' %} {{ user.userprofile.legal_name }}!
 {% trans 'Digest from' %} {{ from }} {% trans 'till' %} {{ till }}
-{% for object in object_list %}----------{% include element_template %}{% endfor %}
+{% for object in object_list %}
+----------
+{% get_object_by_pk exmo2010.Score object.object_pk as score %}
+{{ score.task.organization }}: {{ score.parameter }}
+{% trans 'Date' %}: {{ object.submit_date }}
+{% trans 'User' %}: {% if object.user.userprofile.is_expert or object.user.is_superuser %}{% if user.userprofile.is_expert or user.is_superuser %}{{ object.user.userprofile.legal_name }}{% else %}{{ expert }}{% endif %}{% else %}{{ object.user.userprofile.legal_name }}{% endif %}
+{% trans 'Comment' %}:
+{{ object.comment|striptags }}
+URL: {% settings_value 'EXMO_BASE_URL' %}{{ score.get_absolute_url }}
+{% trans 'Link' %}: {{ protocol }}://{{ site }}{{ score.get_absolute_url }}
+{% endfor %}

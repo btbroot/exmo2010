@@ -17,23 +17,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 import datetime
+import json
 
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
 from django.contrib.comments.signals import comment_was_posted
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
+from django.db.models import Max, Q
 from django.db.models.signals import pre_save
-from django.dispatch import Signal
-from django.db.models import Max
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils import simplejson
+from django.utils.decorators import method_decorator
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -44,19 +44,15 @@ from reversion import revision
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
-from custom_comments.models import CommentExmo
+from core.helpers import table_prepare_queryset
+from core.tasks import send_email
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
+from custom_comments.models import CommentExmo
 from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter
 from exmo2010.models import QAnswer, QQuestion, Score, Task, UserProfile, MONITORING_PUBLISH
-from core.helpers import table_prepare_queryset
 from scores.forms import ScoreForm
 from questionnaire.forms import QuestionnaireDynForm
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 class ScoreMixin(object):
@@ -114,14 +110,19 @@ class ScoreAddView(ScoreMixin, CreateView):
 
         self.initial = {'task': task, 'parameter': parameter}
 
+        expert = _(config_value('GlobalParameters', 'EXPERT'))
+
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
         breadcrumbs(request, crumbs, task)
         current_title = _('Parameter')
 
-        self.extra_context = {'task': task,
-                              'parameter': parameter,
-                              'current_title': current_title,
-                              'title': title, }
+        self.extra_context = {
+            'task': task,
+            'expert': expert,
+            'parameter': parameter,
+            'current_title': current_title,
+            'title': title,
+        }
 
         return super(ScoreAddView, self).get(request, *args, **kwargs)
 
@@ -192,18 +193,18 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
         form = ScoreForm(request.POST, instance=self.object)
         message = _construct_change_message(request, form, None)
         revision.comment = message
-        if form.is_valid() and form.changed_data:
-            score_was_changed.send(
-                sender=Score.__class__,
-                form=form,
-                request=request,
-            )
+
         if self.object.active_claim:
             if not (form.is_valid() and form.changed_data):
                 return HttpResponse(_('Have active claim, but no data changed'))
 
         self.success_url = self.get_redirect(request)
         return super(ScoreEditView, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        result = super(ScoreEditView, self).form_valid(form)
+        score_change_notify(self, form)
+        return result
 
     def form_invalid(self, form):
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
@@ -243,6 +244,7 @@ class ScoreDetailView(ScoreMixin, DetailView):
             delta = datetime.timedelta(days=time_to_answer)
             today = datetime.date.today()
             peremptory_day = today + delta
+            expert = _(config_value('GlobalParameters', 'EXPERT'))
 
             self.extra_context = {'current_title': current_title,
                                   'title': title,
@@ -250,7 +252,8 @@ class ScoreDetailView(ScoreMixin, DetailView):
                                   'parameter': self.object.parameter,
                                   'claim_list': all_score_claims,
                                   'clarification_list': all_score_clarifications,
-                                  'peremptory_day' : peremptory_day,
+                                  'peremptory_day': peremptory_day,
+                                  'expert': expert,
                                   'view': True,
                                   'invcodeform': SettingsInvCodeForm(),
                                   'claim_form': ClaimAddForm(prefix="claim"),
@@ -552,52 +555,53 @@ def log_user_activity(**kwargs):
                     pass
 
 
-def score_change_notify(sender, **kwargs):
+def score_change_notify(self, form):
     """
-    Оповещение об измененях оценки.
+    Scores changing notification.
 
     """
-    form = kwargs['form']
-    score = form.instance
-    request = kwargs['request']
     changes = []
+    score = form.instance
+    task = score.task
     if form.changed_data:
         for change in form.changed_data:
             change_dict = {'field': change,
                            'was': form.initial.get(change, form.fields[change].initial),
                            'now': form.cleaned_data[change]}
             changes.append(change_dict)
-    if score.task.approved:
-        rcpt = []
-        for profile in UserProfile.objects.filter(organization=score.task.organization):
-            if profile.user.is_active and profile.user.email and \
-                    profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-                rcpt.append(profile.user.email)
-        rcpt = list(set(rcpt))
+
+    if task.approved:
+        rcpts = User.objects.filter(
+            Q(userprofile__organization=task.organization) |
+            Q(groups__name=UserProfile.expertA_group) |
+            Q(is_superuser=True),
+            userprofile__preference__icontains='"notify_score": {"type": 1}',
+            is_active=True, email__isnull=False,
+        ).distinct().values_list('email', flat=True)
+        rcpts = list(rcpts)
+
+        if task.user.userprofile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
+            rcpts.append(task.user.email)
+
         subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
             'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-            'monitoring': score.task.organization.monitoring,
-            'org': score.task.organization.name.split(':')[0],
+            'monitoring': task.organization.monitoring,
+            'org': task.organization.name.split(':')[0],
             'code': score.parameter.code,
         }
-        headers = {
-            'X-iifd-exmo': 'score_changed_notification'
-        }
-        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
+
+        current_site = Site.objects.get_current()
+        url = '%s://%s%s' % (self.request.is_secure() and 'https' or 'http', current_site,
                              reverse('exmo2010:score_view', args=[score.pk]))
-        t = loader.get_template('score_email.html')
-        c = Context({'score': score, 'url': url, 'changes': changes, 'subject': subject})
-        message = t.render(c)
-        for rcpt_ in rcpt:
-            email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                 [rcpt_], headers=headers)
-            email.encoding = "utf-8"
-            email.content_subtype = "html"
-            email.send()
+        c = {
+            'score': score,
+            'url': url,
+            'changes': changes,
+            'subject': subject
+        }
 
-
-score_was_changed = Signal(providing_args=["form", "request"])
-score_was_changed.connect(score_change_notify)
+        for rcpt in rcpts:
+            send_email.delay(rcpt, subject, 'score_email', context=c)
 
 
 def create_revision(sender, instance, using, **kwargs):
@@ -638,36 +642,6 @@ def _construct_change_message(request, form, formsets):
                                              'object': force_unicode(deleted_object)})
         change_message = ' '.join(change_message)
         return change_message or _('No fields changed.')
-
-
-@login_required
-def score_claim_color(request, score_id):
-    """
-    AJAX-вьюха для получения изображения для претензий.
-
-    """
-    score = get_object_or_404(Score, pk=score_id)
-    if request.method == "GET" and request.is_ajax():
-        return render_to_response('claim_image.html',
-                                  {'score': score},
-                                  context_instance=RequestContext(request))
-    else:
-        raise Http404
-
-
-@login_required
-def score_comment_unreaded(request, score_id):
-    """
-    AJAX-вьюха для получения изображения для непрочитанных коментов.
-
-    """
-    score = get_object_or_404(Score, pk=score_id)
-    if request.method == "GET" and request.is_ajax():
-        return render_to_response('commentunread_image.html',
-                                  {'score': score},
-                                  context_instance=RequestContext(request))
-    else:
-        raise Http404
 
 
 @login_required

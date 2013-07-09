@@ -656,16 +656,13 @@ class Task(models.Model):
         super(Task, self).save(*args, **kwargs)
 
     def _get_open(self):
-        if self.status == self.TASK_OPEN: return True
-        else: return False
+        return True if self.status == self.TASK_OPEN else False
 
     def _get_ready(self):
-        if self.status == self.TASK_READY: return True
-        else: return False
+        return True if self.status == self.TASK_READY else False
 
     def _get_approved(self):
-        if self.status == self.TASK_APPROVED: return True
-        else: return False
+        return True if self.status == self.TASK_APPROVED else False
 
     def _set_open(self, val):
         if val:
@@ -1217,11 +1214,11 @@ class UserProfile(models.Model):
         {
             'notify_comment': {
                 'self': False,
-                'digest_duratation': 5,
+                'digest_duration': 5,
                 'type': 0
             },
             'notify_score': {
-                'digest_duratation': 5,
+                'digest_duration': 5,
                 'type': 0
             },
         }
@@ -1266,23 +1263,20 @@ class UserProfile(models.Model):
 
     def _get_notify_preference(self, preference):
         prefs = self.get_preference
-        if prefs.has_key(preference):
-            pref = prefs[preference]
-        else:
-            pref = {}
-        if not pref.has_key('type'):
-            pref['type'] = self.NOTIFICATION_TYPE_DISABLE
-        else:
+        pref = prefs.get(preference, {})
+        if 'type' in pref:
             pref['type'] = int(pref['type'])
-        if not pref.has_key('self'):
-            pref['self'] = False
-        if pref.has_key('digest_duratation'):
-            if pref['digest_duratation']:
-                pref['digest_duratation'] = int(pref['digest_duratation'])
-            else:
-                pref['digest_duratation'] = 0
         else:
-            pref['digest_duratation'] = 1
+            pref['type'] = self.NOTIFICATION_TYPE_DISABLE
+        if 'self' not in pref:
+            pref['self'] = False
+        if 'digest_duration' in pref:
+            if pref['digest_duration']:
+                pref['digest_duration'] = int(pref['digest_duration'])
+            else:
+                pref['digest_duration'] = 0
+        else:
+            pref['digest_duration'] = 1
         return pref
 
     @property
@@ -1309,7 +1303,7 @@ class UserProfile(models.Model):
         super(UserProfile, self).clean()
         for notify in ['notify_score','notify_comment']:
             if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
-                if self._get_notify_preference(notify)['digest_duratation'] < 1:
+                if self._get_notify_preference(notify)['digest_duration'] < 1:
                     raise ValidationError(_('Digest duratation must be greater or equal than 1.'))
 
     def save(self,*args,**kwargs):
@@ -1322,7 +1316,7 @@ class UserProfile(models.Model):
                 # create DigestPreference.
                 digest, created = Digest.objects.get_or_create(name=notify)
                 dpref, created = DigestPreference.objects.get_or_create(user = self.user, digest = digest)
-                dpref.interval = self._get_notify_preference(notify)['digest_duratation']
+                dpref.interval = self._get_notify_preference(notify)['digest_duration']
                 dpref.full_clean()
                 dpref.save()
             else:

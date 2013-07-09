@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,41 +17,32 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from admin_tools.dashboard.models import DashboardPreferences
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
-from admin_tools.dashboard.models import DashboardPreferences
 
 from accounts.forms import *
 from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Organization, UserProfile
 
 
+@login_required
 def settings(request):
     """
     Страница настроек пользователя.
 
     """
-    if not request.user.is_authenticated():
-        raise Http404
-
     user = request.user
     profile = user.get_profile()
-    # Сохраняем is_organization , чтобы не обращаться многократно к базе
-    # за одним и тем же.
-    if profile.is_organization:
-        is_organization = True
-    else:
-        is_organization = False
-    if profile.is_internal():
-        is_internal = True
-    else:
-        is_internal = False
+    is_organization = profile.is_organization
+    is_internal = profile.is_internal()
 
     # Маркеры того, что форма уже создана.
     pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = \
@@ -71,7 +62,7 @@ def settings(request):
     send_notif_form_mess = False
     if request.method == "POST":
         # Засабмитили форму с личными данными.
-        if request.POST.has_key("first_name"):
+        if 'first_name' in request.POST:
             if is_organization:
                 pers_inf_form = SettingsPersInfFormFull(request.POST)
             else:
@@ -97,7 +88,7 @@ def settings(request):
                 pers_inf_form_mess = True
             pers_inf_form_ready = True
         # Засабмитили форму с кодом приглашения.
-        elif request.POST.has_key("invitation_code"):
+        elif 'invitation_code' in request.POST:
             if not is_internal:
                 inv_code_form = SettingsInvCodeForm(request.POST)
                 if inv_code_form.is_valid():
@@ -118,7 +109,7 @@ def settings(request):
                                           "exist.")
                     inv_code_form_ready = True
         # Засабмитили форму смены пароля.
-        elif request.POST.has_key("old_password"):
+        elif 'old_password' in request.POST:
             ch_pass_form = SettingsChPassForm(request.POST, user=user)
             if ch_pass_form.is_valid():
                 ch_pass_form_cd = ch_pass_form.cleaned_data
@@ -129,7 +120,7 @@ def settings(request):
                 ch_pass_form_err = True
                 ch_pass_form_ready = True
         # Засабмитили форму настроек уведомлений.
-        elif request.POST.has_key("snf"):
+        elif 'hidden_send_form' in request.POST:
             if is_internal or is_organization:
                 send_notif_form = SettingsSendNotifFormFull(request.POST)
             else:
@@ -139,33 +130,23 @@ def settings(request):
                 subscribe = send_notif_form_cd.get("subscribe", False)
                 profile.subscribe = subscribe
                 if is_internal or is_organization:
-                    cnt = int(send_notif_form_cd.get(
-                        "comment_notification_type"))
-                    nmc = bool(send_notif_form_cd.get("notify_on_my_comments",
-                                                      False))
-                    nac = bool(send_notif_form_cd.get("notify_on_all_comments",
-                                                      False))
-                    comment_pref = {"type": cnt, "self": nmc, "self_all": nac}
-                    if cnt == 2:
-                        cnd = send_notif_form_cd.get(
-                            "comment_notification_digest", 1)
-                        if not cnd:
-                            cnd = 1
-                        else:
-                            cnd = int(cnd)
-                        comment_pref["digest_duratation"] = cnd
+                    comment_notification_type = int(send_notif_form_cd.get('comment_notification_type'))
+                    notify_on_my_comments = bool(send_notif_form_cd.get('notify_on_my_comments', False))
+                    notify_on_all_comments = bool(send_notif_form_cd.get('notify_on_all_comments', False))
+                    comment_pref = {
+                        "type": comment_notification_type,
+                        "self": notify_on_my_comments,
+                        "self_all": notify_on_all_comments
+                    }
+                    if comment_notification_type == 2:
+                        comment_notification_digest = send_notif_form_cd.get('comment_notification_digest', '1')
+                        comment_pref['digest_duration'] = int(comment_notification_digest)
                     profile.notify_comment_preference = comment_pref
-                    snt = int(send_notif_form_cd.get(
-                        "score_notification_type"))
-                    score_pref = {"type": snt}
-                    if snt == 2:
-                        snd = send_notif_form_cd.get(
-                            "score_notification_digest", 1)
-                        if not snd:
-                            snd = 1
-                        else:
-                            snd = int(snd)
-                        score_pref["digest_duratation"] = snd
+                    score_notification_type = int(send_notif_form_cd.get('score_notification_type'))
+                    score_pref = {"type": score_notification_type}
+                    if score_notification_type == 2:
+                        score_notification_digest = send_notif_form_cd.get('score_notification_digest', '1')
+                        score_pref['digest_duration'] = int(score_notification_digest)
                     profile.notify_score_preference = score_pref
             send_notif_form_mess = _("E-mail notification settings saved")
             send_notif_form_ready = True
@@ -212,11 +193,11 @@ def settings(request):
             send_notif_form_indata["comment_notification_type"] = \
                 comment_pref.get('type', 1)
             send_notif_form_indata["comment_notification_digest"] = \
-                comment_pref['digest_duratation']
+                comment_pref['digest_duration']
             send_notif_form_indata["score_notification_type"] = \
                 score_pref['type']
             send_notif_form_indata["score_notification_digest"] = \
-                score_pref['digest_duratation']
+                score_pref['digest_duration']
             send_notif_form_indata["notify_on_my_comments"] = \
                 comment_pref.get('self', False)
             send_notif_form_indata["notify_on_all_comments"] = \

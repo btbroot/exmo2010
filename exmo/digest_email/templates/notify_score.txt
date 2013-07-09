@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,14 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% spaceless %}
-{% load i18n get_object_by_pk settings_value %}
-{% get_object_by_pk exmo2010.Score object.object_pk as score %}
-{{ score.task.organization }}: {{ score.parameter }}
-{% trans 'Date' %}: {{ object.submit_date }}
-{% trans 'User' %}: {% if object.user.userprofile.is_expert or object.user.is_superuser %}{% if user.userprofile.is_expert or user.is_superuser %}{{ object.user.userprofile.legal_name }}{% else %}{% trans "Freedom Information Foundation Expert" %}{% endif %}{% else %}{{ object.user.userprofile.legal_name }}{% endif %}
-{% trans 'Comment' %}:
-{{ object.comment|striptags }}
-URL: {% settings_value 'EXMO_BASE_URL' %}{{ score.get_absolute_url }}
-{% trans 'Link' %}: http://{{ site }}{{ score.get_absolute_url }}
-{% endspaceless %}
+{% load i18n %}
+
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
+
+{% trans 'Hello' %} {{ user.userprofile.legal_name }}!
+{% trans 'Digest from' %} {{from}} {% trans 'till' %} {{till}}
+{% for obj in object_list %}
+----------
+
+{{ obj.organization }}: {{ obj.parameter }}
+{% for field, value in obj.fields.items %}
+{%trans field %}: "{{ value.was|default_if_none:"" }}" => "{{ value.now|default_if_none:"" }}"
+{% endfor %}
+URL: {{ obj.url }}
+{% endfor %}
+
+{% endblock content %}

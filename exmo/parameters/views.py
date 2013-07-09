@@ -19,7 +19,6 @@
 #
 import json
 
-from bread_crumbs.views import breadcrumbs
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -34,6 +33,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 
+from bread_crumbs.views import breadcrumbs
 from core.tasks import send_email
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import Organization, Parameter, Score, Task, UserProfile

@@ -1,7 +1,7 @@
 {% extends "exmo2010/email_base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,8 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n %}
+{% load i18n get_object_by_pk settings_value %}
 
 {% block title %}{% endblock %}
 {% block content %}
@@ -28,8 +27,17 @@
     <p>{% trans 'Hello' %} {{ user.userprofile.legal_name }}!</p>
     <p>{% trans 'Digest from' %} {{from}} {% trans 'till' %} {{till}}</p>
     {% for object in object_list %}
-        <p>----------</p>
-        {% include element_template %}
+        <hr />
+
+        {% get_object_by_pk exmo2010.Score object.object_pk as score %}
+
+        <p>{{ score.task.organization }}: {{ score.parameter }}</p>
+        <p>{% trans 'Date' %}: {{ object.submit_date }}</p>
+        <p>{% trans 'User' %}: {% if object.user.userprofile.is_expert or object.user.is_superuser %}{% if user.userprofile.is_expert or user.is_superuser %}{{ object.user.userprofile.legal_name }}{% else %}{{ expert }}{% endif %}{% else %}{{ object.user.userprofile.legal_name }}{% endif %}</p>
+        <p>{% trans 'Comment' %}:</p>
+        <p>{{ object.comment|safe }}</p>
+        <p>{% trans 'Link' %}: <a href="{{ protocol }}://{{ site }}{{ score.get_absolute_url }}">{{ site }}{{ score.get_absolute_url }}</a></p>
+
     {% endfor %}
 
 {% endblock content %}
