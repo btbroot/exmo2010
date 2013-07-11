@@ -37,25 +37,25 @@
 
 
 {% block nav_sidebar %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+    {% if is_expertA %}
         {% include "exmo2010/nav_sidebar/organization_utility.html" %}
     {% endif %}
 {% endblock %}
 
 {% block nav_sidebar_title %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+    {% if is_expertA %}
         <h1>{{ task.organization.name }}</h1>
     {% endif %}
 {% endblock %}
 
 {% block content_class %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+    {% if is_expertA %}
         sidebar-ident
     {% endif %}
 {% endblock %}
 
 {% block content_title %}
-    {% if not request.user.userprofile.is_expertA and not request.user.is_superuser %}
+    {% if not is_expertA %}
         {{ title }}
     {% endif %}
 {% endblock %}
@@ -142,12 +142,19 @@
             <tr width=100% id='parameter_{{ parameter.code }}'>
                 <td width=4%>{{ parameter.code }}</td>
                 <td>
-                    {% with score_dict|hash:parameter.pk as score %}
-                        {% if score %}
+                    {% with parameter.score as score %}
+                        {% if score and score.claim_color %}
                             {% check_object_permission exmo2010.view_claim score as perm %}
                             {% if perm %}
-                                <div data-score_id="{{ score.id }}" class="claim-color"></div>
+                                {% with score.claim_color as color %}
+                                    {% if color %}
+                                        {% if is_expertB and score.task.user_id == request.user.id or is_expertA %}
+                                            <img src="{{ STATIC_URL }}exmo2010/icon_{{ color }}.gif" alt="{% trans 'claim' %}" />
+                                        {% endif %}
+                                    {% endif %}
+                                {% endwith %}
                             {% endif %}
+
                             <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                         {% else %}
                             {% if perm_fill_task %}
@@ -162,11 +169,11 @@
                                     &nbsp;<a href="{% url exmo2010:parameter_manager task.pk parameter.pk 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                                 {% endif %}
                             {%endif%}
-                        {% if score %}
-                            {% if user.profile.is_expert %}
-                                <div data-score_id="{{ score.id }}" class="comment-unreaded"></div>
-                            {% endif %}
+
+                        {% if parameter.url %}
+                            <a href="{{ parameter.url }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png" class="unreaded_comment" /></a>
                         {% endif %}
+
                         </td>
                         {%if score %}
                             {% include "exmo2010/score_criteria_table.html" with score_interact=score_interact_dict|hash:parameter.pk %}
@@ -183,7 +190,7 @@
     {% endif %}
 
     {% for parameter in parameters_other %}
-        {% with score_dict|hash:parameter.pk as score %}
+        {% with parameter.score as score %}
             <tr width=100% id='parameter_{{ parameter.code }}'>
                 <td width=4%>
                     {{ parameter.code }}
@@ -192,8 +199,15 @@
                     {% if score %}
                         {% check_object_permission exmo2010.view_claim score as perm %}
                         {% if perm %}
-                            <div data-score_id="{{ score.id }}" class="claim-color"></div>
+                            {% with score.claim_color as color %}
+                                {% if color %}
+                                    {% if is_expertB and score.task.user_id == request.user.id or is_expertA %}
+                                        <img src="{{ STATIC_URL }}exmo2010/icon_{{ color }}.gif" alt="{% trans 'claim' %}" />
+                                    {% endif %}
+                                {% endif %}
+                            {% endwith %}
                         {% endif %}
+
                         <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                     {% else %}
                         {% if perm_fill_task %}
@@ -210,11 +224,10 @@
                         {% endif %}
                     {%endif%}
 
-                    {% if score %}
-                        {% if user.profile.is_expert %}
-                            <div data-score_id="{{ score.id }}" class="comment-unreaded"></div>
-                        {% endif %}
+                    {% if parameter.url %}
+                        <a href="{{ parameter.url }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png" class="unreaded_comment" /></a>
                     {% endif %}
+
                 </td>
                 {%if score %}
                     {% include "exmo2010/score_criteria_table.html" with score_interact=score_interact_dict|hash:parameter.pk %}

@@ -973,11 +973,7 @@ class Score(models.Model):
         return ('exmo2010:score_view', [str(self.id)])
 
     def _get_claim(self):
-        claims=self.claim_count()
-        if claims > 0:
-            return True
-        else:
-            return False
+        return Claim.objects.filter(score=self, close_date__isnull=True, addressee=self.task.user).exists()
 
     def _get_openness(self):
         return openness_helper(self)
@@ -1003,19 +999,21 @@ class Score(models.Model):
         claim.save()
         return claim
 
-    def claim_count(self):
-        return Claim.objects.filter(score=self, close_date__isnull=True, addressee=self.task.user).count()
-
     def claim_color(self):
+        """
+        Return the color of the claim`s icon.
+
+        """
         color = None
-        if self.active_claim:
-            color = 'red'
-        elif not self.active_claim and Claim.objects.filter(score=self, addressee=self.task.user).count() > 0:
+
+        claims = Claim.objects.filter(score=self, addressee=self.task.user)
+        open_claims = claims.filter(close_date__isnull=True)
+
+        if claims:
             color = 'green'
-        elif not self.active_claim and \
-                Claim.objects.filter(score=self,
-                                     addressee=self.task.user).exclude(close_user=self.task.user).count() > 0:
-            color = 'yellow'
+            if open_claims:
+                color = 'red'
+
         return color
 
     def create_revision(self, revision):
@@ -1035,24 +1033,6 @@ class Score(models.Model):
                 revision_score.revision = revision
                 revision_score.full_clean()
                 revision_score.save()
-
-    @property
-    def have_comment_without_reply(self):
-        """
-        Вернет pk последнего неотвеченного комента или False
-        """
-        from custom_comments.models import CommentExmo
-        comments = CommentExmo.objects.filter(
-            object_pk=self.pk,
-            content_type__model='score',
-            status=CommentExmo.OPEN,
-            user__groups__name=UserProfile.organization_group,
-            ).order_by('-submit_date')
-
-        if comments.exists():
-            return comments[0].pk
-
-        return False
 
     active_claim = property(_get_claim)
     openness = property(_get_openness)
@@ -1359,48 +1339,22 @@ class UserProfile(models.Model):
             return False
 
     def _is_expert(self):
-        return self._is_expertB() or self._is_expertA() or self._is_manager_expertB() or self.user.is_superuser
+        return self.user.groups.filter(name__in=self.expert_groups).exists() or self.user.is_superuser
 
     def _is_expertB(self):
-        try:
-            group, created = Group.objects.get_or_create(name=self.expertB_group)
-        except:
-            return False
-        else:
-            return group in self.user.groups.all() or self.user.is_superuser
+        return self.user.groups.filter(name=self.expertB_group).exists() or self.user.is_superuser
 
     def _is_expertA(self):
-        try:
-            group, created = Group.objects.get_or_create(name=self.expertA_group)
-        except:
-            return False
-        else:
-            return group in self.user.groups.all() or self.user.is_superuser
+        return self.user.groups.filter(name=self.expertA_group).exists() or self.user.is_superuser
 
     def _is_manager_expertB(self):
-        try:
-            group, created = Group.objects.get_or_create(name=self.expertB_manager_group)
-        except:
-            return False
-        else:
-            return group in self.user.groups.all() or self.user.is_superuser
+        return self.user.groups.filter(name=self.expertB_manager_group).exists() or self.user.is_superuser
 
     def _is_customer(self):
-        try:
-            group, created = Group.objects.get_or_create(name=self.customer_group)
-        except:
-            return False
-        else:
-            return group in self.user.groups.all() or self.user.is_superuser
+        return self.user.groups.filter(name=self.customer_group).exists() or self.user.is_superuser
 
     def _is_organization(self):
-        try:
-            group, creater = Group.objects.get_or_create(
-                name=self.organization_group)
-        except IntegrityError:
-            return False
-        else:
-            return group in self.user.groups.all() or self.user.is_superuser
+        return self.user.groups.filter(name=self.organization_group).exists() or self.user.is_superuser
 
     @property
     def bubble_info(self):

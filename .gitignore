@@ -2,9 +2,11 @@
 *.db
 local_settings.py
 analytics.html
+release
 *~
 *.mo
 *.egg
+*.gz
 _build
 .idea
 *.swp

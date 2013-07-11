@@ -45,19 +45,4 @@ $(document).ready(function() {
             });
     }
 
-    $('.claim-color').each(function(){
-        var $score_id = $(this).data('score_id');
-        var $url = '/exmo2010/score/' + $score_id + '/claimstatus/';
-        $(this).load($url, function(){
-            $(this).css('content', 'none').height('auto');
-        });
-    });
-
-    $('.comment-unreaded').each(function(){
-        var $score_id = $(this).data('score_id');
-        var $url = '/exmo2010/score/' + $score_id + '/commentunreaded/';
-        $(this).load($url, function(){
-            $(this).css('content', 'none').height('auto');
-        });
-    });
 });

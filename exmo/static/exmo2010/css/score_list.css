@@ -68,16 +68,13 @@
     opacity: 0.5;
 }
 
-.comment-unreaded, .claim-color, .rating-ajax {
+.rating-ajax {
+    height: 14px;
     display: inline-block;
     content: url("../img/ajax-loader.gif");
 }
 
-.comment-unreaded, .claim-color {
-    height: 8px;
-}
-
-.comment-unreaded {
+.unreaded_comment {
     float: right;
 }
 

@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
 import reversion
 
@@ -30,9 +30,7 @@ urlpatterns = \
              url(r'^(?P<pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), name='score_edit'),
              url(r'^(?P<pk>\d+)/delete/$', reversion.create_revision()(ScoreDeleteView.as_view()), name='score_delete'),
              url(r'^(?P<pk>\d+)/detail/$', ScoreDetailView.as_view(), name='score_detail'),
-             url(r'^(\d+)/claimstatus/$', 'score_claim_color', name='score_claim_color'),
              url(r'^(\d+)/comment/add/$', 'score_add_comment', name='score_add_comment'),
-             url(r'^(\d+)/commentunreaded/$', 'score_comment_unreaded', name='score_commentunreaded'),
              url(r'^rating_update$', 'ratingUpdate'),
              )
 

@@ -1,8 +1,7 @@
-{% comment %}
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,9 +16,28 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
-{% if score.have_comment_without_reply %}
-    {% if request.user.profile.is_expertB and score.task.user_id == request.user.id or request.user.profile.is_expertA or request.user.is_superuser %}
-        <a href="{% url exmo2010:score_view score.pk %}#c{{ score.have_comment_without_reply }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png"></a>
-    {% endif %}
-{% endif %}
+
+
+def user_groups(request):
+    """
+    Checking users group.
+
+    """
+    context = {}
+
+    if request.user.is_authenticated() and request.user.is_active:
+        user = request.user.userprofile
+        expertA = user.is_expertA
+        expertB = user.is_expertB
+        organization = user.is_organization
+
+        context.update(
+            {
+                'is_expertA': expertA,
+                'is_expertB': expertB,
+                'is_expert': expertA or expertB,
+                'is_organization': organization,
+            }
+        )
+
+    return context

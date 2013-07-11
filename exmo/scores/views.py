@@ -29,6 +29,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models.signals import pre_save
 from django.dispatch import Signal
+from django.db.models import Max
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
@@ -425,8 +426,13 @@ def score_list_by_task(request, task_id, report=None):
             parameters_npa = parameters.filter(npa=True)
             parameters_other = parameters.filter(npa=False)
         else:
-            parameters_npa = None
+            parameters_npa = []
             parameters_other = parameters
+
+        _new_comment_url(request, score_dict, scores_default, parameters_npa)
+
+        _new_comment_url(request, score_dict, scores_default, parameters_other)
+
         # Не показываем ссылку экспертам B или предатвителям, если статус
         # мониторинга отличается от "Опубликован".
         user = request.user
@@ -439,7 +445,6 @@ def score_list_by_task(request, task_id, report=None):
             show_link = True
         extra_context.update(
             {
-                'score_dict': score_dict,
                 'score_interact_dict': score_interact_dict,
                 'parameters_npa': parameters_npa,
                 'parameters_other': parameters_other,
@@ -462,6 +467,44 @@ def score_list_by_task(request, task_id, report=None):
             extra_context,
             context_instance=RequestContext(request),
         )
+
+
+def _new_comment_url(request, score_dict, scores_default, parameters):
+    """
+    Get URL for new comments, if exists.
+
+    """
+    last_comments = {}
+
+    scores = scores_default.filter(parameter_id__in=parameters)
+
+    for param in parameters:
+        score = score_dict.get(param.id, None)
+        param.score = score
+
+    if scores:
+        comments = CommentExmo.objects.filter(
+            object_pk__in=scores,
+            content_type__model='score',
+            status=CommentExmo.OPEN,
+            user__groups__name=UserProfile.organization_group,
+        ).values('object_pk').annotate(pk=Max('pk'))
+
+        for comment in comments:
+            last_comments[int(comment['object_pk'])] = comment['pk']
+
+        if last_comments:
+            for param in parameters:
+                score = param.score
+                if not score:
+                    continue
+
+                last_comment_id = last_comments.get(score.pk, None)
+
+                if last_comment_id:
+                    if request.user.profile.is_expertB and score.task.user_id == request.user.id or \
+                            request.user.profile.is_expertA:
+                        param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
 
 
 @csrf_protect
@@ -627,6 +670,7 @@ def score_comment_unreaded(request, score_id):
         raise Http404
 
 
+@login_required
 def ratingUpdate(request):
     """
     AJAX-view for rating counting.
