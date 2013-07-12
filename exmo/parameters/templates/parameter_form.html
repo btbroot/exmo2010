@@ -26,16 +26,28 @@
 {% load wysiwyg %}
 {% wysiwyg_setup %}
 {% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/parameter.css" />
+{% endblock %}
 
 <p>{{ form.non_field_errors }}</p>
 
 {% block content %}
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-<table>
-{{ form.as_table }}
-</table>
-<input type="submit" /><input class="button" type="reset" />
+    <table>
+        {{ form.as_table }}
+    </table>
+
+    <input type="submit" value="{% trans 'Save' %}" />
+    {% if edit %}
+        <input type="submit" name="submit_and_send" value="{% trans 'Save and send notifications' %}" />
+    {% else %}
+        <input type="reset" class="button" />
+    {% endif %}
 </form>
+
 {% wysiwyg_editor "id_description" %}
+
 {% endblock %}

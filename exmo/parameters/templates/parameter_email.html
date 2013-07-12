@@ -1,0 +1,65 @@
+{% extends "exmo2010/email_base.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2013 Al Nikolov
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n %}
+
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
+
+    <h3>{% trans 'Monitoring cycle' %}: {{ monitoring }}</h3>
+
+    <h3>{% trans 'Old features' %}:</h3>
+
+    {% for field in old_features %}
+        {% trans field.0|capfirst %}: {{ field.1 }}<br />
+    {% endfor %}
+    {% trans 'Relevance criteria' %}:
+    {% for item in old_criteria %}
+        {% trans item %}
+        {% if not forloop.last %}, {% endif %}
+    {% endfor %}<br />
+
+    {% trans 'Excluded organizations' %}:
+    {% for item in old_excluded_org %}
+        {{ item.name }}
+        {% if not forloop.last %}, {% endif %}
+    {% endfor %}<br />
+
+    <h3>{% trans 'Current features' %}:</h3>
+
+    {% for field in new_features %}
+        {% trans field.0|capfirst %}: {{ field.1 }}<br />
+    {% endfor %}
+    {% trans 'Relevance criteria' %}:
+    {% for item in new_criteria %}
+        {% trans item %}
+        {% if not forloop.last %}, {% endif %}
+    {% endfor %}<br />
+
+    {% trans 'Excluded organizations' %}:
+    {% for item in new_excluded_org %}
+        {{ item.name }}
+        {% if not forloop.last %}, {% endif %}
+    {% endfor %}<br />
+
+    <p>{% trans 'We recommend to check the scores of current parameter.' %}</p>
+
+{% endblock content %}

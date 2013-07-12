@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,21 +17,26 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponse
+import json
+
+from bread_crumbs.views import breadcrumbs
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
-import simplejson
-from bread_crumbs.views import breadcrumbs
+
+from core.tasks import send_email
 from exmo2010.forms import CORE_MEDIA
-from exmo2010.models import Parameter, Score, Task
+from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
 from parameters.forms import ParameterForm
 
 
@@ -49,7 +54,7 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         breadcrumbs(request, crumbs, task)
         self.extra_context = {'current_title': current_title,
                               'title': title,
-                              'task': task,
+                              'edit': True,
                               'media': CORE_MEDIA + ParameterForm().media, }
 
     def get_redirect(self, request, task):
@@ -98,12 +103,69 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         task = get_object_or_404(Task, pk=self.kwargs["task_id"])
         self.success_url = self.get_redirect(request, task)
         self.object = self.get_object()
+
         if self.kwargs["method"] == 'delete':
             self.object.delete()
             return HttpResponseRedirect(self.get_success_url())
-        elif self.kwargs["method"] == 'update':
-            self.update(request, task)
-            return super(ParameterManagerView, self).post(request, *args, **kwargs)
+
+        self.update(request, task)
+        return super(ParameterManagerView, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        send = "submit_and_send" in self.request.POST
+        result = super(ParameterManagerView, self).form_valid(form)
+        if send:
+            c = {}
+
+            param_pk = self.kwargs["pk"]
+            parameter = form.cleaned_data['name']
+
+            subject = _('Parameter was changed: %s') % parameter
+
+            user_ids = Score.objects.filter(parameter=param_pk).values_list('task_id__user', flat=True)
+            user_ids = list(set(user_ids))
+
+            rcpts = User.objects.filter(
+                Q(groups__name=UserProfile.expertA_group) |
+                Q(pk__in=user_ids),
+                is_active=True,
+            ).exclude(email__exact='').values_list('email', flat=True)
+
+            rcpts = list(set(rcpts))
+
+            c['monitoring'] = form.cleaned_data['monitoring']
+
+            old_features = []
+            new_features = []
+            features = ['code', 'name', 'description', 'weight']
+            for field in features:
+                old_features.append((field, form.initial.get(field, form.fields[field].initial)))
+                new_features.append((field, form.cleaned_data.get(field, None)))
+
+            c['old_features'] = old_features
+            c['new_features'] = new_features
+
+            old_criteria = []
+            new_criteria = []
+            criteria = ['accessible', 'hypertext', 'npa', 'topical', 'document', 'image', 'complete']
+            for field in criteria:
+                item_was = form.initial.get(field, form.fields[field].initial)
+                item_now = form.cleaned_data.get(field, None)
+                if item_was:
+                    old_criteria.append(field)
+                if item_now:
+                    new_criteria.append(field)
+
+            c['old_criteria'] = old_criteria
+            c['new_criteria'] = new_criteria
+
+            old_excluded_org_pk = form.initial.get('exclude', form.fields['exclude'].initial)
+            c['old_excluded_org'] = Organization.objects.filter(pk__in=old_excluded_org_pk)
+            c['new_excluded_org'] = form.cleaned_data.get('exclude', None)
+
+            for rcpt in rcpts:
+                send_email.delay(rcpt, subject, 'parameter_email', context=c)
+        return result
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -137,7 +199,6 @@ def parameter_add(request, task_id):
             'form': form,
             'current_title': current_title,
             'title': title,
-            'task': task,
             'media': CORE_MEDIA + form.media,
         },
         context_instance=RequestContext(request),
@@ -169,6 +230,6 @@ def get_pc(request):
         if not parameter.image:
             skip_list.append(7)
 
-        return HttpResponse(simplejson.dumps(skip_list), mimetype='application/json')
+        return HttpResponse(json.dumps(skip_list), mimetype='application/json')
     else:
         raise Http404
