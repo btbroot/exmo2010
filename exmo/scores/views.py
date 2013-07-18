@@ -170,10 +170,12 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
             breadcrumbs(request, crumbs, self.object.task)
 
-            title = _('%s') % self.object.parameter
+            parameter = self.object.parameter
+            title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
+
             self.extra_context = {
                 'task': self.object.task,
-                'parameter': self.object.parameter,
+                'parameter': parameter,
                 'current_title': current_title,
                 'title': title,
                 'claim_list': all_score_claims,
