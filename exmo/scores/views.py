@@ -170,14 +170,9 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
             crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
             breadcrumbs(request, crumbs, self.object.task)
 
-            parameter = self.object.parameter
-            title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
-
             self.extra_context = {
                 'task': self.object.task,
-                'parameter': parameter,
                 'current_title': current_title,
-                'title': title,
                 'claim_list': all_score_claims,
                 'clarification_list': all_score_clarifications,
                 'claim_form': ClaimAddForm(prefix="claim"),
@@ -202,7 +197,7 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
             )
         if self.object.active_claim:
             if not (form.is_valid() and form.changed_data):
-                return HttpResponse(_('Have active claim, but no data changed'))
+                return HttpResponse(_('There is an active claim, but no data changed'))
 
         self.success_url = self.get_redirect(request)
         return super(ScoreEditView, self).post(request, *args, **kwargs)
@@ -210,16 +205,24 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
     def form_invalid(self, form):
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
         breadcrumbs(self.request, crumbs, self.object.task)
-        title = _('%s') % self.object.parameter
         current_title = _('Parameter')
 
         self.extra_context = {
             'task': self.object.task,
-            'parameter': self.object.parameter,
             'current_title': current_title,
-            'title': title,
         }
         return super(ScoreEditView, self).form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(ScoreEditView, self).get_context_data(**kwargs)
+        parameter = self.object.parameter
+        title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
+        extra_context = {
+            'parameter': parameter,
+            'title': title,
+        }
+        context.update(extra_context)
+        return context
 
 
 class ScoreDetailView(ScoreMixin, DetailView):
@@ -240,7 +243,8 @@ class ScoreDetailView(ScoreMixin, DetailView):
             breadcrumbs(request, crumbs, self.object.task)
 
             self.template_name = "detail.html"
-            title = _('Score for parameter "%s"') % self.object.parameter.name
+            parameter = self.object.parameter
+            title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
             time_to_answer = self.object.task.organization.monitoring.time_to_answer
             delta = datetime.timedelta(days=time_to_answer)
             today = datetime.date.today()
@@ -249,7 +253,7 @@ class ScoreDetailView(ScoreMixin, DetailView):
             self.extra_context = {'current_title': current_title,
                                   'title': title,
                                   'task': self.object.task,
-                                  'parameter': self.object.parameter,
+                                  'parameter': parameter,
                                   'claim_list': all_score_claims,
                                   'clarification_list': all_score_clarifications,
                                   'peremptory_day' : peremptory_day,
