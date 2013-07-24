@@ -122,12 +122,12 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
 
             subject = _('Parameter was changed: %s') % parameter
 
-            user_ids = Score.objects.filter(parameter=param_pk).values_list('task_id__user', flat=True)
-            user_ids = list(set(user_ids))
+            parameter = Parameter.objects.get(pk=param_pk)
+            orgs = Organization.objects.filter(monitoring=parameter.monitoring).exclude(pk__in=parameter.exclude.all())
 
             rcpts = User.objects.filter(
                 Q(groups__name=UserProfile.expertA_group) |
-                Q(pk__in=user_ids),
+                Q(task__organization__in=orgs),
                 is_active=True,
             ).exclude(email__exact='').values_list('email', flat=True)
 
