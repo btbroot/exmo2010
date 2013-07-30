@@ -33,6 +33,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from livesettings import config_value
 
 from core.tasks import send_email
 from exmo2010.forms import CORE_MEDIA
@@ -120,7 +121,10 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
             param_pk = self.kwargs["pk"]
             parameter = form.cleaned_data['name']
 
-            subject = _('Parameter was changed: %s') % parameter
+            subject = _('%(prefix)sParameter has been changed: %(parameter)s') % {
+                'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
+                'parameter': parameter,
+            }
 
             parameter = Parameter.objects.get(pk=param_pk)
             orgs = Organization.objects.filter(monitoring=parameter.monitoring).exclude(pk__in=parameter.exclude.all())

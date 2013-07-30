@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-23 17:21+0400\n"
+"POT-Creation-Date: 2013-07-26 13:40+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -170,8 +170,8 @@ msgstr "Настройки главной страницы были сброше
 #: monitorings/views.py:745 monitorings/views.py:788 monitorings/views.py:884
 #: monitorings/views.py:969 monitorings/views.py:1125
 #: organizations/views.py:49 organizations/views.py:132
-#: organizations/views.py:256 parameters/views.py:77 parameters/views.py:90
-#: parameters/views.py:97 parameters/views.py:179 questionnaire/views.py:55
+#: organizations/views.py:256 parameters/views.py:78 parameters/views.py:91
+#: parameters/views.py:98 parameters/views.py:183 questionnaire/views.py:55
 #: questionnaire/views.py:57 questionnaire/views.py:87
 #: questionnaire/views.py:111 scores/views.py:107 scores/views.py:149
 #: scores/views.py:184 scores/views.py:282 scores/views.py:293
@@ -1993,35 +1993,35 @@ msgstr "Файловая доступность"
 msgid "Image"
 msgstr "Графическая доступность"
 
-#: parameters/views.py:51
+#: parameters/views.py:52
 #, python-format
 msgid "Edit parameter %s"
 msgstr "Редактировать параметр %s"
 
-#: parameters/views.py:52
+#: parameters/views.py:53
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: parameters/views.py:79
+#: parameters/views.py:80
 #, python-format
 msgid "Delete parameter %s"
 msgstr "Удалить параметр %s"
 
-#: parameters/views.py:80
+#: parameters/views.py:81
 msgid "Delete parameter"
 msgstr "Удалить параметр"
 
-#: parameters/views.py:123
+#: parameters/views.py:124
 #, python-format
-msgid "Parameter was changed: %s"
-msgstr "Изменен параметр: %s"
+msgid "%(prefix)sParameter has been changed: %(parameter)s"
+msgstr "%(prefix)sИзменен параметр: %(parameter)s"
 
-#: parameters/views.py:182
+#: parameters/views.py:186
 #, python-format
 msgid "Add parameter for %s"
 msgstr "Добавить параметр для %s"
 
-#: parameters/views.py:194
+#: parameters/views.py:198
 msgid "Add parameter"
 msgstr "Добавить новый параметр"
 
