@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,8 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n wysiwyg %}
+{% load i18n wysiwyg trim_links %}
 
 {% if view_clarification %}
     {% if clarification_list %}
@@ -37,7 +36,7 @@
                     </span>
 
                     <div class="messages-content">
-                        {{ c.comment|safe }}
+                        {{ c.comment|safe|trim_links:url_length }}
                     </div>
 
                     {% if c.answer %}
@@ -49,7 +48,7 @@
                             {{ c.close_date|date:"H:i d.m.Y" }}
                         </span>
                         <div class="messages-content">
-                            {{ c.answer|safe }}
+                            {{ c.answer|safe|trim_links:url_length }}
                         </div>
                     </div>
                     {% endif %}

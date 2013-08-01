@@ -59,6 +59,9 @@ except ImportError:
     import simplejson as json
 
 
+URL_LENGTH = 70  # Length to truncate URLs to
+
+
 class ScoreMixin(object):
     model = Score
     form_class = ScoreForm
@@ -220,6 +223,7 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
         extra_context = {
             'parameter': parameter,
             'title': title,
+            'url_length': URL_LENGTH,
         }
         context.update(extra_context)
         return context
@@ -252,6 +256,7 @@ class ScoreDetailView(ScoreMixin, DetailView):
 
             self.extra_context = {'current_title': current_title,
                                   'title': title,
+                                  'url_length': URL_LENGTH,
                                   'task': self.object.task,
                                   'parameter': parameter,
                                   'claim_list': all_score_claims,

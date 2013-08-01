@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -21,14 +21,19 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+from core.utils import ckeditor_urlize, sanitize_field
 from exmo2010.models import Claim
 
 
 class ClaimAddForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea,
-                              label=_('Your claim'))
-    claim_id = forms.IntegerField(required=False,
-                                  widget=forms.widgets.HiddenInput())
+    comment = forms.CharField(widget=forms.Textarea, label=_('Your claim'))
+    claim_id = forms.IntegerField(required=False, widget=forms.widgets.HiddenInput())
+
+    def clean_comment(self):
+        data = self.cleaned_data['comment']
+        data = ckeditor_urlize(data)
+        data = sanitize_field(data)
+        return data
 
 
 class ClaimForm(forms.Form):

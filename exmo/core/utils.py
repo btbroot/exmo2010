@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,19 +17,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-try:
-    from functools import wraps
-except ImportError:
-    from django.utils.functional import wraps
-
 import codecs
-import csv
 import cStringIO
+import csv
 import inspect
 import re
+from functools import wraps
+
+from BeautifulSoup import BeautifulSoup
 from dateutil import rrule
 from dateutil.rrule import DAILY
+from django.utils.safestring import mark_safe
 from lxml.html.clean import Cleaner
+
+from core.templatetags.urlize_target_blank import urlize_target_blank
 
 
 def disable_for_loaddata(signal_handler):
@@ -162,3 +163,36 @@ def clean_message(comment):
     comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,4}(?=(</span>)$)', '', comment)
     comment = re.sub(r'(<br>){1,2}(?=(</p>)$)', '', comment)
     return comment
+
+
+def sanitize_field(data):
+    """
+    Remove any not allowed tags.
+
+    """
+    allowed_tags = ['a', 'blockquote', 'br', 'div', 'em',
+                    'li', 'ol', 'p', 'span', 'strong', 'u', 'ul']
+    cleaner = Cleaner(remove_unknown_tags=False, allow_tags=allowed_tags)
+    data = cleaner.clean_html(data)
+    data = mark_safe(data)
+
+    return data
+
+
+#TODO: switch on ckeditor`s auto urlizing for all urls (from clipboard, etc). After that, this function can be removed.
+def ckeditor_urlize(data):
+    """
+    It`s temporary hook for urlizing ckeditor's fields.
+
+    """
+    text = BeautifulSoup(data)
+    textNodes = text.findAll(text=True)
+
+    for textNode in textNodes:
+        if textNode.parent.name != 'a':
+            urlizedText = BeautifulSoup(urlize_target_blank(textNode))
+            textNode.replaceWith(urlizedText)
+
+    result = mark_safe(text)
+
+    return result

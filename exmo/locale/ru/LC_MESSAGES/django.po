@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-26 13:40+0400\n"
+"POT-Creation-Date: 2013-08-01 18:12+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -173,9 +173,9 @@ msgstr "Настройки главной страницы были сброше
 #: organizations/views.py:256 parameters/views.py:78 parameters/views.py:91
 #: parameters/views.py:98 parameters/views.py:183 questionnaire/views.py:55
 #: questionnaire/views.py:57 questionnaire/views.py:87
-#: questionnaire/views.py:111 scores/views.py:107 scores/views.py:149
-#: scores/views.py:184 scores/views.py:282 scores/views.py:293
-#: scores/views.py:324 scores/views.py:390 scores/views.py:540
+#: questionnaire/views.py:111 scores/views.py:110 scores/views.py:152
+#: scores/views.py:187 scores/views.py:287 scores/views.py:298
+#: scores/views.py:329 scores/views.py:395 scores/views.py:545
 #: tasks/views.py:51 tasks/views.py:156 tasks/views.py:276 tasks/views.py:377
 #: tasks/views.py:416 tasks/views.py:423 tasks/views.py:438 tasks/views.py:452
 #: tasks/views.py:465 tasks/views.py:479 tasks/views.py:541 tasks/views.py:551
@@ -259,8 +259,8 @@ msgstr "Циклы мониторинга"
 #: bread_crumbs/views.py:52
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
-#: parameters/forms.py:49 scores/views.py:117 scores/views.py:165
-#: scores/views.py:209 scores/views.py:237 scores/views.py:329
+#: parameters/forms.py:49 scores/views.py:120 scores/views.py:168
+#: scores/views.py:212 scores/views.py:241 scores/views.py:334
 msgid "Parameter"
 msgstr "Параметр"
 
@@ -270,7 +270,7 @@ msgstr "Параметр"
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating_color.html:38
-#: organizations/templates/organizations/all.html:36 scores/views.py:362
+#: organizations/templates/organizations/all.html:36 scores/views.py:367
 #: tasks/views.py:310 tasks/views.py:527
 #: templates/exmo2010/rating_common.html:24
 #: templates/exmo2010/rating_content.html:141
@@ -311,11 +311,11 @@ msgstr "Задачи "
 msgid "Your claim"
 msgstr "Ваша претензия"
 
-#: claims/forms.py:51 clarifications/forms.py:44
+#: claims/forms.py:56 clarifications/forms.py:50
 msgid "all managers"
 msgstr "все руководители"
 
-#: claims/forms.py:57 clarifications/forms.py:50
+#: claims/forms.py:62 clarifications/forms.py:56
 msgid "all experts"
 msgstr "все аналитики"
 
@@ -363,7 +363,7 @@ msgid "There are no claims"
 msgstr "Претензий нет"
 
 #: claims/templates/claim.html:101
-#: clarifications/templates/clarification.html:92
+#: clarifications/templates/clarification.html:91
 msgid "Reply"
 msgstr "Ответить"
 
@@ -471,7 +471,7 @@ msgstr "Ссылка"
 msgid "Claim was deleted by"
 msgstr "Претензию удалил руководитель цикла"
 
-#: clarifications/forms.py:27
+#: clarifications/forms.py:28
 msgid "Your clarification"
 msgstr "Ваше уточнение"
 
@@ -494,16 +494,16 @@ msgstr "Уточнения"
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Новое уточнение"
 
-#: clarifications/templates/clarification.html:62
+#: clarifications/templates/clarification.html:61
 msgid "Answer clarification"
 msgstr "Ответить на уточнение"
 
-#: clarifications/templates/clarification.html:72
+#: clarifications/templates/clarification.html:71
 #: clarifications/templates/clarification_report.html:90
 msgid "There are no clarifications"
 msgstr "Уточнений нет"
 
-#: clarifications/templates/clarification.html:92
+#: clarifications/templates/clarification.html:91
 msgid "Specify"
 msgstr "Уточнить"
 
@@ -534,7 +534,7 @@ msgstr "Уточнение"
 msgid "Dashboard"
 msgstr "Главная"
 
-#: custom_comments/forms.py:31
+#: custom_comments/forms.py:30
 #, python-format
 msgid "%(count)d day"
 msgid_plural "%(count)d days"
@@ -542,18 +542,18 @@ msgstr[0] "%(count)d день"
 msgstr[1] "%(count)d дня"
 msgstr[2] "%(count)d дней"
 
-#: custom_comments/forms.py:36 custom_comments/models.py:41
+#: custom_comments/forms.py:35 custom_comments/models.py:41
 #: exmo2010/models.py:134 exmo2010/models.py:549 exmo2010/models.py:768
 #: monitorings/views.py:117 tasks/views.py:284 tasks/views.py:292
 #: tasks/views.py:560 tasks/views.py:574 tasks/views.py:581
 msgid "status"
 msgstr "статус"
 
-#: custom_comments/forms.py:66 exmo2010/models.py:146
+#: custom_comments/forms.py:71 exmo2010/models.py:146
 msgid "Maximum time to answer"
 msgstr "Максимальное время ответа"
 
-#: custom_comments/forms.py:79
+#: custom_comments/forms.py:84
 msgid ""
 "Monitoring interact start date is missing. Check your monitoring calendar"
 msgstr ""
@@ -1959,22 +1959,22 @@ msgstr ""
 msgid "Invite"
 msgstr "Пригласить"
 
-#: parameters/forms.py:51 scores/views.py:330 scores/templates/detail.html:59
+#: parameters/forms.py:51 scores/views.py:335 scores/templates/detail.html:59
 #: scores/templates/task_report.html:43
 msgid "Found"
 msgstr "Наличие"
 
-#: parameters/forms.py:53 scores/views.py:331 scores/templates/detail.html:68
+#: parameters/forms.py:53 scores/views.py:336 scores/templates/detail.html:68
 #: scores/templates/task_report.html:44
 msgid "Complete"
 msgstr "Полнота"
 
-#: parameters/forms.py:55 scores/views.py:332 scores/templates/detail.html:78
+#: parameters/forms.py:55 scores/views.py:337 scores/templates/detail.html:78
 #: scores/templates/task_report.html:45
 msgid "Topical"
 msgstr "Актуальность"
 
-#: parameters/forms.py:57 scores/views.py:333 scores/templates/detail.html:88
+#: parameters/forms.py:57 scores/views.py:338 scores/templates/detail.html:88
 #: scores/templates/task_report.html:46
 msgid "Accessible"
 msgstr "Навигационная доступность"
@@ -1983,12 +1983,12 @@ msgstr "Навигационная доступность"
 msgid "Hypertext"
 msgstr "HTML доступность"
 
-#: parameters/forms.py:61 scores/views.py:335 scores/templates/detail.html:108
+#: parameters/forms.py:61 scores/views.py:340 scores/templates/detail.html:108
 #: scores/templates/task_report.html:48
 msgid "Document"
 msgstr "Файловая доступность"
 
-#: parameters/forms.py:63 scores/views.py:336 scores/templates/detail.html:118
+#: parameters/forms.py:63 scores/views.py:341 scores/templates/detail.html:118
 #: scores/templates/task_report.html:49
 msgid "Image"
 msgstr "Графическая доступность"
@@ -2077,75 +2077,75 @@ msgstr "Добавить вопрос"
 msgid "Save questionnaire"
 msgstr "Сохранить анкету"
 
-#: scores/views.py:147
+#: scores/views.py:150
 #, python-format
 msgid "Delete score %s"
 msgstr "Удалить оценку %s"
 
-#: scores/views.py:196
+#: scores/views.py:199
 msgid "There is an active claim, but no data changed"
 msgstr "Нет измененных данных при существующей претензии"
 
-#: scores/views.py:220 scores/views.py:248
+#: scores/views.py:223 scores/views.py:252
 #, python-format
 msgid "%(code)s — %(name)s"
 msgstr "%(code)s — %(name)s"
 
-#: scores/views.py:322 tasks/views.py:528
+#: scores/views.py:327 tasks/views.py:528
 #, python-format
 msgid "%s"
 msgstr "%s"
 
-#: scores/views.py:328 scores/templates/task_report.html:39
+#: scores/views.py:333 scores/templates/task_report.html:39
 msgid "Code"
 msgstr "Код"
 
-#: scores/views.py:334 scores/templates/task_report.html:47
+#: scores/views.py:339 scores/templates/task_report.html:47
 msgid "HTML"
 msgstr "Html доступность"
 
-#: scores/views.py:337 scores/templates/task_report.html:42
+#: scores/views.py:342 scores/templates/task_report.html:42
 msgid "Weight"
 msgstr "Ксз"
 
-#: scores/views.py:523
+#: scores/views.py:528
 msgid "Add new comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:528
+#: scores/views.py:533
 msgid "Add comment"
 msgstr "Добавить новый параметр"
 
-#: scores/views.py:592
+#: scores/views.py:597
 #, python-format
 msgid "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed"
 msgstr "%(prefix)s%(monitoring)s - %(org)s: %(code)s - Оценка изменена"
 
-#: scores/views.py:632
+#: scores/views.py:637
 #, python-format
 msgid "Changed %s."
 msgstr "Изменен %s."
 
-#: scores/views.py:632 scores/views.py:642
+#: scores/views.py:637 scores/views.py:647
 msgid "and"
 msgstr "и"
 
-#: scores/views.py:637
+#: scores/views.py:642
 #, python-format
 msgid "Added %(name)s \"%(object)s\"."
 msgstr "Добавлен %(name)s \"%(object)s\"."
 
-#: scores/views.py:641
+#: scores/views.py:646
 #, python-format
 msgid "Changed %(list)s for %(name)s \"%(object)s\"."
 msgstr "Изменен %(list)s для %(name)s \"%(object)s\"."
 
-#: scores/views.py:646
+#: scores/views.py:651
 #, python-format
 msgid "Deleted %(name)s \"%(object)s\"."
 msgstr "Удален %(name)s \"%(object)s\"."
 
-#: scores/views.py:650
+#: scores/views.py:655
 msgid "No fields changed."
 msgstr "Нет измененных полей."
 

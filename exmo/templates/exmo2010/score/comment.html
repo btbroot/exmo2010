@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments days_until date_until pytils_dt wysiwyg %}
+{% load i18n comments days_until date_until pytils_dt wysiwyg trim_links %}
 
 {% if view_comment %}
     {% get_comment_list for object as comment_list %}
@@ -58,7 +58,7 @@
                         </span>
 
                         <div class="messages-content">
-                            {{ comment.comment|safe }}
+                            {{ comment.comment|safe|trim_links:url_length }}
                         </div>
 
                         {% if request.user.is_active and not request.user.userprofile.is_expert and request.user.userprofile.is_organization and comment.user.userprofile.is_organization and not comment.user.userprofile.is_expert and comment.status == 0 %}
