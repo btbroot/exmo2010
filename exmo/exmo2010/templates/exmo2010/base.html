@@ -24,6 +24,7 @@
     <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
     <head>
         <title>{% block title %}{% if title %}{{ title }} | {% endif %}{% trans 'AIS Exmo' %}{% endblock title %}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/base.css" />
         <!-- <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}dashboard/css/dropdown.css" /> -->
         <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{{STATIC_URL}}admin/css/ie.css{% endblock %}" /><![endif]-->

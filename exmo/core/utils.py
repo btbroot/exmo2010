@@ -189,10 +189,12 @@ def ckeditor_urlize(data):
     textNodes = text.findAll(text=True)
 
     for textNode in textNodes:
-        if textNode.parent.name != 'a':
+        if textNode.parent.name == 'a':
+            textNode.parent['target'] = '_blank'
+        else:
             urlizedText = BeautifulSoup(urlize_target_blank(textNode))
             textNode.replaceWith(urlizedText)
 
-    result = mark_safe(text)
+    result = unicode(text)
 
     return result

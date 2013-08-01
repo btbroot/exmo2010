@@ -47,13 +47,14 @@ def trim_links(data, trim_url_limit):
     trim_url = lambda x, limit=trim_url_limit: limit is not None \
         and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
 
-    links = BeautifulSoup(data).findAll('a')
+    text = BeautifulSoup(data)
+    links = text.findAll('a')
 
     for link in links:
         url = link.contents[0]
         trimmed_url = trim_url(url)
-        data = data.replace(url, trimmed_url)
+        url.replaceWith(trimmed_url)
 
-    result = mark_safe(data)
+    result = mark_safe(text)
 
     return result
