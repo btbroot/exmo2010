@@ -681,7 +681,6 @@ def score_comment_unreaded(request, score_id):
         raise Http404
 
 
-@login_required
 def ratingUpdate(request):
     """
     AJAX-view for rating counting.
