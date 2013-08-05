@@ -493,7 +493,7 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
         score = score_dict.get(param.id, None)
         param.score = score
 
-    if scores:
+    if not request.user.is_anonymous() and scores:
         comments = CommentExmo.objects.filter(
             object_pk__in=scores,
             content_type__model='score',
