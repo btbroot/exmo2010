@@ -143,16 +143,7 @@
 {% check_object_permission exmo2010.view_comment_score object as view_comment %}
 {% check_object_permission exmo2010.add_comment_score object as add_comment %}
 {% check_object_permission exmo2010.close_comment_score object as close_comment %}
-
-{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
-{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
-{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
-
-{% check_object_permission exmo2010.add_claim_score object as add_claim %}
 {% check_object_permission exmo2010.view_claim_score object as view_claim %}
-{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
-{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
-
 
 {% if request.user.profile.is_expert and view_comment or request.user.profile.is_expert and view_claim or request.user.profile.is_expert and view_clarification %}
     {% include "exmo2010/score/tabs.html" %}

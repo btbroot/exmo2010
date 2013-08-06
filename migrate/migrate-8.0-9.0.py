@@ -80,7 +80,7 @@ for obj in old_data:
         monitoring.save()
         monitoring.create_calendar()
         if obj['fields']['publish_date']:
-            monitoring.status = em.MONITORING_PUBLISH
+            monitoring.status = em.MONITORING_PUBLISHED
             monitoring.save()
 print "Done"
 

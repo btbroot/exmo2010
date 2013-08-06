@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.conf.urls import *
-from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
+from scores.views import ScoreAddView, ScoreEditView, ScoreEditView_dev, ScoreDeleteView, ScoreDetailView
 import reversion
 
 
@@ -27,6 +27,8 @@ urlpatterns = \
              url(r'^(\d+)/$', 'score_view', name='score_view'),
              url(r'^(\d+)_(\d+)/$', ScoreAddView.as_view(), name='score_add'),
              url(r'^(\d+)_(\w+)/$', 'score_manager', name='score_manager'),
+             # TODO: убрать url для перехода в режим разработки по окончании #1436
+             url(r'^(?P<pk>\d+)/edit/dev/$', reversion.create_revision()(ScoreEditView_dev.as_view()), name='score_edit_dev'),
              url(r'^(?P<pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), name='score_edit'),
              url(r'^(?P<pk>\d+)/delete/$', reversion.create_revision()(ScoreDeleteView.as_view()), name='score_delete'),
              url(r'^(?P<pk>\d+)/detail/$', ScoreDetailView.as_view(), name='score_detail'),

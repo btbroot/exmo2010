@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,7 +19,6 @@
 #
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
 from livesettings import config_register, config_register_list
 from livesettings.values import *
 
@@ -35,7 +34,7 @@ class StringValueWidget(StringValue):
             super(StringValueWidget.field, self).__init__(*args, **kwargs)
 
 
-# setup a group to hold all our possible configs
+# setup a group to hold all our possible Emails configs
 EMAIL_GROUP = ConfigurationGroup('EmailServer', _('Email Server Settings'), ordering=0)
 
 config_register_list(
@@ -82,5 +81,18 @@ config_register_list(
         ordering=0,
         default='tsupport@svobodainfo.org',
         help_text=_('Default support email address'),
+    ),
+)
+
+GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=1)
+
+config_register_list(
+    StringValueWidget(
+        GLOBAL_PARAMETERS_GROUP,
+        'EXPERT',
+        description=_('Expert'),
+        ordering=0,
+        default=_('Freedom Information Foundation Expert'),
+        help_text=_('Default organization`s expert'),
     ),
 )

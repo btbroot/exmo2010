@@ -83,17 +83,17 @@ INV_STATUS_ALL = [('ALL', _('All invitations'))] + INV_STATUS
 MONITORING_PREPARE = 0
 MONITORING_RATE = 1
 MONITORING_REVISION = 2
-MONITORING_INTERACT = 3
+MONITORING_INTERACTION = 3
 MONITORING_RESULT = 4
-MONITORING_PUBLISH = 5
-MONITORING_FINISHING = 7
+MONITORING_PUBLISHED = 5
+MONITORING_FINALIZING = 7
 MONITORING_STATUS = (
     (MONITORING_PREPARE, _('prepare')),
     (MONITORING_RATE, _('initial rate')),
     (MONITORING_RESULT, _('result')),
-    (MONITORING_INTERACT, _('interact')),
-    (MONITORING_FINISHING, _('finishing')),
-    (MONITORING_PUBLISH, _('published')),
+    (MONITORING_INTERACTION, _('interact')),
+    (MONITORING_FINALIZING, _('finishing')),
+    (MONITORING_PUBLISHED, _('published')),
 )
 
 
@@ -119,9 +119,9 @@ class Monitoring(models.Model):
 
     MONITORING_EDIT_STATUSES = {
         MONITORING_RATE: _('Monitoring rate begin date'),
-        MONITORING_INTERACT: _('Monitoring interact start date'),
-        MONITORING_FINISHING: _('Monitoring interact end date'),
-        MONITORING_PUBLISH: _('Monitoring publish date'),
+        MONITORING_INTERACTION: _('Monitoring interact start date'),
+        MONITORING_FINALIZING: _('Monitoring interact end date'),
+        MONITORING_PUBLISHED: _('Monitoring publish date'),
     }
 
     name = models.CharField(
@@ -197,16 +197,16 @@ class Monitoring(models.Model):
         return self.status == MONITORING_RATE
 
     def _get_interact(self):
-        return self.status == MONITORING_INTERACT
+        return self.status == MONITORING_INTERACTION
 
     def _get_result(self):
         return self.status == MONITORING_RESULT
 
     def _get_finishing(self):
-        return self.status == MONITORING_FINISHING
+        return self.status == MONITORING_FINALIZING
 
     def _get_published(self):
-        return self.status == MONITORING_PUBLISH
+        return self.status == MONITORING_PUBLISHED
 
     def _get_active(self):
         return not self.is_prepare
@@ -287,8 +287,8 @@ class Monitoring(models.Model):
     def has_npa(self):
         return self.parameter_set.filter(npa=True).exists()
 
-    after_interaction_status = [MONITORING_INTERACT, MONITORING_FINISHING,
-                                MONITORING_PUBLISH]
+    after_interaction_status = [MONITORING_INTERACTION, MONITORING_FINALIZING,
+                                MONITORING_PUBLISHED]
 
     is_prepare = property(_get_prepare)
     is_rate = property(_get_rate)
@@ -1370,8 +1370,8 @@ class UserProfile(models.Model):
         monitoring_running = False
         monitoring_name = None
         for o in self.organization.order_by("-id"):
-            if o.monitoring.status in (MONITORING_INTERACT,
-                                       MONITORING_FINISHING):
+            if o.monitoring.status in (MONITORING_INTERACTION,
+                                       MONITORING_FINALIZING):
                 show_bubble = False
             else:
                 if not monitoring_running:
@@ -1392,10 +1392,10 @@ class UserProfile(models.Model):
         statuses = []
         if enum == "messages":
             statuses = [MONITORING_PREPARE,
-                        MONITORING_PUBLISH]
+                        MONITORING_PUBLISHED]
         elif enum == "comments":
             statuses = [MONITORING_PREPARE,
-                        MONITORING_PUBLISH,
+                        MONITORING_PUBLISHED,
                         MONITORING_RATE,
                         MONITORING_RESULT]
 
@@ -1533,9 +1533,9 @@ class UserProfile(models.Model):
 
     def get_task_review_id(self):
         organizations = self.organization.filter(
-            monitoring__status__in=[MONITORING_INTERACT,
-                                    MONITORING_FINISHING,
-                                    MONITORING_PUBLISH])\
+            monitoring__status__in=[MONITORING_INTERACTION,
+                                    MONITORING_FINALIZING,
+                                    MONITORING_PUBLISHED])\
         .order_by("-id")
         if organizations:
             organization = organizations[0]

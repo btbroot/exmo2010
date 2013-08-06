@@ -140,10 +140,15 @@ def comment_notification(sender, **kwargs):
                          reverse('exmo2010:score_view',
                          args=[score.pk]))
 
-    context = {'score': score,
-               'user': user,
-               'comments': comments,
-               'url': url}
+    expert = _(config_value('GlobalParameters', 'EXPERT'))
+
+    context = {
+        'comments': comments,
+        'expert': expert,
+        'score': score,
+        'url': url,
+        'user': user,
+    }
 
     if nonadmin_one_comment:
         _send_mails(context, False, subject, nonadmin_one_comment)

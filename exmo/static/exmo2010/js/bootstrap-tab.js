@@ -3,6 +3,7 @@
  * http://twitter.github.com/bootstrap/javascript.html#tabs
  * ========================================================
  * Copyright 2012 Twitter, Inc.
+ * Copyright 2013 Al Nikolov
  * Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -138,8 +139,20 @@
   * ============ */
 
   $(document).on('click.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
-    e.preventDefault()
-    $(this).tab('show')
-  })
+    e.preventDefault();
+    $(this).tab('show');
+      var $hash = e.target.hash;
+    if ($hash=='#comments') {
+      $('.edit-tabs span').removeClass('active');
+      $('.edit-tabs').show();
+    } else if ($.inArray($hash, ['#clarifications', '#claims']) !== -1) {
+      $('.edit-tabs').hide();
+    }
+  });
+
+  $(document).ready(function() {
+    var $hash = window.location.hash;
+    $hash && $('ul.nav-tabs a[href="' + $hash + '"]').tab('show');
+  });
 
 }(window.jQuery);

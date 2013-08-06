@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -23,6 +23,7 @@
 
 .table-parameter
 {
+    margin-bottom: 20px;
     border-spacing: 0;
     border-collapse: separate;
     *border-collapse: collapse;
@@ -229,7 +230,6 @@ label
 
 .score-header
 {
-    float: left;
     display: block;
     margin-bottom: 5px;
 }
@@ -237,11 +237,8 @@ label
 .score-header dt
 {
     clear: both;
-
-    float: left;
     display: block;
-
-    margin-top: 0px;
+    margin-top: 0;
     padding-right: 5px;
 }
 
@@ -254,7 +251,6 @@ label
 {
     clear: both;
     display: block;
-    float: left;
     margin-top: 1px;
     line-height: 21px;
 }
@@ -263,6 +259,26 @@ form.score {
     margin-bottom: 20px;
 }
 
-ul.nav-tabs a {
-    font-size: 18px;
+/* JS-tabs (pseudo-links) */
+
+.criteria_edit_line {
+    margin-top: 20px;
+}
+
+.inline_text {
+    display: inline;
+}
+
+.edit-tabs {
+    font-size: 13px;
+    line-height: 13px;
+}
+
+.edit-tabs span {
+    padding: 5px;
+}
+
+.edit-tabs span.active
+{
+    background-color: #FFFFD6;
 }

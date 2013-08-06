@@ -1,6 +1,7 @@
 // This file is part of EXMO2010 software.
-// Copyright 2010, 2011 Al Nikolovinpu
+// Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -41,6 +42,8 @@ $(document).ready(function() {
         comments = [],
         commentStatuses = [],
         radioStatuses = [];
+
+    $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
 
     $inputComments.each(function() {
         comments.push($(this).html());
@@ -96,4 +99,22 @@ $(document).ready(function() {
     $("form.score").submit(function() {
       $("#submit_score").prop('disabled',true);
     });
+
+    $('.edit-tabs').live('click', function(e) {
+        var $link;
+
+        switch (e.target.hash) {
+           case '#reply':
+              $link = $('a[href="#reply"]');
+              break;
+           case '#change_score':
+              $link = $('a[href="#change_score"]');
+              break;
+           case '#edit':
+              $link = $('a[href="#edit"]');
+              break;
+        }
+
+        $link.parent().addClass('active').siblings().removeClass('active');
+    })
 });

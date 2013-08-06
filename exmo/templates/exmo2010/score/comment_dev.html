@@ -29,21 +29,17 @@
                 <tr id="c{{ comment.id }}">
                     <td
                     {% with comment.submit_date|days_until:object.parameter.monitoring.time_to_answer as days_remaining %}
-                    {% if request.user.is_active and request.user.userprofile.is_expert and comment.user.userprofile.is_organization and not comment.user.is_superuser and comment.status == 0 %}
-                        {% if days_remaining < 0 %}class="answer-missed"{% endif %}
-                        {% if days_remaining == 0 %}class="answer-today"{% endif %}
-                        {% if days_remaining > 0 %}class="answer-later"{% endif %}
-                    {% endif %}
-                    {% if close_comment %}
-                        {% if days_remaining < 0 %}data-class="answer-missed"{% endif %}
-                        {% if days_remaining == 0 %}data-class="answer-today"{% endif %}
-                        {% if days_remaining > 0 %}data-class="answer-later"{% endif %}
-                    {% endif %}
+                        {% if request.user.is_active and is_expert and comment.user.userprofile.is_organization and not comment.user.is_superuser and comment.status == 0 %}
+                            {% include "exmo2010/score/answer_class.html" with attribute="class" %}
+                        {% endif %}
+                        {% if close_comment %}
+                            {% include "exmo2010/score/answer_class.html" with attribute="data-class" %}
+                        {% endif %}
                     {% endwith %}
                     >
                         <span class="messages-author">
                         {% if comment.user.userprofile.is_expert %}
-                            {% if request.user.is_active and request.user.userprofile.is_expert %}
+                            {% if request.user.is_active and is_expert %}
                                 {{ comment.user.userprofile.legal_name }}
                             {% else %}
                                 {{ expert }}
@@ -61,7 +57,7 @@
                             {{ comment.comment|safe|trim_links:url_length }}
                         </div>
 
-                        {% if request.user.is_active and not request.user.userprofile.is_expert and request.user.userprofile.is_organization and comment.user.userprofile.is_organization and not comment.user.userprofile.is_expert and comment.status == 0 %}
+                        {% if request.user.is_active and not is_expert and is_organization and comment.user.userprofile.is_organization and not comment.user.userprofile.is_expert and comment.status == 0 %}
                         <div class="notification-peremptory">
                             {% trans 'Peremptory day to answer your question is' %}
                             {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|ru_strftime:"%d %B %Y" }}
@@ -88,38 +84,37 @@
             </tbody>
         </table>
     {% else %}
-    {% trans 'There are no comments' %}
+        <p>{% trans 'There are no comments' %}</p>
     {% endif %}
 {% endif %}
 
-{% if add_comment %}
-    <div class="comment-form">
-        <p>{% trans 'Your comment' %}</p>
-        {% get_comment_form for object as form %}
-        <form action="{% comment_form_target %}" method="post">{% csrf_token %}
-            {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-            {% endfor %}
-            {% if user %}
-                <input type="hidden" name="id_user" value="{{ user }}" />
-            {% else %}
-                <label class="label-comment">{{ form.user.label }}</label>
-                <br />
-                {{ form.user }}
-                <br />
-            {% endif %}
-            {% if user.email %}
-                <input type="hidden" name="id_email" value="{{ user.email }}" />
-            {% else %}
-                <label class="label-comment">{{ form.email.label }}</label>
-                <br />
-                {{ form.email }}
-            {% endif %}
-            {{ form.comment }}
-            {% wysiwyg_editor "id_comment" %}
-            <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
-            <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />
-        </form>
-    </div>
-{% endif %}
-
+{#{% if add_comment %}#}
+{#    <div class="comment-form">#}
+{#        <p>{% trans 'Your comment' %}</p>#}
+{#        {% get_comment_form for object as form %}#}
+{#        <form action="{% comment_form_target %}" method="post">{% csrf_token %}#}
+{#            {% for hidden in form.hidden_fields %}#}
+{#                {{ hidden }}#}
+{#            {% endfor %}#}
+{#            {% if user %}#}
+{#                <input type="hidden" name="id_user" value="{{ user }}" />#}
+{#            {% else %}#}
+{#                <label class="label-comment">{{ form.user.label }}</label>#}
+{#                <br />#}
+{#                {{ form.user }}#}
+{#                <br />#}
+{#            {% endif %}#}
+{#            {% if user.email %}#}
+{#                <input type="hidden" name="id_email" value="{{ user.email }}" />#}
+{#            {% else %}#}
+{#                <label class="label-comment">{{ form.email.label }}</label>#}
+{#                <br />#}
+{#                {{ form.email }}#}
+{#            {% endif %}#}
+{#            {{ form.comment }}#}
+{#            {% wysiwyg_editor "id_comment" %}#}
+{#            <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />#}
+{#            <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />#}
+{#        </form>#}
+{#    </div>#}
+{#{% endif %}#}

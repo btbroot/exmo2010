@@ -21,7 +21,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from exmo2010.models import Monitoring, MONITORING_STATUS, MONITORING_PUBLISH
+from exmo2010.models import Monitoring, MONITORING_STATUS, MONITORING_PUBLISHED
 
 
 class MonitoringForm(forms.ModelForm):
@@ -98,7 +98,7 @@ class MonitoringFilterForm(forms.Form):
     """
     monitoring = forms.ModelChoiceField(
         queryset=Monitoring.objects.exclude(hidden=True).filter(
-            status=MONITORING_PUBLISH
+            status=MONITORING_PUBLISHED
         ).order_by('-publish_date'),
         required=False,
         empty_label=_('monitoring not select'),

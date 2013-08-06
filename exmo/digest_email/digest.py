@@ -97,15 +97,17 @@ class DigestSend(object):
             if not qs:
                 continue
             current_site = Site.objects.get_current()
+            expert = _(config_value('GlobalParameters', 'EXPERT'))
             subject = _("%(prefix)sEmail digest for %(digest)s") % {
                 'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
                 'digest': self.digest,
             }
             context = {
-                'user': user,
+                'expert': expert,
                 'from': self.digest.get_last(user),
-                'till': timestamp,
                 'site': current_site,
+                'till': timestamp,
+                'user': user,
             }
             email = EmailMultiAlternatives(subject,
                                            self.render_txt(qs, context, extra_context={}),

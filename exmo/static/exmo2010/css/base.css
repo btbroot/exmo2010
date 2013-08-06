@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -950,10 +950,9 @@ ul.nav-tabs
 {
     display: block;
     float: left;
-    list-style-type: none;
-    margin: 0;
     padding: 0;
     margin-bottom: 6px;
+    font-size: 18px;
 }
 
 ul.nav-tabs li
@@ -970,7 +969,6 @@ ul.nav-tabs li span
 
 ul.nav-tabs li.active span
 {
-    padding: 5px;
     background-color: #FFFFD6;
 }
 

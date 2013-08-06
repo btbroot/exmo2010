@@ -72,7 +72,7 @@ def set_npa_params(request, m_id):
     if request.method == "POST":
         formset = ParameterTypeFormSet(request.POST, queryset=parameters)
         # Нельзя изменять опубликованные мониторинги.
-        if monitoring.status == MONITORING_PUBLISH:
+        if monitoring.status == MONITORING_PUBLISHED:
             messages.warning(request, _("Forbidden to modify already "
                                         "published monitorings."), 'warning')
         else:
@@ -122,7 +122,7 @@ def monitoring_list(request):
     active_tasks = None
     if request.user.is_active and request.user.userprofile.is_organization:
         active_tasks = Task.objects.filter(
-            organization__monitoring__status=MONITORING_INTERACT,
+            organization__monitoring__status=MONITORING_INTERACTION,
             organization__in=request.user.profile.organization.all(),
             status=Task.TASK_APPROVED,
         )
@@ -1051,7 +1051,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
     if report_type == 'inprogress':
         all_monitorings = Monitoring.objects.exclude(
-            status=MONITORING_PUBLISH
+            status=MONITORING_PUBLISHED
         ).exclude(
             hidden=True
         ).order_by('-rate_date')
@@ -1059,11 +1059,11 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         all_monitorings = Monitoring.objects.exclude(
             hidden=True
         ).filter(
-            status=MONITORING_PUBLISH
+            status=MONITORING_PUBLISHED
         ).order_by('-publish_date')
     if monitoring_id:
         monitorings = Monitoring.objects.filter(
-            status=MONITORING_PUBLISH,
+            status=MONITORING_PUBLISHED,
             pk=monitoring_id,
             hidden=False)
     else:
