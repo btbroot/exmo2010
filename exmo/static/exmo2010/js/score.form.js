@@ -102,16 +102,20 @@ $(document).ready(function() {
 
     $('.edit-tabs').live('click', function(e) {
         var $link;
+        var $form_comment = $('.comment-form');
 
         switch (e.target.hash) {
            case '#reply':
               $link = $('a[href="#reply"]');
+              $form_comment.show();
               break;
            case '#change_score':
               $link = $('a[href="#change_score"]');
+              $form_comment.hide();
               break;
            case '#edit':
               $link = $('a[href="#edit"]');
+              $form_comment.hide();
               break;
         }
 

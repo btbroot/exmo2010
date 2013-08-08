@@ -345,7 +345,6 @@
 {# end--редактируемая таблица #}
 
 
-
 {% if object %}
 
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}
@@ -357,49 +356,4 @@
 
 {% endif %}
 
-
-{#<ul class="nav-tabs edit-tabs">#}
-{#    {% if view_comment %}#}
-{#        <li class="active">#}
-{#            <span>#}
-{#                <a href="#reply" data-toggle="tab" class="pseudo">#}
-{#                    {% trans 'Reply' %}#}
-{#                </a>#}
-{#            </span>#}
-{#        </li>#}
-{#        <li{% if not view_comment %} class="active"{% endif %}>#}
-{#            <span>#}
-{#                <a href="#chenge_score" data-toggle="tab" class="pseudo">#}
-{#                    {% trans 'Change score' %}#}
-{#                </a>#}
-{#            </span>#}
-{#        </li>#}
-{#        <li{% if not view_clarification and not view_comment %} class="active"{% endif %}>#}
-{#            <span>#}
-{#                <a href="#edit" data-toggle="tab" class="pseudo">#}
-{#                    {% trans 'Edit' %}#}
-{#                </a>#}
-{#            </span>#}
-{#        </li>#}
-{#    {% endif %}#}
-{#</ul>#}
-
-
-{#<div class="edit-tabs">#}
-{#    <span>#}
-{#        <a href="#reply" data-toggle="tab" class="pseudo">#}
-{#            {% trans 'Reply' %}#}
-{#        </a>#}
-{#    </span>#}
-{#    <span>#}
-{#        <a href="#chenge_score" data-toggle="tab" class="pseudo">#}
-{#            {% trans 'Change score' %}#}
-{#        </a>#}
-{#    </span>#}
-{#    <span>#}
-{#        <a href="#edit" data-toggle="tab" class="pseudo">#}
-{#            {% trans 'Edit' %}#}
-{#        </a>#}
-{#    </span>#}
-{#</div>#}
 {% endblock %}

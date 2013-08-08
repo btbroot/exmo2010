@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -161,20 +161,22 @@ a.messages-pseudo-off:hover
     padding-top: 5px;
 }
 
-div.comment-form > p {
-    width: 112px;
+/* Form for comment */
+
+.comment-form > p {
     float: left;
 }
 
-div.comment-form > p, div.comment-form > form {
-    display: block;
-}
-
-div.comment-form > form {
+.comment-form > form {
     margin-left: 122px;
 }
 
-div.comment-form > form input[type="submit"] {
+.comment-form > form input[type="submit"] {
     width: 160px;
     font-size: 13px; /* Firefox fix */
+}
+
+.comment-field {
+    margin-top: 15px;
+    display: none
 }

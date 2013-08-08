@@ -88,33 +88,35 @@
     {% endif %}
 {% endif %}
 
-{#{% if add_comment %}#}
-{#    <div class="comment-form">#}
-{#        <p>{% trans 'Your comment' %}</p>#}
-{#        {% get_comment_form for object as form %}#}
-{#        <form action="{% comment_form_target %}" method="post">{% csrf_token %}#}
-{#            {% for hidden in form.hidden_fields %}#}
-{#                {{ hidden }}#}
-{#            {% endfor %}#}
-{#            {% if user %}#}
-{#                <input type="hidden" name="id_user" value="{{ user }}" />#}
-{#            {% else %}#}
-{#                <label class="label-comment">{{ form.user.label }}</label>#}
-{#                <br />#}
-{#                {{ form.user }}#}
-{#                <br />#}
-{#            {% endif %}#}
-{#            {% if user.email %}#}
-{#                <input type="hidden" name="id_email" value="{{ user.email }}" />#}
-{#            {% else %}#}
-{#                <label class="label-comment">{{ form.email.label }}</label>#}
-{#                <br />#}
-{#                {{ form.email }}#}
-{#            {% endif %}#}
-{#            {{ form.comment }}#}
-{#            {% wysiwyg_editor "id_comment" %}#}
-{#            <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />#}
-{#            <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />#}
-{#        </form>#}
-{#    </div>#}
-{#{% endif %}#}
+{% include "tabs_edit.html" %}
+
+{% if add_comment %}
+    <div class="comment-form comment-field">
+        <p>{% trans 'Your comment' %}</p>
+        {% get_comment_form for object as form %}
+        <form action="{% comment_form_target %}" method="post">{% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% if user %}
+                <input type="hidden" name="id_user" value="{{ user }}" />
+            {% else %}
+                <label class="label-comment">{{ form.user.label }}</label>
+                <br />
+                {{ form.user }}
+                <br />
+            {% endif %}
+            {% if user.email %}
+                <input type="hidden" name="id_email" value="{{ user.email }}" />
+            {% else %}
+                <label class="label-comment">{{ form.email.label }}</label>
+                <br />
+                {{ form.email }}
+            {% endif %}
+            {{ form.comment }}
+            {% wysiwyg_editor "id_comment" %}
+            <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
+            <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />
+        </form>
+    </div>
+{% endif %}
