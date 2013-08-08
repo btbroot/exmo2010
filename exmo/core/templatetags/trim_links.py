@@ -51,7 +51,9 @@ def trim_links(data, trim_url_limit):
     links = text.findAll('a')
 
     for link in links:
-        url = link.contents[0]
+        url = link.find(text=True)
+        if not url:
+            continue
         trimmed_url = trim_url(url)
         url.replaceWith(trimmed_url)
 

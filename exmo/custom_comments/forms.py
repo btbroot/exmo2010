@@ -56,8 +56,8 @@ class CustomCommentForm(CommentForm):
 
     def clean_comment(self):
         data = self.cleaned_data['comment']
-        data = ckeditor_urlize(data)
         data = sanitize_field(data)
+        data = ckeditor_urlize(data)
         return data
 
 
