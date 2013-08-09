@@ -23,9 +23,10 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_list-parameter-colours.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_messages.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_list-parameter-colours.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
 {% endblock %}
 
@@ -48,11 +49,13 @@
 
 {% load criteria_css_class %}
 
-<table class="table-parameter">
+<table class="score-table non-editable">
     <thead>
-    <th class="criteria">{% trans 'Evaluation criterion' %}</th>
-    <th class="value">{% trans 'Value' %}</th>
-    <th class="explanation">{% trans 'Explanation' %}</th>
+        <tr>
+            <th class="criteria">{% trans 'Evaluation criterion' %}</th>
+            <th>{% trans 'Value' %}</th>
+            <th class="explanation">{% trans 'Explanation' %}</th>
+        </tr>
     </thead>
     <tbody>
         <tr>

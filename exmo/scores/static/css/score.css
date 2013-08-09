@@ -19,50 +19,10 @@
 #
 */
 
-/* Parameter */
-
-.table-parameter
-{
-    margin-bottom: 20px;
-    border-spacing: 0;
-    border-collapse: separate;
-    *border-collapse: collapse;
-    border: #fff 1px solid;
+form.score {
+    float: left;
+    display: block;
     width: 100%;
-}
-
-.table-parameter th
-{
-    padding: 8px 12px;
-    background-image: none;
-    background-color: transparent;
-    border-bottom: #fff 1px solid;
-    border-left: #bbb 1px solid;
-    color: #333;
-}
-
-.table-parameter td
-{
-    padding: 8px 12px;
-    border-left: #bbb 1px solid;
-    border-top: #bbb 1px solid;
-    border-bottom: #fff 1px solid;
-}
-
-.table-parameter td:first-child
-{
-    border-left: #fff 1px solid;
-}
-
-.table-parameter .value
-{
-    width: 80px;
-    text-align: center;
-}
-
-.table-parameter .criteria
-{
-    width: 20%;
 }
 
 .heading-comments-parameter
@@ -281,4 +241,58 @@ form.score {
 .edit-tabs span.active
 {
     background-color: #FFFFD6;
+}
+
+.button-bar {
+    padding-left: 15px;
+}
+
+.non-relevant-button {
+    float: right;
+}
+
+.non-relevant-button input {
+    background-color: #ffd8dd;
+    background-image: none;
+}
+
+.reset-button {
+    border: 1px solid #fff;
+    border-bottom: 1px dotted;
+    padding: 0;
+}
+
+.reset-button input {
+    cursor: pointer;
+    color: #005C9C;
+    background-color: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.reset-button input:hover {
+    color: #005580;
+}
+
+h1 {
+    margin-bottom: 7px;
+}
+
+.recomendation-container {
+    padding-right: 7px;
+}
+
+#id_score-comment {
+    width: 100%;
+    resize: none;
+}
+
+.recomendation {
+    color: #333;
+    font-size: 13px;
+}
+
+#non_editable_table {
+    margin-top: 20px;
 }

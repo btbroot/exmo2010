@@ -100,6 +100,13 @@ $(document).ready(function() {
       $("#submit_score").prop('disabled',true);
     });
 
+    var $non_editable = $('#non_editable_table');
+    var $editable = $('#editable_table');
+    var $partially_editable = $('#partially_editable_table');
+
+    $editable.hide();
+    $partially_editable.hide();
+
     $('.edit-tabs').live('click', function(e) {
         var $link;
         var $form_comment = $('.comment-form');
@@ -108,14 +115,23 @@ $(document).ready(function() {
            case '#reply':
               $link = $('a[href="#reply"]');
               $form_comment.show();
+              $non_editable.show();
+              $editable.hide();
+              $partially_editable.hide();
               break;
            case '#change_score':
               $link = $('a[href="#change_score"]');
               $form_comment.hide();
+//              $non_editable.hide();
+//              $editable.show();
+//              $partially_editable.hide();
               break;
            case '#edit':
               $link = $('a[href="#edit"]');
               $form_comment.hide();
+              $non_editable.hide();
+              $editable.hide();
+              $partially_editable.show();
               break;
         }
 

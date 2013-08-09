@@ -56,6 +56,10 @@ Files: debian/exmo/exmo2010/static/exmo2010/jquery.autocomplete.css
 Copyright: 2009, Jörn Zaefferer
 License: MIT
 
+Files: debian/exmo/scores/static/js/jquery.autosize.js
+Copyright: 2012, Jack Moore
+License: MIT
+
 Files: debian/exmo/exmo2010/static/exmo2010/ckeditor/*
 Copyright: 2013, CKSource - Frederico Knabben
 License: GPL

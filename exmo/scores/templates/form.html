@@ -24,27 +24,18 @@
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_form.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/score_messages.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
-
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery.autosize.js"></script>
-    <script type="text/javascript">
-        {# Изменение размера полей в зависимости от количеств строк #}
-        $(document).ready(function(){
-            $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
-        });
-    </script>
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/score.form.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.autosize.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
     {% if object %}
-    {% include "tabs_js.html" %}
-    {% include "exmo2010/score/messages_js.html" %}
-
+        <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
+        {% include "exmo2010/score/messages_js.html" %}
     {% endif %}
 {% endblock %}
 
@@ -63,13 +54,13 @@
 {{ form.parameter.as_hidden }}
 {{ form.task.as_hidden }}
 
-<table class="score-form table-bordered">
+<table class="score-table editable">
     <thead>
         <tr>
-            <th>
+            <th class="criteria">
                 {% trans "Evaluation criterion" %}
             </th>
-            <th class="value">
+            <th>
                 {% trans "Value" %}
             </th>
             <th class="explanation">
