@@ -179,6 +179,13 @@
             {% endif %}
         </tbody>
     </table>
+
+    {% if object.comment %}
+        <p class="recomendation">
+            {% trans 'Recomendations' %}
+        </p>
+        {{ object.comment|default:""|urlize_target_blank:url_length }}
+    {% endif %}
 </div>
 {# end--нередактируемая таблица #}
 
@@ -388,12 +395,10 @@
         </tbody>
     </table>
 
-    <div>
-        <p class="recomendation">
-            {{ form.comment.label }}
-        </p>
-        {{ form.comment }}
-    </div>
+    <p class="recomendation">
+        {{ form.comment.label }}
+    </p>
+    {{ form.comment }}
 
     <input type="submit" id="submit_score" value={% trans 'Save' %} />
 
@@ -569,12 +574,10 @@
         </tbody>
     </table>
 
-    <div>
-        <p class="recomendation">
-            {{ form.comment.label }}
-        </p>
-        {{ form.comment }}
-    </div>
+    <p class="recomendation">
+        {{ form.comment.label }}
+    </p>
+    {{ form.comment }}
 
     <input type="submit" id="submit_score" value={% trans 'Save' %} />
 
