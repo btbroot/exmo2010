@@ -281,6 +281,12 @@ class ScoreEditView_dev(LoginRequiredMixin, ScoreMixin, UpdateView):
 
         return result
 
+    def get_redirect(self, request):
+        self.object = self.get_object()
+        result = reverse('exmo2010:score_view', args=[self.object.pk])
+
+        return result
+
     def get_context_data(self, **kwargs):
         context = super(ScoreEditView_dev, self).get_context_data(**kwargs)
         current_title = _('Parameter')

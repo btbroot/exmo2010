@@ -225,9 +225,11 @@
     </tbody>
 </table>
 
-<div class="recomendation-container">
-<h3 class="recomendation">{{ form.comment.label }}</h3>
-{{ form.comment }}
+<div>
+    <h3 class="recomendation">
+        {{ form.comment.label }}
+    </h3>
+    {{ form.comment }}
 </div>
 
 <input type="submit" id="submit_score" value={% trans 'Save' %} />

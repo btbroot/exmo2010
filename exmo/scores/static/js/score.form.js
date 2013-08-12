@@ -43,6 +43,12 @@ $(document).ready(function() {
         commentStatuses = [],
         radioStatuses = [];
 
+    var $edit_tabs = $('.edit-tabs');
+    var $editable = $('#editable_table');
+    var $non_editable = $('#non_editable_table');
+    var $partially_editable = $('#partially_editable_table');
+    var $hash = window.location.hash;
+
     $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
 
     $inputComments.each(function() {
@@ -100,14 +106,12 @@ $(document).ready(function() {
       $("#submit_score").prop('disabled',true);
     });
 
-    var $non_editable = $('#non_editable_table');
-    var $editable = $('#editable_table');
-    var $partially_editable = $('#partially_editable_table');
-
     $editable.hide();
     $partially_editable.hide();
 
-    $('.edit-tabs').live('click', function(e) {
+    $hash && $edit_tabs.hide();
+
+    $edit_tabs.live('click', function(e) {
         var $link;
         var $form_comment = $('.comment-form');
 

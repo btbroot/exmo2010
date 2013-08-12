@@ -22,7 +22,6 @@
 /* Non-editable table, Partially editable table and Editable table */
 
 .score-table {
-    margin-bottom: 20px;
     border-spacing: 0;
     border-collapse: separate;
     *border-collapse: collapse;
@@ -34,6 +33,10 @@
     color: #333;
 }
 
+.score-table tr {
+    line-height: 34px;
+}
+
 .score-table th {
     padding: 8px 12px;
     background: none, transparent;
@@ -43,8 +46,7 @@
 }
 
 .score-table td {
-    padding: 8px 12px;
-    height: 22px;
+    padding: 0 12px;
     border-left: #bbb 1px solid;
     border-top: #bbb 1px solid;
     border-bottom: #fff 1px solid;
@@ -55,14 +57,17 @@
 }
 
 .criteria {
-    width: 165px;
+    width: 190px;
 }
 
 .score-table textarea {
     height: 1.2em;
     resize: none;
     width: 99%;
-    margin: 0;
+    margin-top: 8px;
+    margin-left: -4px;
+    padding-bottom: 0;
+    padding-top: 0;
     color: #333;
 }
 

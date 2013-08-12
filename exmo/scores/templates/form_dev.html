@@ -388,9 +388,11 @@
         </tbody>
     </table>
 
-    <div class="recomendation-container">
-    <h3 class="recomendation">{{ form.comment.label }}</h3>
-    {{ form.comment }}
+    <div>
+        <p class="recomendation">
+            {{ form.comment.label }}
+        </p>
+        {{ form.comment }}
     </div>
 
     <input type="submit" id="submit_score" value={% trans 'Save' %} />
@@ -450,19 +452,12 @@
                 </td>
                 <td class="value {{object|criteria_css_class:'found'}}">
                     {{ object.found|default:"—" }}
+                    {{ form.found.as_hidden }}
                 </td>
                 <td class="explanation">
                     {{ form.foundComment }}
                 </td>
             </tr>
-
-            {% if form.found.errors %}
-                <tr>
-                    <td colspan="3">
-                        {{ form.found.errors }}
-                    </td>
-                </tr>
-            {% endif %}
 
             {# Полнота #}
             {% if parameter.complete %}
@@ -474,19 +469,12 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'complete'}}">
                         {{ object.complete|default:"—" }}
+                        {{ form.complete.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.completeComment }}
                     </td>
                 </tr>
-
-                {% if form.complete.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.complete.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
 
             {# Астуальность #}
@@ -499,19 +487,12 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'topical'}}">
                         {{ object.topical|default:"—" }}
+                        {{ form.topical.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.topicalComment }}
                     </td>
                 </tr>
-
-                {% if form.topical.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.topical.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
 
             {# Навигационная доступность #}
@@ -524,19 +505,12 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'accessible'}}">
                         {{ object.accessible|default:"—" }}
+                        {{ form.accessible.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.accessibleComment }}
                     </td>
                 </tr>
-
-                {% if form.accessible.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.accessible.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
 
             {# HTML доступность #}
@@ -549,19 +523,12 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'hypertext'}}">
                         {{ object.hypertext|default:"—" }}
+                        {{ form.hypertext.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.hypertextComment }}
                     </td>
                 </tr>
-
-                {% if form.hypertext.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.hypertext.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
 
             {# Файловая доступность #}
@@ -574,19 +541,12 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'document'}}">
                         {{ object.document|default:"—" }}
+                        {{ form.document.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.documentComment }}
                     </td>
                 </tr>
-
-                {% if form.document.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.document.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
 
             {# Графическая доступость #}
@@ -599,26 +559,21 @@
                     </td>
                     <td class="value {{object|criteria_css_class:'image'}}">
                         {{ object.image|default:"—" }}
+                        {{ form.image.as_hidden }}
                     </td>
                     <td class="explanation">
                         {{ form.imageComment }}
                     </td>
                 </tr>
-
-                {% if form.image.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.image.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
             {% endif %}
         </tbody>
     </table>
 
-    <div class="recomendation-container">
-    <h3 class="recomendation">{{ form.comment.label }}</h3>
-    {{ form.comment }}
+    <div>
+        <p class="recomendation">
+            {{ form.comment.label }}
+        </p>
+        {{ form.comment }}
     </div>
 
     <input type="submit" id="submit_score" value={% trans 'Save' %} />

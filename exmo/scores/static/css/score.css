@@ -215,10 +215,6 @@ label
     line-height: 21px;
 }
 
-form.score {
-    margin-bottom: 20px;
-}
-
 /* JS-tabs (pseudo-links) */
 
 .criteria_edit_line {
@@ -279,18 +275,18 @@ h1 {
     margin-bottom: 7px;
 }
 
-.recomendation-container {
-    padding-right: 7px;
-}
-
 #id_score-comment {
     width: 100%;
     resize: none;
+    margin-top: -3px;
+    margin-left: -4px;
 }
 
 .recomendation {
+    margin-top: 20px;
     color: #333;
     font-size: 13px;
+    font-weight: bold;
 }
 
 #non_editable_table {
