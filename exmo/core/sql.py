@@ -152,3 +152,67 @@ WHERE (
     )
 )
 """
+
+
+#расчёт complete
+sql_complete_parameters = """
+SELECT
+    COUNT(`exmo2010_parameter`.`id`)
+FROM `exmo2010_parameter`
+WHERE (
+    `exmo2010_parameter`.`monitoring_id` = `exmo2010_organization`.`monitoring_id`
+    AND NOT ((
+        `exmo2010_parameter`.`id` IN (
+            SELECT U1.`parameter_id`
+            FROM `exmo2010_parameter_exclude` U1
+            WHERE (U1.`organization_id` = `exmo2010_task`.organization_id
+                AND U1.`parameter_id` IS NOT NULL))
+            AND `exmo2010_parameter`.`id` IS NOT NULL))
+    )
+"""
+
+sql_complete_questions = """
+SELECT
+    COUNT(`exmo2010_qquestion`.`id`)
+FROM `exmo2010_qquestion`
+INNER JOIN `exmo2010_questionnaire` ON (`exmo2010_qquestion`.`questionnaire_id` = `exmo2010_questionnaire`.`id`)
+WHERE `exmo2010_questionnaire`.`monitoring_id` = `exmo2010_organization`.`monitoring_id`
+"""
+
+sql_complete_answers = """
+SELECT
+    COUNT(`exmo2010_qanswer`.`id`)
+FROM `exmo2010_qanswer`
+INNER JOIN `exmo2010_qquestion` ON (`exmo2010_qanswer`.`question_id` = `exmo2010_qquestion`.`id`)
+INNER JOIN `exmo2010_questionnaire` ON (`exmo2010_qquestion`.`questionnaire_id` = `exmo2010_questionnaire`.`id`)
+WHERE (
+    `exmo2010_qanswer`.`task_id` = `exmo2010_task`.`id`
+    AND `exmo2010_questionnaire`.`monitoring_id` = `exmo2010_organization`.`monitoring_id` )
+"""
+
+sql_complete_scores = """
+SELECT
+    COUNT(`exmo2010_score`.`id`)
+FROM `exmo2010_score`
+INNER JOIN `exmo2010_parameter` ON (`exmo2010_score`.`parameter_id` = `exmo2010_parameter`.`id`)
+WHERE (
+    `exmo2010_score`.`task_id` = `exmo2010_task`.`id`
+    AND `exmo2010_score`.`revision` = 0
+    AND NOT ((
+        `exmo2010_score`.`parameter_id` IN (
+            SELECT U2.`parameter_id`
+            FROM `exmo2010_parameter_exclude` U2
+            WHERE (U2.`organization_id` = `exmo2010_organization`.`id`  AND U2.`parameter_id` IS NOT NULL))
+        AND `exmo2010_score`.`parameter_id` IS NOT NULL
+        AND `exmo2010_parameter`.`id` IS NOT NULL)))
+"""
+
+sql_complete = """
+    ((%(scores)s) + (%(answers)s)) * 100 /
+    ((%(parameters)s) + (%(questions)s))
+""" % {
+    'scores': sql_complete_scores,
+    'answers': sql_complete_answers,
+    'parameters': sql_complete_parameters,
+    'questions': sql_complete_questions,
+}

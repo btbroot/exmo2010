@@ -549,7 +549,8 @@ def tasks_by_monitoring(request, monitorgin_id):
     if not task_list and not \
     request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    queryset = Task.objects.filter(pk__in=task_list)
+    queryset = Task.objects.filter(pk__in=task_list).extra(
+        select={'complete_sql': Task.complete_sql_extra()}).select_related()
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         users = User.objects.filter(task__organization__monitoring = monitoring).distinct()
         UserChoice = [(u.username, u.profile.legal_name) for u in users]

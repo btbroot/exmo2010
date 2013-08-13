@@ -704,6 +704,10 @@ class Task(models.Model):
             complete = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
         return complete
 
+    @staticmethod
+    def complete_sql_extra():
+        return sql_complete
+
     def get_rating_place(self, parameters=None):
         """
         Если задача в рейтинге (одобрена), то вернет место в
@@ -1338,23 +1342,31 @@ class UserProfile(models.Model):
         else:
             return False
 
+    def check_role(self, groups):
+        if self.user.is_superuser:
+            return True
+        if not hasattr(self, 'groups'):
+            self.groups = self.user.groups.values_list('name', flat=True)
+        ret = bool(set(groups) & set(self.groups))
+        return ret
+
     def _is_expert(self):
-        return self.user.groups.filter(name__in=self.expert_groups).exists() or self.user.is_superuser
+        return self.check_role(self.expert_groups)
 
     def _is_expertB(self):
-        return self.user.groups.filter(name=self.expertB_group).exists() or self.user.is_superuser
+        return self.check_role(self.expertB_group)
 
     def _is_expertA(self):
-        return self.user.groups.filter(name=self.expertA_group).exists() or self.user.is_superuser
+        return self.check_role(self.expertA_group)
 
     def _is_manager_expertB(self):
-        return self.user.groups.filter(name=self.expertB_manager_group).exists() or self.user.is_superuser
+        return self.check_role(self.expertB_manager_group)
 
     def _is_customer(self):
-        return self.user.groups.filter(name=self.customer_group).exists() or self.user.is_superuser
+        return self.check_role(self.customer_group)
 
     def _is_organization(self):
-        return self.user.groups.filter(name=self.organization_group).exists() or self.user.is_superuser
+        return self.check_role(self.organization_group)
 
     @property
     def bubble_info(self):
@@ -1580,8 +1592,19 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = _('user profile')
 
-User.userprofile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
-User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+
+from django.db.models.signals import post_save
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Create user profile for new users at save user time, if it doesn't already exist
+    """
+    if created:
+        UserProfile(user=instance).save()
+
+post_save.connect(create_user_profile, sender=User)
+
+User.userprofile = property(lambda u: u.get_profile())
+User.profile = property(lambda u: u.get_profile())
 
 
 class MonitoringInteractActivity(models.Model):
