@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011,2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -34,22 +34,24 @@ from exmo2010.models import Score
 
 
 class DigestSend(object):
-    "Класс для отсылки дайджестов"
+    """
+    Digest common class.
 
+    """
     digest = None
     users = None
     digest_template = "digest_email/digest.html"
     digest_template_txt = "digest_email/digest.txt"
-    element_template = ""
-    element_template_txt = ""
 
     def __init__(self, digest):
-        "Принимает наименование дайджеста"
+        # get digest name:
         self.digest = digest
-        #get all users for digest
-        self.users = User.objects.filter(digestpreference__digest = self.digest, email__isnull = False).exclude(email__exact='').distinct('email')
-        self.element_template = "digest_email/%s.html" % self.digest.name.replace(' ','_')
-        self.element_template_txt = "digest_email/%s.txt" % self.digest.name.replace(' ','_')
+        # get all users for digest:
+        self.users = User.objects.filter(digestpreference__digest=self.digest, email__isnull=False)\
+            .exclude(email__exact='')\
+            .distinct()
+        self.element_template = "digest_email/%s.html" % self.digest.name.replace(' ', '_')
+        self.element_template_txt = "digest_email/%s.txt" % self.digest.name.replace(' ', '_')
 
     def get_content(self, user, timestamp = datetime.now()):
         "Метод для формирования queryset объектов для отсылки"
