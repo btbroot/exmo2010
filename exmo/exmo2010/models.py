@@ -1354,19 +1354,19 @@ class UserProfile(models.Model):
         return self.check_role(self.expert_groups)
 
     def _is_expertB(self):
-        return self.check_role(self.expertB_group)
+        return self.check_role([self.expertB_group])
 
     def _is_expertA(self):
-        return self.check_role(self.expertA_group)
+        return self.check_role([self.expertA_group])
 
     def _is_manager_expertB(self):
-        return self.check_role(self.expertB_manager_group)
+        return self.check_role([self.expertB_manager_group])
 
     def _is_customer(self):
-        return self.check_role(self.customer_group)
+        return self.check_role([self.customer_group])
 
     def _is_organization(self):
-        return self.check_role(self.organization_group)
+        return self.check_role([self.organization_group])
 
     @property
     def bubble_info(self):
