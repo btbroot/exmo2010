@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2010, 2011 Institute for Information Freedom Development
 #
@@ -17,10 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+Send comments statistics for admins.
 
-'''
-Send comments statistics for admins
-'''
+"""
 
 import os
 import sys
@@ -35,11 +35,11 @@ sys.path.append(os.path.realpath(path))
 
 from django.template import loader, Context
 from django.conf import settings
-from django.contrib.sites import models as sitesModel
+from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from livesettings import config_value
 
-from custom_comments.views import comment_report
+from custom_comments.utils import comment_report
 from exmo2010.models import Monitoring
 
 
@@ -81,7 +81,7 @@ c = Context({
     'active_organization_stats': active_organization_stats,
     'active_iifd_person_stats': active_iifd_person_stats,
     'limit': time_to_answer,
-    'site': sitesModel.Site.objects.get(name='exmo.svobodainfo.org'),
+    'site': Site.objects.get_current(),
 })
 
 message = t.render(c)

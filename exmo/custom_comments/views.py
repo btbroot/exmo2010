@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import timedelta, datetime
 from functools import wraps
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -25,7 +24,6 @@ from django.contrib.auth.models import User
 from django.contrib.comments.signals import comment_was_posted, comment_will_be_posted
 from custom_comments.models import CommentExmo
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -36,7 +34,7 @@ from livesettings import config_value
 from bread_crumbs.views import breadcrumbs
 from core.helpers import get_experts
 from core.tasks import send_email
-from exmo2010.models import Organization, Score, Task, UserProfile
+from exmo2010.models import Score, UserProfile
 
 
 def comment_list(request):
@@ -216,115 +214,6 @@ def comment_change_status(sender, **kwargs):
 
 
 comment_was_posted.connect(comment_change_status)
-
-
-def comment_report(monitoring):
-    """
-    Вернет словарь с основной статистикой по комментариям.
-
-    """
-    from custom_comments.models import CommentExmo
-
-    result = {}
-    comments_without_reply = []
-    fail_comments_without_reply = []
-    fail_soon_comments_without_reply = []
-    fail_comments_with_reply = []
-    active_organization_stats = []
-    total_org = Organization.objects.filter(monitoring=monitoring)
-    reg_org = total_org.filter(userprofile__isnull=False)
-    start_date = monitoring.interact_date
-    end_date = datetime.today()
-    time_to_answer = monitoring.time_to_answer
-
-    scores = Score.objects.filter(
-        task__organization__monitoring=monitoring)
-
-    iifd_all_comments = CommentExmo.objects.filter(
-        content_type__model='score',
-        object_pk__in=scores,
-        user__in=User.objects.exclude(
-            groups__name='organizations')).order_by('submit_date')
-
-    org_all_comments = CommentExmo.objects.filter(
-        content_type__model='score',
-        object_pk__in=scores,
-        user__in=User.objects.filter(
-            groups__name='organizations')).order_by('submit_date')
-
-    org_comments = org_all_comments.filter(
-        status=CommentExmo.OPEN
-    )
-
-    comments_with_reply = org_all_comments.filter(
-        status=CommentExmo.ANSWERED
-    )
-
-    active_organizations = set([Score.objects.get(
-        pk=oco.object_pk).task.organization for oco in org_all_comments])
-    for active_organization in active_organizations:
-        active_org_comments_count = org_all_comments.filter(
-            object_pk__in=scores.filter(
-                task__organization=active_organization)).count()
-        try:
-            task = Task.approved_tasks.get(organization=active_organization)
-        except Task.DoesNotExist:
-            task = None
-        active_organization_stats.append(
-            {'org': active_organization,
-             'comments_count': active_org_comments_count,
-             'task': task})
-
-    active_iifd_person_stats = User.objects.filter(
-        comment_comments__pk__in=iifd_all_comments).annotate(
-            comments_count=Count('comment_comments'))
-
-    for org_comment in org_comments:
-        from core.utils import workday_count
-        delta = timedelta(days=1)
-        #check time_to_answer
-        if workday_count(org_comment.submit_date.date() + delta,
-                         end_date) == time_to_answer:
-            fail_soon_comments_without_reply.append(org_comment)
-        elif workday_count(org_comment.submit_date.date() + delta,
-                           end_date) > time_to_answer:
-            fail_comments_without_reply.append(org_comment)
-        else:
-            comments_without_reply.append(org_comment)
-
-    #комментарии без ответа
-    result['comments_without_reply'] = comments_without_reply
-    #просроченные комментарии без ответа
-    result['fail_comments_without_reply'] = fail_comments_without_reply
-    #комментарии с ответом
-    result['comments_with_reply'] = comments_with_reply
-    #комментарии без ответа; срок ответа истечет в течении суток
-    result['fail_soon_comments_without_reply'] = fail_soon_comments_without_reply
-    #комментарии с ответом, но ответ был позже срока
-    result['fail_comments_with_reply'] = fail_comments_with_reply
-    #неотвеченные комментарии представителей
-    result['org_comments'] = org_comments
-    #все комментарии экспертов
-    result['org_all_comments'] = org_all_comments
-    #статистика активных (оставивших хоть один комментарий) организаций
-    #лист словарей: [{'org': org1, 'comments_count': 1}, ...]
-    result['active_organization_stats'] = active_organization_stats
-    #статистика ответов по экспертам
-    result['active_iifd_person_stats'] = active_iifd_person_stats
-    #комментарии экспертов
-    result['iifd_all_comments'] = iifd_all_comments
-    #всего огранизаций
-    result['total_org'] = total_org
-    #зарегистрированных организаций
-    result['reg_org'] = reg_org
-    #дата начала взаимодействия
-    result['start_date'] = start_date
-    #дата окончания отчетного периода
-    result['end_date'] = end_date
-    #срок ответа на комментарии (в днях)
-    result['time_to_answer'] = time_to_answer
-
-    return result
 
 
 def comments_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):

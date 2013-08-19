@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -47,7 +47,7 @@ from django.forms.models import modelformset_factory
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from custom_comments.forms import MonitoringCommentStatForm
-from custom_comments.views import comment_report
+from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from core.utils import UnicodeReader, UnicodeWriter
