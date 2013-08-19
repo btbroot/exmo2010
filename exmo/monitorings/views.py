@@ -47,7 +47,7 @@ from django.forms.models import modelformset_factory
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
 from custom_comments.forms import MonitoringCommentStatForm
-from custom_comments.views import comment_report
+from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from core.utils import UnicodeReader, UnicodeWriter
