@@ -972,6 +972,16 @@ class Score(models.Model):
             )):
             raise ValidationError(_('Not found, but some excessive data persists'))
 
+    def unique_error_message(self, model_class, unique_check):
+        # A unique field
+        if len(unique_check) == 1:
+            result = super(Score, self).unique_error_message(model_class, unique_check)
+        # unique_together
+        else:
+            result = _(u"A technical error of scores evaluation. To edit the score start from the task page.")
+
+        return result
+
     @models.permalink
     def get_absolute_url(self):
         return ('exmo2010:score_view', [str(self.id)])

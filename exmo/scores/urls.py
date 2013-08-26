@@ -17,15 +17,22 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls import *
-from scores.views import ScoreAddView, ScoreEditView, ScoreEditView_dev, ScoreDeleteView, ScoreDetailView
 import reversion
+from django.conf.urls import *
+from django.views.decorators.cache import cache_control
+
+from scores.views import ScoreAddView, ScoreEditView, ScoreEditView_dev, ScoreDeleteView, ScoreDetailView
 
 
 urlpatterns = \
     patterns('scores.views',
              url(r'^(\d+)/$', 'score_view', name='score_view'),
-             url(r'^(\d+)_(\d+)/$', ScoreAddView.as_view(), name='score_add'),
+             # The cache_control decorator will force the browser to make request to server, when user clicks 'back'
+             # button after add new Score. BUT, not working in Opera browser:
+             # (http://my.opera.com/yngve/blog/2007/02/27/introducing-cache-contexts-or-why-the).
+             url(r'^(\d+)_(\d+)/$',
+                 cache_control(no_cache=True, must_revalidate=True, no_store=True)(ScoreAddView.as_view()),
+                 name='score_add'),
              url(r'^(\d+)_(\w+)/$', 'score_manager', name='score_manager'),
              # TODO: убрать url для перехода в режим разработки по окончании #1436
              url(r'^(?P<pk>\d+)/edit/dev/$', reversion.create_revision()(ScoreEditView_dev.as_view()), name='score_edit_dev'),

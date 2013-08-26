@@ -91,59 +91,67 @@ class LoginRequiredMixin(object):
 class ScoreAddView(ScoreMixin, CreateView):
     template_name = "form.html"
 
-    def get_redirect(self, request, task, parameter):
+    def get_redirect(self, request):
         redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-                                           args=(task.pk,)),
+                                           args=(self.task.pk,)),
                                            request.GET.urlencode(),
-                                           parameter.code)
+                                           self.parameter.code)
         redirect = redirect.replace("%", "%%")
+
         return redirect
 
     def get(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=args[0])
-        parameter = get_object_or_404(Parameter, pk=args[1])
-        title = parameter
+        self.task = get_object_or_404(Task, pk=args[0])
+        self.parameter = get_object_or_404(Parameter, pk=args[1])
 
         try:
-            score = Score.objects.get(parameter=parameter, task=task)
+            score = Score.objects.get(parameter=self.parameter, task=self.task)
         except Score.DoesNotExist:
             pass
         else:
             return HttpResponseRedirect(reverse('exmo2010:score_view', args=(score.pk,)))
 
-        if not request.user.has_perm('exmo2010.fill_task', task):
+        if not request.user.has_perm('exmo2010.fill_task', self.task):
             return HttpResponseForbidden(_('Forbidden'))
 
-        self.success_url = self.get_redirect(request, task, parameter)
-        self.initial = {'task': task, 'parameter': parameter}
-        expert = _(config_value('GlobalParameters', 'EXPERT'))
+        self.initial = {
+            'task': self.task,
+            'parameter': self.parameter
+        }
+        result = super(ScoreAddView, self).get(request, *args, **kwargs)
 
+        return result
+
+    def post(self, request, *args, **kwargs):
+        self.task = get_object_or_404(Task, pk=args[0])
+        self.parameter = get_object_or_404(Parameter, pk=args[1])
+        self.success_url = self.get_redirect(request)
+        result = super(ScoreAddView, self).post(request, *args, **kwargs)
+
+        return result
+
+    def get_context_data(self, **kwargs):
+        context = super(ScoreAddView, self).get_context_data(**kwargs)
+        request = self.request
+        task = self.task
+        parameter = self.parameter
+        title = parameter
+
+        expert = _(config_value('GlobalParameters', 'EXPERT'))
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
         breadcrumbs(request, crumbs, task)
         current_title = _('Parameter')
 
-        self.extra_context = {
+        extra_context = {
             'current_title': current_title,
             'expert': expert,
             'parameter': parameter,
             'task': task,
             'title': title,
         }
+        context.update(extra_context)
 
-        return super(ScoreAddView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.task = get_object_or_404(Task, pk=args[0])
-        self.parameter = get_object_or_404(Parameter, pk=args[1])
-        self.success_url = self.get_redirect(request, self.task, self.parameter)
-        return super(ScoreAddView, self).post(request, *args, **kwargs)
-
-    def form_invalid(self, form):
-        self.extra_context = {
-            'task': self.task,
-            'parameter': self.parameter,
-        }
-        return super(ScoreAddView, self).form_invalid(form)
+        return context
 
 
 class ScoreDeleteView(LoginRequiredMixin, ScoreMixin, DeleteView):
