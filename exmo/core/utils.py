@@ -20,9 +20,7 @@
 import codecs
 import cStringIO
 import csv
-import inspect
 import re
-from functools import wraps
 
 from BeautifulSoup import BeautifulSoup
 from dateutil import rrule
@@ -31,21 +29,6 @@ from django.utils.safestring import mark_safe
 from lxml.html.clean import Cleaner
 
 from core.templatetags.urlize_target_blank import urlize_target_blank
-
-
-def disable_for_loaddata(signal_handler):
-    """
-    http://code.djangoproject.com/ticket/8399
-    Декоратор для пропуска при loaddata.
-
-    """
-    @wraps(signal_handler)
-    def wrapper(*args, **kwargs):
-        for fr in inspect.stack():
-            if inspect.getmodulename(fr[1]) in ('loaddata', 'syncdb'):
-                return
-        signal_handler(*args, **kwargs)
-    return wrapper
 
 
 def workday_count(alpha, omega):

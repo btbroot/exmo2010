@@ -25,7 +25,7 @@ import re
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, IntegrityError
+from django.db import models
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.utils.translation import ugettext as _
@@ -185,6 +185,18 @@ class Monitoring(models.Model):
 
     def __unicode__(self):
         return '%s' % self.name
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+
+        # update task`s openness.
+        if not is_new and self.is_interact:
+            for task in Task.objects.filter(organization__monitoring=self):
+                task.update_openness()
+
+        result = super(Monitoring, self).save(*args, **kwargs)
+
+        return result
 
     @models.permalink
     def get_absolute_url(self):
@@ -549,7 +561,6 @@ class Task(models.Model):
         verbose_name=_('status'),
     )
 
-    #хранит рассчитанное значение первичного Кид. обновляется по сигналу
     openness_first = models.FloatField(
         default=-1,
         editable=False,
@@ -609,7 +620,7 @@ class Task(models.Model):
     def update_openness(self):
         #по умолчанию openness_first=-1.
         #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness=0
-        if self.organization.monitoring.is_interact and self.openness_first < 0:
+        if self.openness_first < 0:
             self.openness_first = self.openness
             self.save()
 
