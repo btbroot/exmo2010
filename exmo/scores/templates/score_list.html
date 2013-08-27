@@ -143,9 +143,9 @@
                 <td width=4%>{{ parameter.code }}</td>
                 <td>
                     {% with parameter.score as score %}
-                        {% if score and score.claim_color %}
+                        {% if score %}
                             {% check_object_permission exmo2010.view_claim score as perm %}
-                            {% if perm %}
+                            {% if perm and score.claim_color %}
                                 {% with score.claim_color as color %}
                                     {% if color %}
                                         {% if is_expertB and score.task.user_id == request.user.id or is_expertA %}
