@@ -29,6 +29,9 @@ jQuery.expr[':'].regex = function(elem, index, match) {
     return regex.test(jQuery(elem)[attr.method](attr.property));
 };
 
+// Django`s cach_control decorator will work correctly at Safari browser only with this event.
+$(window).unload(function(){});
+
 $(document).ready(function() {
     var $foundDash = $("#id_score-found_0"),
         $foundZero = $("#id_score-found_1"),
