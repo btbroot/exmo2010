@@ -643,25 +643,18 @@ def score_add_comment(request, score_id):
         return HttpResponseForbidden(_('Forbidden'))
 
 
-def log_user_activity(**kwargs):
+def log_user_activity(comment, **kwargs):
     """
-    Oбработчик сигнала при создании нового комментария. Функция для ведения журнала посещений представителя
-    организации на стадии взаимодействия.
+    Signal handler. Organizations representatives activity log at the stage of interaction.
 
     """
-    comment = kwargs['comment']
-    if comment.content_type.model == 'score':
-        score = Score.objects.get(pk=comment.object_pk)
-        monitoring = score.task.organization.monitoring
-        user = comment.user
-        if monitoring.is_interact and user.profile.is_organization and not user.is_superuser:
-            activity = MonitoringInteractActivity.objects.filter(monitoring=monitoring, user=user).exists()
-            if activity:
-                log = MonitoringInteractActivity(monitoring=monitoring, user=user)
-                try:
-                    log.save()
-                except IntegrityError:
-                    pass
+    score = Score.objects.get(pk=comment.object_pk)
+    monitoring = score.task.organization.monitoring
+    user = comment.user
+    if monitoring.is_interact and user.profile.is_organization and not user.is_superuser:
+        MonitoringInteractActivity.objects.get_or_create(monitoring=monitoring, user=user)
+
+comment_was_posted.connect(log_user_activity, sender=CommentExmo)
 
 
 def score_change_notify(sender, **kwargs):
@@ -803,7 +796,3 @@ def ratingUpdate(request):
             return HttpResponse(json.dumps(rating), mimetype='application/json')
     else:
         raise Http404
-
-
-# Регистрируем обработчик сигнала.
-comment_was_posted.connect(log_user_activity)
