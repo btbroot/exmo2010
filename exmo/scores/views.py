@@ -383,10 +383,10 @@ def score_view(request, score_id):
     if request.user.has_perm('exmo2010.edit_score', score):
 
         # TODO: убрать переход в режим разработки по окончании #1436
-        if settings.DEBUG:
-            redirect_url = reverse('exmo2010:score_edit_dev', args=[score_id])
-        else:
-            redirect_url = reverse('exmo2010:score_edit', args=[score_id])
+        # if settings.DEBUG:
+        #     redirect_url = reverse('exmo2010:score_edit_dev', args=[score_id])
+        # else:
+        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
 
         return HttpResponseRedirect(redirect_url)
     if request.user.has_perm('exmo2010.view_score', score):
