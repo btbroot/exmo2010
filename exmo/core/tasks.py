@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -31,8 +31,8 @@ from django.core.mail.utils import DNS_NAME
 from django.template import loader, Context
 from livesettings import config_value
 
-from exmo2010.models import Organization, EmailTasks
 from core.helpers import use_locale
+from exmo2010.models import Organization, EmailTasks, Score
 
 
 @task(default_retry_delay=10 * 60, max_retries=5, rate_limit="500/h")
@@ -149,9 +149,8 @@ def change_inv_status():
     """
     orgs = Organization.objects.filter(inv_status='RGS')
     for org in orgs:
-        users = org.userprofile_set.all()
-        for user in users:
-            if user.user.comment_comments.count():
-                org.inv_status = 'ACT'
-                org.save()
-                break
+        scores = Score.objects.filter(task__organization=org)
+        is_active = org.userprofile_set.filter(user__comment_comments__object_pk__in=scores).exists()
+        if is_active:
+            org.inv_status = 'ACT'
+            org.save()
