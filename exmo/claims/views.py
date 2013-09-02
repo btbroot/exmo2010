@@ -28,9 +28,9 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_protect
 from livesettings import config_value
 
+from accounts.views import get_experts
 from bread_crumbs.views import breadcrumbs
 from claims.forms import *
-from core.helpers import get_experts
 from core.tasks import send_email
 from exmo2010.models import Claim, Monitoring, Score
 

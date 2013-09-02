@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import messages
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
@@ -271,3 +271,14 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         profile = UserProfile(user=instance)
         profile.save()
+
+
+def get_experts():
+    """
+    Возвращает пользователей из групп expertA и expertB_manager.
+
+    """
+    return User.objects.filter(groups__name__in=[UserProfile.expertA_group, UserProfile.expertB_manager_group],
+                               is_active=True,
+                               email__isnull=False)\
+        .exclude(email__exact='').distinct()

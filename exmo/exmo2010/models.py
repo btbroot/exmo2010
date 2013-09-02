@@ -261,6 +261,7 @@ class Monitoring(models.Model):
     def statistics(self):
         """
         Метод, возвращающий словарь со статистикой по мониторингу.
+
         """
         stat = MONITORING_STAT_DICT
         stat['organization'] = self.organization_set.count()
@@ -289,7 +290,7 @@ class Monitoring(models.Model):
                 task__organization__monitoring=self),
             user__in=User.objects.exclude(groups__name='organizations')
         ).count()
-        from core.helpers import rating
+        from monitorings.views import rating
         rating_list, avg = rating(self)
         stat['avg_openness'] = avg['openness']
         stat['avg_openness_first'] = avg['openness_first']
@@ -723,8 +724,9 @@ class Task(models.Model):
         """
         Если задача в рейтинге (одобрена), то вернет место в
         рейтинге относительно прочих задач
+
         """
-        from core.helpers import rating
+        from monitorings.views import rating
         place = None
         rating_list, avg = rating(self.organization.monitoring, parameters)
         for rating_object in rating_list:

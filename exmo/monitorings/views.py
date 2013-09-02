@@ -46,12 +46,12 @@ from django.forms.models import modelformset_factory
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
+from core.helpers import table
+from core.utils import UnicodeReader, UnicodeWriter
 from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
-from core.utils import UnicodeReader, UnicodeWriter
-from core.helpers import *
 from monitorings.forms import MonitoringForm, MonitoringFilterForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
@@ -1210,3 +1210,69 @@ def _rating_type_parameter(request, monitoring, has_npa=False):
                 parameter_list.append(parameter.pk)
 
     return rating_type, parameter_list, form
+
+
+def rating(monitoring, parameters=None, rating_type=None):
+    """
+    Генерация рейтинга для мониторинга по выбранным параметрам
+    Вернет tuple из отсортированного списка объектов рейтинга
+    и словаря средних значений Кид.
+
+    """
+    #sample extra for select
+    extra_select = "count(*)"
+    #get task from monitoring for valid sql
+    generic_task_qs = Task.objects.filter(organization__monitoring=monitoring)
+    if generic_task_qs.exists():
+        extra_select = generic_task_qs[0]._sql_openness(parameters)
+
+    tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)
+    total_tasks = tasks.count()
+
+    if parameters and rating_type == 'user':
+        params_list = Parameter.objects.filter(pk__in=parameters)
+        non_relevant = set(params_list[0].exclude.all())
+        for item in params_list[1:]:
+            non_relevant &= set(item.exclude.all())
+
+        tasks = tasks.exclude(organization__in=list(non_relevant))
+
+    object_list = [
+        {
+            'task': task,
+            'openness': task.__task_openness or 0,
+            'openness_first': task.openness_first,
+        } for task in tasks
+        .extra(select={'__task_openness': extra_select})
+        .order_by('-__task_openness')
+    ]
+
+    place = 1
+    avg = {
+        'openness': 0,
+        'openness_first': 0,
+        'total_tasks': total_tasks,
+    }
+    max_rating = 0
+    if object_list:
+        max_rating = object_list[0]['openness']
+        avg['openness'] = sum([t['openness'] for t in object_list]) / len(object_list)
+        avg['openness_first'] = sum([t['openness_first'] for t in object_list]) / len(object_list)
+    rating_list = []
+    place_count = {}
+    for rating_object in object_list:
+        if rating_object['openness'] < max_rating:
+            place += 1
+            max_rating = rating_object['openness']
+        try:
+            place_count[place] += 1
+        except KeyError:
+            place_count[place] = 1
+        rating_object['place'] = place
+        rating_list.append(rating_object)
+
+    rating_list_final = []
+    for rating_object in rating_list:
+        rating_object['place_count'] = place_count[rating_object['place']]
+        rating_list_final.append(rating_object)
+    return rating_list_final, avg

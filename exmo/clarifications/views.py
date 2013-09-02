@@ -26,9 +26,9 @@ from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
+from accounts.views import get_experts
 from bread_crumbs.views import breadcrumbs
 from clarifications.forms import *
-from core.helpers import get_experts
 from core.tasks import send_email
 from exmo2010.models import Clarification, Monitoring, Score
 

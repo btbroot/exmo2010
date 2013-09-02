@@ -22,7 +22,6 @@ from functools import wraps
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
 from django.contrib.comments.signals import comment_was_posted, comment_will_be_posted
-from custom_comments.models import CommentExmo
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response
@@ -31,9 +30,10 @@ from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
+from accounts.views import get_experts
 from bread_crumbs.views import breadcrumbs
-from core.helpers import get_experts
 from core.tasks import send_email
+from custom_comments.models import CommentExmo
 from exmo2010.models import Score, UserProfile
 
 
