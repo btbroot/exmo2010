@@ -20,21 +20,21 @@
 
 import datetime
 
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.comments.signals import comment_was_posted
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError
 from django.db.models.signals import pre_save
-from django.dispatch import Signal
 from django.db.models import Max
+from django.dispatch import Signal
+from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
 from django.utils import simplejson
+from django.utils.decorators import method_decorator
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -214,9 +214,30 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
                 return HttpResponse(_('There is an active claim, but no data changed'))
 
         self.success_url = self.get_redirect(request)
-        result = super(ScoreEditView, self).post(request, *args, **kwargs)
 
-        return result
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        self.valid = True
+        try:
+            signal_to_create_revision.send(
+                sender=Score.__class__,
+                instance=self.object,
+            )
+        except ValidationError:
+            self.valid = False
+
+        if form.is_valid() and self.valid:
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        if not self.valid:
+            error = form._errors.setdefault('__all__', ErrorList())
+            error.append(_('Couldn`t save a new version of the existing score since the existing score is incomplete. '
+                           'Contact your Supervisor.'))
+        return super(ScoreEditView, self).form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super(ScoreEditView, self).get_context_data(**kwargs)
@@ -705,7 +726,7 @@ score_was_changed = Signal(providing_args=["form", "request"])
 score_was_changed.connect(score_change_notify)
 
 
-def create_revision(sender, instance, using, **kwargs):
+def create_revision(sender, instance, **kwargs):
     """
     Сохранение ревизии оценки на стадии взаимодействия.
 
@@ -713,8 +734,8 @@ def create_revision(sender, instance, using, **kwargs):
     if instance.revision != Score.REVISION_INTERACT:
         instance.create_revision(Score.REVISION_INTERACT)
 
-
-pre_save.connect(create_revision, sender=Score)
+signal_to_create_revision = Signal(providing_args=["instance"])
+signal_to_create_revision.connect(create_revision)
 
 
 def _construct_change_message(request, form, formsets):
