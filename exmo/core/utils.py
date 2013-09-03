@@ -65,7 +65,7 @@ def ToType(string):
         retval = int(string)
     except ValueError:
         retval = unicode(string, "utf-8")
-    return string
+    return retval
 
 
 #http://docs.python.org/library/csv#examples
