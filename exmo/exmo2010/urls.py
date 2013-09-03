@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,8 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.utils.translation import ugettext as _
+from livesettings import config_value
 
 from bread_crumbs.views import BreadcrumbsView
 
@@ -48,7 +49,10 @@ urlpatterns = patterns('',
     url(r'^toggle_comment/$', 'scores.views.toggle_comment', name='toggle_comment'),
     url(r'^ratings/$', 'monitorings.views.ratings', name='ratings'),
     url(r'^help/$', BreadcrumbsView.as_view(template_name='exmo2010/help.html',
-                                            get_context_data=lambda: {'current_title': _('Help')}),
+                                            get_context_data=lambda: {
+                                                'current_title': _('Help'),
+                                                'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')
+                                            }),
         name='help'),
     url(r'^about/$', BreadcrumbsView.as_view(template_name='exmo2010/about.html',
                                              get_context_data=lambda: {'current_title': _('About')}),

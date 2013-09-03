@@ -239,13 +239,12 @@ p.mini {
     color: #999;
 }
 
-.quiet, a.quiet:link, a.quiet:visited {
-    color: #999 !important;
-    font-weight: normal !important;
+.bold {
+    font-weight: bold;
 }
 
-.quiet strong {
-    font-weight: bold !important;
+.italic {
+    font-style: italic;
 }
 
 .float-right {
