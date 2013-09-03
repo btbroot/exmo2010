@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -60,7 +60,7 @@
 
     <div id="top-menu">
         <h2>{% trans "Organizations" %}</h2>
-        <ul class="nav nav-tabs">
+        <ul class="nav-tabs">
             <li{% if org_type == "all" %} class="active"{% endif %}>
                 <span>
                     <a href="#all" data-toggle="tab" class="pseudo">{% trans 'all' %}</a>

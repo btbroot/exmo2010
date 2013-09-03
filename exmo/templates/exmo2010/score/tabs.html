@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -33,7 +33,7 @@
 {% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
 {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 
-<ul class="nav nav-tabs">
+<ul class="nav-tabs comment-tabs">
     {% if view_comment %}
     <li class="active">
         <span>
