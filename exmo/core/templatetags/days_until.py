@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,34 +17,30 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import date, datetime
 
-import datetime
-from dateutil import rrule
-from dateutil.rrule import DAILY
-from dateutil.rrule import MO, TU, WE, TH, FR
+from dateutil.rrule import rrule, DAILY, MO, TU, WE, TH, FR
 from django import template
 
 
 register = template.Library()
 
 
-@register.filter
-def days_until(start_date, delta_days):
+@register.filter(is_safe=False)
+def workdays_still_left(start, limit):
     """
-    Возвращает количество оставшихся дней:
-    от настоящего времени до даты (start_date + delta_days с учетом выходных).
+    Количество рабочих дней, оставшихся на сегодня до исчерпания периода.
+    start: дата начала периода, datetime
+    limit: величина периода в рабднях, int/long
+
     """
-    if not isinstance(start_date, datetime.datetime):
+    if not isinstance(start, datetime):
         return None
-    if not isinstance(delta_days, (int, long)):
+    if not isinstance(limit, (int, long)):
         return None
-    start_date.replace(second=0, microsecond=0)
-    next_date = rrule.rrule(DAILY,
-                            byweekday=(MO, TU, WE, TH, FR),
-                            dtstart=start_date)
-    next_date = next_date[delta_days].replace(second=0, microsecond=0)
-    now = datetime.datetime.now().replace(second=0, microsecond=0)
-    return (next_date - now).days
+    workdays_generator = rrule(DAILY, byweekday=(MO, TU, WE, TH, FR), dtstart=start)
+    next_date = workdays_generator[limit]
+    today = date.today()
+    result = (next_date.date() - today).days
 
-
-days_until.is_safe = False
+    return result
