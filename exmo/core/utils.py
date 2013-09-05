@@ -57,17 +57,6 @@ def safeConvert(string):
         return ''
 
 
-def ToType(string):
-    #try convert to int, else -- string
-    if not string:
-        return None
-    try:
-        retval = int(string)
-    except ValueError:
-        retval = unicode(string, "utf-8")
-    return retval
-
-
 #http://docs.python.org/library/csv#examples
 class UTF8Recoder(object):
     """
@@ -96,7 +85,7 @@ class UnicodeReader(object):
 
     def next(self):
         row = self.reader.next()
-        return [ToType(s) for s in row]
+        return [unicode(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
