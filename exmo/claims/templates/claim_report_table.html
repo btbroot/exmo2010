@@ -1,7 +1,7 @@
 {% spaceless %}
-    {% comment %}
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,23 +19,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-    {% load i18n %}
-    {% for c in claims %}
-        <tr>
-            <td class="date">{{ c.open_date|date:"H:i d.m.Y" }}</td>
-            <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
-            <td class="creator">{{ c.creator.profile.legal_name }}</td>
-            <td class="link">
-                <a href="{% url exmo2010:score_view c.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
-            </td>
-        </tr>
-        <tr style="display: none">
-            <td class="count">
-                {{ claims|length }}
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    {% endfor %}
+{% load i18n %}
+{% for c in claims %}
+    <tr>
+        <td class="date">{{ c.open_date|date:"H:i d.m.Y" }}</td>
+        <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
+        <td class="creator">{{ c.creator.profile.legal_name }}</td>
+        <td class="link">
+            <a href="{% url exmo2010:score_edit c.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
+        </td>
+    </tr>
+    <tr style="display: none">
+        <td class="count">
+            {{ claims|length }}
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+{% endfor %}
 {% endspaceless %}

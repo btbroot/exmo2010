@@ -1,7 +1,7 @@
 {% spaceless %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -26,7 +26,7 @@
         <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
         <td class="creator">{{ c.creator.profile.legal_name }}</td>
         <td class="link">
-            <a href="{% url exmo2010:score_view c.score.pk %}#clarifications" target="_blank">{% trans 'go to clarification' %}</a>
+            <a href="{% url exmo2010:score_edit c.score.pk %}#clarifications" target="_blank">{% trans 'go to clarification' %}</a>
         </td>
     </tr>
     <tr style="display: none">
