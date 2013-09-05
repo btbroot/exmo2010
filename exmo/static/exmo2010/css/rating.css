@@ -97,13 +97,6 @@ div.scroll {
     border: none;
 }
 
-#map
-{
-    float: right;
-    background: url(../img/earth.png) no-repeat;
-    padding-left: 20px;
-}
-
 #pselect_div {
     display: none;
 }
@@ -163,4 +156,45 @@ div.scroll {
 #mselect_form
 {
     margin-bottom: 20px;
+}
+
+.icon-download-alt {
+    background-position: -96px -24px;
+    background-image: url("../img/glyphicons-halflings.png");
+}
+
+.icon-map
+{
+    background-image: url("../img/earth_14x14.png");
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 14px;
+    line-height: 14px;
+    margin-top: 1px;
+    vertical-align: text-top;
+    width: 14px;
+}
+
+table#rating-menu {
+    width: 100%;
+}
+
+.link-right {
+    float: right;
+}
+
+.link-right ul,
+.link-right li {
+    right: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.link-right li {
+    display: inline;
+    padding-right: 20px;
 }

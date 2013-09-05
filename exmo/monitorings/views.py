@@ -24,6 +24,7 @@ import tempfile
 import zipfile
 from cStringIO import StringIO
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Count
@@ -42,6 +43,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
+from django.utils import simplejson
 from django.forms.models import modelformset_factory
 
 from accounts.forms import SettingsInvCodeForm
@@ -1276,3 +1278,144 @@ def rating(monitoring, parameters=None, rating_type=None):
         rating_object['place_count'] = place_count[rating_object['place']]
         rating_list_final.append(rating_object)
     return rating_list_final, avg
+
+
+class MonitoringExport(object):
+    #отсортированные критерии для экспорта в csv
+    CSV_CRITERIONS = [
+        'name',
+        'id',
+        'found',
+    ]
+    CSV_CRITERIONS.extend(Parameter.OPTIONAL_CRITERIONS)
+    CSV_CRITERIONS.extend(['social', 'type', 'revision'])
+
+    def __init__(self, monitoring):
+        self.monitoring = monitoring
+        scores = Score.objects.raw(monitoring.sql_scores())
+        current_openness = getattr(scores[0], 'task_openness')
+        place = 1
+        #dict with organization as keys and el as list of scores for json export
+        self.tasks = {}
+        for score in scores:
+            if score.task_openness != current_openness:
+                place += 1
+                current_openness = score.task_openness
+
+            score_dict = {
+                'name': score.parameter_name.strip(),
+                'social': score.weight,
+                'found': score.found,
+                'type': 'npa' if score.parameter_npa else 'other',
+                'revision': Score.REVISION_EXPORT[score.revision],
+                'id': score.parameter_id,
+            }
+            if settings.DEBUG:
+                score_dict['pk'] = score.pk
+            if score.found:
+                for criteria in Parameter.OPTIONAL_CRITERIONS:
+                    row_criteria = float(getattr(score, criteria, -1) or -1)
+                    if row_criteria > -1:
+                        score_dict[criteria] = row_criteria
+
+            if score.organization_id in self.tasks.keys():
+                self.tasks[score.organization_id]['scores'].append(score_dict)
+            else:
+                self.tasks[score.organization_id] = {
+                    'scores': [score_dict, ],
+                    'place': place,
+                    'openness': '%.3f' % (score.task_openness or 0),
+                    'openness_initial': '%.3f' % (score.openness_first or 0),
+                    'name': score.organization_name,
+                    'id': score.organization_id,
+                    'url': score.url,
+                }
+
+    def json(self):
+        ret = {
+            'monitoring': {
+                'name': self.monitoring.name,
+                'tasks': self.tasks.values(),
+            }
+        }
+        json_dump_args = {}
+        if settings.DEBUG:
+            json_dump_args = {'indent': 2}
+        response = HttpResponse(mimetype='application/json')
+        response.encoding = 'UTF-8'
+        response['Content-Disposition'] = \
+            'attachment; filename=monitoring-%s.json' % self.monitoring.pk
+        response.write(
+            simplejson.dumps(
+                ret, **json_dump_args
+            ).decode("unicode_escape").encode("utf8"))
+        return response
+
+    def csv(self):
+        response = HttpResponse(mimetype='application/vnd.ms-excel')
+        response['Content-Disposition'] = \
+            'attachment; filename=monitoring-%s.csv' % self.monitoring.pk
+        response.encoding = 'UTF-16'
+        writer = UnicodeWriter(response)
+        #csv HEAD
+        writer.writerow([
+            "#Monitoring",
+            "Organization",
+            "Organization_id",
+            "Position",
+            "Initial Openness",
+            "Openness",
+            "Parameter",
+            "Parameter_id",
+            "Found",
+            "Complete",
+            "Topical",
+            "Accessible",
+            "Hypertext",
+            "Document",
+            "Image",
+            "Social",
+            "Type",
+            "Revision"
+        ])
+        for task in self.tasks.values():
+            for score_dict in task['scores']:
+                row = [
+                    self.monitoring.name,
+                    task['name'],
+                    task['id'],
+                    task['place'],
+                    task['openness_initial'],
+                    task['openness'],
+                ]
+                row.extend(
+                    [
+                        unicode(score_dict.get(c, "not relevant"))
+                        for c in self.CSV_CRITERIONS
+                    ])
+                writer.writerow(row)
+        return response
+
+
+def monitoring_export(request, monitoring):
+    """
+    :param request:
+        django request object with GET var 'format'
+        export format could be 'json' or 'csv'
+    :param monitoring:
+        monitoring pk
+    :return:
+        json or csv with all scores for monitoring
+    """
+
+    export_format = request.GET.get('format', 'json')
+    monitoring = get_object_or_404(Monitoring, pk=monitoring)
+    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
+        return HttpResponseForbidden(_('Forbidden'))
+    export = MonitoringExport(monitoring)
+    r = HttpResponseForbidden(_('Forbidden'))
+    if export_format == 'csv':
+        r = export.csv()
+    elif export_format == 'json':
+        r = export.json()
+    return r

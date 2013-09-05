@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -115,6 +115,11 @@ class Migration(SchemaMigration):
 
         # Adding unique constraint on 'Parameter', fields ['code', 'monitoring']
         db.create_unique('exmo2010_parameter', ['code', 'monitoring_id'])
+
+        #for MYSQL only! exmo2010_parameter.name is VARCHAR(255)
+        #and mysql got error while creating index
+        if db.backend_name == 'mysql':
+            db.execute('ALTER TABLE exmo2010_parameter ROW_FORMAT=DYNAMIC;')
 
         # Adding unique constraint on 'Parameter', fields ['name', 'monitoring']
         db.create_unique('exmo2010_parameter', ['name', 'monitoring_id'])

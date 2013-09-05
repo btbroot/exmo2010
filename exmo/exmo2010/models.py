@@ -106,11 +106,29 @@ class OpennessExpression(models.Model):
     """
     Модель для хранения кода и наименования формул расчета Кид
     """
-    code    = models.PositiveIntegerField(primary_key=True)
-    name    = models.CharField(max_length = 255, default = "-", verbose_name=_('name'))
+    code = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
+
+    OPENNESS_EXPRESSIONS = [1, 8]
 
     def __unicode__(self):
         return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
+
+    def sql_openness(self):
+        if self.code == 1:
+            return sql_score_openness_v1
+        elif self.code == 8:
+            return sql_score_openness_v8
+        else:
+            raise Exception(_('Unknown OpennessExpression code'))
+
+    def sql_monitoring(self):
+        if self.code == 1:
+            return sql_monitoring_v1
+        elif self.code == 8:
+            return sql_monitoring_v8
+        else:
+            raise Exception(_('Unknown OpennessExpression code'))
 
 
 class Monitoring(models.Model):
@@ -299,6 +317,18 @@ class Monitoring(models.Model):
     @property
     def has_npa(self):
         return self.parameter_set.filter(npa=True).exists()
+
+    def sql_scores(self):
+        sql_openness = sql_task_openness % {
+            'sql_score_openness': self.openness_expression.sql_openness(),
+            'sql_parameter_filter': ""
+        }
+        sql_scores = sql_monitoring_scores % {
+            'sql_monitoring': self.openness_expression.sql_monitoring(),
+            'sql_openness': sql_openness,
+            'monitoring_pk': self.pk
+        }
+        return sql_scores
 
     after_interaction_status = [MONITORING_INTERACTION, MONITORING_FINALIZING,
                                 MONITORING_PUBLISHED]
@@ -498,6 +528,16 @@ class Parameter(models.Model):
     image = models.BooleanField(default=True, verbose_name=_('image'))
     npa = models.BooleanField(default=False, verbose_name=_('coherent'))
 
+    #необязательные критерии в оценке
+    OPTIONAL_CRITERIONS = [
+        'complete',
+        'topical',
+        'accessible',
+        'hypertext',
+        'document',
+        'image'
+    ]
+
 #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
         return self.name
@@ -574,11 +614,10 @@ class Task(models.Model):
         по умолчанию считается для всех параметров
         если указать parameters, то считается только для параметров имеющих соотв. pk
         """
-        sql_score_openness = sql_score_openness_v8
         #empty addtional filter for parameter
         sql_parameter_filter = ""
-        if self.organization.monitoring.openness_expression.code == 1:
-            sql_score_openness = sql_score_openness_v1
+        sql_score_openness = \
+            self.organization.monitoring.openness_expression.sql_openness()
         if parameters:
             if isinstance(parameters[0], Parameter):
                 parameters_pk_list = [p.pk for p in parameters]
@@ -833,6 +872,11 @@ class Score(models.Model):
 
     REVISION_DEFAULT = 0
     REVISION_INTERACT = 1
+
+    REVISION_EXPORT = {
+        REVISION_DEFAULT: 'default',
+        REVISION_INTERACT: 'initial',
+    }
 
     REVISION_CHOICE = (
         (REVISION_DEFAULT, _('default revision')),
@@ -1379,6 +1423,12 @@ class UserProfile(models.Model):
     def _is_expertB(self):
         return self.check_role([self.expertB_group])
 
+    def _set_expertB(self, val):
+        if val:
+            self.user.groups.add(Group.objects.get(name=self.expertB_group))
+        else:
+            self.user.groups.remove(Group.objects.get(name=self.expertB_group))
+
     def _is_expertA(self):
         return self.check_role([self.expertA_group])
 
@@ -1595,7 +1645,7 @@ class UserProfile(models.Model):
             return u"{0}".format(self.user.email)
 
     is_expert = property(_is_expert)
-    is_expertB = property(_is_expertB)
+    is_expertB = property(_is_expertB, _set_expertB)
     is_expertA = property(_is_expertA)
     is_manager_expertB = property(_is_expertA)
     is_customer = property(_is_customer)

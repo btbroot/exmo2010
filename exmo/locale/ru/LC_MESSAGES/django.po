@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-02 18:59+0400\n"
+"POT-Creation-Date: 2013-09-04 13:28+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -80,12 +80,12 @@ msgstr "Отчество"
 msgid "Last name"
 msgstr "Фамилия"
 
-#: accounts/forms.py:81 exmo2010/models.py:1282
+#: accounts/forms.py:81 exmo2010/models.py:1414
 #: exmo2010/custom_registration/forms.py:126
 msgid "Seat"
 msgstr "Должность"
 
-#: accounts/forms.py:84 exmo2010/models.py:1284
+#: accounts/forms.py:84 exmo2010/models.py:1416
 #: exmo2010/custom_registration/forms.py:129
 msgid "Phone"
 msgstr "Контактный телефон"
@@ -115,7 +115,7 @@ msgstr ""
 "Изменить пароль не удалось: пароль может состоять только из латинских букв "
 "(A-Z, a-z) и цифр (0-9)"
 
-#: accounts/forms.py:157 exmo2010/models.py:1281
+#: accounts/forms.py:157 exmo2010/models.py:1413
 #: exmo2010/custom_registration/forms.py:76
 msgid "Subscribe to news e-mail notification"
 msgstr "Подписаться на рассылку новостей"
@@ -162,13 +162,14 @@ msgstr "Настройки главной страницы были сброше
 
 #: accounts/views.py:262 claims/views.py:53 claims/views.py:176
 #: claims/views.py:251 clarifications/views.py:103 clarifications/views.py:180
-#: custom_comments/views.py:47 monitorings/views.py:66
-#: monitorings/views.py:134 monitorings/views.py:181 monitorings/views.py:196
-#: monitorings/views.py:241 monitorings/views.py:278 monitorings/views.py:312
-#: monitorings/views.py:351 monitorings/views.py:444 monitorings/views.py:509
-#: monitorings/views.py:530 monitorings/views.py:631 monitorings/views.py:699
-#: monitorings/views.py:745 monitorings/views.py:788 monitorings/views.py:884
-#: monitorings/views.py:969 monitorings/views.py:1125
+#: custom_comments/views.py:47 monitorings/views.py:67
+#: monitorings/views.py:135 monitorings/views.py:182 monitorings/views.py:197
+#: monitorings/views.py:242 monitorings/views.py:279 monitorings/views.py:313
+#: monitorings/views.py:352 monitorings/views.py:445 monitorings/views.py:510
+#: monitorings/views.py:531 monitorings/views.py:632 monitorings/views.py:700
+#: monitorings/views.py:746 monitorings/views.py:789 monitorings/views.py:885
+#: monitorings/views.py:970 monitorings/views.py:1126
+#: monitorings/views.py:1436 monitorings/views.py:1438
 #: organizations/views.py:49 organizations/views.py:132
 #: organizations/views.py:256 parameters/views.py:78 parameters/views.py:91
 #: parameters/views.py:98 parameters/views.py:183 questionnaire/views.py:55
@@ -185,7 +186,7 @@ msgid "Forbidden"
 msgstr "Запрещено"
 
 #: accounts/templates/user_settings.html:36 dashboard/menu.py:93
-#: exmo2010/models.py:1277 templates/user_dashboard/modules/quicklinks.html:31
+#: exmo2010/models.py:1409 templates/user_dashboard/modules/quicklinks.html:31
 msgid "Preferences"
 msgstr "Настройки"
 
@@ -223,7 +224,7 @@ msgstr "Электронная почта"
 msgid "Save"
 msgstr "Сохранить"
 
-#: accounts/templates/user_settings.html:84 exmo2010/models.py:429
+#: accounts/templates/user_settings.html:84 exmo2010/models.py:459
 #: exmo2010/custom_registration/forms.py:132
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
@@ -253,7 +254,7 @@ msgstr "Рассылка уведомлений"
 msgid "Password reset on %s"
 msgstr "Смена пароля на %s"
 
-#: bread_crumbs/views.py:42 dashboard/dashboard.py:92 monitorings/views.py:138
+#: bread_crumbs/views.py:42 dashboard/dashboard.py:92 monitorings/views.py:139
 #: templates/exmo2010/monitoring_list.html:43
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
@@ -275,7 +276,7 @@ msgstr "Параметр"
 #: organizations/templates/organizations/all.html:36 scores/views.py:486
 #: tasks/views.py:310 tasks/views.py:527
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:141
+#: templates/exmo2010/rating_content.html:151
 #: templates/exmo2010/score/parameter_header.html:26
 msgid "Organization"
 msgstr "Организация"
@@ -285,8 +286,8 @@ msgid "Task for monitoring "
 msgstr "Задачи цикла мониторинга "
 
 #: bread_crumbs/views.py:81 claims/views.py:227 clarifications/views.py:156
-#: monitorings/views.py:89 monitorings/views.py:323 monitorings/views.py:486
-#: monitorings/views.py:610 monitorings/views.py:676 monitorings/views.py:1014
+#: monitorings/views.py:90 monitorings/views.py:324 monitorings/views.py:487
+#: monitorings/views.py:611 monitorings/views.py:677 monitorings/views.py:1015
 #: organizations/views.py:156 parameters/templates/parameter_email.html:27
 #: parameters/templates/parameter_email.txt:25 tasks/views.py:595
 #: tasks/views.py:651
@@ -294,18 +295,20 @@ msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
 #: bread_crumbs/views.py:88 claims/views.py:229 clarifications/views.py:158
-#: monitorings/views.py:91 monitorings/views.py:313 monitorings/views.py:325
-#: monitorings/views.py:488 monitorings/views.py:612 monitorings/views.py:1016
+#: monitorings/views.py:92 monitorings/views.py:314 monitorings/views.py:326
+#: monitorings/views.py:489 monitorings/views.py:613 monitorings/views.py:1017
 #: organizations/views.py:158 tasks/views.py:597 tasks/views.py:653
 #: templates/errors_header.html:35
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:98
 msgid "Rating"
 msgstr "Рейтинг"
 
 #: bread_crumbs/views.py:94 claims/views.py:229 clarifications/views.py:158
-#: monitorings/views.py:91 monitorings/views.py:325 monitorings/views.py:488
-#: monitorings/views.py:612 monitorings/views.py:1016
+#: monitorings/views.py:92 monitorings/views.py:326 monitorings/views.py:489
+#: monitorings/views.py:613 monitorings/views.py:1017
 #: organizations/views.py:158 tasks/views.py:597 tasks/views.py:653
 #: tasks/templates/task_list.html:67
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:33
 msgid "Tasks"
 msgstr "Задачи "
 
@@ -340,6 +343,7 @@ msgid "Claims report for \"%s\""
 msgstr "Отчет по претензиям для \"%s\""
 
 #: claims/views.py:262 dashboard/dashboard.py:119 dashboard/menu.py:75
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:81
 msgid "Claims"
 msgstr "Претензии"
 
@@ -455,7 +459,7 @@ msgstr "Претензия"
 
 #: claims/templates/score_claim.html:41 claims/templates/score_claim.txt:33
 #: clarifications/templates/score_clarification.html:39
-#: clarifications/templates/score_clarification.txt:33 exmo2010/models.py:348
+#: clarifications/templates/score_clarification.txt:33 exmo2010/models.py:378
 msgid "Answer"
 msgstr "Ответ"
 
@@ -488,6 +492,7 @@ msgid "Clarifications report for \"%s\""
 msgstr "Отчет по уточнениям для \"%s\""
 
 #: clarifications/views.py:191 dashboard/dashboard.py:115 dashboard/menu.py:73
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:77
 #: templates/exmo2010/score/tabs.html:50
 #: templates/exmo2010/score/tabs_dev.html:49
 msgid "Clarifications"
@@ -547,13 +552,13 @@ msgstr[1] "%(count)d дня"
 msgstr[2] "%(count)d дней"
 
 #: custom_comments/forms.py:35 custom_comments/models.py:41
-#: exmo2010/models.py:134 exmo2010/models.py:562 exmo2010/models.py:788
-#: monitorings/views.py:117 tasks/views.py:284 tasks/views.py:292
+#: exmo2010/models.py:152 exmo2010/models.py:602 exmo2010/models.py:827
+#: monitorings/views.py:118 tasks/views.py:284 tasks/views.py:292
 #: tasks/views.py:561 tasks/views.py:575 tasks/views.py:582
 msgid "status"
 msgstr "статус"
 
-#: custom_comments/forms.py:71 exmo2010/models.py:146
+#: custom_comments/forms.py:71 exmo2010/models.py:164
 msgid "Maximum time to answer"
 msgstr "Максимальное время ответа"
 
@@ -577,7 +582,9 @@ msgid "Comment is closed and not answered"
 msgstr "Комментарии закрыт не отвечен"
 
 #: custom_comments/views.py:58 dashboard/dashboard.py:111 dashboard/menu.py:71
-#: scores/templates/detail.html:158 templates/exmo2010/score/tabs.html:41
+#: scores/templates/detail.html:158
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:69
+#: templates/exmo2010/score/tabs.html:41
 #: templates/exmo2010/score/tabs_dev.html:40
 msgid "Comments"
 msgstr "Комментарии"
@@ -606,18 +613,18 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: dashboard/menu.py:82 monitorings/views.py:1112 monitorings/views.py:1113
+#: dashboard/menu.py:82 monitorings/views.py:1113 monitorings/views.py:1114
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: dashboard/menu.py:85 monitorings/views.py:1089
+#: dashboard/menu.py:85 monitorings/views.py:1090
 #: monitorings/templates/monitoring_comment_report.html:67
 #: templates/errors_header.html:40
 msgid "Statistics"
 msgstr "Статистика"
 
-#: dashboard/menu.py:88 exmo2010/urls.py:51
-#: exmo2010/templates/exmo2010/help.html:31 templates/errors_header.html:45
+#: dashboard/menu.py:88 exmo2010/urls.py:53
+#: exmo2010/templates/exmo2010/help.html:30 templates/errors_header.html:45
 msgid "Help"
 msgstr "Помощь"
 
@@ -644,8 +651,8 @@ msgstr "Список"
 msgid "%(prefix)sEmail digest for %(digest)s"
 msgstr "%(prefix)sДайджест для %(digest)s"
 
-#: digest_email/models.py:36 exmo2010/models.py:110 exmo2010/models.py:130
-#: exmo2010/models.py:422 exmo2010/models.py:484
+#: digest_email/models.py:36 exmo2010/models.py:110 exmo2010/models.py:148
+#: exmo2010/models.py:452 exmo2010/models.py:514
 msgid "name"
 msgstr "название"
 
@@ -662,7 +669,7 @@ msgstr "Дайджест"
 msgid "%(date)s: %(digest)s for %(user)s"
 msgstr "%(date)s: %(digest)s для %(user)s"
 
-#: digest_email/models.py:81 exmo2010/models.py:557 exmo2010/models.py:784
+#: digest_email/models.py:81 exmo2010/models.py:597 exmo2010/models.py:823
 msgid "user"
 msgstr "пользователь"
 
@@ -717,7 +724,7 @@ msgstr "Адрес с которого осуществляется отправ
 msgid "Global Parameters"
 msgstr "Глобальные параметры"
 
-#: exmo/config.py:93 monitorings/views.py:475
+#: exmo/config.py:93 monitorings/views.py:476
 #: tasks/templates/task_history.html:73
 msgid "Expert"
 msgstr "Эксперт"
@@ -771,7 +778,7 @@ msgstr "активна"
 msgid "All invitations"
 msgstr "все статусы приглашения"
 
-#: exmo2010/models.py:91 exmo2010/models.py:118
+#: exmo2010/models.py:91 exmo2010/models.py:136
 msgid "prepare"
 msgstr "подготовка"
 
@@ -795,211 +802,215 @@ msgstr "подведение итогов"
 msgid "published"
 msgstr "результаты опубликованы"
 
-#: exmo2010/models.py:113
+#: exmo2010/models.py:115
 #, python-format
 msgid "%(name)s (from EXMO2010 v%(code)d)"
 msgstr "%(name)s (из EXMO2010 v%(code)d)"
 
-#: exmo2010/models.py:121 exmo2010/models.py:163
+#: exmo2010/models.py:123 exmo2010/models.py:131 exmo2010/models.py:1194
+msgid "Unknown OpennessExpression code"
+msgstr "Неизвестный код OpennessExpression "
+
+#: exmo2010/models.py:139 exmo2010/models.py:181
 #: monitorings/templates/monitoring_report.html:92
 msgid "Monitoring rate begin date"
 msgstr "Дата начала первоначальной оценки"
 
-#: exmo2010/models.py:122 exmo2010/models.py:168
+#: exmo2010/models.py:140 exmo2010/models.py:186
 #: monitorings/templates/monitoring_report.html:97
 msgid "Monitoring interact start date"
 msgstr "Дата начала этапа взаимодействия"
 
-#: exmo2010/models.py:123 exmo2010/models.py:183
+#: exmo2010/models.py:141 exmo2010/models.py:201
 #: monitorings/templates/monitoring_report.html:101
 msgid "Monitoring interact end date"
 msgstr "Дата окончания этапа взаимодействия"
 
-#: exmo2010/models.py:124 exmo2010/models.py:178
+#: exmo2010/models.py:142 exmo2010/models.py:196
 #: monitorings/templates/monitoring_report.html:106
 msgid "Monitoring publish date"
 msgstr "Дата публикации результатов мониторинга"
 
-#: exmo2010/models.py:137
+#: exmo2010/models.py:155
 msgid "openness expression"
 msgstr "формулы расчета Кид"
 
-#: exmo2010/models.py:141
+#: exmo2010/models.py:159
 msgid "Link to map"
 msgstr "Ссылка на карту"
 
-#: exmo2010/models.py:149
+#: exmo2010/models.py:167
 msgid "No interact stage"
 msgstr "Без этапа взаимодействия"
 
-#: exmo2010/models.py:153
+#: exmo2010/models.py:171
 msgid "Hidden monitoring"
 msgstr "Скрытый цикл мониторинга"
 
-#: exmo2010/models.py:158
+#: exmo2010/models.py:176
 msgid "prepare date"
 msgstr "дата подготовки"
 
-#: exmo2010/models.py:173
+#: exmo2010/models.py:191
 msgid "result date"
 msgstr "дата результатов"
 
-#: exmo2010/models.py:320 monitorings/templates/monitoring_form.html:120
+#: exmo2010/models.py:350 monitorings/templates/monitoring_form.html:120
 msgid "Monitoring"
 msgstr "Цикл мониторинга"
 
-#: exmo2010/models.py:322 questionnaire/templates/add_questionnaire.html:37
+#: exmo2010/models.py:352 questionnaire/templates/add_questionnaire.html:37
 #: templates/exmo2010/add_questionnaire.html:37
 msgid "Questionnaire name"
 msgstr "Название анкеты"
 
-#: exmo2010/models.py:324 questionnaire/templates/add_questionnaire.html:39
+#: exmo2010/models.py:354 questionnaire/templates/add_questionnaire.html:39
 #: templates/exmo2010/add_questionnaire.html:39
 msgid "Questionnaire comment"
 msgstr "Примечание к анкете"
 
-#: exmo2010/models.py:334
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:112
+#: exmo2010/models.py:364
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:124
 msgid "Questionnaire"
 msgstr "Анкета"
 
-#: exmo2010/models.py:336
+#: exmo2010/models.py:366
 msgid "Question type"
 msgstr "Тип вопроса"
 
-#: exmo2010/models.py:337 exmo2010/models.py:347 exmo2010/models.py:801
+#: exmo2010/models.py:367 exmo2010/models.py:377 exmo2010/models.py:840
 msgid "Question"
 msgstr "Вопрос"
 
-#: exmo2010/models.py:338
+#: exmo2010/models.py:368
 msgid "Question comment"
 msgstr "Пояснение к вопросу"
 
-#: exmo2010/models.py:377
+#: exmo2010/models.py:407
 msgid "Illegal symbols in email field."
 msgstr "Недопустимые символы в поле Электронная почта."
 
-#: exmo2010/models.py:393
+#: exmo2010/models.py:423
 msgid "Illegal symbols in phone field."
 msgstr "Недопустимые символы в поле Телефон."
 
-#: exmo2010/models.py:423
+#: exmo2010/models.py:453
 msgid "url"
 msgstr "веб-адрес"
 
-#: exmo2010/models.py:424 exmo2010/models.py:491
+#: exmo2010/models.py:454 exmo2010/models.py:521
 msgid "keywords"
 msgstr "ключевые слова"
 
-#: exmo2010/models.py:425 organizations/views.py:119
+#: exmo2010/models.py:455 organizations/views.py:119
 #: organizations/views.py:136
 msgid "email"
 msgstr "электронная почта"
 
-#: exmo2010/models.py:426 organizations/views.py:120
+#: exmo2010/models.py:456 organizations/views.py:120
 #: organizations/views.py:137
 msgid "phone"
 msgstr "телефон"
 
-#: exmo2010/models.py:427
+#: exmo2010/models.py:457
 msgid "comments"
 msgstr "комментарии"
 
-#: exmo2010/models.py:428 exmo2010/models.py:465 exmo2010/models.py:487
-#: monitorings/views.py:116
+#: exmo2010/models.py:458 exmo2010/models.py:495 exmo2010/models.py:517
+#: monitorings/views.py:117
 msgid "monitoring"
 msgstr "цикл мониторинга"
 
-#: exmo2010/models.py:432 exmo2010/models.py:469
+#: exmo2010/models.py:462 exmo2010/models.py:499
 msgid "Invitation status"
 msgstr "Статус приглашения"
 
-#: exmo2010/models.py:464
+#: exmo2010/models.py:494
 msgid "date and time"
 msgstr "дата и время"
 
-#: exmo2010/models.py:466 exmo2010/models.py:1088 exmo2010/models.py:1091
-#: exmo2010/models.py:1141 exmo2010/models.py:1147
+#: exmo2010/models.py:496 exmo2010/models.py:1220 exmo2010/models.py:1223
+#: exmo2010/models.py:1273 exmo2010/models.py:1279
 #: scores/templates/task_report.html:69
 msgid "comment"
 msgstr "комментарий"
 
-#: exmo2010/models.py:477 exmo2010/models.py:558 organizations/views.py:118
+#: exmo2010/models.py:507 exmo2010/models.py:598 organizations/views.py:118
 #: organizations/views.py:135 tasks/views.py:282 tasks/views.py:291
 #: tasks/views.py:300 tasks/views.py:558 tasks/views.py:573 tasks/views.py:580
 #: tasks/views.py:587
 msgid "organization"
 msgstr "организация"
 
-#: exmo2010/models.py:478
+#: exmo2010/models.py:508
 msgid "task id"
 msgstr "задача"
 
-#: exmo2010/models.py:483
+#: exmo2010/models.py:513
 msgid "code"
 msgstr "код"
 
-#: exmo2010/models.py:486
+#: exmo2010/models.py:516
 msgid "description"
 msgstr "описание"
 
-#: exmo2010/models.py:489
+#: exmo2010/models.py:519
 msgid "excluded organizations"
 msgstr "исключенные органы/организации"
 
-#: exmo2010/models.py:490
+#: exmo2010/models.py:520
 msgid "weight"
 msgstr "Ксз"
 
-#: exmo2010/models.py:492 exmo2010/models.py:863
+#: exmo2010/models.py:522 exmo2010/models.py:902
 msgid "complete"
 msgstr "полнота"
 
-#: exmo2010/models.py:493 exmo2010/models.py:874
+#: exmo2010/models.py:523 exmo2010/models.py:913
 msgid "topical"
 msgstr "актуальность"
 
-#: exmo2010/models.py:495 exmo2010/models.py:885
+#: exmo2010/models.py:525 exmo2010/models.py:924
 msgid "accessible"
 msgstr "навигационная доступность"
 
-#: exmo2010/models.py:496 exmo2010/models.py:896
+#: exmo2010/models.py:526 exmo2010/models.py:935
 msgid "hypertext"
 msgstr "HTML доступность"
 
-#: exmo2010/models.py:497 exmo2010/models.py:907
+#: exmo2010/models.py:527 exmo2010/models.py:946
 msgid "document"
 msgstr "файловая доступность"
 
-#: exmo2010/models.py:498 exmo2010/models.py:918
+#: exmo2010/models.py:528 exmo2010/models.py:957
 msgid "image"
 msgstr "графическая доступность"
 
-#: exmo2010/models.py:499
+#: exmo2010/models.py:529
 msgid "coherent"
 msgstr "согласован"
 
-#: exmo2010/models.py:553 parameters/forms.py:65
+#: exmo2010/models.py:593 parameters/forms.py:65
 msgid "opened"
 msgstr "открыта"
 
-#: exmo2010/models.py:554 parameters/forms.py:67
+#: exmo2010/models.py:594 parameters/forms.py:67
 msgid "closed"
 msgstr "закрыта"
 
-#: exmo2010/models.py:555 parameters/forms.py:69
+#: exmo2010/models.py:595 parameters/forms.py:69
 msgid "approved"
 msgstr "одобрена"
 
-#: exmo2010/models.py:568
+#: exmo2010/models.py:608
 msgid "openness first"
 msgstr "первичный Кид"
 
-#: exmo2010/models.py:654
+#: exmo2010/models.py:693
 msgid "Ready task must be 100 percent complete."
 msgstr "Готовая задача должна быть выполнена на 100 процентов."
 
-#: exmo2010/models.py:658
+#: exmo2010/models.py:697
 #, python-format
 msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
@@ -1008,104 +1019,104 @@ msgstr ""
 "Для мониторинга %(monitoring)s и органа/организации %(organization)s уже "
 "существует одобренная задача."
 
-#: exmo2010/models.py:783 exmo2010/models.py:844
+#: exmo2010/models.py:822 exmo2010/models.py:883
 msgid "task"
 msgstr "задача"
 
-#: exmo2010/models.py:790
+#: exmo2010/models.py:829
 msgid "time"
 msgstr "время"
 
-#: exmo2010/models.py:802
+#: exmo2010/models.py:841
 msgid "Text answer"
 msgstr "Ответ текстом"
 
-#: exmo2010/models.py:804
+#: exmo2010/models.py:843
 msgid "Numerical answer"
 msgstr "Ответ числом"
 
-#: exmo2010/models.py:807
+#: exmo2010/models.py:846
 msgid "Variance choice"
 msgstr "Ответ-выбор варианта"
 
-#: exmo2010/models.py:838
+#: exmo2010/models.py:877
 msgid "default revision"
 msgstr "последняя ревизия"
 
-#: exmo2010/models.py:839
+#: exmo2010/models.py:878
 msgid "interact revision"
 msgstr "ревизия до взаимодействия"
 
-#: exmo2010/models.py:848
+#: exmo2010/models.py:887
 msgid "parameter"
 msgstr "Параметр"
 
-#: exmo2010/models.py:852
+#: exmo2010/models.py:891
 msgid "found"
 msgstr "Наличие"
 
-#: exmo2010/models.py:857
+#: exmo2010/models.py:896
 msgid "foundComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
-#: exmo2010/models.py:868 scores/templates/task_report.html:64
+#: exmo2010/models.py:907 scores/templates/task_report.html:64
 msgid "completeComment"
 msgstr "комментарий к критерию 'Полнота'"
 
-#: exmo2010/models.py:879 scores/templates/task_report.html:65
+#: exmo2010/models.py:918 scores/templates/task_report.html:65
 msgid "topicalComment"
 msgstr "комментарий к критерию 'Актуальность'"
 
-#: exmo2010/models.py:890 scores/templates/task_report.html:66
+#: exmo2010/models.py:929 scores/templates/task_report.html:66
 msgid "accessibleComment"
 msgstr "комментарий к критерию 'Навигационная доступность'"
 
-#: exmo2010/models.py:901 scores/templates/task_report.html:67
+#: exmo2010/models.py:940 scores/templates/task_report.html:67
 msgid "hypertextComment"
 msgstr "комментарий к критерию 'HTML доступность'"
 
-#: exmo2010/models.py:912 scores/templates/task_report.html:68
+#: exmo2010/models.py:951 scores/templates/task_report.html:68
 msgid "documentComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
-#: exmo2010/models.py:923
+#: exmo2010/models.py:962
 msgid "imageComment"
 msgstr "комментарий к критерию 'Графическая доступность'"
 
-#: exmo2010/models.py:928 scores/templates/detail.html:134
+#: exmo2010/models.py:967 scores/templates/detail.html:134
 #: scores/templates/form_dev.html:185
 msgid "Recomendations"
 msgstr "Рекомендации"
 
-#: exmo2010/models.py:961
+#: exmo2010/models.py:1000
 msgid "Complete must be set"
 msgstr "Критерий Полнота не оценен"
 
-#: exmo2010/models.py:963
+#: exmo2010/models.py:1002
 msgid "Topical must be set"
 msgstr "Критерий Актуальность не оценен"
 
-#: exmo2010/models.py:965
+#: exmo2010/models.py:1004
 msgid "Accessible must be set"
 msgstr "Критерий Навигационная доступность не оценен"
 
-#: exmo2010/models.py:967
+#: exmo2010/models.py:1006
 msgid "Hypertext must be set"
 msgstr "Критерий 'Html доступность' не оценен"
 
-#: exmo2010/models.py:969
+#: exmo2010/models.py:1008
 msgid "Document must be set"
 msgstr "Критерий 'Файловая доступность' не оценен"
 
-#: exmo2010/models.py:971
+#: exmo2010/models.py:1010
 msgid "Image must be set"
 msgstr "Критерий 'Графическая доступность' не оценен"
 
-#: exmo2010/models.py:986
+#: exmo2010/models.py:1025
 msgid "Not found, but some excessive data persists"
 msgstr "Критерий Наличие не найден, но присутствуют оценки по другим критериям"
 
-#: exmo2010/models.py:994
+#: exmo2010/models.py:1033
 msgid ""
 "A technical error of scores evaluation. To edit the score start from the "
 "task page."
@@ -1114,89 +1125,89 @@ msgstr ""
 "вернитесь на страницу задачи и перейдите к странице оценки параметра по "
 "ссылке из таблицы оценок."
 
-#: exmo2010/models.py:1080 exmo2010/models.py:1132
+#: exmo2010/models.py:1212 exmo2010/models.py:1264
 msgid "score"
 msgstr "оценка"
 
-#: exmo2010/models.py:1083
+#: exmo2010/models.py:1215
 msgid "claim open"
 msgstr "претензия создана"
 
-#: exmo2010/models.py:1086
+#: exmo2010/models.py:1218
 msgid "claim close"
 msgstr "претензия закрыта"
 
-#: exmo2010/models.py:1095 exmo2010/models.py:1152
+#: exmo2010/models.py:1227 exmo2010/models.py:1284
 msgid "user who close"
 msgstr "пользователь закрывший претензию"
 
-#: exmo2010/models.py:1097 exmo2010/models.py:1137
+#: exmo2010/models.py:1229 exmo2010/models.py:1269
 msgid "creator"
 msgstr "создатель"
 
-#: exmo2010/models.py:1100
+#: exmo2010/models.py:1232
 msgid "addressee"
 msgstr "кому выставили"
 
-#: exmo2010/models.py:1110
+#: exmo2010/models.py:1242
 #, python-format
 msgid "claim for %(score)s from %(creator)s"
 msgstr "претензия для %(score)s от %(creator)s"
 
-#: exmo2010/models.py:1135
+#: exmo2010/models.py:1267
 msgid "clarification open"
 msgstr "уточнение открыто"
 
-#: exmo2010/models.py:1145
+#: exmo2010/models.py:1277
 msgid "clarification close"
 msgstr "уточнение закрыто"
 
-#: exmo2010/models.py:1164
+#: exmo2010/models.py:1296
 #, python-format
 msgid "clarification for %(score)s from %(creator)s"
 msgstr "уточнение для %(score)s от %(creator)s"
 
-#: exmo2010/models.py:1201
+#: exmo2010/models.py:1333
 msgid "not set"
 msgstr "не указан"
 
-#: exmo2010/models.py:1202
+#: exmo2010/models.py:1334
 msgid "male"
 msgstr "мужской"
 
-#: exmo2010/models.py:1203
+#: exmo2010/models.py:1335
 msgid "female"
 msgstr "женский"
 
-#: exmo2010/models.py:1265
+#: exmo2010/models.py:1397
 msgid "disabled"
 msgstr "отключено"
 
-#: exmo2010/models.py:1266
+#: exmo2010/models.py:1398
 msgid "one email per one comment/change"
 msgstr "одно уведомление на один комментарий/изменение"
 
-#: exmo2010/models.py:1267
+#: exmo2010/models.py:1399
 msgid "digest notification"
 msgstr "уведомления дайджестами"
 
-#: exmo2010/models.py:1276
+#: exmo2010/models.py:1408
 msgid "organizations for view"
 msgstr "органы/организации для просмотра"
 
-#: exmo2010/models.py:1278
+#: exmo2010/models.py:1410
 msgid "Sex"
 msgstr "Пол"
 
-#: exmo2010/models.py:1340
+#: exmo2010/models.py:1472
 msgid "Digest duratation must be greater or equal than 1."
 msgstr "Период дайджеста должен быть больше или равен единице"
 
-#: exmo2010/models.py:1616
+#: exmo2010/models.py:1754
 msgid "user profile"
 msgstr "Профиль пользователя"
 
-#: exmo2010/urls.py:54 exmo2010/templates/exmo2010/footer.html:25
+#: exmo2010/urls.py:58 exmo2010/templates/exmo2010/footer.html:25
 msgid "About"
 msgstr "О проекте"
 
@@ -1431,125 +1442,125 @@ msgstr "Добавить анкету в цикл"
 msgid "monitoring not select"
 msgstr "ни один цикл не выбран"
 
-#: monitorings/views.py:76
+#: monitorings/views.py:77
 msgid "Forbidden to modify already published monitorings."
 msgstr ""
 "Невозможно изменить выборку согласованных параметров в опубликованном цикле "
 "мониторинга."
 
-#: monitorings/views.py:81
+#: monitorings/views.py:82
 msgid "Changes have saved."
 msgstr "Изменения сохранены."
 
-#: monitorings/views.py:119
+#: monitorings/views.py:120
 msgid "Monitoring list"
 msgstr "Циклы мониторинга"
 
-#: monitorings/views.py:183
+#: monitorings/views.py:184
 #, python-format
 msgid "Delete monitoring %s"
 msgstr "Удалить цикл мониторинга %s"
 
-#: monitorings/views.py:186
+#: monitorings/views.py:187
 msgid "Delete monitoring cycle"
 msgstr "Цикл мониторинга"
 
-#: monitorings/views.py:197 questionnaire/views.py:89
+#: monitorings/views.py:198 questionnaire/views.py:89
 #, python-format
 msgid "Edit monitoring %s"
 msgstr "Редактировать цикл мониторинга %s"
 
-#: monitorings/views.py:200
+#: monitorings/views.py:201
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: monitorings/views.py:242 templates/exmo2010/monitoring_list.html:51
+#: monitorings/views.py:243 templates/exmo2010/monitoring_list.html:51
 #: templates/user_dashboard/modules/monitoring_list.html:32
 msgid "Add new monitoring"
 msgstr "Добавить цикл мониторинга"
 
-#: monitorings/views.py:262
+#: monitorings/views.py:263
 msgid "Add monitoring cycle"
 msgstr "Цикл мониторинга"
 
-#: monitorings/views.py:446
+#: monitorings/views.py:447
 #, python-format
 msgid "Experts of monitoring %s"
 msgstr "Эксперты цикла мониторинга %s"
 
-#: monitorings/views.py:476
+#: monitorings/views.py:477
 msgid "Open tasks"
 msgstr "Открытые задачи"
 
-#: monitorings/views.py:477
+#: monitorings/views.py:478
 msgid "Ready tasks"
 msgstr "Готовые задачи"
 
-#: monitorings/views.py:478
+#: monitorings/views.py:479
 msgid "Approved tasks"
 msgstr "Одобренные задачи"
 
-#: monitorings/views.py:479
+#: monitorings/views.py:480
 msgid "All tasks"
 msgstr "Все задачи"
 
-#: monitorings/views.py:632
+#: monitorings/views.py:633
 #, python-format
 msgid "Report for %s by parameter and found"
 msgstr "Отчёт для %s по параметру и наличию"
 
-#: monitorings/views.py:675
+#: monitorings/views.py:676
 #, python-format
 msgid "Parameter found report of %(monitoring)s"
 msgstr "Отчёт по наличию параметра для %(monitoring)s"
 
-#: monitorings/views.py:844 monitorings/views.py:938 tasks/views.py:230
+#: monitorings/views.py:845 monitorings/views.py:939 tasks/views.py:230
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "строка %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:846 monitorings/views.py:940 tasks/views.py:232
+#: monitorings/views.py:847 monitorings/views.py:941 tasks/views.py:232
 msgid "File, you are loading is not valid CSV."
 msgstr "Файл, который Вы загружаете не валиден или не является CSV-файлом."
 
-#: monitorings/views.py:848 monitorings/views.py:942 tasks/views.py:234
+#: monitorings/views.py:849 monitorings/views.py:943 tasks/views.py:234
 #, python-format
 msgid "Import error: %s."
 msgstr "Ошибка импорта: %s."
 
-#: monitorings/views.py:849
+#: monitorings/views.py:850
 #, python-format
 msgid "Import organization from CSV for monitoring %s"
 msgstr "Импортировать органы/организации из CSV для %s"
 
-#: monitorings/views.py:856
+#: monitorings/views.py:857
 msgid "Import organization"
 msgstr "Импортировать органы/организации"
 
-#: monitorings/views.py:943
+#: monitorings/views.py:944
 #, python-format
 msgid "Import parameter from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для %s"
 
-#: monitorings/views.py:950
+#: monitorings/views.py:951
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: monitorings/views.py:970
+#: monitorings/views.py:971
 #, python-format
 msgid "Comment report for %s"
 msgstr "Отчет по комментариям для %s"
 
-#: monitorings/views.py:984
+#: monitorings/views.py:985
 msgid "Start date for interact not defined."
 msgstr "Дата взаимодействия не указана"
 
-#: monitorings/views.py:1050
+#: monitorings/views.py:1051
 #: templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
 
-#: monitorings/views.py:1165
+#: monitorings/views.py:1166
 #, python-format
 msgid "Altogether, there is %(count)d organization in the monitoring cycle"
 msgid_plural ""
@@ -1558,7 +1569,7 @@ msgstr[0] "Всего в цикле мониторинга %(count)d орган�
 msgstr[1] "Всего в цикле мониторинга %(count)d организации"
 msgstr[2] "Всего в цикле мониторинга %(count)d организаций"
 
-#: monitorings/views.py:1172
+#: monitorings/views.py:1173
 #, python-format
 msgid ", %(count)d of them has at least 1 relevant setting from users sample"
 msgid_plural ""
@@ -1727,6 +1738,7 @@ msgstr "Задача"
 
 #: monitorings/templates/monitoring_parameter_found_report.html:64
 #: templates/exmo2010/organization_list.html:62
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:38
 msgid "Organizations"
 msgstr "Организации"
 
@@ -1816,13 +1828,13 @@ msgstr "Рейтинг "
 
 #: monitorings/templates/rating_color.html:38
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:140
+#: templates/exmo2010/rating_content.html:150
 msgid "Position"
 msgstr "Позиция в рейтинге"
 
 #: monitorings/templates/rating_color.html:38
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/rating_content.html:142
+#: templates/exmo2010/rating_content.html:152
 msgid "URL"
 msgstr "Веб-адрес"
 
@@ -1834,13 +1846,13 @@ msgstr "Кид"
 
 #: monitorings/templates/rating_color.html:49
 #: templates/exmo2010/rating_common.html:28
-#: templates/exmo2010/rating_content.html:172
+#: templates/exmo2010/rating_content.html:182
 msgid "Average"
 msgstr "Среднее значение"
 
 #: monitorings/templates/rating_color.html:53
 #: templates/exmo2010/rating_common.html:31
-#: templates/exmo2010/rating_content.html:199
+#: templates/exmo2010/rating_content.html:209
 msgid "Empty list"
 msgstr "Список пуст"
 
@@ -2384,6 +2396,7 @@ msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
 #: tasks/templates/mass_assign_tasks.html:29
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:45
 msgid "Task assignment"
 msgstr "Назначение задач"
 
@@ -2392,6 +2405,7 @@ msgid "Process log:"
 msgstr "Журнал обработки:"
 
 #: tasks/templates/task_history.html:58
+#: templates/exmo2010/nav_sidebar/organization_utility.html:29
 msgid "History"
 msgstr ""
 
@@ -2655,47 +2669,55 @@ msgstr "дополнительные параметры"
 msgid "user selected"
 msgstr "пользовательский"
 
-#: templates/exmo2010/rating_content.html:93
+#: templates/exmo2010/rating_content.html:94
 msgid "Map"
 msgstr "Карта"
 
+#: templates/exmo2010/rating_content.html:98
+msgid "Export as JSON"
+msgstr "Выгрузить в JSON"
+
 #: templates/exmo2010/rating_content.html:102
+msgid "Export as CSV"
+msgstr "Выгрузить в CSV"
+
+#: templates/exmo2010/rating_content.html:112
 msgid "Parameter list"
 msgstr "Список параметров"
 
-#: templates/exmo2010/rating_content.html:114
+#: templates/exmo2010/rating_content.html:124
 msgid "Get rating"
 msgstr "Сформировать рейтинг"
 
-#: templates/exmo2010/rating_content.html:120
+#: templates/exmo2010/rating_content.html:130
 msgid "Show parameter list"
 msgstr "Показать список параметров"
 
-#: templates/exmo2010/rating_content.html:126
+#: templates/exmo2010/rating_content.html:136
 msgid "generated by parameters based on normative-legal acts"
 msgstr "сформирован по параметрам на основе НПА"
 
-#: templates/exmo2010/rating_content.html:129
+#: templates/exmo2010/rating_content.html:139
 msgid "generated by other parameters"
 msgstr "сформирован по дополнительным параметрам"
 
-#: templates/exmo2010/rating_content.html:132
+#: templates/exmo2010/rating_content.html:142
 msgid "generated by parameters on user selected"
 msgstr "сформирован по выбранным параметрам"
 
-#: templates/exmo2010/rating_content.html:146
+#: templates/exmo2010/rating_content.html:156
 msgid "First openness"
 msgstr "Первичный Кид"
 
-#: templates/exmo2010/rating_content.html:149
+#: templates/exmo2010/rating_content.html:159
 msgid "Finally openness"
 msgstr "Итоговый Кид"
 
-#: templates/exmo2010/rating_content.html:151
+#: templates/exmo2010/rating_content.html:161
 msgid "Actualy openness"
 msgstr "Актуальный Кид"
 
-#: templates/exmo2010/rating_content.html:194
+#: templates/exmo2010/rating_content.html:204
 msgid "First openness &mdash; openness value before interact"
 msgstr ""
 "Первичный Кид &mdash; значение коэффициента информационной доступности до "
@@ -2741,17 +2763,41 @@ msgstr ""
 msgid "Cycle management"
 msgstr "Управление циклом"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:54
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:51
+msgid "Coherent parameters"
+msgstr "Согласованные параметры"
+
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:58
 msgid "Reports"
 msgstr "Отчеты"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:96
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:63
+msgid "Task filtering"
+msgstr "Фильтрация задач"
+
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:85
+msgid "Experts"
+msgstr "Эксперты"
+
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:91
+msgid "Presence of the parameter"
+msgstr "Наличие параметра"
+
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:107
 msgid "Export"
 msgstr "Экспорт"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:108
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:112
+msgid "Criterion"
+msgstr "Критерий"
+
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:120
 msgid "You must have approved task for export"
 msgstr "Для экспорта необходима одобренная задача"
+
+#: templates/exmo2010/nav_sidebar/organization_utility.html:25
+msgid "Scores"
+msgstr "Оценки"
 
 #: templates/exmo2010/score/comment.html:66
 #: templates/exmo2010/score/comment_dev.html:62
@@ -3136,21 +3182,3 @@ msgstr "Модули"
 #: templates/user_dashboard/menu.html:57
 msgid "Please enter a name for the bookmark"
 msgstr ""
-
-msgid "Coherent parameters"
-msgstr "Согласованные параметры"
-
-msgid "Task filtering"
-msgstr "Фильтрация задач"
-
-msgid "Experts"
-msgstr "Эксперты"
-
-msgid "Presence of the parameter"
-msgstr "Наличие параметра"
-
-msgid "Criterion"
-msgstr "Критерий"
-
-msgid "Scores"
-msgstr "Оценки"

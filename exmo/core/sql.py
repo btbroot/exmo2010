@@ -26,89 +26,111 @@
 sql_score_openness_v1 = """
 exmo2010_parameter.weight*
 exmo2010_score.found*
-if (exmo2010_parameter.complete=1,
-	(CASE exmo2010_score.complete
-	WHEN 1 THEN 0.2
-	WHEN 2 THEN 0.5
+(CASE exmo2010_parameter.complete
+    WHEN 1 THEN
+        (CASE exmo2010_score.complete
+        WHEN 1 THEN 0.2
+        WHEN 2 THEN 0.5
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.topical=1,
-	(CASE exmo2010_score.topical
-	WHEN 1 THEN 0.7
-	WHEN 2 THEN 0.85
+    END)*
+(CASE exmo2010_parameter.topical
+    WHEN 1 THEN
+        (CASE exmo2010_score.topical
+        WHEN 1 THEN 0.7
+        WHEN 2 THEN 0.85
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.accessible=1,
-	(CASE exmo2010_score.accessible
-	WHEN 1 THEN 0.9
-	WHEN 2 THEN 0.95
+    END)*
+(CASE exmo2010_parameter.accessible
+    WHEN 1 THEN
+        (CASE exmo2010_score.accessible
+        WHEN 1 THEN 0.9
+        WHEN 2 THEN 0.95
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.hypertext=1,
-	if (exmo2010_parameter.document=1,
-	    (CASE exmo2010_score.hypertext
-	    WHEN 0 THEN 0.2
-	    WHEN 1 THEN
-	        (CASE exmo2010_score.document
-	        WHEN 0 THEN 0.9
-	        ELSE 1
-	        END)
-	    ELSE 1
-	    END),
-        (CASE exmo2010_score.hypertext
-        WHEN 0 THEN 0.2
-	    ELSE 1
-	    END)
-	    ),
-	1)
+    END)*
+(CASE exmo2010_parameter.hypertext
+    WHEN 1 THEN
+        (CASE exmo2010_parameter.document
+            WHEN 1 THEN
+                (CASE exmo2010_score.hypertext
+                WHEN 0 THEN 0.2
+                WHEN 1 THEN
+                    (CASE exmo2010_score.document
+                    WHEN 0 THEN 0.9
+                    ELSE 1
+                    END)
+                ELSE 1
+                END)
+            ELSE
+                (CASE exmo2010_score.hypertext
+                WHEN 0 THEN 0.2
+                ELSE 1
+                END)
+            END)
+    ELSE 1
+    END)
 """
 
 #Расчёт Кид для одной оценки по формуле v8
 sql_score_openness_v8 = """
 exmo2010_parameter.weight*
 exmo2010_score.found*
-if (exmo2010_parameter.complete=1,
-	(CASE exmo2010_score.complete
-	WHEN 1 THEN 0.2
-	WHEN 2 THEN 0.5
+(CASE exmo2010_parameter.complete
+    WHEN 1 THEN
+        (CASE exmo2010_score.complete
+        WHEN 1 THEN 0.2
+        WHEN 2 THEN 0.5
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.topical=1,
-	(CASE exmo2010_score.topical
-	WHEN 1 THEN 0.7
-	WHEN 2 THEN 0.85
+    END)*
+(CASE exmo2010_parameter.topical
+    WHEN 1 THEN
+        (CASE exmo2010_score.topical
+        WHEN 1 THEN 0.7
+        WHEN 2 THEN 0.85
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.accessible=1,
-	(CASE exmo2010_score.accessible
-	WHEN 1 THEN 0.9
-	WHEN 2 THEN 0.95
+    END)*
+(CASE exmo2010_parameter.accessible
+    WHEN 1 THEN
+        (CASE exmo2010_score.accessible
+        WHEN 1 THEN 0.9
+        WHEN 2 THEN 0.95
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.hypertext=1,
-	(CASE exmo2010_score.hypertext
-	WHEN 0 THEN 0.2
+    END)*
+(CASE exmo2010_parameter.hypertext
+    WHEN 1 THEN
+        (CASE exmo2010_score.hypertext
+        WHEN 0 THEN 0.2
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.document=1,
-	(CASE exmo2010_score.document
-	WHEN 0 THEN 0.85
+    END)*
+(CASE exmo2010_parameter.document
+    WHEN 1 THEN
+        (CASE exmo2010_score.document
+        WHEN 0 THEN 0.85
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)*
-if (exmo2010_parameter.image=1,
-	(CASE exmo2010_score.image
-	WHEN 0 THEN 0.95
+    END)*
+(CASE exmo2010_parameter.image
+    WHEN 1 THEN
+        (CASE exmo2010_score.image
+        WHEN 0 THEN 0.95
+        ELSE 1
+        END)
     ELSE 1
-	END),
-	1)
+    END)
 """
 
 
@@ -120,20 +142,20 @@ sql_task_openness = """
 FROM `exmo2010_score`
 join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
 WHERE (
-	`exmo2010_score`.`task_id` = exmo2010_task.id AND
-	`exmo2010_score`.`revision` = 0  AND
-	`exmo2010_score`.`parameter_id` IN
-	(SELECT
-		U0.`id`
-	FROM `exmo2010_parameter` U0
-	WHERE `exmo2010_parameter`.`monitoring_id` = exmo2010_organization.monitoring_id
+    `exmo2010_score`.`task_id` = exmo2010_task.id AND
+    `exmo2010_score`.`revision` = 0  AND
+    `exmo2010_score`.`parameter_id` IN
+    (SELECT
+        U0.`id`
+    FROM `exmo2010_parameter` U0
+    WHERE `exmo2010_parameter`.`monitoring_id` = exmo2010_organization.monitoring_id
     %(sql_parameter_filter)s
-	AND NOT ((`exmo2010_parameter`.`id` IN
-		(SELECT U1.`parameter_id`
-		FROM `exmo2010_parameter_exclude` U1
-		WHERE (U1.`organization_id` = exmo2010_task.organization_id
-		AND U1.`parameter_id` IS NOT NULL))
-		AND `exmo2010_parameter`.`id` IS NOT NULL))))
+    AND NOT ((`exmo2010_parameter`.`id` IN
+        (SELECT U1.`parameter_id`
+        FROM `exmo2010_parameter_exclude` U1
+        WHERE (U1.`organization_id` = exmo2010_task.organization_id
+        AND U1.`parameter_id` IS NOT NULL))
+        AND `exmo2010_parameter`.`id` IS NOT NULL))))
 )
 /
 (SELECT
@@ -216,3 +238,142 @@ sql_complete = """
     'parameters': sql_complete_parameters,
     'questions': sql_complete_questions,
 }
+
+#sql для приведение в абсолютные значения критериев по формуле v1
+sql_monitoring_v1 = """
+(CASE exmo2010_parameter.complete
+    WHEN 1 THEN
+        (CASE exmo2010_score.complete
+        WHEN 1 THEN 0.2
+        WHEN 2 THEN 0.5
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `complete`,
+(CASE exmo2010_parameter.topical
+    WHEN 1 THEN
+        (CASE exmo2010_score.topical
+        WHEN 1 THEN 0.7
+        WHEN 2 THEN 0.85
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `topical`,
+(CASE exmo2010_parameter.accessible
+    WHEN 1 THEN
+        (CASE exmo2010_score.accessible
+        WHEN 1 THEN 0.9
+        WHEN 2 THEN 0.95
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `accessible`,
+(CASE exmo2010_parameter.hypertext
+    WHEN 1 THEN
+        (CASE exmo2010_parameter.document
+            WHEN 1 THEN
+                (CASE exmo2010_score.hypertext
+                WHEN 0 THEN 0.2
+                WHEN 1 THEN
+                    (CASE exmo2010_score.document
+                    WHEN 0 THEN 0.9
+                    ELSE 1
+                    END)
+                ELSE 1
+                END)
+            ELSE
+                (CASE exmo2010_score.hypertext
+                WHEN 0 THEN 0.2
+                ELSE 1
+                END)
+            END)
+    ELSE -1
+    END) as `hypertext`
+"""
+
+#sql для приведение в абсолютные значения критериев по формуле v8
+sql_monitoring_v8 = """
+(CASE exmo2010_parameter.complete
+    WHEN 1 THEN
+        (CASE exmo2010_score.complete
+        WHEN 1 THEN 0.2
+        WHEN 2 THEN 0.5
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `complete`,
+(CASE exmo2010_parameter.topical
+    WHEN 1 THEN
+        (CASE exmo2010_score.topical
+        WHEN 1 THEN 0.7
+        WHEN 2 THEN 0.85
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `topical`,
+(CASE exmo2010_parameter.accessible
+    WHEN 1 THEN
+        (CASE exmo2010_score.accessible
+        WHEN 1 THEN 0.9
+        WHEN 2 THEN 0.95
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `accessible`,
+(CASE exmo2010_parameter.hypertext
+    WHEN 1 THEN
+        (CASE exmo2010_score.hypertext
+        WHEN 0 THEN 0.2
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `hypertext`,
+(CASE exmo2010_parameter.document
+    WHEN 1 THEN
+        (CASE exmo2010_score.document
+        WHEN 0 THEN 0.85
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `document`,
+(CASE exmo2010_parameter.image
+    WHEN 1 THEN
+        (CASE exmo2010_score.image
+        WHEN 0 THEN 0.95
+        ELSE 1
+        END)
+    ELSE -1
+    END) as `image`
+"""
+
+sql_monitoring_scores = """
+SELECT
+    `exmo2010_score`.`id`,
+    `exmo2010_score`.`found`,
+    `exmo2010_score`.`revision`,
+    %(sql_monitoring)s,
+    `exmo2010_parameter`.`weight`,
+    `exmo2010_parameter`.`name` as parameter_name,
+    `exmo2010_parameter`.`id` as parameter_id,
+    `exmo2010_organization`.`id` as organization_id,
+    `exmo2010_organization`.`url`,
+    `exmo2010_task`.`openness_first`,
+    `exmo2010_parameter`.`npa` as parameter_npa,
+    `exmo2010_organization`.`name` as organization_name,
+    (%(sql_openness)s) as task_openness
+FROM `exmo2010_score`
+INNER JOIN `exmo2010_task` ON (`exmo2010_score`.`task_id` = `exmo2010_task`.`id`)
+INNER JOIN `exmo2010_organization` ON (`exmo2010_task`.`organization_id` = `exmo2010_organization`.`id`)
+INNER JOIN `exmo2010_parameter` ON (`exmo2010_score`.`parameter_id` = `exmo2010_parameter`.`id`)
+WHERE (
+    `exmo2010_organization`.`monitoring_id` = %(monitoring_pk)s
+    AND NOT ((
+        `exmo2010_score`.`parameter_id` IN (
+            SELECT U2.`parameter_id`
+            FROM `exmo2010_parameter_exclude` U2
+            WHERE (U2.`organization_id` = `exmo2010_organization`.`id`  AND U2.`parameter_id` IS NOT NULL))
+        AND `exmo2010_score`.`parameter_id` IS NOT NULL
+        AND `exmo2010_parameter`.`id` IS NOT NULL))
+    )
+ORDER BY task_openness DESC, organization_name ASC
+"""

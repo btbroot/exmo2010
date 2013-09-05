@@ -1,6 +1,6 @@
-{% comment %}
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,16 +17,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
-{% load i18n check_object_permission %}
-<div id="nav-sidebar">
-    <ul>
-        {% url exmo2010:score_list_by_task task.pk as url %}
-        <!-- {% trans 'Scores' %} -->
-        {% include "exmo2010/nav_sidebar/item.html" with url=url title="Scores" %}
 
-        {% url exmo2010:task_history task.pk as url %}
-        <!-- {% trans 'History' %} -->
-        {% include "exmo2010/nav_sidebar/item.html" with url=url title="History" %}
-    </ul>
-</div>
+from django.contrib.auth.models import User
+from model_mommy.recipe import Recipe
+
+active_user = Recipe(
+    User,
+    is_active=True,
+    is_superuser=False
+)

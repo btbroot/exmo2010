@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -42,6 +42,8 @@ urlpatterns = \
              url(r'^(\d+)/rating/$', 'monitoring_rating', name='monitoring_rating'),
              url(r'^(\d+)/set_npa_params/$', 'set_npa_params', name='set_npa_params'),
              url(r'^(?P<pk>\d+)_(?P<method>\w+)/$', MonitoringManagerView.as_view(), name='monitoring_manager'),
+             url(r'^(\d+)/export/$', 'monitoring_export',
+                 name='monitoring_export'),
              )
 
 urlpatterns += \

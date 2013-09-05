@@ -45,7 +45,7 @@ django-wysiwyg==0.5
 feedparser==5.1.2
 kombu==2.5.10
 lxml==2.3.5
-mercurial==2.6-rc
+mercurial
 pymongo==2.1
 python-dateutil==1.5
 pytils==0.2.3
@@ -55,3 +55,6 @@ git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
 hg+https://bitbucket.org/bsavelev/django-admin-tools
+#for testing:
+#django-nose
+#nose-parameterized

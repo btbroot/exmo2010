@@ -1,0 +1,40 @@
+[
+  {
+    "pk": 1,
+    "model": "exmo2010.opennessexpression",
+    "fields": {
+      "name": "2010"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "exmo2010.opennessexpression",
+    "fields": {
+      "name": "2011"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "auth.group",
+    "fields": {
+      "name": "expertsA",
+      "permissions": []
+    }
+  },
+  {
+    "pk": 2,
+    "model": "auth.group",
+    "fields": {
+      "name": "expertsB",
+      "permissions": []
+    }
+  },
+  {
+    "pk": 3,
+    "model": "auth.group",
+    "fields": {
+      "name": "expertsB_manager",
+      "permissions": []
+    }
+  }
+]

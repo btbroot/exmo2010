@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -30,21 +30,25 @@
             {% endif %}
 
             {% url exmo2010:tasks_by_monitoring monitoring.pk as url %}
+            <!-- {% trans "Tasks" %} -->
             {% include "exmo2010/nav_sidebar/item.html" with url=url title="Tasks" %}
 
             {% if request.user.profile.is_expertA %}
                 {% url exmo2010:organization_list monitoring.pk as url %}
+                <!-- {% trans "Organizations" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Organizations" %}
             {% endif %}
 
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
             {% if perm %}
                 {% url exmo2010:task_mass_assign_tasks monitoring.pk as url %}
+                <!-- {% trans "Task assignment" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Task assignment" %}
             {% endif %}
 
             {% if request.user.profile.is_expertA %}
                 {% url exmo2010:set_npa_params monitoring.pk as url %}
+                <!-- {% trans "Coherent parameters" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Coherent parameters" %}
             {% endif %}
 
@@ -56,11 +60,13 @@
             {% endif %}
 
             {% url exmo2010:monitoring_parameter_filter monitoring.pk as url %}
+            <!-- {% trans "Task filtering" %} -->
             {% include "exmo2010/nav_sidebar/item.html" with url=url title="Task filtering" %}
 
             {% if request.user.profile.is_expert or request.user.is_superuser %}
                 {% if request.user.profile.is_expertA and not monitoring.no_interact %}
                     {% url exmo2010:monitoring_comment_report monitoring.pk as url %}
+                    <!-- {% trans "Comments" %} -->
                     {% include "exmo2010/nav_sidebar/item.html" with url=url title="Comments" %}
                 {% endif %}
             {% endif %}
@@ -68,23 +74,28 @@
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
             {% if perm %}
                 {% url exmo2010:clarification_report monitoring.pk as url %}
+                <!-- {% trans "Clarifications" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Clarifications" %}
 
                 {% url exmo2010:claim_report monitoring.pk as url %}
+                <!-- {% trans "Claims" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Claims" %}
 
                 {% url exmo2010:monitoring_by_experts monitoring.pk as url %}
+                <!-- {% trans "Experts" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Experts" %}
 
                 {% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
                 {% if perm %}
                     {% url exmo2010:monitoring_parameter_found_report monitoring.pk as url %}
+                    <!-- {% trans "Presence of the parameter" %} -->
                     {% include "exmo2010/nav_sidebar/item.html" with url=url title="Presence of the parameter" %}
                 {% endif %}
             {% endif %}
 
             {% if not request.user.profile.is_expertB or request.user.is_superuser or monitoring.status == 5 %}
                 {% url exmo2010:monitoring_rating monitoring.pk as url %}
+                <!-- {% trans "Rating" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Rating" %}
             {% endif %}
 
@@ -98,6 +109,7 @@
                 {% endif %}
 
                 {% url exmo2010:monitoring_by_criteria_mass_export monitoring.pk as url %}
+                <!-- {% trans "Criterion" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Criterion" %}
 
                 {% if monitoring.has_questionnaire %}

@@ -20,6 +20,7 @@
 # Django settings for exmo project.
 
 import os
+import sys
 import djcelery
 djcelery.setup_loader()
 
@@ -37,6 +38,12 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+MYSQL_INIT = [
+    'SET storage_engine=INNODB',
+#    'SET GLOBAL innodb_file_format = Barracuda',
+#    'SET GLOBAL innodb_file_per_table = ON'
+]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -44,11 +51,22 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'OPTIONS': {
-            'init_command': 'SET storage_engine=INNODB',
+            'init_command': ';'.join(MYSQL_INIT),
         },
+        'TEST_CHARSET': 'utf8',
+        'TEST_COLLATION': 'utf8_unicode_ci',
     }
 }
 
+TEST = 'test' in sys.argv
+if TEST:
+    # in-memory SQLite used for testing.
+    DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+                }
+            }
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -155,6 +173,8 @@ INSTALLED_APPS = (
     'django_wysiwyg',
     'ckeditor',
     'breadcrumbs',
+    # Testing:
+    #'django_nose',
     # Local apps:
     'accounts',
     'auth',
@@ -250,6 +270,8 @@ CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 CELERY_ALWAYS_EAGER = False
 CELERY_TASK_RESULT_EXPIRES = 18000
 CELERND_TASK_ERROR_EMAILS = True
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 try:
     from local_settings import *

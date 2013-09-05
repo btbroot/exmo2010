@@ -18,13 +18,6 @@
 //
 $(document).ready(function() {
 
-    var $map = $("#map");
-    var $table_form = $("#table_form");
-    var $table_string = $("#table_string table");
-    if ($table_form.width() > $table_string.width() + $map.width()) {
-        $table_string.width($table_form.width());
-    }
-
     function pseudolinkHandler( e ) {
         var $user_selected = $('#user-selcted');
         $user_selected.removeClass('pseudo-off');

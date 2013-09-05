@@ -41,7 +41,7 @@
 </div>
 {% if monitoring %}
     <div id="table_string">
-        <table>
+        <table id="rating-menu">
             <tr>
                 <td>
                     <span class="rating-menu">
@@ -87,12 +87,22 @@
                         {% endif %}
                     </span>
                 </td>
-                <td>
-                    <span>
-                        {% if monitoring.map_link %}
-                            <a href="{{ monitoring.map_link }}" target="_blank" id="map">{% trans "Map" %}</a>
-                        {% endif %}
-                    </span>
+                <td><div class="link-right">
+                    <ul>
+                    {% if monitoring.map_link %}<li>
+                        <a href="{{ monitoring.map_link }}" target="_blank">
+                            <i class="icon icon-map"></i> {% trans "Map" %}</a>
+                    </li>{% endif %}
+                    <li>
+                        <a href="{% url exmo2010:monitoring_export monitoring.pk %}?format=json">
+                            <i class="icon icon-download-alt"></i> {% trans 'Export as JSON' %}
+                        </a></li>
+                    <li>
+                        <a href="{% url exmo2010:monitoring_export monitoring.pk %}?format=csv">
+                            <i class="icon icon-download-alt"></i> {% trans 'Export as CSV' %}
+                        </a></li>
+                    </ul>
+                    </div>
                 </td>
             </tr>
         </table>

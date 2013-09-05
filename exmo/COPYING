@@ -140,6 +140,7 @@ exmo/exmo2010/static/dashboard/img/menu_arrow_up.png
 exmo/exmo2010/static/dashboard/img/settings.png
 exmo/exmo2010/static/dashboard/img/exit.png
 exmo/exmo2010/static/exmo2010/img/earth.png
+exmo/exmo2010/static/exmo2010/img/earth_14x14.png
 
 Copyright (c) 2005-2013 Aha-Soft.
 http://www.small-icons.com/stock-icons/16x16-free-application-icons.htm
@@ -501,3 +502,13 @@ exmo/exmo2010/static/dashboard/js/jquery.dashboard.js
 Copyright (c) 2010, David Jean Louis <izimobil@gmail.com>
 
 Code licensed under the MIT License
+
+--
+
+exmo/exmo2010/static/img/glyphicons-halflings.png
+
+Glyphicons Halflings are also a part of Bootstrap by Twitter, and are released under the same Apache 2.0 license as Bootstrap.
+While you are not required to include attribution on your Bootstrap-based projects,
+I'd certainly appreciate a visibile link back to glyphicons.com in any place you find appropriate (footer, docs, etc).
+
+Apache 2.0 license
