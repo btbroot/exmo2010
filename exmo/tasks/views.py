@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -169,47 +169,23 @@ def task_import(request, id):
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                  errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
-                  continue
-                if (
-                    row[2]  == '' and
-                    row[3]  == '' and
-                    row[4]  == '' and
-                    row[5]  == '' and
-                    row[6]  == '' and
-                    row[7]  == '' and
-                    row[8]  == '' and
-                    row[9]  == '' and
-                    row[10] == '' and
-                    row[11] == '' and
-                    row[12] == '' and
-                    row[13] == '' and
-                    row[14] == '' and
-                    row[15] == ''
-                  ):
+                    errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
+                    continue
+                if not any(row[2:16]):
                     errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
                     continue
-                parameter = Parameter.objects.get(code=code.group(1), monitoring = task.organization.monitoring)
+                parameter = Parameter.objects.get(code=code.group(1), monitoring=task.organization.monitoring)
                 try:
-                    score = Score.objects.get(task = task, parameter = parameter)
+                    score = Score.objects.get(task=task, parameter=parameter)
                 except Score.DoesNotExist:
                     score = Score()
-                score.task              = task
-                score.parameter         = parameter
-                score.found             = row[2]
-                score.complete          = row[3]
-                score.completeComment   = row[4]
-                score.topical           = row[5]
-                score.topicalComment    = row[6]
-                score.accessible        = row[7]
-                score.accessibleComment = row[8]
-                score.hypertext         = row[9]
-                score.hypertextComment  = row[10]
-                score.document          = row[11]
-                score.documentComment   = row[12]
-                score.image             = row[13]
-                score.imageComment      = row[14]
-                score.comment           = row[15]
+                score.task = task
+                score.parameter = parameter
+                for i, key in enumerate(['found', 'complete', 'completeComment', 'topical', 'topicalComment',
+                                         'accessible', 'accessibleComment', 'hypertext', 'hypertextComment',
+                                         'document', 'documentComment', 'image', 'imageComment', 'comment']):
+                    value = row[i+2]
+                    setattr(score, key, value if value else None)
                 score.full_clean()
                 score.save()
             except ValidationError, e:
