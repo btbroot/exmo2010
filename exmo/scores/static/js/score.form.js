@@ -46,13 +46,33 @@ $(document).ready(function() {
         commentStatuses = [],
         radioStatuses = [];
 
-    var $edit_tabs = $('.edit-tabs');
-    var $editable = $('#editable_table');
-    var $non_editable = $('#non_editable_table');
-    var $partially_editable = $('#partially_editable_table');
-    var $hash = window.location.hash;
+    var $comment_field = $("#comment_field");
 
-    $('textarea:not(#id_comment):not(#id_score-comment)').autosize();
+    var $submit_score = $("#submit_scores");
+    var $submit_comment = $("#submit_comment");
+    var $submit_score_and_comment = $("#submit_score_and_comment");
+
+    var $non_edit_table = $(".non_edit_table");
+
+    if($foundDash.length == 0) {
+        $foundDash = $("#id_found_0");
+        $foundZero = $("#id_found_1");
+        $foundOne = $("#id_found_2");
+        $radiosDashes = $("input:not(#id_found_0):regex(id, id_.+_0)");
+        $radiosExceptFound = $("input[type='radio']:not(#id_found_0):not(#id_found_1):not(#id_found_2)");
+        $inputCommentFound = $("#id_foundComment");
+        $inputCommentsExceptFound = $("textarea:not(#id_foundComment):regex(id, id_.+Comment)");
+    }
+
+    $non_edit_table.show();
+
+    $('textarea:not(#id_comment):not(#id_score-comment):not(#id_recomendation)').autosize();
+
+    $comment_field.hide();
+
+    $submit_score.hide();
+    $submit_comment.hide();
+    $submit_score_and_comment.hide();
 
     $inputComments.each(function() {
         comments.push($(this).html());
@@ -106,42 +126,27 @@ $(document).ready(function() {
     });
 
     $("form.score").submit(function() {
-      $("#submit_score").prop('disabled',true);
+        $submit_score.prop('disabled',true);
+        $submit_comment.prop('disabled',true);
+        $submit_score_and_comment.prop('disabled',true);
+        return true;
     });
 
-    $editable.hide();
-    $partially_editable.hide();
+    $submit_comment.prop('disabled',true);
+    $submit_score_and_comment.prop('disabled',true);
 
-    $hash && $edit_tabs.hide();
 
-    $edit_tabs.live('click', function(e) {
-        var $link;
-        var $form_comment = $('.comment-form');
+    $('#id_comment').bind('input propertychange', function() {
 
-        switch (e.target.hash) {
-           case '#reply':
-              $link = $('a[href="#reply"]');
-              $form_comment.show();
-              $non_editable.show();
-              $editable.hide();
-              $partially_editable.hide();
-              break;
-           case '#change_score':
-              $link = $('a[href="#change_score"]');
-              $form_comment.hide();
-//              $non_editable.hide();
-//              $editable.show();
-//              $partially_editable.hide();
-              break;
-           case '#edit':
-              $link = $('a[href="#edit"]');
-              $form_comment.hide();
-              $non_editable.hide();
-              $editable.hide();
-              $partially_editable.show();
-              break;
+        $submit_comment.prop('disabled',true);
+
+        if(this.value.length){
+            $submit_comment.prop('disabled',false);
         }
+    });
 
-        $link.parent().addClass('active').siblings().removeClass('active');
-    })
+    $submit_comment.on('click', function() {
+        $('#non_editable_table_form').submit();
+    });
+
 });

@@ -18,66 +18,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n %}
 
-{% load i18n check_object_permission wysiwyg %}
-
-{% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
-
-{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
-{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
-{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
-
-{% check_object_permission exmo2010.add_claim_score object as add_claim %}
-{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
-{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
-
-<ul class="nav-tabs comment-tabs">
+<div class="ccc-tabs">
     {% if view_comment %}
-    <li class="active">
-        <span>
-            <a href="#comments" data-toggle="tab" class="pseudo">
+        <span class="active">
+            <a href="#comments" class="pseudo">
                 {% trans 'Comments' %}
             </a>
         </span>
-    </li>
     {% endif %}
+
     {% if view_clarification %}
-    <li{% if not view_comment %} class="active"{% endif %}>
         <span>
-            <a href="#clarifications" data-toggle="tab" class="pseudo">
+            <a href="#clarifications" class="pseudo">
                 {% trans 'Clarifications' %}
             </a>
         </span>
-    </li>
-    {% endif %}
-    {% if view_claim %}
-        <li{% if not view_clarification and not view_comment %} class="active"{% endif %}>
-            <span>
-                <a href="#claims" data-toggle="tab" class="pseudo">
-                    {% trans 'Opened claims' %}
-                </a>
-            </span>
-        </li>
-    {% endif %}
-</ul>
-
-<div class="tab-content">
-    {% if view_comment %}
-    <div class="tab-pane active" id="comments">
-        {% include "exmo2010/score/comment_dev.html" %}
-    </div>
-    {% endif %}
-
-    {% if view_clarification %}
-    <div class="tab-pane{% if not view_comment %} active{% endif %}" id="clarifications">
-        {% include "clarification.html" %}
-    </div>
     {% endif %}
 
     {% if view_claim %}
-        <div class="tab-pane{% if not view_comment and not view_clarification %} active{% endif %}" id="claims">
-            {% include "claim.html" %}
-        </div>
+        <span>
+            <a href="#claims" class="pseudo">
+                {% trans 'Opened claims' %}
+            </a>
+        </span>
     {% endif %}
 </div>

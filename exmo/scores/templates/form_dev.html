@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia check_object_permission criteria_css_class urlize_target_blank %}
+{% load i18n adminmedia check_object_permission criteria_css_class wysiwyg urlize_target_blank %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -34,24 +34,59 @@
     {{ block.super }}
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery.autosize.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/score.tabs.js"></script>
     {% if object %}
         <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
-        {% include "exmo2010/score/messages_js.html" %}
+        <script type="text/javascript" src="{{ STATIC_URL }}js/score.comments.js"></script>
     {% endif %}
 {% endblock %}
 
 
 {% block content %}
 
+{% if object %}
+    {% check_object_permission exmo2010.view_comment_score object as view_comment %}
+    {% check_object_permission exmo2010.add_comment_score object as add_comment %}
+    {% check_object_permission exmo2010.close_comment_score object as close_comment %}
+    {% check_object_permission exmo2010.view_claim_score object as view_claim %}
+{% endif %}
+
+{% wysiwyg_setup %}
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
+
+{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
+{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
+
+{% check_object_permission exmo2010.add_claim_score object as add_claim %}
+{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
+{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
+
+{% check_object_permission exmo2010.exclude_parameter parameter as perm %}
+
 {% include "exmo2010/score/parameter_header.html" %}
 
 <div class="criteria_edit_line">
-    <h2>{% trans 'Score by criterion' %}
-    {% include "tabs_edit.html" %}</h2>
+    <h2>
+        {% trans 'Score by criterion' %}
+        {% include "tabs_edit.html" %}
+    </h2>
 </div>
 
-{# start--нередактируемая таблица #}
-<div id="non_editable_table">
+<form action="" method="post" id="non_editable_table_form" class="score">{% csrf_token %}
+
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    <input type="hidden" name="name" value="{{ user }}" />
+    <input type="hidden" name="email" value="{{ user.email }}" />
+    <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
+
+    <p>{{ form.non_field_errors }}</p>
+
+    {{ form.parameter.as_hidden }}
+    {{ form.task.as_hidden }}
+
     <table class="score-table non-editable">
         <thead>
             <tr>
@@ -68,543 +103,202 @@
         </thead>
 
         <tbody>
+            {# Наличие #}
             <tr>
                 <td>
                     <label>
-                        {% trans 'Found' %}
+                        {{ form.found.label }}
                     </label>
                 </td>
                 <td class="value {{object|criteria_css_class:'found'}}">
-                    {{ object.found|default:"—" }}
+                    <span class="non_edit_table part_edit_table">{{ object.found|default_if_none:"—" }}</span>
+                    <span class="edit_table">{{ form.found }}</span>
                 </td>
-                <td>
-                    {{ object.foundComment|default:""|urlize_target_blank:url_length }}
+                <td class="explanation">
+                    <span class="non_edit_table">{{ object.foundComment|default:""|urlize_target_blank:url_length }}</span>
+                    <span class="edit_table part_edit_table">{{ form.foundComment }}</span>
                 </td>
             </tr>
 
+            {# Полнота #}
             {% if parameter.complete %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Complete' %}
+                            {{ form.complete.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'complete'}}">
-                        {{ object.complete|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.complete|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.complete }}</span>
                     </td>
-                    <td>
-                        {{ object.completeComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.completeComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.completeComment }}</span>
                     </td>
                 </tr>
             {% endif %}
 
+            {# Актуальность #}
             {% if parameter.topical %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Topical' %}
+                            {{ form.topical.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'topical'}}">
-                        {{ object.topical|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.topical|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.topical }}</span>
                     </td>
-                    <td>
-                        {{ object.topicalComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.topicalComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.topicalComment }}</span>
                     </td>
                 </tr>
             {% endif %}
 
+            {# Навигационная доступность #}
             {% if parameter.accessible %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Accessible' %}
+                            {{ form.accessible.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'accessible'}}">
-                        {{ object.accessible|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.accessible|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.accessible }}</span>
                     </td>
-                    <td>
-                        {{ object.accessibleComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.accessibleComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.accessibleComment }}</span>
                     </td>
                 </tr>
             {% endif %}
 
+            {# HTML доступность #}
             {% if parameter.hypertext %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Hypertext' %}
+                            {{ form.hypertext.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'hypertext'}}">
-                        {{ object.hypertext|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.hypertext|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.hypertext }}</span>
                     </td>
-                    <td>
-                        {{ object.hypertextComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.hypertextComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.hypertextComment }}</span>
                     </td>
                 </tr>
             {% endif %}
 
+            {# Файловая доступность #}
             {% if parameter.document %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Document' %}
+                            {{ form.document.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'document'}}">
-                        {{ object.document|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.document|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.document }}</span>
                     </td>
-                    <td>
-                        {{ object.documentComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.documentComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.documentComment }}</span>
                     </td>
                 </tr>
             {% endif %}
 
+            {# Графическая доступость #}
             {% if parameter.image %}
                 <tr>
                     <td>
                         <label>
-                            {% trans 'Image' %}
+                            {{ form.image.label }}
                         </label>
                     </td>
                     <td class="value {{object|criteria_css_class:'image'}}">
-                        {{ object.image|default:"—" }}
+                        <span class="non_edit_table part_edit_table">{{ object.image|default_if_none:"—" }}</span>
+                        <span class="edit_table">{{ form.image }}</span>
                     </td>
-                    <td>
-                        {{ object.imageComment|default:""|urlize_target_blank:url_length }}
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.imageComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="edit_table part_edit_table">{{ form.imageComment }}</span>
                     </td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
 
-    {% if object.comment %}
-        <p class="recomendation">
-            {% trans 'Recomendations' %}
-        </p>
+    <p class="recomendation">
+        {% if object.comment %}
+            <span class="non_edit_table">
+                {{ form.recomendation.label }}
+            </span>
+        {% endif %}
+        <span class="edit_table part_edit_table">
+            {{ form.recomendation.label }}
+        </span>
+    </p>
+    <span class="non_edit_table">
         {{ object.comment|default:""|urlize_target_blank:url_length }}
-    {% endif %}
-</div>
-{# end--нередактируемая таблица #}
+    </span>
+    <span class="edit_table part_edit_table">
+        {{ form.recomendation }}
+    </span>
 
+    <input type="submit" name="submit_scores" id="submit_scores" value="{% trans 'Save' %}" />
 
-
-{# start--редактируемая таблица #}
-<div id="editable_table">
-    <form action="" method="post" class="score">{% csrf_token %}
-
-    {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
-
-    <p>{{ form.non_field_errors }}</p>
-
-    {{ form.parameter.as_hidden }}
-    {{ form.task.as_hidden }}
-
-    <table class="score-table editable">
-        <thead>
-            <tr>
-                <th class="criteria">
-                    {% trans 'Evaluation criterion' %}
-                </th>
-                <th>
-                    {% trans 'Value' %}
-                </th>
-                <th class="explanation">
-                    {% trans 'Explanation' %}
-                </th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {# Наличие #}
-            <tr>
-                <td>
-                    <label>
-                        {% trans 'Found' %}
-                    </label>
-                </td>
-                <td class="value">
-                    {{ form.found }}
-                </td>
-                <td class="explanation">
-                    {{ form.foundComment }}
-                </td>
-            </tr>
-
-            {% if form.found.errors %}
-                <tr>
-                    <td colspan="3">
-                        {{ form.found.errors }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# Полнота #}
-            {% if parameter.complete %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Complete' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.complete }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.completeComment }}
-                    </td>
-                </tr>
-
-                {% if form.complete.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.complete.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-
-            {# Астуальность #}
-            {% if parameter.topical %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Topical' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.topical }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.topicalComment }}
-                    </td>
-                </tr>
-
-                {% if form.topical.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.topical.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-
-            {# Навигационная доступность #}
-            {% if parameter.accessible %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Accessible' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.accessible }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.accessibleComment }}
-                    </td>
-                </tr>
-
-                {% if form.accessible.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.accessible.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-
-            {# HTML доступность #}
-            {% if parameter.hypertext %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Hypertext' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.hypertext }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.hypertextComment }}
-                    </td>
-                </tr>
-
-                {% if form.hypertext.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.hypertext.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-
-            {# Файловая доступность #}
-            {% if parameter.document %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Document' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.document }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.documentComment }}
-                    </td>
-                </tr>
-
-                {% if form.document.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.document.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-
-            {# Графическая доступость #}
-            {% if parameter.image %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Image' %}
-                        </label>
-                    </td>
-                    <td class="value">
-                        {{ form.image }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.imageComment }}
-                    </td>
-                </tr>
-
-                {% if form.image.errors %}
-                    <tr>
-                        <td colspan="3">
-                            {{ form.image.errors }}
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-        </tbody>
-    </table>
-
-    <p class="recomendation">
-        {{ form.comment.label }}
-    </p>
-    {{ form.comment }}
-
-    <input type="submit" id="submit_score" value={% trans 'Save' %} />
-
-    {# только для эксперта А - кнопка "Признать нерелевантным" #}
-    {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
     {% if perm %}
-        <span class="non-relevant-button">
+        <span class="non_relevant_button">
         <input type="button"
                value="{% trans 'Set non-relevant' %}"
                onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
         </span>
     {% endif %}
 
-    </form>
-</div>
-{# end--редактируемая таблица #}
-
-
-
-
-{# start--частично редактируемая таблица #}
-<div id="partially_editable_table">
-    <form action="" method="post" class="score">{% csrf_token %}
-
-    {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
-
-    <p>{{ form.non_field_errors }}</p>
-
-    {{ form.parameter.as_hidden }}
-    {{ form.task.as_hidden }}
-
-    <table class="score-table partially-editable">
-        <thead>
-            <tr>
-                <th class="criteria">
-                    {% trans 'Evaluation criterion' %}
-                </th>
-                <th>
-                    {% trans 'Value' %}
-                </th>
-                <th class="explanation">
-                    {% trans 'Explanation' %}
-                </th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {# Наличие #}
-            <tr>
-                <td>
-                    <label>
-                        {% trans 'Found' %}
-                    </label>
-                </td>
-                <td class="value {{object|criteria_css_class:'found'}}">
-                    {{ object.found|default:"—" }}
-                    {{ form.found.as_hidden }}
-                </td>
-                <td class="explanation">
-                    {{ form.foundComment }}
-                </td>
-            </tr>
-
-            {# Полнота #}
-            {% if parameter.complete %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Complete' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'complete'}}">
-                        {{ object.complete|default:"—" }}
-                        {{ form.complete.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.completeComment }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# Астуальность #}
-            {% if parameter.topical %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Topical' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'topical'}}">
-                        {{ object.topical|default:"—" }}
-                        {{ form.topical.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.topicalComment }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# Навигационная доступность #}
-            {% if parameter.accessible %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Accessible' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'accessible'}}">
-                        {{ object.accessible|default:"—" }}
-                        {{ form.accessible.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.accessibleComment }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# HTML доступность #}
-            {% if parameter.hypertext %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Hypertext' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'hypertext'}}">
-                        {{ object.hypertext|default:"—" }}
-                        {{ form.hypertext.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.hypertextComment }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# Файловая доступность #}
-            {% if parameter.document %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Document' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'document'}}">
-                        {{ object.document|default:"—" }}
-                        {{ form.document.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.documentComment }}
-                    </td>
-                </tr>
-            {% endif %}
-
-            {# Графическая доступость #}
-            {% if parameter.image %}
-                <tr>
-                    <td>
-                        <label>
-                            {% trans 'Image' %}
-                        </label>
-                    </td>
-                    <td class="value {{object|criteria_css_class:'image'}}">
-                        {{ object.image|default:"—" }}
-                        {{ form.image.as_hidden }}
-                    </td>
-                    <td class="explanation">
-                        {{ form.imageComment }}
-                    </td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
-
-    <p class="recomendation">
-        {{ form.comment.label }}
-    </p>
-    {{ form.comment }}
-
-    <input type="submit" id="submit_score" value={% trans 'Save' %} />
-
-    {# только для эксперта А - кнопка "Признать нерелевантным" #}
-    {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
-    {% if perm %}
-        <span class="non-relevant-button">
-        <input type="button"
-               value="{% trans 'Set non-relevant' %}"
-               onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
-        </span>
+    {% if object %}
+        {% include "exmo2010/score/tabs_dev.html" %}
     {% endif %}
 
-    </form>
+    <div class="tab-content-comments">
+        {% if view_comment %}
+            <div class="active" id="comments">
+                {% include "exmo2010/score/comment_dev.html" %}
+            </div>
+            {% if add_comment %}
+                <div id="comment_field">
+                    <p>{% trans 'Your comment' %}</p>
+                    {{ form.comment }}
+                    <input type="submit" name="submit_comment" id="submit_comment" value="{% trans 'Post comment' %}" />
+                    <input type="submit" name="submit_score_and_comment" id="submit_score_and_comment" value="{% trans "Post comment and change score" %}" />
+                    {% wysiwyg_editor "id_comment" %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</form>
+
+<div class="tab-content-clarifications hidden">
+    {% if view_clarification %}
+        <div class="{% if not view_comment %} active{% endif %}" id="clarifications">
+            {% include "clarification.html" %}
+        </div>
+    {% endif %}
 </div>
-{# end--частично редактируемая таблица #}
 
-
-{% if object %}
-
-    {% check_object_permission exmo2010.view_comment_score object as view_comment %}
-    {% check_object_permission exmo2010.add_comment_score object as add_comment %}
-    {% check_object_permission exmo2010.close_comment_score object as close_comment %}
-    {% check_object_permission exmo2010.view_claim_score object as view_claim %}
-
-    {% include "exmo2010/score/tabs_dev.html" %}
-
-{% endif %}
+<div class="tab-content-claims hidden">
+    {% if view_claim %}
+        <div class="{% if not view_comment and not view_clarification %} active{% endif %}" id="claims">
+            {% include "claim.html" %}
+        </div>
+    {% endif %}
+</div>
 
 {% endblock %}

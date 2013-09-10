@@ -19,7 +19,7 @@
 #
 */
 
-/* Non-editable table, Partially editable table and Editable table */
+/* Non-editable table and Editable table */
 
 .score-table {
     border-spacing: 0;
@@ -38,7 +38,7 @@
 }
 
 .score-table th {
-    padding: 8px 12px;
+    padding: 2px 12px;
     background: none, transparent;
     border-bottom: #fff 1px solid;
     border-left: #bbb 1px solid;
@@ -49,7 +49,7 @@
     padding: 0 12px;
     border-left: #bbb 1px solid;
     border-top: #bbb 1px solid;
-    border-bottom: #fff 1px solid;
+    border-bottom: none;
 }
 
 .score-table td:first-child {
@@ -71,9 +71,9 @@
     color: #333;
 }
 
-/* Non-editable table and Partially editable table */
+/* Non-editable table */
 
-.non-editable .value, .partially-editable .value {
+.non-editable .value {
     width: 80px;
     text-align: center;
 }
@@ -90,7 +90,6 @@
     list-style: none;
     margin: 0;
     padding: 7px 0;
-    position: relative;
     top: 7px;
     display: inline;
     white-space:nowrap;

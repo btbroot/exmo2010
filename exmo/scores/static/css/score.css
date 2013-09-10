@@ -96,11 +96,11 @@ form.score {
     overflow: auto;
 }
 
-.form-requred
-{
-    color: red;
-}
+/* Submit buttons */
 
+#submit_score_and_comment {
+    width: 300px;
+}
 
 
 
@@ -243,13 +243,12 @@ label
     padding-left: 15px;
 }
 
-.non-relevant-button {
+.non_relevant_button {
     float: right;
 }
 
-.non-relevant-button input {
-    background-color: #ffd8dd;
-    background-image: none;
+.non_relevant_button input {
+    background: none, #ffd8dd;
 }
 
 .reset-button {
@@ -275,7 +274,7 @@ h1 {
     margin-bottom: 7px;
 }
 
-#id_score-comment {
+#id_score-comment, #id_recomendation {
     width: 100%;
     resize: none;
     margin-top: -3px;
@@ -289,6 +288,10 @@ h1 {
     font-weight: bold;
 }
 
-#non_editable_table {
-    margin-top: 20px;
+.edit_table, .part_edit_table {
+    display: none;
+}
+
+.blank {
+    background: none !important;
 }

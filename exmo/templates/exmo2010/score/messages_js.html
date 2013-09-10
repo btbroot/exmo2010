@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -35,7 +35,6 @@
 {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 
 {% if add_comment or add_clarification or add_claim or close_comment or delete_claim or answer_claim or answer_clarification %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -80,152 +79,6 @@
             }
         {% endif %}
 
-        {% if close_comment %}
-            {# Открытие/закртие комментария #}
-            var $anchor = $('a.toggle-comment');
-
-            $anchor.click(function( e ) {
-                e.preventDefault();
-
-                var $this = $(this)
-                    , url = $this.attr('href')
-                    , pk = $this.attr('rel')
-                    , openedClass = $this.closest('td').attr('data-class');
-
-                $.ajax({
-                    type : "POST",
-                    url: url,
-                    data : {pk: pk, openedClass: openedClass},
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.success) {
-                            $this.html('');
-                            if (data.status == 0) {
-                                $this.append('{% trans 'Close without answer' %}');
-                                $this.closest('td').addClass(openedClass);
-                            }
-                            if (data.status == 2) {
-                                $this.append('{% trans 'Open comment' %}');
-                                $this.closest('td').removeClass(openedClass);
-                            }
-                        }
-                    }
-                })
-
-                return false;
-            });
-        {% endif %}
-
-        {% if delete_claim %}
-            {# удаление претензии #}
-            var $claimAnchor = $('a.delete-claim');
-
-            $claimAnchor.click(function( e ) {
-                e.preventDefault();
-
-                var $this = $(this)
-                        , url = $this.attr('href')
-                        , pk = $this.attr('rel')
-                        , $container = $this.closest('tr');
-
-                $.ajax({
-                    type : "POST",
-                    url: url,
-                    data : {pk: pk},
-                    dataType: "json",
-                    success: function(data) {
-                        if (data.success) {
-                            $container.fadeOut(300, function() {
-                                $container.remove();
-                            })
-                        }
-                    }
-                })
-                return false;
-            });
-        {% endif %}
-
-        {% if answer_claim %}
-            {# ответ на претензию #}
-            var $claimAnswerAnchor = $('a.answer-claim')
-                , pkClaim = undefined;
-
-            $claimAnswerAnchor.click(function( e ) {
-                e.preventDefault();
-
-                var $this = $(this)
-                    , $form = $('#add-claim').remove();
-
-                $form.addClass('reply-form-tweak');
-
-                if (pkClaim != undefined && pkClaim == $this.attr('rel')) {
-                    if($form.css('display') == 'block') {
-                        $form.hide();
-                    } else {
-                        $form.show();
-                    }
-                } else {
-                    $form.show();
-                }
-
-                var $container = $this.closest('td')
-                    , $input = $('#id_claim-claim_id');
-
-                pkClaim = $this.attr('rel');
-
-                django_wysiwyg.disable('id_claim-comment_editor');
-
-                $container.append($form);
-
-                var $input = $('#id_claim-claim_id');
-
-                $input.val(pkClaim);
-
-                django_wysiwyg.enable('id_claim-comment_editor', 'id_claim-comment', null);
-                addContentListener(CKEDITOR.instances['id_claim-comment']);
-            })
-        {% endif %}
-
-        {% if answer_clarification %}
-            {# ответ на претензию #}
-            var $clarificationAnswerAnchor = $('a.answer-clarification')
-                , pkClarification = undefined;
-
-            $clarificationAnswerAnchor.click(function( e ) {
-                e.preventDefault();
-
-                var $this = $(this)
-                    , $form = $('#add-clarification').remove()
-
-                $form.addClass('reply-form-tweak');
-
-                if (pkClarification != undefined && pkClarification == $this.attr('rel')) {
-                    if($form.css('display') == 'block') {
-                        $form.hide();
-                    } else {
-                        $form.show();
-                    }
-                } else {
-                    $form.show();
-                }
-
-                var $container = $this.closest('td')
-                    , $input = $('#id_clarification-clarification_id');
-
-                pkClarification = $this.attr('rel')
-
-                django_wysiwyg.disable('id_clarification-comment_editor');
-
-                $container.append($form);
-
-                var $input = $('#id_clarification-clarification_id');
-
-                $input.val(pkClarification);
-
-                django_wysiwyg.enable('id_clarification-comment_editor', 'id_clarification-comment', null);
-                addContentListener(CKEDITOR.instances['id_clarification-comment']);
-            })
-        {% endif %}
     });
 </script>
 {% endif %}

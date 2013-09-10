@@ -1,5 +1,5 @@
 // This file is part of EXMO2010 software.
-// Copyright 2010, 2011 Al Nikolov
+// Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 // Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 //
@@ -15,9 +15,12 @@
 //
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+//Get CSRF token for AJAX.
+//https://docs.djangoproject.com/en/1.4/ref/contrib/csrf/#ajax
 
 $(document).ready(function() {
-    // using jQuery
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie != '') {
@@ -33,6 +36,7 @@ $(document).ready(function() {
         }
         return cookieValue;
     }
+
     var csrftoken = getCookie('csrftoken');
 
     function csrfSafeMethod(method) {
@@ -40,12 +44,28 @@ $(document).ready(function() {
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+
     $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
         beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
         }
     });
-})
+});

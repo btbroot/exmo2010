@@ -107,11 +107,6 @@
     border-bottom: 1px dashed;
 }
 
-.submit-post
-{
-    margin-top: 7px;
-}
-
 .claim-delete-container
 {
     margin-top: 7px;
@@ -163,20 +158,20 @@ a.messages-pseudo-off:hover
 
 /* Form for comment */
 
-.comment-form > p {
+#comment_field {
+    margin-top: 20px;
+}
+
+.comment-form > p, #comment_field > p {
     float: left;
 }
 
-.comment-form > form {
+.comment-form > form, #comment_field > span, #comment_field > input {
     margin-left: 122px;
 }
 
-.comment-form > form input[type="submit"] {
+.submit-post {
+    margin-top: 7px;
     width: 160px;
     font-size: 13px; /* Firefox fix */
-}
-
-.comment-field {
-    margin-top: 15px;
-    display: none
 }

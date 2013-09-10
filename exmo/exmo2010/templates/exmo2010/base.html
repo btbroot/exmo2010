@@ -35,6 +35,7 @@
         <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
         {{ media|default:"" }}
         <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}exmo2010/js/csrf.js"></script>
         {% block extrahead %}{% endblock %}
         {% include "analytics.html" %}
     </head>

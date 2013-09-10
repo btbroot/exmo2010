@@ -34,6 +34,7 @@
 {% block extrahead %}
     {{ block.super }}
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/score.comments.js"></script>
     {% include "tabs_js.html" %}
     {% include "exmo2010/score/messages_js.html" %}
 {% endblock %}
@@ -129,14 +130,15 @@
 </table>
 
 {% if object.comment %}
-<dl>
-    <dt>
+<p class="recomendation">
+    <span class="non_edit_table">
         {% trans 'Recomendations' %}
-    </dt>
-    <dd>
-        {{ object.comment|default:""|urlize_target_blank:url_length }}
-    </dd>
-</dl>
+    </span>
+</p>
+<span class="non_edit_table">
+    {{ object.comment|default:""|urlize_target_blank:url_length }}
+</span>
+<br />
 {% endif %}
 
 {# Проверка всех прав для сообщений #}

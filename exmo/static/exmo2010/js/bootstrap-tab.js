@@ -138,21 +138,24 @@
  /* TAB DATA-API
   * ============ */
 
+  function editTabsActive(hash) {
+    if (hash=='#comments') {
+      $('.edit-tabs span').removeClass('active');
+      $('.edit-tabs').show();
+    } else if ($.inArray(hash, ['#clarifications', '#claims']) !== -1) {
+      $('.edit-tabs').hide();
+    }
+  }
+
   $(document).on('click.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
     e.preventDefault();
     $(this).tab('show');
-      var $hash = e.target.hash;
-    if ($hash=='#comments') {
-      $('.edit-tabs span').removeClass('active');
-      $('.edit-tabs').show();
-    } else if ($.inArray($hash, ['#clarifications', '#claims']) !== -1) {
-      $('.edit-tabs').hide();
-    }
   });
 
   $(document).ready(function() {
     var $hash = window.location.hash;
     $hash && $('ul.nav-tabs a[href="' + $hash + '"]').tab('show');
+    editTabsActive($hash);
   });
 
 }(window.jQuery);

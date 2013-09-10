@@ -35,6 +35,7 @@
     <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
     {% if object %}
         <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/score.comments.js"></script>
         {% include "exmo2010/score/messages_js.html" %}
     {% endif %}
 {% endblock %}
@@ -240,7 +241,7 @@
 
 {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
 {% if perm %}
-    <span class="non-relevant-button">
+    <span class="non_relevant_button">
     <input type="button"
            value="{% trans 'Set non-relevant' %}"
            onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
@@ -262,4 +263,3 @@
 
 {% endif %}
 {% endblock %}
-

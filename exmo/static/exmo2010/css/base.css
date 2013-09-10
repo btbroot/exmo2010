@@ -980,6 +980,29 @@ ul.nav-tabs li.active a
     border: 0;
 }
 
+/* Comments, Clarifications, Claims */
+.ccc-tabs {
+    display: block;
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 6px;
+    font-size: 18px;
+}
+
+.ccc-tabs span {
+    padding: 5px;
+}
+
+.ccc-tabs span.active {
+    background-color: #FFFFD6;
+}
+
+.ccc-tabs span.active a {
+    color: #222;
+    border: 0;
+}
+
+
 /* Misc */
 
 .required
