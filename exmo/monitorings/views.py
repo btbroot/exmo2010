@@ -1292,12 +1292,18 @@ class MonitoringExport(object):
 
     def __init__(self, monitoring):
         self.monitoring = monitoring
-        scores = Score.objects.raw(monitoring.sql_scores())
-        current_openness = getattr(scores[0], 'task_openness')
+        scores = list(Score.objects.raw(monitoring.sql_scores()))
         place = 1
         #dict with organization as keys and el as list of scores for json export
         self.tasks = {}
+        if not len(scores):
+            return
+        current_openness = getattr(scores[0], 'task_openness')
         for score in scores:
+            # skip score from non-approved task
+            if score.task_status != Task.TASK_APPROVED:
+                continue
+
             if score.task_openness != current_openness:
                 place += 1
                 current_openness = score.task_openness

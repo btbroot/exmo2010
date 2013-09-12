@@ -360,6 +360,7 @@ SELECT
     `exmo2010_task`.`openness_first`,
     `exmo2010_parameter`.`npa` as parameter_npa,
     `exmo2010_organization`.`name` as organization_name,
+    `exmo2010_task`.`status` as task_status,
     (%(sql_openness)s) as task_openness
 FROM `exmo2010_score`
 INNER JOIN `exmo2010_task` ON (`exmo2010_score`.`task_id` = `exmo2010_task`.`id`)

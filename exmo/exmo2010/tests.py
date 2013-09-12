@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from cStringIO import StringIO
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
@@ -26,6 +27,7 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 from core.sql import *
 from exmo2010.models import *
+from core.utils import UnicodeReader
 
 
 class TestOpennessExpression(TestCase):
@@ -91,7 +93,7 @@ class TestMonitoringExport(TestCase):
 
     @parameterized.expand(
         [("expression-v%d" % code, code)
-         for code in OpennessExpression.OPENNESS_EXPRESSIONS])
+            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
     def test_json(self, name, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
         # WHEN анонимный пользователь запрашивает данные каждого мониторинга в json
@@ -125,13 +127,10 @@ class TestMonitoringExport(TestCase):
             self.parameter_type(score)
         )
 
-
     @parameterized.expand(
         [("expression-v%d" % code, code)
-         for code in OpennessExpression.OPENNESS_EXPRESSIONS])
+            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
     def test_csv(self, name, code):
-        from core.utils import UnicodeReader
-        from cStringIO import StringIO
         monitoring = Monitoring.objects.get(openness_expression__code=code)
         # WHEN анонимный пользователь запрашивает данные каждого мониторинга в csv
         url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
@@ -183,3 +182,64 @@ class TestMonitoringExport(TestCase):
                     row[16],
                     self.parameter_type(score)
                 )
+
+class TestMonitoringExportApproved(TestCase):
+    # Scenario: Экспорт данных мониторинга
+    def setUp(self):
+        self.client = Client()
+        self.monitoring = mommy.make(
+            Monitoring,
+            pk=999,
+            status=MONITORING_PUBLISHED)
+        # AND в каждом мониторинге есть организация
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
+        expert1 = mommy.make_recipe('exmo2010.active_user')
+        expert1.profile.is_expertB = True
+        expert2 = mommy.make_recipe('exmo2010.active_user')
+        expert2.profile.is_expertB = True
+        # AND в каждой организации есть одобренная задача для expert
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expert1,
+            status=Task.TASK_APPROVED,
+        )
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expert2,
+            status=Task.TASK_OPEN,
+        )
+        # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
+        parameter = mommy.make(
+            Parameter,
+            monitoring=self.monitoring,
+            complete=False)
+        # AND в каждой задаче есть оценка по parameter
+        score = mommy.make(
+            Score,
+            task=task,
+            parameter=parameter,
+        )
+
+    def test_approved_json(self):
+        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
+        response = self.client.get(url + '?format=json')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается json
+        self.assertEqual(response.get('content-type'), 'application/json')
+        json = simplejson.loads(response.content)
+        self.assertEqual(len(json['monitoring']['tasks']), 0, simplejson.dumps(json, indent=2))
+
+    def test_approved_csv(self):
+        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
+        response = self.client.get(url + '?format=csv')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается csv
+        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+        csv = [line for line in UnicodeReader(StringIO(response.content))]
+        #only header
+        self.assertEqual(len(csv), 1)
