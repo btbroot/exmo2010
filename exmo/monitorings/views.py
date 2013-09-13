@@ -1318,11 +1318,14 @@ class MonitoringExport(object):
             }
             if settings.DEBUG:
                 score_dict['pk'] = score.pk
-            if score.found:
-                for criteria in Parameter.OPTIONAL_CRITERIONS:
-                    row_criteria = float(getattr(score, criteria, -1) or -1)
-                    if row_criteria > -1:
-                        score_dict[criteria] = row_criteria
+            for criteria in Parameter.OPTIONAL_CRITERIONS:
+                row_criteria = getattr(score, criteria, -1)
+                #for sql_v1: document and image always None
+                if row_criteria is None:
+                    row_criteria = -1
+                row_criteria = float(row_criteria)
+                if row_criteria > -1:
+                    score_dict[criteria] = row_criteria
 
             if score.organization_id in self.tasks.keys():
                 self.tasks[score.organization_id]['scores'].append(score_dict)

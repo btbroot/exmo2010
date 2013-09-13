@@ -239,14 +239,19 @@ sql_complete = """
     'questions': sql_complete_questions,
 }
 
-#sql для приведение в абсолютные значения критериев по формуле v1
+# sql для приведение в абсолютные значения критериев
+# если параметр не релевантен критерий равен -1
+# если параметр не оценен или оценка за рамками, критерий равен 0
+
+# по формуле v1
 sql_monitoring_v1 = """
 (CASE exmo2010_parameter.complete
     WHEN 1 THEN
         (CASE exmo2010_score.complete
         WHEN 1 THEN 0.2
         WHEN 2 THEN 0.5
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `complete`,
@@ -255,7 +260,8 @@ sql_monitoring_v1 = """
         (CASE exmo2010_score.topical
         WHEN 1 THEN 0.7
         WHEN 2 THEN 0.85
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `topical`,
@@ -264,7 +270,8 @@ sql_monitoring_v1 = """
         (CASE exmo2010_score.accessible
         WHEN 1 THEN 0.9
         WHEN 2 THEN 0.95
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `accessible`,
@@ -277,28 +284,31 @@ sql_monitoring_v1 = """
                 WHEN 1 THEN
                     (CASE exmo2010_score.document
                     WHEN 0 THEN 0.9
-                    ELSE 1
+                    WHEN 1 THEN 1
+                    ELSE 0
                     END)
-                ELSE 1
+                ELSE 0
                 END)
             ELSE
                 (CASE exmo2010_score.hypertext
                 WHEN 0 THEN 0.2
-                ELSE 1
+                WHEN 1 THEN 1
+                ELSE 0
                 END)
             END)
     ELSE -1
     END) as `hypertext`
 """
 
-#sql для приведение в абсолютные значения критериев по формуле v8
+# по формуле v8
 sql_monitoring_v8 = """
 (CASE exmo2010_parameter.complete
     WHEN 1 THEN
         (CASE exmo2010_score.complete
         WHEN 1 THEN 0.2
         WHEN 2 THEN 0.5
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `complete`,
@@ -307,7 +317,8 @@ sql_monitoring_v8 = """
         (CASE exmo2010_score.topical
         WHEN 1 THEN 0.7
         WHEN 2 THEN 0.85
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `topical`,
@@ -316,7 +327,8 @@ sql_monitoring_v8 = """
         (CASE exmo2010_score.accessible
         WHEN 1 THEN 0.9
         WHEN 2 THEN 0.95
-        ELSE 1
+        WHEN 3 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `accessible`,
@@ -324,7 +336,8 @@ sql_monitoring_v8 = """
     WHEN 1 THEN
         (CASE exmo2010_score.hypertext
         WHEN 0 THEN 0.2
-        ELSE 1
+        WHEN 1 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `hypertext`,
@@ -332,7 +345,8 @@ sql_monitoring_v8 = """
     WHEN 1 THEN
         (CASE exmo2010_score.document
         WHEN 0 THEN 0.85
-        ELSE 1
+        WHEN 1 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `document`,
@@ -340,7 +354,8 @@ sql_monitoring_v8 = """
     WHEN 1 THEN
         (CASE exmo2010_score.image
         WHEN 0 THEN 0.95
-        ELSE 1
+        WHEN 1 THEN 1
+        ELSE 0
         END)
     ELSE -1
     END) as `image`

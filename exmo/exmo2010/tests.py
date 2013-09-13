@@ -74,7 +74,8 @@ class TestMonitoringExport(TestCase):
             parameter = mommy.make(
                 Parameter,
                 monitoring=monitoring,
-                complete=False)
+                complete=False,
+            )
             # AND в каждой задаче есть оценка по parameter
             score = mommy.make(
                 Score,
@@ -116,7 +117,7 @@ class TestMonitoringExport(TestCase):
         # AND КИД (для первой задачи) в БД и json совпадает
         self.assertEqual(
             float(json['monitoring']['tasks'][0]['openness']),
-            float(task.openness))
+            float('%.3f' % task.openness))
         # AND балл найденности (в первой задаче, в оценке по первому параметру)
         # в БД и json совпадает
         self.assertEqual(
