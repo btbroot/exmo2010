@@ -23,6 +23,7 @@ import os
 import tempfile
 import zipfile
 from cStringIO import StringIO
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -1293,19 +1294,18 @@ class MonitoringExport(object):
     def __init__(self, monitoring):
         self.monitoring = monitoring
         scores = list(Score.objects.raw(monitoring.sql_scores()))
-        place = 1
+        position = 0
         #dict with organization as keys and el as list of scores for json export
-        self.tasks = {}
+        self.tasks = OrderedDict()
         if not len(scores):
             return
-        current_openness = getattr(scores[0], 'task_openness')
+        current_openness = None
         for score in scores:
             # skip score from non-approved task
             if score.task_status != Task.TASK_APPROVED:
                 continue
-
-            if score.task_openness != current_openness:
-                place += 1
+            if not current_openness or score.task_openness != current_openness:
+                position += 1
                 current_openness = score.task_openness
 
             score_dict = {
@@ -1332,7 +1332,7 @@ class MonitoringExport(object):
             else:
                 self.tasks[score.organization_id] = {
                     'scores': [score_dict, ],
-                    'place': place,
+                    'position': position,
                     'openness': '%.3f' % (score.task_openness or 0),
                     'openness_initial': '%.3f' % (score.openness_first or 0),
                     'name': score.organization_name,
@@ -1393,7 +1393,7 @@ class MonitoringExport(object):
                     self.monitoring.name,
                     task['name'],
                     task['id'],
-                    task['place'],
+                    task['position'],
                     task['openness_initial'],
                     task['openness'],
                 ]

@@ -118,6 +118,9 @@ class TestMonitoringExport(TestCase):
         self.assertEqual(
             float(json['monitoring']['tasks'][0]['openness']),
             float('%.3f' % task.openness))
+        self.assertEqual(
+            int(json['monitoring']['tasks'][0]['position']),
+            1)
         # AND балл найденности (в первой задаче, в оценке по первому параметру)
         # в БД и json совпадает
         self.assertEqual(
@@ -167,6 +170,9 @@ class TestMonitoringExport(TestCase):
                 self.assertEqual(
                     int(row[2]),
                     organization.pk)
+                self.assertEqual(
+                    int(row[3]),
+                    1)
                 # AND КИД (для первой задачи) в БД и json совпадает
                 self.assertEqual(
                     float(row[5]),
