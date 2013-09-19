@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.files.base import ContentFile
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import simplejson
@@ -1200,3 +1201,76 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
         statistics = self.monitoring.statistics()
         # THEN active orgusers count in monitoring statistics should equal 1
         self.assertEqual(statistics['organization_users_active'], 1)
+
+
+class CopyMonitoringTestCase(TestCase):
+    # Script SHOULD create monitoring copy
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND 3 organizations connected to monitoring
+        organizations = mommy.make(Organization, monitoring=self.monitoring, _quantity=3)
+        # AND parameter connected to monitoring
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring)
+        # AND expert B account
+        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        self.expertB.profile.is_expertB = True
+        # AND 3 approved tasks connected to organizations
+        task1 = mommy.make(
+            Task,
+            organization=organizations[0],
+            user=self.expertB,
+            status=Task.TASK_APPROVED,
+        )
+        task2 = mommy.make(
+            Task,
+            organization=organizations[1],
+            user=self.expertB,
+            status=Task.TASK_APPROVED,
+        )
+        task3 = mommy.make(
+            Task,
+            organization=organizations[2],
+            user=self.expertB,
+            status=Task.TASK_APPROVED,
+        )
+        # AND 1 score for each task
+        mommy.make(Score, task=task1, parameter=self.parameter)
+        mommy.make(Score, task=task2, parameter=self.parameter)
+        mommy.make(Score, task=task3, parameter=self.parameter)
+
+    def test_copy_monitoring(self):
+        # WHEN I call 'copy_monitoring' comamnd
+        call_command('copy_monitoring', self.monitoring.pk)
+        # AND get new monitoring and parameter
+        copied_monitoring = Monitoring.objects.all().order_by('-id')[0]
+        copied_parameter = Parameter.objects.all().order_by('-id')[0]
+        # THEN monitorings fields should be equal
+        self.assertEqual('%s_copy' % self.monitoring.name, copied_monitoring.name)
+        self.assertEqual(copied_monitoring.status, MONITORING_RATE)
+        self.assertEqual(self.monitoring.map_link, copied_monitoring.map_link)
+        self.assertEqual(self.monitoring.time_to_answer, copied_monitoring.time_to_answer)
+        self.assertEqual(self.monitoring.no_interact, copied_monitoring.no_interact)
+        self.assertEqual(self.monitoring.hidden, copied_monitoring.hidden)
+        self.assertEqual(self.monitoring.rate_date, copied_monitoring.rate_date)
+        self.assertEqual(self.monitoring.interact_date, copied_monitoring.interact_date)
+        self.assertEqual(self.monitoring.publish_date, copied_monitoring.publish_date)
+        self.assertEqual(self.monitoring.finishing_date, copied_monitoring.finishing_date)
+        # AND organizations names should be equal
+        self.assertEqual(set(self.monitoring.organization_set.values_list('name', flat=True)),
+                         set(copied_monitoring.organization_set.values_list('name', flat=True)))
+        # AND parameters name and code should be equal
+        self.assertEqual(set(self.monitoring.parameter_set.values_list('name', 'code')),
+                         set(copied_monitoring.parameter_set.values_list('name', 'code')))
+        # AND scores fields should be equal
+        self.assertEqual(
+            set(self.parameter.score_set.values_list(
+                'found', 'complete', 'topical', 'accessible', 'hypertext',
+                'document', 'image', 'links', 'comment', 'revision')
+                ),
+            set(copied_parameter.score_set.values_list(
+                'found', 'complete', 'topical', 'accessible', 'hypertext',
+                'document', 'image', 'links', 'comment', 'revision')
+                )
+        )
