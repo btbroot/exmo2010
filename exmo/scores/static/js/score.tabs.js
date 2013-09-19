@@ -17,8 +17,7 @@
 //
 $(document).ready(function() {
 
-    var $hash = window.location.hash;
-
+    var $non_editable_table_form = $('#non_editable_table_form');
     var $comment_field = $("#comment_field");
     var $value = $(".value");
     var $score_table = $(".score-table");
@@ -32,57 +31,19 @@ $(document).ready(function() {
     var $edit_table = $(".edit_table");
     var $part_edit_table = $(".part_edit_table");
 
-    var $tab_content_comments = $('.tab-content-comments');
-    var $tab_content_clarifications = $('.tab-content-clarifications');
-    var $tab_content_claims = $('.tab-content-claims');
-
     var $edit_tabs = $('.edit-tabs');
 
 
     $non_relevant_button.hide();
 
-    // CKEditor's buttons property (disable/enable)
-    CKEDITOR.config.extraPlugins = 'onchange';
-
-    function ckChangeHandler(e) {
-        var sender = e.sender,
-            $input = $(sender.container.$)
-                    .closest('form')
-                    .children('input[type="submit"]');
-        if(sender.document.getBody().getChild(0).getText()) {
-            $input.prop('disabled', false);
-        } else {
-            $input.prop('disabled', true);
-        }
-    }
-
-    function addContentListener(editor) {
-        if ($.browser.msie) {
-            editor.on('contentDom', function(e) {
-                editor.document.on('keyup', function() {
-                    ckChangeHandler(e);
-                });
-            });
-        } else {
-            editor.on('change', ckChangeHandler);
-        }
-    }
-
-    for(var name in CKEDITOR.instances) {
-        if (name=='id_comment') {
-            continue;
-        }
-        var editor = CKEDITOR.instances[name];
-        addContentListener(editor);
-        $(editor.element.$).closest('form')
-                .children('input[type="submit"]')
-                .prop('disabled', true);
-    }
-
-
     // change score handler
+    // save initial values
+    var $radioInitial = {};
     $('input:radio').each(function() {
         $(this).data('initialValue', $(this).serialize());
+        if ($(this).attr("checked")=="checked") {
+            $radioInitial[$(this).attr('name')] = $(this).val();
+        }
     });
 
     var isDirty = false;
@@ -132,33 +93,22 @@ $(document).ready(function() {
     });
 
 
-    // tabs clicking (comment, clarification, claim)
+    // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js
     $('.ccc-tabs').live('click', function(e) {
-        var $link;
 
         switch (e.target.hash) {
            case '#comments':
-              $tab_content_clarifications.hide();
-              $tab_content_claims.hide();
-              $tab_content_comments.show();
               $('.edit-tabs span').removeClass('active');
               $edit_tabs.show();
               break;
            case '#clarifications':
-              $tab_content_comments.hide();
-              $tab_content_claims.hide();
-              $tab_content_clarifications.show();
               $edit_tabs.hide();
               break;
            case '#claims':
-              $tab_content_comments.hide();
-              $tab_content_clarifications.hide();
-              $tab_content_claims.show();
               $edit_tabs.hide();
               break;
         }
 
-        $link = $('a[href="' + e.target.hash + '"]');
         $edit_table.hide();
         $part_edit_table.hide();
         $non_edit_table.show();
@@ -167,8 +117,6 @@ $(document).ready(function() {
         $score_table.addClass("non-editable");
         $comment_field.hide();
         $submit_score.hide();
-        $link.parent().addClass('active').siblings().removeClass('active');
-        window.location.hash = '';
 
         return false;
     });
@@ -221,7 +169,7 @@ $(document).ready(function() {
 
               $submit_comment.hide();
               $submit_score_and_comment.hide();
-              $submit_score.show();
+              $submit_score.prop('disabled',false).show();
               $non_relevant_button.show();
               break;
         }
@@ -234,13 +182,29 @@ $(document).ready(function() {
     });
 
 
+    // submit form
+    // returns radio buttons initial values
+    function clearRadio() {
+        $('input:radio').each(function () {
+            $(this).prop('checked', !!($(this).val() == $radioInitial[$(this).attr('name')]));
+        });
+    }
+
+    $submit_score.click(function(){
+        $cke_comment.setData('');
+        clearRadio();
+    });
+
+    $submit_comment.mousedown(function(){
+        $non_editable_table_form.get(0).reset();
+    });
+
+
     // change tabs if errors exists
     var $error = $('ul.errorlist li').first().text();
     if ($error) {
-        $hash = '#change_score';
+        window.location.hash = '#change_score';
     }
-
-    $hash && $('a[href="' + $hash + '"]').click();
 
 });
 

@@ -18,6 +18,44 @@
 //
 $(document).ready(function() {
 
+//  disable all wysiwyg submit buttons
+    CKEDITOR.config.extraPlugins = 'onchange';
+
+//  enable submit button if wysiwyg-area not empty
+    function ckChangeHandler(e) {
+        var sender = e.sender
+                , $input = $(sender.container.$)
+                        .closest('form')
+                        .children('input[type="submit"]');
+
+        if(sender.document.getBody().getChild(0).getText()) {
+            $input.prop('disabled', false);
+        } else {
+            $input.prop('disabled', true);
+        }
+    }
+
+    function addContentListener(editor) {
+        if ($.browser.msie) {
+            editor.on('contentDom', function( e ) {
+                editor.document.on('keyup', function(event) {
+                    ckChangeHandler(e);
+                });
+            });
+        } else {
+            editor.on('change', ckChangeHandler);
+        }
+    }
+
+    for(var name in CKEDITOR.instances) {
+        var editor = CKEDITOR.instances[name];
+        addContentListener(editor);
+        $(editor.element.$).closest('form')
+                .children('input[type="submit"]')
+                .prop('disabled', true);
+    }
+
+
 //  Open/close comment
     var $anchor = $('a.toggle-comment');
 

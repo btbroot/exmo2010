@@ -23,7 +23,6 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
@@ -35,8 +34,8 @@
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery.autosize.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/score.tabs.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/ccc-tabs.js"></script>
     {% if object %}
-        <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/bootstrap-tab.js"></script>
         <script type="text/javascript" src="{{ STATIC_URL }}js/score.comments.js"></script>
     {% endif %}
 {% endblock %}
@@ -44,27 +43,27 @@
 
 {% block content %}
 
+{% wysiwyg_setup %}
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
+
 {% if object %}
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}
     {% check_object_permission exmo2010.add_comment_score object as add_comment %}
     {% check_object_permission exmo2010.close_comment_score object as close_comment %}
+
+    {% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
+    {% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+    {% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
+
     {% check_object_permission exmo2010.view_claim_score object as view_claim %}
+    {% check_object_permission exmo2010.add_claim_score object as add_claim %}
+    {% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
+    {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 {% endif %}
-
-{% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
-
-{% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
-{% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
-{% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
-
-{% check_object_permission exmo2010.add_claim_score object as add_claim %}
-{% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
-{% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
 
 {% check_object_permission exmo2010.exclude_parameter parameter as perm %}
 
-{% include "exmo2010/score/parameter_header.html" %}
+{% include "parameter_header.html" %}
 
 <div class="criteria_edit_line">
     <h2>
@@ -78,6 +77,7 @@
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
+
     <input type="hidden" name="name" value="{{ user }}" />
     <input type="hidden" name="email" value="{{ user.email }}" />
     <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
@@ -236,6 +236,7 @@
         </tbody>
     </table>
 
+    {# Рекомендации #}
     <p class="recomendation">
         {% if object.comment %}
             <span class="non_edit_table">
@@ -253,8 +254,10 @@
         {{ form.recomendation }}
     </span>
 
+    {# Кнопка "Сохранить" #}
     <input type="submit" name="submit_scores" id="submit_scores" value="{% trans 'Save' %}" />
 
+    {# Кнопка "Признать нерелевантным" #}
     {% if perm %}
         <span class="non_relevant_button">
         <input type="button"
@@ -263,14 +266,15 @@
         </span>
     {% endif %}
 
+    {# Табы #}
     {% if object %}
-        {% include "exmo2010/score/tabs_dev.html" %}
+        {% include "tabs.html" %}
     {% endif %}
 
     <div class="tab-content-comments">
         {% if view_comment %}
             <div class="active" id="comments">
-                {% include "exmo2010/score/comment_dev.html" %}
+                {% include "comment.html" %}
             </div>
             {% if add_comment %}
                 <div id="comment_field">

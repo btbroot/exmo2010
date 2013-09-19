@@ -1,0 +1,43 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2013 Al Nikolov
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+<div class="tab-content-comments">
+    {% if view_comment %}
+        <div class="active" id="comments">
+            {% include "comment.html" %}
+        </div>
+    {% endif %}
+</div>
+
+<div class="tab-content-clarifications hidden">
+    {% if view_clarification %}
+        <div class="{% if not view_comment %}active{% endif %}" id="clarifications">
+            {% include "clarification.html" %}
+        </div>
+    {% endif %}
+</div>
+
+<div class="tab-content-claims hidden">
+    {% if view_claim %}
+        <div class="{% if not view_comment and not view_clarification %}active{% endif %}" id="claims">
+            {% include "claim.html" %}
+        </div>
+    {% endif %}
+</div>

@@ -23,6 +23,7 @@ form.score {
     float: left;
     display: block;
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .heading-comments-parameter

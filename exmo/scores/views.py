@@ -21,7 +21,6 @@
 import datetime
 import json
 
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.comments.signals import comment_was_posted
 from django.contrib.comments.views.comments import post_comment
@@ -30,12 +29,14 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db.models import Max
 from django.dispatch import Signal
+from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import loader, Context, RequestContext
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_unicode
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -53,7 +54,7 @@ from custom_comments.models import CommentExmo
 from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter, QAnswer, QQuestion
 from exmo2010.models import Score, Task, UserProfile, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_FINALIZING
 from questionnaire.forms import QuestionnaireDynForm
-from scores.forms import ScoreForm, ScoreForm_dev
+from scores.forms import ScoreForm, ScoreFormWithComment
 
 
 URL_LENGTH = 70  # Length to truncate URLs to
@@ -76,12 +77,6 @@ class ScoreMixin(object):
                                            request.GET.urlencode(),
                                            self.object.parameter.code)
         return redirect.replace("%", "%%")
-
-
-class LoginRequiredMixin(object):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
 
 class ScoreAddView(ScoreMixin, CreateView):
@@ -150,8 +145,12 @@ class ScoreAddView(ScoreMixin, CreateView):
         return context
 
 
-class ScoreDeleteView(LoginRequiredMixin, ScoreMixin, DeleteView):
+class ScoreDeleteView(ScoreMixin, DeleteView):
     template_name = "exmo2010/score_confirm_delete.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ScoreDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         title = _('Delete score %s') % self.object.parameter
@@ -166,49 +165,59 @@ class ScoreDeleteView(LoginRequiredMixin, ScoreMixin, DeleteView):
         return super(ScoreDeleteView, self).post(request, *args, **kwargs)
 
 
-class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
+class ScoreEditView(UpdateView):
+    form_class = ScoreForm
     template_name = "form.html"
+    model = Score
+    extra_context = {}
+    is_interaction_or_finalizing = False
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if not request.user.has_perm('exmo2010.edit_score', self.object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        score = get_object_or_404(Score, pk=kwargs['pk'])
+
+        if not request.user.has_perm('exmo2010.edit_score', score):
             return HttpResponseForbidden(_('Forbidden'))
 
-        if request.user.profile.is_expertA:
-            all_score_claims = Claim.objects.filter(score=self.object)
-        else:
-            all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
-        all_score_clarifications = Clarification.objects.filter(score=self.object)
+        if score.parameter.monitoring.status in [MONITORING_INTERACTION, MONITORING_FINALIZING]:
+            self.form_class = ScoreFormWithComment
+            self.template_name = "form_with_comment.html"
+            self.is_interaction_or_finalizing = True
+        result = super(ScoreEditView, self).dispatch(request, *args, **kwargs)
 
-        self.extra_context = {
-            'claim_list': all_score_claims,
-            'clarification_list': all_score_clarifications,
-            'claim_form': ClaimAddForm(prefix="claim"),
-            'clarification_form': ClarificationAddForm(
-                prefix="clarification"),
-        }
-        result = super(ScoreEditView, self).get(request, *args, **kwargs)
+        return result
+
+    def get_initial(self):
+        if self.is_interaction_or_finalizing:
+            self.object = self.get_object()
+            initial = self.object.__dict__.copy()
+            if 'comment' in initial:
+                recomendation = initial.pop('comment')
+                initial['recomendation'] = recomendation
+
+            result = {
+                'instance': self.object,
+                'initial': initial
+            }
+        else:
+            result = super(ScoreEditView, self).get_initial()
+
+        return result
+
+    def get_form_kwargs(self):
+        if self.is_interaction_or_finalizing:
+            result = self.get_initial()
+            if self.request.method in ('POST', 'PUT'):
+                result.update({
+                    'data': self.request.POST,
+                })
+        else:
+            result = super(ScoreEditView, self).get_form_kwargs()
 
         return result
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not request.user.has_perm('exmo2010.edit_score', self.object):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        form = ScoreForm(request.POST, instance=self.object)
-        message = _construct_change_message(request, form, None)
-        revision.comment = message
-        if form.is_valid() and form.changed_data:
-            score_was_changed.send(
-                sender=Score.__class__,
-                form=form,
-                request=request,
-            )
-        if self.object.active_claim:
-            if not (form.is_valid() and form.changed_data):
-                return HttpResponse(_('There is an active claim, but no data changed'))
-
         self.success_url = self.get_redirect(request)
 
         form_class = self.get_form_class()
@@ -228,12 +237,39 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
         else:
             return self.form_invalid(form)
 
+    def form_valid(self, form):
+        if self.is_interaction_or_finalizing:
+            post_comment(self.request)
+        result = super(ScoreEditView, self).form_valid(form)
+
+        message = _construct_change_message(self.request, form)
+        revision.comment = message
+        score_was_changed.send(
+            sender=Score.__class__,
+            form=form,
+            request=self.request,
+        )
+
+        return result
+
     def form_invalid(self, form):
         if not self.valid:
             error = form._errors.setdefault('__all__', ErrorList())
             error.append(_('Couldn`t save a new version of the existing score since the existing score is incomplete. '
                            'Contact your Supervisor.'))
         return super(ScoreEditView, self).form_invalid(form)
+
+    def get_redirect(self, request):
+        if self.is_interaction_or_finalizing:
+            result = reverse('exmo2010:score_view', args=[self.object.pk])
+        else:
+            redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
+                                               args=[self.object.task.pk]),
+                                               request.GET.urlencode(),
+                                               self.object.parameter.code)
+            result = redirect.replace("%", "%%")
+
+        return result
 
     def get_context_data(self, **kwargs):
         context = super(ScoreEditView, self).get_context_data(**kwargs)
@@ -247,89 +283,7 @@ class ScoreEditView(LoginRequiredMixin, ScoreMixin, UpdateView):
 
         extra_context = {
             'current_title': current_title,
-            'parameter': parameter,
-            'task': task,
-            'title': title,
-            'url_length': URL_LENGTH,
-        }
-        context.update(extra_context)
-
-        return context
-
-
-class ScoreEditView_dev(UpdateView):
-    form_class = ScoreForm_dev
-    template_name = "form_dev.html"
-
-    model = Score
-    extra_context = {}
-
-    def get_initial(self):
-        self.object = self.get_object()
-        initial = self.object.__dict__.copy()
-        if 'comment' in initial:
-            recomendation = initial.pop('comment')
-            initial['recomendation'] = recomendation
-
-        result = {
-            'instance': self.object,
-            'initial': initial
-        }
-
-        return result
-
-    def get_form_kwargs(self):
-        kwargs = self.get_initial()
-        if self.request.method in ('POST', 'PUT'):
-
-            kwargs.update({
-                'data': self.request.POST,
-            })
-
-        return kwargs
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if not request.user.has_perm('exmo2010.edit_score', self.object):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        result = super(ScoreEditView_dev, self).get(request, *args, **kwargs)
-
-        return result
-
-    def post(self, request, *args, **kwargs):
-        self.success_url = self.get_redirect(request)
-        result = super(ScoreEditView_dev, self).post(request, *args, **kwargs)
-
-        return result
-
-    def form_valid(self, form):
-        post_comment(self.request)
-        result = super(ScoreEditView_dev, self).form_valid(form)
-
-        return result
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get_redirect(self, request):
-        self.object = self.get_object()
-        result = reverse('exmo2010:score_view', args=[self.object.pk])
-
-        return result
-
-    def get_context_data(self, **kwargs):
-        context = super(ScoreEditView_dev, self).get_context_data(**kwargs)
-        current_title = _('Parameter')
-        parameter = self.object.parameter
-        task = self.object.task
-        title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
-
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(self.request, crumbs, task)
-
-        extra_context = {
-            'current_title': current_title,
+            'is_interaction_or_finalizing': self.is_interaction_or_finalizing,
             'parameter': parameter,
             'task': task,
             'title': title,
@@ -351,12 +305,6 @@ class ScoreEditView_dev(UpdateView):
         context.update(self.extra_context)
 
         return context
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        result = super(ScoreEditView_dev, self).dispatch(*args, **kwargs)
-
-        return result
 
 
 class ScoreDetailView(ScoreMixin, DetailView):
@@ -422,15 +370,11 @@ def score_manager(request, score_id, method='update'):
 
 def score_view(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
+
     if request.user.has_perm('exmo2010.edit_score', score):
-
-        # TODO: убрать переход в режим разработки по окончании #1436
-        if settings.DEBUG and score.parameter.monitoring.status in [MONITORING_INTERACTION, MONITORING_FINALIZING]:
-            redirect_url = reverse('exmo2010:score_edit_dev', args=[score_id])
-        else:
-            redirect_url = reverse('exmo2010:score_edit', args=[score_id])
-
+        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
         return HttpResponseRedirect(redirect_url)
+
     if request.user.has_perm('exmo2010.view_score', score):
         redirect_url = reverse('exmo2010:score_detail', args=[score_id])
         return HttpResponseRedirect(redirect_url)
@@ -701,11 +645,15 @@ comment_was_posted.connect(log_user_activity, sender=CommentExmo)
 
 def score_change_notify(sender, **kwargs):
     """
-    Оповещение об измененях оценки.
+    Score change notification.
 
     """
     form = kwargs['form']
-    score = form.instance
+    if isinstance(form, ModelForm):
+        score = form.instance
+    else:
+        score = form.target_object
+
     request = kwargs['request']
     changes = []
     if form.changed_data:
@@ -759,7 +707,7 @@ signal_to_create_revision = Signal(providing_args=["instance"])
 signal_to_create_revision.connect(create_revision)
 
 
-def _construct_change_message(request, form, formsets):
+def _construct_change_message(request, form, formsets=None):
         """
         Construct a change message from a changed object. Можно использовать для reversion.
 

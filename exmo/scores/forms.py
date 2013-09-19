@@ -64,13 +64,13 @@ class ScoreForm(forms.ModelForm):
         }
 
 
-class ScoreForm_dev(CustomCommentForm):
+class ScoreFormWithComment(CustomCommentForm):
     BASE_CHOICE = (('', '-'), (0, 0), (1, 1))
     BIG_CHOICE = (('', '-'), (1, 1), (2, 2), (3, 3))
     TEXTAREA_ATTRS = {'cols': 45, 'rows': 1}
 
     def __init__(self, instance=None, **kwargs):
-        super(ScoreForm_dev, self).__init__(instance, **kwargs)
+        super(ScoreFormWithComment, self).__init__(instance, **kwargs)
 
     found = forms.ChoiceField(label=_('Found'), widget=forms.RadioSelect(), choices=BASE_CHOICE)
     foundComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
@@ -78,7 +78,8 @@ class ScoreForm_dev(CustomCommentForm):
     completeComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
     topical = forms.ChoiceField(label=_('Topical'), widget=forms.RadioSelect(), choices=BIG_CHOICE, required=False)
     topicalComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    accessible = forms.ChoiceField(label=_('Accessible'), widget=forms.RadioSelect(), choices=BIG_CHOICE, required=False)
+    accessible = forms.ChoiceField(label=_('Accessible'), widget=forms.RadioSelect(), choices=BIG_CHOICE,
+                                   required=False)
     accessibleComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
     hypertext = forms.ChoiceField(label=_('Hypertext'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
     hypertextComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
@@ -86,8 +87,8 @@ class ScoreForm_dev(CustomCommentForm):
     documentComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
     image = forms.ChoiceField(label=_('Image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
     imageComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    recomendation = forms.CharField(label=_('Recomendations'), widget=forms.Textarea(attrs={'cols': 45, 'rows': 5}), required=False)
-
+    recomendation = forms.CharField(label=_('Recomendations'), widget=forms.Textarea(attrs={'cols': 45, 'rows': 5}),
+                                    required=False)
     comment = forms.CharField(label=_('Comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
 
     # overwrite method from CustomCommentForm
@@ -99,7 +100,7 @@ class ScoreForm_dev(CustomCommentForm):
     def clean_comment(self):
         comment = self.cleaned_data['comment']
         if comment:
-            comment = super(ScoreForm_dev, self).clean_comment()
+            comment = super(ScoreFormWithComment, self).clean_comment()
 
         return comment
 
@@ -109,7 +110,6 @@ class ScoreForm_dev(CustomCommentForm):
                 raise ValidationError(_('%s must be set' % criterion.capitalize()))
 
         data = self.cleaned_data
-
         obj = self.target_object
 
         if 'found' not in data:
@@ -134,7 +134,7 @@ class ScoreForm_dev(CustomCommentForm):
         )):
             raise ValidationError(_('Not found, but some excessive data persists'))
 
-        return super(ScoreForm_dev, self).clean()
+        return super(ScoreFormWithComment, self).clean()
 
     def save(self):
         data = self.cleaned_data

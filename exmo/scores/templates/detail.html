@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n urlize_target_blank %}
+{% load i18n check_object_permission wysiwyg urlize_target_blank criteria_css_class %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -30,14 +30,12 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
 {% endblock %}
 
-{% if request.user.profile.is_expert %}
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/score.comments.js"></script>
-    {% include "tabs_js.html" %}
-    {% include "exmo2010/score/messages_js.html" %}
-{% endblock %}
+{% if is_expert %}
+    {% block extrahead %}
+        {{ block.super }}
+        <script type="text/javascript" src="{{STATIC_URL}}js/score.comments.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}js/ccc-tabs.js"></script>
+    {% endblock %}
 {% endif %}
 
 {% block title %}{{ parameter }}{% endblock %}
@@ -46,9 +44,25 @@
 
 {% block content %}
 
-{% include "exmo2010/score/parameter_header.html" %}
+{% wysiwyg_setup %}
+<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
 
-{% load criteria_css_class %}
+{% if object %}
+    {% check_object_permission exmo2010.view_comment_score object as view_comment %}
+    {% check_object_permission exmo2010.add_comment_score object as add_comment %}
+    {% check_object_permission exmo2010.close_comment_score object as close_comment %}
+
+    {% check_object_permission exmo2010.view_clarification_score object as view_clarification %}
+    {% check_object_permission exmo2010.add_clarification_score object as add_clarification %}
+    {% check_object_permission exmo2010.answer_clarification_score object as answer_clarification %}
+
+    {% check_object_permission exmo2010.view_claim_score object as view_claim %}
+    {% check_object_permission exmo2010.add_claim_score object as add_claim %}
+    {% check_object_permission exmo2010.answer_claim_score object as answer_claim %}
+    {% check_object_permission exmo2010.delete_claim_score object as delete_claim %}
+{% endif %}
+
+{% include "parameter_header.html" %}
 
 <table class="score-table non-editable">
     <thead>
@@ -141,24 +155,14 @@
 <br />
 {% endif %}
 
-{# Проверка всех прав для сообщений #}
+{% if is_expert and view_comment or is_expert and view_claim or is_expert and view_clarification %}
+    {% include "tabs.html" %}
+    {% include "ccc-tabs.html" %}
 
-{% load check_object_permission %}
-
-{% check_object_permission exmo2010.view_comment_score object as view_comment %}
-{% check_object_permission exmo2010.add_comment_score object as add_comment %}
-{% check_object_permission exmo2010.close_comment_score object as close_comment %}
-{% check_object_permission exmo2010.view_claim_score object as view_claim %}
-
-{% if request.user.profile.is_expert and view_comment or request.user.profile.is_expert and view_claim or request.user.profile.is_expert and view_clarification %}
-    {% include "exmo2010/score/tabs.html" %}
 {% else %}
     {% if view_comment %}
-        {% load wysiwyg %}
-        {% wysiwyg_setup %}
-        <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
         <h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
-        {% include "exmo2010/score/comment.html" %}
+        {% include "comment.html" %}
     {% endif %}
 {% endif %}
 
