@@ -1,5 +1,5 @@
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -55,6 +55,8 @@ git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
 hg+https://bitbucket.org/bsavelev/django-admin-tools
+
 #for testing:
-#django-nose
-#nose-parameterized
+django-nose==1.2
+nose-parameterized==0.3.1
+model_mommy==1.1

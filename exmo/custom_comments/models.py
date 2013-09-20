@@ -39,3 +39,15 @@ class CommentExmo(Comment):
     )
 
     status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
+
+    def is_expert(self):
+        return self.user.userprofile.is_expert
+
+    def is_organization(self):
+        return self.user.userprofile.is_organization
+
+    def is_superuser(self):
+        return self.user.is_superuser
+
+    def legal_name(self):
+        return self.user.userprofile.legal_name

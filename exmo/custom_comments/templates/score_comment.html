@@ -28,14 +28,14 @@
     {% for comment in comments %}
         <p>
             <span class="bold">
-            {% if comment.user.userprofile.is_expert or comment.user.is_superuser %}
+            {% if comment.is_expert or comment.is_superuser %}
                 {% if admin %}
-                    {{ comment.user.userprofile.legal_name }},
+                    {{ comment.legal_name }},
                 {% else %}
                     {{ expert }},
                 {% endif %}
             {% else %}
-                {{ comment.user.userprofile.legal_name }},
+                {{ comment.legal_name }},
             {% endif %}
             </span>
             {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
