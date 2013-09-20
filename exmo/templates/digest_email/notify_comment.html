@@ -19,7 +19,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n get_object_by_pk settings_value %}
+{% load i18n get_object_by_pk %}
 {% get_object_by_pk exmo2010.Score object.object_pk as score %}
 <p>{{ score.task.organization }}: {{ score.parameter }}</p>
 <p>{% trans 'Date' %}: {{ object.submit_date }}</p>
