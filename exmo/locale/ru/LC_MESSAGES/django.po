@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 14:52+0400\n"
+"POT-Creation-Date: 2013-09-22 12:32+0400\n"
 "PO-Revision-Date: 2013-05-27 18:28+0300\n"
 "Last-Translator: Al Nikolov <root@toor.fi.eu.org>\n"
 "Language-Team: \n"
@@ -288,7 +288,7 @@ msgstr "Задачи цикла мониторинга "
 #: monitorings/views.py:613 monitorings/views.py:679 monitorings/views.py:1017
 #: organizations/views.py:156 parameters/templates/parameter_email.html:27
 #: parameters/templates/parameter_email.txt:25 tasks/views.py:571
-#: tasks/views.py:627
+#: tasks/views.py:627 templates/exmo2010/opendata.html:68
 msgid "Monitoring cycle"
 msgstr "Цикл мониторинга"
 
@@ -1232,7 +1232,7 @@ msgid "About"
 msgstr "О проекте"
 
 #: exmo2010/views.py:63 exmo2010/views.py:76
-#: exmo2010/templates/exmo2010/footer.html:27
+#: exmo2010/templates/exmo2010/footer.html:28
 msgid "Feedback"
 msgstr "Обратная связь"
 
@@ -1406,7 +1406,12 @@ msgstr "Пожалуйста, опишите вашу проблему как м
 msgid "Methodology"
 msgstr "Методика"
 
-#: exmo2010/templates/exmo2010/footer.html:30
+#: exmo2010/templates/exmo2010/footer.html:27
+#: templates/exmo2010/opendata.html:31
+msgid "Open data"
+msgstr "Открытые данные"
+
+#: exmo2010/templates/exmo2010/footer.html:31
 #, python-format
 msgid ""
 "Copyright 2012, 2013 Foundation \"<a href=\"%(url)s\">Institute for "
@@ -1415,17 +1420,17 @@ msgstr ""
 "© Фонд \"<a href=\"%(url)s\">Институт Развития Свободы Информации</a>\", "
 "2012–2013"
 
-#: exmo2010/templates/exmo2010/footer.html:31
+#: exmo2010/templates/exmo2010/footer.html:32
 msgid ""
 "Copyright 2010, 2011 Non-profit Partnership \"Institute of Information "
 "Freedom Development\""
 msgstr "© НП \"Институт Развития Свободы Информации\", 2010-2012"
 
-#: exmo2010/templates/exmo2010/footer.html:32
+#: exmo2010/templates/exmo2010/footer.html:33
 msgid "Copyright 2010, 2011, 2013 Al Nikolov"
 msgstr "© Al Nikolov, 2010, 2011, 2013"
 
-#: exmo2010/templates/exmo2010/footer.html:33
+#: exmo2010/templates/exmo2010/footer.html:34
 #, python-format
 msgid ""
 "<a href=\"%(url)s\">This program</a> is free software: you can redistribute "
@@ -2604,6 +2609,225 @@ msgstr "Органы/организации с готовыми задачами
 #: templates/exmo2010/monitoring_stats.html:26
 msgid "Organizations with approved task"
 msgstr "Органы/организации с одобренными задачами"
+
+#: templates/exmo2010/opendata.html:33
+msgid ""
+"\n"
+"    There's ability to download dataset for an every monitoring cycle in "
+"EXMO system using two formats,\n"
+"    JSON and CSV. JSON file is for machine data processing. CSV file is for "
+"research it can be opened by\n"
+"    spreadsheet application.\n"
+msgstr ""
+"\nВ системе ЭКСМО возможно выгрузить набор данных по каждому циклу мониторинга "
+"в двух форматах: JSON и CSV. Файл формата JSON предназначен для машинной "
+"обработки данных. Файл формата CSV предназначен для проведения исследований, "
+"его можно открыть программами для работы с электронными таблицами.\n"
+
+#: templates/exmo2010/opendata.html:40
+msgid ""
+"\n"
+"    Data available to download from finished monitoring cycles pages. For "
+"understanding data to download,\n"
+"    we suggest familiarize with\n"
+msgstr "\nДанные доступны для выгрузки со страниц рейтингов завершенных циклов "
+"мониторинга. Для понимания выгружаемых данных рекомендуем ознакомиться с\n"
+
+#: templates/exmo2010/opendata.html:45
+msgid "metodology of official sites of government authorities"
+msgstr "методикой мониторинга официальных сайтов органов власти."
+
+#: templates/exmo2010/opendata.html:49
+msgid "Structure of JSON dataset to download"
+msgstr "Структура набора данных, выгружаемых в формате JSON"
+
+#: templates/exmo2010/opendata.html:54 templates/exmo2010/opendata.html:365
+msgid "Designation"
+msgstr "Наименование"
+
+#: templates/exmo2010/opendata.html:57 templates/exmo2010/opendata.html:368
+msgid "Description"
+msgstr "Описание"
+
+#: templates/exmo2010/opendata.html:60 templates/exmo2010/opendata.html:371
+msgid "Possible values"
+msgstr "Возможные значения"
+
+#: templates/exmo2010/opendata.html:79 templates/exmo2010/opendata.html:382
+msgid "Name of monitoring cycle"
+msgstr "Название цикла мониторинга"
+
+#: templates/exmo2010/opendata.html:90
+msgid "Organizations array within monitoring cycle"
+msgstr "Массив организаций в цикле мониторинга"
+
+#: templates/exmo2010/opendata.html:101 templates/exmo2010/opendata.html:410
+msgid "Organization's ID in database"
+msgstr "Идентификационный номер организации в базе данных"
+
+#: templates/exmo2010/opendata.html:112 templates/exmo2010/opendata.html:396
+msgid "Organization's name"
+msgstr "Название организации"
+
+#: templates/exmo2010/opendata.html:123
+msgid "Organization's site URL"
+msgstr "URL сайта организации"
+
+#: templates/exmo2010/opendata.html:134 templates/exmo2010/opendata.html:424
+msgid "Organization's place in rating"
+msgstr "Место организации в рейтинге"
+
+#: templates/exmo2010/opendata.html:137 templates/exmo2010/opendata.html:427
+msgid "Natural number"
+msgstr "Натуральное число"
+
+#: templates/exmo2010/opendata.html:145 templates/exmo2010/opendata.html:438
+msgid ""
+"Score of organization's site openness before interaction of organization's "
+"representatives with experts"
+msgstr "Оценка открытости сайта организации до взаимодействия представителей "
+"организации с экспертами"
+
+#: templates/exmo2010/opendata.html:148 templates/exmo2010/opendata.html:159
+#: templates/exmo2010/opendata.html:441 templates/exmo2010/opendata.html:455
+msgid "From"
+msgstr "От"
+
+#: templates/exmo2010/opendata.html:148 templates/exmo2010/opendata.html:159
+#: templates/exmo2010/opendata.html:441 templates/exmo2010/opendata.html:455
+msgid "to"
+msgstr "до"
+
+#: templates/exmo2010/opendata.html:156 templates/exmo2010/opendata.html:452
+msgid "Final score of site's openness"
+msgstr "Итоговая оценка открытости сайта"
+
+#: templates/exmo2010/opendata.html:167
+msgid "Parameter's scores array of organization's site within monitoring cycle"
+msgstr "Массив оценок по параметрам сайта организации в цикле мониторинга"
+
+#: templates/exmo2010/opendata.html:180 templates/exmo2010/opendata.html:466
+msgid "Parameters's name"
+msgstr "Название параметра"
+
+#: templates/exmo2010/opendata.html:192
+msgid "Scores's ID in database"
+msgstr "Идентификационный номер оценки по параметру в базе данных"
+
+#: templates/exmo2010/opendata.html:204 templates/exmo2010/opendata.html:480
+msgid "Parameters's ID in database"
+msgstr "Идентификационный номер параметра в базе данных"
+
+#: templates/exmo2010/opendata.html:216 templates/exmo2010/opendata.html:592
+msgid "Value of social importance factor"
+msgstr "Значение коэффициента социальной значимости"
+
+#: templates/exmo2010/opendata.html:228 templates/exmo2010/opendata.html:240
+#: templates/exmo2010/opendata.html:252 templates/exmo2010/opendata.html:264
+#: templates/exmo2010/opendata.html:276 templates/exmo2010/opendata.html:288
+#: templates/exmo2010/opendata.html:300 templates/exmo2010/opendata.html:494
+#: templates/exmo2010/opendata.html:508 templates/exmo2010/opendata.html:522
+#: templates/exmo2010/opendata.html:536 templates/exmo2010/opendata.html:550
+#: templates/exmo2010/opendata.html:564 templates/exmo2010/opendata.html:578
+msgid "Factor's value"
+msgstr "Значение коэффициента"
+
+#: templates/exmo2010/opendata.html:228 templates/exmo2010/opendata.html:494
+msgid "\"Found\""
+msgstr "«Наличие»"
+
+#: templates/exmo2010/opendata.html:240 templates/exmo2010/opendata.html:508
+msgid "\"Complete\""
+msgstr "«Полнота»"
+
+#: templates/exmo2010/opendata.html:252 templates/exmo2010/opendata.html:522
+msgid "\"Topical\""
+msgstr "«Актуальность»"
+
+#: templates/exmo2010/opendata.html:264 templates/exmo2010/opendata.html:536
+msgid "\"Accessible\""
+msgstr "«Навигационная доступность»"
+
+#: templates/exmo2010/opendata.html:276 templates/exmo2010/opendata.html:550
+msgid "\"Hypertext\""
+msgstr "«HTML-доступность»"
+
+#: templates/exmo2010/opendata.html:288 templates/exmo2010/opendata.html:564
+msgid "\"Document\""
+msgstr "«Файловая доступность»"
+
+#: templates/exmo2010/opendata.html:300 templates/exmo2010/opendata.html:578
+msgid "\"Image\""
+msgstr "«Графическая доступность»"
+
+#: templates/exmo2010/opendata.html:312 templates/exmo2010/opendata.html:606
+msgid "Parameter's type"
+msgstr "Тип параметра"
+
+#: templates/exmo2010/opendata.html:324 templates/exmo2010/opendata.html:620
+msgid "Parameter's score version"
+msgstr "Версия оценки по параметру"
+
+#: templates/exmo2010/opendata.html:333
+msgid "Dataset description"
+msgstr "Пояснение к набору данных"
+
+#: templates/exmo2010/opendata.html:337
+msgid ""
+"\n"
+"        Quantity of parameters from different organizations may not be same "
+"because some parameters are relevant only for several organizations.\n"
+"        "
+msgstr "\nКоличество параметров у разных организаций может отличаться, так как "
+"некоторые параметры релевантны только части организаций."
+"\n        "
+
+#: templates/exmo2010/opendata.html:342
+msgid ""
+"\n"
+"        Within estimate may be absent such criteries as Fullness, Actuality, "
+"Navigation accessibility, HTML accessibility, File accessibility, Graphical "
+"accessibility because they may be not relevant for parameter\n"
+"        "
+msgstr "\nВ оценке по параметру могут отсутствовать критерии «Полнота», "
+"«Актуальность», «Навигационная доступность», «HTML-доступность», "
+"«Файловая доступность», «Графическая доступность», так как они могут "
+"быть нерелевантны для параметра."
+"\n        "
+
+#: templates/exmo2010/opendata.html:347
+msgid ""
+"\n"
+"        Parameter type can have two values: 1) \"other\" for formulated by "
+"experts parameters; 2) \"npa\" for formulated by normative legal acts "
+"parameters.\n"
+"        "
+msgstr "\nТип параметра может принимать два значения: 1) «other», для "
+"сформулированных экспертами параметров; 2) «npa», для сформулированных на "
+"основе нормативно-правовых актов параметров."
+"\n        "
+
+#: templates/exmo2010/opendata.html:352
+msgid ""
+"\n"
+"        Version of parameter's estimate can have two values: 1) \"initial\" "
+"for parameter's estimate before interaction of organization's "
+"representatives with experts; 2) \"default\" for final parameter's estimate "
+"after interaction of organization's representatives with experts. Within "
+"dataset may be absent parameters with \"initial\" value if parameter's "
+"estimate was not changed during interaction.\n"
+"        "
+msgstr "\nВерсия оценки по параметру может принимать два значения: 1) "
+"«initial», для оценки по параметру до взаимодействия представителей "
+"организации с экспертами; 2) «default», для итоговой оценки по параметру "
+"после взаимодействия представителей организации с экспертами. В наборе "
+"данных могут отсутствовать параметры со значением «initial» если оценка "
+"по параметру не менялась в ходе взаимодействия."
+"\n        "
+
+#: templates/exmo2010/opendata.html:357
+msgid "Structure of CSV dataset to download"
+msgstr "Структура набора данных, выгружаемых в формате CSV"
 
 #: templates/exmo2010/org_user_info.html:29
 msgid "Registration's last step"

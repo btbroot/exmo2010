@@ -55,8 +55,10 @@ urlpatterns = patterns('',
                                             }),
         name='help'),
     url(r'^about/$', BreadcrumbsView.as_view(template_name='exmo2010/about.html',
-                                             get_context_data=lambda: {'current_title': _('About')}),
-        name='about'),
+                                             get_context_data=lambda: {'current_title': _('About')}), name='about'),
+
+    url(r'^opendata/$', BreadcrumbsView.as_view(template_name='exmo2010/opendata.html',
+                                             get_context_data=lambda: {'current_title': _('Open data')}), name='opendata'),
     url(r'^feedback/$', 'exmo2010.views.feedback', name='feedback'),
     # AJAX-вьюха для получения списка критериев, отключенных у параметра
     url(r'^get_pc/$', 'parameters.views.get_pc', name='get_pc'),
