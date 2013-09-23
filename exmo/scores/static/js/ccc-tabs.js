@@ -20,6 +20,7 @@ $(document).ready(function() {
     var $tab_content_comments = $('.tab-content-comments');
     var $tab_content_clarifications = $('.tab-content-clarifications');
     var $tab_content_claims = $('.tab-content-claims');
+    var $comments = $('#comments').length;
 
     // tabs clicking (comment, clarification, claim)
     $('.ccc-tabs').live('click', function(e) {
@@ -49,5 +50,9 @@ $(document).ready(function() {
         return false;
     });
 
+    // only for form page without comments (clarification tab by default)
+    if ($comments == 0) {
+        $('a[href="#clarifications"]').click();
+    }
     $hash && $('a[href="' + $hash + '"]').click();
 });
