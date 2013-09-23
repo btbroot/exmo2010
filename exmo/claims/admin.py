@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -22,4 +22,7 @@ from django.contrib import admin
 from exmo2010.models import Claim
 
 
-admin.site.register(Claim)
+class ClaimAdmin(admin.ModelAdmin):
+    raw_id_fields = ('score',)
+
+admin.site.register(Claim, ClaimAdmin)
