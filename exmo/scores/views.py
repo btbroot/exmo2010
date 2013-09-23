@@ -341,44 +341,52 @@ class ScoreEditView_dev(LoginRequiredMixin, ScoreMixin, UpdateView):
 class ScoreDetailView(ScoreMixin, DetailView):
     template_name = "detail.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        score = get_object_or_404(Score, pk=kwargs['pk'])
+
+        if not request.user.has_perm('exmo2010.view_score', score):
+            return HttpResponseForbidden(_('Forbidden'))
+
+        result = super(ScoreDetailView, self).dispatch(request, *args, **kwargs)
+
+        return result
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.success_url = self.get_redirect(request)
 
-        if request.user.has_perm('exmo2010.view_score', self.object):
-            current_title = _('Parameter')
-            if request.user.is_active and request.user.profile.is_expertA:
-                all_score_claims = Claim.objects.filter(score=self.object)
-            else:
-                all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
-            all_score_clarifications = Clarification.objects.filter(score=self.object)
-            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-            breadcrumbs(request, crumbs, self.object.task)
+        current_title = _('Parameter')
+        if request.user.is_active and request.user.profile.is_expertA:
+            all_score_claims = Claim.objects.filter(score=self.object)
+        else:
+            all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
+        all_score_clarifications = Clarification.objects.filter(score=self.object)
+        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        breadcrumbs(request, crumbs, self.object.task)
 
-            self.template_name = "detail.html"
-            parameter = self.object.parameter
-            title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
-            time_to_answer = self.object.task.organization.monitoring.time_to_answer
-            delta = datetime.timedelta(days=time_to_answer)
-            today = datetime.date.today()
-            peremptory_day = today + delta
-            expert = _(config_value('GlobalParameters', 'EXPERT'))
+        parameter = self.object.parameter
+        title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
+        time_to_answer = self.object.task.organization.monitoring.time_to_answer
+        delta = datetime.timedelta(days=time_to_answer)
+        today = datetime.date.today()
+        peremptory_day = today + delta
+        expert = _(config_value('GlobalParameters', 'EXPERT'))
 
-            self.extra_context = {
-                'claim_form': ClaimAddForm(prefix="claim"),
-                'claim_list': all_score_claims,
-                'clarification_form': ClarificationAddForm(prefix="clarification"),
-                'clarification_list': all_score_clarifications,
-                'current_title': current_title,
-                'expert': expert,
-                'invcodeform': SettingsInvCodeForm(),
-                'parameter': parameter,
-                'peremptory_day': peremptory_day,
-                'task': self.object.task,
-                'title': title,
-                'url_length': URL_LENGTH,
-                'view': True,
-            }
+        self.extra_context = {
+            'claim_form': ClaimAddForm(prefix="claim"),
+            'claim_list': all_score_claims,
+            'clarification_form': ClarificationAddForm(prefix="clarification"),
+            'clarification_list': all_score_clarifications,
+            'current_title': current_title,
+            'expert': expert,
+            'invcodeform': SettingsInvCodeForm(),
+            'parameter': parameter,
+            'peremptory_day': peremptory_day,
+            'task': self.object.task,
+            'title': title,
+            'url_length': URL_LENGTH,
+            'view': True,
+        }
 
         result = super(ScoreDetailView, self).get(request, *args, **kwargs)
 
