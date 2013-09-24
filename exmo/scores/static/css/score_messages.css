@@ -28,6 +28,7 @@
 }
 
 .table-messages-parameter {
+    display: inline-table; /* Firefox fix */
     max-width: 100%;
     background-color: transparent;
     border-collapse: collapse;

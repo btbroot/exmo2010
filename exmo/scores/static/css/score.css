@@ -23,7 +23,6 @@ form.score {
     float: left;
     display: block;
     width: 100%;
-    margin-bottom: 15px;
 }
 
 .heading-comments-parameter
@@ -235,9 +234,12 @@ label
     padding: 5px;
 }
 
-.edit-tabs span.active
-{
+.edit-tabs span.active {
     background-color: #FFFFD6;
+}
+
+.edit-tabs span.active a {
+    border-bottom: none;
 }
 
 .button-bar {
@@ -245,6 +247,7 @@ label
 }
 
 .non_relevant_button {
+    display: inline;
     float: right;
 }
 

@@ -254,17 +254,19 @@
         {{ form.recomendation }}
     </span>
 
-    {# Кнопка "Сохранить" #}
-    <input type="submit" name="submit_scores" id="submit_scores" value="{% trans 'Save' %}" />
+    <div>
+        {# Кнопка "Сохранить" #}
+        <input type="submit" name="submit_scores" id="submit_scores" value="{% trans 'Save' %}" />
 
-    {# Кнопка "Признать нерелевантным" #}
-    {% if perm %}
-        <span class="non_relevant_button">
-        <input type="button"
-               value="{% trans 'Set non-relevant' %}"
-               onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
-        </span>
-    {% endif %}
+        {# Кнопка "Признать нерелевантным" #}
+        {% if perm %}
+            <span class="non_relevant_button">
+            <input type="button"
+                   value="{% trans 'Set non-relevant' %}"
+                   onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
+            </span>
+        {% endif %}
+    </div>
 
     {# Табы #}
     {% if object %}
