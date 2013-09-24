@@ -21,6 +21,7 @@
 import datetime
 import json
 
+import reversion
 from django.contrib.auth.decorators import login_required
 from django.contrib.comments.signals import comment_was_posted
 from django.contrib.comments.views.comments import post_comment
@@ -43,7 +44,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.detail import DetailView
 from livesettings import config_value
-from reversion import revision
 
 from accounts.forms import SettingsInvCodeForm
 from bread_crumbs.views import breadcrumbs
@@ -243,7 +243,7 @@ class ScoreEditView(UpdateView):
         result = super(ScoreEditView, self).form_valid(form)
 
         message = _construct_change_message(self.request, form)
-        revision.comment = message
+        reversion.revision.comment = message
         score_was_changed.send(
             sender=Score.__class__,
             form=form,
@@ -380,14 +380,19 @@ def score_view(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
 
     if request.user.has_perm('exmo2010.edit_score', score):
-        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
-        return HttpResponseRedirect(redirect_url)
+        call_view = ScoreEditView.as_view()
+        revision = reversion.create_revision()
+        callback = revision(call_view)
+        result = callback(request, pk=score_id)
 
-    if request.user.has_perm('exmo2010.view_score', score):
-        redirect_url = reverse('exmo2010:score_detail', args=[score_id])
-        return HttpResponseRedirect(redirect_url)
+    elif request.user.has_perm('exmo2010.view_score', score):
+        call_view = ScoreDetailView.as_view()
+        result = call_view(request, pk=score_id)
 
-    return HttpResponseForbidden(_('Forbidden'))
+    else:
+        result = HttpResponseForbidden(_('Forbidden'))
+
+    return result
 
 
 def _save_comment(comment):
