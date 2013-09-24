@@ -2635,7 +2635,7 @@ msgstr "\nДанные доступны для выгрузки со стран�
 
 #: templates/exmo2010/opendata.html:45
 msgid "metodology of official sites of government authorities"
-msgstr "методикой мониторинга официальных сайтов органов власти."
+msgstr "методикой мониторинга официальных сайтов органов власти"
 
 #: templates/exmo2010/opendata.html:49
 msgid "Structure of JSON dataset to download"
