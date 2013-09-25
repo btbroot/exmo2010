@@ -115,6 +115,7 @@ $(document).ready(function() {
         $value.removeClass("blank");
         $score_table.removeClass("editable");
         $score_table.addClass("non-editable");
+        $non_relevant_button.hide();
         $comment_field.hide();
         $submit_score.hide();
 
