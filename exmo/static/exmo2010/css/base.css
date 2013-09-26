@@ -299,28 +299,6 @@ th.table-headers
     background-image: none;
 }
 
-thead th,
-tfoot td {
-    padding: 2px 5px;
-    background: #e1e1e1 url(../../admin/img/nav-bg.gif) top left repeat-x;
-    border-left: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-}
-
-tfoot td {
-    border-bottom: none;
-    border-top: 1px solid #ddd;
-}
-
-thead th:first-child,
-tfoot td:first-child {
-    border-left: none !important;
-}
-
-thead th.optional {
-    font-weight: normal !important;
-}
-
 fieldset table {
     border-right: 1px solid #eee;
 }
@@ -349,11 +327,21 @@ tr.alt {
 table.base-table th {
     font-weight: bold;
     color: #222;
-    border-top: 1px solid;
     border-color: #D7D7D7;
+    border-left: 0;
+    border-right: 0;
+    background-image: none;
+    background-color: #fff;
+}
+
+table.base-table tfoot > tr > td {
+    background-color: #fff;
+    padding: 5px;
+    border-left: none;
 }
 
 table.base-table td {
+    background-image: none;
     border-color: #D7D7D7;
 }
 

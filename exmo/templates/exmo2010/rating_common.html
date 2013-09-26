@@ -21,12 +21,12 @@
 {% load i18n %}
 {% if object_list %}
 <table>
-  <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
+  <thead><td>{% trans "Position in rating" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>{% for object, place in object_list %}
     <tr><td>{{ place }}</td><td>{{ object.task.organization.name }}</td><td>{{ object.task.organization.url }}</td><td>{{ object.openness|floatformat:3 }}</td></tr>
   {% endfor %}</tbody>
-  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
+  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average value' %}</td><td>{{ average|floatformat:3 }}</td></tr>
 </table>
 {% else %}
-{% trans 'Empty list' %}
+{% trans 'List is empty' %}
 {% endif %}

@@ -281,7 +281,7 @@ def claim_notification(sender, **kwargs):
 
     theme = _('New claim') if creation else _('Delete claim')
 
-    subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s') % {
+    subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s' % {
         'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
         'monitoring': score.task.organization.monitoring,
         'org': score.task.organization.name.split(':')[0],

@@ -23,7 +23,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
-<title>{% trans "Rating " %} {{ monitoring }}</title>
+<title>{% trans "Rating" %} {{ monitoring }}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/rating.css" />
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
@@ -31,11 +31,11 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 
 <div id=content>
-<h1>{% trans "Rating " %} {{ monitoring }}</h1>
+<h1>{% trans "Rating" %} {{ monitoring }}</h1>
 <div id=organization_list>
 {% if object_list %}
 <table>
-  <thead><td>{% trans "Position" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
+  <thead><td>{% trans "Position in rating" %}</td><td>{% trans "Organization" %}</td><td>{% trans "URL" %}</td><td>{% trans "Openness" %}</td></thead>
   <tbody>{% for object in object_list %}
             <tr {%ifchanged object.place%}style="border-top:solid; border-color:#333333;"{%endifchanged%} class="group{{object.category}}">
         {% ifchanged object.place %}
@@ -46,11 +46,11 @@
         <td class="rating_color">{{ object.openness|floatformat:3 }}</td>
     </tr>
   {% endfor %}</tbody>
-  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average' %}</td><td>{{ average|floatformat:3 }}</td></tr>
+  <tr style="font-weight: bold"><td colspan=3>{% trans 'Average value' %}</td><td>{{ average|floatformat:3 }}</td></tr>
   <tr style="font-weight: bold"><td colspan=3>{% trans 'Total organizations' %}</td><td>{{ object_list|length }}</td></tr>
 </table>
 {% else %}
-{% trans 'Empty list' %}
+{% trans 'List is empty' %}
 {% endif %}
 </div>
 </div>

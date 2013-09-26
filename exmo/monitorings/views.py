@@ -42,6 +42,7 @@ from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils import simplejson
@@ -53,13 +54,14 @@ from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
+from custom_comments.models import CommentExmo
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
-from monitorings.forms import MonitoringForm, MonitoringFilterForm
+from monitorings.forms import MonitoringForm, MonitoringFilterForm, TableSettingsForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
 
-def set_npa_params(request, m_id):
+def set_npa_params(request, monitoring_id):
     """
     Страница 'Выбрать согласованные параметры'.
 
@@ -67,7 +69,7 @@ def set_npa_params(request, m_id):
     # На админа проверять не надо. Они и так все is_expertA.
     if not request.user.is_active or not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     parameters = monitoring.parameter_set.all()
     ParameterTypeFormSet = modelformset_factory(Parameter,
                                                 extra=0,
@@ -303,17 +305,15 @@ def monitoring_rating_color(request, id):
     }, context_instance=RequestContext(request))
 
 
-def monitoring_rating(request, m_id):
+def monitoring_rating(request, monitoring_id):
+    """Return a response containing the rating table,
+    the table settings form, and the parameter selection form.
     """
-    Display monitoring.
-
-    """
-    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring) \
             or not request.user.is_anonymous() and request.user.profile.is_expertB \
             and not request.user.is_superuser and monitoring.status != 5:
         return HttpResponseForbidden(_('Forbidden'))
-    title = _('Rating')
 
     has_npa = monitoring.has_npa
     rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
@@ -323,11 +323,50 @@ def monitoring_rating(request, m_id):
     breadcrumbs(request, crumbs)
 
     if request.expert:
-        current_title = _('Monitoring cycle')
+        title = _('Rating')
+        breadcrumbs_title = _('Monitoring cycle')
     else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
+        title = monitoring.name
+        breadcrumbs_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     total_orgs = _total_orgs_translate(avg, rating_list, rating_type)
+
+    name_filter = request.GET.get('name_filter', '')
+
+    if name_filter:
+        tasks = Task.objects.filter(organization__name__icontains=name_filter)
+        filtered_rating_list = []
+        for o in rating_list:
+            if o["task"] in tasks:
+                filtered_rating_list.append(o)
+        rating_list = filtered_rating_list
+
+    if request.user.is_active:
+        profile = request.user.profile
+        representatives = request.GET.get('representatives', None)
+        comment_quantity = request.GET.get('comment_quantity', None)
+        initial_openness = request.GET.get('initial_openness', None)
+        final_openness = request.GET.get('final_openness', None)
+        difference = request.GET.get('difference', None)
+
+        if representatives is not None or comment_quantity is not None or initial_openness is not None or final_openness is not None or difference is not None:
+            table_settings = TableSettingsForm(request.GET)
+            if table_settings.is_valid():
+                data = table_settings.cleaned_data
+                profile.rt_representatives = data['representatives']
+                profile.rt_comment_quantity = data['comment_quantity']
+                profile.rt_initial_openness = data['initial_openness']
+                profile.rt_final_openness = data['final_openness']
+                profile.rt_difference = data['difference']
+                profile.save()
+        else:
+            table_settings = TableSettingsForm(initial={'representatives': profile.rt_representatives,
+                                                    'comment_quantity': profile.rt_comment_quantity,
+                                                    'initial_openness': profile.rt_initial_openness,
+                                                    'final_openness': profile.rt_final_openness,
+                                                    'difference': profile.rt_difference, })
+    else:
+        table_settings = TableSettingsForm()
 
     return render_to_response('rating.html', {
         'monitoring': monitoring,
@@ -336,9 +375,11 @@ def monitoring_rating(request, m_id):
         'rating_type': rating_type,
         'average': avg,
         'total_orgs': total_orgs,
-        'current_title': current_title,
+        'current_title': breadcrumbs_title,
         'title': title,
         'form': form,
+        'table_form': table_settings,
+        'name_filter': name_filter,
     }, context_instance=RequestContext(request))
 
 
@@ -525,13 +566,13 @@ def monitoring_info(request, id):
 
 
 @login_required
-def monitoring_parameter_filter(request, m_id):
+def monitoring_parameter_filter(request, monitoring_id):
     """
     Отчёт по параметру и критерию
     """
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     queryset = None
     if request.method == "POST":
         hide = 0
@@ -1110,7 +1151,7 @@ def ratings(request):
     Рейтинги.
 
     """
-    m_id = request.GET.get('monitoring')
+    monitoring_id = request.GET.get('monitoring')
     mform = MonitoringFilterForm(request.GET)
     title = _('Ratings')
     current_title = _('Ratings')
@@ -1122,8 +1163,8 @@ def ratings(request):
         'mform': mform,
     }
 
-    if m_id:
-        monitoring = get_object_or_404(Monitoring, pk=m_id)
+    if monitoring_id:
+        monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
         if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         has_npa = monitoring.has_npa
@@ -1161,8 +1202,12 @@ def replace_string(cell):
 
 def _total_orgs_translate(avg, rating_list, rating_type):
     """
-    Display of the number of organizations in the rating.
+    Returns string containing organization count.
 
+    Accepts arguments:
+    avg - dictionary of average values of monitoring rating
+    rating_list - list of rating data for monitoring
+    rating_type - string/unicode type of monitoring, may be 'user' for example
     """
     text = ungettext(
         'Altogether, there is %(count)d organization in the monitoring cycle',
@@ -1221,6 +1266,10 @@ def rating(monitoring, parameters=None, rating_type=None):
     Вернет tuple из отсортированного списка объектов рейтинга
     и словаря средних значений Кид.
 
+    Принимает аргументы:
+    monitoring - экземпляр модели Monitoring
+    parameters - list/tuple из экземпляров модели Parameter
+    rating_type - string/unicode тип мониторинга
     """
     #sample extra for select
     extra_select = "count(*)"
@@ -1254,6 +1303,7 @@ def rating(monitoring, parameters=None, rating_type=None):
     avg = {
         'openness': 0,
         'openness_first': 0,
+        'openness_delta': 0,
         'total_tasks': total_tasks,
     }
     max_rating = 0
@@ -1261,9 +1311,29 @@ def rating(monitoring, parameters=None, rating_type=None):
         max_rating = object_list[0]['openness']
         avg['openness'] = sum([t['openness'] for t in object_list]) / len(object_list)
         avg['openness_first'] = sum([t['openness_first'] for t in object_list]) / len(object_list)
+        openness_delta = sum([float(t['openness'])-float(t['openness_first']) for t in object_list]) / len(object_list)
+        avg['openness_delta'] = round(openness_delta, 3)
     rating_list = []
     place_count = {}
     for rating_object in object_list:
+        profiles = UserProfile.objects.filter(organization=rating_object['task'].organization)
+
+        scores = Score.objects.filter(task=rating_object['task'])
+        rating_object["repr_len"] = len(profiles)
+        rating_object["active_repr_len"] = 0
+        all_comments = 0
+        content_type = ContentType.objects.get_for_model(scores[0])
+        for p in profiles:
+            p_comments = 0
+            for s in scores:
+                p_comments = CommentExmo.objects.filter(content_type=content_type, object_pk=s.pk, user=p.user).count()
+                all_comments += p_comments
+            if p_comments:
+                rating_object["active_repr_len"] += 1
+
+        rating_object["comments"] = all_comments
+        openness_delta = float(rating_object['openness']) - float(rating_object['openness_first'])
+        rating_object['openness_delta'] = round(openness_delta, 3)
         if rating_object['openness'] < max_rating:
             place += 1
             max_rating = rating_object['openness']
@@ -1273,6 +1343,11 @@ def rating(monitoring, parameters=None, rating_type=None):
             place_count[place] = 1
         rating_object['place'] = place
         rating_list.append(rating_object)
+
+    if object_list:
+        avg['repr_len'] = sum([t['repr_len'] for t in object_list]) / len(object_list)
+        avg['active_repr_len'] = sum([t['active_repr_len'] for t in object_list]) / len(object_list)
+        avg['comments'] = sum([t['comments'] for t in object_list]) / len(object_list)
 
     rating_list_final = []
     for rating_object in rating_list:

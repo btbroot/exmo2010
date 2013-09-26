@@ -512,3 +512,29 @@ While you are not required to include attribution on your Bootstrap-based projec
 I'd certainly appreciate a visibile link back to glyphicons.com in any place you find appropriate (footer, docs, etc).
 
 Apache 2.0 license
+
+--
+
+exmo/exmo2010/static/exmo2010/js/jquery.mousewheel.js
+
+Copyright (c) 2011, Brandon Aaron <http://brandonaaron.net>
+
+Code licensed under the MIT License
+
+--
+
+exmo/exmo2010/static/exmo2010/js/jquery.simplemodal-1.4.4.js
+
+Copyright (c) 2013, Eric Martin <http://simplemodal.com>
+
+Code licensed under MIT and GPL License
+
+--
+
+exmo/exmo2010/static/exmo2010/js/jquery.tablesorter.js
+
+Copyright (c) 2007, Christian Bach <http://tablesorter.com>
+
+Code licensed under MIT and GPL License
+
+--

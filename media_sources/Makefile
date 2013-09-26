@@ -16,35 +16,11 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-OBJECT := HEAD
-NAME := exmo2010
-PREFIX := $(NAME)/
-RELEASE := $(shell git describe --tags $(OBJECT))
-RELEASE_ALL := $(shell git describe --long --all $(OBJECT))
-RELEASE_FILE := exmo/templates/release
-TARBALL := $(NAME)-$(RELEASE)
-TARBALL_FILE := $(TARBALL).tar
 
-ifeq ($(RELEASE),)
-$(error OBJECT $(OBJECT) is unknown)
-endif
+STATIC_FOLDER := ../exmo/static
+ARROWS_SOURCE := rate_icons.xcf
 
-dist: releaseinfo
-	git archive --format tar --prefix $(PREFIX) $(OBJECT) -o $(TARBALL_FILE)
-	tar -r $(RELEASE_FILE) --xform 's,^,$(PREFIX),S' -f $(TARBALL_FILE)
-	gzip -f $(TARBALL_FILE)
-	$(MAKE) -C media_sources
+media:
+	xcf2png ./$(ARROWS_SOURCE) rate_up -o $(STATIC_FOLDER)/exmo2010/img/rate_up.png
+	xcf2png ./$(ARROWS_SOURCE) rate_down -o $(STATIC_FOLDER)/exmo2010/img/rate_down.png
 
-dist-clean: releaseinfo-clean
-	$(RM) $(TARBALL_FILE) $(TARBALL_FILE).gz
-
-releaseinfo:
-	echo $(RELEASE) $(RELEASE_ALL) > $(RELEASE_FILE)
-
-releaseinfo-clean:
-	$(RM) $(RELEASE_FILE)
-
-clean: dist-clean
-
-.PHONY: dist dist-clean releaseinfo releaseinfo-clean clean

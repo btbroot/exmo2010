@@ -207,13 +207,12 @@ def clarification_notification(sender, **kwargs):
     request = kwargs['request']
     score = clarification.score
 
-    subject = _(
-        '%(prefix)s%(monitoring)s - %(org)s: %(code)s - New clarification'
-    ) % {
+    subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(msg)s' % {
         'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
         'monitoring': score.task.organization.monitoring,
         'org': score.task.organization.name.split(':')[0],
         'code': score.parameter.code,
+        'msg': _('New clarification')
     }
 
     url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',

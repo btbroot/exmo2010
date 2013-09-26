@@ -43,7 +43,7 @@
 #header ul#navigation-menu li.person {
     position: absolute;
     right: 0;
-    z-index: 9999;
+    z-index: 99;
     text-align: right;
     outline: none;
 }

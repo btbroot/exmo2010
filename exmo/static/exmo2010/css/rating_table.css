@@ -1,0 +1,276 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+.icon-download-alt {
+    background-position: -96px -24px;
+    background-image: url("../img/glyphicons-halflings.png");
+}
+
+.icon-map
+{
+    background-image: url("../img/earth_14x14.png");
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    background-repeat: no-repeat;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    height: 14px;
+    line-height: 14px;
+    margin-top: 1px;
+    vertical-align: text-top;
+    width: 18px;
+}
+
+h2 {
+    margin-bottom: 0;
+}
+
+div.rating-menu > h2 {
+    float: left;
+}
+
+ul.switcher {
+    float: left;
+    margin: 0 0 0 11px;
+    padding: 0;
+}
+
+ul.utils {
+    float: right;
+    margin: 0;
+    padding: 0;
+}
+
+ul.switcher > li {
+    display: block;
+    float: left;
+    padding: 4px 11px 7px 11px;
+}
+
+ul.switcher > li.active {
+    background-color: #FFFFD6;
+}
+
+ul.utils > li {
+    display: block;
+    float: left;
+    padding-left: 15px;
+}
+
+#user-defined-parameters {
+    margin-top: 15px;
+}
+
+.parameter-list-heading {
+    margin-bottom: 5px;
+}
+
+.scroll
+{
+    line-height: 20px;
+    margin-bottom: 2px;
+    border: #000 1px solid;
+    padding: 3px 8px;
+    max-height: 150px;
+    overflow-y: scroll;
+}
+
+.scroll input[type="checkbox"]
+{
+    margin-right: 10px;
+}
+
+form.org-filter {
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.org-filter > div {
+    margin-right: 90px;
+}
+
+form.org-filter input[type="text"] {
+    font-size: 13px;
+    width: 100%;
+}
+
+form.org-filter input[type="submit"] {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 13px;
+    width: 84px;
+    padding-top: 2px;
+}
+
+#filler {
+    background-color: red;
+    height: 30px;
+    width: 100%;
+
+}
+
+table.base-table {
+    width: 100%;
+}
+
+table.base-table tr:nth-child(odd) {
+    background: #F5F5F5;
+}
+table.base-table tr:nth-child(even) {
+    background: #fff;
+}
+
+table.base-table tfoot td {
+    border-bottom: #D7D7D7 1px solid;
+}
+
+table.base-table tfoot tr:hover td {
+    background-color: #fff;
+}
+
+th.tablesorter-headerDesc  span.arrow:before {
+    content: "↓";
+}
+
+th.tablesorter-headerAsc span.arrow:before {
+    content: "↑";
+}
+
+th span {
+    cursor: pointer;
+    border-bottom: 1px dotted;
+}
+
+th.tablesorter-headerAsc span, th.tablesorter-headerDesc span {
+    border-bottom: none;
+}
+
+th.place {
+    width: 50px;
+}
+
+th.init-openness {
+    width: 119px;
+}
+
+th.init-openness {
+    width: 119px;
+}
+
+th.openness {
+    width: 92px;
+}
+
+th.diff {
+    width: 77px;
+}
+
+th.representatives {
+    width: 50px;
+}
+
+th.comments {
+    width: 70px;
+}
+
+th.settings {
+    width: 16px;
+    text-align: right;
+}
+
+td.place {
+    text-align: center;
+}
+
+td.place > span {
+    display: block;
+    position: relative;
+    left: -8px;
+}
+
+td.comments {
+    text-align: center;
+}
+
+td.diff > span  {
+    display: block;
+    float: left;
+}
+
+td.diff > img  {
+    display: block;
+    float: right;
+    position: relative;
+    top: 6px;
+    left: -9px;
+}
+
+p.total-organizations {
+    padding: 15px 5px;
+}
+
+.rate-direction {
+    position: relative;
+    top: -1px;
+}
+
+#simplemodal-overlay {
+  background-color: black;
+  opacity: .5;
+}
+
+#settings-modal {
+    background-color: #fff;
+    margin: 0;
+    padding: 20px 30px 30px 20px;
+}
+
+#settings-modal img {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+}
+
+#settings-modal form {
+    line-height: 27px;
+}
+
+#settings-modal form span {
+    top: 8px;
+    width: 130px;
+}
+
+.modal-heading {
+    margin-bottom: 5px;
+}
+
+#cancel-link {
+    position: relative;
+    top: 2px;
+    left: 33px;
+}
+
+a.pseudo {
+    margin-top: 1px;
+}

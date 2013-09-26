@@ -147,7 +147,7 @@
         {% if object_list %}
             <table id="table_form">
                 <thead>
-                <td>{% trans "Position" %}</td>
+                <td>{% trans "Position in rating" %}</td>
                 <td>{% trans "Organization" %}</td>
                 <td>{% trans "URL" %}</td>
                 {% if monitoring.status in monitoring.after_interaction_status %}
@@ -179,7 +179,7 @@
                 {% endfor %}
                 </tbody>
                 <tr id="average">
-                    <td colspan=3>{% trans 'Average' %}</td>
+                    <td colspan=3>{% trans 'Average value' %}</td>
                     {% if monitoring.status in monitoring.after_interaction_status and average.openness_first >= 0 %}
                         {% if rating_type == "all" %}
                             <td>{{ average.openness_first|floatformat:3 }}</td>
@@ -206,7 +206,7 @@
                 {% endif %}
             {% endif %}
         {% else %}
-            {% trans 'Empty list' %}
+            {% trans 'List is empty' %}
         {% endif %}
     </div>
 {% endif %}

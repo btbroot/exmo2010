@@ -72,6 +72,8 @@ TIME_ZONE = 'Europe/Moscow'
 
 LANGUAGE_CODE = 'ru-RU'
 
+USE_L10N = True
+
 SITE_ID = 1
 
 USE_I18N = True

@@ -434,7 +434,7 @@ def toggle_comment(request):
 
 def score_list_by_task(request, task_id, report=None):
     task = get_object_or_404(Task, pk=task_id)
-    title = _('%s') % task.organization.name
+    title = task.organization.name
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = task.organization.monitoring
@@ -635,12 +635,12 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
 @login_required
 def score_add_comment(request, score_id):
     score = get_object_or_404(Score, pk=score_id)
-    title = _('Add new comment')
+    title = _('Add new parameter')
     if request.user.has_perm('exmo2010.add_comment_score', score):
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
         breadcrumbs(request, crumbs, score)
-        current_title = _('Add comment')
+        current_title = _('Add parameter')
 
         return render_to_response(
             'score_comment_form.html',
@@ -697,11 +697,12 @@ def score_change_notify(sender, **kwargs):
                     profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
                 rcpt.append(profile.user.email)
         rcpt = list(set(rcpt))
-        subject = _('%(prefix)s%(monitoring)s - %(org)s: %(code)s - Score changed') % {
+        subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(msg)s' % {
             'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
             'monitoring': score.task.organization.monitoring,
             'org': score.task.organization.name.split(':')[0],
             'code': score.parameter.code,
+            'msg': _('Score changed'),
         }
         headers = {
             'X-iifd-exmo': 'score_changed_notification'

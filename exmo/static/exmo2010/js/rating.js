@@ -15,59 +15,83 @@
 //
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+
 $(document).ready(function() {
+    /* Sortable table */
 
-    function pseudolinkHandler( e ) {
-        var $user_selected = $('#user-selcted');
-        $user_selected.removeClass('pseudo-off');
-        $user_selected.addClass('pseudo');
-        $user_selected.parent('span').removeClass('active');
-        $(e.target).removeClass('pseudo');
-        $(e.target).addClass('pseudo-off');
-        $(e.target).parent('span').addClass('active');
+    var sortList = [[0,0]];
+    var thClasses = new Array(5);
 
-        $('#pselect_div').hide();
-        $('#parameters-toggle').hide();
-
-        e.preventDefault();
-    }
-
-    function parametersToggle() {
-        if($('div.scroll').is(":visible")) {
-            $('#parameters-toggle a').html(gettext('Hide parameter list'));
-            $('#parameters-toggle').removeClass('arrow-down');
-            $('#parameters-toggle').addClass('arrow-up');
-
-        } else {
-            $('#parameters-toggle a').html(gettext('Show parameter list'));
-            $('#parameters-toggle').removeClass('arrow-up');
-            $('#parameters-toggle').addClass('arrow-down');
-        }
-    }
-
-    $('#user-selcted').click(function( e ) {
-
-        $('.rating-menu > span > span').each(function() {
-            $(this).removeClass('pseudo-off');
-            $(this).addClass('pseudo');
-            $(this).parent('span').removeClass('active');
-            $(this).on("click", pseudolinkHandler);
+    function modalOpenHandler() {
+        $('#rating-data th').each(function(i) {
+            thClasses[i] = ($(this).attr('class'));
         });
+    }
 
-        $('#pselect_div').show();
-        $(this).removeClass('pseudo');
-        $(this).addClass('pseudo-off');
-        $(this).parent('span').addClass('active');
-        $('#parameters-toggle').show();
+    function modalCloseHandler() {
+        $('#rating-data th').each(function(i) {
+             $(this).attr('class', thClasses[i]);
+        });
+        $.modal.close();
+    }
 
-        parametersToggle();
+    $("#rating-data").tablesorter({sortList: sortList});
+
+    /* Modal */
+
+    $(document).on('mousewheel', '.simplemodal-overlay, .simplemodal-data', function() {
+        return false;
+    });
+
+    $("#modal-open").click(function( e ) {
+        modalOpenHandler();
+
+        $("#settings-modal").modal({
+            overlayClose: true,
+            onClose: modalCloseHandler
+        });
 
         e.preventDefault();
     });
 
-    $('#parameters-toggle').click(function( e ) {
-        $('#pselect_div').toggle();
+    $("#cancel-link").click(function( e ) {
+        $.modal.close();
+        e.preventDefault();
+    });
+
+    /* User defined menu item */
+
+    $('#user-defined').click(function( e ) {
+        $('.switcher > li > a').each(function() {
+            $(this).parent().removeClass('active');
+            $(this).removeClass('pseudo-off');
+            $(this).addClass('pseudo');
+        });
+
+        $(this).removeClass('pseudo');
+        $(this).addClass('pseudo-off');
+        $(this).parent().addClass('active');
+
+        $("#user-defined-parameters").removeClass('hidden');
+
+        e.preventDefault();
+    });
+
+    /* Toggle parameters */
+
+    function parametersToggle() {
+        if(!$('#pselect_form').is(":visible")) {
+            $('#user-defined-parameters>p a').html(gettext('hide'));
+            $('#user-defined-parameters>form').removeClass('hidden');
+
+        } else {
+            $('#user-defined-parameters>p a').html(gettext('show'));
+            $('#user-defined-parameters>form').addClass('hidden');
+
+        }
+    }
+
+    $('#user-defined-parameters>p a').click(function( e ) {
         parametersToggle();
         e.preventDefault();
     })
