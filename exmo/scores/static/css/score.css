@@ -240,6 +240,7 @@ label
 
 .edit-tabs span.active a {
     border-bottom: none;
+    color: #222222;
 }
 
 .button-bar {
