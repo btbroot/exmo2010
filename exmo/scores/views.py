@@ -668,13 +668,15 @@ def score_change_notify(sender, **kwargs):
         score = form.target_object
 
     request = kwargs['request']
+    non_criterion_fields = ['timestamp', 'security_hash', 'name', 'email', 'comment', 'tabs']
     changes = []
     if form.changed_data:
-        for change in form.changed_data:
-            change_dict = {'field': change,
-                           'was': form.initial.get(change, form.fields[change].initial),
-                           'now': form.cleaned_data[change]}
-            changes.append(change_dict)
+        for field_name in form.changed_data:
+            if field_name not in non_criterion_fields:
+                change_dict = {'field': form.fields[field_name].label,
+                               'was': form.initial.get(field_name, form.fields[field_name].initial),
+                               'now': form.cleaned_data[field_name]}
+                changes.append(change_dict)
     if score.task.approved:
         rcpt = []
         for profile in UserProfile.objects.filter(organization=score.task.organization):

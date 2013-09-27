@@ -1108,6 +1108,10 @@ msgstr "комментарий к критерию 'Графическая до�
 msgid "Recomendations"
 msgstr "Рекомендации"
 
+#: scores/forms.py:88
+msgid "recomendations"
+msgstr "рекомендации"
+
 #: exmo2010/models.py:1005
 msgid "Complete must be set"
 msgstr "Критерий 'Полнота' не оценен"

@@ -240,11 +240,11 @@
     <p class="recomendation">
         {% if object.comment %}
             <span class="non_edit_table">
-                {{ form.recomendation.label }}
+                {{ form.recomendation.label|capfirst }}
             </span>
         {% endif %}
         <span class="edit_table part_edit_table">
-            {{ form.recomendation.label }}
+            {{ form.recomendation.label|capfirst }}
         </span>
     </p>
     <span class="non_edit_table">

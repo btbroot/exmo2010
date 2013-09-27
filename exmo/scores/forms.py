@@ -65,31 +65,29 @@ class ScoreForm(forms.ModelForm):
 
 
 class ScoreFormWithComment(CustomCommentForm):
+    # options for radio buttons (variant of scores):
     BASE_CHOICE = (('', '-'), (0, 0), (1, 1))
-    BIG_CHOICE = (('', '-'), (1, 1), (2, 2), (3, 3))
-    TEXTAREA_ATTRS = {'cols': 45, 'rows': 1}
+    FULL_CHOICE = (('', '-'), (1, 1), (2, 2), (3, 3))
 
     def __init__(self, instance=None, **kwargs):
         super(ScoreFormWithComment, self).__init__(instance, **kwargs)
 
-    found = forms.ChoiceField(label=_('Found'), widget=forms.RadioSelect(), choices=BASE_CHOICE)
-    foundComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    complete = forms.ChoiceField(label=_('Complete'), widget=forms.RadioSelect(), choices=BIG_CHOICE, required=False)
-    completeComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    topical = forms.ChoiceField(label=_('Topical'), widget=forms.RadioSelect(), choices=BIG_CHOICE, required=False)
-    topicalComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    accessible = forms.ChoiceField(label=_('Accessible'), widget=forms.RadioSelect(), choices=BIG_CHOICE,
-                                   required=False)
-    accessibleComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    hypertext = forms.ChoiceField(label=_('Hypertext'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    hypertextComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    document = forms.ChoiceField(label=_('Document'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    documentComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    image = forms.ChoiceField(label=_('Image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    imageComment = forms.CharField(widget=forms.Textarea(attrs=TEXTAREA_ATTRS), required=False)
-    recomendation = forms.CharField(label=_('Recomendations'), widget=forms.Textarea(attrs={'cols': 45, 'rows': 5}),
-                                    required=False)
-    comment = forms.CharField(label=_('Comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
+    found = forms.ChoiceField(label=_('found'), widget=forms.RadioSelect(), choices=BASE_CHOICE)
+    foundComment = forms.CharField(label=_('foundComment'), widget=forms.Textarea(), required=False)
+    complete = forms.ChoiceField(label=_('complete'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
+    completeComment = forms.CharField(label=_('completeComment'), widget=forms.Textarea(), required=False)
+    topical = forms.ChoiceField(label=_('topical'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
+    topicalComment = forms.CharField(label=_('topicalComment'), widget=forms.Textarea(), required=False)
+    accessible = forms.ChoiceField(label=_('accessible'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
+    accessibleComment = forms.CharField(label=_('accessibleComment'), widget=forms.Textarea(), required=False)
+    hypertext = forms.ChoiceField(label=_('hypertext'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
+    hypertextComment = forms.CharField(label=_('hypertextComment'), widget=forms.Textarea(), required=False)
+    document = forms.ChoiceField(label=_('document'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
+    documentComment = forms.CharField(label=_('documentComment'), widget=forms.Textarea(), required=False)
+    image = forms.ChoiceField(label=_('image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
+    imageComment = forms.CharField(label=_('imageComment'), widget=forms.Textarea(), required=False)
+    recomendation = forms.CharField(label=_('recomendations'), widget=forms.Textarea(), required=False)
+    comment = forms.CharField(label=_('comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
 
     # overwrite method from CustomCommentForm
     def get_comment_create_data(self):
