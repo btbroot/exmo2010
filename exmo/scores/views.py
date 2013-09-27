@@ -238,17 +238,30 @@ class ScoreEditView(UpdateView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        if self.is_interaction_or_finalizing:
-            post_comment(self.request)
-        result = super(ScoreEditView, self).form_valid(form)
+        def _send_signal():
+            message = _construct_change_message(self.request, form)
+            reversion.revision.comment = message
+            score_was_changed.send(
+                sender=Score.__class__,
+                form=form,
+                request=self.request,
+            )
 
-        message = _construct_change_message(self.request, form)
-        reversion.revision.comment = message
-        score_was_changed.send(
-            sender=Score.__class__,
-            form=form,
-            request=self.request,
-        )
+        if self.is_interaction_or_finalizing:
+            button = self.request.POST['tabs']
+            if button == 'submit_comment':
+                post_comment(self.request)
+                return HttpResponseRedirect(self.get_success_url())
+
+            elif button == 'submit_scores':
+                result = super(ScoreEditView, self).form_valid(form)
+                return result
+
+            elif button == 'submit_score_and_comment':
+                post_comment(self.request)
+
+        result = super(ScoreEditView, self).form_valid(form)
+        _send_signal()
 
         return result
 

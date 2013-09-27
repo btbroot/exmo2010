@@ -22,6 +22,7 @@ $(document).ready(function() {
     var $value = $(".value");
     var $score_table = $(".score-table");
 
+    var $submits = $('input[type=submit]');
     var $submit_score = $("#submit_scores");
     var $submit_comment = $("#submit_comment");
     var $submit_score_and_comment = $("#submit_score_and_comment");
@@ -32,7 +33,7 @@ $(document).ready(function() {
     var $part_edit_table = $(".part_edit_table");
 
     var $edit_tabs = $('.edit-tabs');
-
+    var $tabs = $('input[name=tabs]:hidden');
 
     $non_relevant_button.hide();
 
@@ -200,6 +201,9 @@ $(document).ready(function() {
         $non_editable_table_form.get(0).reset();
     });
 
+    $submits.mousedown(function(e){
+        $tabs.val(e.target.name);
+    });
 
     // change tabs if errors exists
     var $error = $('ul.errorlist li').first().text();

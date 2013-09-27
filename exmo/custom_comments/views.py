@@ -75,7 +75,6 @@ def comment_notification(sender, **kwargs):
 
     """
     comment = kwargs['comment']
-    comments = [comment]
     user = comment.user
     request = kwargs['request']
     score = comment.content_object
@@ -140,8 +139,12 @@ def comment_notification(sender, **kwargs):
 
     expert = _(config_value('GlobalParameters', 'EXPERT'))
 
+    setattr(comment, 'is_expert', comment.is_expert())
+    setattr(comment, 'is_superuser', comment.is_superuser())
+    setattr(comment, 'legal_name', comment.legal_name())
+
     context = {
-        'comments': comments,
+        'comments': [comment],
         'expert': expert,
         'score': score,
         'url': url,
@@ -153,9 +156,14 @@ def comment_notification(sender, **kwargs):
     if admin_one_comment:
         _send_mails(context, True, subject, admin_one_comment)
 
-    context['comments'] = list(CommentExmo.objects.filter(
-        object_pk=comment.object_pk
-    )) + comments
+    thread = list(CommentExmo.objects.filter(object_pk=comment.object_pk))
+    for item in thread:
+        setattr(item, 'is_expert', item.is_expert())
+        setattr(item, 'is_superuser', item.is_superuser())
+        setattr(item, 'legal_name', item.legal_name())
+
+    thread.append(comment)
+    context['comments'] = thread
 
     if nonadmin_all_comments:
         _send_mails(context, False, subject, nonadmin_all_comments)
@@ -168,17 +176,17 @@ comment_will_be_posted.connect(comment_notification)
 
 def _comments_lists(rcpt):
     """
-    Get emails lists for comments branch and single comment.
+    Get emails lists for comments thread and single comment.
 
     """
-    branch, comment = [], []
+    thread, comment = [], []
     for user in rcpt:
         if user.profile.notify_comment_preference.get('self_all', False):
-            branch.append(user.email)
+            thread.append(user.email)
         else:
             comment.append(user.email)
 
-    return list(set(branch)), list(set(comment))
+    return list(set(thread)), list(set(comment))
 
 
 def _send_mails(context, admin, subject, rcpts):
