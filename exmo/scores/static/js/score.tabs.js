@@ -52,7 +52,7 @@ $(document).ready(function() {
     $cke_comment.on('change', function(e) {
 
         var $cke_text = $cke_comment.document.getBody().getChild(0);
-        // special condition for IE and Opera
+        // special condition for IE and Opera (if text in field exists and not a new line only)
         if($cke_text && $cke_text.getText() && $cke_text.getText() != String.fromCharCode(10)) {
             $submit_comment.prop('disabled', false);
             if (isDirty) {

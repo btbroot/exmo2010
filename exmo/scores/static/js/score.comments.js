@@ -28,7 +28,9 @@ $(document).ready(function() {
                         .closest('form')
                         .children('input[type="submit"]');
 
-        if(sender.document.getBody().getChild(0).getText()) {
+        var $cke_sender = sender.document.getBody().getChild(0);
+        // special condition for IE and Opera (if text in field exists and not a new line only)
+        if($cke_sender && $cke_sender.getText() && $cke_sender.getText() != String.fromCharCode(10)) {
             $input.prop('disabled', false);
         } else {
             $input.prop('disabled', true);
