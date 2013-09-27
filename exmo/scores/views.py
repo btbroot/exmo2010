@@ -126,7 +126,7 @@ class ScoreAddView(ScoreMixin, CreateView):
         request = self.request
         task = self.task
         parameter = self.parameter
-        title = parameter
+        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
 
         expert = _(config_value('GlobalParameters', 'EXPERT'))
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
@@ -276,7 +276,7 @@ class ScoreEditView(UpdateView):
         current_title = _('Parameter')
         parameter = self.object.parameter
         task = self.object.task
-        title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
+        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
 
         crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
         breadcrumbs(self.request, crumbs, task)
