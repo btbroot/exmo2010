@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,28 +19,11 @@
 #
 from django.contrib import admin
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.db import models
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
+from django.db.models import ManyToManyField
 
 from exmo2010.models import UserProfile
-
-
-UserAdmin.filter_horizontal = ('user_permissions', 'groups')
-
-
-class UserProfileAdmin(admin.ModelAdmin):
-    search_fields = ('user__username', )
-    formfield_overrides = {
-        models.ManyToManyField: {
-            'widget': FilteredSelectMultiple('', is_stacked=False)
-        },
-    }
-
-    class Media:
-        css = {
-            "all": ("exmo2010/css/selector.css",)
-        }
 
 
 class UserProfileInline(admin.StackedInline):
@@ -48,7 +31,7 @@ class UserProfileInline(admin.StackedInline):
     fk_name = 'user'
     max_num = 1
     formfield_overrides = {
-        models.ManyToManyField: {
+        ManyToManyField: {
             'widget': FilteredSelectMultiple('', is_stacked=False)
         },
     }
@@ -59,9 +42,21 @@ class UserProfileInline(admin.StackedInline):
         }
 
 
-class UserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
+    filter_horizontal = ('user_permissions', 'groups')
     inlines = [UserProfileInline, ]
 
 
 admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.register(User, CustomUserAdmin)
+
+
+class CustomGroupAdmin(GroupAdmin):
+    class Media:
+        css = {
+            "all": ("exmo2010/css/selector.css",)
+        }
+
+
+admin.site.unregister(Group)
+admin.site.register(Group, CustomGroupAdmin)
