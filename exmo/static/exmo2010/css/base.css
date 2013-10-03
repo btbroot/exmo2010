@@ -334,9 +334,8 @@ table.base-table th {
     background-color: #fff;
 }
 
-table.base-table tfoot > tr > td {
+tfoot > tr > td {
     background-color: #fff;
-    padding: 5px;
     border-left: none;
 }
 

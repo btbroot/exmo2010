@@ -71,6 +71,7 @@
 {% block content %}
 <div class="rating-menu clearfix">
     <h2>{% trans "Rating" %}</h2>
+
     <ul class="switcher">
 
         <li {% if rating_type == "all" %}class="active"{% endif %}>
@@ -125,13 +126,7 @@
 <div id="user-defined-parameters" class="parameter-selection{% if rating_type != "user" %} hidden{% endif %}">
     <p id="parameter-list-heading">
         <strong>{% trans 'Parameter list' %}</strong>
-
-        (<a href="#" class="pseudo">
-        {% if rating_type != "user" %}
-            {% trans "hide" %}
-        {% else %}
-            {% trans "show" %}
-        {% endif %}</a>)
+(<a href="#" class="pseudo">{% if rating_type != "user" %}{% trans "hide" %}{% else %}{% trans "show" %}{% endif %}</a>)
     </p>
 
     <form action="." method="GET" id="pselect_form"{% if rating_type == "user" %} class="hidden"{% endif %}>
@@ -227,19 +222,27 @@
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_initial_openness %}
-            <td>{{ object.openness_first|floatformat:3 }}%</td>
+            <td class="init-openness">{{ object.openness_first|floatformat:3 }}%</td>
             {% endif %}
 
 
             {% if not user.is_active or user.profile.rt_final_openness %}
-            <td>{{ object.openness|floatformat:3 }}%</td>
+            <td class="openness">{{ object.openness|floatformat:3 }}%</td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_difference %}
             <td class="diff">
+            {% spaceless %}
+                <div>
                 <span>{{ object.openness_delta|floatformat:3 }}%</span>&nbsp;
-                {% if object.openness_delta > 0%}<img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">{% endif %}
-                {% if object.openness_delta < 0%}<img src="{{ STATIC_URL }}exmo2010/img/rate_down.png">{% endif %}
+                {% if object.openness_delta > 0%}
+                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
+                {% endif %}
+                {% if object.openness_delta < 0%}
+                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
+                {% endif %}
+                </div>
+            {% endspaceless %}
             </td>
             {% endif %}
 
@@ -268,25 +271,35 @@
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_initial_openness %}
-            <td>
+            <td class="init-openness">
                 <strong>{{ average.openness_first|floatformat:3 }}%</strong>
             </td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_final_openness %}
-            <td>
+            <td class="openness">
                 <strong>{{ average.openness|floatformat:3 }}%</strong>
             </td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_difference %}
+
             <td class="diff">
+            {% spaceless %}
+                <div>
                 <span>
                     <strong>{{ average.openness_delta|floatformat:3 }}%</strong>
                 </span>&nbsp;
-                {% if average.openness_delta > 0%}<img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">{% endif %}
-                {% if average.openness_delta < 0%}<img src="{{ STATIC_URL }}exmo2010/img/rate_down.png">{% endif %}
+                {% if average.openness_delta > 0%}
+                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
+                {% endif %}
+                {% if average.openness_delta < 0%}
+                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
+                {% endif %}
+                </div>
+            {% endspaceless %}
             </td>
+
             {% endif %}
 
             {% if user.is_active %}
@@ -297,7 +310,7 @@
 </table>
 
 <p class="total-organizations">
-    <strong>{{ total_orgs }}</strong>
+    {{ total_orgs }}
 </p>
 
 <!-- Modal -->

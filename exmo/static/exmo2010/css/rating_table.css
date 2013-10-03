@@ -107,11 +107,16 @@ form.org-filter {
 
 .org-filter > div {
     margin-right: 90px;
+    padding: 0;
+
 }
 
 form.org-filter input[type="text"] {
     font-size: 13px;
     width: 100%;
+    height: 18px;
+    margin: 0;
+
 }
 
 form.org-filter input[type="submit"] {
@@ -120,7 +125,8 @@ form.org-filter input[type="submit"] {
     top: 0;
     font-size: 13px;
     width: 84px;
-    padding-top: 2px;
+    height: 25px;
+    margin: 0;
 }
 
 #filler {
@@ -174,10 +180,6 @@ th.init-openness {
     width: 119px;
 }
 
-th.init-openness {
-    width: 119px;
-}
-
 th.openness {
     width: 92px;
 }
@@ -213,17 +215,29 @@ td.comments {
     text-align: center;
 }
 
-td.diff > span  {
-    display: block;
-    float: left;
+td.diff > div {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-td.diff > img  {
+td.diff > div > span  {
     display: block;
     float: right;
     position: relative;
-    top: 6px;
-    left: -9px;
+    right: 13px;
+}
+
+td.diff > div > img  {
+    display: block;
+    position: absolute;
+    right: -1px;
+    top: 5px;
+}
+
+td.init-openness, td.openness {
+    text-align: right;
+    padding-right: 20px;
 }
 
 p.total-organizations {
@@ -273,4 +287,8 @@ p.total-organizations {
 
 a.pseudo {
     margin-top: 1px;
+}
+
+p#parameter-list-heading {
+    margin-bottom: 2px;
 }
