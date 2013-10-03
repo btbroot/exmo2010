@@ -347,7 +347,7 @@ class ScoreDetailView(ScoreMixin, DetailView):
         breadcrumbs(request, crumbs, self.object.task)
 
         parameter = self.object.parameter
-        title = _(u'%(code)s \u2014 %(name)s') % {'code': parameter.code, 'name': parameter.name}
+        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
         time_to_answer = self.object.task.organization.monitoring.time_to_answer
         delta = datetime.timedelta(days=time_to_answer)
         today = datetime.date.today()

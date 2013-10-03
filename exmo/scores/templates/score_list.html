@@ -68,7 +68,7 @@
 
     {% if request.user.userprofile.is_expertB and not request.user.is_superuser and not monitoring.is_published %}
     {% else %}
-        {% trans 'Openness for all parameters' %}:&nbsp;{{ task.openness|floatformat:3 }}%
+        {% trans 'Openness for all parameters' %}:&nbsp;{{ task.openness|default_if_none:0|floatformat:3 }}%
         <span id="place_img" class="rating-ajax"></span>
         <span class="get-rating" id="place" data-task_id="{{ task.id }}" style="display: none;">
             &nbsp;(

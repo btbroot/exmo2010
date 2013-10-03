@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,11 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""
-Модуль в котором хранится RAW SQL
-"""
-
-#Расчёт Кид для одной оценки по формуле v1
+# Calculate Openness for each score (with openness code = 1)
 sql_score_openness_v1 = """
 exmo2010_parameter.weight*
 exmo2010_score.found*
@@ -76,7 +72,7 @@ exmo2010_score.found*
     END)
 """
 
-#Расчёт Кид для одной оценки по формуле v8
+# Calculate Openness for each score (with openness code = 8)
 sql_score_openness_v8 = """
 exmo2010_parameter.weight*
 exmo2010_score.found*
@@ -133,8 +129,29 @@ exmo2010_score.found*
     END)
 """
 
+# Return 1 if current score revision = 1
+# or the same score with revision = 1 exists in scores table
+sql_tail_with_respect_to_revision = """
+* (CASE exmo2010_score.revision
+    WHEN 0 THEN
+        (NOT EXISTS (SELECT SC.`id`
+        FROM `exmo2010_score` SC
+        WHERE SC.`parameter_id`=exmo2010_score.parameter_id
+        AND SC.`task_id`=exmo2010_score.task_id
+        AND SC.`revision`=1))
+    ELSE 1
+END)
+"""
 
-#Расчет Кид для задачи
+# Calculate Openness Initial for each score (with openness code = 1)
+sql_score_openness_initial_v1 = sql_score_openness_v1 + sql_tail_with_respect_to_revision
+
+
+# Calculate Openness Initial for each score (with openness code = 8)
+sql_score_openness_initial_v8 = sql_score_openness_v8 + sql_tail_with_respect_to_revision
+
+
+# Calculate Openness (or Openness Initial):
 sql_task_openness = """
 (SELECT (SUM(
 %(sql_score_openness)s
@@ -143,7 +160,7 @@ FROM `exmo2010_score`
 join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
 WHERE (
     `exmo2010_score`.`task_id` = exmo2010_task.id AND
-    `exmo2010_score`.`revision` = 0  AND
+    %(sql_revision_filter)s
     `exmo2010_score`.`parameter_id` IN
     (SELECT
         U0.`id`
@@ -174,6 +191,12 @@ WHERE (
     )
 )
 """
+
+# Filter for revisions = 0 only
+sql_revision_filter = "`exmo2010_score`.`revision` = 0  AND"
+
+# Filter for chosen parameters only
+sql_parameter_filter = "AND `exmo2010_parameter`.`id` in (%s)"
 
 
 #расчёт complete
@@ -240,8 +263,8 @@ sql_complete = """
 }
 
 # sql для приведение в абсолютные значения критериев
-# если параметр не релевантен критерий равен -1
-# если параметр не оценен или оценка за рамками, критерий равен 0
+# если критерий оценки не релевантен, то возвращается -1
+# если параметр не оценен или объекта Score не существует для данного параметра, то возвращается 0
 
 # по формуле v1
 sql_monitoring_v1 = """
@@ -372,10 +395,10 @@ SELECT
     `exmo2010_parameter`.`id` as parameter_id,
     `exmo2010_organization`.`id` as organization_id,
     `exmo2010_organization`.`url`,
-    `exmo2010_task`.`openness_first`,
     `exmo2010_parameter`.`npa` as parameter_npa,
     `exmo2010_organization`.`name` as organization_name,
     `exmo2010_task`.`status` as task_status,
+    (%(sql_openness_initial)s) as openness_initial,
     (%(sql_openness)s) as task_openness
 FROM `exmo2010_score`
 INNER JOIN `exmo2010_task` ON (`exmo2010_score`.`task_id` = `exmo2010_task`.`id`)

@@ -14,14 +14,19 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.usr/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from cStringIO import StringIO
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.utils import simplejson
 from django.utils.translation import ungettext
 from model_mommy import mommy
+from nose_parameterized import parameterized
+
+from core.utils import UnicodeReader
 from exmo2010.models import *
 from monitorings.views import rating, _total_orgs_translate
 
@@ -73,7 +78,7 @@ class RatingTableValuesTestCase(TestCase):
         organization = mommy.make(Organization, monitoring=self.monitoring)
         self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
         self.parameter = mommy.make(Parameter, monitoring=self.monitoring)
-        score = mommy.make(Score, task=self.task, parameter=self.parameter)
+        score = mommy.make(Score, task=self.task, parameter=self.parameter, found=0)
 
     def test_rt_row_output(self):
         # WHEN user requests rating page
@@ -85,9 +90,9 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(o['repr_len'], 0)
         self.assertEqual(o['active_repr_len'], 0)
         self.assertEqual(o['comments'], 0)
-        self.assertEqual(o['openness_first'], -1)
         self.assertEqual(o['openness'], 0)
-        self.assertEqual(o['openness_delta'], 1)
+        self.assertEqual(o['openness_initial'], 0)
+        self.assertEqual(o['openness_delta'], 0.0)
 
     def test_rt_average_output(self):
         # WHEN user requests rating page
@@ -98,9 +103,9 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(a['repr_len'], 0)
         self.assertEqual(a['active_repr_len'], 0)
         self.assertEqual(a['comments'], 0)
-        self.assertEqual(a['openness_first'], -1)
         self.assertEqual(a['openness'], 0)
-        self.assertEqual(a['openness_delta'], 1)
+        self.assertEqual(a['openness_initial'], 0)
+        self.assertEqual(a['openness_delta'], 0.0)
 
     def test_organizations_count(self):
         # WHEN function accepts monitoring and parameters data
@@ -114,3 +119,208 @@ class RatingTableValuesTestCase(TestCase):
         ) % {'count': 1}
         self.assertTrue(expected_text in text)
 
+
+class TestMonitoringExport(TestCase):
+    # Scenario: Экспорт данных мониторинга
+    def setUp(self):
+        self.client = Client()
+        # GIVEN предопределены все code OPENNESS_EXPRESSION
+        for code in OpennessExpression.OPENNESS_EXPRESSIONS:
+            # AND для каждого code есть опубликованный мониторинг
+            monitoring = mommy.make(
+                Monitoring,
+                openness_expression__code=code,
+                status=MONITORING_PUBLISHED)
+            # AND в каждом мониторинге есть организация
+            organization = mommy.make(Organization, monitoring=monitoring)
+            # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
+            expert = mommy.make_recipe('exmo2010.active_user')
+            expert.profile.is_expertB = True
+            # AND в каждой организации есть одобренная задача для expert
+            task = mommy.make(
+                Task,
+                organization=organization,
+                user=expert,
+                status=Task.TASK_APPROVED,
+            )
+            # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
+            parameter = mommy.make(
+                Parameter,
+                monitoring=monitoring,
+                complete=False,
+            )
+            # AND в каждой задаче есть оценка по parameter
+            score = mommy.make(
+                Score,
+                task=task,
+                parameter=parameter,
+            )
+            score = mommy.make(
+                Score,
+                task=task,
+                parameter=parameter,
+                revision=Score.REVISION_INTERACT,
+            )
+
+    def parameter_type(self, score):
+        return 'npa' if score.parameter.npa else 'other'
+
+    @parameterized.expand(
+        [("expression-v%d" % code, code)
+            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
+    def test_json(self, name, code):
+        monitoring = Monitoring.objects.get(openness_expression__code=code)
+        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в json
+        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
+        response = self.client.get(url + '?format=json')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается json
+        self.assertEqual(response.get('content-type'), 'application/json')
+        json = simplejson.loads(response.content)
+        organization = monitoring.organization_set.all()[0]
+        task = organization.task_set.all()[0]
+        score = task.score_set.filter(revision=Score.REVISION_DEFAULT,)[0]
+        # AND имя мониторинга в БД и json совпадает
+        self.assertEqual(json['monitoring']['name'], monitoring.name)
+        # AND имя организации (для первой задачи) в БД и json совпадает
+        self.assertEqual(
+            json['monitoring']['tasks'][0]['name'],
+            organization.name)
+        # AND КИД (для первой задачи) в БД и json совпадает
+        self.assertEqual(
+            float(json['monitoring']['tasks'][0]['openness']),
+            float('%.3f' % task.openness))
+        self.assertEqual(
+            int(json['monitoring']['tasks'][0]['position']),
+            1)
+        # AND балл найденности (в первой задаче, в оценке по первому параметру)
+        # в БД и json совпадает
+        self.assertEqual(
+            int(json['monitoring']['tasks'][0]['scores'][0]['found']),
+            int(score.found))
+        self.assertEqual(
+            json['monitoring']['tasks'][0]['scores'][0]['type'],
+            self.parameter_type(score)
+        )
+
+    @parameterized.expand(
+        [("expression-v%d" % code, code)
+            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
+    def test_csv(self, name, code):
+        monitoring = Monitoring.objects.get(openness_expression__code=code)
+        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в csv
+        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
+        response = self.client.get(url + '?format=csv')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается csv
+        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+        csv = UnicodeReader(StringIO(response.content))
+        organization = monitoring.organization_set.all()[0]
+        task = organization.task_set.all()[0]
+        row_count = 0
+        for row in csv:
+            row_count += 1
+            self.assertEqual(len(row), 18)
+            if row_count == 1:
+                self.assertEqual(row[0], '#Monitoring')
+                continue
+            else:
+                revision = row[17]
+                self.assertIn(revision, Score.REVISION_EXPORT.values())
+                for k, v in Score.REVISION_EXPORT.iteritems():
+                    if v == revision:
+                        revision = k
+                        break
+                score = task.score_set.filter(revision=revision)[0]
+                # AND имя мониторинга в БД и json совпадает
+                self.assertEqual(row[0], monitoring.name)
+                # AND имя организации (для первой задачи) в БД и json совпадает
+                self.assertEqual(
+                    row[1],
+                    organization.name)
+                self.assertEqual(
+                    int(row[2]),
+                    organization.pk)
+                self.assertEqual(
+                    int(row[3]),
+                    1)
+                # AND КИД (для первой задачи) в БД и json совпадает
+                self.assertEqual(
+                    float(row[5]),
+                    float(task.openness))
+                self.assertEqual(
+                    float(row[7]),
+                    float(score.parameter.pk))
+                # AND балл найденности (в первой задаче, в оценке по первому параметру)
+                # в БД и json совпадает
+                self.assertEqual(
+                    int(row[8]),
+                    int(score.found))
+                self.assertEqual(
+                    row[16],
+                    self.parameter_type(score)
+                )
+
+
+class TestMonitoringExportApproved(TestCase):
+    # Scenario: Экспорт данных мониторинга
+    def setUp(self):
+        self.client = Client()
+        self.monitoring = mommy.make(
+            Monitoring,
+            pk=999,
+            status=MONITORING_PUBLISHED)
+        # AND в каждом мониторинге есть организация
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
+        expert1 = mommy.make_recipe('exmo2010.active_user')
+        expert1.profile.is_expertB = True
+        expert2 = mommy.make_recipe('exmo2010.active_user')
+        expert2.profile.is_expertB = True
+        # AND в каждой организации есть одобренная задача для expert
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expert1,
+            status=Task.TASK_APPROVED,
+        )
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expert2,
+            status=Task.TASK_OPEN,
+        )
+        # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
+        parameter = mommy.make(
+            Parameter,
+            monitoring=self.monitoring,
+            complete=False)
+        # AND в каждой задаче есть оценка по parameter
+        score = mommy.make(
+            Score,
+            task=task,
+            parameter=parameter,
+        )
+
+    def test_approved_json(self):
+        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
+        response = self.client.get(url + '?format=json')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается json
+        self.assertEqual(response.get('content-type'), 'application/json')
+        json = simplejson.loads(response.content)
+        self.assertEqual(len(json['monitoring']['tasks']), 0, simplejson.dumps(json, indent=2))
+
+    def test_approved_csv(self):
+        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
+        response = self.client.get(url + '?format=csv')
+        # THEN запрос удовлетворяется
+        self.assertEqual(response.status_code, 200)
+        # AND отдается csv
+        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+        csv = [line for line in UnicodeReader(StringIO(response.content))]
+        #only header
+        self.assertEqual(len(csv), 1)

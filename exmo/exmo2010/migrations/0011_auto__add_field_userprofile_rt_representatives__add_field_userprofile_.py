@@ -259,7 +259,6 @@ class Migration(SchemaMigration):
         'exmo2010.task': {
             'Meta': {'ordering': "('organization__name', 'user__username')", 'unique_together': "(('user', 'organization'),)", 'object_name': 'Task'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'openness_first': ('django.db.models.fields.FloatField', [], {'default': '-1'}),
             'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Organization']"}),
             'status': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})

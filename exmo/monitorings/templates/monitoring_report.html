@@ -151,10 +151,10 @@
                 <td>{% trans 'Expert comments' %}</td>
                 <td class="value">{{ stat.comment_expert }}</td>
             </tr>
-            {% if stat.avg_openness_first >= 0 %}
+            {% if stat.avg_openness_initial >= 0 %}
             <tr>
                 <td>{% trans 'Average openness first' %}</td>
-                <td class="value">{{ stat.avg_openness_first|floatformat:3 }}</td>
+                <td class="value">{{ stat.avg_openness_initial|floatformat:3 }}</td>
             </tr>
             {% endif %}
             <tr>

@@ -501,7 +501,7 @@ def task_history(request, task_id):
             'task': task,
             'history': history,
             'current_title': _('Organization'),
-            'title': _('%s') % task.organization.name,
+            'title': '%s' % task.organization.name,
         },
         context_instance=RequestContext(request),
     )

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011, 2013 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,236 +16,140 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-from cStringIO import StringIO
 from django.test import TestCase
-from django.test.client import Client
-from django.core.urlresolvers import reverse
-from django.utils import simplejson
 from model_mommy import mommy
 from nose_parameterized import parameterized
+
 from core.sql import *
 from exmo2010.models import *
-from core.utils import UnicodeReader
+
+
+class TestMonitoring(TestCase):
+    # Scenario: monitoring model test
+
+    @parameterized.expand([(code,) for code in OpennessExpression.OPENNESS_EXPRESSIONS])
+    def test_sql_scores_valid(self, code):
+        # WHEN openness code in allowable range
+        monitoring = mommy.make(Monitoring, openness_expression__code=code)
+        openness = monitoring.openness_expression
+        expected_result = sql_monitoring_scores % {
+            'sql_monitoring': openness.sql_monitoring(),
+            'sql_openness_initial': openness.get_sql_openness(initial=True),
+            'sql_openness': openness.get_sql_openness(),
+            'monitoring_pk': monitoring.pk,
+        }
+        # THEN function return expected result
+        self.assertEqual(monitoring.sql_scores(), expected_result)
+
+    @parameterized.expand([(2,)])
+    def test_sql_scores_invalid(self, code):
+        # WHEN openness code in disallowable range
+        monitoring = mommy.make(Monitoring, openness_expression__code=code)
+        # THEN raises exception
+        self.assertRaises(ValidationError, monitoring.sql_scores)
 
 
 class TestOpennessExpression(TestCase):
+    # Scenario: openness expression model test
+    parameters_count = 10
+    empty_string = ""
+    revision_filter = sql_revision_filter
+    parameter_filter = sql_parameter_filter % ','.join(str(i) for i in range(1, parameters_count + 1))
+
     def setUp(self):
-        self.v1 = OpennessExpression.objects.get(code=1)
+        # GIVEN 2 openness expressions with valid code
+        self.v1 = mommy.make(OpennessExpression, code=1)
+        self.v8 = mommy.make(OpennessExpression, code=8)
+        # AND 1 openness expression with invalid code
         self.v2 = mommy.make(OpennessExpression, code=2)
-        self.v8 = OpennessExpression.objects.get(code=8)
+        # AND any 10 parameters objects
+        self.parameters = mommy.make(Parameter, _quantity=self.parameters_count)
 
-    def test_sql_openness(self):
-        self.assertEqual(self.v1.sql_openness(), sql_score_openness_v1)
-        self.assertEqual(self.v8.sql_openness(), sql_score_openness_v8)
-        self.assertRaises(Exception, self.v2.sql_monitoring)
+    @parameterized.expand([
+        ({}, [sql_score_openness_v1, revision_filter, empty_string]),
+        ({'initial': True}, [sql_score_openness_initial_v1, empty_string, empty_string]),
+        ({'parameters': True}, [sql_score_openness_v1, revision_filter, parameter_filter]),
+        ({'parameters': True, 'initial': True}, [sql_score_openness_initial_v1, empty_string, parameter_filter]),
+    ])
+    def test_get_sql_openness_valid_v1(self, kwargs, args):
+        # WHEN openness code in allowable range
+        if kwargs.get('parameters', False):
+            kwargs['parameters'] = self.parameters
 
-    def test_sql_monitoring(self):
-        self.assertEqual(self.v1.sql_monitoring(), sql_monitoring_v1)
-        self.assertEqual(self.v8.sql_monitoring(), sql_monitoring_v8)
-        self.assertRaises(Exception, self.v2.sql_monitoring)
+        # THEN function return expected result
+        self.assertEqual(self.v1.get_sql_openness(**kwargs),
+                         self.expected_result(*args))
 
+    @parameterized.expand([
+        ({}, [sql_score_openness_v8, revision_filter, empty_string]),
+        ({'initial': True}, [sql_score_openness_initial_v8, empty_string, empty_string]),
+        ({'parameters': True}, [sql_score_openness_v8, revision_filter, parameter_filter]),
+        ({'parameters': True, 'initial': True}, [sql_score_openness_initial_v8, empty_string, parameter_filter]),
+    ])
+    def test_get_sql_openness_valid_v1(self, kwargs, args):
+        # WHEN openness code in allowable range
+        if kwargs.get('parameters', False):
+            kwargs['parameters'] = self.parameters
 
-class TestMonitoringExport(TestCase):
-    # Scenario: Экспорт данных мониторинга
-    def setUp(self):
-        self.client = Client()
-        # GIVEN предопределены все code OPENNESS_EXPRESSION
-        for code in OpennessExpression.OPENNESS_EXPRESSIONS:
-            # AND для каждого code есть опубликованный мониторинг
-            monitoring = mommy.make(
-                Monitoring,
-                openness_expression__code=code,
-                status=MONITORING_PUBLISHED)
-            # AND в каждом мониторинге есть организация
-            organization = mommy.make(Organization, monitoring=monitoring)
-            # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
-            expert = mommy.make_recipe('exmo2010.active_user')
-            expert.profile.is_expertB = True
-            # AND в каждой организации есть одобренная задача для expert
-            task = mommy.make(
-                Task,
-                organization=organization,
-                user=expert,
-                status=Task.TASK_APPROVED,
-            )
-            # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
-            parameter = mommy.make(
-                Parameter,
-                monitoring=monitoring,
-                complete=False,
-            )
-            # AND в каждой задаче есть оценка по parameter
-            score = mommy.make(
-                Score,
-                task=task,
-                parameter=parameter,
-            )
-            score = mommy.make(
-                Score,
-                task=task,
-                parameter=parameter,
-                revision=Score.REVISION_INTERACT,
-            )
+        # THEN function return expected result
+        self.assertEqual(self.v8.get_sql_openness(**kwargs),
+                         self.expected_result(*args))
 
-    def parameter_type(self, score):
-        return 'npa' if score.parameter.npa else 'other'
+    @parameterized.expand([
+        ({},),
+        ({'initial': True},),
+        ({'parameters': True},),
+        ({'parameters': True, 'initial': True},),
+    ])
+    def test_get_sql_openness_invalid(self, kwargs):
+        # WHEN openness code is invalid
+        if kwargs.get('parameters', False):
+            kwargs['parameters'] = self.parameters
 
-    @parameterized.expand(
-        [("expression-v%d" % code, code)
-            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
-    def test_json(self, name, code):
-        monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в json
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=json')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается json
-        self.assertEqual(response.get('content-type'), 'application/json')
-        json = simplejson.loads(response.content)
-        organization = monitoring.organization_set.all()[0]
-        task = organization.task_set.all()[0]
-        score = task.score_set.filter(revision=Score.REVISION_DEFAULT,)[0]
-        # AND имя мониторинга в БД и json совпадает
-        self.assertEqual(json['monitoring']['name'], monitoring.name)
-        # AND имя организации (для первой задачи) в БД и json совпадает
-        self.assertEqual(
-            json['monitoring']['tasks'][0]['name'],
-            organization.name)
-        # AND КИД (для первой задачи) в БД и json совпадает
-        self.assertEqual(
-            float(json['monitoring']['tasks'][0]['openness']),
-            float('%.3f' % task.openness))
-        self.assertEqual(
-            int(json['monitoring']['tasks'][0]['position']),
-            1)
-        # AND балл найденности (в первой задаче, в оценке по первому параметру)
-        # в БД и json совпадает
-        self.assertEqual(
-            int(json['monitoring']['tasks'][0]['scores'][0]['found']),
-            int(score.found))
-        self.assertEqual(
-            json['monitoring']['tasks'][0]['scores'][0]['type'],
-            self.parameter_type(score)
-        )
+        # THEN raises exception
+        self.assertRaises(ValidationError, self.v2.get_sql_openness, **kwargs)
 
-    @parameterized.expand(
-        [("expression-v%d" % code, code)
-            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
-    def test_csv(self, name, code):
-        monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в csv
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=csv')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается csv
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = UnicodeReader(StringIO(response.content))
-        organization = monitoring.organization_set.all()[0]
-        task = organization.task_set.all()[0]
-        row_count = 0
-        for row in csv:
-            row_count += 1
-            self.assertEqual(len(row), 18)
-            if row_count == 1:
-                self.assertEqual(row[0], '#Monitoring')
-                continue
-            else:
-                revision = row[17]
-                self.assertIn(revision, Score.REVISION_EXPORT.values())
-                for k, v in Score.REVISION_EXPORT.iteritems():
-                    if v == revision:
-                        revision = k
-                        break
-                score = task.score_set.filter(revision=revision)[0]
-                # AND имя мониторинга в БД и json совпадает
-                self.assertEqual(row[0], monitoring.name)
-                # AND имя организации (для первой задачи) в БД и json совпадает
-                self.assertEqual(
-                    row[1],
-                    organization.name)
-                self.assertEqual(
-                    int(row[2]),
-                    organization.pk)
-                self.assertEqual(
-                    int(row[3]),
-                    1)
-                # AND КИД (для первой задачи) в БД и json совпадает
-                self.assertEqual(
-                    float(row[5]),
-                    float(task.openness))
-                self.assertEqual(
-                    float(row[7]),
-                    float(score.parameter.pk))
-                # AND балл найденности (в первой задаче, в оценке по первому параметру)
-                # в БД и json совпадает
-                self.assertEqual(
-                    int(row[8]),
-                    int(score.found))
-                self.assertEqual(
-                    row[16],
-                    self.parameter_type(score)
-                )
+    def expected_result(self, sql_score_openness, sql_revision_filter, sql_parameter_filter):
+        result = sql_task_openness % {
+            'sql_score_openness': sql_score_openness,
+            'sql_revision_filter': sql_revision_filter,
+            'sql_parameter_filter': sql_parameter_filter,
+        }
 
-class TestMonitoringExportApproved(TestCase):
-    # Scenario: Экспорт данных мониторинга
-    def setUp(self):
-        self.client = Client()
-        self.monitoring = mommy.make(
-            Monitoring,
-            pk=999,
-            status=MONITORING_PUBLISHED)
-        # AND в каждом мониторинге есть организация
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-        # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
-        expert1 = mommy.make_recipe('exmo2010.active_user')
-        expert1.profile.is_expertB = True
-        expert2 = mommy.make_recipe('exmo2010.active_user')
-        expert2.profile.is_expertB = True
-        # AND в каждой организации есть одобренная задача для expert
-        task = mommy.make(
-            Task,
-            organization=organization,
-            user=expert1,
-            status=Task.TASK_APPROVED,
-        )
-        task = mommy.make(
-            Task,
-            organization=organization,
-            user=expert2,
-            status=Task.TASK_OPEN,
-        )
-        # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
-        parameter = mommy.make(
-            Parameter,
-            monitoring=self.monitoring,
-            complete=False)
-        # AND в каждой задаче есть оценка по parameter
-        score = mommy.make(
-            Score,
-            task=task,
-            parameter=parameter,
-        )
+        return result
 
-    def test_approved_json(self):
-        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
-        response = self.client.get(url + '?format=json')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается json
-        self.assertEqual(response.get('content-type'), 'application/json')
-        json = simplejson.loads(response.content)
-        self.assertEqual(len(json['monitoring']['tasks']), 0, simplejson.dumps(json, indent=2))
+    @parameterized.expand([
+        (1, {}, sql_score_openness_v1),
+        (8, {}, sql_score_openness_v8),
+        (1, {'initial': True}, sql_score_openness_initial_v1),
+        (8, {'initial': True}, sql_score_openness_initial_v8),
+    ])
+    def test_get_sql_expression_valid(self, code, kwargs, args):
+        # WHEN openness code in allowable range
+        # THEN function return expected result
+        openness = getattr(self, 'v%d' % code)
+        self.assertEqual(openness.get_sql_expression(kwargs), args)
 
-    def test_approved_csv(self):
-        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
-        response = self.client.get(url + '?format=csv')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается csv
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = [line for line in UnicodeReader(StringIO(response.content))]
-        #only header
-        self.assertEqual(len(csv), 1)
+    @parameterized.expand([
+        ({},),
+        ({'initial': True},),
+    ])
+    def test_get_sql_expression_invalid(self, kwargs):
+        # WHEN openness code is invalid
+        # THEN raises exception
+        self.assertRaises(ValidationError, self.v2.get_sql_expression, **kwargs)
+
+    @parameterized.expand([
+        (1, sql_monitoring_v1),
+        (8, sql_monitoring_v8),
+    ])
+    def test_sql_monitoring_valid(self, code, result):
+        # WHEN openness code in allowable range
+        # THEN function return expected result
+        openness = getattr(self, 'v%d' % code)
+        self.assertEqual(openness.sql_monitoring(), result)
+
+    def test_sql_monitoring_invalid(self):
+        # WHEN openness code is invalid
+        # THEN raises exception
+        self.assertRaises(ValidationError, self.v2.sql_monitoring)

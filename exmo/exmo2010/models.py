@@ -65,7 +65,7 @@ MONITORING_STAT_DICT = {
     'comment_organization': 0,
     'comment_expert': 0,
     'avg_openness': 0,
-    'avg_openness_first': 0,
+    'avg_openness_initial': 0,
 }
 
 INV_CODE_CHARS = string.ascii_uppercase + string.digits
@@ -104,7 +104,8 @@ def generate_inv_code(ch_nr):
 
 class OpennessExpression(models.Model):
     """
-    Модель для хранения кода и наименования формул расчета Кид
+    Openness expression model for code and name of openness.
+
     """
     code = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
@@ -112,15 +113,43 @@ class OpennessExpression(models.Model):
     OPENNESS_EXPRESSIONS = [1, 8]
 
     def __unicode__(self):
-        return _('%(name)s (from EXMO2010 v%(code)d)') % { 'name': self.name, 'code': self.code }
+        result = '%(name)s (%(prep)s EXMO2010 v%(code)d)' % \
+                 {'name': self.name, 'prep': _('from'), 'code': self.code}
 
-    def sql_openness(self):
+        return result
+
+    def get_sql_openness(self, parameters=None, initial=False):
+        """
+        Getting raw SQL for 'openness' (if initial=False) or
+        'openness initial' (if initial=True). Calculating for all
+        parameters (by default) and using with '.extra(select=...)'
+        expression.
+
+        """
+        score_openness = self.get_sql_expression(initial=initial)
+        revision_filter = "" if initial else sql_revision_filter
+        parameter_filter = ""
+        if parameters:
+            if isinstance(parameters[0], Parameter):
+                parameters = [p.pk for p in parameters]
+            parameter_filter = sql_parameter_filter % ','.join(str(p) for p in parameters)
+        result = sql_task_openness % {
+            'sql_score_openness': score_openness,
+            'sql_revision_filter': revision_filter,
+            'sql_parameter_filter': parameter_filter,
+        }
+
+        return result
+
+    def get_sql_expression(self, initial=False):
         if self.code == 1:
-            return sql_score_openness_v1
+            result = initial and sql_score_openness_initial_v1 or sql_score_openness_v1
         elif self.code == 8:
-            return sql_score_openness_v8
+            result = initial and sql_score_openness_initial_v8 or sql_score_openness_v8
         else:
-            raise Exception(_('Unknown OpennessExpression code'))
+            raise ValidationError(_('Unknown OpennessExpression code'))
+
+        return result
 
     def sql_monitoring(self):
         if self.code == 1:
@@ -128,7 +157,7 @@ class OpennessExpression(models.Model):
         elif self.code == 8:
             return sql_monitoring_v8
         else:
-            raise Exception(_('Unknown OpennessExpression code'))
+            raise ValidationError(_('Unknown OpennessExpression code'))
 
 
 class Monitoring(models.Model):
@@ -203,18 +232,6 @@ class Monitoring(models.Model):
 
     def __unicode__(self):
         return '%s' % self.name
-
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-
-        # update task`s openness.
-        if not is_new and self.is_interact:
-            for task in Task.objects.filter(organization__monitoring=self):
-                task.update_openness()
-
-        result = super(Monitoring, self).save(*args, **kwargs)
-
-        return result
 
     @models.permalink
     def get_absolute_url(self):
@@ -311,7 +328,7 @@ class Monitoring(models.Model):
         from monitorings.views import rating
         rating_list, avg = rating(self)
         stat['avg_openness'] = avg['openness']
-        stat['avg_openness_first'] = avg['openness_first']
+        stat['avg_openness_initial'] = avg['openness_initial']
         return stat
 
     @property
@@ -319,16 +336,17 @@ class Monitoring(models.Model):
         return self.parameter_set.filter(npa=True).exists()
 
     def sql_scores(self):
-        sql_openness = sql_task_openness % {
-            'sql_score_openness': self.openness_expression.sql_openness(),
-            'sql_parameter_filter': ""
-        }
-        sql_scores = sql_monitoring_scores % {
+        sql_openness_initial = self.openness_expression.get_sql_openness(initial=True)
+        sql_openness = self.openness_expression.get_sql_openness()
+
+        result = sql_monitoring_scores % {
             'sql_monitoring': self.openness_expression.sql_monitoring(),
+            'sql_openness_initial': sql_openness_initial,
             'sql_openness': sql_openness,
-            'monitoring_pk': self.pk
+            'monitoring_pk': self.pk,
         }
-        return sql_scores
+
+        return result
 
     after_interaction_status = [MONITORING_INTERACTION, MONITORING_FINALIZING,
                                 MONITORING_PUBLISHED]
@@ -596,50 +614,23 @@ class Task(models.Model):
     )
     user = models.ForeignKey(User, verbose_name=_('user'))
     organization = models.ForeignKey(Organization, verbose_name=_('organization'))
-    status = models.PositiveIntegerField(
-        choices=TASK_STATUS,
-        default=TASK_OPEN,
-        verbose_name=_('status'),
-    )
+    status = models.PositiveIntegerField(choices=TASK_STATUS, default=TASK_OPEN, verbose_name=_('status'))
 
-    openness_first = models.FloatField(
-        default=-1,
-        editable=False,
-        verbose_name=_('openness first'),
-    )
-
-    def _sql_openness(self, parameters=None):
-        """
-        функция для получения SQL пригодного для использования в extra(select=
-        по умолчанию считается для всех параметров
-        если указать parameters, то считается только для параметров имеющих соотв. pk
-        """
-        #empty addtional filter for parameter
-        sql_parameter_filter = ""
-        sql_score_openness = \
-            self.organization.monitoring.openness_expression.sql_openness()
-        if parameters:
-            if isinstance(parameters[0], Parameter):
-                parameters_pk_list = [p.pk for p in parameters]
-            else:
-                parameters_pk_list = parameters
-            sql_parameter_filter = "AND `exmo2010_parameter`.`id` in (%s)" %\
-                               ",".join([str(p) for p in parameters_pk_list])
-        return sql_task_openness % {
-            'sql_score_openness': sql_score_openness,
-            'sql_parameter_filter': sql_parameter_filter,
-        }
-
-    def get_openness(self, parameters=None):
-        return Task.objects.filter(
-            pk=self.pk
-        ).extra(select={
-            '__openness': self._sql_openness(parameters)
-        }).values('__openness')[0]['__openness'] or 0
+    @property
+    def openness_initial(self):
+        return self.get_openness(initial=True)
 
     @property
     def openness(self):
         return self.get_openness()
+
+    def get_openness(self, parameters=None, initial=False):
+        sql_openness = self.organization.monitoring.openness_expression.get_sql_openness(parameters, initial)
+        result = Task.objects.filter(pk=self.pk)\
+                             .extra(select={'__openness': sql_openness})\
+                             .values_list('__openness', flat=True)[0]
+
+        return result
 
     @property
     def openness_npa(self):
@@ -656,13 +647,6 @@ class Task(models.Model):
             return self.get_openness(params)
         else:
             return 0
-
-    def update_openness(self):
-        #по умолчанию openness_first=-1.
-        #проверять на 0 нельзя, т.к. возможно что до взаимодействия openness=0
-        if self.openness_first < 0:
-            self.openness_first = self.openness
-            self.save()
 
 # want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
 # sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
@@ -1230,7 +1214,7 @@ def openness_helper(score):
 	where exmo2010_score.id=%(pk)d
     """ % {
         'pk': score.pk,
-        'score_openness': score.task._sql_openness(),
+        'score_openness': score.task.organization.monitoring.openness_expression.get_sql_openness(),
     }
     s = Score.objects.filter(pk=score.pk).extra(select={
         'sql_openness': sql,

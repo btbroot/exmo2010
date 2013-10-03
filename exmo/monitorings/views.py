@@ -1276,7 +1276,7 @@ def rating(monitoring, parameters=None, rating_type=None):
     #get task from monitoring for valid sql
     generic_task_qs = Task.objects.filter(organization__monitoring=monitoring)
     if generic_task_qs.exists():
-        extra_select = generic_task_qs[0]._sql_openness(parameters)
+        extra_select = generic_task_qs[0].organization.monitoring.openness_expression.get_sql_openness(parameters)
 
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)
     total_tasks = tasks.count()
@@ -1293,7 +1293,7 @@ def rating(monitoring, parameters=None, rating_type=None):
         {
             'task': task,
             'openness': task.__task_openness or 0,
-            'openness_first': task.openness_first,
+            'openness_initial': task.openness_initial,
         } for task in tasks
         .extra(select={'__task_openness': extra_select})
         .order_by('-__task_openness')
@@ -1302,16 +1302,15 @@ def rating(monitoring, parameters=None, rating_type=None):
     place = 1
     avg = {
         'openness': 0,
-        'openness_first': 0,
-        'openness_delta': 0,
+        'openness_initial': 0,
         'total_tasks': total_tasks,
     }
     max_rating = 0
     if object_list:
         max_rating = object_list[0]['openness']
         avg['openness'] = sum([t['openness'] for t in object_list]) / len(object_list)
-        avg['openness_first'] = sum([t['openness_first'] for t in object_list]) / len(object_list)
-        openness_delta = sum([float(t['openness'])-float(t['openness_first']) for t in object_list]) / len(object_list)
+        avg['openness_initial'] = sum([t['openness_initial'] for t in object_list]) / len(object_list)
+        openness_delta = sum([float(t['openness'])-float(t['openness_initial']) for t in object_list]) / len(object_list)
         avg['openness_delta'] = round(openness_delta, 3)
     rating_list = []
     place_count = {}
@@ -1332,7 +1331,7 @@ def rating(monitoring, parameters=None, rating_type=None):
                 rating_object["active_repr_len"] += 1
 
         rating_object["comments"] = all_comments
-        openness_delta = float(rating_object['openness']) - float(rating_object['openness_first'])
+        openness_delta = float(rating_object['openness']) - float(rating_object['openness_initial'])
         rating_object['openness_delta'] = round(openness_delta, 3)
         if rating_object['openness'] < max_rating:
             place += 1
@@ -1409,7 +1408,7 @@ class MonitoringExport(object):
                     'scores': [score_dict, ],
                     'position': position,
                     'openness': '%.3f' % (score.task_openness or 0),
-                    'openness_initial': '%.3f' % (score.openness_first or 0),
+                    'openness_initial': '%.3f' % (score.openness_initial or 0),
                     'name': score.organization_name,
                     'id': score.organization_id,
                     'url': score.url,

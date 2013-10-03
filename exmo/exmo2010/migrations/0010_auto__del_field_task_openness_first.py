@@ -18,21 +18,22 @@
 #
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
-from django.core.management import call_command
-
-from exmo2010.models import Monitoring
 
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
+
     def forwards(self, orm):
-        monitorings_list = orm.Monitoring.objects.filter(status__in=Monitoring.after_interaction_status)\
-                                                 .values_list('pk', flat=True)
-        call_command('recalculate_openness', *monitorings_list)
+        # Deleting field 'Task.openness_first'
+        db.delete_column('exmo2010_task', 'openness_first')
+
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        # Adding field 'Task.openness_first'
+        db.add_column('exmo2010_task', 'openness_first',
+                      self.gf('django.db.models.fields.FloatField')(default=-1),
+                      keep_default=False)
 
     models = {
         'auth.group': {
@@ -225,7 +226,6 @@ class Migration(DataMigration):
         'exmo2010.task': {
             'Meta': {'ordering': "('organization__name', 'user__username')", 'unique_together': "(('user', 'organization'),)", 'object_name': 'Task'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'openness_first': ('django.db.models.fields.FloatField', [], {'default': '-1'}),
             'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Organization']"}),
             'status': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
@@ -252,4 +252,3 @@ class Migration(DataMigration):
     }
 
     complete_apps = ['exmo2010']
-    symmetrical = True
