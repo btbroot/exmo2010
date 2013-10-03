@@ -24,7 +24,7 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.placeholder.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.mousewheel.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.simplemodal-1.4.4.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.tablesorter.js"></script>
@@ -33,7 +33,7 @@
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/rating_table.css"
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/ratings.css"
           xmlns="http://www.w3.org/1999/html"/>
 {% endblock %}
 
@@ -143,7 +143,7 @@
     </form>
 </div>
 
-<form class="org-filter clearfix" action="" method="GET">
+<form class="filter clearfix" action="" method="GET">
     <div>
         <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Organization' %}" />
     </div>

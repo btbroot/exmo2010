@@ -99,19 +99,18 @@ ul.utils > li {
     margin-right: 10px;
 }
 
-form.org-filter {
+form.filter {
     position: relative;
     margin-top: 15px;
     margin-bottom: 10px;
 }
 
-.org-filter > div {
+.filter > div {
     margin-right: 90px;
     padding: 0;
-
 }
 
-form.org-filter input[type="text"] {
+form.filter input[type="text"] {
     font-size: 13px;
     width: 100%;
     height: 18px;
@@ -119,7 +118,7 @@ form.org-filter input[type="text"] {
 
 }
 
-form.org-filter input[type="submit"] {
+form.filter input[type="submit"] {
     position: absolute;
     right: 0;
     top: 0;
@@ -127,13 +126,6 @@ form.org-filter input[type="submit"] {
     width: 84px;
     height: 25px;
     margin: 0;
-}
-
-#filler {
-    background-color: red;
-    height: 30px;
-    width: 100%;
-
 }
 
 table.base-table {
@@ -171,6 +163,8 @@ th span {
 th.tablesorter-headerAsc span, th.tablesorter-headerDesc span {
     border-bottom: none;
 }
+
+/* Rating Table */
 
 th.place {
     width: 50px;
@@ -240,6 +234,29 @@ td.init-openness, td.openness {
     padding-right: 20px;
 }
 
+/* Ratings Table */
+
+th.map, td.map {
+    width: 14px;
+}
+
+th.monitoring, th.published, th.sites {
+    vertical-align: bottom;
+}
+
+th.published {
+    width: 120px;
+}
+
+th.sites {
+    width: 65px;
+}
+
+th.average {
+    width: 100px;
+}
+
+
 p.total-organizations {
     padding: 15px 5px;
 }
@@ -297,4 +314,8 @@ a.pseudo {
 
 p#parameter-list-heading {
     margin-bottom: 2px;
+}
+
+.placeholder {
+    color: #999;
 }

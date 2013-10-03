@@ -1,0 +1,97 @@
+{% extends 'exmo2010/base_site.html' %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n check_object_permission %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.placeholder.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.tablesorter.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/rating.js"></script>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/ratings.css" xmlns="http://www.w3.org/1999/html"/>
+{% endblock %}
+
+{% block content %}
+<form class="filter clearfix" action="" method="GET">
+    <div>
+        <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Monitoring cycle' %}" />
+    </div>
+    <input type=submit value="{% trans 'Find' %}" />
+</form>
+
+<table id="ratings-data" class="base-table">
+    <thead>
+        <tr>
+            <th class="monitoring">
+                <span>{% trans "Monitoring cycle" %}</span>&nbsp;<span class="arrow"></span>
+            </th>
+
+            <th class="map">
+            </th>
+
+            <th class="published">
+                <span>{% trans "Published" %}</span>&nbsp;<span class="arrow"></span>
+            </th>
+
+            <th class="sites">
+                <span>{% trans "Sites" context "genetivus" %}</span>&nbsp;<span class="arrow"></span>
+            </th>
+
+            <th class="average">
+                <span>{% trans "Average openness" context "literally" %}</span>&nbsp;<span class="arrow"></span>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in monitoring_list %}
+        <tr>
+            <td>
+                {% check_object_permission exmo2010.view_tasks m as perm %}
+                {% if not perm %}
+                    <a href="{% url exmo2010:monitoring_rating m.pk %}">{{ m }}</a>
+                {% else %}
+                    <a href="{{ m.get_absolute_url }}">{{ m }}</a>
+                {% endif %}
+            </td>
+
+            <td class="map">{% if m.map_link %}
+                <a href="{{ m.map_link }}" target="_blank">
+                    <i class="icon icon-map"></i>
+                </a>{% endif %}
+            </td>
+
+            <td class="published">
+                <span class="machine">{{ m.publish_date|date:"d/m/Y" }}</span>
+                <span class="verbose">{{ m.publish_date }}</span>
+            </td>
+
+            <td class="sites">{{ m.org_count }}</td>
+
+            <td>{{ m.average }}&nbsp;%</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

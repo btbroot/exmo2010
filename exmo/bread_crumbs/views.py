@@ -1,5 +1,5 @@
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -40,6 +40,7 @@ def breadcrumbs(request, items, obj=None):
     crumbs = {
         'Home': ('', reverse('exmo2010:index')),
         'Monitoring': (_('Monitoring cycles'), reverse('exmo2010:monitoring_list')),
+        'Ratings': (_('Ratings'), reverse('exmo2010:ratings')),
     }
 
     try:

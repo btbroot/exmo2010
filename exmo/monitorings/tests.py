@@ -33,6 +33,35 @@ from custom_comments.models import CommentExmo
 from monitorings.views import rating, _total_orgs_translate
 
 
+class RatingsTableValuesTestCase(TestCase):
+    # Scenario: Output to Ratings Table
+    def setUp(self):
+        # GIVEN published monitoring
+        self.client = Client()
+        self.today = datetime.date.today()
+        self.monitoring_name = "Name"
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED,
+                                name=self.monitoring_name,
+                                publish_date=self.today)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        score = mommy.make(Score, task=task, parameter=parameter)
+
+    def test_values(self):
+        # WHEN user requests ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        monitoring = response.context['monitoring_list'][0]
+        # THEN server returns "OK" response
+        self.assertEqual(response.status_code, 200)
+        # AND output data equals initial data
+        self.assertEqual(monitoring.name, self.monitoring_name)
+        self.assertEqual(monitoring.publish_date, self.today)
+        self.assertEqual(monitoring.org_count, 1)
+        # AND equals expected calculated average value
+        self.assertEqual(monitoring.average, 0)
+
+
 class RatingTableSettingsTestCase(TestCase):
     # Scenario: User settings for Rating Table columns
     def setUp(self):
@@ -407,3 +436,4 @@ class TestMonitoringExportApproved(TestCase):
         csv = [line for line in UnicodeReader(StringIO(response.content))]
         #only header
         self.assertEqual(len(csv), 1)
+

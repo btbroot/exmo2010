@@ -17,10 +17,13 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function() {
+    /* placeholder */
+    jQuery('input[placeholder]').placeholder();
+
     /* Sortable table */
 
-    var sortList = [[0,0]];
-    var thClasses = new Array(5);
+    var thClasses = new Array(5),
+    dateFormat = "ddmmyyyy"
 
     function modalOpenHandler() {
         $('#rating-data th').each(function(i) {
@@ -35,7 +38,17 @@ $(document).ready(function() {
         $.modal.close();
     }
 
-    $("#rating-data").tablesorter({sortList: sortList});
+    $("#rating-data").tablesorter({sortList: [[0,0]]});
+
+    // remove verbose date before table initialization
+    var v = $('td.published span.verbose').remove()
+
+    $("#ratings-data").tablesorter({sortList: [[2,1]], dateFormat: dateFormat});
+
+    // replace machine readable date with verbose one
+    $('td.published span.machine').each(function(i) {
+        $(this).replaceWith(v[i]);
+    })
 
     /* Modal */
 

@@ -28,7 +28,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
@@ -319,7 +319,8 @@ def monitoring_rating(request, monitoring_id):
     rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
     rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
 
-    crumbs = ['Home', 'Monitoring']
+    crumbs_parent_title = 'Monitoring' if request.user.is_active and request.user.profile.is_expert else 'Ratings'
+    crumbs = ['Home', crumbs_parent_title]
     breadcrumbs(request, crumbs)
 
     if request.expert:
@@ -1147,44 +1148,45 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
 
 
 def ratings(request):
+    """Returns table of monitorings' rating data,
+    optionally filters table by monitoring
     """
-    Рейтинги.
+    title = breadcrumbs_title = _('Ratings')
 
-    """
-    monitoring_id = request.GET.get('monitoring')
-    mform = MonitoringFilterForm(request.GET)
-    title = _('Ratings')
-    current_title = _('Ratings')
+    name_filter = request.GET.get('name_filter', '')
+    if name_filter:
+        monitoring_list = Monitoring.objects.filter(status=MONITORING_PUBLISHED,
+                                                    name__icontains=name_filter).order_by('-publish_date')
+    else:
+        monitoring_list = Monitoring.objects.filter(status=MONITORING_PUBLISHED).order_by('-publish_date')
+
+    user = request.user
+    if not user.is_active or not (user.is_active and user.profile.is_expertA):
+        monitoring_list = monitoring_list.filter(hidden=False)
+    if user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
+        monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__task__user=user, hidden=True))
+
+    monitoring_list = monitoring_list.annotate(org_count=Count('organization'))
+
+    for m in monitoring_list:
+        tasks = Task.approved_tasks.filter(organization__monitoring=m)
+        extra_select = tasks[0]._sql_openness() if tasks.exists() else "count(*)"
+        tasks = tasks.extra(select={'__task_openness': extra_select})
+        openness_list = [t.__task_openness or 0 for t in tasks]
+        avg = reduce(lambda x, y: x + y, openness_list) / len(openness_list)
+        m.average = round(avg, 3)
 
     context = {
         'title': title,
-        'current_title': current_title,
-        'report': True,
-        'mform': mform,
+        'current_title': breadcrumbs_title,
+        'monitoring_list': monitoring_list,
+        'name_filter': name_filter,
     }
-
-    if monitoring_id:
-        monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
-        if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        has_npa = monitoring.has_npa
-        rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
-        rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
-        con = {
-            'monitoring': monitoring,
-            'has_npa': has_npa,
-            'object_list': rating_list,
-            'rating_type': rating_type,
-            'average': avg,
-            'form': form,
-        }
-        context.update(con)
-        context['total_orgs'] = _total_orgs_translate(avg, rating_list, rating_type)
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
 
-    return render_to_response('rating_report.html', context, context_instance=RequestContext(request))
+    return render_to_response('ratings.html', context, context_instance=RequestContext(request))
 
 
 def replace_string(cell):
