@@ -120,6 +120,26 @@ class RatingTableValuesTestCase(TestCase):
         self.assertTrue(expected_text in text)
 
 
+class EmptyMonitoringTestCase(TestCase):
+    def setUp(self):
+        # GIVEN monitoring without tasks
+        self.client = Client()
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring_id = self.monitoring.pk
+        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND expertA account
+        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
+        self.usr.groups.add(Group.objects.get(name=self.usr.profile.expertA_group))
+
+    def test_ok_response(self):
+        self.client.login(username='usr', password='password')
+        # WHEN expertA requests rating page
+        response = self.client.get(self.url)
+        # THEN server's response is OK
+        self.assertEqual(response.status_code, 200)
+
+
 class TestMonitoringExport(TestCase):
     # Scenario: Экспорт данных мониторинга
     def setUp(self):
@@ -324,3 +344,5 @@ class TestMonitoringExportApproved(TestCase):
         csv = [line for line in UnicodeReader(StringIO(response.content))]
         #only header
         self.assertEqual(len(csv), 1)
+
+

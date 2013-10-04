@@ -1296,15 +1296,17 @@ def rating(monitoring, parameters=None, rating_type=None):
             'openness_initial': task.openness_initial,
         } for task in tasks
         .extra(select={'__task_openness': extra_select})
-        .order_by('-__task_openness')
+        .order_by('-__task_openness') if total_tasks > 0
     ]
 
     place = 1
     avg = {
         'openness': 0,
         'openness_initial': 0,
+        'openness_delta': 0,
         'total_tasks': total_tasks,
     }
+
     max_rating = 0
     if object_list:
         max_rating = object_list[0]['openness']
@@ -1315,13 +1317,12 @@ def rating(monitoring, parameters=None, rating_type=None):
     rating_list = []
     place_count = {}
     for rating_object in object_list:
-        profiles = UserProfile.objects.filter(organization=rating_object['task'].organization)
-
+        profiles = UserProfile.objects.filter(organization__task=rating_object['task'])
         scores = Score.objects.filter(task=rating_object['task'])
         rating_object["repr_len"] = len(profiles)
         rating_object["active_repr_len"] = 0
         all_comments = 0
-        content_type = ContentType.objects.get_for_model(scores[0])
+        content_type = ContentType.objects.get_for_model(Score)
         for p in profiles:
             p_comments = 0
             for s in scores:
