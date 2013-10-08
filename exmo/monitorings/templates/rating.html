@@ -270,7 +270,7 @@
             </td>
             {% endif %}
 
-            {% if not user.is_active or user.profile.rt_initial_openness %}
+            {% if user.is_active and user.profile.rt_initial_openness %}
             <td class="init-openness">
                 <strong>{{ average.openness_initial|floatformat:3 }}%</strong>
             </td>

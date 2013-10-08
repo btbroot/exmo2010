@@ -1315,7 +1315,7 @@ class UserProfile(models.Model):
     # Rating table settings
     rt_representatives = models.BooleanField(verbose_name=_("Representatives"), default=True)
     rt_comment_quantity = models.BooleanField(verbose_name=_("Comment quantity"), default=True)
-    rt_initial_openness = models.BooleanField(verbose_name=_("Representatives"), default=True)
+    rt_initial_openness = models.BooleanField(verbose_name=_("Representatives"), default=False)
     rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
     rt_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
 

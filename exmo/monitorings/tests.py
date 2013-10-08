@@ -47,11 +47,15 @@ class RatingTableSettingsTestCase(TestCase):
 
     def test_rt_settings_exist(self):
         # WHEN User instance is created
-        # THEN instance has settings fields with values that equal True
+        # THEN visibility of "Representatives" column setting is True
         self.assertEqual(self.usr.profile.rt_representatives, True)
+        # AND visibility of "Comments" column setting is True
         self.assertEqual(self.usr.profile.rt_comment_quantity, True)
-        self.assertEqual(self.usr.profile.rt_initial_openness, True)
+        # AND visibility of "Initial" openness column setting is False
+        self.assertEqual(self.usr.profile.rt_initial_openness, False)
+        # AND visibility of "Openness" column setting is True
         self.assertEqual(self.usr.profile.rt_final_openness, True)
+        # AND visibility of "Difference" column setting is True
         self.assertEqual(self.usr.profile.rt_difference, True)
 
     def test_rt_settings_change(self):
