@@ -138,9 +138,9 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(a['repr_len'], 0)
         self.assertEqual(a['active_repr_len'], 0)
         self.assertEqual(a['comments'], 0)
-        self.assertEqual(a['openness'], 0)
-        self.assertEqual(a['openness_initial'], 0)
-        self.assertEqual(a['openness_delta'], 0.0)
+        self.assertEqual(a['openness'], None)
+        self.assertEqual(a['openness_initial'], None)
+        self.assertEqual(a['openness_delta'], None)
 
     def test_organizations_count(self):
         # WHEN function accepts monitoring and parameters data
