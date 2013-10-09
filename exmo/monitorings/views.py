@@ -1317,21 +1317,15 @@ def rating(monitoring, parameters=None, rating_type=None):
     rating_list = []
     place_count = {}
     for rating_object in object_list:
-        profiles = UserProfile.objects.filter(organization__task=rating_object['task'])
         scores = Score.objects.filter(task=rating_object['task'])
-        rating_object["repr_len"] = len(profiles)
-        rating_object["active_repr_len"] = 0
-        all_comments = 0
         content_type = ContentType.objects.get_for_model(Score)
-        for p in profiles:
-            p_comments = 0
-            for s in scores:
-                p_comments = CommentExmo.objects.filter(content_type=content_type, object_pk=s.pk, user=p.user).count()
-                all_comments += p_comments
-            if p_comments:
-                rating_object["active_repr_len"] += 1
+        users = User.objects.filter(userprofile__organization__task=rating_object['task'])
+        comments = CommentExmo.objects.filter(content_type=content_type, object_pk__in=scores, user__in=users)
 
-        rating_object["comments"] = all_comments
+        rating_object["comments"] = comments.count()
+        rating_object["repr_len"] = users.count()
+        rating_object["active_repr_len"] = comments.only('user').distinct().count()
+
         openness_delta = float(rating_object['openness']) - float(rating_object['openness_initial'])
         rating_object['openness_delta'] = round(openness_delta, 3)
         if rating_object['openness'] < max_rating:

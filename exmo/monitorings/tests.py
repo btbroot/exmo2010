@@ -23,11 +23,13 @@ from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson
 from django.utils.translation import ungettext
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from model_mommy import mommy
 from nose_parameterized import parameterized
-
 from core.utils import UnicodeReader
 from exmo2010.models import *
+from custom_comments.models import CommentExmo
 from monitorings.views import rating, _total_orgs_translate
 
 
@@ -122,6 +124,63 @@ class RatingTableValuesTestCase(TestCase):
         avg['total_tasks']
         ) % {'count': 1}
         self.assertTrue(expected_text in text)
+
+
+class ActiveRepresentativesTestCase(TestCase):
+    def setUp(self):
+        # GIVEN User instance and two connected organizations to it
+        self.client = Client()
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        monitoring_id = monitoring.pk
+        organization1 = mommy.make(Organization, monitoring=monitoring)
+        organization2 = mommy.make(Organization, monitoring=monitoring)
+        self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
+        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
+        profile = self.usr.get_profile()
+        profile.organization = [organization1, organization2]
+        profile.save()
+        # AND two corresponding tasks, parameters, and scores for organizations
+        task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring)
+        self.score1 = mommy.make(Score, task=task1, parameter=parameter1)
+        self.score2 = mommy.make(Score, task=task2, parameter=parameter2)
+        self.content_type = ContentType.objects.get_for_model(Score)
+        self.site = Site.objects.get_current()
+
+    def test_first_org_active_users(self):
+        # WHEN representative adds a comment to first task's score
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.usr, site=self.site)
+        comment.save()
+
+        # AND requests rating page for monitoring
+        response = self.client.get(self.url)
+        o1 = response.context['object_list'][0]
+        o2 = response.context['object_list'][1]
+
+        # THEN representatives quantity for every organization equals 1
+        self.assertEqual(o1['repr_len'], 1)
+        self.assertEqual(o2['repr_len'], 1)
+
+        # AND active representatives quantity for first organization equals 1 (because of comment)
+        self.assertEqual(o1['active_repr_len'], 1)
+
+        # AND active representatives quantity for second organization equals 0 (because of absence of comment)
+        self.assertEqual(o2['active_repr_len'], 0)
+
+    def test_second_org_active_users(self):
+        # WHEN representative adds a comment to second task's score
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.usr, site=self.site)
+        comment.save()
+
+        # AND requests rating page for monitoring
+        response = self.client.get(self.url)
+        o1 = response.context['object_list'][0]
+        o2 = response.context['object_list'][1]
+
+        # THEN active representatives quantity for second organization equals 1 (because of presence of comment)
+        self.assertEqual(o2['active_repr_len'], 1)
 
 
 class EmptyMonitoringTestCase(TestCase):
@@ -348,5 +407,3 @@ class TestMonitoringExportApproved(TestCase):
         csv = [line for line in UnicodeReader(StringIO(response.content))]
         #only header
         self.assertEqual(len(csv), 1)
-
-
