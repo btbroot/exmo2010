@@ -315,17 +315,21 @@
 
 <!-- Modal -->
 <div id="settings-modal" class="hidden">
-    <h2 class="modal-heading">{% trans "Table settings" %}</h2>
     <form action="." method="GET">
+        <div id="checkboxes">
+            <h2 class="modal-heading">{% trans "Table settings" %}</h2>
         {% for field in table_form %}
             {% if field.field != table_form.fields.representatives and field.field != table_form.fields.comment_quantity or is_expert %}
             {{ field }}&nbsp;{{ field.label_tag }}<br/>
             {% endif %}
         {% endfor %}
-        <span>
-            <input type="submit" value="{% trans "Change" %}">
-        </span>
-        <a href="#" id="cancel-link" class="pseudo">{% trans "Cancel" %}</a>
+        </div>
+        <div id="buttons">
+            <span>
+                <input type="submit" value="{% trans "Change" %}">
+            </span>
+            <a href="#" id="cancel-link" class="pseudo">{% trans "Cancel" %}</a>
+        </div>
     </form>
 </div>
 {% endblock %}

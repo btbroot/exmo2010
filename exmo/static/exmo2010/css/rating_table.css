@@ -255,16 +255,22 @@ p.total-organizations {
 }
 
 #settings-modal {
+    width: 260px;
     background-color: #fff;
     margin: 0;
-    padding: 20px 30px 30px 20px;
+    padding: 0;
 }
 
-#settings-modal img {
-    position: absolute;
-    right: 3px;
-    top: 3px;
+#settings-modal #checkboxes {
+    padding: 20px 20px 0 20px;
 }
+
+#settings-modal #buttons {
+    margin-top: 11px;
+    padding-left: 20px;
+    padding-bottom: 30px;
+}
+
 
 #settings-modal form {
     line-height: 27px;
@@ -282,7 +288,7 @@ p.total-organizations {
 #cancel-link {
     position: relative;
     top: 2px;
-    left: 33px;
+    left: 21px;
 }
 
 a.pseudo {
