@@ -1,0 +1,70 @@
+<!--
+# This file is part of EXMO2010 software.
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+-->
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>exmo2010 Test Suite</title>
+
+  <!-- jquery -->
+  <script src="../exmo/static/exmo2010/js/jquery/jquery.min.js"></script>
+
+  <!-- qunit -->
+  <link rel="stylesheet" href="vendor/qunit-1.12.0.css" media="screen">
+  <script src="vendor/qunit-1.12.0.js"></script>
+
+  <!--  additional plugins -->
+  <script src="../exmo/static/exmo2010/js/jquery.mousewheel.js"></script>
+  <script src="../exmo/static/exmo2010/js/jquery.simplemodal-1.4.4.js"></script>
+  <script src="../exmo/static/exmo2010/js/jquery.tablesorter.js"></script>
+
+  <!--  script sources -->
+  <script src="../exmo/static/exmo2010/js/rating.js"></script>
+
+  <!-- unit tests -->
+  <script src="unit/rating.js"></script>
+
+</head>
+<body>
+  <div>
+    <h1 id="qunit-header">exmo2010 Test Suite</h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">
+        <form action="." method="GET" id="pselect_form">
+            <div class="scroll">
+                <input type="checkbox" name="parameter_1" id="id_parameter_1" />
+                <label for="id_parameter_1">Parameter 1</label><br>
+
+                <input type="checkbox" name="parameter_2" id="id_parameter_2" />
+                <label for="id_parameter_2">Parameter 2</label><br>
+
+                <input type="checkbox" name="parameter_3" id="id_parameter_3" />
+                <label for="id_parameter_3">Parameter 3</label><br>
+
+                <input type="checkbox" name="parameter_4" id="id_parameter_4" />
+                <label for="id_parameter_4">Parameter 4</label><br>
+            </div>
+            <input type="submit" value="Get rating" disabled="disabled">
+    </form>
+    </div>
+  </div>
+</body>
+</html>

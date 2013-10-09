@@ -108,4 +108,32 @@ $(document).ready(function() {
         parametersToggle();
         e.preventDefault();
     })
+
+    /* User defined mode, submit button ability */
+
+    var $submit = $('#pselect_form > input[type="submit"]'),
+        $checkboxes = $('#pselect_form > div >input[type="checkbox"]');
+
+    function isAnyChecked() {
+        var any_checked = false
+        $checkboxes.each(function() {
+            var checked = $(this).attr('checked');
+            if (checked)
+                any_checked = true;
+        });
+        return any_checked;
+    }
+
+    function setSubmitButtonAbility() {
+        if ( isAnyChecked() )
+            $submit.attr("disabled", false);
+        else
+            $submit.attr("disabled", true);
+    }
+
+    setSubmitButtonAbility();
+
+    $checkboxes.click(function() {
+        setSubmitButtonAbility();
+    });
 });
