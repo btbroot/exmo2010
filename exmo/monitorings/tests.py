@@ -59,8 +59,8 @@ class RatingsTableValuesTestCase(TestCase):
         self.assertEqual(monitoring.name, self.monitoring_name)
         self.assertEqual(monitoring.publish_date, self.today)
         self.assertEqual(monitoring.org_count, 1)
-        # AND equals expected calculated average value
-        self.assertEqual(monitoring.average, 0)
+        # AND equals none because of absence of openness
+        self.assertEqual(monitoring.average, None)
 
 
 class RatingTableSettingsTestCase(TestCase):
@@ -200,16 +200,17 @@ class ActiveRepresentativesTestCase(TestCase):
         self.assertEqual(o2.active_repr_len, 0)
 
     def test_second_org_active_users(self):
-        # WHEN representative adds a comment to second task's score
+        # WHEN representative adds two comments to second task's score
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.usr, site=self.site)
+        comment.save()
         comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.usr, site=self.site)
         comment.save()
 
         # AND requests rating page for monitoring
         response = self.client.get(self.url)
-        o1 = response.context['object_list'][0]
         o2 = response.context['object_list'][1]
 
-        # THEN active representatives quantity for second organization equals 1 (because of presence of comment)
+        # THEN active representatives quantity for second organization equals 1
         self.assertEqual(o2.active_repr_len, 1)
 
 
