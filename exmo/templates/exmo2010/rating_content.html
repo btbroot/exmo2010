@@ -151,7 +151,7 @@
                 <td>{% trans "Organization" %}</td>
                 <td>{% trans "URL" %}</td>
                 {% if monitoring.status in monitoring.after_interaction_status %}
-                    {% if average.openness_initial|default_if_none:0 >= 0 %}
+                    {% if average.openness_initial >= 0 %}
                         {% if rating_type == "all" %}
                             <td>{% trans "First openness" %}*</td>
                         {% endif %}
@@ -167,29 +167,29 @@
                         {% ifchanged object.place %}
                             <td id="first_column" rowspan="{{ object.place_count }}">{{ object.place }}</td>
                         {% endifchanged %}
-                        <td><a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task.organization.name }}</a></td>
-                        <td><a target="_blank" href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a></td>
-                        {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial|default_if_none:0 >= 0 %}
+                        <td><a href="{% url exmo2010:score_list_by_task object.pk %}">{{ object.organization.name }}</a></td>
+                        <td><a target="_blank" href="{{ object.organization.url }}">{{ object.organization.url }}</a></td>
+                        {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial >= 0 %}
                             {% if rating_type == "all" %}
-                                <td>{{ object.openness_initial|default_if_none:0|floatformat:3 }}</td>
+                                <td>{{ object.openness_initial|floatformat:3 }}</td>
                             {% endif %}
                         {% endif %}
-                        <td>{{ object.openness|default_if_none:0|floatformat:3 }}</td>
+                        <td>{{ object.openness|floatformat:3 }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
                 <tr id="average">
                     <td colspan=3>{% trans 'Average value' %}</td>
-                    {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial|default_if_none:0 >= 0 %}
+                    {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial >= 0 %}
                         {% if rating_type == "all" %}
-                            <td>{{ average.openness_initial|default_if_none:0|floatformat:3 }}</td>
+                            <td>{{ average.openness_initial|floatformat:3 }}</td>
                         {% endif %}
                     {% endif %}
-                    <td>{{ average.openness|default_if_none:0|floatformat:3 }}</td>
+                    <td>{{ average.openness|floatformat:3 }}</td>
                 </tr>
                 <tr>
                     <td colspan="
-                                {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial|default_if_none:0 >= 0 and rating_type == "all" %}
+                                {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial >= 0 and rating_type == "all" %}
                                     5
                                 {% else %}
                                     4
@@ -198,7 +198,7 @@
                     </td>
                 </tr>
             </table>
-            {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial|default_if_none:0 >= 0 %}
+            {% if monitoring.status in monitoring.after_interaction_status and average.openness_initial >= 0 %}
                 {% if rating_type == "all" %}
                     <p class="footnote">
                         * {% trans 'First openness &mdash; openness value before interact' %}

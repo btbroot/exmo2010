@@ -18,18 +18,19 @@
 #
 from cStringIO import StringIO
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson
 from django.utils.translation import ungettext
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from model_mommy import mommy
 from nose_parameterized import parameterized
+
 from core.utils import UnicodeReader
-from exmo2010.models import *
 from custom_comments.models import CommentExmo
+from exmo2010.models import *
 from monitorings.views import rating, _total_orgs_translate
 
 
@@ -73,7 +74,7 @@ class RatingTableSettingsTestCase(TestCase):
         self.monitoring_id = monitoring.pk
         organization = mommy.make(Organization, monitoring=monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring)
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
         score = mommy.make(Score, task=task, parameter=parameter)
 
     def test_rt_settings_exist(self):
@@ -112,7 +113,7 @@ class RatingTableValuesTestCase(TestCase):
         self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
         organization = mommy.make(Organization, monitoring=self.monitoring)
         self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring)
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
         score = mommy.make(Score, task=self.task, parameter=self.parameter, found=0)
 
     def test_rt_row_output(self):
@@ -120,14 +121,14 @@ class RatingTableValuesTestCase(TestCase):
         response = self.client.get(self.url)
         o = response.context['object_list'][0]
         # THEN output data equals default values for organization
-        self.assertEqual(o['place'], 1)
-        self.assertEqual(o['task'], self.task)
-        self.assertEqual(o['repr_len'], 0)
-        self.assertEqual(o['active_repr_len'], 0)
-        self.assertEqual(o['comments'], 0)
-        self.assertEqual(o['openness'], 0)
-        self.assertEqual(o['openness_initial'], 0)
-        self.assertEqual(o['openness_delta'], 0.0)
+        self.assertEqual(o, self.task)
+        self.assertEqual(o.place, 1)
+        self.assertEqual(o.repr_len, 0)
+        self.assertEqual(o.active_repr_len, 0)
+        self.assertEqual(o.comments, 0)
+        self.assertEqual(o.openness, 0)
+        self.assertEqual(o.openness_initial, 0)
+        self.assertEqual(o.openness_delta, 0.0)
 
     def test_rt_average_output(self):
         # WHEN user requests rating page
@@ -138,9 +139,9 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(a['repr_len'], 0)
         self.assertEqual(a['active_repr_len'], 0)
         self.assertEqual(a['comments'], 0)
-        self.assertEqual(a['openness'], None)
-        self.assertEqual(a['openness_initial'], None)
-        self.assertEqual(a['openness_delta'], None)
+        self.assertEqual(a['openness'], 0)
+        self.assertEqual(a['openness_initial'], 0)
+        self.assertEqual(a['openness_delta'], 0.0)
 
     def test_organizations_count(self):
         # WHEN function accepts monitoring and parameters data
@@ -171,8 +172,8 @@ class ActiveRepresentativesTestCase(TestCase):
         # AND two corresponding tasks, parameters, and scores for organizations
         task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
         task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
-        parameter1 = mommy.make(Parameter, monitoring=monitoring)
-        parameter2 = mommy.make(Parameter, monitoring=monitoring)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=1)
         self.score1 = mommy.make(Score, task=task1, parameter=parameter1)
         self.score2 = mommy.make(Score, task=task2, parameter=parameter2)
         self.content_type = ContentType.objects.get_for_model(Score)
@@ -189,14 +190,14 @@ class ActiveRepresentativesTestCase(TestCase):
         o2 = response.context['object_list'][1]
 
         # THEN representatives quantity for every organization equals 1
-        self.assertEqual(o1['repr_len'], 1)
-        self.assertEqual(o2['repr_len'], 1)
+        self.assertEqual(o1.repr_len, 1)
+        self.assertEqual(o2.repr_len, 1)
 
         # AND active representatives quantity for first organization equals 1 (because of comment)
-        self.assertEqual(o1['active_repr_len'], 1)
+        self.assertEqual(o1.active_repr_len, 1)
 
         # AND active representatives quantity for second organization equals 0 (because of absence of comment)
-        self.assertEqual(o2['active_repr_len'], 0)
+        self.assertEqual(o2.active_repr_len, 0)
 
     def test_second_org_active_users(self):
         # WHEN representative adds a comment to second task's score
@@ -209,7 +210,7 @@ class ActiveRepresentativesTestCase(TestCase):
         o2 = response.context['object_list'][1]
 
         # THEN active representatives quantity for second organization equals 1 (because of presence of comment)
-        self.assertEqual(o2['active_repr_len'], 1)
+        self.assertEqual(o2.active_repr_len, 1)
 
 
 class EmptyMonitoringTestCase(TestCase):
@@ -260,6 +261,7 @@ class TestMonitoringExport(TestCase):
                 Parameter,
                 monitoring=monitoring,
                 complete=False,
+                weight=1,
             )
             # AND в каждой задаче есть оценка по parameter
             score = mommy.make(
@@ -301,8 +303,8 @@ class TestMonitoringExport(TestCase):
             organization.name)
         # AND КИД (для первой задачи) в БД и json совпадает
         self.assertEqual(
-            float(json['monitoring']['tasks'][0]['openness']),
-            float('%.3f' % task.openness))
+            json['monitoring']['tasks'][0]['openness'],
+            ('%.3f' % task.openness) if task.openness is not None else task.openness)
         self.assertEqual(
             int(json['monitoring']['tasks'][0]['position']),
             1)
@@ -360,8 +362,8 @@ class TestMonitoringExport(TestCase):
                     1)
                 # AND КИД (для первой задачи) в БД и json совпадает
                 self.assertEqual(
-                    float(row[5]),
-                    float(task.openness))
+                    row[5],
+                    '%.3f' % task.openness if task.openness is not None else '')
                 self.assertEqual(
                     float(row[7]),
                     float(score.parameter.pk))
@@ -408,7 +410,8 @@ class TestMonitoringExportApproved(TestCase):
         parameter = mommy.make(
             Parameter,
             monitoring=self.monitoring,
-            complete=False)
+            complete=False,
+            weight=1)
         # AND в каждой задаче есть оценка по parameter
         score = mommy.make(
             Score,

@@ -753,8 +753,8 @@ class Task(models.Model):
         place = None
         rating_list, avg = rating(self.organization.monitoring, parameters)
         for rating_object in rating_list:
-            if rating_object['task'] == self:
-                place = rating_object['place']
+            if rating_object == self:
+                place = rating_object.place
                 break
         return place
 

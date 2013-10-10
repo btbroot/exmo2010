@@ -57,7 +57,7 @@ from custom_comments.utils import comment_report
 from custom_comments.models import CommentExmo
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
-from monitorings.forms import MonitoringForm, MonitoringFilterForm, TableSettingsForm
+from monitorings.forms import MonitoringForm, TableSettingsForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
 
@@ -286,15 +286,15 @@ def monitoring_rating_color(request, id):
 
   rating_list_with_categories = []
   num_categories = 4 #number for division
-  rating_piece = rating_list[0]['openness'] // num_categories
+  rating_piece = rating_list[0].task_openness // num_categories
   for rating_object in rating_list:
-    div_result = rating_object['openness'] // rating_piece
+    div_result = rating_object.task_openness // rating_piece
     category = 4
     for i in range(1,num_categories):
         if div_result > num_categories - i:
             category = i
             break
-    rating_object['category'] = category
+    rating_object.category = category
 
     rating_list_with_categories.append(rating_object)
 
@@ -337,9 +337,9 @@ def monitoring_rating(request, monitoring_id):
     if name_filter:
         tasks = Task.objects.filter(organization__name__icontains=name_filter)
         filtered_rating_list = []
-        for o in rating_list:
-            if o["task"] in tasks:
-                filtered_rating_list.append(o)
+        for task in rating_list:
+            if task in tasks:
+                filtered_rating_list.append(task)
         rating_list = filtered_rating_list
 
     if request.user.is_active:
@@ -1272,17 +1272,24 @@ def rating(monitoring, parameters=None, rating_type=None):
     monitoring - экземпляр модели Monitoring
     parameters - list/tuple из экземпляров модели Parameter
     rating_type - string/unicode тип мониторинга
-    """
-    #sample extra for select
-    sql_openness = sql_openness_initial = "count(*)"
-    #get task from monitoring for valid sql
-    if Task.objects.filter(organization__monitoring=monitoring).exists():
-        openness = monitoring.openness_expression
-        sql_openness = openness.get_sql_openness(parameters)
-        sql_openness_initial = openness.get_sql_openness(parameters, initial=True)
 
-    tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)
+    """
+    place = 1
+    place_count = {}
+    rating_list = []
+    rating_list_final = []
+
+    tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)\
+                               .filter(score__pk__isnull=False)\
+                               .distinct()
     total_tasks = tasks.count()
+
+    avg = {
+        'openness': None,
+        'openness_initial': None,
+        'openness_delta': None,
+        'total_tasks': total_tasks,
+    }
 
     if parameters and rating_type == 'user':
         params_list = Parameter.objects.filter(pk__in=parameters)
@@ -1292,68 +1299,50 @@ def rating(monitoring, parameters=None, rating_type=None):
 
         tasks = tasks.exclude(organization__in=list(non_relevant))
 
-    object_list = [
-        {
-            'task': task,
-            'openness': task.__openness,
-            'openness_initial': task.__openness_initial,
-        } for task in tasks.extra(select={'__openness': sql_openness,
-                                          '__openness_initial': sql_openness_initial},
-                                  order_by=['-__openness']) if total_tasks > 0 and task.__openness_initial is not None
-    ]
+    if tasks.exists():
+        openness = monitoring.openness_expression
+        sql_openness = openness.get_sql_openness(parameters)
+        sql_openness_initial = openness.get_sql_openness(parameters, initial=True)
 
-    place = 1
-    avg = {
-        'openness': None,
-        'openness_initial': None,
-        'openness_delta': None,
-        'total_tasks': total_tasks,
-    }
+        tasks = tasks.extra(select={'task_openness': sql_openness,
+                                    'task_openness_initial': sql_openness_initial},
+                            order_by=['-task_openness'])
 
-    max_rating = 0
-    if object_list:
-        max_rating = object_list[0]['openness']
-        avg['openness'] = sum([t['openness'] for t in object_list]) / len(object_list)
-        avg['openness_initial'] = sum([t['openness_initial'] for t in object_list]) / len(object_list)
+        max_rating = tasks[0].task_openness
+        avg['openness'] = sum([t.task_openness for t in tasks]) / tasks.count()
+        avg['openness_initial'] = sum([t.task_openness_initial for t in tasks]) / tasks.count()
         avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
-    rating_list = []
-    place_count = {}
-    for rating_object in object_list:
-        scores = Score.objects.filter(task=rating_object['task'])
-        content_type = ContentType.objects.get_for_model(Score)
-        users = User.objects.filter(userprofile__organization__task=rating_object['task'])
-        comments = CommentExmo.objects.filter(content_type=content_type, object_pk__in=scores, user__in=users)
 
-        rating_object["comments"] = comments.count()
-        rating_object["repr_len"] = users.count()
-        rating_object["active_repr_len"] = comments.only('user').distinct().count()
+        for task in tasks:
+            scores = Score.objects.filter(task=task)
+            content_type = ContentType.objects.get_for_model(Score)
+            users = User.objects.filter(userprofile__organization__task=task)
+            comments = CommentExmo.objects.filter(content_type=content_type, object_pk__in=scores, user__in=users)
 
-        if rating_object['openness'] is None and rating_object['openness_initial'] is None:
-            openness_delta = None
-        else:
-            openness_delta_float = float(rating_object['openness'] or 0) - float(rating_object['openness_initial'] or 0)
-            openness_delta = round(openness_delta_float, 3)
-        rating_object['openness_delta'] = openness_delta
+            task.comments = comments.count()
+            task.repr_len = users.count()
+            task.active_repr_len = comments.only('user').distinct().count()
+            openness_delta_float = float(task.task_openness) - float(task.task_openness_initial)
+            task.openness_delta = round(openness_delta_float, 3)
 
-        if rating_object['openness'] < max_rating:
-            place += 1
-            max_rating = rating_object['openness']
-        try:
-            place_count[place] += 1
-        except KeyError:
-            place_count[place] = 1
-        rating_object['place'] = place
-        rating_list.append(rating_object)
+            if task.task_openness < max_rating:
+                place += 1
+                max_rating = task.task_openness
+            try:
+                place_count[place] += 1
+            except KeyError:
+                place_count[place] = 1
+            task.place = place
+            rating_list.append(task)
 
-    if object_list:
-        avg['repr_len'] = sum([t['repr_len'] for t in object_list]) / len(object_list)
-        avg['active_repr_len'] = sum([t['active_repr_len'] for t in object_list]) / len(object_list)
-        avg['comments'] = sum([t['comments'] for t in object_list]) / len(object_list)
+        avg['repr_len'] = sum([t.repr_len for t in tasks]) / tasks.count()
+        avg['active_repr_len'] = sum([t.active_repr_len for t in tasks]) / tasks.count()
+        avg['comments'] = sum([t.comments for t in tasks]) / tasks.count()
 
-    rating_list_final = []
     for rating_object in rating_list:
-        rating_object['place_count'] = place_count[rating_object['place']]
+        rating_object.place_count = place_count[rating_object.place]
         rating_list_final.append(rating_object)
+
     return rating_list_final, avg
 
 
@@ -1406,11 +1395,16 @@ class MonitoringExport(object):
             if score.organization_id in self.tasks.keys():
                 self.tasks[score.organization_id]['scores'].append(score_dict)
             else:
+                if score.task_openness is not None:
+                    score.task_openness = '%.3f' % score.task_openness
+                if score.openness_initial is not None:
+                    score.openness_initial = '%.3f' % score.openness_initial
+
                 self.tasks[score.organization_id] = {
                     'scores': [score_dict, ],
                     'position': position,
-                    'openness': '%.3f' % (score.task_openness or 0),
-                    'openness_initial': '%.3f' % (score.openness_initial or 0),
+                    'openness': score.task_openness,
+                    'openness_initial': score.openness_initial,
                     'name': score.organization_name,
                     'id': score.organization_id,
                     'url': score.url,

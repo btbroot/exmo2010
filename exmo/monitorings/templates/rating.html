@@ -207,10 +207,10 @@
                 <span>{{ object.place }}</span>
             </td>
             <td>
-                <a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task.organization.name }}</a>
+                <a href="{% url exmo2010:score_list_by_task object.pk %}">{{ object.organization.name }}</a>
             </td>
             <td>
-                <a target="_blank" href="{{ object.task.organization.url }}">{{ object.task.organization.url }}</a>
+                <a target="_blank" href="{{ object.organization.url }}">{{ object.organization.url }}</a>
             </td>
 
             {% if is_expert and user.profile.rt_representatives %}
@@ -222,12 +222,12 @@
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_initial_openness %}
-            <td class="init-openness">{{ object.openness_initial|floatformat:3 }}%</td>
+            <td class="init-openness">{{ object.task_openness_initial|floatformat:3 }}%</td>
             {% endif %}
 
 
             {% if not user.is_active or user.profile.rt_final_openness %}
-            <td class="openness">{{ object.openness|floatformat:3 }}%</td>
+            <td class="openness">{{ object.task_openness|floatformat:3 }}%</td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_difference %}
@@ -235,12 +235,13 @@
             {% spaceless %}
                 <div>
                 <span>{{ object.openness_delta|floatformat:3 }}%</span>&nbsp;
-                {% if object.openness_delta > 0%}
-                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
-                {% endif %}
-                {% if object.openness_delta < 0%}
-                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
-                {% endif %}
+                {% ifnotequal object.openness_delta None %}
+                    {% if object.openness_delta > 0%}
+                        <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
+                    {% elif object.openness_delta < 0%}
+                        <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
+                    {% endif %}
+                {% endifnotequal %}
                 </div>
             {% endspaceless %}
             </td>
@@ -290,12 +291,13 @@
                 <span>
                     <strong>{{ average.openness_delta|floatformat:3 }}%</strong>
                 </span>&nbsp;
-                {% if average.openness_delta > 0%}
-                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
-                {% endif %}
-                {% if average.openness_delta < 0%}
-                    <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
-                {% endif %}
+                {% ifnotequal average.openness_delta None %}
+                    {% if average.openness_delta > 0%}
+                        <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
+                    {% elif average.openness_delta < 0%}
+                        <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
+                    {% endif %}
+                {% endifnotequal %}
                 </div>
             {% endspaceless %}
             </td>
