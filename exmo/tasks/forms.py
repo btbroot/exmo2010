@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -21,7 +21,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from exmo2010.models import Organization, Task, TaskHistory, UserProfile
+from exmo2010.models import Organization, Task, UserProfile
 
 
 class TaskForm(forms.ModelForm):
@@ -64,31 +64,6 @@ class TaskForm(forms.ModelForm):
             if Organization.objects.filter(pk=organization.pk, monitoring=self._monitoring).count() < 1:
                 raise forms.ValidationError(_("Illegal monitoring"))
         return organization
-
-    def save(self, *args, **kwargs):
-        """
-        Saves the new task history if expert was changed.
-
-        """
-        task = self.instance.id
-
-        if task:
-            user = Task.objects.get(pk=task).user
-            task_id = super(TaskForm, self).save(*args, **kwargs)
-
-            if user == task_id.user:
-                return task_id
-
-        else:
-            task_id = super(TaskForm, self).save(*args, **kwargs)
-
-        TaskHistory.objects.create(
-            task=task_id,
-            user=self.cleaned_data['user'],
-            status=self.cleaned_data['organization'].monitoring.status
-        )
-
-        return task_id
 
     class Meta:
         model = Task

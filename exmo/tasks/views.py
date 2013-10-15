@@ -24,17 +24,14 @@ import string
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group, User
-from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from livesettings import config_value
 import reversion
 
 from accounts.forms import SettingsInvCodeForm
@@ -638,29 +635,3 @@ def task_mass_assign_tasks(request, id):
             'title': title,
         }, context_instance=RequestContext(request))
 
-
-def task_user_change_notify(sender, **kwargs):
-    """
-    Оповещение об измененях задачи.
-
-    """
-    task = sender
-    email = task.user.email
-    subject = _('You have an assigned task')
-    headers = {
-        'X-iifd-exmo': 'task_user_change_notification'
-    }
-    if Site._meta.installed:
-        site = Site.objects.get_current()
-        url = '%s://%s%s' % ('http', site, reverse('exmo2010:score_list_by_task', args=[task.pk]))
-    else:
-        url = None
-
-    t = loader.get_template('task_user_changed.html')
-    c = Context({'task': task, 'url': url, 'subject': subject})
-    message = t.render(c)
-
-    email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'), [email], headers=headers)
-    email.encoding = "utf-8"
-    email.content_subtype = "html"
-    email.send()

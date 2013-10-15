@@ -684,11 +684,23 @@ class Task(models.Model):
                 })
 
     def save(self, *args, **kwargs):
-        if self.pk is not None:
+        new_user_assigned = False
+        if self.pk is None:
+            new_user_assigned = True
+        else:
             task = Task.objects.get(pk=self.pk)
             if task.user != self.user:
-                task_user_changed.send(sender=self)
+                new_user_assigned = True
+
         super(Task, self).save(*args, **kwargs)
+        if new_user_assigned:
+            task_user_assignged_sig.send(sender=self)
+            TaskHistory.objects.create(
+                task=self,
+                user=self.user,
+                status=self.organization.monitoring.status
+            )
+
 
     def _get_open(self):
         if self.status == self.TASK_OPEN: return True
@@ -1690,7 +1702,7 @@ class MonitoringInteractActivity(models.Model):
 
 from django.db.models.signals import m2m_changed
 from django.dispatch import Signal
-from tasks.views import task_user_change_notify
+from tasks.signals import task_assign_user_notify
 
 def org_changed(sender, instance, action, **kwargs):
     """
@@ -1706,5 +1718,5 @@ def org_changed(sender, instance, action, **kwargs):
 # invoke signal when 'organization' field at UserProfile was changed
 m2m_changed.connect(org_changed, sender=UserProfile.organization.through)
 
-task_user_changed = Signal()
-task_user_changed.connect(task_user_change_notify)
+task_user_assignged_sig = Signal()
+task_user_assignged_sig.connect(task_assign_user_notify)
