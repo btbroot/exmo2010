@@ -20,6 +20,7 @@
 import copy
 import csv
 import os
+import re
 import tempfile
 import zipfile
 from cStringIO import StringIO
@@ -275,36 +276,6 @@ def monitoring_add(request):
                               context_instance=RequestContext(request))
 
 
-#update rating twice in a day
-#@cache_page(60 * 60 * 12)
-#todo: remove this
-def monitoring_rating_color(request, id):
-  monitoring = get_object_or_404(Monitoring, pk = id)
-  if not request.user.has_perm('exmo2010.rating_monitoring', monitoring): return HttpResponseForbidden(_('Forbidden'))
-
-  rating_list, avg = rating(monitoring)
-
-  rating_list_with_categories = []
-  num_categories = 4 #number for division
-  rating_piece = rating_list[0].task_openness // num_categories
-  for rating_object in rating_list:
-    div_result = rating_object.task_openness // rating_piece
-    category = 4
-    for i in range(1,num_categories):
-        if div_result > num_categories - i:
-            category = i
-            break
-    rating_object.category = category
-
-    rating_list_with_categories.append(rating_object)
-
-  return render_to_response('rating_color.html', {
-        'monitoring': monitoring,
-        'object_list': rating_list_with_categories,
-        'average': avg,
-    }, context_instance=RequestContext(request))
-
-
 def monitoring_rating(request, monitoring_id):
     """Return a response containing the rating table,
     the table settings form, and the parameter selection form.
@@ -381,6 +352,7 @@ def monitoring_rating(request, monitoring_id):
         'form': form,
         'table_form': table_settings,
         'name_filter': name_filter,
+        'show_initial_openness': monitoring.status in Monitoring.after_interaction_status,
     }, context_instance=RequestContext(request))
 
 
@@ -1239,52 +1211,40 @@ def _rating_type_parameter(request, monitoring, has_npa=False):
     Функция подготовки списка параметров и формы выбора параметров.
 
     """
+    data = {}
+    parameter_list = []
+
+    rating_type_list = ('all', 'user')
     if has_npa:
-        rating_type_list = ('all', 'npa', 'user', 'other')
-    else:
-        rating_type_list = ('all', 'user')
+        rating_type_list += ('npa', 'other')
     rating_type = request.GET.get('type', 'all')
     if rating_type not in rating_type_list:
         raise Http404
 
-    form = ParameterDynForm(monitoring=monitoring)
-    parameter_list = []
+    parameters = Parameter.objects.filter(monitoring=monitoring)
+
     if rating_type == 'npa':
-        parameter_list = Parameter.objects.filter(
-            monitoring=monitoring,
-            npa=True,
-        )
+        parameter_list = parameters.filter(npa=True)
     elif rating_type == 'other':
-        parameter_list = Parameter.objects.filter(
-            monitoring=monitoring,
-            npa=False,
-        )
+        parameter_list = parameters.filter(npa=False)
     elif rating_type == 'user':
-        form = ParameterDynForm(request.GET, monitoring=monitoring)
-        for parameter in Parameter.objects.filter(monitoring=monitoring):
-            if request.GET.get('parameter_%d' % parameter.pk):
-                parameter_list.append(parameter.pk)
+        data = request.GET
+        query_string = request.META.get('QUERY_STRING')
+        if query_string:
+            parameter_ids = re.findall(r'\d+', query_string)
+            parameter_list = parameters.filter(pk__in=parameter_ids)
+
+    form = ParameterDynForm(data=data, monitoring=monitoring)
 
     return rating_type, parameter_list, form
 
 
 def rating(monitoring, parameters=None, rating_type=None):
     """
-    Генерация рейтинга для мониторинга по выбранным параметрам
-    Вернет tuple из отсортированного списка объектов рейтинга
-    и словаря средних значений Кид.
-
-    Принимает аргументы:
-    monitoring - экземпляр модели Monitoring
-    parameters - list/tuple из экземпляров модели Parameter
-    rating_type - string/unicode тип мониторинга
+    Create monitoring rating with or without parameters.
+    Rerturns sorted tasks queryset and average openness dictionary.
 
     """
-    place = 1
-    place_count = {}
-    rating_list = []
-    rating_list_final = []
-
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)\
                                .filter(score__pk__isnull=False)\
                                .distinct()
@@ -1315,13 +1275,16 @@ def rating(monitoring, parameters=None, rating_type=None):
                             order_by=['-task_openness'])
 
         max_rating = tasks[0].task_openness
-        avg['openness'] = sum([t.task_openness for t in tasks]) / tasks.count()
-        avg['openness_initial'] = sum([t.task_openness_initial for t in tasks]) / tasks.count()
+
+        avg['openness'] = sum([t.task_openness for t in tasks])/tasks.count()
+        avg['openness_initial'] = sum([t.task_openness_initial for t in tasks])/tasks.count()
         avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
 
+        content_type = ContentType.objects.get_for_model(Score)
+
+        place = 1
         for task in tasks:
             scores = Score.objects.filter(task=task)
-            content_type = ContentType.objects.get_for_model(Score)
             users = User.objects.filter(userprofile__organization__task=task)
             comments = CommentExmo.objects.filter(content_type=content_type,
                                                   object_pk__in=scores,
@@ -1336,23 +1299,14 @@ def rating(monitoring, parameters=None, rating_type=None):
             if task.task_openness < max_rating:
                 place += 1
                 max_rating = task.task_openness
-            try:
-                place_count[place] += 1
-            except KeyError:
-                place_count[place] = 1
+
             task.place = place
-            rating_list.append(task)
 
+        avg['repr_len'] = sum([t.repr_len for t in tasks])/tasks.count()
+        avg['active_repr_len'] = sum([t.active_repr_len for t in tasks])/tasks.count()
+        avg['comments'] = sum([t.comments for t in tasks])/tasks.count()
 
-        avg['repr_len'] = sum([t.repr_len for t in tasks]) / tasks.count()
-        avg['active_repr_len'] = sum([t.active_repr_len for t in tasks]) / tasks.count()
-        avg['comments'] = sum([t.comments for t in tasks]) / tasks.count()
-
-    for rating_object in rating_list:
-        rating_object.place_count = place_count[rating_object.place]
-        rating_list_final.append(rating_object)
-
-    return rating_list_final, avg
+    return tasks, avg
 
 
 class MonitoringExport(object):

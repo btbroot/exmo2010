@@ -175,10 +175,12 @@
             </th>
             {% endif %}
 
-            {% if user.is_active and user.profile.rt_initial_openness %}
-            <th class="init-openness">
-                <span>{% trans "Init. openness" %}</span>&nbsp;<span class="arrow"></span>
-            </th>
+            {% if show_initial_openness %}
+                {% if not user.is_active or user.profile.rt_initial_openness %}
+                    <th class="init-openness">
+                        <span>{% trans "Init. openness" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_final_openness %}
@@ -214,20 +216,22 @@
             </td>
 
             {% if is_expert and user.profile.rt_representatives %}
-            <td>{{ object.active_repr_len }} / {{ object.repr_len }}</td>
+                <td>{{ object.active_repr_len }} / {{ object.repr_len }}</td>
             {% endif %}
 
             {% if is_expert and user.profile.rt_comment_quantity %}
-            <td class="comments">{{ object.comments }}</td>
+                <td class="comments">{{ object.comments }}</td>
             {% endif %}
 
-            {% if user.is_active and user.profile.rt_initial_openness %}
-            <td class="init-openness">{{ object.task_openness_initial|floatformat:3 }}%</td>
+            {% if show_initial_openness %}
+                {% if not user.is_active or user.profile.rt_initial_openness %}
+                    <td class="init-openness">{{ object.task_openness_initial|floatformat:3 }}%</td>
+                {% endif %}
             {% endif %}
 
 
             {% if not user.is_active or user.profile.rt_final_openness %}
-            <td class="openness">{{ object.task_openness|floatformat:3 }}%</td>
+                <td class="openness">{{ object.task_openness|floatformat:3 }}%</td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_difference %}
@@ -248,7 +252,7 @@
             {% endif %}
 
             {% if user.is_active %}
-            <td></td>
+                <td></td>
             {% endif %}
         </tr>
     {% endfor %}
@@ -260,27 +264,29 @@
             </td>
 
             {% if is_expert and user.profile.rt_representatives %}
-            <td>
-                <strong>{{ average.active_repr_len }} / {{ average.repr_len }}</strong>
-            </td>
+                <td>
+                    <strong>{{ average.active_repr_len }} / {{ average.repr_len }}</strong>
+                </td>
             {% endif %}
 
             {% if is_expert and user.profile.rt_comment_quantity %}
-            <td class="comments">
-                <strong>{{ average.comments }}</strong>
-            </td>
+                <td class="comments">
+                    <strong>{{ average.comments }}</strong>
+                </td>
             {% endif %}
 
-            {% if user.is_active and user.profile.rt_initial_openness %}
-            <td class="init-openness">
-                <strong>{{ average.openness_initial|floatformat:3 }}%</strong>
-            </td>
+            {% if show_initial_openness %}
+                {% if not user.is_active or user.profile.rt_initial_openness %}
+                    <td class="init-openness">
+                        <strong>{{ average.openness_initial|floatformat:3 }}%</strong>
+                    </td>
+                {% endif %}
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_final_openness %}
-            <td class="openness">
-                <strong>{{ average.openness|floatformat:3 }}%</strong>
-            </td>
+                <td class="openness">
+                    <strong>{{ average.openness|floatformat:3 }}%</strong>
+                </td>
             {% endif %}
 
             {% if not user.is_active or user.profile.rt_difference %}

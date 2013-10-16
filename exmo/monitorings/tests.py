@@ -16,11 +16,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import urllib
 from cStringIO import StringIO
 
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.http import HttpRequest, Http404
 from django.test import TestCase
 from django.test.client import Client
 from django.utils import simplejson
@@ -31,7 +34,8 @@ from nose_parameterized import parameterized
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
-from monitorings.views import rating, _total_orgs_translate
+from monitorings.views import rating, _total_orgs_translate, _rating_type_parameter
+from parameters.forms import ParameterDynForm
 
 
 class RatingsTableValuesTestCase(TestCase):
@@ -441,3 +445,129 @@ class TestMonitoringExportApproved(TestCase):
         #only header
         self.assertEqual(len(csv), 1)
 
+
+class TestRatingTypeParameter(TestCase):
+    # Scenario: check '_rating_type_parameter' function
+
+    def setUp(self):
+        self.request = HttpRequest()
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND 3 parameters with npa
+        self.parameters1 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, _quantity=3)
+        # AND 5 parameters without npa
+        self.parameters2 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, _quantity=5)
+
+    @parameterized.expand([
+        ('all', False, 0),
+        ('all', True, 0),
+        ('npa', True, 3),
+        ('other', True, 5),
+    ])
+    def test__rating_type_parameter(self, rating_type_initial, has_npa, expected_parameters_len):
+        # WHEN rating type in ('all', 'npa', 'other')
+        self.request.GET = {'type': rating_type_initial}
+        rating_type, parameter_list, form = _rating_type_parameter(self.request, self.monitoring, has_npa)
+        # THEN function returns the same rating type
+        self.assertEqual(rating_type_initial, rating_type)
+        # AND expected count of parameters
+        self.assertEqual(len(parameter_list), expected_parameters_len)
+        # AND form without data
+        self.assertTrue(isinstance(form, ParameterDynForm))
+        self.assertEqual(form.data, {})
+
+    @parameterized.expand([
+        ('user', 8, False),
+        ('user', 8, True),
+    ])
+    def test__rating_type_parameter_user(self, rating_type_initial, expected_parameters_len, has_npa):
+        # WHEN rating type is 'user'
+        self.request.GET = {'type': rating_type_initial}
+        # AND we have query string in url
+        for param in self.parameters1 + self.parameters2:
+            key = 'parameter_%s' % param.pk
+            self.request.GET.update({key: 'on'})
+        uri = urllib.urlencode(self.request.GET)
+        self.request.META['QUERY_STRING'] = uri
+        rating_type, parameter_list, form = _rating_type_parameter(self.request, self.monitoring, has_npa)
+        # THEN function returns the same rating type
+        self.assertEqual(rating_type_initial, rating_type)
+        # AND expected count of parameters
+        self.assertEqual(len(parameter_list), expected_parameters_len)
+        # AND form without data
+        self.assertTrue(isinstance(form, ParameterDynForm))
+        self.assertEqual(form.data, self.request.GET)
+
+    @parameterized.expand([
+        ('npa', False),
+        ('other', False),
+        ('error', True),
+        ('error', False),
+    ])
+    def test__rating_type_parameter_error(self, rating_type_initial, has_npa):
+        # WHEN parameters in disallowable range
+        self.request.GET = {'type': rating_type_initial}
+        # THEN raises Http404
+        self.assertRaises(Http404, _rating_type_parameter, self.request, self.monitoring, has_npa)
+
+
+class TestRating(TestCase):
+    # Scenario: check 'rating' function
+
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
+        # AND 2 organizations in this monitoring
+        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        self.organization2 = mommy.make(Organization, monitoring=self.monitoring)
+        # AND 2 approuved tasks
+        self.tasks = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED, _quantity=2)
+        # AND 2 parameters
+        self.parameters = mommy.make(Parameter, monitoring=self.monitoring, weight=1, exclude=None, _quantity=2,
+                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        # AND 2 scores for each parameter
+        self.score1 = mommy.make(Score, task=self.tasks[0], parameter=self.parameters[0],
+                                 found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        self.score2 = mommy.make(Score, task=self.tasks[0], parameter=self.parameters[1],
+                                 found=1, complete=3, topical=3, accessible=2, hypertext=1, document=1, image=1)
+        self.score3 = mommy.make(Score, task=self.tasks[1], parameter=self.parameters[0],
+                                 found=1, complete=2, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        self.score4 = mommy.make(Score, task=self.tasks[1], parameter=self.parameters[1],
+                                 found=1, complete=3, topical=3, accessible=1, hypertext=1, document=1, image=1)
+
+    @parameterized.expand([
+        (None,),
+        ('user',),
+        ('error',),
+    ])
+    def test_rating_without_parameters(self, rating_type):
+        # WHEN function calls without parameters
+        tasks, avg = rating(self.monitoring, rating_type=rating_type)
+        # THEN function returns expected results
+        self.assertEqual(avg['openness'], 83.75)
+        self.assertEqual(avg['openness_initial'], 83.75)
+        self.assertEqual(avg['openness_delta'], 0.0)
+        self.assertEqual(avg['total_tasks'], len(self.tasks))
+
+    @parameterized.expand([
+        (None,),
+        ('user',),
+        ('error',),
+    ])
+    def test_rating_with_parameters(self, rating_type):
+        # WHEN function calls only for the first parameter
+        parameters = [self.parameters[0].pk]
+        tasks, avg = rating(self.monitoring, parameters, rating_type=rating_type)
+        # THEN function returns expected results
+        self.assertEqual(avg['openness'], 75.0)
+        self.assertEqual(avg['openness_initial'], 75.0)
+        self.assertEqual(avg['openness_delta'], 0.0)
+        self.assertEqual(avg['total_tasks'], len(self.tasks))
+        # WHEN function calls only for the second parameter
+        parameters = [self.parameters[1].pk]
+        tasks, avg = rating(self.monitoring, parameters, rating_type=rating_type)
+        # THEN function returns expected results
+        self.assertEqual(avg['openness'], 92.5)
+        self.assertEqual(avg['openness_initial'], 92.5)
+        self.assertEqual(avg['openness_delta'], 0.0)
+        self.assertEqual(avg['total_tasks'], len(self.tasks))
