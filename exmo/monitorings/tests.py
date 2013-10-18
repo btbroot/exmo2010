@@ -78,7 +78,7 @@ class RatingTableSettingsTestCase(TestCase):
         self.monitoring_id = monitoring.pk
         organization = mommy.make(Organization, monitoring=monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        parameter = mommy.make(Parameter, monitoring=monitoring)
         score = mommy.make(Score, task=task, parameter=parameter)
 
     def test_rt_settings_exist(self):
@@ -453,16 +453,19 @@ class TestRatingTypeParameter(TestCase):
         self.request = HttpRequest()
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
-        # AND 3 parameters with npa
-        self.parameters1 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, _quantity=3)
-        # AND 5 parameters without npa
-        self.parameters2 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, _quantity=5)
+        # AND 2 parameters with npa
+        self.parameter1 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, code=1)
+        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, code=2)
+        # AND 3 parameters without npa
+        self.parameters3 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=3)
+        self.parameters4 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=4)
+        self.parameters5 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=5)
 
     @parameterized.expand([
         ('all', False, 0),
         ('all', True, 0),
-        ('npa', True, 3),
-        ('other', True, 5),
+        ('npa', True, 2),
+        ('other', True, 3),
     ])
     def test__rating_type_parameter(self, rating_type_initial, has_npa, expected_parameters_len):
         # WHEN rating type in ('all', 'npa', 'other')
@@ -477,14 +480,14 @@ class TestRatingTypeParameter(TestCase):
         self.assertEqual(form.data, {})
 
     @parameterized.expand([
-        ('user', 8, False),
-        ('user', 8, True),
+        ('user', 5, False),
+        ('user', 5, True),
     ])
     def test__rating_type_parameter_user(self, rating_type_initial, expected_parameters_len, has_npa):
         # WHEN rating type is 'user'
         self.request.GET = {'type': rating_type_initial}
         # AND we have query string in url
-        for param in self.parameters1 + self.parameters2:
+        for param in Parameter.objects.all():
             key = 'parameter_%s' % param.pk
             self.request.GET.update({key: 'on'})
         uri = urllib.urlencode(self.request.GET)
@@ -515,16 +518,22 @@ class TestRating(TestCase):
     # Scenario: check 'rating' function
 
     def setUp(self):
-        # GIVEN monitoring
+        # GIVEN 2 monitorings
         self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
-        # AND 2 organizations in this monitoring
+        self.monitoring2 = mommy.make(Monitoring, openness_expression__code=8)
+        # AND 1 organization for each monitoring
         self.organization = mommy.make(Organization, monitoring=self.monitoring)
-        self.organization2 = mommy.make(Organization, monitoring=self.monitoring)
-        # AND 2 approuved tasks
+        self.organization2 = mommy.make(Organization, monitoring=self.monitoring2)
+        # AND 2 approved tasks for first organization
         self.tasks = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED, _quantity=2)
-        # AND 2 parameters
+        # AND 1 approved task for second organization
+        self.task = mommy.make(Task, organization=self.organization2, status=Task.TASK_APPROVED)
+        # AND 2 parameters with positive weight
         self.parameters = mommy.make(Parameter, monitoring=self.monitoring, weight=1, exclude=None, _quantity=2,
                                      complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        # AND 1 parameters with negative weight
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=None,
+                                    complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND 2 scores for each parameter
         self.score1 = mommy.make(Score, task=self.tasks[0], parameter=self.parameters[0],
                                  found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
@@ -534,6 +543,9 @@ class TestRating(TestCase):
                                  found=1, complete=2, topical=3, accessible=3, hypertext=1, document=1, image=1)
         self.score4 = mommy.make(Score, task=self.tasks[1], parameter=self.parameters[1],
                                  found=1, complete=3, topical=3, accessible=1, hypertext=1, document=1, image=1)
+        # AND 1 score for parameter with negative weight
+        self.score = mommy.make(Score, task=self.task, parameter=self.parameter,
+                                found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
 
     @parameterized.expand([
         (None,),
@@ -571,3 +583,21 @@ class TestRating(TestCase):
         self.assertEqual(avg['openness_initial'], 92.5)
         self.assertEqual(avg['openness_delta'], 0.0)
         self.assertEqual(avg['total_tasks'], len(self.tasks))
+
+    @parameterized.expand([
+        (True, None,),
+        (False, None,),
+        (True, 'user',),
+        (False, 'user',),
+        (True, 'error',),
+        (False, 'error',),
+    ])
+    def test_rating_without_openness(self, parameters, rating_type):
+        # WHEN function calls for parameter with negative weight
+        parameters = [self.parameter.pk] if parameters else []
+        tasks, avg = rating(self.monitoring2, parameters, rating_type=rating_type)
+        # THEN function returns expected results
+        self.assertEqual(avg['openness'], None)
+        self.assertEqual(avg['openness_initial'], None)
+        self.assertEqual(avg['openness_delta'], None)
+        self.assertEqual(avg['total_tasks'], 0)

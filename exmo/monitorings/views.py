@@ -1248,13 +1248,12 @@ def rating(monitoring, parameters=None, rating_type=None):
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)\
                                .filter(score__pk__isnull=False)\
                                .distinct()
-    total_tasks = tasks.count()
 
     avg = {
         'openness': None,
         'openness_initial': None,
         'openness_delta': None,
-        'total_tasks': total_tasks,
+        'total_tasks': 0,
     }
 
     if parameters and rating_type == 'user':
@@ -1272,39 +1271,43 @@ def rating(monitoring, parameters=None, rating_type=None):
 
         tasks = tasks.extra(select={'task_openness': sql_openness,
                                     'task_openness_initial': sql_openness_initial},
+                            where=['%s IS NOT NULL' % sql_openness],
                             order_by=['-task_openness'])
 
-        max_rating = tasks[0].task_openness
+        if tasks.exists():
+            max_rating = tasks[0].task_openness
+            total_tasks = tasks.count()
 
-        avg['openness'] = sum([t.task_openness for t in tasks])/tasks.count()
-        avg['openness_initial'] = sum([t.task_openness_initial for t in tasks])/tasks.count()
-        avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
+            avg['total_tasks'] = total_tasks
+            avg['openness'] = sum([t.task_openness for t in tasks])/total_tasks
+            avg['openness_initial'] = sum([t.task_openness_initial for t in tasks])/total_tasks
+            avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
 
-        content_type = ContentType.objects.get_for_model(Score)
+            content_type = ContentType.objects.get_for_model(Score)
 
-        place = 1
-        for task in tasks:
-            scores = Score.objects.filter(task=task)
-            users = User.objects.filter(userprofile__organization__task=task)
-            comments = CommentExmo.objects.filter(content_type=content_type,
-                                                  object_pk__in=scores,
-                                                  user__in=users).order_by()
+            place = 1
+            for task in tasks:
+                scores = Score.objects.filter(task=task)
+                users = User.objects.filter(userprofile__organization__task=task)
+                comments = CommentExmo.objects.filter(content_type=content_type,
+                                                      object_pk__in=scores,
+                                                      user__in=users).order_by()
 
-            task.comments = comments.count()
-            task.repr_len = users.count()
-            task.active_repr_len = comments.values('user').distinct().count()
-            openness_delta_float = float(task.task_openness) - float(task.task_openness_initial)
-            task.openness_delta = round(openness_delta_float, 3)
+                task.comments = comments.count()
+                task.repr_len = users.count()
+                task.active_repr_len = comments.values('user').distinct().count()
+                openness_delta_float = float(task.task_openness) - float(task.task_openness_initial)
+                task.openness_delta = round(openness_delta_float, 3)
 
-            if task.task_openness < max_rating:
-                place += 1
-                max_rating = task.task_openness
+                if task.task_openness < max_rating:
+                    place += 1
+                    max_rating = task.task_openness
 
-            task.place = place
+                task.place = place
 
-        avg['repr_len'] = sum([t.repr_len for t in tasks])/tasks.count()
-        avg['active_repr_len'] = sum([t.active_repr_len for t in tasks])/tasks.count()
-        avg['comments'] = sum([t.comments for t in tasks])/tasks.count()
+            avg['repr_len'] = sum([t.repr_len for t in tasks])/total_tasks
+            avg['active_repr_len'] = sum([t.active_repr_len for t in tasks])/total_tasks
+            avg['comments'] = sum([t.comments for t in tasks])/total_tasks
 
     return tasks, avg
 
