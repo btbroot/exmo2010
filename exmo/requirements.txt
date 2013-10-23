@@ -60,3 +60,4 @@ hg+https://bitbucket.org/bsavelev/django-admin-tools
 django-nose==1.2
 nose-parameterized==0.3.1
 model_mommy==1.1
+selenium

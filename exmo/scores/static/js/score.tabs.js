@@ -37,24 +37,48 @@ $(document).ready(function() {
 
     $non_relevant_button.hide();
 
+    // Enable input, serialize, return input to initial state
+    // Returns serialized value
+    function serailize_as_enabled(x) {
+        was_disabled = x.attr('disabled');
+        res = x.attr('disabled', false).serialize();
+        x.attr('disabled', was_disabled);
+        return res;
+    }
+
     // change score handler
     // save initial values
     var $radioInitial = {};
+    var $radioValues = {};
+    var $radioLabels = {};
+    var $radioMax = {};
     $('input:radio').each(function() {
-        $(this).data('initialValue', $(this).serialize());
+        if (!($(this).attr('name') in $radioValues)) {
+            $radioValues[$(this).attr('name')] = [];
+        }
+        if (!isNaN(parseInt($(this).val()))) {
+            $radioValues[$(this).attr('name')].push(parseInt($(this).val()));
+        }
+        $(this).data('initialValue', serailize_as_enabled($(this)));
         if ($(this).attr("checked")=="checked") {
             $radioInitial[$(this).attr('name')] = $(this).val();
         }
     });
 
+    for (var key in $radioValues) {
+        // get maximum possible value for each radio input
+        $radioMax[key] = Math.max.apply(null, $radioValues[key]);
+        // get text label for each radio input
+        $radioLabels[key] = $('input[name='+key+']').closest('td').prev().find('label').html().trim();
+    }
+
     var isDirty = false;
 
     var $cke_comment = CKEDITOR.instances['id_comment'];
     $cke_comment.on('change', function(e) {
+        editor_body = $($cke_comment.document.$).find('body');
 
-        var $cke_text = $cke_comment.document.getBody().getChild(0);
-        // special condition for IE and Opera (if text in field exists and not a new line only)
-        if($cke_text && $cke_text.getText() && $cke_text.getText() != String.fromCharCode(10)) {
+        if(editor_body && editor_body.text().trim() != '') {
             $submit_comment.prop('disabled', false);
             if (isDirty) {
                 $submit_score_and_comment.prop('disabled', false);
@@ -69,17 +93,66 @@ $(document).ready(function() {
 
     function scoreChanged() {
         isDirty = false;
-
+        changedVals = {};
+        all_max = true;  // flag if all changed radioinputs set to max
         $('input:radio').each(function () {
-            if($(this).data('initialValue') != $(this).serialize()) {
+            if($(this).data('initialValue') != serailize_as_enabled($(this))) {
                 isDirty = true;
+                if ($(this).attr("checked")=="checked") {
+                    val = $(this).val()
+                    name = $(this).attr('name')
+                    initial = $radioInitial[name];
+                    if ((initial == '') && (val == '0')) {
+                        // changes form '-' to '0' aren't interesting
+                        return;
+                    }
+                    if (parseInt(val) != $radioMax[name]) {
+                        all_max = false;
+                    }
+                    changedVals[name] = val;
+                }
             }
         });
 
-        var $cke_field = $cke_comment.document.getBody().getChild(0);
+        editor_body = $($cke_comment.document.$).find('body');
+
+        deleteAllAutoScoreCommentBricks();
+
+        if (!$.isEmptyObject(changedVals)) {
+            // create introduction text
+            if (all_max == true) {
+                text = gettext("Score changed to maximum");
+                makeBrick('autoscore-intro', text, {class:'max'}).prependTo(editor_body);
+            } else {
+                text = gettext("Score changed");
+                makeBrick('autoscore-intro', text).prependTo(editor_body);
+            }
+            // create guard break
+            $('<br id="autoscore-break" />').insertAfter(editor_body.find('.autoscore:last'));
+
+            for (var name in changedVals) {
+                // create brick for each changed input
+                id = name + '_brick';
+                initial = $radioInitial[name];
+                newVal = changedVals[name];
+
+                if (initial == '') {
+                    initial = 0
+                }
+                if (newVal == '') {
+                    newVal = '-'
+                }
+                text = $radioLabels[name] + ': ' + initial + ' → ' + newVal;
+                if (editor_body.find('#'+id).length == 0) {
+                    makeBrick(id, text).insertAfter(editor_body.find('.autoscore:last'));
+                } else {
+                    editor_body.find('#'+id).val(text);
+                }
+            }
+        }
 
         if(isDirty == true){
-            if ($cke_field && $cke_field.getText()) {
+            if (editor_body && editor_body.text()) {
                 $submit_score_and_comment.prop('disabled',false);
             } else {
                 $submit_score_and_comment.prop('disabled',true);
@@ -93,9 +166,37 @@ $(document).ready(function() {
         scoreChanged();
     });
 
+    // create Brick - uneditable block of text inside CKEDITOR
+    function makeBrick(id, text, options) {
+        defoptions = {
+            css: {
+                border: 'none',
+                width: '300px',
+                color: 'black',
+                margin: '0px' },
+            class: ''
+        }
+        options = $.extend(true, defoptions, options)
+        return $(
+            '<input>',
+            {
+                id: id,
+                class: 'autoscore ' + options.class,
+                css: options.css,
+                val: text,
+                disabled: 'disabled'
+            }).add('<br class="autoscore" />')
+    }
+
+    function deleteAllAutoScoreCommentBricks(){
+        $($cke_comment.document.$).find('.autoscore').remove();
+        $($cke_comment.document.$).find('#autoscore-break').remove();
+    }
 
     // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js
     $('.ccc-tabs').live('click', function(e) {
+
+        deleteAllAutoScoreCommentBricks();
 
         switch (e.target.hash) {
            case '#comments':
@@ -127,6 +228,7 @@ $(document).ready(function() {
     // tabs clicking (reply, change score, edit)
     $edit_tabs.live('click', function(e) {
         var $link;
+        deleteAllAutoScoreCommentBricks();
 
         switch (e.target.hash) {
            case '#reply':
@@ -158,6 +260,7 @@ $(document).ready(function() {
               $submit_comment.hide();
               $submit_score_and_comment.show();
               $non_relevant_button.show();
+              scoreChanged();
               break;
            case '#edit':
               $comment_field.hide();
@@ -200,6 +303,16 @@ $(document).ready(function() {
     $submit_comment.mousedown(function(){
         $non_editable_table_form.get(0).reset();
     });
+
+    $submit_score_and_comment.mousedown(function(){
+        // convert all bricks to normal text spans before sending comment
+        editor_body = $($cke_comment.document.$).find('body');
+        editor_body.find('input.autoscore').each(function(){
+            repl = '<span>'+$(this).val()+'</span>';
+            $(repl).insertAfter($(this))
+            $(this).remove();
+        })
+    })
 
     $submits.mousedown(function(e){
         $tabs.val(e.target.name);
