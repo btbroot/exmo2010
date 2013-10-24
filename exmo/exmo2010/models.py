@@ -22,7 +22,7 @@ import string
 import random
 import re
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.contrib.comments.models import Comment
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
@@ -1233,16 +1233,6 @@ def openness_helper(score):
     })
     return float(s[0].score_openness)
 
-from digest_email.models import Digest, DigestPreference
-from django.contrib.auth.models import Group
-import json
-
-SEX_CHOICES = (
-    (0, _("not set")),
-    (1, _("male")),
-    (2, _("female")),
-)
-
 
 class ExtUPManager(models.Manager):
     """
@@ -1272,39 +1262,30 @@ class IntUPManager(models.Manager):
 
 class UserProfile(models.Model):
     """
-    Наша кастомная модель профиля пользователя.
+    Custom user profile model.
 
-    Notification types can be:
-    0 - disable
-    1 - one mail per one comment/change
-    2 - digest
-
-    Preference field
-    this is like::
-        {
-            'notify_comment': {
-                'self': False,
-                'digest_duratation': 5,
-                'type': 0
-            },
-            'notify_score': {
-                'digest_duratation': 5,
-                'type': 0
-            },
-        }
-    type is one of notification types
     """
-    # Оповещение отключено.
-    NOTIFICATION_TYPE_DISABLE = 0
-    # Оповещение включено. По одному письму на событие.
-    NOTIFICATION_TYPE_ONEBYONE = 1
-    # Оповещение включено. По одному письму в период времени. Оповещение дайджестами.
-    NOTIFICATION_TYPE_DIGEST = 2
+    SEX_CHOICES = (
+        (0, _("not set")),
+        (1, _("male")),
+        (2, _("female")),
+    )
 
+    NOTIFICATION_DISABLE = 0
+    NOTIFICATION_ONEBYONE = 1
+    NOTIFICATION_DIGEST = 2
     NOTIFICATION_TYPE_CHOICES = (
-        (NOTIFICATION_TYPE_DISABLE, _('disabled')),
-        (NOTIFICATION_TYPE_ONEBYONE, _('one email per one comment/change')),
-        (NOTIFICATION_TYPE_DIGEST, _('digest notification')),
+        (NOTIFICATION_DISABLE, _('do not send')),
+        (NOTIFICATION_ONEBYONE, _('one email per one changing')),
+        (NOTIFICATION_DIGEST, _('one email for all in time interval')),
+    )
+
+    NOTIFICATION_INTERVAL_CHOICES = (
+        (1, _("Once in 1 hour")),
+        (3, _("Once in 3 hours")),
+        (6, _("Once in 6 hours")),
+        (12, _("Once in 12 hours")),
+        (24, _("Once in 24 hours")),
     )
 
     objects = models.Manager()  # Все пользователи.
@@ -1312,17 +1293,11 @@ class UserProfile(models.Model):
     internals = IntUPManager()  # Только внутренние.
 
     user = models.ForeignKey(User, unique=True)
-    organization = models.ManyToManyField(Organization, null=True, blank=True,
-                                      verbose_name=_('organizations for view'))
-    preference = models.TextField(blank=True, verbose_name=_('Preferences'))
-    sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"),
-        choices=SEX_CHOICES, default=0, db_index=True)
-    subscribe = models.BooleanField(
-        verbose_name=_("Subscribe to news e-mail notification"), default=False)
-    position = models.CharField(verbose_name=_("Seat"), max_length=48,
-        blank=True)
-    phone = models.CharField(verbose_name=_("Phone"), max_length=30,
-        blank=True)
+    organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
+    sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
+    subscribe = models.BooleanField(verbose_name=_("Subscribe to news"), default=False)
+    position = models.CharField(verbose_name=_("Seat"), max_length=48,  blank=True)
+    phone = models.CharField(verbose_name=_("Phone"), max_length=30, blank=True)
 
     # Rating table settings
     rt_representatives = models.BooleanField(verbose_name=_("Representatives"), default=True)
@@ -1331,78 +1306,15 @@ class UserProfile(models.Model):
     rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
     rt_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
 
-
-    @property
-    def get_preference(self):
-        try:
-            return json.loads(self.preference)
-        except (ValueError, TypeError):
-            return {}
-
-    def _get_notify_preference(self, preference):
-        prefs = self.get_preference
-        if prefs.has_key(preference):
-            pref = prefs[preference]
-        else:
-            pref = {}
-        if not pref.has_key('type'):
-            pref['type'] = self.NOTIFICATION_TYPE_DISABLE
-        else:
-            pref['type'] = int(pref['type'])
-        if not pref.has_key('self'):
-            pref['self'] = False
-        if pref.has_key('digest_duratation'):
-            if pref['digest_duratation']:
-                pref['digest_duratation'] = int(pref['digest_duratation'])
-            else:
-                pref['digest_duratation'] = 0
-        else:
-            pref['digest_duratation'] = 1
-        return pref
-
-    @property
-    def notify_comment_preference(self):
-        return self._get_notify_preference('notify_comment')
-
-    @notify_comment_preference.setter
-    def notify_comment_preference(self, pref):
-        prefs = self.get_preference
-        prefs['notify_comment'] = pref
-        self.preference = json.dumps(prefs)
-
-    @property
-    def notify_score_preference(self):
-        return self._get_notify_preference('notify_score')
-
-    @notify_score_preference.setter
-    def notify_score_preference(self, pref):
-        prefs = self.get_preference
-        prefs['notify_score'] = pref
-        self.preference = json.dumps(prefs)
-
-    def clean(self):
-        super(UserProfile, self).clean()
-        for notify in ['notify_score','notify_comment']:
-            if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
-                if self._get_notify_preference(notify)['digest_duratation'] < 1:
-                    raise ValidationError(_('Digest duratation must be greater or equal than 1.'))
-
-    def save(self,*args,**kwargs):
-        """
-        Переопределение метода для сохранения настроек дайджеста.
-        """
-        super(UserProfile, self).save(*args, **kwargs)
-        for notify in ['notify_score','notify_comment']:
-            if self._get_notify_preference(notify)['type'] == self.NOTIFICATION_TYPE_DIGEST:
-                # create DigestPreference.
-                digest, created = Digest.objects.get_or_create(name=notify)
-                dpref, created = DigestPreference.objects.get_or_create(user = self.user, digest = digest)
-                dpref.interval = self._get_notify_preference(notify)['digest_duratation']
-                dpref.full_clean()
-                dpref.save()
-            else:
-                digest, created = Digest.objects.get_or_create(name = notify)
-                DigestPreference.objects.filter(user = self.user, digest = digest).delete()
+    # Change notification settings
+    notification_type = models.PositiveSmallIntegerField(verbose_name=_("Notification about changes"),
+                                                         choices=NOTIFICATION_TYPE_CHOICES,
+                                                         default=NOTIFICATION_DISABLE)
+    notification_interval = models.PositiveSmallIntegerField(verbose_name=_("Notification interval"),
+                                                             choices=NOTIFICATION_INTERVAL_CHOICES,
+                                                             default=1)
+    notification_self = models.BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
+    digest_date_journal = models.DateTimeField(verbose_name=_('last digest sending date'), blank=True, null=True)
 
     def is_internal(self):
         """Внутренний пользователь или внешний."""

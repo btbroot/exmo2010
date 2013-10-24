@@ -19,18 +19,8 @@
 #
 {% endcomment %}
 {% load i18n pytils_dt %}
-{{ score.task.organization }}: {{ score.parameter }}
-{% for comment in comments %}
-    {% if comment.is_expert or comment.is_superuser %}
-        {% if admin %}
-            {{ comment.legal_name }},
-        {% else %}
-            {{ expert }},
-        {% endif %}
-    {% else %}
-        {{ comment.legal_name }},
-    {% endif %}
-    {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
-    {{ comment.comment|safe }}
-{% endfor %}
+{{ title }}
+{{ comment.legal_user_name }},
+{{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
+{{ comment.comment|safe }}
 {% trans 'Link' %}: {{ url }}

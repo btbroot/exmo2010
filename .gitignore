@@ -1,5 +1,6 @@
 *.pyc
 *.db
+ghostdriver.log
 local_settings.py
 analytics.html
 release

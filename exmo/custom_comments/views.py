@@ -20,21 +20,16 @@
 from functools import wraps
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.models import User
-from django.contrib.comments.signals import comment_was_posted, comment_will_be_posted
+from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
-from livesettings import config_value
 
-from accounts.views import get_experts
 from bread_crumbs.views import breadcrumbs
-from core.tasks import send_email
-from custom_comments.models import CommentExmo
-from exmo2010.models import Score, UserProfile
+from exmo2010.models import Score
 
 
 def comment_list(request):
@@ -67,139 +62,6 @@ def comment_list(request):
                                       'comments': comments,
                                   },
                                   RequestContext(request))
-
-
-def comment_notification(sender, **kwargs):
-    """
-    Comments notification.
-
-    """
-    comment = kwargs['comment']
-    user = comment.user
-    request = kwargs['request']
-    score = comment.content_object
-    admin_rcpt, nonadmin_rcpt = [], []
-    admin_users = []
-
-    # Update user.email
-    if not user.email and comment.user_email:
-        user.email = comment.user_email
-        user.save()
-
-    subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
-        'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-        'monitoring': score.task.organization.monitoring,
-        'org': score.task.organization.name.split(':')[0],
-        'code': score.parameter.code,
-    }
-
-    # get superusers:
-    superusers = User.objects.filter(is_superuser=True, email__isnull=False).exclude(email__exact='')
-    admin_users.extend(superusers)
-
-    # get experts A, experts B managers:
-    admin_users.extend(get_experts())
-
-    # get experts B:
-    if score.task.user.is_active:
-        admin_users.extend([score.task.user])
-
-    for user in admin_users:
-        if user.is_active and user.email and \
-                user.profile.notify_comment_preference['type'] == \
-                UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            admin_rcpt.append(user)
-
-    admin_all_comments, admin_one_comment = _comments_lists(admin_rcpt)
-
-    # get organizations:
-    nonadmin_users = User.objects.filter(
-        userprofile__organization=score.task.organization,
-        email__isnull=False,
-    ).exclude(email__exact='')
-
-    if len(nonadmin_users) > 1:
-        # in PostgreSQL = .distinct('email'), but for MySQL it look like this:
-        nonadmin_users = User.objects.filter(email__in=nonadmin_users.values_list('email', flat=True)
-                                                                     .order_by('email')
-                                                                     .distinct())
-
-    for user in nonadmin_users:
-        if user.email and user.email not in admin_rcpt and \
-                user.profile.notify_comment_preference['type'] == \
-                UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-            nonadmin_rcpt.append(user)
-
-    nonadmin_all_comments, nonadmin_one_comment = _comments_lists(nonadmin_rcpt)
-
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
-                         request.get_host(),
-                         reverse('exmo2010:score_view',
-                         args=[score.pk]))
-
-    expert = _(config_value('GlobalParameters', 'EXPERT'))
-
-    setattr(comment, 'is_expert', comment.is_expert())
-    setattr(comment, 'is_superuser', comment.is_superuser())
-    setattr(comment, 'legal_name', comment.legal_name())
-
-    context = {
-        'comments': [comment],
-        'expert': expert,
-        'score': score,
-        'url': url,
-        'user': user,
-    }
-
-    if nonadmin_one_comment:
-        _send_mails(context, False, subject, nonadmin_one_comment)
-    if admin_one_comment:
-        _send_mails(context, True, subject, admin_one_comment)
-
-    thread = list(CommentExmo.objects.filter(object_pk=comment.object_pk))
-    for item in thread:
-        setattr(item, 'is_expert', item.is_expert())
-        setattr(item, 'is_superuser', item.is_superuser())
-        setattr(item, 'legal_name', item.legal_name())
-
-    thread.append(comment)
-    context['comments'] = thread
-
-    if nonadmin_all_comments:
-        _send_mails(context, False, subject, nonadmin_all_comments)
-    if admin_all_comments:
-        _send_mails(context, True, subject, admin_all_comments)
-
-
-comment_will_be_posted.connect(comment_notification)
-
-
-def _comments_lists(rcpt):
-    """
-    Get emails lists for comments thread and single comment.
-
-    """
-    thread, comment = [], []
-    for user in rcpt:
-        if user.profile.notify_comment_preference.get('self_all', False):
-            thread.append(user.email)
-        else:
-            comment.append(user.email)
-
-    return list(set(thread)), list(set(comment))
-
-
-def _send_mails(context, admin, subject, rcpts):
-    """
-    Sending comments notification mails.
-
-    """
-    # True if superusers, experts A, B, B managers, False if organizations
-    context['admin'] = admin
-
-    for rcpt in rcpts:
-        "".join(rcpt.split())
-        send_email.delay(rcpt, subject, 'score_comment', context=context)
 
 
 def comment_change_status(sender, **kwargs):

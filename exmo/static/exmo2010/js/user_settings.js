@@ -1,5 +1,5 @@
 // This file is part of EXMO2010 software.
-// Copyright 2010, 2011 Al Nikolov
+// Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 // Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 //
@@ -18,59 +18,31 @@
 
 $(document).ready(function () {
 
-    var $comment_type = $("#id_comment_notification_type");
-    var $score_type = $("#id_score_notification_type");
-    var $comments = $("#id_notify_on_all_comments, #id_notify_on_my_comments");
-    var $all_comments = $("#id_notify_on_all_comments");
-    var $cnd = $("#cnd");
-    var $snd = $("#snd");
+    var $comment_type = $("#id_notification_type");
+    var $interval = $("#id_notification_interval");
+    var $notification_self = $("#id_notification_self");
 
-    switch($comment_type.val()){
-        case '0':
-            $comments.attr("disabled", true).attr("checked", false);
-            $cnd.hide();
-            break;
-        case '1':
-            $cnd.hide();
-            break;
-        case '2':
-            $all_comments.attr("disabled", true).attr("checked", false);
-            break;
-    }
-
-    if ($score_type.val() != '2') {
-        $snd.hide();
-    }
-
-    $comment_type.change(function () {
-
-        switch($(this).val()){
+    function notification_form(value) {
+        switch(value){
             case '0':
-                $comments.attr("disabled", true).attr("checked", false);
-                $cnd.hide();
+                $notification_self.attr("disabled", true).attr("checked", false);
+                $interval.hide();
                 break;
             case '1':
-                $comments.removeAttr("disabled");
-                $cnd.hide();
+                $notification_self.removeAttr("disabled");
+                $interval.hide();
                 break;
             case '2':
-                $comments.removeAttr("disabled");
-                $all_comments.removeAttr("disabled").attr("disabled", true).attr("checked", false);
-                $cnd.show();
+                $notification_self.removeAttr("disabled");
+                $interval.show();
                 break;
         }
+    }
 
-    });
+    notification_form($comment_type.val());
 
-    $score_type.change(function () {
-
-        if ($(this).val() == '2') {
-            $snd.show();
-        }
-        else {
-            $snd.hide();
-        }
-
+    $comment_type.change(function () {
+        notification_form($(this).val());
     });
 
 });

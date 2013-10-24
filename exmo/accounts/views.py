@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from admin_tools.dashboard.models import DashboardPreferences
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
@@ -25,7 +26,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
-from admin_tools.dashboard.models import DashboardPreferences
 
 from accounts.forms import *
 from bread_crumbs.views import breadcrumbs
@@ -42,16 +42,9 @@ def settings(request):
 
     user = request.user
     profile = user.get_profile()
-    # Сохраняем is_organization , чтобы не обращаться многократно к базе
-    # за одним и тем же.
-    if profile.is_organization:
-        is_organization = True
-    else:
-        is_organization = False
-    if profile.is_internal():
-        is_internal = True
-    else:
-        is_internal = False
+    is_organization = profile.is_organization
+    is_internal = profile.is_internal()
+    subscribe_form = SubscribeAndNotifyForm if is_internal or is_organization else SubscribeForm
 
     # Маркеры того, что форма уже создана.
     pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = \
@@ -129,45 +122,11 @@ def settings(request):
                 ch_pass_form_err = True
                 ch_pass_form_ready = True
         # Засабмитили форму настроек уведомлений.
-        elif request.POST.has_key("snf"):
-            if is_internal or is_organization:
-                send_notif_form = SettingsSendNotifFormFull(request.POST)
-            else:
-                send_notif_form = SettingsSendNotifForm(request.POST)
+        elif "notify_submit" in request.POST:
+            send_notif_form = subscribe_form(request.POST, instance=user.profile)
             if send_notif_form.is_valid():
-                send_notif_form_cd = send_notif_form.cleaned_data
-                subscribe = send_notif_form_cd.get("subscribe", False)
-                profile.subscribe = subscribe
-                if is_internal or is_organization:
-                    cnt = int(send_notif_form_cd.get(
-                        "comment_notification_type"))
-                    nmc = bool(send_notif_form_cd.get("notify_on_my_comments",
-                                                      False))
-                    nac = bool(send_notif_form_cd.get("notify_on_all_comments",
-                                                      False))
-                    comment_pref = {"type": cnt, "self": nmc, "self_all": nac}
-                    if cnt == 2:
-                        cnd = send_notif_form_cd.get(
-                            "comment_notification_digest", 1)
-                        if not cnd:
-                            cnd = 1
-                        else:
-                            cnd = int(cnd)
-                        comment_pref["digest_duratation"] = cnd
-                    profile.notify_comment_preference = comment_pref
-                    snt = int(send_notif_form_cd.get(
-                        "score_notification_type"))
-                    score_pref = {"type": snt}
-                    if snt == 2:
-                        snd = send_notif_form_cd.get(
-                            "score_notification_digest", 1)
-                        if not snd:
-                            snd = 1
-                        else:
-                            snd = int(snd)
-                        score_pref["digest_duratation"] = snd
-                    profile.notify_score_preference = score_pref
-            send_notif_form_mess = _("E-mail notification settings saved")
+                send_notif_form.save()
+                send_notif_form_mess = _("E-mail notification settings saved")
             send_notif_form_ready = True
         profile.save()
         user.save()
@@ -202,30 +161,7 @@ def settings(request):
         ch_pass_form = SettingsChPassForm(user=user)
 
     if not send_notif_form_ready:
-        send_notif_form_indata = {}  # Для 4-й формы.
-        if profile.subscribe:
-            send_notif_form_indata["subscribe"] = profile.subscribe
-        if is_internal or is_organization:
-            score_pref = profile.notify_score_preference
-            comment_pref = profile.notify_comment_preference
-
-            send_notif_form_indata["comment_notification_type"] = \
-                comment_pref.get('type', 1)
-            send_notif_form_indata["comment_notification_digest"] = \
-                comment_pref['digest_duratation']
-            send_notif_form_indata["score_notification_type"] = \
-                score_pref['type']
-            send_notif_form_indata["score_notification_digest"] = \
-                score_pref['digest_duratation']
-            send_notif_form_indata["notify_on_my_comments"] = \
-                comment_pref.get('self', False)
-            send_notif_form_indata["notify_on_all_comments"] = \
-                comment_pref.get('self_all', False)
-            send_notif_form = SettingsSendNotifFormFull(
-                initial=send_notif_form_indata)
-        else:
-            send_notif_form = SettingsSendNotifForm(
-                initial=send_notif_form_indata)
+        send_notif_form = subscribe_form(instance=user.profile)
 
     crumbs = ['Home']
     breadcrumbs(request, crumbs)
@@ -260,17 +196,6 @@ def user_reset_dashboard(request):
         return HttpResponseRedirect(reverse('exmo2010:user_profile'))
     else:
         return HttpResponseForbidden(_('Forbidden'))
-
-
-# TODO: не используется?
-def create_profile(sender, instance, created, **kwargs):
-    """
-    post-save для модели User для создания профиля.
-
-    """
-    if created:
-        profile = UserProfile(user=instance)
-        profile.save()
 
 
 def get_experts():

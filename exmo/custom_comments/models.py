@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.comments.models import Comment
@@ -40,14 +39,14 @@ class CommentExmo(Comment):
 
     status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
 
-    def is_expert(self):
+    def user_is_expert(self):
         return self.user.userprofile.is_expert
 
-    def is_organization(self):
+    def user_is_organization(self):
         return self.user.userprofile.is_organization
 
-    def is_superuser(self):
+    def user_is_superuser(self):
         return self.user.is_superuser
 
-    def legal_name(self):
+    def user_legal_name(self):
         return self.user.userprofile.legal_name

@@ -21,28 +21,26 @@
 {% endcomment %}
 {% load i18n pytils_dt %}
 
-{% block title %}{{ score.task.organization }}: {{ score.parameter }}{% endblock %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+
 {% block content %}
-    <h2>{{ score.task.organization }}: {{ score.parameter }}</h2>
+    <h2>
+        {{ title }}
+    </h2>
     <div>
-    {% for comment in comments %}
         <p>
             <span class="bold">
-            {% if comment.is_expert or comment.is_superuser %}
-                {% if admin %}
-                    {{ comment.legal_name }},
-                {% else %}
-                    {{ expert }},
-                {% endif %}
-            {% else %}
-                {{ comment.legal_name }},
-            {% endif %}
+                {{ comment.legal_user_name }},
             </span>
             {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
         </p>
-        <p>{{ comment.comment|safe }}</p>
-        <hr />
-    {% endfor %}
-    <p><span class="bold">{% trans 'Link' %}:</span> <a href="{{ url }}#comments">{{ url }}#comments</a></p>
+        <p>
+            {{ comment.comment|safe }}
+        </p>
+        <p>
+            <span class="bold">{% trans 'Link' %}:</span> <a href="{{ url }}#comments">{{ url }}#comments</a>
+        </p>
     </div>
 {% endblock content %}

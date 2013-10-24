@@ -23,21 +23,18 @@ import json
 
 import reversion
 from django.contrib.auth.decorators import login_required
-from django.contrib.comments.signals import comment_was_posted
+from django.contrib.comments import signals
 from django.contrib.comments.views.comments import post_comment
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db.models import Max
 from django.dispatch import Signal
-from django.forms import ModelForm
 from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render_to_response
-from django.template import loader, Context, RequestContext
+from django.template import RequestContext
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_unicode
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -51,6 +48,7 @@ from core.helpers import table_prepare_queryset
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
+from custom_comments.signals import comment_notification
 from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter, QAnswer, QQuestion
 from exmo2010.models import Score, Task, UserProfile, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_FINALIZING
 from questionnaire.forms import QuestionnaireDynForm
@@ -238,30 +236,15 @@ class ScoreEditView(UpdateView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        def _send_signal():
-            message = _construct_change_message(self.request, form)
-            reversion.revision.comment = message
-            score_was_changed.send(
-                sender=Score.__class__,
-                form=form,
-                request=self.request,
-            )
-
         if self.is_interaction_or_finalizing:
             button = self.request.POST['tabs']
-            if button == 'submit_comment':
+            if button in ['submit_comment', 'submit_score_and_comment']:
                 post_comment(self.request)
-                return HttpResponseRedirect(self.get_success_url())
 
-            elif button == 'submit_scores':
-                result = super(ScoreEditView, self).form_valid(form)
-                return result
-
-            elif button == 'submit_score_and_comment':
-                post_comment(self.request)
+            message = _('Changed %s.') % get_text_list(form.changed_data, _('and'))
+            reversion.revision.comment = message
 
         result = super(ScoreEditView, self).form_valid(form)
-        _send_signal()
 
         return result
 
@@ -318,6 +301,9 @@ class ScoreEditView(UpdateView):
         context.update(self.extra_context)
 
         return context
+
+
+signals.comment_was_posted.connect(comment_notification, sender=CommentExmo)
 
 
 class ScoreDetailView(ScoreMixin, DetailView):
@@ -666,62 +652,7 @@ def log_user_activity(comment, **kwargs):
     if monitoring.is_interact and user.profile.is_organization and not user.is_superuser:
         MonitoringInteractActivity.objects.get_or_create(monitoring=monitoring, user=user)
 
-comment_was_posted.connect(log_user_activity, sender=CommentExmo)
-
-
-def score_change_notify(sender, **kwargs):
-    """
-    Score change notification.
-
-    """
-    form = kwargs['form']
-    if isinstance(form, ModelForm):
-        score = form.instance
-    else:
-        score = form.target_object
-
-    request = kwargs['request']
-    non_criterion_fields = ['timestamp', 'security_hash', 'name', 'email', 'comment', 'tabs']
-    changes = []
-    if form.changed_data:
-        for field_name in form.changed_data:
-            if field_name not in non_criterion_fields:
-                change_dict = {'field': form.fields[field_name].label,
-                               'was': form.initial.get(field_name, form.fields[field_name].initial),
-                               'now': form.cleaned_data[field_name]}
-                changes.append(change_dict)
-    if score.task.approved:
-        rcpt = []
-        for profile in UserProfile.objects.filter(organization=score.task.organization):
-            if profile.user.is_active and profile.user.email and \
-                    profile.notify_score_preference['type'] == UserProfile.NOTIFICATION_TYPE_ONEBYONE:
-                rcpt.append(profile.user.email)
-        rcpt = list(set(rcpt))
-        subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(msg)s' % {
-            'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-            'monitoring': score.task.organization.monitoring,
-            'org': score.task.organization.name.split(':')[0],
-            'code': score.parameter.code,
-            'msg': _('Score changed'),
-        }
-        headers = {
-            'X-iifd-exmo': 'score_changed_notification'
-        }
-        url = '%s://%s%s' % (request.is_secure() and 'https' or 'http', request.get_host(),
-                             reverse('exmo2010:score_view', args=[score.pk]))
-        t = loader.get_template('score_email.html')
-        c = Context({'score': score, 'url': url, 'changes': changes, 'subject': subject})
-        message = t.render(c)
-        for rcpt_ in rcpt:
-            email = EmailMessage(subject, message, config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                 [rcpt_], headers=headers)
-            email.encoding = "utf-8"
-            email.content_subtype = "html"
-            email.send()
-
-
-score_was_changed = Signal(providing_args=["form", "request"])
-score_was_changed.connect(score_change_notify)
+signals.comment_was_posted.connect(log_user_activity, sender=CommentExmo)
 
 
 def create_revision(sender, instance, **kwargs):
@@ -734,34 +665,6 @@ def create_revision(sender, instance, **kwargs):
 
 signal_to_create_revision = Signal(providing_args=["instance"])
 signal_to_create_revision.connect(create_revision)
-
-
-def _construct_change_message(request, form, formsets=None):
-        """
-        Construct a change message from a changed object. Можно использовать для reversion.
-
-        """
-        change_message = []
-        if form.changed_data:
-            change_message.append(_('Changed %s.') % get_text_list(form.changed_data, _('and')))
-
-        if formsets:
-            for formset in formsets:
-                for added_object in formset.new_objects:
-                    change_message.append(_('Added %(name)s "%(object)s".')
-                                          % {'name': force_unicode(added_object._meta.verbose_name),
-                                             'object': force_unicode(added_object)})
-                for changed_object, changed_fields in formset.changed_objects:
-                    change_message.append(_('Changed %(list)s for %(name)s "%(object)s".')
-                                          % {'list': get_text_list(changed_fields, _('and')),
-                                             'name': force_unicode(changed_object._meta.verbose_name),
-                                             'object': force_unicode(changed_object)})
-                for deleted_object in formset.deleted_objects:
-                    change_message.append(_('Deleted %(name)s "%(object)s".')
-                                          % {'name': force_unicode(deleted_object._meta.verbose_name),
-                                             'object': force_unicode(deleted_object)})
-        change_message = ' '.join(change_message)
-        return change_message or _('No fields changed.')
 
 
 @login_required

@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -28,7 +28,6 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/user_settings.js"></script>
 {% endblock %}
 
@@ -171,46 +170,31 @@
                 {% if is_internal or is_organization %}
                 <tr>
                     <td>
-                        {{ send_notif_form.score_notification_type.label }}
+                        {{ send_notif_form.notification_type.label }}
                     </td>
                     <td>
-                        {{ send_notif_form.score_notification_type }}
-                        <span id="snd" class="fc_field_header">{{ send_notif_form.score_notification_digest }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        {{ send_notif_form.comment_notification_type.label }}
-                    </td>
-                    <td>
-                        {{ send_notif_form.comment_notification_type }}
-                        <span id="cnd" class="fc_field_header">{{ send_notif_form.comment_notification_digest }}</span>
+                        {{ send_notif_form.notification_type }}
+                        <span id="cnd" class="fc_field_header">{{ send_notif_form.notification_interval }}</span>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
-                        {{ send_notif_form.notify_on_my_comments }} {{ send_notif_form.notify_on_my_comments.help_text }}
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        {{ send_notif_form.notify_on_all_comments }} {{ send_notif_form.notify_on_all_comments.help_text }}
+                        {{ send_notif_form.notification_self }} {{ send_notif_form.notification_self.label }}
                     </td>
                 </tr>
                 {% endif %}
                 <tr>
-                    <td>{{ send_notif_form.snf }}</td>
+                    <td></td>
                     <td>
-                        {{ send_notif_form.subscribe }} {{ send_notif_form.subscribe.help_text }}
+                        {{ send_notif_form.subscribe }} {{ send_notif_form.subscribe.label }}
                     </td>
                 </tr>
 
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="{% trans 'Save' %}" />
+                        <input type="submit" name="notify_submit" value="{% trans 'Save' %}" />
                     </td>
                 </tr>
             </tbody>

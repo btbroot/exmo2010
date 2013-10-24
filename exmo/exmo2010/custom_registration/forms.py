@@ -73,7 +73,7 @@ class RegistrationFormShort(forms.Form):
         help_text=_("Create a complicated password using latin characters "
                     "(A-Z, a-z) and digits (0-9)"))
     subscribe = forms.BooleanField(label="",
-        help_text=_("Subscribe to news e-mail notification"),
+        help_text=_("Subscribe to news"),
         required=False)
 
     def clean_password(self):

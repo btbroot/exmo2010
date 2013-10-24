@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -19,36 +19,16 @@
 #
 import string
 import time
-from annoying.decorators import autostrip
 
+from annoying.decorators import autostrip
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 
-from exmo2010.models import Organization
+from exmo2010.models import Organization, UserProfile
 
-
-COMMENT_NOTIFICATION_CHOICES = (
-    (0, _('do not send')),
-    (1, _('one email per one comment')),
-    (2, _('one email for all in time interval')),
-)
-
-DIGEST_INTERVALS = (
-    (1, _("once in 1 hour")),
-    (3, _("once in 3 hours")),
-    (6, _("once in 6 hours")),
-    (12, _("once in 12 hours")),
-    (24, _("once in 24 hours")),
-)
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
-
-SCORE_CHANGE_NOTIFICATION_CHOICES = (
-    (0, _('do not send')),
-    (1, _('one email per one change')),
-    (2, _('one email for all in time interval')),
-)
 
 
 @autostrip
@@ -143,40 +123,20 @@ class SettingsChPassForm(forms.Form):
         return new_password
 
 
-class SettingsSendNotifForm(forms.Form):
+class SubscribeForm(forms.ModelForm):
     """
-    Форма для блока "Рассылка уведомлений" страницы настроек пользователя.
-    Версия для пользователя, не являющегося представителем организации.
-
-    """
-    # Скрытое поле, нужное для того, чтобы однозначно идентифицировать форму,
-    # т.к. при снятой галке у subscribe, django вообще не кладет
-    # это поле (subscribe) в POST.
-    snf = forms.IntegerField(widget=forms.HiddenInput, required=False)
-    subscribe = forms.BooleanField(label="",
-                                   help_text=_("Subscribe to news e-mail notification"), required=False)
-
-
-class SettingsSendNotifFormFull(SettingsSendNotifForm):
-    """
-    Форма для блока "Рассылка уведомлений" страницы настроек пользователя.
-    Версия для пользователя, являющегося представителем организации.
+    Subscribe form for registered users without any permissions.
 
     """
-    comment_notification_type = forms.ChoiceField(
-        choices=COMMENT_NOTIFICATION_CHOICES,
-        label=_('Comment notification'))
-    comment_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
-                                                    required=False)
-    score_notification_type = forms.ChoiceField(
-        choices=SCORE_CHANGE_NOTIFICATION_CHOICES,
-        label=_('Score change notification'))
-    score_notification_digest = forms.ChoiceField(choices=DIGEST_INTERVALS,
-                                                  required=False)
-    notify_on_my_comments = forms.BooleanField(label="",
-                                               help_text=_("Send to me my comments"), required=False)
-    notify_on_all_comments = forms.BooleanField(label="",
-                                                help_text=_("Send whole comment thread"), required=False)
+    class Meta:
+        model = UserProfile
+        fields = ['subscribe']
 
-    def __init__(self, *args, **kwargs):
-        super(SettingsSendNotifFormFull, self).__init__(*args, **kwargs)
+
+class SubscribeAndNotifyForm(SubscribeForm):
+    """
+    Subscribe and notification form for experts, organisations representatives and admins.
+
+    """
+    class Meta(SubscribeForm.Meta):
+        SubscribeForm.Meta.fields += ['notification_type', 'notification_interval', 'notification_self']

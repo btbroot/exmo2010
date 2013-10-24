@@ -1,5 +1,5 @@
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -16,9 +16,3 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from digest_email import models
-from django.contrib import admin
-
-admin.site.register(models.Digest)
-admin.site.register(models.DigestJournal)
-admin.site.register(models.DigestPreference)

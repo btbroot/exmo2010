@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,22 +17,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+{% endcomment %}
+{% load i18n get_object_by_pk %}
 
-"""
-Задача для рассылки дайджестов
-
-Can be run as a cronjob to send comment digest
-"""
-
-from django_extensions.management.jobs import HourlyJob
-
-from digest_email.digest import ScoreCommentDigest
-from digest_email.models import Digest
-
-
-class Job(HourlyJob):
-    help = "Comment daily digest notification"
-
-    def execute(self):
-        digest = ScoreCommentDigest(Digest.objects.get(name = 'notify_comment'))
-        digest.send()
+{% trans 'Hello' %} {{ user.userprofile.legal_name }}!
+{% trans 'Digest from' %} {{ from }} {% trans 'till' %} {{ till }}
+{% for comment in comments %}
+    ----------
+    {% get_object_by_pk exmo2010.Score comment.object_pk as score %}
+    {{ score.task.organization }}: {{ score.parameter }}
+    {% trans 'Date' %}: {{ comment.submit_date }}
+    {% trans 'User' %}: {% if comment.user.userprofile.is_expert %}{% if user.userprofile.is_expert %}{{ comment.user.userprofile.legal_name }}{% else %}{{ expert }}{% endif %}{% else %}{{ comment.user.userprofile.legal_name }}{% endif %}
+    {% trans 'Comment' %}:
+    {{ comment.comment|striptags }}
+    {% trans 'Link' %}: http://{{ site }}{{ score.get_absolute_url }}
+{% endfor %}
