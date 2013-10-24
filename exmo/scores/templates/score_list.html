@@ -108,7 +108,7 @@
 
 <div id=utility>
      <a href="{% url exmo2010:score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
-     <a href="{% url exmo2010:score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with comments" %}</a>
+     <a href="{% url exmo2010:score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with explanations" %}</a>
 {% check_object_permission exmo2010.view_task task as export_perm %}
 {% check_object_permission exmo2010.fill_task task as import_perm %}
 {% if export_perm %}

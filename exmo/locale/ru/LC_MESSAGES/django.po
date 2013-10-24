@@ -1073,33 +1073,48 @@ msgid "foundComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
 #: exmo2010/models.py:896 scores/forms.py:78
-#: scores/templates/task_report.html:64
 msgid "completeComment"
 msgstr "комментарий к критерию 'Полнота'"
 
 #: exmo2010/models.py:907 scores/forms.py:80
-#: scores/templates/task_report.html:65
 msgid "topicalComment"
 msgstr "комментарий к критерию 'Актуальность'"
 
 #: exmo2010/models.py:918 scores/forms.py:82
-#: scores/templates/task_report.html:66
 msgid "accessibleComment"
 msgstr "комментарий к критерию 'Навигационная доступность'"
 
 #: exmo2010/models.py:929 scores/forms.py:84
-#: scores/templates/task_report.html:67
 msgid "hypertextComment"
 msgstr "комментарий к критерию 'HTML доступность'"
 
 #: exmo2010/models.py:940 scores/forms.py:86
-#: scores/templates/task_report.html:68
 msgid "documentComment"
 msgstr "комментарий к критерию 'Файловая доступность'"
 
 #: exmo2010/models.py:951 scores/forms.py:88
 msgid "imageComment"
 msgstr "комментарий к критерию 'Графическая доступность'"
+
+#: scores/templates/task_report.html:64
+msgid "explanation for 'Complete' criterion"
+msgstr "пояснение к критерию 'Полнота'"
+
+#: scores/templates/task_report.html:65
+msgid "explanation for 'Topical' criterion"
+msgstr "пояснение к критерию 'Актуальность'"
+
+#: scores/templates/task_report.html:66
+msgid "explanation for 'Accessible' criterion"
+msgstr "пояснение к критерию 'Навигационная доступность'"
+
+#: scores/templates/task_report.html:67
+msgid "explanation for 'Hypertext' criterion"
+msgstr "пояснение к критерию 'HTML доступность'"
+
+#: scores/templates/task_report.html:68
+msgid "explanation for 'Document' criterion"
+msgstr "пояснение к критерию 'Файловая доступность'"
 
 #: exmo2010/models.py:956 scores/templates/detail.html:149
 msgid "Recomendations"
@@ -2358,8 +2373,8 @@ msgid "Print"
 msgstr "Версия для печати"
 
 #: scores/templates/score_list.html:111
-msgid "Print with comments"
-msgstr "Версия для печати с комментариями"
+msgid "Print with explanations"
+msgstr "Версия для печати с пояснениями"
 
 #: scores/templates/score_list.html:116
 msgid "Export task to CSV"
