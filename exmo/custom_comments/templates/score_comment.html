@@ -30,15 +30,18 @@
         {{ title }}
     </h2>
     <div>
-        <p>
-            <span class="bold">
-                {{ comment.legal_user_name }},
-            </span>
-            {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
-        </p>
-        <p>
-            {{ comment.comment|safe }}
-        </p>
+        {% for comment in comments %}
+            <p>
+                <span class="bold">
+                    {{ comment.legal_user_name }},
+                </span>
+                {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
+            </p>
+            <p>
+                {{ comment.comment|safe }}
+            </p>
+            <hr />
+        {% endfor %}
         <p>
             <span class="bold">{% trans 'Link' %}:</span> <a href="{{ url }}#comments">{{ url }}#comments</a>
         </p>

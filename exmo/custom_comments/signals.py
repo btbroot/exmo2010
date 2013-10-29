@@ -58,6 +58,11 @@ def comment_notification(sender, **kwargs):
                                  .values('email')\
                                  .distinct()
 
+    # whole comment thread
+    experts_thread = experts_emails.filter(userprofile__notification_thread=True)
+    # last comment
+    experts_one = experts_emails.filter(userprofile__notification_thread=False)
+
     # get emails by organizations representatives:
     orgs_emails = User.objects.filter(userprofile__organization=score.task.organization,
                                       is_active=True,
@@ -67,6 +72,11 @@ def comment_notification(sender, **kwargs):
                                        Q(email__exact=''))\
                               .values('email')\
                               .distinct()
+
+    # whole comment thread
+    orgs_thread = orgs_emails.filter(userprofile__notification_thread=True)
+    # last comment
+    orgs_one = orgs_emails.filter(userprofile__notification_thread=False)
 
     subject = u'%(prefix)s%(monitoring)s - %(org)s: %(code)s' % {
         'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
@@ -85,22 +95,32 @@ def comment_notification(sender, **kwargs):
         'url': url,
     }
 
-    _send_mails(experts_emails, subject, context, comment, True)
-    _send_mails(orgs_emails, subject, context, comment)
+    thread = sender.objects.filter(object_pk=comment.object_pk)
+
+    # send notifications with the last comment:
+    _send_mails(experts_one, subject, context, [comment], True)
+    _send_mails(orgs_one, subject, context, [comment])
+
+    # send notifications with whole comment thread:
+    _send_mails(experts_thread, subject, context, thread, True)
+    _send_mails(orgs_thread, subject, context, thread)
 
 
-def _send_mails(rcpts, subject, context, comment, is_experts=False):
+def _send_mails(rcpts, subject, context, comments, is_experts=False):
     """
     Sending comments notification mails.
 
     """
-    if not comment.user_is_expert():
-        legal_user_name = comment.user_legal_name()
-    else:
-        legal_user_name = comment.user_legal_name() if is_experts else _(config_value('GlobalParameters', 'EXPERT'))
+    expert = _(config_value('GlobalParameters', 'EXPERT'))
+    for comment in comments:
+        if not comment.user_is_expert():
+            legal_user_name = comment.user_legal_name()
+        else:
+            legal_user_name = comment.user_legal_name() if is_experts else expert
 
-    setattr(comment, 'legal_user_name', legal_user_name)
-    context['comment'] = comment
+        setattr(comment, 'legal_user_name', legal_user_name)
+
+    context['comments'] = comments
 
     for rcpt in rcpts:
         email = ''.join(rcpt['email'].split())

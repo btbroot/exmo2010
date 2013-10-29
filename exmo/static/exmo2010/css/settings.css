@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,14 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-#id_email
-{
-    margin-top: 1px;
-    margin-bottom: 5px;
-}
-
-.table-setings td
-{
+.table-setings td {
     vertical-align: middle;
     border-bottom-color: #fff;
     padding: 4px 6px;
@@ -34,41 +27,45 @@
     line-height: 18px;
 }
 
-.table-setings td:first-child
-{
+.table-setings td:first-child {
     text-align: right;
     width: 215px;
 }
 
-.table-setings td input[type="text"], .table-setings td input[type="password"]
-{
+.table-setings td input[type="text"], .table-setings td input[type="password"] {
     width: 300px;
     font-size: 13px;
 }
 
-.table-setings td > select
-{
+.table-setings td > select {
     width: 308px;
     font-size: 13px;
 }
 
-.table-setings td span > select
-{
+.table-setings td span > select {
     font-size: 13px;
 }
 
-.fc_field_header
-{
-    padding-left: 10px;
-}
-
-h2
-{
+h2 {
     font-weight: bold;
-    color: #333;
 }
 
-hr
-{
+hr {
     margin-top: 12px;
+}
+
+.main_block {
+    float:left;
+    width: 550px;
+    line-height:26px;
+    margin-left: 40px;
+}
+
+.right_field {
+    float: right;
+    width: 360px;
+}
+
+select {
+    margin-right: 10px;
 }

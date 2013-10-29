@@ -139,4 +139,7 @@ class SubscribeAndNotifyForm(SubscribeForm):
 
     """
     class Meta(SubscribeForm.Meta):
-        SubscribeForm.Meta.fields += ['notification_type', 'notification_interval', 'notification_self']
+        SubscribeForm.Meta.fields += ['notification_type',
+                                      'notification_interval',
+                                      'notification_self',
+                                      'notification_thread']

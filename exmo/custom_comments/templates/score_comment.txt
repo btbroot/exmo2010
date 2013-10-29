@@ -20,7 +20,9 @@
 {% endcomment %}
 {% load i18n pytils_dt %}
 {{ title }}
+{% for comment in comments %}
 {{ comment.legal_user_name }},
 {{ comment.submit_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ comment.submit_date|date:"G:i" }}
 {{ comment.comment|safe }}
+{% endfor %}
 {% trans 'Link' %}: {{ url }}

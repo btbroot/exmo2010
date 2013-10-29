@@ -39,20 +39,22 @@ class FormsTestCase(TestCase):
         self.assertEqual(form.is_valid(), True)
 
     @parameterized.expand([
-        (False, 0, 1, False),
-        (False, 1, 3, True),
-        (False, 2, 6, False),
-        (True, 0, 12, True),
-        (True, 1, 24, False),
-        (True, 2, 12, True),
+        (False, 0, 1, False, False),
+        (False, 1, 3, True, False),
+        (False, 2, 6, False, True),
+        (True, 0, 12, True, True),
+        (True, 1, 24, False, False),
+        (True, 2, 12, True, False),
     ])
-    def test_subscribe_and_notify_form(self, subscribe, notification_type, notification_interval, notification_self):
+    def test_subscribe_and_notify_form(self, subscribe, notification_type, notification_interval,
+                                       notification_self, notification_thread):
         # WHEN user send SubscribeAndNotifyForm with data
         form_data = {
             'subscribe': subscribe,
             'notification_type': notification_type,
             'notification_interval': notification_interval,
             'notification_self': notification_self,
+            'notification_thread': notification_thread,
         }
         form = SubscribeAndNotifyForm(data=form_data)
         # THEN form is valid

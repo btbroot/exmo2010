@@ -1314,7 +1314,8 @@ class UserProfile(models.Model):
                                                              choices=NOTIFICATION_INTERVAL_CHOICES,
                                                              default=1)
     notification_self = models.BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
-    digest_date_journal = models.DateTimeField(verbose_name=_('last digest sending date'), blank=True, null=True)
+    notification_thread = models.BooleanField(verbose_name=_("Send whole comment thread"), default=False)
+    digest_date_journal = models.DateTimeField(verbose_name=_('Last digest sending date'), blank=True, null=True)
 
     def is_internal(self):
         """Внутренний пользователь или внешний."""

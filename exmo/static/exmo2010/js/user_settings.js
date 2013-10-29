@@ -15,33 +15,36 @@
 //
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+//
 $(document).ready(function () {
 
-    var $comment_type = $("#id_notification_type");
+    var $notification_type = $("#id_notification_type");
     var $interval = $("#id_notification_interval");
-    var $notification_self = $("#id_notification_self");
+    var $notifications = $("#id_notification_self, #id_notification_thread");
+    var $notification_thread = $("#id_notification_thread");
 
     function notification_form(value) {
         switch(value){
             case '0':
-                $notification_self.attr("disabled", true).attr("checked", false);
+                $notifications.attr("disabled", true).attr("checked", false);
                 $interval.hide();
                 break;
             case '1':
-                $notification_self.removeAttr("disabled");
+                $notifications.removeAttr("disabled");
                 $interval.hide();
                 break;
             case '2':
-                $notification_self.removeAttr("disabled");
+                $notifications.removeAttr("disabled");
+                $notification_thread.removeAttr("disabled").attr("disabled", true).attr("checked", false);
                 $interval.show();
                 break;
         }
+
     }
 
-    notification_form($comment_type.val());
+    notification_form($notification_type.val());
 
-    $comment_type.change(function () {
+    $notification_type.change(function () {
         notification_form($(this).val());
     });
 
