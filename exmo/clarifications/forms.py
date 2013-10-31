@@ -21,7 +21,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
-from core.utils import ckeditor_urlize, sanitize_field
+from core.utils import urlize, sanitize_field
 
 
 class ClarificationAddForm(forms.Form):
@@ -31,7 +31,7 @@ class ClarificationAddForm(forms.Form):
     def clean_comment(self):
         data = self.cleaned_data['comment']
         data = sanitize_field(data)
-        data = ckeditor_urlize(data)
+        data = urlize(data)
         return data
 
 

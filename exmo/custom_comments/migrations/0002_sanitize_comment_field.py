@@ -21,7 +21,7 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
-from core.utils import ckeditor_urlize, sanitize_field
+from core.utils import urlize, sanitize_field
 
 
 class Migration(DataMigration):
@@ -31,7 +31,7 @@ class Migration(DataMigration):
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         for comment in orm.CommentExmo.objects.all():
             data = sanitize_field(comment.comment)
-            data = ckeditor_urlize(data)
+            data = urlize(data)
             comment.comment = data
             comment.save()
 

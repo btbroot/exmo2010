@@ -23,7 +23,7 @@ from django.forms.widgets import HiddenInput
 from django.utils.translation import ungettext
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import ckeditor_urlize, clean_message, sanitize_field
+from core.utils import urlize, clean_message, sanitize_field
 from custom_comments.models import CommentExmo
 
 
@@ -57,7 +57,7 @@ class CustomCommentForm(CommentForm):
     def clean_comment(self):
         data = self.cleaned_data['comment']
         data = sanitize_field(data)
-        data = ckeditor_urlize(data)
+        data = urlize(data)
         return data
 
 

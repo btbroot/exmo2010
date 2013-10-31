@@ -151,22 +151,18 @@ def sanitize_field(data):
     return data
 
 
-#TODO: switch on ckeditor`s auto urlizing for all urls (from clipboard, etc). After that, this function can be removed.
-def ckeditor_urlize(data):
+def urlize(textdata):
     """
-    It`s temporary hook for urlizing ckeditor's fields.
+    Convert all http links into anchor tags and add target=_blank
 
     """
-    text = BeautifulSoup(data)
-    textNodes = text.findAll(text=True)
+    soup = BeautifulSoup(textdata)
 
-    for textNode in textNodes:
-        if textNode.parent.name == 'a':
-            textNode.parent['target'] = '_blank'
-        else:
-            urlizedText = BeautifulSoup(urlize_target_blank(textNode))
-            textNode.replaceWith(urlizedText)
+    for link in soup.findAll('a'):
+        link['target'] = '_blank'
 
-    result = unicode(text)
+    for text_node in soup.findAll(text=True):
+        urlized = BeautifulSoup(urlize_target_blank(text_node))
+        text_node.replaceWith(urlized)
 
-    return result
+    return unicode(soup)
