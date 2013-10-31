@@ -42,9 +42,21 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
             status=Task.TASK_APPROVED,
         )
 
-        # AND parameter and score with found == 0
-        parameter = mommy.make(Parameter, monitoring=monitoring)
-        score = mommy.make(Score, task=task, parameter=parameter, found=0)
+        # AND parameter with only 'accessible' attribute
+        parameter = mommy.make(
+            Parameter,
+            monitoring=monitoring,
+            complete = False,
+            accessible = True,
+            topical = False,
+            hypertext = False,
+            document = False,
+            image = False,
+            npa = False
+        )
+
+        # AND score with zero initial values for parameter attributes
+        score = mommy.make(Score, task=task, parameter=parameter, found=0, accessible=0)
 
         # AND i am logged in as expertB
         self.login('expertB', 'password')
@@ -53,21 +65,24 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         # AND i opened change score tab
         self.find('a[href="#change_score"]').click()
 
-    def test_one_maximum_score(self):
-        # WHEN i set 'found' value to 1 (maximum)
+    def test_all_maximum_scores(self):
+        # WHEN i set all values to (maximum)
         self.find('#id_found_2').click()
+        self.find('#id_accessible_3').click()
 
         with self.frame('iframe'):
-            # THEN 2 comment lines should be added automatically
-            self.assertEqual(len(self.findall('input.autoscore')), 2)
+            # THEN 3 comment lines should be added automatically
+            self.assertEqual(len(self.findall('input.autoscore')), 3)
 
             # AND intro line should say that value changed to maximum (have 'max' class)
             cls = self.find('#autoscore-intro').get_attribute('class')
             self.assertTrue('max' in cls)
 
-            # AND second line should say that 'found' changed from 0 to 1
+            # AND all other lines should say that values changed
             text = self.find('#found_brick').get_attribute('value')
             self.assertTrue(text.endswith(u'0 → 1'))
+            text = self.find('#accessible_brick').get_attribute('value')
+            self.assertTrue(text.endswith(u'0 → 3'))
 
     def test_two_scores(self):
         # WHEN i set 'found' value to 1 (maximum)

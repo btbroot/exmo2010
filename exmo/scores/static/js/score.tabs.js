@@ -37,15 +37,6 @@ $(document).ready(function() {
 
     $non_relevant_button.hide();
 
-    // Enable input, serialize, return input to initial state
-    // Returns serialized value
-    function serailize_as_enabled(x) {
-        was_disabled = x.attr('disabled');
-        res = x.attr('disabled', false).serialize();
-        x.attr('disabled', was_disabled);
-        return res;
-    }
-
     // change score handler
     // save initial values
     var $radioInitial = {};
@@ -59,7 +50,6 @@ $(document).ready(function() {
         if (!isNaN(parseInt($(this).val()))) {
             $radioValues[$(this).attr('name')].push(parseInt($(this).val()));
         }
-        $(this).data('initialValue', serailize_as_enabled($(this)));
         if ($(this).attr("checked")=="checked") {
             $radioInitial[$(this).attr('name')] = $(this).val();
         }
@@ -94,23 +84,21 @@ $(document).ready(function() {
     function scoreChanged() {
         isDirty = false;
         changedVals = {};
-        all_max = true;  // flag if all changed radioinputs set to max
-        $('input:radio').each(function () {
-            if($(this).data('initialValue') != serailize_as_enabled($(this))) {
+        all_max = true;  // flag if all radioinputs set to max
+        $('input:radio:checked').each(function () {
+            val = $(this).val()
+            name = $(this).attr('name')
+            initial = $radioInitial[name];
+            if (parseInt(val) != $radioMax[name]) {
+                all_max = false;
+            }
+            if (val != initial) {
                 isDirty = true;
-                if ($(this).attr("checked")=="checked") {
-                    val = $(this).val()
-                    name = $(this).attr('name')
-                    initial = $radioInitial[name];
-                    if ((initial == '') && (val == '0')) {
-                        // changes form '-' to '0' aren't interesting
-                        return;
-                    }
-                    if (parseInt(val) != $radioMax[name]) {
-                        all_max = false;
-                    }
-                    changedVals[name] = val;
+                if ((initial == '') && (val == '0')) {
+                    // changes form '-' to '0' aren't interesting
+                    return;
                 }
+                changedVals[name] = val;
             }
         });
 
