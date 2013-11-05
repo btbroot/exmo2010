@@ -206,7 +206,7 @@ td.place > span {
 }
 
 td.comments {
-    text-align: center;
+    text-align: left;
 }
 
 td.diff > div {
@@ -219,7 +219,7 @@ td.diff > div > span  {
     display: block;
     float: right;
     position: relative;
-    right: 13px;
+    right: 23px;
 }
 
 td.diff > div > img  {
@@ -232,7 +232,17 @@ td.diff > div > img  {
 td.init-openness, td.openness {
     text-align: right;
     padding-right: 20px;
+    position: relative;
 }
+
+td.init-openness {
+    right: 45px;
+}
+
+td.openness {
+    right: 17px;
+}
+
 
 /* Ratings Table */
 
