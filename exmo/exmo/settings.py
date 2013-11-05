@@ -22,12 +22,6 @@
 import os
 import sys
 import djcelery
-djcelery.setup_loader()
-
-
-PROJECT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
-path_to_project = lambda *a: os.path.join(PROJECT_DIR, *a)
-
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -35,15 +29,23 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
     ('Your Name', ''),
 )
-
 MANAGERS = ADMINS
 
+PROJECT_NAME = 'exmo'
+
+# Celery
+djcelery.setup_loader()
+BROKER_URL = 'mongodb://user:password@hostname:port/database_name'
+CELERY_RESULT_BACKEND = 'database'
+CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_ALWAYS_EAGER = False
+CELERY_TASK_RESULT_EXPIRES = 18000
+CELERND_TASK_ERROR_EMAILS = True
+
+# Databases
 MYSQL_INIT = [
     'SET storage_engine=INNODB',
-#    'SET GLOBAL innodb_file_format = Barracuda',
-#    'SET GLOBAL innodb_file_per_table = ON'
 ]
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -58,39 +60,41 @@ DATABASES = {
     }
 }
 
+# Tests
 TEST = 'test' in sys.argv
 if TEST:
     # in-memory SQLite used for testing.
     DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': ':memory:',
-                }
-            }
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+# Localization
 TIME_ZONE = 'Europe/Moscow'
-
 LANGUAGE_CODE = 'ru-RU'
-
 USE_L10N = True
-
 SITE_ID = 1
-
 USE_I18N = True
-
 USE_ETAGS = True
+DATETIME_FORMAT = "Y-m-d, H:i"
+DATE_INPUT_FORMATS = (
+    '%d.%m.%Y',
+    '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
+    '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
+    '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
+)
+LOCALE_PATHS = ('locale',)
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
-# path to project media and static files:
-MEDIA_ROOT = path_to_project('../media')
-STATIC_ROOT = path_to_project('../static')
+MEDIA_ROOT = '/var/lib/exmo2010'
+STATIC_ROOT = '/usr/share/exmo2010'
 
-# path to application static files:
-STATICFILES_DIRS = (
-    path_to_project('static'),
-)
+STATICFILES_DIRS = ('static',)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -98,8 +102,22 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-SECRET_KEY = 'zou(k9*+vc69ji$xlpy+e-poi1s6_*q3#0+)=(pgv(wxb&94dd'
+# Cache
+CACHE_PATH = '/var/cache/exmo2010/'
+CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
+CACHE_PREFIX = 'Cache'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_PATH,
+    }
+}
 
+# WYSIWYG-editor
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+
+# Middleware
 MIDDLEWARE_CLASSES = ()
 
 if not DEBUG:
@@ -124,16 +142,15 @@ if not DEBUG:
         'django.middleware.cache.FetchFromCacheMiddleware',
     )
 
+# URLs
 ROOT_URLCONF = 'exmo.urls'
 
+# Templates
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
-
-TEMPLATE_DIRS = (
-    os.path.join(os.path.abspath(os.path.dirname(__file__)), '../templates'),
-)
+TEMPLATE_DIRS = ('templates',)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -146,6 +163,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'core.context_processors.user_groups',
 )
 
+# Applications
 INSTALLED_APPS = (
     # Built-in django apps:
     'django.contrib.auth',
@@ -175,8 +193,6 @@ INSTALLED_APPS = (
     'django_wysiwyg',
     'ckeditor',
     'breadcrumbs',
-    # Testing:
-    #'django_nose',
     # Local apps:
     'accounts',
     'auth',
@@ -196,26 +212,31 @@ INSTALLED_APPS = (
     'questionnaire',
 )
 
-COMMENTS_APP = 'custom_comments'
+if TEST:
+    INSTALLED_APPS += ('django_nose',)
 
+# Admin tools
+ADMIN_TOOLS_INDEX_DASHBOARD = {
+    'core.site': 'dashboard.dashboard.CustomIndexDashboard',
+    'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
+}
+ADMIN_TOOLS_MENU = {
+    'core.site': 'dashboard.menu.CustomMenu',
+    'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
+}
+ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
+
+# Customization
+COMMENTS_APP = 'custom_comments'
 CSRF_FAILURE_VIEW = 'exmo2010.custom_registration.views.csrf_failure'
 
-DJANGO_WYSIWYG_FLAVOR = "ckeditor"
-CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
-
-
-LOCALE_PATHS = (path_to_project('locale'),)
-
-# email server
+# E-mail
 SERVER_EMAIL = 'www-data@svobodainfo.org'
-FORCE_SCRIPT_NAME = ""
-
-# imap server:
 IMAP_SERVER = 'imap.example.com'
 IMAP_LOGIN = 'example@example.com'
 IMAP_PASSWORD = 'password'
 
-# registration
+# Registration
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
 LOGIN_URL = '/exmo2010/accounts/login/'
@@ -227,55 +248,23 @@ AUTHENTICATION_BACKENDS = (
     'auth.backends.ObjectPermBackend',
 )
 
-#tag length
+# Tags
 MAX_TAG_LENGTH = 255
-#tag autocomlete
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 
-# cache
-CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
-CACHE_PATH = path_to_project('../cache')
-CACHE_PREFIX = 'Cache'
-CACHE_TIMEOUT = 0
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_PATH,
-    }
-}
+DEVEL = False
 
-DATETIME_FORMAT = "Y-m-d, H:i"
-
-ADMIN_TOOLS_INDEX_DASHBOARD = {
-    'core.site': 'dashboard.dashboard.CustomIndexDashboard',
-    'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
-}
-
-ADMIN_TOOLS_MENU = {
-    'core.site': 'dashboard.menu.CustomMenu',
-    'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
-}
-
-ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
-
-DATE_INPUT_FORMATS = (
-    '%d.%m.%Y',
-    '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
-    '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
-    '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
-)
-
-BROKER_URL = 'mongodb://user:password@hostname:port/database_name'
-CELERY_RESULT_BACKEND = 'database'
-
-CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
-CELERY_ALWAYS_EAGER = False
-CELERY_TASK_RESULT_EXPIRES = 18000
-CELERND_TASK_ERROR_EMAILS = True
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-try:
+if os.path.isfile('%s/local_settings.py' % PROJECT_NAME):
     from local_settings import *
-except ImportError:
-    pass
+
+
+def mkdir_ifnotexist(path):
+    os.path.exists(path) or os.makedirs(path)
+    return path
+
+if DEVEL:
+    PROJECT_DIR = os.path.abspath(PROJECT_NAME)
+    path_to_project = lambda *a: os.path.join(PROJECT_DIR, *a)
+    CACHE_PATH = mkdir_ifnotexist(path_to_project('../../cache'))
+    MEDIA_ROOT = mkdir_ifnotexist(path_to_project('../../media'))
+    STATIC_ROOT = mkdir_ifnotexist(path_to_project('../../static'))
