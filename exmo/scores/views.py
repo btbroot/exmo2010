@@ -329,7 +329,8 @@ class ScoreDetailView(ScoreMixin, DetailView):
         else:
             all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
         all_score_clarifications = Clarification.objects.filter(score=self.object)
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
+        crumbs_upper_title = 'Monitoring' if request.user.is_authenticated() and request.user.profile.is_expert else 'Ratings'
+        crumbs = ['Home', crumbs_upper_title, 'Organization', 'ScoreList']
         breadcrumbs(request, crumbs, self.object.task)
 
         parameter = self.object.parameter
@@ -569,7 +570,8 @@ def score_list_by_task(request, task_id, report=None):
             }
         )
 
-        crumbs = ['Home', 'Monitoring', 'Organization']
+        crumbs_upper_title = 'Monitoring' if request.user.is_authenticated() and request.user.profile.is_expert else 'Ratings'
+        crumbs = ['Home', crumbs_upper_title, 'Organization']
         breadcrumbs(request, crumbs, task)
 
         return render_to_response(

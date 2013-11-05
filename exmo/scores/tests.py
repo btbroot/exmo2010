@@ -23,7 +23,9 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from django.utils.crypto import salted_hmac
+from django.utils.translation import ugettext as _
 from model_mommy import mommy
+from nose_parameterized import parameterized
 
 from exmo2010.models import *
 from scores.forms import ScoreFormWithComment
@@ -111,3 +113,50 @@ class ScoreViewsTestCase(TestCase):
 
         form = ScoreFormWithComment(self.score, data=form_data)
         self.assertEqual(form.is_valid(), True)
+
+
+class ScoreBreadcrumbsTestCase(TestCase):
+    def setUp(self):
+        # GIVEN breadcrumbs data
+        self.crumbs = {
+            'Monitoring': (_('Monitoring cycles'), reverse('exmo2010:monitoring_list')),
+            'Ratings': (_('Ratings'), reverse('exmo2010:ratings')),
+        }
+        self.breadcrumb_html = '<span class="breadcrumb-arrow"></span><a href="%s">%s</a>'
+
+        # AND expertB account
+        self.expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        self.expertB.groups.add(Group.objects.get(name=self.expertB.profile.expertB_group))
+
+        # AND published monitoring with score
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        task_id = task.pk
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        score = mommy.make(Score, task=task, parameter=parameter)
+        score_id = score.pk
+        self.client = Client()
+        self.scores_list_url = reverse('exmo2010:score_list_by_task', args=[task_id])
+        self.score_detail_url = reverse('exmo2010:score_view', args=[score_id])
+
+    @parameterized.expand([
+        ('Monitoring',),
+        ('Ratings',),
+    ])
+    def test_rating_breadcrumbs(self, title):
+        if title == 'Monitoring':
+            self.client.login(username='expertB', password='password')
+        ratings_html = self.breadcrumb_html % (self.crumbs[title][1], self.crumbs[title][0])
+
+        # WHEN user requests scores list page
+        response = self.client.get(self.scores_list_url)
+        content = response.content.decode('utf-8')
+        # THEN it contains expected breadcrumb title and URL
+        self.assertTrue(ratings_html in content)
+
+        # WHEN user requests score detail page
+        response = self.client.get(self.score_detail_url)
+        content = response.content.decode('utf-8')
+        # THEN it contains expected breadcrumb title and URL
+        self.assertTrue(ratings_html in content)
