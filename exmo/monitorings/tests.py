@@ -218,6 +218,40 @@ class ActiveRepresentativesTestCase(TestCase):
         self.assertEqual(o2.active_repr_len, 1)
 
 
+class HiddenMonitoringVisibilityTestCase(TestCase):
+    def setUp(self):
+        # GIVEN hidden and published monitoring
+        self.client = Client()
+        self.url = reverse('exmo2010:ratings')
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.monitoring_id = self.monitoring.pk
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND expertB
+        self.expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        self.expertB.groups.add(Group.objects.get(name=self.expertB.profile.expertB_group))
+        # AND organization representative
+        self.org = User.objects.create_user('org', 'usr@svobodainfo.org', 'password')
+        profile = self.org.get_profile()
+        profile.organization = [organization]
+        profile.save()
+        # AND task, score and parameter
+        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED, user=self.expertB)
+        parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        self.score = mommy.make(Score, task=task, parameter=parameter)
+
+    @parameterized.expand([
+        ('expertB',),
+        ('org',),
+    ])
+    def test_user_can_view_monitoring(self, username):
+        # WHEN user requests ratings page
+        self.client.login(username=username, password='password')
+        response = self.client.get(self.url)
+        response_monitoring = response.context['monitoring_list'][0]
+        # THEN response's context contains hidden monitoring in monitoring list
+        self.assertEqual(response_monitoring, self.monitoring)
+
+
 class EmptyMonitoringTestCase(TestCase):
     def setUp(self):
         # GIVEN monitoring without tasks

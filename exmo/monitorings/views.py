@@ -1134,9 +1134,12 @@ def ratings(request):
         monitoring_list = Monitoring.objects.filter(status=MONITORING_PUBLISHED).order_by('-publish_date')
 
     user = request.user
-    if not user.is_active or not (user.is_active and user.profile.is_expertA):
+
+    if not user.is_authenticated():
         monitoring_list = monitoring_list.filter(hidden=False)
-    if user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
+    elif user.is_active and user.profile.is_organization and not user.profile.is_expert:
+        monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__userprofile__user=user, hidden=True))
+    elif user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
         monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__task__user=user, hidden=True))
 
     monitoring_list = monitoring_list.annotate(org_count=Count('organization'))
