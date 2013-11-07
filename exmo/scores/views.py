@@ -37,6 +37,7 @@ from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.detail import DetailView
@@ -80,6 +81,13 @@ class ScoreMixin(object):
 class ScoreAddView(ScoreMixin, CreateView):
     template_name = "form.html"
 
+    # The cache_control decorator will force the browser to make request to server, when user clicks 'back'
+    # button after add new Score. BUT, not working in Opera browser:
+    # (http://my.opera.com/yngve/blog/2007/02/27/introducing-cache-contexts-or-why-the).
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
+    def dispatch(self, *args, **kwargs):
+        return super(ScoreAddView, self).dispatch(*args, **kwargs)
+
     def get_redirect(self, request):
         redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
                                            args=(self.task.pk,)),
@@ -90,8 +98,8 @@ class ScoreAddView(ScoreMixin, CreateView):
         return redirect
 
     def get(self, request, *args, **kwargs):
-        self.task = get_object_or_404(Task, pk=args[0])
-        self.parameter = get_object_or_404(Parameter, pk=args[1])
+        self.task = get_object_or_404(Task, pk=kwargs['task_pk'])
+        self.parameter = get_object_or_404(Parameter, pk=kwargs['parameter_pk'])
 
         try:
             score = Score.objects.get(parameter=self.parameter, task=self.task)
@@ -112,8 +120,8 @@ class ScoreAddView(ScoreMixin, CreateView):
         return result
 
     def post(self, request, *args, **kwargs):
-        self.task = get_object_or_404(Task, pk=args[0])
-        self.parameter = get_object_or_404(Parameter, pk=args[1])
+        self.task = get_object_or_404(Task, pk=kwargs['task_pk'])
+        self.parameter = get_object_or_404(Parameter, pk=kwargs['parameter_pk'])
         self.success_url = self.get_redirect(request)
         result = super(ScoreAddView, self).post(request, *args, **kwargs)
 
@@ -145,12 +153,14 @@ class ScoreAddView(ScoreMixin, CreateView):
 
 class ScoreDeleteView(ScoreMixin, DeleteView):
     template_name = "exmo2010/score_confirm_delete.html"
+    pk_url_kwarg = 'score_pk'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ScoreDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
         title = _('Delete score %s') % self.object.parameter
         if not request.user.has_perm('exmo2010.delete_score', self.object):
             return HttpResponseForbidden(_('Forbidden'))
@@ -169,10 +179,11 @@ class ScoreEditView(UpdateView):
     model = Score
     extra_context = {}
     is_interaction_or_finalizing = False
+    pk_url_kwarg = 'score_pk'
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        score = get_object_or_404(Score, pk=kwargs['pk'])
+        score = get_object_or_404(Score, pk=kwargs['score_pk'])
 
         if not request.user.has_perm('exmo2010.edit_score', score):
             return HttpResponseForbidden(_('Forbidden'))
@@ -308,9 +319,10 @@ signals.comment_was_posted.connect(comment_notification, sender=CommentExmo)
 
 class ScoreDetailView(ScoreMixin, DetailView):
     template_name = "detail.html"
+    pk_url_kwarg = 'score_pk'
 
     def dispatch(self, request, *args, **kwargs):
-        score = get_object_or_404(Score, pk=kwargs['pk'])
+        score = get_object_or_404(Score, pk=kwargs['score_pk'])
 
         if not request.user.has_perm('exmo2010.view_score', score):
             return HttpResponseForbidden(_('Forbidden'))
@@ -362,32 +374,32 @@ class ScoreDetailView(ScoreMixin, DetailView):
         return result
 
 
-def score_manager(request, score_id, method='update'):
+def score_manager(request, score_pk, method='update'):
     if method == 'delete':
-        redirect_url = reverse('exmo2010:score_delete', args=[score_id])
+        redirect_url = reverse('exmo2010:score_delete', kwargs={'score_pk': score_pk})
         return HttpResponseRedirect(redirect_url)
     elif method == 'update':
-        redirect_url = reverse('exmo2010:score_edit', args=[score_id])
+        redirect_url = reverse('exmo2010:score_edit', kwargs={'score_pk': score_pk})
         return HttpResponseRedirect(redirect_url)
     elif method == 'view':
-        redirect_url = reverse('exmo2010:score_detail', args=[score_id])
+        redirect_url = reverse('exmo2010:score_detail', kwargs={'score_pk': score_pk})
         return HttpResponseRedirect(redirect_url)
 
     return HttpResponseForbidden(_('Forbidden'))
 
 
-def score_view(request, score_id):
-    score = get_object_or_404(Score, pk=score_id)
+def score_view(request, score_pk):
+    score = get_object_or_404(Score, pk=score_pk)
 
     if request.user.has_perm('exmo2010.edit_score', score):
         call_view = ScoreEditView.as_view()
         revision = reversion.create_revision()
         callback = revision(call_view)
-        result = callback(request, pk=score_id)
+        result = callback(request, score_pk=score_pk)
 
     elif request.user.has_perm('exmo2010.view_score', score):
         call_view = ScoreDetailView.as_view()
-        result = call_view(request, pk=score_id)
+        result = call_view(request, score_pk=score_pk)
 
     else:
         result = HttpResponseForbidden(_('Forbidden'))
@@ -416,11 +428,11 @@ def toggle_comment(request):
             comment.status = CommentExmo.OPEN
             return _save_comment(comment)
 
-    return Http404
+    raise Http404
 
 
-def score_list_by_task(request, task_id, report=None):
-    task = get_object_or_404(Task, pk=task_id)
+def score_list_by_task(request, task_pk, print_report_type=None):
+    task = get_object_or_404(Task, pk=task_pk)
     title = task.organization.name
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
@@ -462,8 +474,8 @@ def score_list_by_task(request, task_id, report=None):
         score_interact_dict[score.parameter.pk] = score
 
     current_title = _('Organization')
-    if report:
-        # Print report
+    if print_report_type:
+        # Requested print report
         extra_context.update(
             {
                 'score_dict': score_dict,
@@ -471,7 +483,7 @@ def score_list_by_task(request, task_id, report=None):
                 'task': task,
                 'current_title': current_title,
                 'title': title,
-                'report': report,
+                'report': print_report_type,
             }
         )
 
@@ -621,8 +633,8 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
 
 @csrf_protect
 @login_required
-def score_add_comment(request, score_id):
-    score = get_object_or_404(Score, pk=score_id)
+def score_add_comment(request, score_pk):
+    score = get_object_or_404(Score, pk=score_pk)
     title = _('Add new parameter')
     if request.user.has_perm('exmo2010.add_comment_score', score):
 
@@ -670,12 +682,12 @@ signal_to_create_revision.connect(create_revision)
 
 
 @login_required
-def score_claim_color(request, score_id):
+def score_claim_color(request, score_pk):
     """
     AJAX-вьюха для получения изображения для претензий.
 
     """
-    score = get_object_or_404(Score, pk=score_id)
+    score = get_object_or_404(Score, pk=score_pk)
     if request.method == "GET" and request.is_ajax():
         return render_to_response('claim_image.html',
                                   {'score': score},
@@ -685,12 +697,12 @@ def score_claim_color(request, score_id):
 
 
 @login_required
-def score_comment_unreaded(request, score_id):
+def score_comment_unreaded(request, score_pk):
     """
     AJAX-вьюха для получения изображения для непрочитанных коментов.
 
     """
-    score = get_object_or_404(Score, pk=score_id)
+    score = get_object_or_404(Score, pk=score_pk)
     if request.method == "GET" and request.is_ajax():
         return render_to_response('commentunread_image.html',
                                   {'score': score},

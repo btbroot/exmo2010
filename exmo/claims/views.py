@@ -30,71 +30,19 @@ from livesettings import config_value
 
 from accounts.views import get_experts
 from bread_crumbs.views import breadcrumbs
-from claims.forms import *
+from claims.forms import ClaimAddForm, ClaimReportForm
 from core.tasks import send_email
 from exmo2010.models import Claim, Monitoring, Score
 
 
-@csrf_protect
 @login_required
-def claim_manager(request, score_id, claim_id=None, method=None):
-    """
-    Вью для манипуляции с претензиями.
-
-    """
-    score = get_object_or_404(Score, pk=score_id)
-    redirect = reverse('exmo2010:score_view', args=[score.pk])
-    title = _('Add new claim for %s') % score
-
-    if claim_id:
-        claim = get_object_or_404(Claim, pk=claim_id)
-    elif not method:  # create new
-        if not request.user.has_perm('exmo2010.add_claim', score):
-            return HttpResponseForbidden(_('Forbidden'))
-        if request.method == 'GET':
-            form = ClaimForm()
-            form.fields['creator'].initial = request.user.pk
-            form.fields['score'].initial = score.pk
-        elif request.method == 'POST':
-            form = ClaimForm(request.POST)
-            if form.is_valid():
-                if form.cleaned_data['score'] == score and form.cleaned_data['creator'] == request.user:
-                    claim = score.add_claim(request.user,
-                                            form.cleaned_data['comment'])
-                    claim_was_posted_or_deleted.send(
-                        sender=Claim.__class__,
-                        claim=claim,
-                        request=request,
-                        creation=True,
-                    )
-                    return HttpResponseRedirect(redirect)
-
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-        breadcrumbs(request, crumbs, score)
-        current_title = _('Edit claim')
-
-        return render_to_response(
-            'claim_form.html',
-            {
-                'monitoring': score.task.organization.monitoring,
-                'task': score.task,
-                'score': score,
-                'current_title': current_title,
-                'title': title,
-                'form': form,
-            },
-            context_instance=RequestContext(request),
-        )
-
-
-@login_required
-def claim_create(request, score_id):
+def claim_create(request, score_pk):
     """
     Добавление претензии на странице параметра.
 
     """
     user = request.user
-    score = get_object_or_404(Score, pk=score_id)
+    score = get_object_or_404(Score, pk=score_pk)
     redirect = reverse('exmo2010:score_view', args=[score.pk, ])
     redirect += '#claims'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
@@ -167,14 +115,14 @@ def claim_delete(request):
 
 
 @login_required
-def claim_report(request, monitoring_id):
+def claim_report(request, monitoring_pk):
     """
     Отчёт по претензиям.
 
     """
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
     title = _('Claims report for "%s"') % monitoring

@@ -17,53 +17,160 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls import *
-from django.utils.translation import ugettext as _
-from livesettings import config_value
+import types
 
-from bread_crumbs.views import BreadcrumbsView
+from django.conf.urls import patterns, url, include
+
+import reversion
+
+from exmo2010.views import HelpView, AboutView, OpenDataView
+from monitorings.views import MonitoringManagerView
+from organizations.views import OrganizationManagerView
+from parameters.views import ParameterManagerView
+from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
+from tasks.views import TaskManagerView
 
 
-urlpatterns = patterns('',
+def named_urls(module, *pattern_tuples):
+    '''
+    Wrapper around django.conf.urls.patterns which can guess url name from view and
+    automatically converts GenericView classes to views
+    Positional args are pattern_tuples:
+        (pattern, view, name)
+        or
+        (pattern, view)
+    If the name is omitted, it will be the same as view class or view function name
+    '''
+    result_patterns = []
+    for p_tuple in pattern_tuples:
+        try:
+            regex, view, name = p_tuple
+        except ValueError:
+            regex, view = p_tuple
+            if isinstance(view, types.TypeType):
+                name = view.__name__
+            elif isinstance(view, (str, unicode)):
+                name = view.split('.')[-1]
+            else:
+                name = None
 
-    url(r'^accounts/', include('exmo2010.custom_registration.backends.custom.urls')),
+        if isinstance(view, types.TypeType):
+            view = view.as_view()
 
-    url(r'^monitoring/', include('monitorings.urls')),
+        result_patterns.append(url(regex, view, name=name))
 
-    url(r'^score/', include('scores.urls')),
-    url(r'^scores/(\d+)/(print|printfull)?$', 'scores.views.score_list_by_task', name='score_list_by_task'),
+    return patterns(module, *result_patterns)
 
-    url(r'^tasks/', include('tasks.urls')),
-    url(r'^task/(\d+)/history/$', 'tasks.views.task_history', name='task_history'),
+
+scores_patterns = named_urls('scores.views',
+    (r'^(?P<score_pk>\d+)/$', 'score_view'),
+    (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', ScoreAddView, 'score_add'),
+    (r'^(?P<score_pk>\d+)_(?P<method>\w+)/$', 'score_manager'),
+    (r'^(?P<score_pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), 'score_edit'),
+    (r'^(?P<score_pk>\d+)/delete/$', reversion.create_revision()(ScoreDeleteView.as_view()), 'score_delete'),
+    (r'^(?P<score_pk>\d+)/detail/$', ScoreDetailView, 'score_detail'),
+    (r'^(?P<score_pk>\d+)/comment/add/$', 'score_add_comment'),
+    (r'^rating_update$', 'ratingUpdate'),
+)
+
+scores_patterns += named_urls('',
+    (r'^(?P<score_pk>\d+)/claim/create/$', 'claims.views.claim_create'),
+    (r'^(?P<score_pk>\d+)/clarification/create/$', 'clarifications.views.clarification_create'),
+)
+
+monitoring_patterns = named_urls('monitorings.views',
+    (r'^$', 'monitoring_list'),
+    (r'^add/$', 'monitoring_add'),
+    (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
+    (r'^(?P<monitoring_pk>\d+)/comment_report/$', 'monitoring_comment_report'),
+    (r'^(?P<monitoring_pk>\d+)/experts/$', 'monitoring_by_experts'),
+    (r'^(?P<monitoring_pk>\d+)/organization_export/$', 'monitoring_organization_export'),
+    (r'^(?P<monitoring_pk>\d+)/organization_import/$', 'monitoring_organization_import'),
+    (r'^(?P<monitoring_pk>\d+)/parameter_export/$', 'monitoring_parameter_export'),
+    (r'^(?P<monitoring_pk>\d+)/parameter_filter/$', 'monitoring_parameter_filter'),
+    (r'^(?P<monitoring_pk>\d+)/parameter_found_report/$', 'monitoring_parameter_found_report'),
+    (r'^(?P<monitoring_pk>\d+)/parameter_import/$', 'monitoring_parameter_import'),
+    (r'^(?P<monitoring_pk>\d+)/rating/$', 'monitoring_rating'),
+    (r'^(?P<monitoring_pk>\d+)/set_npa_params/$', 'set_npa_params'),
+    (r'^(?P<monitoring_pk>\d+)_(?P<method>\w+)/$', MonitoringManagerView, 'monitoring_manager'),
+    (r'^(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
+)
+
+monitoring_patterns += named_urls('tasks.views',
+    (r'^(?P<monitoring_pk>\d+)/mass_assign_tasks/$', 'task_mass_assign_tasks'),
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)/task/add/$', 'task_add'),
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)/task/(?P<task_pk>\d+)_(?P<method>\w+)/$',
+        TaskManagerView, 'task_manager'),
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)/tasks/$', 'tasks_by_monitoring_and_organization'),
+    (r'^(?P<monitoring_pk>\d+)/task/add/$', 'task_add'),
+    (r'^(?P<monitoring_pk>\d+)/tasks/$', 'tasks_by_monitoring'),
+)
+
+monitoring_patterns += named_urls('organizations.views',
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_(?P<method>\w+)/$',
+        OrganizationManagerView, 'organization_manager'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/$', 'organization_list'),
+)
+
+monitoring_patterns += named_urls('questionnaire.views',
+    (r'^(?P<monitoring_pk>\d+)/add_questionnaire/$', 'add_questionnaire'),
+    (r'^(?P<monitoring_pk>\d+)/answers_export/$', 'answers_export', 'monitoring_answers_export'),
+)
+
+monitoring_patterns += named_urls('',
+    (r'^(?P<monitoring_pk>\d+)/claims/$', 'claims.views.claim_report'),
+    (r'^(?P<monitoring_pk>\d+)/clarifications/$', 'clarifications.views.clarification_report'),
+)
+
+
+tasks_patterns = named_urls('tasks.views',
+    (r'^$', 'tasks'),
+    (r'^task/(?P<task_pk>\d+)_(?P<method>\w+)/$',
+        reversion.create_revision()(TaskManagerView.as_view()), 'task_manager'),
+    (r'^taskexport/(?P<task_pk>\d+)/$', 'task_export'),
+    (r'^taskimport/(?P<task_pk>\d+)/$', 'task_import'),
+)
+
+tasks_patterns += named_urls('parameters.views',
+    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_(?P<method>\w+)/$',
+        ParameterManagerView, 'parameter_manager'),
+    (r'^task/(?P<task_pk>\d+)/parameter/add/$', 'parameter_add',),
+)
+
+
+urlpatterns = named_urls('',
+    (r'^accounts/', include('exmo2010.custom_registration.backends.custom.urls')),
+
+    (r'^monitoring/', include(monitoring_patterns)),
+
+    (r'^score/', include(scores_patterns)),
+    (r'^scores/(?P<task_pk>\d+)/(?P<print_report_type>print|printfull)?$', 'scores.views.score_list_by_task'),
+
+    (r'^tasks/', include(tasks_patterns)),
+    (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),
 
     # Отчеты
-    url(r'^reports/comments/$', 'custom_comments.views.comment_list', name='comment_list'),
-    url(r'^reports/clarifications/$', 'clarifications.views.clarification_list', name='clarification_list'),
-    url(r'^reports/claims/$', 'claims.views.claim_list', name='claim_list'),
-    url(r'^reports/monitoring/$', 'monitorings.views.monitoring_report', name='monitoring_report'),
-    url(r'^reports/monitoring/(\w+)/$', 'monitorings.views.monitoring_report', name='monitoring_report_type'),
-    url(r'^reports/monitoring/(\w+)/(\d+)/$', 'monitorings.views.monitoring_report',
-        name='monitoring_report_finished'),
+    (r'^reports/comments/$', 'custom_comments.views.comment_list'),
+    (r'^reports/clarifications/$', 'clarifications.views.clarification_list'),
+    (r'^reports/claims/$', 'claims.views.claim_list'),
+    (r'^reports/monitoring/$', 'monitorings.views.monitoring_report'),
+    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/$',
+        'monitorings.views.monitoring_report', 'monitoring_report_type'),
+    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
+        'monitorings.views.monitoring_report', 'monitoring_report_finished'),
 
-    url(r'^claim/delete/$', 'claims.views.claim_delete', name='claim_delete'),
-    url(r'^toggle_comment/$', 'scores.views.toggle_comment', name='toggle_comment'),
-    url(r'^ratings/$', 'monitorings.views.ratings', name='ratings'),
-    url(r'^help/$', BreadcrumbsView.as_view(template_name='exmo2010/help.html',
-                                            get_context_data=lambda: {
-                                                'current_title': _('Help'),
-                                                'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')
-                                            }),
-        name='help'),
-    url(r'^about/$', BreadcrumbsView.as_view(template_name='exmo2010/about.html',
-                                             get_context_data=lambda: {'current_title': _('About')}), name='about'),
+    (r'^claim/delete/$', 'claims.views.claim_delete'),
+    (r'^toggle_comment/$', 'scores.views.toggle_comment'),
+    (r'^ratings/$', 'monitorings.views.ratings'),
+    (r'^help/$', HelpView, 'help'),
+    (r'^about/$', AboutView, 'about'),
 
-    url(r'^opendata/$', BreadcrumbsView.as_view(template_name='exmo2010/opendata.html',
-                                             get_context_data=lambda: {'current_title': _('Open data')}), name='opendata'),
-    url(r'^feedback/$', 'exmo2010.views.feedback', name='feedback'),
+    (r'^opendata/$', OpenDataView, 'opendata'),
+    (r'^feedback/$', 'exmo2010.views.feedback'),
     # AJAX-вьюха для получения списка критериев, отключенных у параметра
-    url(r'^get_pc/$', 'parameters.views.get_pc', name='get_pc'),
+    (r'^get_pc/$', 'parameters.views.get_pc'),
     # AJAX-вьюха для получения кода div'а для одного вопроса (c полями).
-    url(r'^get_qq/$', 'questionnaire.views.get_qq', name='get_qq'),
+    (r'^get_qq/$', 'questionnaire.views.get_qq'),
     # AJAX-вьюха для получения кода div'а для одного вопроса (без полей).
-    url(r'^get_qqt/$', 'questionnaire.views.get_qqt', name='get_qqt'),
+    (r'^get_qqt/$', 'questionnaire.views.get_qqt'),
 )

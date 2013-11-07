@@ -16,12 +16,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from textwrap import dedent
+
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.test.client import Client
 from django.test import TestCase
+
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.sql import *
-from exmo2010.models import *
+from core.utils import get_named_patterns
+from exmo2010.models import (
+    Group, Monitoring, Organization, Parameter, Questionnaire, Score,
+    TaskHistory, Task, OpennessExpression, ValidationError, MONITORING_INTERACTION)
 
 
 class TestMonitoring(TestCase):
@@ -153,3 +162,95 @@ class TestOpennessExpression(TestCase):
         # WHEN openness code is invalid
         # THEN raises exception
         self.assertRaises(ValidationError, self.v2.sql_monitoring)
+
+
+class CanonicalViewKwargsTestCase(TestCase):
+    # Url patterns and views should use and accept only canonical kwargs
+
+    exmo_urlpatterns = [pat for pat in get_named_patterns() if pat._full_name.startswith('exmo2010:')]
+
+    post_urls = set([
+        'claim_create',
+        'claim_delete',
+        'clarification_create',
+        'get_pc',
+        'user_reset_dashboard',
+        'toggle_comment',
+    ])
+
+    ajax_urls = set([
+        'get_qq',
+        'get_qqt',
+    ])
+
+    urls_excluded = [
+        'auth_logout',   # do not logout during test
+        'ratingUpdate',  # requires GET params, should be tested explicitly
+    ]
+
+    test_patterns = set([p.name for p in exmo_urlpatterns]) - set(urls_excluded)
+
+    def setUp(self):
+        # GIVEN monitoring, organization
+        monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        # AND approved task (for monitoring_answers_export to work)
+        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        # AND parameter, score, questionnaire
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        score = mommy.make(Score, task=task, parameter=parameter)
+        questionnaire = mommy.make(Questionnaire, monitoring=monitoring)
+
+        # AND i am logged-in as superuser
+        admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        admin.groups.add(Group.objects.get(name=admin.profile.expertA_group))
+        self.client = Client()
+        self.client.login(username='admin', password='password')
+
+        # AND canonical kwargs to reverse view urls
+        self.auto_pattern_kwargs = {
+            'monitoring_pk': monitoring.pk,
+            'score_pk': score.pk,
+            'parameter_pk': parameter.pk,
+            'task_pk': task.pk,
+            'org_pk': organization.pk,
+            'method': 'update',       # for all *_manager views
+            'activation_key': '123',  # for registration_activate
+            'uidb36': '123',          # for auth_password_reset_confirm
+            'token': '123',           # for auth_password_reset_confirm
+            'report_type': 'inprogress',   # for monitoring_report_*
+            'print_report_type': 'print',  # for score_list_by_task
+        }
+
+        self.patterns_by_name = dict((p.name, p) for p in self.exmo_urlpatterns)
+
+    @parameterized.expand(test_patterns)
+    def test_urlpattern(self, name):
+        pat = self.patterns_by_name[name]
+
+        if pat.regex.groups > len(pat.regex.groupindex):
+            raise Exception(dedent(
+                'Urlpattern ("%s", "%s") uses positional args and can\'t be reversed for this test.\
+                It should be modified to use only kwargs or excluded from this test and tested explicitly'\
+                    % (pat.regex.pattern, pat.name)))
+        unknown_kwargs = set(pat.regex.groupindex) - set(self.auto_pattern_kwargs)
+        if unknown_kwargs:
+            raise Exception(dedent(
+                'Urlpattern ("%s", "%s") uses unknown kwargs and can\'t be reversed for this test.\
+                These kwargs should be added to this test\'s auto_pattern_kwargs in setUp'\
+                    % (pat.regex.pattern, pat.name)))
+
+        kwargs = dict((k, self.auto_pattern_kwargs[k]) for k in pat.regex.groupindex)
+        url = reverse(pat._full_name, kwargs=kwargs)
+
+        # WHEN i get url
+        if pat.name in self.ajax_urls:
+            res = self.client.get(url, follow=True, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        else:
+            res = self.client.get(url, follow=True)
+
+        # THEN no exception should raise
+
+        if pat.name not in set(self.ajax_urls | self.post_urls):
+            # AND non-ajax and non-post urls should return http status 200 (OK)
+            self.assertEqual(res.status_code, 200)

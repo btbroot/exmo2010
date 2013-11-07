@@ -18,6 +18,7 @@
 #
 
 from django.test import TestCase
+
 from nose_parameterized import parameterized
 
 from core.utils import urlize
@@ -32,5 +33,3 @@ class UrlizeTestCase(TestCase):
     ])
     def test_urlize(self, data, expected_result):
         self.assertEqual(urlize(data), expected_result)
-
-

@@ -62,7 +62,7 @@ from monitorings.forms import MonitoringForm, TableSettingsForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
 
-def set_npa_params(request, monitoring_id):
+def set_npa_params(request, monitoring_pk):
     """
     Страница 'Выбрать согласованные параметры'.
 
@@ -70,7 +70,7 @@ def set_npa_params(request, monitoring_id):
     # На админа проверять не надо. Они и так все is_expertA.
     if not request.user.is_active or not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     parameters = monitoring.parameter_set.all()
     ParameterTypeFormSet = modelformset_factory(Parameter,
                                                 extra=0,
@@ -168,6 +168,7 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
     form_class = MonitoringForm
     template_name = "monitoring_form.html"
     extra_context = {}
+    pk_url_kwarg = 'monitoring_pk'
 
     def get_redirect(self, request):
         redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
@@ -276,11 +277,11 @@ def monitoring_add(request):
                               context_instance=RequestContext(request))
 
 
-def monitoring_rating(request, monitoring_id):
+def monitoring_rating(request, monitoring_pk):
     """Return a response containing the rating table,
     the table settings form, and the parameter selection form.
     """
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring) \
             or not request.user.is_anonymous() and request.user.profile.is_expertB \
             and not request.user.is_superuser and monitoring.status != 5:
@@ -357,13 +358,13 @@ def monitoring_rating(request, monitoring_id):
 
 
 @login_required
-def monitoring_by_criteria_mass_export(request, id):
+def monitoring_by_criteria_mass_export(request, monitoring_pk):
     """
     Экспорт по критерию
     Архив из CVS файлов -- по файлу на критерий.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     row_template = {
@@ -436,7 +437,7 @@ def monitoring_by_criteria_mass_export(request, id):
         for criteria in row.keys():
             writer[criteria].writerow(row[criteria])
     response = HttpResponse(mimetype = 'application/zip')
-    response['Content-Disposition'] = 'attachment; filename=monitoring-%s.zip' % id
+    response['Content-Disposition'] = 'attachment; filename=monitoring-%s.zip' % monitoring_pk
     buffer = StringIO()
     writer = zipfile.ZipFile(buffer, 'w')
     for criteria in row_template.keys():
@@ -451,12 +452,12 @@ def monitoring_by_criteria_mass_export(request, id):
 
 
 @login_required
-def monitoring_by_experts(request, id):
+def monitoring_by_experts(request, monitoring_pk):
     """
     Статистика мониторинга по экспертам.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk=id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     experts = Task.objects.filter(organization__monitoring = monitoring).values('user').annotate(cuser=Count('user'))
@@ -520,8 +521,8 @@ def monitoring_by_experts(request, id):
 
 #todo: remove
 @login_required
-def monitoring_info(request, id):
-    monitoring = get_object_or_404(Monitoring, pk = id)
+def monitoring_info(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()
@@ -539,13 +540,13 @@ def monitoring_info(request, id):
 
 
 @login_required
-def monitoring_parameter_filter(request, monitoring_id):
+def monitoring_parameter_filter(request, monitoring_pk):
     """
     Отчёт по параметру и критерию
     """
     if not (request.user.profile.is_expert or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     queryset = None
     if request.method == "POST":
         hide = 0
@@ -638,12 +639,12 @@ def monitoring_parameter_filter(request, monitoring_id):
 
 
 @login_required
-def monitoring_parameter_found_report(request, id):
+def monitoring_parameter_found_report(request, monitoring_pk):
     """
     Отчёт по наличию параметра.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk=id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Report for %s by parameter and found') % monitoring
@@ -707,16 +708,16 @@ def monitoring_parameter_found_report(request, id):
 
 
 @login_required
-def monitoring_parameter_export(request, id):
+def monitoring_parameter_export(request, monitoring_pk):
     """
     Экспорт параметров в CSV
     """
-    monitoring = get_object_or_404(Monitoring, pk = id)
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring = monitoring)
     response = HttpResponse(mimetype = 'application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % id
+    response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % monitoring_pk
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
@@ -752,17 +753,17 @@ def monitoring_parameter_export(request, id):
 
 
 @login_required
-def monitoring_organization_export(request, monitoring_id):
+def monitoring_organization_export(request, monitoring_pk):
     """
     Экспорт организаций в CSV.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring=monitoring)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=monitoring-organization-%s.csv' % monitoring_id
+    response['Content-Disposition'] = 'attachment; filename=monitoring-organization-%s.csv' % monitoring_pk
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
@@ -789,7 +790,7 @@ def monitoring_organization_export(request, monitoring_id):
 
 @login_required
 @csrf_protect
-def monitoring_organization_import(request, monitoring_id):
+def monitoring_organization_import(request, monitoring_pk):
     """
     Импорт организаций из CSV.
 
@@ -800,7 +801,7 @@ def monitoring_organization_import(request, monitoring_id):
         revision.unregister(Organization)
         must_register = True
 
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not 'orgfile' in request.FILES:
@@ -885,7 +886,7 @@ def monitoring_organization_import(request, monitoring_id):
 
 @login_required
 @csrf_protect
-def monitoring_parameter_import(request, monitoring_id):
+def monitoring_parameter_import(request, monitoring_pk):
     """
     Импорт параметров из CSV.
 
@@ -896,7 +897,7 @@ def monitoring_parameter_import(request, monitoring_id):
         revision.unregister(Parameter)
         must_register = True
 
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not 'paramfile' in request.FILES:
@@ -979,8 +980,8 @@ def monitoring_parameter_import(request, monitoring_id):
 
 @login_required
 @csrf_protect
-def monitoring_comment_report(request, id):
-    monitoring = get_object_or_404(Monitoring, pk=id)
+def monitoring_comment_report(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     time_to_answer = monitoring.time_to_answer
     if not (request.user.profile.is_expertA or request.user.is_superuser):
         return HttpResponseForbidden(_('Forbidden'))
@@ -1054,7 +1055,7 @@ def monitoring_comment_report(request, id):
         }, context_instance=RequestContext(request))
 
 
-def monitoring_report(request, report_type='inprogress', monitoring_id=None):
+def monitoring_report(request, report_type='inprogress', monitoring_pk=None):
     """
     Статистика по мониторингам.
 
@@ -1078,10 +1079,10 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
         ).filter(
             status=MONITORING_PUBLISHED
         ).order_by('-publish_date')
-    if monitoring_id:
+    if monitoring_pk:
         monitorings = Monitoring.objects.filter(
             status=MONITORING_PUBLISHED,
-            pk=monitoring_id,
+            pk=monitoring_pk,
             hidden=False)
     else:
         monitorings = all_monitorings
@@ -1112,7 +1113,7 @@ def monitoring_report(request, report_type='inprogress', monitoring_id=None):
                                   'report_type': report_type,
                                   'current_title': current_title,
                                   'title': title,
-                                  'monitoring_id': monitoring_id,
+                                  'monitoring_id': monitoring_pk,
                                   'all_monitorings': all_monitorings,
                               },
                               RequestContext(request),
@@ -1445,19 +1446,19 @@ class MonitoringExport(object):
         return response
 
 
-def monitoring_export(request, monitoring):
+def monitoring_export(request, monitoring_pk):
     """
     :param request:
         django request object with GET var 'format'
         export format could be 'json' or 'csv'
-    :param monitoring:
+    :param monitoring_pk:
         monitoring pk
     :return:
         json or csv with all scores for monitoring
     """
 
     export_format = request.GET.get('format', 'json')
-    monitoring = get_object_or_404(Monitoring, pk=monitoring)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     export = MonitoringExport(monitoring)

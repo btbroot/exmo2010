@@ -47,6 +47,7 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
     template_name = "parameter_form.html"
     context_object_name = "object"
     extra_context = {}
+    pk_url_kwarg = 'parameter_pk'
 
     def update(self, request, task):
         title = _('Edit parameter %s') % self.object
@@ -69,7 +70,7 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         return context
 
     def get(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=self.kwargs["task_id"])
+        task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
         self.success_url = self.get_redirect(request, task)
         self.object = self.get_object()
 
@@ -101,7 +102,7 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         return super(ParameterManagerView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=self.kwargs["task_id"])
+        task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
         self.success_url = self.get_redirect(request, task)
         self.object = self.get_object()
 
@@ -177,8 +178,8 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
 
 
 @login_required
-def parameter_add(request, task_id):
-    task = get_object_or_404(Task, pk=task_id)
+def parameter_add(request, task_pk):
+    task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())

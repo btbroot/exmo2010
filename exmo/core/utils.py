@@ -25,6 +25,8 @@ import re
 from BeautifulSoup import BeautifulSoup
 from dateutil import rrule
 from dateutil.rrule import DAILY
+from django.conf import settings
+from django.core.urlresolvers import get_resolver, RegexURLResolver
 from django.utils.safestring import mark_safe
 from lxml.html.clean import Cleaner
 
@@ -166,3 +168,32 @@ def urlize(textdata):
         text_node.replaceWith(urlized)
 
     return unicode(soup)
+
+
+def get_named_patterns():
+    resolver = get_resolver(settings.ROOT_URLCONF)
+    return list(iter_named_patterns(resolver))
+
+
+def iter_named_patterns(root_resolver):
+    '''
+    Recursively iterate over all named urlpatterns in the resolver
+    Will also set pattern _full_name as "app_name:name"
+    '''
+    if not hasattr(root_resolver, '_app_name'):
+        root_resolver._app_name = root_resolver.app_name
+
+    for child in root_resolver.url_patterns:
+        child._app_name = getattr(child, 'app_name', None) or root_resolver._app_name
+        name = getattr(child, 'name', None)
+        if isinstance(child, RegexURLResolver):
+            # This is RegexURLResolver, we should iterate deeper into it
+            for p in iter_named_patterns(child):
+                yield p
+        elif name:
+            # This is RegexURLPattern with proper name. We will construct full name
+            if child._app_name:
+                child._full_name = '%s:%s' % (child._app_name, name)
+            else:
+                child._full_name = name
+            yield child

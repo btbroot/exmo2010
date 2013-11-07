@@ -37,14 +37,14 @@ from exmo2010.models import EmailTasks, Monitoring, Organization, InviteOrgs, Ta
 from organizations.forms import OrganizationForm, InviteOrgsForm
 
 
-def organization_list(request, monitoring_id):
+def organization_list(request, monitoring_pk):
     name_filter = invite_filter = None
     alert = request.GET.get('alert', False)
     if request.method == "GET":
         name_filter = request.GET.get('name_filter', False)
         invite_filter = request.GET.get('invite_filter', False)
 
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring
@@ -96,7 +96,7 @@ def organization_list(request, monitoring_id):
                 task.organization = org
                 task.save()
 
-            redirect = reverse('exmo2010:organization_list', args=[monitoring_id])+"?alert=success#all"
+            redirect = reverse('exmo2010:organization_list', args=[monitoring_pk])+"?alert=success#all"
             return HttpResponseRedirect(redirect)
         else:
             initial.update({'comment': comment, 'inv_status': inv_status})
@@ -218,6 +218,7 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
     template_name = "exmo2010/organization_form.html"
     context_object_name = "object"
     extra_context = {}
+    pk_url_kwarg = 'org_pk'
 
     def add(self, request, monitoring):
         self.object = None
@@ -251,7 +252,7 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
         return context
 
     def get(self, request, *args, **kwargs):
-        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_id"])
+        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_pk"])
         if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
             return HttpResponseForbidden(_('Forbidden'))
         self.success_url = self.get_redirect(request, monitoring)
@@ -277,7 +278,7 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
         return super(OrganizationManagerView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_id"])
+        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_pk"])
         self.success_url = self.get_redirect(request, monitoring)
         if self.kwargs["method"] == 'add':
             self.add(request, monitoring)

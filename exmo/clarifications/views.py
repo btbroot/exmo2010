@@ -34,13 +34,13 @@ from exmo2010.models import Clarification, Monitoring, Score
 
 
 @login_required
-def clarification_create(request, score_id):
+def clarification_create(request, score_pk):
     """
     Добавление уточнения на странице параметра.
 
     """
     user = request.user
-    score = get_object_or_404(Score, pk=score_id)
+    score = get_object_or_404(Score, pk=score_pk)
     redirect = reverse('exmo2010:score_view', args=[score.pk])
     redirect += '#clarifications'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
@@ -94,14 +94,14 @@ def clarification_create(request, score_id):
 
 
 @login_required
-def clarification_report(request, monitoring_id):
+def clarification_report(request, monitoring_pk):
     """
     Отчёт по уточнениям.
 
     """
     if not request.user.profile.is_expertA:
         return HttpResponseForbidden(_('Forbidden'))
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
     title = _('Clarifications report for "%s"') % monitoring.name

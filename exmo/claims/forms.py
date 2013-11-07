@@ -36,11 +36,6 @@ class ClaimAddForm(forms.Form):
         return data
 
 
-class ClaimForm(forms.Form):
-    class Meta:
-        model = Claim
-
-
 class ClaimReportForm(forms.Form):
     """
     Форма для отчета по претензиям.

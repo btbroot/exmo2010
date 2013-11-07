@@ -42,14 +42,14 @@ from core.helpers import table
 from tasks.forms import TaskForm
 
 
-def task_export(request, id):
-    task = get_object_or_404(Task, pk=id)
+def task_export(request, task_pk):
+    task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     parameters = Parameter.objects.filter(monitoring=task.organization.monitoring).exclude(exclude=task.organization)
-    scores = Score.objects.filter(task=id, revision=Score.REVISION_DEFAULT)
+    scores = Score.objects.filter(task=task_pk, revision=Score.REVISION_DEFAULT)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % id
+    response['Content-Disposition'] = 'attachment; filename=task-%s.csv' % task_pk
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
@@ -147,12 +147,12 @@ def task_export(request, id):
 
 @reversion.create_revision()
 @login_required
-def task_import(request, id):
-    task = get_object_or_404(Task, pk=id)
+def task_import(request, task_pk):
+    task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.fill_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     if not request.FILES.has_key('taskfile'):
-        return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[id]))
+        return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[task_pk]))
     reader = UnicodeReader(request.FILES['taskfile'])
     errLog = []
     rowOKCount = 0
@@ -230,7 +230,7 @@ def tasks(request):
     return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
 
 
-def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id):
+def tasks_by_monitoring_and_organization(request, monitoring_pk, org_pk):
     """
     We have 3 generic group: experts, customers, organizations.
     Superusers: all tasks
@@ -240,8 +240,8 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
     Also for every ogranization we can have group.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    organization = get_object_or_404(Organization, pk = organization_id)
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
+    organization = get_object_or_404(Organization, pk = org_pk)
     user = request.user
     profile = None
     if user.is_active: profile = user.profile
@@ -294,10 +294,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_id, organization_id
 
 @reversion.create_revision()
 @login_required
-def task_add(request, monitoring_id, organization_id=None):
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_id)
-    if organization_id:
-        organization = get_object_or_404(Organization, pk = organization_id)
+def task_add(request, monitoring_pk, org_pk=None):
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
+    if org_pk:
+        organization = get_object_or_404(Organization, pk = org_pk)
         redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
         title = _('Add new task for %s') % organization.name
     else:
@@ -356,10 +356,11 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
     form_class = TaskForm
     template_name = "task_status.html"
     extra_context = {}
+    pk_url_kwarg = 'task_pk'
 
-    def get_redirect(self, request, monitoring, organization, organization_id=None):
+    def get_redirect(self, request, monitoring, organization, org_pk=None):
         organization_from_get = request.GET.get('organization', '')
-        if organization_id or organization_from_get:
+        if org_pk or organization_from_get:
             q = request.GET.copy()
             if organization_from_get:
                 q.pop('organization')
@@ -380,8 +381,8 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
         self.object = self.get_object()
         organization = self.object.organization
         monitoring = organization.monitoring
-        organization_id = self.kwargs.get('organization_id')
-        self.success_url = self.get_redirect(request, monitoring, organization, organization_id)
+        org_pk = self.kwargs.get('org_pk')
+        self.success_url = self.get_redirect(request, monitoring, organization, org_pk)
 
         valid_methods = ['delete', 'approve', 'close',
                          'open', 'update', 'get', ]
@@ -470,8 +471,8 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
         self.object = self.get_object()
         organization = self.object.organization
         monitoring = organization.monitoring
-        organization_id = self.kwargs.get('organization_id')
-        self.success_url = self.get_redirect(request, monitoring, organization, organization_id)
+        org_pk = self.kwargs.get('org_pk')
+        self.success_url = self.get_redirect(request, monitoring, organization, org_pk)
         if self.kwargs["method"] == 'delete':
             self.object = self.get_object()
             self.object.delete()
@@ -484,10 +485,10 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
         return super(TaskManagerView, self).dispatch(*args, **kwargs)
 
 
-def task_history(request, task_id):
+def task_history(request, task_pk):
 
-    task = Task.objects.get(pk=task_id)
-    history = TaskHistory.objects.filter(task=task_id)
+    task = Task.objects.get(pk=task_pk)
+    history = TaskHistory.objects.filter(task=task_pk)
 
     crumbs = ['Home', 'Monitoring', 'Organization']
     breadcrumbs(request, crumbs, task)
@@ -505,8 +506,8 @@ def task_history(request, task_id):
 
 from django.http import QueryDict
 
-def tasks_by_monitoring(request, monitorgin_id):
-    monitoring = get_object_or_404(Monitoring, pk=monitorgin_id)
+def tasks_by_monitoring(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     profile = None
     if request.user.is_active:
         profile = request.user.profile
@@ -585,8 +586,8 @@ def tasks_by_monitoring(request, monitorgin_id):
 
 
 @login_required
-def task_mass_assign_tasks(request, id):
-    monitoring = get_object_or_404(Monitoring, pk = id)
+def task_mass_assign_tasks(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     organizations = Organization.objects.filter(monitoring = monitoring)

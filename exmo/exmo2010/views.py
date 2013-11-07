@@ -17,10 +17,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext as _
-from django.core.mail import EmailMultiAlternatives
+from django.views.generic import TemplateView
 from livesettings import config_value
 from bread_crumbs.views import breadcrumbs
 from exmo2010.forms import FeedbackForm
@@ -89,3 +90,31 @@ def _send_feedback_mail(email_to, email_from, comment, t_txt, t_html, user=None)
                                     {},)
     letter.attach_alternative(content_html, "text/html")
     letter.send()
+
+
+class HelpView(TemplateView):
+    template_name = 'exmo2010/help.html'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'current_title': _('Help'),
+            'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')
+        }
+
+
+class AboutView(TemplateView):
+    template_name = 'exmo2010/about.html'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'current_title': _('About')
+        }
+
+
+class OpenDataView(TemplateView):
+    template_name = 'exmo2010/opendata.html'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'current_title': _('Open data')
+        }

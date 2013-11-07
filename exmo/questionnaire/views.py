@@ -34,7 +34,7 @@ from core.utils import UnicodeWriter
 
 
 @csrf_exempt
-def add_questionnaire(request, m_id):
+def add_questionnaire(request, monitoring_pk):
     """
     Создание опросника анкеты мониторинга.
     Формат входящего json-файла (уже дисериализованного):
@@ -50,7 +50,7 @@ def add_questionnaire(request, m_id):
     ]
 
     """
-    monitoring = get_object_or_404(Monitoring, pk=m_id)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if monitoring.has_questions():
@@ -103,7 +103,7 @@ def add_questionnaire(request, m_id):
 def answers_export(request, monitoring_pk):
     """
     Экспорт ответов на анкету.
-    
+
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
 
