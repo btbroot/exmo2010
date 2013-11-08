@@ -296,7 +296,6 @@ class RatingActiveRepresentativesTestCase(TestCase):
         self.assertEqual(t2.active_repr_len, 0)
 
 
-
 class HiddenMonitoringVisibilityTestCase(TestCase):
     def setUp(self):
         # GIVEN hidden and published monitoring
@@ -304,31 +303,74 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.url = reverse('exmo2010:ratings')
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
         self.monitoring_id = self.monitoring.pk
+
+        # AND organization connected to monitoring
         organization = mommy.make(Organization, monitoring=self.monitoring)
-        # AND expertB
-        self.expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+
+        # AND expertB connected to organization
+        self.expertB = User.objects.create_user('expertB', 'expertb@svobodainfo.org', 'password')
         self.expertB.groups.add(Group.objects.get(name=self.expertB.profile.expertB_group))
-        # AND organization representative
-        self.org = User.objects.create_user('org', 'usr@svobodainfo.org', 'password')
+
+        # AND representative connected to organization
+        self.org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        self.org.groups.add(Group.objects.get(name=self.org.profile.organization_group))
         profile = self.org.get_profile()
         profile.organization = [organization]
-        profile.save()
-        # AND task, score and parameter
+
+        # AND expertA
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+
+        # AND superuser
+        self.su = User.objects.create_superuser('su', 'su@svobodainfo.org', 'password')
+
+        # AND task, parameter and score
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED, user=self.expertB)
         parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
         self.score = mommy.make(Score, task=task, parameter=parameter)
 
+        # AND regular user
+        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
+
+        # AND expertB not connected to task
+        self.expertB_out = User.objects.create_user('expertB_out', 'expertb.out@svobodainfo.org', 'password')
+        self.expertB_out.groups.add(Group.objects.get(name=self.expertB_out.profile.expertB_group))
+
+        # AND organization representative not connected to task
+        self.org_out = User.objects.create_user('org_out', 'org.out@svobodainfo.org', 'password')
+        self.org_out.groups.add(Group.objects.get(name=self.org_out.profile.organization_group))
+
     @parameterized.expand([
         ('expertB',),
         ('org',),
+        ('expertA',),
+        ('su',),
     ])
-    def test_user_can_view_monitoring(self, username):
-        # WHEN user requests ratings page
+    def test_allowed_users_see_monitoring(self, username):
+        # WHEN user logging in
         self.client.login(username=username, password='password')
+        # AND requests ratings page
         response = self.client.get(self.url)
         response_monitoring = response.context['monitoring_list'][0]
         # THEN response's context contains hidden monitoring in monitoring list
+        # for connected organization representative, connected expertB, expertA and superuser
         self.assertEqual(response_monitoring, self.monitoring)
+
+    @parameterized.expand([
+        (None,),
+        ('usr',),
+        ('expertB_out',),
+        ('org_out',),
+    ])
+    def test_forbidden_users_do_not_see_monitoring(self, username):
+        # WHEN user logging in
+        self.client.login(username=username, password='password')
+        # AND requests ratings page
+        response = self.client.get(self.url)
+        response_monitoring_list = response.context['monitoring_list']
+        # THEN response's context contains no monitoring in monitoring list
+        # for disconnected organization representative, disconnected expertB, anonymous and regular user
+        self.assertEqual(len(response_monitoring_list), 0)
 
 
 class EmptyMonitoringTestCase(TestCase):

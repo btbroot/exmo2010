@@ -1015,7 +1015,8 @@ def ratings(request):
 
     user = request.user
 
-    if not user.is_authenticated():
+    if not user.is_authenticated() or (user.is_active and not user.profile.is_organization
+                                       and not user.profile.is_expert):
         monitoring_list = monitoring_list.filter(hidden=False)
     elif user.is_active and user.profile.is_organization and not user.profile.is_expert:
         monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__userprofile__user=user, hidden=True))
