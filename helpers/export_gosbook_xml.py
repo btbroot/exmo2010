@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -90,6 +90,7 @@ def generate_xml_for_monitoring(tasks):
             etree.SubElement(question, "edited").text = edited
 
             etree.SubElement(question, "value").text = str(score.parameter.weight)
+            etree.SubElement(question, "description").text = etree.CDATA(score.parameter.description)
             etree.SubElement(question, "found").text = str(score.found)
             if score.comment:
                 scomment = score.comment
