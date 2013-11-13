@@ -45,12 +45,19 @@ class RatingsTableValuesTestCase(TestCase):
         self.client = Client()
         self.today = datetime.date.today()
         self.monitoring_name = "Name"
-        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED,
-                                name=self.monitoring_name,
-                                publish_date=self.today)
+        monitoring = mommy.make(
+            Monitoring,
+            status=MONITORING_PUBLISHED,
+            name=self.monitoring_name,
+            publish_date=self.today
+        )
         organization = mommy.make(Organization, monitoring=monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring)
+
+        # AND parameter with zero weight
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=0)
+
+        # AND score of this parameter
         score = mommy.make(Score, task=task, parameter=parameter)
 
     def test_values(self):
@@ -63,7 +70,7 @@ class RatingsTableValuesTestCase(TestCase):
         self.assertEqual(monitoring.name, self.monitoring_name)
         self.assertEqual(monitoring.publish_date, self.today)
         self.assertEqual(monitoring.org_count, 1)
-        # AND equals none because of absence of openness
+        # AND average openness is None because all parameters weight is 0
         self.assertEqual(monitoring.average, None)
 
 
@@ -160,14 +167,64 @@ class RatingTableValuesTestCase(TestCase):
         self.assertTrue(expected_text in text)
 
 
-class ActiveRepresentativesTestCase(TestCase):
+class NameFilterRatingTestCase(TestCase):
+    ''' If name filter given on rating page, should show only filtered orgs '''
+
+    def setUp(self):
+        self.client = Client()
+
+        # GIVEN monitoring with 2 organizations
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        monitoring_id = monitoring.pk
+        organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
+        organization2 = mommy.make(Organization, name='org2', monitoring=monitoring)
+
+        # AND two corresponding tasks, parameters, and scores for organizations
+        task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        score1 = mommy.make(Score, task=task1, parameter=parameter1)
+        score2 = mommy.make(Score, task=task2, parameter=parameter2)
+
+        self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
+
+    def test_one_org_filter(self):
+        # WHEN user requests rating page with name_filter 'org1'
+        response = self.client.get(self.url, {'name_filter':'org1'})
+
+        # THEN only org1 should be shown
+        orgs = set(t.organization.name for t in response.context['object_list'])
+        self.assertEqual(set(['org1']), orgs)
+
+    def test_all_orgs_filter(self):
+        # WHEN user requests rating page with name_filter that matches all orgs
+        response = self.client.get(self.url, {'name_filter':'org'})
+
+        # THEN org1 and org2 should be shown (all orgs)
+        orgs = set(t.organization.name for t in response.context['object_list'])
+        self.assertEqual(set(['org1', 'org2']), orgs)
+
+    def test_no_orgs_filter(self):
+        # WHEN user requests rating page with name_filter that does not match any org
+        response = self.client.get(self.url, {'name_filter':'qwe'})
+
+        # THEN no orgs should be shown
+        orgs = set(t.organization.name for t in response.context['object_list'])
+        self.assertEqual(set(), orgs)
+
+
+
+class RatingActiveRepresentativesTestCase(TestCase):
+    ''' Should count active and total organizations representatives on rating page '''
+
     def setUp(self):
         # GIVEN User instance and two connected organizations to it
         self.client = Client()
         monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         monitoring_id = monitoring.pk
-        organization1 = mommy.make(Organization, monitoring=monitoring)
-        organization2 = mommy.make(Organization, monitoring=monitoring)
+        organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
+        organization2 = mommy.make(Organization, name='org2', monitoring=monitoring)
         self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
         self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
         profile = self.usr.get_profile()
@@ -178,8 +235,8 @@ class ActiveRepresentativesTestCase(TestCase):
         task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
         parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1)
         parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=1)
-        self.score1 = mommy.make(Score, task=task1, parameter=parameter1)
-        self.score2 = mommy.make(Score, task=task2, parameter=parameter2)
+        self.score1 = mommy.make(Score, pk=1, task=task1, parameter=parameter1)
+        self.score2 = mommy.make(Score, pk=2, task=task2, parameter=parameter2)
         self.content_type = ContentType.objects.get_for_model(Score)
         self.site = Site.objects.get_current()
 
@@ -190,18 +247,19 @@ class ActiveRepresentativesTestCase(TestCase):
 
         # AND requests rating page for monitoring
         response = self.client.get(self.url)
-        o1 = response.context['object_list'][0]
-        o2 = response.context['object_list'][1]
+        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        t1 = tasks['org1']
+        t2 = tasks['org2']
 
         # THEN representatives quantity for every organization equals 1
-        self.assertEqual(o1.repr_len, 1)
-        self.assertEqual(o2.repr_len, 1)
+        self.assertEqual(t1.repr_len, 1)
+        self.assertEqual(t2.repr_len, 1)
 
         # AND active representatives quantity for first organization equals 1 (because of comment)
-        self.assertEqual(o1.active_repr_len, 1)
+        self.assertEqual(t1.active_repr_len, 1)
 
         # AND active representatives quantity for second organization equals 0 (because of absence of comment)
-        self.assertEqual(o2.active_repr_len, 0)
+        self.assertEqual(t2.active_repr_len, 0)
 
     def test_second_org_active_users(self):
         # WHEN representative adds two comments to second task's score
@@ -212,10 +270,31 @@ class ActiveRepresentativesTestCase(TestCase):
 
         # AND requests rating page for monitoring
         response = self.client.get(self.url)
-        o2 = response.context['object_list'][1]
+        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        t2 = tasks['org2']
 
         # THEN active representatives quantity for second organization equals 1
-        self.assertEqual(o2.active_repr_len, 1)
+        self.assertEqual(t2.active_repr_len, 1)
+
+    def test_non_existing_score_comments(self):
+        # GIVEN comment to non-existing score
+        comment = CommentExmo(content_type=self.content_type, object_pk=3, user=self.usr, site=self.site)
+        comment.save()
+
+        # WHEN user requests rating page for monitoring
+        response = self.client.get(self.url)
+        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        t1 = tasks['org1']
+        t2 = tasks['org2']
+
+        # THEN representatives quantity for every organization equals 1
+        self.assertEqual(t1.repr_len, 1)
+        self.assertEqual(t2.repr_len, 1)
+
+        # AND active representatives quantity for all organizations equals 0
+        self.assertEqual(t1.active_repr_len, 0)
+        self.assertEqual(t2.active_repr_len, 0)
+
 
 
 class HiddenMonitoringVisibilityTestCase(TestCase):

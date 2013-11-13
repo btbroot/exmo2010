@@ -24,10 +24,11 @@ import re
 import tempfile
 import zipfile
 from cStringIO import StringIO
-from collections import OrderedDict
+from collections import defaultdict, OrderedDict
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.comments.models import Comment
 from django.contrib import messages
 from django.db.models import Count, Q
 from django.db import transaction
@@ -35,7 +36,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
-from django.template import RequestContext
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
@@ -44,7 +44,6 @@ from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils import simplejson
@@ -55,7 +54,6 @@ from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
-from custom_comments.models import CommentExmo
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from monitorings.forms import MonitoringForm, TableSettingsForm
@@ -269,12 +267,8 @@ def monitoring_rating(request, monitoring_pk):
     name_filter = request.GET.get('name_filter', '')
 
     if name_filter:
-        tasks = Task.objects.filter(organization__name__icontains=name_filter)
-        filtered_rating_list = []
-        for task in rating_list:
-            if task in tasks:
-                filtered_rating_list.append(task)
-        rating_list = filtered_rating_list
+        tasks = set(Task.objects.order_by().filter(organization__name__icontains=name_filter).values_list('pk', flat=True))
+        rating_list = [t for t in rating_list if t.pk in tasks]
 
     if request.user.is_active:
         profile = request.user.profile
@@ -1132,7 +1126,7 @@ def rating(monitoring, parameters=None, rating_type=None):
     """
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)\
                                .filter(score__pk__isnull=False)\
-                               .distinct()
+                               .order_by().distinct()
 
     avg = {
         'openness': None,
@@ -1154,33 +1148,44 @@ def rating(monitoring, parameters=None, rating_type=None):
         sql_openness = openness.get_sql_openness(parameters)
         sql_openness_initial = openness.get_sql_openness(parameters, initial=True)
 
-        tasks = tasks.extra(select={'task_openness': sql_openness,
-                                    'task_openness_initial': sql_openness_initial},
-                            where=['%s IS NOT NULL' % sql_openness],
-                            order_by=['-task_openness'])
+        tasks = tasks.select_related('organization').extra(
+            select={'task_openness': sql_openness, 'task_openness_initial': sql_openness_initial},
+            where=['%s IS NOT NULL' % sql_openness],
+            order_by=['-task_openness'])
 
-        if tasks.exists():
+        if tasks:
             max_rating = tasks[0].task_openness
-            total_tasks = tasks.count()
+            total_tasks = len(tasks)
 
             avg['total_tasks'] = total_tasks
-            avg['openness'] = sum([t.task_openness for t in tasks])/total_tasks
-            avg['openness_initial'] = sum([t.task_openness_initial for t in tasks])/total_tasks
+            avg['openness'] = sum([t.task_openness for t in tasks]) / total_tasks
+            avg['openness_initial'] = sum([t.task_openness_initial for t in tasks]) / total_tasks
             avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
 
-            content_type = ContentType.objects.get_for_model(Score)
+            orgusers_by_task, orgcomments_by_task = defaultdict(list), defaultdict(list)
+
+            orgusers = User.objects.filter(userprofile__organization__task__in=tasks)\
+                                   .values_list('pk', 'userprofile__organization__task')
+            for uid, tid in orgusers:
+                orgusers_by_task[tid].append(uid)
+
+            orgcomments = Comment.objects.filter(user__in=[uid for uid, tid in orgusers])\
+                                         .values_list('user_id', 'object_pk')
+
+            scores = Score.objects.filter(pk__in=[sid for uid, sid in orgcomments])
+            tasks_by_scores = dict(scores.values_list('pk', 'task_id'))
+            for uid, sid in orgcomments:
+                if int(sid) in tasks_by_scores:
+                    orgcomments_by_task[tasks_by_scores[int(sid)]].append(uid)
 
             place = 1
             for task in tasks:
-                scores = Score.objects.filter(task=task)
-                users = User.objects.filter(userprofile__organization__task=task)
-                comments = CommentExmo.objects.filter(content_type=content_type,
-                                                      object_pk__in=scores,
-                                                      user__in=users).order_by()
+                users = orgusers_by_task[task.pk]
+                comments = orgcomments_by_task[task.pk]
 
-                task.comments = comments.count()
-                task.repr_len = users.count()
-                task.active_repr_len = comments.values('user').distinct().count()
+                task.comments = len(comments)
+                task.repr_len = len(users)
+                task.active_repr_len = len(set(comments))
                 openness_delta_float = float(task.task_openness) - float(task.task_openness_initial)
                 task.openness_delta = round(openness_delta_float, 3)
 
@@ -1190,9 +1195,9 @@ def rating(monitoring, parameters=None, rating_type=None):
 
                 task.place = place
 
-            avg['repr_len'] = sum([t.repr_len for t in tasks])/total_tasks
-            avg['active_repr_len'] = sum([t.active_repr_len for t in tasks])/total_tasks
-            avg['comments'] = sum([t.comments for t in tasks])/total_tasks
+            avg['repr_len'] = sum([t.repr_len for t in tasks]) / total_tasks
+            avg['active_repr_len'] = sum([t.active_repr_len for t in tasks]) / total_tasks
+            avg['comments'] = sum([t.comments for t in tasks]) / total_tasks
 
     return tasks, avg
 
