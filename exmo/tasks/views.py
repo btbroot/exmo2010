@@ -26,16 +26,15 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, QueryDict
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 import reversion
 
 from accounts.forms import SettingsInvCodeForm
-from bread_crumbs.views import breadcrumbs
 from core.utils import UnicodeReader, UnicodeWriter
 from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory
 from core.helpers import table
@@ -207,29 +206,17 @@ def task_import(request, task_pk):
         errLog.append(_("Import error: %s." % e))
     title = _('Import CSV for task %s') % task
 
-    crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-    breadcrumbs(request, crumbs, task)
-    current_title = _('Import task')
-
-    return render_to_response(
-        'task_import_log.html',
-        {
-            'task': task,
-            'file': request.FILES['taskfile'],
-            'errLog': errLog,
-            'rowOKCount': rowOKCount,
-            'rowALLCount': rowALLCount,
-            'current_title': current_title,
-            'title': title,
-        },
-        context_instance=RequestContext(request),
-    )
+    return TemplateResponse(request, 'task_import_log.html', {
+        'task': task,
+        'file': request.FILES['taskfile'],
+        'errLog': errLog,
+        'rowOKCount': rowOKCount,
+        'rowALLCount': rowALLCount,
+        'title': title,
+    })
 
 
-def tasks(request):
-    return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
-
-
+# TODO: replace with tasks_by_monitoring
 def tasks_by_monitoring_and_organization(request, monitoring_pk, org_pk):
     """
     We have 3 generic group: experts, customers, organizations.
@@ -278,15 +265,10 @@ def tasks_by_monitoring_and_organization(request, monitoring_pk, org_pk):
         if user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
     queryset = Task.objects.filter(pk__in = task_list)
 
-    crumbs = ['Home', 'Monitoring', 'Organization']
-    breadcrumbs(request, crumbs, monitoring)
-    current_title = _('Organization')
-
     return table(request, headers, queryset=queryset, paginate_by=15,
                  extra_context={
                      'monitoring': monitoring,
                      'organization': organization,
-                     'current_title': current_title,
                      'title': title,
                  },
                  template_name="task_list.html",)
@@ -306,46 +288,21 @@ def task_add(request, monitoring_pk, org_pk=None):
         title = _('Add new task for %s') % monitoring
 
     redirect = redirect.replace("%","%%")
-    current_title = _('Add task')
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         if request.method == 'GET':
             form = TaskForm(initial={'organization': organization}, monitoring=monitoring)
-
-            crumbs = ['Home', 'Monitoring', 'Organization']
-            breadcrumbs(request, crumbs, monitoring)
-
-            return render_to_response(
-                'exmo2010/task_form.html',
-                {
-                    'monitoring': monitoring,
-                    'organization': organization,
-                    'current_title': current_title,
-                    'title': title,
-                    'form': form
-                },
-                context_instance=RequestContext(request),
-            )
-        if request.method == 'POST':
+        elif request.method == 'POST':
             form = TaskForm(request.POST, monitoring=monitoring)
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(redirect)
-            else:
 
-                crumbs = ['Home', 'Monitoring', 'Organization']
-                breadcrumbs(request, crumbs, monitoring)
-
-                return render_to_response(
-                    'exmo2010/task_form.html',
-                    {
-                        'monitoring': monitoring,
-                        'organization': organization,
-                        'current_title': current_title,
-                        'title': title,
-                        'form': form
-                    },
-                    context_instance=RequestContext(request),
-                )
+        return TemplateResponse(request, 'exmo2010/task_form.html', {
+            'monitoring': monitoring,
+            'organization': organization,
+            'title': title,
+            'form': form
+        })
     else:
         return HttpResponseForbidden(_('Forbidden'))
 
@@ -389,22 +346,18 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
         if self.kwargs["method"] not in valid_methods:
             HttpResponseForbidden(_('Forbidden'))
 
-        current_title = title = _('Edit task')
-
         if self.kwargs["method"] == 'delete':
             title = _('Delete task %s') % self.object
             if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
                 return HttpResponseForbidden(_('Forbidden'))
             else:
                 self.template_name = "exmo2010/task_confirm_delete.html"
-                crumbs = ['Home', 'Monitoring', 'Organization']
-                breadcrumbs(request, crumbs, self.object)
-                current_title = _('Delete task')
-                self.extra_context = {'monitoring': monitoring,
-                                      'organization': organization,
-                                      'current_title': current_title,
-                                      'title': title,
-                                      'deleted_objects': Score.objects.filter(task=self.object), }
+                self.extra_context = {
+                    'monitoring': monitoring,
+                    'organization': organization,
+                    'title': title,
+                    'deleted_objects': Score.objects.filter(task=self.object)
+                }
 
         if self.kwargs["method"] == 'close':
             title = _('Close task %s') % self.object
@@ -453,18 +406,13 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
                 return HttpResponseForbidden(_('Forbidden'))
             else:
                 reversion.set_comment(_('Task updated'))
-                crumbs = ['Home', 'Monitoring', 'Organization']
-                breadcrumbs(request, crumbs, self.object)
                 self.extra_context = {
                     'monitoring': monitoring,
                     'organization': organization,
-                    'current_title': current_title,
                     'title': title,
                 }
 
         self.extra_context['title'] = title
-        self.extra_context['current_title'] = current_title
-
         return super(TaskManagerView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -486,25 +434,15 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
 
 
 def task_history(request, task_pk):
-
     task = Task.objects.get(pk=task_pk)
     history = TaskHistory.objects.filter(task=task_pk)
 
-    crumbs = ['Home', 'Monitoring', 'Organization']
-    breadcrumbs(request, crumbs, task)
+    return TemplateResponse(request, 'task_history.html', {
+        'task': task,
+        'history': history,
+        'title': task.organization.name,
+    })
 
-    return render_to_response(
-        'task_history.html',
-        {
-            'task': task,
-            'history': history,
-            'current_title': _('Organization'),
-            'title': task.organization.name,
-        },
-        context_instance=RequestContext(request),
-    )
-
-from django.http import QueryDict
 
 def tasks_by_monitoring(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
@@ -562,14 +500,6 @@ def tasks_by_monitoring(request, monitoring_pk):
              None, None),
             )
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
     return table(
         request,
         headers,
@@ -577,7 +507,6 @@ def tasks_by_monitoring(request, monitoring_pk):
         paginate_by = 50,
         extra_context = {
             'monitoring': monitoring,
-            'current_title': current_title,
             'title': title,
             'invcodeform': SettingsInvCodeForm(),
         },
@@ -618,21 +547,10 @@ def task_mass_assign_tasks(request, monitoring_pk):
                 else:
                     log.append('%s: %s' % (user.userprofile.legal_name, organization.name))
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response(
-        'mass_assign_tasks.html', {
-            'organizations': organizations,
-            'users': users,
-            'monitoring': monitoring,
-            'log': log,
-            'current_title': current_title,
-            'title': title,
-        }, context_instance=RequestContext(request))
-
+    return TemplateResponse(request, 'mass_assign_tasks.html', {
+        'organizations': organizations,
+        'users': users,
+        'monitoring': monitoring,
+        'log': log,
+        'title': title,
+    })

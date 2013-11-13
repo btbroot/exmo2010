@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -22,12 +22,11 @@ import simplejson
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, Http404
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Monitoring, Task
 from exmo2010.models import Questionnaire, QQuestion, QUESTION_TYPE_CHOICES, AnswerVariant
 from core.utils import UnicodeWriter
@@ -90,13 +89,10 @@ def add_questionnaire(request, monitoring_pk):
         # title0 - потому что переменную title ждет темплейт base.html и
         # использует не так, как мне тут нужно.
 
-        crumbs = ['Home', 'Monitoring']
-        breadcrumbs(request, crumbs, monitoring)
-        current_title = _('Add questionnaire')
-
-        return render_to_response('add_questionnaire.html',
-                                  {"monitoring": monitoring, "current_title": current_title, "title0": title},
-                                  context_instance=RequestContext(request))
+        return TemplateResponse(request, 'add_questionnaire.html', {
+            "monitoring": monitoring,
+            "title0": title
+        })
 
 
 @login_required
@@ -151,7 +147,7 @@ def get_qqt(request):
 
     """
     if request.method == "GET" and request.is_ajax():
-        return render_to_response('question_div2.html', context_instance=RequestContext(request))
+        return TemplateResponse(request, 'question_div2.html')
     else:
         raise Http404
 
@@ -162,8 +158,6 @@ def get_qq(request):
 
     """
     if request.method == "GET" and request.is_ajax():
-        return render_to_response('question_div.html',
-                                  {"choices": QUESTION_TYPE_CHOICES},
-                                  context_instance=RequestContext(request))
+        return TemplateResponse(request, 'question_div.html', {"choices": QUESTION_TYPE_CHOICES})
     else:
         raise Http404

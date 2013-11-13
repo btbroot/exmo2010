@@ -132,9 +132,9 @@ MIDDLEWARE_CLASSES += (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django403.middleware.Django403Middleware',
-    'breadcrumbs.middleware.BreadcrumbsMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
+    'bread_crumbs.middleware_exmo.ExmoBreadcrumbsMiddleware',
 )
 
 if not DEBUG:
@@ -192,11 +192,9 @@ INSTALLED_APPS = (
     'registration',
     'django_wysiwyg',
     'ckeditor',
-    'breadcrumbs',
     # Local apps:
     'accounts',
     'auth',
-    'breadcrumbs',
     'claims',
     'clarifications',
     'core',

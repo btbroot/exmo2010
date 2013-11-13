@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -41,11 +41,10 @@ from django.conf.urls.defaults import *
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
-from django.utils.translation import ugettext as _
+from django.views.generic import TemplateView
 from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
 from exmo2010.custom_registration.views import password_reset_done
 from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
-from bread_crumbs.views import BreadcrumbsView
 
 
 reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
@@ -56,9 +55,8 @@ urlpatterns = patterns('',
     url(r'^settings/$', 'accounts.views.settings', name='settings'),
     url(r'^dashboard_reset/$', 'accounts.views.user_reset_dashboard', name='user_reset_dashboard'),
 
-    url(r'^activate/complete/$', BreadcrumbsView.as_view(
+    url(r'^activate/complete/$', TemplateView.as_view(
         template_name='registration/activation_complete.html',
-        get_context_data=lambda: {'current_title': _('Activation complete')}
         ),
         name='registration_activation_complete'),
     # Activation keys get matched by \w+ instead of the more specific
@@ -72,15 +70,12 @@ urlpatterns = patterns('',
     url(r'^register/$', register_test_cookie,
         {'backend': 'exmo2010.custom_registration.backends.custom.CustomBackend'},
         name='registration_register'),
-    url(r'^register/complete/$', BreadcrumbsView.as_view(
+    url(r'^register/complete/$', TemplateView.as_view(
         template_name='registration/registration_complete.html',
-        get_context_data=lambda: {'current_title': _('Registration (step %(step)s from %(steps)s)') % {'step': 2,
-                                                                                                       'steps': 2}}
         ),
         name='registration_complete'),
-    url(r'^register/closed/$', BreadcrumbsView.as_view(
+    url(r'^register/closed/$', TemplateView.as_view(
         template_name='registration/registration_closed.html',
-        get_context_data=lambda: {'current_title': _('Registration disallowed')}
         ),
         name='registration_disallowed'),
     # Auth urls.

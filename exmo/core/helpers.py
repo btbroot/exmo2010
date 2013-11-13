@@ -19,8 +19,9 @@
 #
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
-from django.http import Http404, HttpResponse
-from django.template import loader, RequestContext
+from django.http import Http404
+from django.template import loader
+from django.template.response import TemplateResponse
 from django.utils import translation
 from django.utils.functional import wraps
 
@@ -96,7 +97,7 @@ def object_list(request, queryset, paginate_by=None, page=None,
             page_obj = paginator.page(page_number)
         except InvalidPage:
             raise Http404
-        c = RequestContext(request, {
+        context = {
             '%s_list' % template_object_name: page_obj.object_list,
             'paginator': paginator,
             'page_obj': page_obj,
@@ -115,26 +116,25 @@ def object_list(request, queryset, paginate_by=None, page=None,
             'pages': paginator.num_pages,
             'hits': paginator.count,
             'page_range': paginator.page_range,
-        }, context_processors)
+        }
     else:
-        c = RequestContext(request, {
+        context = {
             '%s_list' % template_object_name: queryset,
             'paginator': None,
             'page_obj': None,
             'is_paginated': False,
-        }, context_processors)
+        }
         if not allow_empty and len(queryset) == 0:
             raise Http404
     for key, value in extra_context.items():
         if callable(value):
-            c[key] = value()
+            context[key] = value()
         else:
-            c[key] = value
+            context[key] = value
     if not template_name:
         model = queryset.model
         template_name = "%s/%s_list.html" % (model._meta.app_label, model._meta.object_name.lower())
-    t = template_loader.get_template(template_name)
-    return HttpResponse(t.render(c), mimetype=mimetype)
+    return TemplateResponse(request, template_name, context)
 
 
 def table(request, headers, **kwargs):

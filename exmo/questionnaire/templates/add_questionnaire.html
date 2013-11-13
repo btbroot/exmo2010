@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css"/>{% endblock %}
 
 {% block content %}
-    <form id="rform" action="{% url exmo2010:monitoring_manager monitoring.pk 'update' %}"></form>
+    <form id="rform" action="{% url exmo2010:monitoring_update monitoring.pk %}"></form>
     <h1>{% trans "Create questionnaire" %}</h1>
 
     <div id="ainfo">

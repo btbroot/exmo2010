@@ -24,11 +24,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
 
 from accounts.forms import *
-from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Organization, UserProfile
 
 
@@ -163,23 +163,18 @@ def settings(request):
     if not send_notif_form_ready:
         send_notif_form = subscribe_form(instance=user.profile)
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-    title = _('Settings')
-
-    return render_to_response('user_settings.html',
-        {"email": user.email,
-         "current_title": title,
-         "is_organization": is_organization, "is_internal": is_internal,
-         "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
-         "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,
-         "pers_inf_form_mess": pers_inf_form_mess,
-         "inv_code_form_mess": inv_code_form_mess,
-         "ch_pass_form_mess": ch_pass_form_mess,
-         "send_notif_form_mess": send_notif_form_mess,
-         "inv_code_form_err": inv_code_form_err,
-         "ch_pass_form_err": ch_pass_form_err},
-        context_instance=RequestContext(request))
+    return TemplateResponse(request, 'user_settings.html', {
+        "email": user.email,
+        "is_organization": is_organization, "is_internal": is_internal,
+        "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
+        "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,
+        "pers_inf_form_mess": pers_inf_form_mess,
+        "inv_code_form_mess": inv_code_form_mess,
+        "ch_pass_form_mess": ch_pass_form_mess,
+        "send_notif_form_mess": send_notif_form_mess,
+        "inv_code_form_err": inv_code_form_err,
+        "ch_pass_form_err": ch_pass_form_err
+    })
 
 
 @csrf_protect

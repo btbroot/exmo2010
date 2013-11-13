@@ -20,8 +20,9 @@
 import re
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext, Context, Template
+from django.shortcuts import redirect
+from django.template import Context, Template
+from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
@@ -39,11 +40,9 @@ from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.views import password_reset_done as auth_password_reset_done
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext as _
 from registration.backends import get_backend
 
 from auth.forms import CustomPasswordResetForm
-from bread_crumbs.views import breadcrumbs
 from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
 from exmo2010.custom_registration.models import CustomRegistrationProfile
@@ -54,19 +53,14 @@ def password_reset_redirect(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
     kwargs['extra_context'] = {
-        'current_title': _('Password reset (step %d from 3)') % 1,
         'required_error': Field.default_error_messages['required']
     }
     kwargs['password_reset_form'] = CustomPasswordResetForm
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
     return auth_password_reset(request, **kwargs)
 
 
 def password_reset_done(request, **kwargs):
-    kwargs['extra_context'] = {'current_title': _('Password reset (step %d from 3)') % 2}
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
+    kwargs['extra_context'] = {}
     return auth_password_reset_done(request, **kwargs)
 
 
@@ -101,19 +95,13 @@ def password_reset_confirm(request, uidb36=None, token=None,
     else:
         validlink = False
         form = None
-    title = _('Password reset (step %d from 3)') % 3
     context = {
         'form': form,
         'validlink': validlink,
-        'current_title': title,
-        }
+    }
     context.update(extra_context or {})
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-
-    return render_to_response(template_name, context,
-        context_instance=RequestContext(request, current_app=current_app))
+    return TemplateResponse(request, template_name, context, current_app=current_app)
 
 
 def register_test_cookie(request, backend, success_url=None, form_class=None,
@@ -130,7 +118,7 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
         if request.session.test_cookie_worked():
             request.session.delete_test_cookie()
         else:
-            return render_to_response('cookies.html', RequestContext(request))
+            return TemplateResponse(request, 'cookies.html')
 
     request.session.set_test_cookie()
     backend = get_backend(backend)
@@ -166,17 +154,11 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
     extra_context.update({'required_error':
                               Field.default_error_messages['required']})
 
-    context = RequestContext(request)
+    context = {'form': form}
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-    title = _('Registration (step %(step)s from %(steps)s)') % {'step': 1, 'steps': 2}
-
-    return render_to_response(template_name,
-        {'form': form, 'current_title': title},
-        context_instance=context)
+    return TemplateResponse(request, template_name, context)
 
 
 @csrf_protect
@@ -204,7 +186,7 @@ def login_test_cookie(request, template_name='registration/login.html',
             return redirect('exmo2010:index')
 
         if not request.session.test_cookie_worked():
-            return render_to_response('cookies.html', RequestContext(request))
+            return TemplateResponse(request, 'cookies.html')
 
         form = authentication_form(data=request.POST)
         if form.is_valid():
@@ -238,24 +220,17 @@ def login_test_cookie(request, template_name='registration/login.html',
     else:
         current_site = RequestSite(request)
 
-    title = _('Login')
     context.update({
         'form': form,
         redirect_field_name: redirect_to,
         'site': current_site,
         'site_name': current_site.name,
-        'current_title': title,
         })
     context.update(extra_context or {})
 
     context.update({'required_error': Field.default_error_messages['required']})
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-
-    return render_to_response(template_name, context,
-                              context_instance=RequestContext(
-                                  request, current_app=current_app))
+    return TemplateResponse(request, template_name, context, current_app=current_app)
 
 
 def resend_email(request):
@@ -278,9 +253,7 @@ def resend_email(request):
             return HttpResponseRedirect(
                 reverse('exmo2010:registration_complete'))
     context = {'form': form}
-    return render_to_response('registration/resend_email_form.html',
-                              context,
-                              context_instance=RequestContext(request))
+    return TemplateResponse(request, 'registration/resend_email_form.html', context)
 
 
 def csrf_failure(request, reason=""):
@@ -290,7 +263,7 @@ def csrf_failure(request, reason=""):
     чтобы объясняла пользователю о выключенных cookies в браузере.
     """
     if reason == REASON_NO_CSRF_COOKIE:
-        return render_to_response('cookies.html', RequestContext(request))
+        return TemplateResponse(request, 'cookies.html')
     else:
         t = Template(CSRF_FAILURE_TEMPLATE)
         c = Context({'DEBUG': settings.DEBUG,
@@ -332,10 +305,8 @@ def activate_redirect(request, backend,
     # если ключ активации неправильный
     if extra_context is None:
         extra_context = {}
-    context = RequestContext(request)
+    context = dict(kwargs)
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
-    return render_to_response(template_name,
-        kwargs,
-        context_instance=context)
+    return TemplateResponse(request, template_name, context)

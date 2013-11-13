@@ -19,15 +19,14 @@
 #
 import json
 
-from bread_crumbs.views import breadcrumbs
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
@@ -49,16 +48,6 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
     extra_context = {}
     pk_url_kwarg = 'parameter_pk'
 
-    def update(self, request, task):
-        title = _('Edit parameter %s') % self.object
-        current_title = _('Edit parameter')
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, task)
-        self.extra_context = {'current_title': current_title,
-                              'title': title,
-                              'edit': True,
-                              'media': CORE_MEDIA + ParameterForm().media, }
-
     def get_redirect(self, request, task):
         redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
         redirect = redirect.replace("%", "%%")
@@ -79,13 +68,11 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
                 return HttpResponseForbidden(_('Forbidden'))
             self.template_name = "exmo2010/parameter_confirm_delete.html"
             title = _('Delete parameter %s') % self.object
-            current_title = _('Delete parameter')
-            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-            breadcrumbs(request, crumbs, task)
-            self.extra_context = {'current_title': current_title,
-                                  'title': title,
-                                  'task': task,
-                                  'deleted_objects': Score.objects.filter(parameter=self.object), }
+            self.extra_context = {
+                'title': title,
+                'task': task,
+                'deleted_objects': Score.objects.filter(parameter=self.object),
+            }
 
         if self.kwargs["method"] == 'exclude':
             if not request.user.has_perm('exmo2010.exclude_parameter', self.object):
@@ -97,7 +84,11 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         if self.kwargs["method"] == 'update':
             if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
                 return HttpResponseForbidden(_('Forbidden'))
-            self.update(request, task)
+            self.extra_context = {
+                'title': _('Edit parameter %s') % self.object,
+                'edit': True,
+                'media': CORE_MEDIA + ParameterForm().media
+            }
 
         return super(ParameterManagerView, self).get(request, *args, **kwargs)
 
@@ -194,20 +185,11 @@ def parameter_add(request, task_pk):
             form.save()
             return HttpResponseRedirect(redirect)
 
-    crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-    breadcrumbs(request, crumbs, task)
-    current_title = _('Add parameter')
-
-    return render_to_response(
-        'parameter_form.html',
-        {
-            'form': form,
-            'current_title': current_title,
-            'title': title,
-            'media': CORE_MEDIA + form.media,
-        },
-        context_instance=RequestContext(request),
-    )
+    return TemplateResponse(request, 'parameter_form.html', {
+        'form': form,
+        'title': title,
+        'media': CORE_MEDIA + form.media,
+    })
 
 
 @csrf_exempt

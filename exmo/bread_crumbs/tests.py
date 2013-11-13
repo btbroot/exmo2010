@@ -16,33 +16,83 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.usr/licenses/>.
 #
-from django.test import TestCase
-from django.http import HttpRequest
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.test import TestCase
+from django.test.client import Client
+from django.utils.translation import ugettext_lazy as _
+
+from model_mommy import mommy
 from nose_parameterized import parameterized
-from breadcrumbs.breadcrumbs import Breadcrumbs
+
+from exmo2010.models import Group, Monitoring, Organization, Task, MONITORING_PUBLISHED
+from core.utils import get_named_patterns
 
 
-class TestBreadcrumbs(TestCase):
-    # Scenario: Breadcrumbs data within request
+class ExmoBreadcrumbsTestCase(TestCase):
+    ''' Should set proper breadcrumbs for expets and non-experts '''
+
+    # Expected breadcrumbs
+    index = [('index', '')]
+    ratings = index + [('ratings', _('Ratings'))]
+    rating = ratings + [('monitoring_rating', _('Rating'))]
+
+    nonexpert_task_scores = rating + [('score_list_by_task', _('Organization'))]
+
+    expert_task_scores = index + [
+        ('monitoring_list', _('Monitoring cycles')),
+        ('tasks_by_monitoring', _('Monitoring cycle')),
+        ('score_list_by_task', _('Organization'))
+    ]
+
+    def setUp(self):
+        # GIVEN published monitoring, organization and approved task
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+
+        # AND superuser account
+        admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        admin.groups.add(Group.objects.get(name=admin.profile.expertA_group))
+
+        # AND kwargs to reverse view urls
+        self.kwargs = {
+            'monitoring_pk': monitoring.pk,
+            'task_pk': task.pk,
+            'org_pk': organization.pk
+        }
+
+        # AND dict of all urlpatterns by urlname
+        self.patterns_by_name = dict((p.name, p) for p in get_named_patterns())
+
+    def _reverse(self, urlname):
+        ''' reverse urlname with needed kwargs '''
+        pat = self.patterns_by_name[urlname]
+        kwargs = dict((k, self.kwargs[k]) for k in pat.regex.groupindex if k in self.kwargs)
+        return reverse(pat._full_name, kwargs=kwargs)
+
+    def _reversed_crumbs(self, expected):
+        for urlname, title in expected:
+            yield {'urlname': urlname, 'url': self._reverse(urlname), 'title': title}
+
     @parameterized.expand([
-        ('Home', '', reverse('exmo2010:index'), 0),
-        ('Monitoring', 'Monitoring cycles', reverse('exmo2010:monitoring_list'), 1),
-        ('Ratings', 'Ratings', reverse('exmo2010:ratings'), 2),
+        ('index', index),
+        ('ratings', ratings),
+        ('monitoring_rating', rating),
+        ('score_list_by_task', nonexpert_task_scores),
+        ('score_list_by_task', expert_task_scores, True),
     ])
-    def test_items(self, key, name, url, i):
-        # 'breadcrumbs' app name and 'breadcrumbs' function name conflict
-        from bread_crumbs.views import breadcrumbs
-        request = HttpRequest()
-        request.breadcrumbs = Breadcrumbs()
+    def test_crumbs(self, urlname, expected_crumbs, is_expert=False):
+        client = Client()
+        if is_expert:
+            # WHEN i login as admin (with expertA rights)
+            client.login(username='admin', password='password')
 
-        # WHEN pass to function HttpRequest instance and predefined key
-        breadcrumbs(request, [key])
+        # WHEN i get the page
+        res = client.get(self._reverse(urlname))
+        # THEN status code is 200
+        self.assertEqual(res.status_code, 200)
 
-        # THEN request has expected name and url
-        name = _(name) if i != 0 else name
-        self.assertEqual(request.breadcrumbs[i].name, name)
-        self.assertEqual(request.breadcrumbs[i].url, url)
-
-
+        # AND crumbs are equal to expected
+        expected_crumbs = list(self._reversed_crumbs(expected_crumbs))
+        self.assertEqual(res.context['breadcrumbs'], expected_crumbs)

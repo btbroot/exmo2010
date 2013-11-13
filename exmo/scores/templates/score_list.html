@@ -164,9 +164,9 @@
                             {% endif %}
                         {% endif %}
                             {% if perm_admin_monitoring %}
-                                &nbsp;<a href="{% url exmo2010:parameter_manager task.pk parameter.pk 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                                &nbsp;<a href="{% url exmo2010:parameter_update task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
                                 {% if not monitoring.is_published %}
-                                    &nbsp;<a href="{% url exmo2010:parameter_manager task.pk parameter.pk 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                                    &nbsp;<a href="{% url exmo2010:parameter_delete task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                                 {% endif %}
                             {%endif%}
 
@@ -218,9 +218,9 @@
                     {% endif %}
 
                     {% if perm_admin_monitoring %}
-                        &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'update' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                        &nbsp;<a href="{% url exmo2010:parameter_update task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
                         {% if not monitoring.is_published %}
-                            &nbsp;<a href="{% url exmo2010:parameter_manager task.pk, parameter.pk, 'delete' %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                            &nbsp;<a href="{% url exmo2010:parameter_delete task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                         {% endif %}
                     {%endif%}
 

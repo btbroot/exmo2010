@@ -21,15 +21,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
-from django.views.decorators.csrf import csrf_protect
 from livesettings import config_value
 
 from accounts.views import get_experts
-from bread_crumbs.views import breadcrumbs
 from claims.forms import ClaimAddForm, ClaimReportForm
 from core.tasks import send_email
 from exmo2010.models import Claim, Monitoring, Score
@@ -69,23 +67,13 @@ def claim_create(request, score_pk):
             )
             return HttpResponseRedirect(redirect)
         else:
-
-            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-            breadcrumbs(request, crumbs, score)
-            current_title = _('Create claim')
-
-            return render_to_response(
-                'claim_form.html',
-                {
-                    'monitoring': score.task.organization.monitoring,
-                    'task': score.task,
-                    'score': score,
-                    'current_title': current_title,
-                    'title': title,
-                    'form': form,
-                },
-                context_instance=RequestContext(request),
-            )
+            return TemplateResponse(request, 'claim_form.html', {
+                'monitoring': score.task.organization.monitoring,
+                'task': score.task,
+                'score': score,
+                'title': title,
+                'form': form,
+            })
     else:
         raise Http404
 
@@ -125,7 +113,6 @@ def claim_report(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
-    title = _('Claims report for "%s"') % monitoring
 
     if request.is_ajax():
         creator_id = request.REQUEST.get('creator_id')
@@ -138,10 +125,7 @@ def claim_report(request, monitoring_pk):
                 claims = claims.filter(creator__id=creator_id)
             if addressee_id != 0:
                 claims = claims.filter(addressee__id=addressee_id)
-            return render_to_response(
-                'claim_report_table.html',
-                {'claims': claims},
-                context_instance=RequestContext(request))
+            return TemplateResponse(request, 'claim_report_table.html', {'claims': claims})
         else:
             raise Http404
 
@@ -153,9 +137,11 @@ def claim_report(request, monitoring_pk):
         "creator", flat=True).distinct()
 
     if request.method == "POST":
-        form = ClaimReportForm(request.POST,
-                               creator_id_list=creator_id_list,
-                               addressee_id_list=addressee_id_list)
+        form = ClaimReportForm(
+            request.POST,
+            creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list
+        )
         if form.is_valid():
             cd = form.cleaned_data
             creator_id = int(cd["creator"])
@@ -165,28 +151,17 @@ def claim_report(request, monitoring_pk):
             if addressee_id != 0:
                 claims = claims.filter(addressee__id=addressee_id)
     else:
-        form = ClaimReportForm(creator_id_list=creator_id_list,
-                               addressee_id_list=addressee_id_list)
+        form = ClaimReportForm(
+            creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list
+        )
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response(
-        'claim_report.html',
-        {
-            'monitoring': monitoring,
-            'current_title': current_title,
-            'title': title,
-            'claims': claims,
-            'form': form,
-        },
-        context_instance=RequestContext(request),
-    )
+    return TemplateResponse(request, 'claim_report.html', {
+        'monitoring': monitoring,
+        'title': _('Claims report for "%s"') % monitoring,
+        'claims': claims,
+        'form': form,
+    })
 
 
 def claim_list(request):
@@ -200,25 +175,13 @@ def claim_list(request):
 
     if request.is_ajax():
         claims = user.profile.get_closed_claims()
-        return render_to_response(
-            'claim_list_table.html',
-            {'claims': claims},
-            context_instance=RequestContext(request))
-
+        return TemplateResponse(request, 'claim_list_table.html', {'claims': claims})
     else:
         claims = user.profile.get_filtered_opened_claims()
-        title = current_title = _('Claims')
-
-        crumbs = ['Home']
-        breadcrumbs(request, crumbs)
-
-        return render_to_response('claim_list.html',
-                                  {
-                                      'current_title': current_title,
-                                      'title': title,
-                                      'claims': claims,
-                                  },
-                                  RequestContext(request))
+        return TemplateResponse(request, 'claim_list.html', {
+            'title': _('Claims'),
+            'claims': claims,
+        })
 
 
 def claim_notification(sender, **kwargs):

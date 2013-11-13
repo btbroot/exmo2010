@@ -21,14 +21,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.dispatch import Signal
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from livesettings import config_value
 
 from accounts.views import get_experts
-from bread_crumbs.views import breadcrumbs
-from clarifications.forms import *
+from clarifications.forms import ClarificationReportForm, ClarificationAddForm
 from core.tasks import send_email
 from exmo2010.models import Clarification, Monitoring, Score
 
@@ -70,25 +69,14 @@ def clarification_create(request, score_pk):
             )
 
             return HttpResponseRedirect(redirect)
-
         else:
-
-            crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-            breadcrumbs(request, crumbs, score)
-            current_title = _('Create clarification')
-
-            return render_to_response(
-                'clarification_form.html',
-                {
-                    'monitoring': score.task.organization.monitoring,
-                    'task': score.task,
-                    'score': score,
-                    'current_title': current_title,
-                    'title': title,
-                    'form': form,
-                },
-                context_instance=RequestContext(request),
-            )
+            return TemplateResponse(request, 'clarification_form.html', {
+                'monitoring': score.task.organization.monitoring,
+                'task': score.task,
+                'score': score,
+                'title': title,
+                'form': form,
+            })
     else:
         raise Http404
 
@@ -117,10 +105,9 @@ def clarification_report(request, monitoring_pk):
                 clarifications = clarifications.filter(creator__id=creator_id)
             if addressee_id != 0:
                 clarifications = clarifications.filter(score__task__user__id=addressee_id)
-            return render_to_response(
-                'clarification_report_table.html',
-                {'clarifications': clarifications},
-                context_instance=RequestContext(request))
+            return TemplateResponse(request, 'clarification_report_table.html', {
+                'clarifications': clarifications
+            })
         else:
             raise Http404
 
@@ -132,9 +119,11 @@ def clarification_report(request, monitoring_pk):
         "creator", flat=True).distinct()
 
     if request.method == "POST":
-        form = ClarificationReportForm(request.POST,
-                                       creator_id_list=creator_id_list,
-                                       addressee_id_list=addressee_id_list)
+        form = ClarificationReportForm(
+            request.POST,
+            creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list
+        )
         if form.is_valid():
             cd = form.cleaned_data
             creator_id = int(cd["creator"])
@@ -146,28 +135,17 @@ def clarification_report(request, monitoring_pk):
                 clarifications = clarifications.filter(
                     score__task__user__id=addressee_id)
     else:
-        form = ClarificationReportForm(creator_id_list=creator_id_list,
-                                       addressee_id_list=addressee_id_list)
+        form = ClarificationReportForm(
+            creator_id_list=creator_id_list,
+            addressee_id_list=addressee_id_list
+        )
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response(
-        'clarification_report.html',
-        {
-            'monitoring': monitoring,
-            'current_title': current_title,
-            'title': title,
-            'clarifications': clarifications,
-            'form': form,
-        },
-        context_instance=RequestContext(request),
-    )
+    return TemplateResponse(request, 'clarification_report.html', {
+        'monitoring': monitoring,
+        'title': title,
+        'clarifications': clarifications,
+        'form': form,
+    })
 
 
 def clarification_list(request):
@@ -181,25 +159,18 @@ def clarification_list(request):
 
     if request.is_ajax():
         clarifications = user.profile.get_closed_clarifications()
-        return render_to_response(
-            'clarification_list_table.html',
-            {'clarifications': clarifications},
-            context_instance=RequestContext(request))
+        return TemplateResponse(request, 'clarification_list_table.html', {
+            'clarifications': clarifications
+        })
 
     else:
         clarifications = user.profile.get_filtered_opened_clarifications()
-        title = current_title = _('Clarifications')
+        title = _('Clarifications')
 
-        crumbs = ['Home']
-        breadcrumbs(request, crumbs)
-
-        return render_to_response('clarification_list.html',
-                                  {
-                                      'current_title': current_title,
-                                      'title': title,
-                                      'clarifications': clarifications,
-                                  },
-                                  RequestContext(request))
+        return TemplateResponse(request, 'clarification_list.html', {
+            'title': title,
+            'clarifications': clarifications
+        })
 
 
 def clarification_notification(sender, **kwargs):

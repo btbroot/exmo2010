@@ -264,7 +264,7 @@
             <span class="non_relevant_button">
             <input type="button"
                    value="{% trans 'Set non-relevant' %}"
-                   onclick="window.location.href='{% url exmo2010:parameter_manager task.pk parameter.pk 'exclude' %}?{{ request.GET.urlencode }}'" />
+                   onclick="window.location.href='{% url exmo2010:parameter_exclude task.pk parameter.pk %}?{{ request.GET.urlencode }}'" />
             </span>
         {% endif %}
     </div>

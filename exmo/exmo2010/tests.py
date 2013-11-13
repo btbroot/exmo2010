@@ -214,7 +214,6 @@ class CanonicalViewKwargsTestCase(TestCase):
             'parameter_pk': parameter.pk,
             'task_pk': task.pk,
             'org_pk': organization.pk,
-            'method': 'update',       # for all *_manager views
             'activation_key': '123',  # for registration_activate
             'uidb36': '123',          # for auth_password_reset_confirm
             'token': '123',           # for auth_password_reset_confirm

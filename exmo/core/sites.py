@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,8 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
 
@@ -49,7 +48,7 @@ class DashboardSite(object):
             'root_path': None,
             'user_dashboard': True,
         }
-        return render_to_response('index.html', context, context_instance=RequestContext(request))
+        return TemplateResponse(request, 'index.html', context)
 
     @property
     def urls(self):

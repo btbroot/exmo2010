@@ -1,7 +1,7 @@
 {% extends "admin_tools/dashboard/module.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -44,14 +44,14 @@
                 {% check_object_permission exmo2010.edit_monitoring object as perm %}
                 {% if perm %}
                     &nbsp;
-                    <a href="{% url exmo2010:monitoring_manager object.pk 'update' %}">
+                    <a href="{% url exmo2010:monitoring_update object.pk %}">
                         <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" >
                     </a>
                 {% endif %}
                 {% check_object_permission exmo2010.delete_monitoring object as perm %}
                 {% if perm %}
                     &nbsp;
-                    <a href="{% url exmo2010:monitoring_manager object.pk 'delete' %}">
+                    <a href="{% url exmo2010:monitoring_delete object.pk %}">
                         <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" >
                     </a>
                 {% endif %}

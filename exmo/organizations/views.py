@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -30,7 +30,6 @@ from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 
 from accounts.forms import SettingsInvCodeForm
-from bread_crumbs.views import breadcrumbs
 from core.helpers import table
 from core.tasks import send_email
 from exmo2010.models import EmailTasks, Monitoring, Organization, InviteOrgs, Task, INV_STATUS
@@ -149,14 +148,6 @@ def organization_list(request, monitoring_pk):
     if invite_filter and invite_filter != 'ALL':
         queryset = queryset.filter(inv_status=invite_filter)
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
     initial = {'monitoring': monitoring}
     form = OrganizationForm(initial=initial)
     if request.method == "POST" and "submit_add" in request.POST:
@@ -192,7 +183,6 @@ def organization_list(request, monitoring_pk):
         queryset=queryset,
         paginate_by=100,
         extra_context={
-            'current_title': current_title,
             'title': title,
             'sent': sent,
             'inv_form': inv_form,
@@ -223,23 +213,19 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
     def add(self, request, monitoring):
         self.object = None
         title = _('Add new organization for %s') % monitoring
-        crumbs = ['Home', 'Monitoring', 'Organization']
-        breadcrumbs(request, crumbs, monitoring)
-        current_title = _('Add organization')
-        self.extra_context = {'current_title': current_title,
-                              'title': title,
-                              'org_type': 'add',
-                              'monitoring': monitoring}
+        self.extra_context = {
+            'title': title,
+            'org_type': 'add',
+            'monitoring': monitoring
+        }
 
     def update(self, request, monitoring):
         self.object = self.get_object()
         title = _('Edit organization %s') % monitoring
-        crumbs = ['Home', 'Monitoring', 'Organization']
-        breadcrumbs(request, crumbs, monitoring)
-        current_title = _('Edit organization')
-        self.extra_context = {'current_title': current_title,
-                              'title': title,
-                              'monitoring': monitoring, }
+        self.extra_context = {
+            'title': title,
+            'monitoring': monitoring
+        }
 
     def get_redirect(self, request, monitoring):
         redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
@@ -265,13 +251,11 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
             self.object = self.get_object()
             self.template_name = "exmo2010/organization_confirm_delete.html"
             title = _('Delete organization %s') % monitoring
-            crumbs = ['Home', 'Monitoring', 'Organization']
-            breadcrumbs(request, crumbs, monitoring)
-            current_title = _('Edit organization')
-            self.extra_context = {'current_title': current_title,
-                                  'title': title,
-                                  'monitoring': monitoring,
-                                  'deleted_objects': Task.objects.filter(organization=self.object), }
+            self.extra_context = {
+                'title': title,
+                'monitoring': monitoring,
+                'deleted_objects': Task.objects.filter(organization=self.object)
+            }
         if self.kwargs["method"] == 'update':
             self.update(request, monitoring)
 

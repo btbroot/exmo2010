@@ -31,8 +31,8 @@ from django.db.models import Max
 from django.dispatch import Signal
 from django.forms.util import ErrorList
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.utils import simplejson
 from django.utils.decorators import method_decorator
 from django.utils.text import get_text_list
@@ -44,7 +44,6 @@ from django.views.generic.detail import DetailView
 from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
-from bread_crumbs.views import breadcrumbs
 from core.helpers import table_prepare_queryset
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
@@ -63,12 +62,6 @@ class ScoreMixin(object):
     model = Score
     form_class = ScoreForm
     context_object_name = "object"
-    extra_context = {}
-
-    def get_context_data(self, **kwargs):
-        context = super(ScoreMixin, self).get_context_data(**kwargs)
-        context.update(self.extra_context)
-        return context
 
     def get_redirect(self, request):
         redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
@@ -135,18 +128,13 @@ class ScoreAddView(ScoreMixin, CreateView):
         title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
 
         expert = _(config_value('GlobalParameters', 'EXPERT'))
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, task)
-        current_title = _('Parameter')
 
-        extra_context = {
-            'current_title': current_title,
+        context.update({
             'expert': expert,
             'parameter': parameter,
             'task': task,
             'title': title,
-        }
-        context.update(extra_context)
+        })
 
         return context
 
@@ -160,12 +148,9 @@ class ScoreDeleteView(ScoreMixin, DeleteView):
         return super(ScoreDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        title = _('Delete score %s') % self.object.parameter
-        if not request.user.has_perm('exmo2010.delete_score', self.object):
+        if not request.user.has_perm('exmo2010.delete_score', self.get_object()):
             return HttpResponseForbidden(_('Forbidden'))
-        else:
-            self.extra_context = {'current_title': title}
+
         return super(ScoreDeleteView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -177,7 +162,6 @@ class ScoreEditView(UpdateView):
     form_class = ScoreForm
     template_name = "form.html"
     model = Score
-    extra_context = {}
     is_interaction_or_finalizing = False
     pk_url_kwarg = 'score_pk'
 
@@ -280,37 +264,25 @@ class ScoreEditView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ScoreEditView, self).get_context_data(**kwargs)
-        current_title = _('Parameter')
         parameter = self.object.parameter
-        task = self.object.task
-        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
-
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList']
-        breadcrumbs(self.request, crumbs, task)
-
-        extra_context = {
-            'current_title': current_title,
-            'is_interaction_or_finalizing': self.is_interaction_or_finalizing,
-            'parameter': parameter,
-            'task': task,
-            'title': title,
-            'url_length': URL_LENGTH,
-        }
-        context.update(extra_context)
+        title = u'{p.code} \u2014 {p.name}'.format(p=parameter)
 
         all_score_claims = Claim.objects.filter(score=self.object)
         if not self.request.user.profile.is_expertA:
             all_score_claims = all_score_claims.filter(addressee=self.object.task.user)
         all_score_clarifications = Clarification.objects.filter(score=self.object)
 
-        self.extra_context = {
+        context.update({
+            'is_interaction_or_finalizing': self.is_interaction_or_finalizing,
+            'parameter': parameter,
+            'task': self.object.task,
+            'title': title,
+            'url_length': URL_LENGTH,
             'claim_form': ClaimAddForm(prefix="claim"),
             'claim_list': all_score_claims,
             'clarification_form': ClarificationAddForm(prefix="clarification"),
             'clarification_list': all_score_clarifications,
-        }
-        context.update(self.extra_context)
-
+        })
         return context
 
 
@@ -331,19 +303,16 @@ class ScoreDetailView(ScoreMixin, DetailView):
 
         return result
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.success_url = self.get_redirect(request)
+    def get_context_data(self, **kwargs):
+        context = super(ScoreMixin, self).get_context_data(**kwargs)
+        self.success_url = self.get_redirect(self.request)
 
-        current_title = _('Parameter')
-        if request.user.is_active and request.user.profile.is_expertA:
+        user = self.request.user
+        if user.is_active and user.profile.is_expertA:
             all_score_claims = Claim.objects.filter(score=self.object)
         else:
             all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
         all_score_clarifications = Clarification.objects.filter(score=self.object)
-        crumbs_upper_title = 'Monitoring' if request.user.is_authenticated() and request.user.profile.is_expert else 'Ratings'
-        crumbs = ['Home', crumbs_upper_title, 'Organization', 'ScoreList']
-        breadcrumbs(request, crumbs, self.object.task)
 
         parameter = self.object.parameter
         title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
@@ -353,12 +322,11 @@ class ScoreDetailView(ScoreMixin, DetailView):
         peremptory_day = today + delta
         expert = _(config_value('GlobalParameters', 'EXPERT'))
 
-        self.extra_context = {
+        context.update({
             'claim_form': ClaimAddForm(prefix="claim"),
             'claim_list': all_score_claims,
             'clarification_form': ClarificationAddForm(prefix="clarification"),
             'clarification_list': all_score_clarifications,
-            'current_title': current_title,
             'expert': expert,
             'invcodeform': SettingsInvCodeForm(),
             'parameter': parameter,
@@ -367,25 +335,8 @@ class ScoreDetailView(ScoreMixin, DetailView):
             'title': title,
             'url_length': URL_LENGTH,
             'view': True,
-        }
-
-        result = super(ScoreDetailView, self).get(request, *args, **kwargs)
-
-        return result
-
-
-def score_manager(request, score_pk, method='update'):
-    if method == 'delete':
-        redirect_url = reverse('exmo2010:score_delete', kwargs={'score_pk': score_pk})
-        return HttpResponseRedirect(redirect_url)
-    elif method == 'update':
-        redirect_url = reverse('exmo2010:score_edit', kwargs={'score_pk': score_pk})
-        return HttpResponseRedirect(redirect_url)
-    elif method == 'view':
-        redirect_url = reverse('exmo2010:score_detail', kwargs={'score_pk': score_pk})
-        return HttpResponseRedirect(redirect_url)
-
-    return HttpResponseForbidden(_('Forbidden'))
+        })
+        return context
 
 
 def score_view(request, score_pk):
@@ -473,28 +424,16 @@ def score_list_by_task(request, task_pk, print_report_type=None):
     for score in scores_interact:
         score_interact_dict[score.parameter.pk] = score
 
-    current_title = _('Organization')
     if print_report_type:
         # Requested print report
-        extra_context.update(
-            {
-                'score_dict': score_dict,
-                'parameters': parameters,
-                'task': task,
-                'current_title': current_title,
-                'title': title,
-                'report': print_report_type,
-            }
-        )
-
-        crumbs = ['Home', 'Monitoring', 'Organization']
-        breadcrumbs(request, crumbs, task)
-
-        return render_to_response(
-            'task_report.html',
-            extra_context,
-            context_instance=RequestContext(request),
-        )
+        extra_context.update({
+            'score_dict': score_dict,
+            'parameters': parameters,
+            'task': task,
+            'title': title,
+            'report': print_report_type,
+        })
+        return TemplateResponse(request, 'task_report.html', extra_context)
     else:
         questionnaire = monitoring.get_questionnaire()
         if questionnaire and questionnaire.qquestion_set.exists():
@@ -566,31 +505,20 @@ def score_list_by_task(request, task_pk, print_report_type=None):
             show_link = False
         else:
             show_link = True
-        extra_context.update(
-            {
-                'score_interact_dict': score_interact_dict,
-                'parameters_npa': parameters_npa,
-                'parameters_other': parameters_other,
-                'monitoring': monitoring,
-                'task': task,
-                'has_npa': has_npa,
-                'current_title': current_title,
-                'title': title,
-                'form': form,
-                'invcodeform': SettingsInvCodeForm(),
-                'show_link': show_link,
-            }
-        )
+        extra_context.update({
+            'score_interact_dict': score_interact_dict,
+            'parameters_npa': parameters_npa,
+            'parameters_other': parameters_other,
+            'monitoring': monitoring,
+            'task': task,
+            'has_npa': has_npa,
+            'title': title,
+            'form': form,
+            'invcodeform': SettingsInvCodeForm(),
+            'show_link': show_link,
+        })
 
-        crumbs_upper_title = 'Monitoring' if request.user.is_authenticated() and request.user.profile.is_expert else 'Ratings'
-        crumbs = ['Home', crumbs_upper_title, 'Organization']
-        breadcrumbs(request, crumbs, task)
-
-        return render_to_response(
-            'score_list.html',
-            extra_context,
-            context_instance=RequestContext(request),
-        )
+        return TemplateResponse(request, 'score_list.html', extra_context)
 
 
 def _new_comment_url(request, score_dict, scores_default, parameters):
@@ -631,30 +559,6 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
                         param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
 
 
-@csrf_protect
-@login_required
-def score_add_comment(request, score_pk):
-    score = get_object_or_404(Score, pk=score_pk)
-    title = _('Add new parameter')
-    if request.user.has_perm('exmo2010.add_comment_score', score):
-
-        crumbs = ['Home', 'Monitoring', 'Organization', 'ScoreList', 'ScoreView']
-        breadcrumbs(request, crumbs, score)
-        current_title = _('Add parameter')
-
-        return render_to_response(
-            'score_comment_form.html',
-            {
-                'score': score,
-                'current_title': current_title,
-                'title': title,
-            },
-            context_instance=RequestContext(request),
-        )
-    else:
-        return HttpResponseForbidden(_('Forbidden'))
-
-
 def log_user_activity(comment, **kwargs):
     """
     Signal handler. Organizations representatives activity log at the stage of interaction.
@@ -689,9 +593,7 @@ def score_claim_color(request, score_pk):
     """
     score = get_object_or_404(Score, pk=score_pk)
     if request.method == "GET" and request.is_ajax():
-        return render_to_response('claim_image.html',
-                                  {'score': score},
-                                  context_instance=RequestContext(request))
+        return TemplateResponse(request, 'claim_image.html', {'score': score})
     else:
         raise Http404
 
@@ -704,9 +606,7 @@ def score_comment_unreaded(request, score_pk):
     """
     score = get_object_or_404(Score, pk=score_pk)
     if request.method == "GET" and request.is_ajax():
-        return render_to_response('commentunread_image.html',
-                                  {'score': score},
-                                  context_instance=RequestContext(request))
+        return TemplateResponse(request, 'commentunread_image.html', {'score': score})
     else:
         raise Http404
 

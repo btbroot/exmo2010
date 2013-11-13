@@ -23,12 +23,10 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template.response import TemplateResponse
 from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
 
-from bread_crumbs.views import breadcrumbs
 from exmo2010.models import Score
 
 
@@ -43,25 +41,15 @@ def comment_list(request):
 
     if request.is_ajax():
         comments = user.profile.get_answered_comments()
-        return render_to_response(
-            'comment_list_table.html',
-            {'comments': comments},
-            context_instance=RequestContext(request))
+        return TemplateResponse(request, 'comment_list_table.html', {'comments': comments})
 
     else:
         comments = user.profile.get_filtered_not_answered_comments()
-        title = current_title = _('Comments')
 
-        crumbs = ['Home']
-        breadcrumbs(request, crumbs)
-
-        return render_to_response('comment_list.html',
-                                  {
-                                      'current_title': current_title,
-                                      'title': title,
-                                      'comments': comments,
-                                  },
-                                  RequestContext(request))
+        return TemplateResponse(request, 'comment_list.html', {
+            'title': _('Comments'),
+            'comments': comments,
+        })
 
 
 def comment_change_status(sender, **kwargs):

@@ -38,7 +38,8 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.utils.decorators import method_decorator
@@ -50,7 +51,6 @@ from django.utils import simplejson
 from django.forms.models import modelformset_factory
 
 from accounts.forms import SettingsInvCodeForm
-from bread_crumbs.views import breadcrumbs
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from custom_comments.forms import MonitoringCommentStatForm
@@ -88,17 +88,8 @@ def set_npa_params(request, monitoring_pk):
     else:
         formset = ParameterTypeFormSet(queryset=parameters)
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response('set_npa_params.html',
-                              {"formset": formset, "monitoring": monitoring, "current_title": current_title},
-                              context_instance=RequestContext(request))
+    context = {"formset": formset, "monitoring": monitoring,}
+    return TemplateResponse(request, 'set_npa_params.html', context)
 
 
 def _get_monitoring_list(request):
@@ -139,17 +130,12 @@ def monitoring_list(request):
     if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-    current_title = _('Monitoring cycles')
-
     return table(
         request,
         headers,
         queryset = queryset,
         paginate_by = 25,
         extra_context = {
-            'current_title': current_title,
             'title': title,
             'fakeobject': Monitoring(),
             'active_tasks': active_tasks,
@@ -188,12 +174,8 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
                 return HttpResponseForbidden(_('Forbidden'))
 
             title = _('Delete monitoring %s') % self.object
-            crumbs = ['Home', 'Monitoring']
-            breadcrumbs(request, crumbs)
-            current_title = _('Delete monitoring cycle')
             self.template_name = "exmo2010/monitoring_confirm_delete.html"
             self.extra_context = {
-                'current_title': current_title,
                 'title': title,
                 'deleted_objects': Task.objects.filter(organization__monitoring=self.object),
             }
@@ -202,11 +184,7 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
             if not request.user.has_perm('exmo2010.edit_monitoring', self.object):
                 return HttpResponseForbidden(_('Forbidden'))
             title = _('Edit monitoring %s') % self.object
-            crumbs = ['Home', 'Monitoring']
-            breadcrumbs(request, crumbs)
-            current_title = _('Edit monitoring cycle')
             self.extra_context = {
-                'current_title': current_title,
                 'title': title,
             }
 
@@ -246,7 +224,6 @@ def monitoring_add(request):
     """
     if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
         return HttpResponseForbidden(_('Forbidden'))
-    title = _('Add new monitoring')
     if request.method == 'POST':
         form = MonitoringForm(request.POST)
         if form.is_valid():
@@ -254,27 +231,23 @@ def monitoring_add(request):
             with transaction.commit_on_success():
                 # Чтобы нельзя было создать удачно мониторинг, а потом словить
                 # ошибку создания опроса для него.
-                monitoring_instance = form.save()
+                monitoring = form.save()
                 if cd.get("add_questionnaire"):
-                    questionnaire = Questionnaire(monitoring=monitoring_instance)
+                    questionnaire = Questionnaire(monitoring=monitoring)
                     questionnaire.save()
-            redirect = reverse('exmo2010:monitoring_manager', args=[monitoring_instance.pk, 'update'])
+            redirect = reverse('exmo2010:monitoring_update', kwargs={'monitoring_pk': monitoring.pk})
             return HttpResponseRedirect(redirect)
     else:
         form = MonitoringForm()
         form.fields['status'].choices = Monitoring.MONITORING_STATUS_NEW
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-    current_title = _('Add monitoring cycle')
-
-    return render_to_response('monitoring_form.html',
-                              {'current_title': current_title,
-                               'media': form.media,
-                               'form': form,
-                               'title': title,
-                               'formset': None},
-                              context_instance=RequestContext(request))
+    context = {
+        'media': form.media,
+        'form': form,
+        'title': _('Add new monitoring'),
+        'formset': None
+    }
+    return TemplateResponse(request, 'monitoring_form.html', context)
 
 
 def monitoring_rating(request, monitoring_pk):
@@ -290,17 +263,6 @@ def monitoring_rating(request, monitoring_pk):
     has_npa = monitoring.has_npa
     rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
     rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
-
-    crumbs_parent_title = 'Monitoring' if request.user.is_active and request.user.profile.is_expert else 'Ratings'
-    crumbs = ['Home', crumbs_parent_title]
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        title = _('Rating')
-        breadcrumbs_title = _('Monitoring cycle')
-    else:
-        title = monitoring.name
-        breadcrumbs_title = _('Rating') if monitoring.status == 5 else _('Tasks')
 
     total_orgs = _total_orgs_translate(avg, rating_list, rating_type)
 
@@ -341,20 +303,19 @@ def monitoring_rating(request, monitoring_pk):
     else:
         table_settings = TableSettingsForm()
 
-    return render_to_response('rating.html', {
+    return TemplateResponse(request, 'rating.html', {
         'monitoring': monitoring,
         'has_npa': has_npa,
         'object_list': rating_list,
         'rating_type': rating_type,
         'average': avg,
         'total_orgs': total_orgs,
-        'current_title': breadcrumbs_title,
-        'title': title,
+        'title': monitoring.name,
         'form': form,
         'table_form': table_settings,
         'name_filter': name_filter,
         'show_initial_openness': monitoring.status in Monitoring.after_interaction_status,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -497,14 +458,6 @@ def monitoring_by_experts(request, monitoring_pk):
           (_('All tasks'), 'all_tasks', None, None, None),
     )
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
     return table(
         request,
         headers,
@@ -512,31 +465,10 @@ def monitoring_by_experts(request, monitoring_pk):
         paginate_by=15,
         extra_context={
             'monitoring': monitoring,
-            'current_title': current_title,
             'title': title,
         },
         template_name="expert_list.html",
     )
-
-
-#todo: remove
-@login_required
-def monitoring_info(request, monitoring_pk):
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    organization_all_count = Organization.objects.filter(monitoring = monitoring).distinct().count()
-    organization_open_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_OPEN).count()
-    organization_ready_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_READY).count()
-    organization_approved_count = Organization.objects.filter(monitoring = monitoring, task__status = Task.TASK_APPROVED).count()
-    organization_with_task_count = Organization.objects.filter(monitoring = monitoring, task__status__isnull = False).distinct().count()
-    extra_context = {
-            'organization_all_count': organization_all_count,
-            'organization_open_count': organization_open_count,
-            'organization_ready_count': organization_ready_count,
-            'organization_approved_count': organization_approved_count,
-            'organization_with_task_count': organization_with_task_count,
-    }
 
 
 @login_required
@@ -621,21 +553,12 @@ def monitoring_parameter_filter(request, monitoring_pk):
         form = ParamCritScoreFilterForm(monitoring=monitoring)
         hide = 1
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response('monitoring_parameter_filter.html', {
+    return TemplateResponse(request, 'monitoring_parameter_filter.html', {
         'form': form,
         'object_list': queryset,
         'monitoring': monitoring,
-        'current_title': current_title,
         'hide': hide
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -647,7 +570,6 @@ def monitoring_parameter_found_report(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    title = _('Report for %s by parameter and found') % monitoring
     queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
             'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s) -
                                     (select count(*) from %(parameterexclude_table)s where %(parameterexclude_table)s.parameter_id = %(parameter_table)s.id
@@ -691,20 +613,15 @@ def monitoring_parameter_found_report(request, monitoring_pk):
         score_per_organization_total = float(score_count_total) / organization_count_total * 100
 
     title = _('Parameter found report of %(monitoring)s') % {'monitoring': monitoring}
-    current_title = _('Monitoring cycle')
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    return render_to_response('monitoring_parameter_found_report.html', {
+    return TemplateResponse(request, 'monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
-        'current_title': current_title,
         'title': title,
         'object_list': object_list,
         'score_count_total': score_count_total,
         'organization_count_total': organization_count_total,
         'score_per_organization_total': score_per_organization_total,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -869,19 +786,14 @@ def monitoring_organization_import(request, monitoring_pk):
     if must_register:
         revision.register(Organization)
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs, monitoring)
-    current_title = _('Import organization')
-
-    return render_to_response('monitoring_import_log.html', {
+    return TemplateResponse(request, 'monitoring_import_log.html', {
         'monitoring': monitoring,
         'file': request.FILES['orgfile'],
         'errLog': errLog,
         'rowOKCount': rowOKCount,
         'rowALLCount': rowALLCount,
-        'current_title': current_title,
         'title': title,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -963,19 +875,14 @@ def monitoring_parameter_import(request, monitoring_pk):
     if must_register:
         revision.register(Parameter)
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs, monitoring)
-    current_title = _('Import parameter')
-
-    return render_to_response('monitoring_import_log.html', {
+    return TemplateResponse(request, 'monitoring_import_log.html', {
       'monitoring': monitoring,
       'file': request.FILES['paramfile'],
       'errLog': errLog,
       'rowOKCount': rowOKCount,
       'rowALLCount': rowALLCount,
-      'current_title': current_title,
       'title': title,
-    }, context_instance=RequestContext(request))
+    })
 
 
 @login_required
@@ -993,14 +900,9 @@ def monitoring_comment_report(request, monitoring_pk):
 
     start_date = monitoring.interact_date
     if not start_date:
-
-        crumbs = ['Home', 'Monitoring']
-        breadcrumbs(request, crumbs)
-
-        return render_to_response(
-            "msg.html", {
+        return TemplateResponse(request, "msg.html", {
                 'msg': _('Start date for interact not defined.')
-            }, context_instance=RequestContext(request))
+            })
 
     if request.method == "GET" and request.GET.__contains__('time_to_answer'):
         form = MonitoringCommentStatForm(request.GET, monitoring=monitoring)
@@ -1025,15 +927,7 @@ def monitoring_comment_report(request, monitoring_pk):
     reg_org = report.get('reg_org')
     active_iifd_person_stats = report.get('active_iifd_person_stats')
 
-    crumbs = ['Home', 'Monitoring']
-    breadcrumbs(request, crumbs)
-
-    if request.expert:
-        current_title = _('Monitoring cycle')
-    else:
-        current_title = _('Rating') if monitoring.status == 5 else _('Tasks')
-
-    return render_to_response('monitoring_comment_report.html', {
+    return TemplateResponse(request, 'monitoring_comment_report.html', {
         'form': form,
         'comments_without_reply': comments_without_reply,
         'fail_comments_without_reply': fail_comments_without_reply,
@@ -1049,10 +943,9 @@ def monitoring_comment_report(request, monitoring_pk):
         'active_iifd_person_stats': active_iifd_person_stats,
         'time_to_answer': time_to_answer,
         'monitoring': monitoring,
-        'current_title': current_title,
         'title': title,
         'media': CORE_MEDIA,
-        }, context_instance=RequestContext(request))
+        })
 
 
 def monitoring_report(request, report_type='inprogress', monitoring_pk=None):
@@ -1102,22 +995,14 @@ def monitoring_report(request, report_type='inprogress', monitoring_pk=None):
 
         monitorings = paginator_list.object_list
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-    current_title = _('Statistics')
-
-    return render_to_response('monitoring_report.html',
-                              {
-                                  'paginator': paginator_list,
-                                  'monitorings': monitorings,
-                                  'report_type': report_type,
-                                  'current_title': current_title,
-                                  'title': title,
-                                  'monitoring_id': monitoring_pk,
-                                  'all_monitorings': all_monitorings,
-                              },
-                              RequestContext(request),
-                              )
+    return TemplateResponse(request, 'monitoring_report.html', {
+        'paginator': paginator_list,
+        'monitorings': monitorings,
+        'report_type': report_type,
+        'title': title,
+        'monitoring_id': monitoring_pk,
+        'all_monitorings': all_monitorings,
+    })
 
 
 def ratings(request):
@@ -1125,7 +1010,7 @@ def ratings(request):
     optionally filters table by monitoring
     """
 
-    title = breadcrumbs_title = _('Ratings')
+    title = _('Ratings')
 
     name_filter = request.GET.get('name_filter', '')
     if name_filter:
@@ -1160,15 +1045,11 @@ def ratings(request):
 
     context = {
         'title': title,
-        'current_title': breadcrumbs_title,
         'monitoring_list': monitoring_list,
         'name_filter': name_filter,
     }
 
-    crumbs = ['Home']
-    breadcrumbs(request, crumbs)
-
-    return render_to_response('ratings.html', context, context_instance=RequestContext(request))
+    return TemplateResponse(request, 'ratings.html', context)
 
 
 def replace_string(cell):

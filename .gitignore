@@ -12,6 +12,8 @@ _build
 .idea
 *.swp
 *.kate-swp
+.kateproject
+.kateproject.d
 
 /env
 /venv
