@@ -91,6 +91,10 @@ class BreadcrumbsMiddleware(object):
           'breadcrumbs': constructed breadcrumbs
           'breadcrumb_last': last item in the breadcrumbs
         '''
+        if response.is_rendered:
+            # response was rendered (fetched from cache), do nothing
+            return response
+
         if response.context_data is None:
             response.context_data = {}
 
