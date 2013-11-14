@@ -23,7 +23,7 @@
 
 {% if alert %}
     {% ifequal alert 'success' %}
-        <p class="alert-{{ alert }}">
+        <p class="{{ alert }}">
             {% trans 'Invitations sent.' %}
         </p>
     {% endifequal %}

@@ -27,7 +27,7 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{{STATIC_URL}}admin/css/base.css{% endblock %}" />
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{{STATIC_URL}}admin/css/rtl.css{% endblock %}" />{% endif %}
 </head>
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<body class="{% block bodyclass %}{% endblock %}">
 <div>
 {% with task.organization.monitoring as monitoring %}
 {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}

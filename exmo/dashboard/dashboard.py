@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -30,13 +30,13 @@ And to activate the app index dashboard::
     ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'exmo.dashboard.CustomAppIndexDashboard'
 """
 
+from admin_tools.dashboard import modules, Dashboard
+from admin_tools.utils import get_admin_site_name
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 import modules as custom_modules
 from accounts.forms import SettingsInvCodeForm
-from admin_tools.dashboard import modules, Dashboard
-from admin_tools.utils import get_admin_site_name
 from monitorings.views import _get_monitoring_list
 
 
@@ -99,7 +99,7 @@ class CustomIndexDashboard(UserDashboard):
             template="user_dashboard/modules/monitoring_list.html",
         ))
 
-        if user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
+        if user.is_active and user.profile.is_expertB and not user.is_superuser:
             comments = user.profile.get_filtered_not_answered_comments()
             clarifications = user.profile.get_filtered_opened_clarifications()
             claims = user.profile.get_filtered_opened_claims()
@@ -118,6 +118,21 @@ class CustomIndexDashboard(UserDashboard):
                     (
                         _('Claims') + ': ' + str(claims.count()),
                         reverse('exmo2010:claim_list')
+                    ),
+                ),
+            ))
+
+        if user.is_active and user.profile.is_organization and not user.is_superuser:
+
+            self.children.append(modules.LinkList(
+                _('Certificate'),
+                collapsible=False,
+                deletable=False,
+                draggable=False,
+                children=(
+                    (
+                        _('Order openness certificate'),
+                        reverse('exmo2010:certificate_order')
                     ),
                 ),
             ))

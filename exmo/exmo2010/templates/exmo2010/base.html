@@ -40,41 +40,38 @@
         {% include "analytics.html" %}
     </head>
 
-    <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+    <body class="{% block bodyclass %}{% endblock %}">
 
     <!-- Container -->
     <div id="container">
-        {% if not is_popup %}
-            <!-- Header -->
-            {% block header %}
-                <div id="header">
-                    <div id="user-tools">
-                        {% block userwelcome %}{% endblock %}
-                        {% block userlinks %}{% endblock %}
-                    </div>
-                    {% block nav-global %}{% endblock %}
+        <!-- Header -->
+        {% block header %}
+            <div id="header">
+                <div id="user-tools">
+                    {% block userwelcome %}{% endblock %}
+                    {% block userlinks %}{% endblock %}
                 </div>
-            {% endblock header %}
+                {% block nav-global %}{% endblock %}
+            </div>
+        {% endblock header %}
 
-            <!-- END Header -->
-            {% block breadcrumbs %}{% endblock %}
+        <!-- END Header -->
+        {% block breadcrumbs %}{% endblock %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
 
         {% block nav_sidebar_title %}{% endblock %}
-        {% block nav_sidebar %}
-        {% endblock nav_sidebar %}
+
+        {% block nav_sidebar %}{% endblock nav_sidebar %}
 
         <div id="content-container">
-            {% if not is_popup %}
-                {% for message in messages %}
-                    <ul class="{% if message.extra_tags %}errorlist{% else %}messagelist{% endif %}">
-                        <li>
-                            {{ message }}
-                        </li>
-                    </ul>
-                {% endfor %}
-                {% block bubble %}{% endblock %}
-            {% endif %}
+            {% block bubble %}{% endblock %}
 
             <!-- Content -->
             <div id="content" class="{% block content_class %}{% endblock %}">

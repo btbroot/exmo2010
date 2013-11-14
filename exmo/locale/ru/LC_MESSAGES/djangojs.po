@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-22 17:26+0400\n"
+"POT-Creation-Date: 2013-11-14 12:11+0400\n"
 "PO-Revision-Date: 2013-10-22 01:15+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: \n"
@@ -39,13 +39,25 @@ msgstr "Закрыть без ответа"
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
-#: scores/static/js/score.tabs.js:124
+#: scores/static/js/score.tabs.js:112
 msgid "Score changed to maximum"
 msgstr "Оценка изменена до максимального значения"
 
-#: scores/static/js/score.tabs.js:127
+#: scores/static/js/score.tabs.js:115
 msgid "Score changed"
 msgstr "Оценка изменена"
+
+#: static/exmo2010/js/certificate_form.js:100
+msgid "is required field."
+msgstr "является обязательным полем."
+
+#: static/exmo2010/js/certificate_form.js:140
+msgid "Enter correct email."
+msgstr "Введите правильный адрес электронной почты."
+
+#: static/exmo2010/js/certificate_form.js:154
+msgid "Enter correct zip code."
+msgstr "Введите правильный индекс."
 
 #: static/exmo2010/js/rating.js:97
 msgid "hide"

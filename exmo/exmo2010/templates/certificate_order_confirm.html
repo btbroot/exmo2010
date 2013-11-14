@@ -1,0 +1,62 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {{ wizard.form.media }}
+    <script type="text/javascript" src="{% static 'exmo2010/js/certificate_order_confirm.js' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/certificate_order_confirm.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">{% csrf_token %}
+        {{ wizard.management_form }}
+
+        <p>{% trans 'Openness certificate will be prepared and sent within 5 working days.' %}</p>
+
+        <h2>{% trans 'Deliver' %}</h2>
+
+        <p>{{ on_address }}</p>
+
+        <h2>{% trans 'Content of the certificate' %}</h2>
+
+        <p>{{ description }}</p>
+
+        {% if prepare_for %}
+            <p>{{ prepare_for }}</p>
+        {% endif %}
+
+        {% if special_wishes %}
+            <p>{{ special_wishes }}</p>
+        {% endif %}
+
+        <div class="submit_buttons">
+            <input type="submit" value="{% trans "Confirm order" %}"/>
+            <a id="previous_form">{% trans "Back to certificate ordering" %}</a>
+        </div>
+    </form>
+{% endblock %}

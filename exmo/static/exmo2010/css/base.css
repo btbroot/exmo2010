@@ -80,10 +80,10 @@ h5 {
     letter-spacing: 1px;
 }
 
-a
-{
+a {
     text-decoration: none;
     color: #005C9C;
+    cursor: pointer;
 }
 
 .dashboard-module-content a
@@ -433,7 +433,7 @@ input.date-picker {
 
 .button, input[type=submit], input[type=button], .submit-row input {
     background: white url(../../admin/img/nav-bg.gif) bottom repeat-x;
-    padding: 3px 5px;
+    padding: 3px 7px;
     color: black;
     border: 1px solid #bbb;
     border-color: #ddd #aaa #aaa #ddd;
@@ -605,10 +605,7 @@ div.system-message p.system-message-title {
 {
     position: absolute;
     width: 240px;
-    top: 131px;
-    bottom: 100px;
     background-color: #f8f8f8;
-    border-right: 1px solid #d7d7d7;
 }
 
 #nav-sidebar ul
@@ -696,6 +693,7 @@ div.system-message p.system-message-title {
 #content.sidebar-ident
 {
     border-top: 1px solid #d7d7d7;
+    border-left: 1px solid #d7d7d7;
     margin-left: 240px;
 }
 
@@ -837,8 +835,9 @@ ul#errors-header li.brand a
 
 /* Alerts */
 
-.alert-info, .alert-success, .alert-fail {
+.alert-info, .success, .warning {
     padding: 10px;
+    margin: 10px;
 }
 
 .alert-info {
@@ -851,15 +850,13 @@ ul#errors-header li.brand a
     text-decoration: underline;
 }
 
-.alert-success
-{
+.success {
     background-color: #d6f5d6;
     border: #80e580 1px solid;
     color: #000000;
 }
 
-.alert-fail
-{
+.warning {
     background-color: #f5d2cc;
     border: #e58a83 1px solid;
     color: #000000;

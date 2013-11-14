@@ -79,12 +79,12 @@ def set_npa_params(request, monitoring_pk):
         formset = ParameterTypeFormSet(request.POST, queryset=parameters)
         # Нельзя изменять опубликованные мониторинги.
         if monitoring.status == MONITORING_PUBLISHED:
-            messages.warning(request, _("Forbidden to modify already "
-                                        "published monitorings."), 'warning')
+            messages.warning(request, _("Forbidden to modify already published monitorings."))
         else:
             if formset.is_valid():
                 formset.save()
                 messages.success(request, _("Changes have saved."))
+
     else:
         formset = ParameterTypeFormSet(queryset=parameters)
 

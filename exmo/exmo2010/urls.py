@@ -25,7 +25,8 @@ from django.utils.translation import ugettext as _
 
 import reversion
 
-from exmo2010.views import HelpView, AboutView, OpenDataView
+from exmo2010.forms import CertificateOrderForm
+from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringManagerView
 from organizations.views import OrganizationManagerView
 from parameters.views import ParameterManagerView
@@ -172,6 +173,8 @@ urlpatterns = named_urls('',
     (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
         'monitorings.views.monitoring_report', 'monitoring_report_finished'),
 
+    (r'^certificate_order/$', CertificateOrderView.as_view([CertificateOrderForm, CertificateOrderForm]),
+     'certificate_order'),
     (r'^claim/delete/$', 'claims.views.claim_delete'),
     (r'^toggle_comment/$', 'scores.views.toggle_comment'),
     (r'^ratings/$', 'monitorings.views.ratings'),
@@ -281,7 +284,8 @@ def crumbs_tree(is_expert=False):
                 })
             }),
         }),
-        'monitoring_list': _('Monitoring cycles')
+        'monitoring_list': _('Monitoring cycles'),
+        'certificate_order': _('Openness certificate'),
     }
 
     common_tree.update(expert_tree if is_expert else nonexpert_tree)

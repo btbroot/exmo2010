@@ -174,6 +174,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.formtools',
     # External apps:
     'admin_tools',
     'admin_tools.theming',

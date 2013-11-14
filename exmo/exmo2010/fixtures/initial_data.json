@@ -36,5 +36,13 @@
       "name": "expertsB_manager",
       "permissions": []
     }
+  },
+  {
+    "pk": 4,
+    "model": "auth.group",
+    "fields": {
+      "name": "organizations",
+      "permissions": []
+    }
   }
 ]

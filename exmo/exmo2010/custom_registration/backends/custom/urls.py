@@ -37,11 +37,12 @@ up your own URL patterns for these views instead.
 
 """
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.views.generic import TemplateView
+
 from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
 from exmo2010.custom_registration.views import password_reset_done
 from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
@@ -53,7 +54,6 @@ reverse_lazy = lambda name=None, *args : lazy(reverse, str)(name, args=args)
 urlpatterns = patterns('',
 
     url(r'^settings/$', 'accounts.views.settings', name='settings'),
-    url(r'^dashboard_reset/$', 'accounts.views.user_reset_dashboard', name='user_reset_dashboard'),
 
     url(r'^activate/complete/$', TemplateView.as_view(
         template_name='registration/activation_complete.html',

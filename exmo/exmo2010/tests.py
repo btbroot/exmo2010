@@ -22,15 +22,15 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.test import TestCase
-
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.sql import *
 from core.utils import get_named_patterns
+from exmo2010.forms import CertificateOrderForm
 from exmo2010.models import (
     Group, Monitoring, Organization, Parameter, Questionnaire, Score,
-    TaskHistory, Task, OpennessExpression, ValidationError, MONITORING_INTERACTION)
+    Task, OpennessExpression, ValidationError)
 
 
 class TestMonitoring(TestCase):
@@ -253,3 +253,52 @@ class CanonicalViewKwargsTestCase(TestCase):
         if pat.name not in set(self.ajax_urls | self.post_urls):
             # AND non-ajax and non-post urls should return http status 200 (OK)
             self.assertEqual(res.status_code, 200)
+
+
+class CertificateOrderFormTestCase(TestCase):
+    # Scenario: Form tests
+    @parameterized.expand([
+        (1, 1, 0, 'name', 'wishes', 'test@mail.com', '', '', ''),
+        (2, 0, 0, '', '', 'test@mail.com', '', '', ''),
+        (3, 0, 1, '', '', 'test@mail.com', 'name', '123456', 'address'),
+    ])
+    def test_valid_form(self, task_id, certificate_for, send, name, wishes, email, for_whom, zip_code, address):
+        # WHEN user send CertificateOrderForm with data
+        form_data = {
+            'task_id': task_id,
+            'certificate_for': certificate_for,
+            'send': send,
+            'name': name,
+            'wishes': wishes,
+            'email': email,
+            'for_whom': for_whom,
+            'zip_code': zip_code,
+            'address': address,
+        }
+
+        form = CertificateOrderForm(data=form_data)
+        # THEN form is valid
+        self.assertEqual(form.is_valid(), True)
+
+    @parameterized.expand([
+        (1, 1, 0, 'name', 'wishes', 'test@.mail.com', '', '', ''),
+        (3, 0, 1, '', '', 'test@mail.com', 'name', '1234', 'address'),
+        (3, 0, 1, '', '', 'test@mail.com', 'name', 'text', 'address'),
+    ])
+    def test_invalid_form(self, task_id, certificate_for, send, name, wishes, email, for_whom, zip_code, address):
+        # WHEN user send CertificateOrderForm with data
+        form_data = {
+            'task_id': task_id,
+            'certificate_for': certificate_for,
+            'send': send,
+            'name': name,
+            'wishes': wishes,
+            'email': email,
+            'for_whom': for_whom,
+            'zip_code': zip_code,
+            'address': address,
+        }
+
+        form = CertificateOrderForm(data=form_data)
+        # THEN form is invalid
+        self.assertEqual(form.is_valid(), False)

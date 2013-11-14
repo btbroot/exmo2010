@@ -1,0 +1,87 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013 Al Nikolov
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+.main_block {
+    width: 65%;
+    float:left;
+    line-height:26px;
+}
+
+.main_block div div {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.left_field {
+    min-width: 130px;
+    text-align: right;
+    vertical-align: top;
+    padding-right: 10px;
+}
+
+.right_field {
+    width: 80%;
+}
+
+#rating-data {
+    margin-bottom: 15px;
+}
+
+input[type="text"]:not([name="0-zip_code"]) {
+    min-width: 450px;
+}
+
+input[type="text"]:not([name="name_filter"]) {
+    width: 100%;
+    max-width: 600px;
+}
+
+textarea {
+    width: 100%;
+    min-width: 450px;
+    max-width: 600px;
+    height: 100px;
+}
+
+.star_color {
+    color: #FF0000;
+}
+
+#id_0-zip_code {
+    width: 60px;
+}
+
+.certificate_group {
+    float: right;
+    text-align: center;
+}
+
+#certificate_image {
+    width: 300px;
+    height: 430px;
+
+}
+
+.rating-menu {
+    margin-top: 15px;
+}
+
+.radio_group {
+    margin-bottom: 5px;
+}

@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -22,14 +22,19 @@
 {% load i18n admin_tools_dashboard_tags %}
 
 {% block extrastyle %}
-{{ block.super }}
-{% block dashboard_css %}{{ block.super }}{% admin_tools_render_dashboard_css %}{% endblock %}
+    {{ block.super }}
+    {% block dashboard_css %}
+        {{ block.super }}
+        {% admin_tools_render_dashboard_css %}
+    {% endblock %}
 {% endblock %}
 
 {% block bodyclass %}dashboard{% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
+
 {% block content_title_base %}{% endblock %}
+
 {% block content %}
-{% admin_tools_render_dashboard %}
+    {% admin_tools_render_dashboard %}
 {% endblock %}

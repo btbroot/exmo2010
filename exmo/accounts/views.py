@@ -17,16 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from admin_tools.dashboard.models import DashboardPreferences
-from django.contrib import messages
 from django.contrib.auth.models import Group, User
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import csrf_protect
 
 from accounts.forms import *
 from exmo2010.models import Organization, UserProfile
@@ -175,22 +169,6 @@ def settings(request):
         "inv_code_form_err": inv_code_form_err,
         "ch_pass_form_err": ch_pass_form_err
     })
-
-
-@csrf_protect
-def user_reset_dashboard(request):
-    if request.method == 'POST':
-        if request.user.is_active:
-            try:
-                pref = DashboardPreferences.objects.get(dashboard_id = 'exmo2010', user = request.user)
-                pref.data = '{}'
-                pref.save()
-            except DashboardPreferences.DoesNotExist:
-                pass
-        messages.add_message(request, messages.INFO, _('Dashboard preferences was reset.'))
-        return HttpResponseRedirect(reverse('exmo2010:user_profile'))
-    else:
-        return HttpResponseForbidden(_('Forbidden'))
 
 
 def get_experts():

@@ -82,6 +82,15 @@ config_register_list(
         default='tsupport@svobodainfo.org',
         help_text=_('Default support email address'),
     ),
+
+    StringValueWidget(
+        EMAIL_GROUP,
+        'CERTIFICATE_ORDER_NOTIFICATION_EMAIL',
+        description=_('Email'),
+        ordering=5,
+        default='tsupport@svobodainfo.org',
+        help_text=_('Certificate order notification email'),
+    ),
 )
 
 GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=1)

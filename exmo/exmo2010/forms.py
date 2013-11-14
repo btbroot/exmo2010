@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -17,13 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-Формы EXMO2010
-"""
-
 from django import forms
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Textarea
 from django.utils import formats
@@ -106,3 +102,27 @@ class TagAutocomplete(Textarea):
 class FeedbackForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), required=True)
     comment = forms.CharField(widget=forms.Textarea, label=_('Your problem'), required=True)
+
+
+class CertificateOrderForm(forms.Form):
+    CERTIFICATE_FOR_CHOICES = (
+        (0, _('to organization')),
+        (1, _('to employee')),
+    )
+
+    DELIVERY_METHOD_CHOICES = (
+        (0, _('by email')),
+        (1, _('by post')),
+    )
+
+    task_id = forms.IntegerField(required=False)
+    certificate_for = forms.ChoiceField(label=_('Certificate for'), choices=CERTIFICATE_FOR_CHOICES,
+                                        widget=forms.RadioSelect(), initial=0, required=False)
+    delivery_method = forms.ChoiceField(label=_('Send'), choices=DELIVERY_METHOD_CHOICES, widget=forms.RadioSelect(),
+                                        initial=0, required=False)
+    name = forms.CharField(label=_('Name'), max_length=100, required=False)
+    wishes = forms.CharField(label=_('Wishes'), widget=Textarea(), required=False)
+    email = forms.EmailField(label=_('Email'), max_length=100, required=False)
+    for_whom = forms.CharField(label=_('For whom'), max_length=100, required=False)
+    zip_code = forms.CharField(label=_('Zip code'), max_length=6, min_length=6, required=False)
+    address = forms.CharField(label=_('Address'), widget=Textarea(), required=False)
