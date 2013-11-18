@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-18 22:31+0400\n"
+"POT-Creation-Date: 2013-11-19 16:51+0400\n"
 "PO-Revision-Date: 2013-11-13 03:42+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: \n"
@@ -190,22 +190,22 @@ msgstr "Рассылка уведомлений"
 msgid "Password reset on %s"
 msgstr "Смена пароля на %s"
 
-#: bread_crumbs/tests.py:34 dashboard/menu.py:82 exmo2010/urls.py:218
+#: bread_crumbs/tests.py:37 dashboard/menu.py:82 exmo2010/urls.py:218
 #: exmo2010/urls.py:277 monitorings/views.py:1013 scores/tests.py:123
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: bread_crumbs/tests.py:35 exmo2010/urls.py:219 exmo2010/urls.py:278
+#: bread_crumbs/tests.py:38 exmo2010/urls.py:219 exmo2010/urls.py:278
 #: monitorings/templates/rating.html:73 templates/errors_header.html:35
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:98
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: bread_crumbs/tests.py:37 bread_crumbs/tests.py:42
+#: bread_crumbs/tests.py:40 bread_crumbs/tests.py:45
 #: claims/templates/claim_list.html:62
 #: clarifications/templates/clarification_list.html:62
 #: custom_comments/templates/comment_list.html:63 exmo2010/urls.py:249
-#: exmo2010/urls.py:254 exmo2010/urls.py:270 exmo2010/urls.py:279
+#: exmo2010/urls.py:254 exmo2010/urls.py:261 exmo2010/urls.py:279
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.html:27
 #: exmo2010/templates/exmo2010/emails/feedback_recipient.txt:26
 #: monitorings/templates/rating.html:148 monitorings/templates/rating.html:160
@@ -215,13 +215,13 @@ msgstr "Рейтинг"
 msgid "Organization"
 msgstr "Организация"
 
-#: bread_crumbs/tests.py:40 dashboard/dashboard.py:92 exmo2010/urls.py:222
+#: bread_crumbs/tests.py:43 dashboard/dashboard.py:92 exmo2010/urls.py:222
 #: exmo2010/urls.py:284 scores/tests.py:122
 #: templates/exmo2010/monitoring_list.html:43
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
 
-#: bread_crumbs/tests.py:41 exmo2010/urls.py:229 exmo2010/urls.py:230
+#: bread_crumbs/tests.py:44 exmo2010/urls.py:229 exmo2010/urls.py:230
 #: exmo2010/urls.py:232 exmo2010/urls.py:233 exmo2010/urls.py:235
 #: exmo2010/urls.py:236 exmo2010/urls.py:241 exmo2010/urls.py:243
 #: exmo2010/urls.py:245 monitorings/templates/ratings.html:38
@@ -897,8 +897,8 @@ msgid "image"
 msgstr "графическая доступность"
 
 #: exmo2010/models.py:547
-msgid "coherent"
-msgstr "согласован"
+msgid "normative parameter"
+msgstr "нормативный параметр"
 
 #: exmo2010/models.py:611 parameters/forms.py:65
 msgid "opened"
@@ -1259,14 +1259,26 @@ msgid "Delte organization"
 msgstr "Удалить орган/организацию"
 
 #: exmo2010/urls.py:255
-msgid "Create claim"
-msgstr "Создать претензию"
-
-#: exmo2010/urls.py:256
 msgid "Create clarification"
 msgstr "Создать уточнение"
 
-#: exmo2010/urls.py:258 exmo2010/urls.py:259 exmo2010/urls.py:260
+#: exmo2010/urls.py:256
+msgid "Create claim"
+msgstr "Создать претензию"
+
+#: exmo2010/urls.py:258
+msgid "Edit task"
+msgstr "Редактировать задачу"
+
+#: exmo2010/urls.py:259
+msgid "Delte task"
+msgstr "Удалить задачу"
+
+#: exmo2010/urls.py:260
+msgid "Import task"
+msgstr "Импортировать задачу"
+
+#: exmo2010/urls.py:263 exmo2010/urls.py:264 exmo2010/urls.py:265
 #: exmo2010/urls.py:280
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
@@ -1274,33 +1286,21 @@ msgstr "Создать уточнение"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo2010/urls.py:261
+#: exmo2010/urls.py:266
 msgid "Delete score"
 msgstr "Удалить оценку"
 
-#: exmo2010/urls.py:263
+#: exmo2010/urls.py:268
 msgid "Add parameter"
 msgstr "Добавить параметр"
 
-#: exmo2010/urls.py:264
+#: exmo2010/urls.py:269
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: exmo2010/urls.py:265
+#: exmo2010/urls.py:270
 msgid "Delte parameter"
 msgstr "Удалить параметр"
-
-#: exmo2010/urls.py:267
-msgid "Edit task"
-msgstr "Редактировать задачу"
-
-#: exmo2010/urls.py:268
-msgid "Delte task"
-msgstr "Удалить задачу"
-
-#: exmo2010/urls.py:269
-msgid "Import task"
-msgstr "Импортировать задачу"
 
 #: exmo2010/custom_registration/forms.py:39
 msgid "representative"
@@ -1858,12 +1858,12 @@ msgid "common"
 msgstr "общий"
 
 #: monitorings/templates/rating.html:86
-msgid "legal"
-msgstr "правовой"
+msgid "normative"
+msgstr "нормативный"
 
 #: monitorings/templates/rating.html:92
-msgid "of experts"
-msgstr "экспертный"
+msgid "recommendatory"
+msgstr "рекомендательный"
 
 #: monitorings/templates/rating.html:99
 msgid "user defined"
@@ -1964,8 +1964,8 @@ msgid "Average openness"
 msgstr "Средняя открытость"
 
 #: monitorings/templates/set_npa_params.html:46
-msgid "Choose coherent parameters"
-msgstr "Выбрать согласованные параметры"
+msgid "Choose normative parameters"
+msgstr "Выбрать нормативные параметры"
 
 #: monitorings/templates/set_npa_params.html:55
 msgid "Reset Selection"
@@ -2279,16 +2279,16 @@ msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
 #: scores/templates/score_list.html:140
-msgid "NPA parameters"
-msgstr "Параметры на основе нормативных правовых актов"
+msgid "Normative parameters"
+msgstr "Нормативные параметры"
 
 #: scores/templates/score_list.html:152 scores/templates/score_list.html:205
 msgid "claim"
 msgstr "претензия"
 
 #: scores/templates/score_list.html:189
-msgid "Other parameters"
-msgstr "Дополнительные параметры"
+msgid "Recommendatory parameters"
+msgstr "Рекомендательные параметры"
 
 #: scores/templates/tabs.html:43
 msgid "Opened claims"
@@ -2940,8 +2940,8 @@ msgid "Cycle management"
 msgstr "Управление циклом"
 
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:51
-msgid "Coherent parameters"
-msgstr "Согласованные параметры"
+msgid "Parameter type"
+msgstr "Тип параметра"
 
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:58
 msgid "Reports"

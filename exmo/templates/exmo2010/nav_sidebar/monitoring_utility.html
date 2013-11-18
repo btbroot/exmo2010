@@ -48,8 +48,8 @@
 
             {% if request.user.profile.is_expertA %}
                 {% url exmo2010:set_npa_params monitoring.pk as url %}
-                <!-- {% trans "Coherent parameters" %} -->
-                {% include "exmo2010/nav_sidebar/item.html" with url=url title="Coherent parameters" %}
+                <!-- {% trans "Parameter type" %} -->
+                {% include "exmo2010/nav_sidebar/item.html" with url=url title="Parameter type" %}
             {% endif %}
 
             {# Reports #}

@@ -544,7 +544,7 @@ class Parameter(models.Model):
     hypertext = models.BooleanField(default=True, verbose_name=_('hypertext'))
     document = models.BooleanField(default=True, verbose_name=_('document'))
     image = models.BooleanField(default=True, verbose_name=_('image'))
-    npa = models.BooleanField(default=False, verbose_name=_('coherent'))
+    npa = models.BooleanField(default=False, verbose_name=_('normative parameter'))
 
     #необязательные критерии в оценке
     OPTIONAL_CRITERIONS = [

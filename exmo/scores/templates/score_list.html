@@ -137,7 +137,7 @@
             </td>
         </tr>
     {% if has_npa %}
-        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'NPA parameters' %}</td></tr>
+        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Normative parameters' %}</td></tr>
         {% for parameter in parameters_npa %}
             <tr width=100% id='parameter_{{ parameter.code }}'>
                 <td width=4%>{{ parameter.code }}</td>
@@ -186,7 +186,7 @@
                 </td>
             </tr>
         {% endfor %}
-        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Other parameters' %}</td></tr>
+        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Recommendatory parameters' %}</td></tr>
     {% endif %}
 
     {% for parameter in parameters_other %}

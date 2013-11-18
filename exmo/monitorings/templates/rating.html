@@ -83,13 +83,13 @@
         {% if has_npa %}
         <li {% if rating_type == "npa" %}class="active"{% endif %}>
             <a href="?type=npa" class="pseudo{% if rating_type == "npa" %}-off{% endif %}">
-                {% trans 'legal' %}
+                {% trans 'normative' %}
             </a>
         </li>
 
         <li {% if rating_type == "other" %}class="active"{% endif %}>
             <a href="?type=other" class="pseudo{% if rating_type == "other" %}-off{% endif %}">
-                {% trans 'of experts' %}
+                {% trans 'recommendatory' %}
             </a>
         </li>
         {% endif %}
