@@ -213,14 +213,14 @@ class CertificateOrderView(SessionWizardView):
             else:
                 on_address = _('On email address %s.') % form_data['email']
 
-                context_data = {
-                    'description': description,
-                    'on_address': on_address,
-                    'special_wishes': form_data['wishes'],
-                    'breadcrumbs': [{'url': reverse('exmo2010:index')},
-                                    {'url': reverse('exmo2010:certificate_order'), 'title': _('Openness certificate')},
-                                    {'title': _('Confirmation of a certificate ordering')}]
-                }
+            context_data = {
+                'description': description,
+                'on_address': on_address,
+                'special_wishes': form_data['wishes'],
+                'breadcrumbs': [{'url': reverse('exmo2010:index')},
+                                {'url': reverse('exmo2010:certificate_order'), 'title': _('Openness certificate')},
+                                {'title': _('Confirmation of a certificate ordering')}]
+            }
 
             if form_data['certificate_for'] == "1":
                 prepare_for = _('Prepare a certificate in the name of %s.') % form_data['name']
@@ -250,7 +250,7 @@ class CertificateOrderView(SessionWizardView):
         organization_name = organization.name
         monitoring_name = organization.monitoring.name
         subject = ' '.join([_('Ordering openness certificate for'), organization_name])
-        rcpt = config_value('EmailServer', 'EMAIL_FOR_CERTIFICATE_NOTIFICATION_ORDER')
+        rcpt = config_value('EmailServer', 'CERTIFICATE_ORDER_NOTIFICATION_EMAIL')
 
         current_site = Site.objects.get_current()
         protocol = request.is_secure() and 'https' or 'http'
