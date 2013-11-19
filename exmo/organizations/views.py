@@ -78,7 +78,7 @@ def organization_list(request, monitoring_pk):
                 all_orgs = all_orgs.filter(inv_status=inv_status)
 
             for org in all_orgs:
-                subject = _('Invitation to interact with EXMO system')
+                subject = _('Invitation to interact with Infometer system')
                 message = comment.replace('%code%', org.inv_code)
                 context = {
                     'subject': subject,
