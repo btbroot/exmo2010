@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Django settings for exmo project.
+# Django settings for exmo2010 project.
 
 import os
 import sys
@@ -25,6 +25,7 @@ import djcelery
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+DEVEL = False
 
 ADMINS = (
     ('Your Name', ''),
@@ -106,16 +107,6 @@ STATICFILES_FINDERS = (
 CACHE_PATH = '/var/cache/exmo2010/'
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 CACHE_PREFIX = 'Cache'
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_PATH,
-    }
-}
-
-# WYSIWYG-editor
-DJANGO_WYSIWYG_FLAVOR = "ckeditor"
-CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
 
 # Middleware
 MIDDLEWARE_CLASSES = ()
@@ -251,8 +242,6 @@ AUTHENTICATION_BACKENDS = (
 MAX_TAG_LENGTH = 255
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 
-DEVEL = False
-
 if os.path.isfile('%s/local_settings.py' % PROJECT_NAME):
     from local_settings import *
 
@@ -267,3 +256,16 @@ if DEVEL:
     CACHE_PATH = mkdir_ifnotexist(path_to_project('../../cache'))
     MEDIA_ROOT = mkdir_ifnotexist(path_to_project('../../media'))
     STATIC_ROOT = mkdir_ifnotexist(path_to_project('../../static'))
+
+
+# WYSIWYG-editor
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+
+# Cache backend
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_PATH,
+    }
+}
