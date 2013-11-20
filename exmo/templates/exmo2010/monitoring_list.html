@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia model_status check_object_permission %}
+{% load table_header i18n adminmedia check_object_permission %}
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
@@ -71,7 +71,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% monitoring_status object.status %}
+                        {{ object.get_status_display }}
                     </td>
                 </tr>
             {% endfor %}

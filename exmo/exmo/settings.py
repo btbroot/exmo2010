@@ -161,6 +161,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'core.context_processors.user_groups',
+    'exmo2010.context_processors.models',
 )
 
 # Applications

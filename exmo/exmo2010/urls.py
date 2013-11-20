@@ -31,7 +31,7 @@ from monitorings.views import MonitoringManagerView
 from organizations.views import OrganizationManagerView
 from parameters.views import ParameterManagerView
 from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
-from tasks.views import TaskManagerView
+from tasks.views import TaskManagerView, AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView
 
 
 def named_urls(module, *urlpatterns):
@@ -107,8 +107,6 @@ monitoring_patterns = named_urls('monitorings.views',
 
 monitoring_patterns += named_urls('tasks.views',
     (r'^(?P<monitoring_pk>\d+)/mass_assign_tasks/$', 'task_mass_assign_tasks'),
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)/task/add/$', 'task_add', 'org_task_add'),   # TODO: replace with task_add
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)/tasks/$', 'tasks_by_monitoring_and_organization'),  # TODO: replace with tasks_by_monitoring
     (r'^(?P<monitoring_pk>\d+)/task/add/$', 'task_add'),
     (r'^(?P<monitoring_pk>\d+)/tasks/$', 'tasks_by_monitoring'),
 )
@@ -137,6 +135,9 @@ tasks_patterns = named_urls('tasks.views',
         reversion.create_revision()(TaskManagerView.as_view()), 'task_update', {'method': 'update'}),
     (r'^task/(?P<task_pk>\d+)_delete/$',
         reversion.create_revision()(TaskManagerView.as_view()), 'task_delete', {'method': 'delete'}),
+    (r'^task/(?P<task_pk>\d+)_ajax_approve/$', AjaxTaskApproveView, 'ajax_task_approve'),
+    (r'^task/(?P<task_pk>\d+)_ajax_close/$', AjaxTaskCloseView, 'ajax_task_close'),
+    (r'^task/(?P<task_pk>\d+)_ajax_open/$', AjaxTaskOpenView, 'ajax_task_open'),
     (r'^taskexport/(?P<task_pk>\d+)/$', 'task_export'),
     (r'^taskimport/(?P<task_pk>\d+)/$', 'task_import'),
 )
@@ -247,9 +248,6 @@ def crumbs_tree(is_expert=False):
 
             'tasks_by_monitoring': (_('Monitoring cycle'), {
                 'task_add':     _('Add task'),
-                'org_task_add': _('Add task'),  # TODO: replace with task_add
-
-                'tasks_by_monitoring_and_organization': _('Organization'),  # TODO: replace with tasks_by_monitoring
 
                 'organization_update':    _('Edit organization'),
                 'organization_delete':    _('Delte organization'),
@@ -284,8 +282,10 @@ def crumbs_tree(is_expert=False):
                 })
             }),
         }),
-        'monitoring_list': _('Monitoring cycles'),
         'certificate_order': _('Openness certificate'),
+        'monitoring_list': (_('Monitoring cycles'), {
+            'tasks_by_monitoring': _('Monitoring cycle'),
+         })
     }
 
     common_tree.update(expert_tree if is_expert else nonexpert_tree)

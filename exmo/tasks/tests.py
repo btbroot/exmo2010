@@ -17,13 +17,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import json
+import re
+
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from model_mommy import mommy
 
-from exmo2010.models import Monitoring, Group, User, Organization, TaskHistory, Task, MONITORING_INTERACTION
+from exmo2010.models import (
+    Monitoring, User, Organization, TaskHistory, Task, Score,
+    Parameter, MONITORING_INTERACTION, MONITORING_RATE)
 
 
 class TaskAssignSideEffectsTestCase(TestCase):
@@ -39,7 +44,7 @@ class TaskAssignSideEffectsTestCase(TestCase):
         self.organization2 = mommy.make(Organization, monitoring=self.monitoring)
         # AND i am logged-in as expertA
         usr = User.objects.create_user('expA', 'usr@svobodainfo.org', 'password')
-        usr.groups.add(Group.objects.get(name=usr.profile.expertA_group))
+        usr.profile.is_expertA = True
         self.client.login(username='expA', password='password')
         # AND there is 2 active expertsB
         self.expertB1 = mommy.make_recipe('exmo2010.active_user')
@@ -64,17 +69,14 @@ class TaskAssignSideEffectsTestCase(TestCase):
         # AND Every expertB should receive 2 Email notifications about her new assigned Tasks
         self.assertEqual(len(mail.outbox), 4)
 
-
     def test_add_single_task(self):
         # WHEN I create new task
         url = reverse('exmo2010:task_add', args=[self.monitoring_id])
-        res = self.client.post(
-            url,
-            {
-                'organization': self.organization1.pk,
-                'user': self.expertB1.pk,
-                'status': Task.TASK_OPEN
-            })
+        res = self.client.post(url, {
+            'organization': self.organization1.pk,
+            'user': self.expertB1.pk,
+            'status': Task.TASK_OPEN
+        })
 
         # THEN There should be one Task and one TaskHistory
         self.assertEqual(Task.objects.count(), 1)
@@ -89,3 +91,225 @@ class TaskAssignSideEffectsTestCase(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
 
+class ExpertBTaskAjaxActionsTestCase(TestCase):
+    # Should allow expertB to close and open only own Tasks using ajax actions
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN MONITORING_RATE monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
+        # AND there are 4 organizations in this monitoring (for every task)
+        organization1 = mommy.make(Organization, monitoring=self.monitoring)
+        organization2 = mommy.make(Organization, monitoring=self.monitoring)
+        organization3 = mommy.make(Organization, monitoring=self.monitoring)
+        organization4 = mommy.make(Organization, monitoring=self.monitoring)
+        # AND one parameter with only 'accessible' attribute
+        parameter = mommy.make(
+            Parameter,
+            monitoring = self.monitoring,
+            complete = False,
+            accessible = True,
+            topical = False,
+            hypertext = False,
+            document = False,
+            image = False,
+            npa = False
+        )
+        # AND i am logged-in as expertB_1
+        self.expertB_1 = User.objects.create_user('expertB_1', 'usr@svobodainfo.org', 'password')
+        self.expertB_1.profile.is_expertB = True
+        self.client.login(username='expertB_1', password='password')
+        # AND there is an open task assigned to me (expertB_1), which have no score (incomplete)
+        self.incomplete_task_b1 = mommy.make(
+            Task,
+            organization=organization1,
+            status=Task.TASK_OPEN,
+            user=self.expertB_1
+        )
+        # AND there is an open task assigned to me (expertB_1), which have complete score
+        self.complete_task_b1 = mommy.make(
+            Task,
+            organization=organization2,
+            status=Task.TASK_OPEN,
+            user=self.expertB_1
+        )
+        score = mommy.make(Score, task=self.complete_task_b1, parameter=parameter, found=1, accessible=1)
+
+        # AND there is a closed task assigned to me (expertB_1)
+        self.closed_task_b1 = mommy.make(
+            Task,
+            organization=organization3,
+            status=Task.TASK_CLOSED,
+            user=self.expertB_1
+        )
+
+        # AND there is approved task assigned to me (expertB_1)
+        self.approved_task_b1 = mommy.make(
+            Task,
+            organization=organization4,
+            status=Task.TASK_APPROVED,
+            user=self.expertB_1
+        )
+
+        # AND there is another expertB with assigned open task
+        self.expertB2 = mommy.make_recipe('exmo2010.active_user')
+        self.expertB2.profile.is_expertB = True
+        self.task_b2 = mommy.make(Task, organization=organization1, status=Task.TASK_OPEN, user=self.expertB2)
+
+    def test_forbid_unowned_tasks_actions(self):
+        # WHEN I try to close Task that is not assigned to me
+        url = reverse('exmo2010:ajax_task_open', args=[self.task_b2.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 403 (forbidden)
+        self.assertEqual(res.status_code, 403)
+
+    def test_allow_close_complete_task_action(self):
+        # WHEN I try to close opened Task that is assigned to me and have complete score
+        url = reverse('exmo2010:ajax_task_close', args=[self.complete_task_b1.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND new status_display "ready" should be in the ajax response
+        res = json.loads(res.content)
+        ready_status_display = dict(Task.TASK_STATUS).get(Task.TASK_READY)
+        self.assertEqual(res['status_display'], ready_status_display)
+        # AND new permitted actions should be in the ajax response ('open_task', 'view_task')
+        self.assertEqual(set(['open_task', 'view_task']), set(res['perms'].split()))
+
+    def test_forbid_close_incomplete_task_action(self):
+        # WHEN I try to close opened Task that is assigned to me but does not have complete score
+        url = reverse('exmo2010:ajax_task_close', args=[self.incomplete_task_b1.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND ajax response status_display should be same old status "open" plus error message
+        res = json.loads(res.content)
+        open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
+        res_pattern = re.compile(r'^%s \[.+\]$' % open_status_display)
+        self.assertTrue(res_pattern.match(res['status_display']))
+        # AND ajax response permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+
+    def test_allow_open_closed_task_action(self):
+        # WHEN I try to open closed Task that is assigned to me
+        url = reverse('exmo2010:ajax_task_open', args=[self.closed_task_b1.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND new status_display "open" should be in the ajax response
+        res = json.loads(res.content)
+        open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
+        self.assertEqual(res['status_display'], open_status_display)
+        # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+
+    def test_forbid_open_approved_task_action(self):
+        # WHEN I try to open approved Task that is assigned to me
+        url = reverse('exmo2010:ajax_task_open', args=[self.approved_task_b1.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND ajax response status_display should be same old status "approved"
+        res = json.loads(res.content)
+        approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
+        self.assertEqual(res['status_display'], approved_status_display)
+        # AND ajax response permitted actions should be same as before ('view_task')
+        self.assertEqual('view_task', res['perms'])
+
+
+class ExpertATaskAjaxActionsTestCase(TestCase):
+    # Should allow expertA to approve and reopen Tasks using ajax actions
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN MONITORING_RATE monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
+        # AND there are 3 organizations in this monitoring (for every task)
+        organization1 = mommy.make(Organization, monitoring=self.monitoring)
+        organization2 = mommy.make(Organization, monitoring=self.monitoring)
+        organization3 = mommy.make(Organization, monitoring=self.monitoring)
+        # AND one parameter with only 'accessible' attribute
+        parameter = mommy.make(
+            Parameter,
+            monitoring = self.monitoring,
+            complete = False,
+            accessible = True,
+            topical = False,
+            hypertext = False,
+            document = False,
+            image = False,
+            npa = False
+        )
+        # AND i am logged-in as expertA
+        self.expertA = User.objects.create_user('expertA', 'usr1@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND expertB account
+        self.expertB = User.objects.create_user('expertB', 'usr2@svobodainfo.org', 'password')
+        self.expertB.profile.is_expertB = True
+
+        # AND there is an open task assigned to expertB
+        self.open_task = mommy.make(
+            Task,
+            organization=organization1,
+            status=Task.TASK_OPEN,
+            user=self.expertB
+        )
+
+        # AND there is closed task assigned to expertB, which have complete score
+        self.closed_complete_task = mommy.make(
+            Task,
+            organization=organization2,
+            status=Task.TASK_OPEN,
+            user=self.expertB
+        )
+        score = mommy.make(Score, task=self.closed_complete_task, parameter=parameter, found=1, accessible=1)
+
+        # AND there is approved task assigned to expertB
+        self.approved_task = mommy.make(
+            Task,
+            organization=organization3,
+            status=Task.TASK_APPROVED,
+            user=self.expertB
+        )
+
+    def test_allow_open_approved_task_action(self):
+        # WHEN I try to reopen approved Task
+        url = reverse('exmo2010:ajax_task_open', args=[self.approved_task.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND new status_display "open" should be in the ajax response
+        res = json.loads(res.content)
+        open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
+        self.assertEqual(res['status_display'], open_status_display)
+        # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+
+    def test_allow_approve_complete_task_action(self):
+        # WHEN I try to approve closed complete Task
+        url = reverse('exmo2010:ajax_task_approve', args=[self.closed_complete_task.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND new status_display "approved" should be in the ajax response
+        res = json.loads(res.content)
+        approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
+        self.assertEqual(res['status_display'], approved_status_display)
+        # AND new permitted actions should be in the ajax response ('open_task', 'fill_task', 'view_task')
+        self.assertEqual(set(['open_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+
+    def test_forbid_approve_open_task_action(self):
+        # WHEN I try to approve opened Task
+        url = reverse('exmo2010:ajax_task_approve', args=[self.open_task.pk])
+        res = self.client.post(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(res.status_code, 200)
+        # AND ajax response status_display should be same old status "open" plus error message
+        res = json.loads(res.content)
+        open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
+        res_pattern = re.compile(r'^%s \[.+\]$' % open_status_display)
+        self.assertTrue(res_pattern.match(res['status_display']))
+        # AND ajax response  permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))

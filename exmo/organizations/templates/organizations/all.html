@@ -60,7 +60,7 @@
             {% for object in object_list %}
                 <tr>
                     <td>
-                        <a href="{% url exmo2010:tasks_by_monitoring_and_organization monitoring.pk, object.pk %}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
+                        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter0={{object.name|urlencode}}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
                         {% if perm %}
                             &nbsp;<a href="{% url exmo2010:organization_update monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>
                         {%endif%}

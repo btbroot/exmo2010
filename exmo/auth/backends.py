@@ -22,16 +22,13 @@
  Модуль с классом пригодным для использования как authentication backend
 """
 
-from auth.helpers import check_permission
+from auth.helpers import check_permission, get_all_permissions
 
 
 class ObjectPermBackend(object):
     """
-     Это бекенд для получения прав для объекта
-     Сделан по описанию https://docs.djangoproject.com/en/1.3/topics/auth/#handling-object-permissions
-     Имеет один активный метод -- has_perm который принимает и обрабатывает obj -- объект для которого
-     проверяет привелегия. По сути django-врапер для check_permission.
-
+    Django Authentication Backend
+    Implements standard authenticate, has_perm and get_all_permissions methods
     """
     supports_object_permissions = True
     supports_anonymous_user = True
@@ -41,3 +38,6 @@ class ObjectPermBackend(object):
 
     def has_perm(self, user_obj, perm, obj=None):
         return check_permission(user_obj, perm, obj)
+
+    def get_all_permissions(self, user, obj=None):
+        return set(get_all_permissions(user, obj))

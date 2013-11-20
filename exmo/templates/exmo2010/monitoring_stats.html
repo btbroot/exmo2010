@@ -18,10 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n model_status %}
+{% load i18n %}
 <div id=monitoring_stats>
     {% trans 'Organizations count' %}: <a href="{% url exmo2010:organization_list monitoring.pk %}">{{ organization_all_count }}</a><br />
     {% trans 'Organizations with task' %}: <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{{ organization_with_task_count }}</a><br />
     {% trans 'Organizations with ready task' %}: {{ organization_ready_count }}<br />
-    {% trans 'Organizations with approved task' %}: <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter2={% task_status 'approved' %}">{{ organization_approved_count }}</a><br />
+    {% trans 'Organizations with approved task' %}: <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter2={{ models.Task.TASK_APPROVED }}">{{ organization_approved_count }}</a><br />
 </div>

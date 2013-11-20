@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
+{% load url from future %}
+{% load table_header i18n adminmedia monitoring_stats %}
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
@@ -33,22 +34,33 @@
     </style>
     <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
     <script>
-        var baseURL='/exmo2010/tasks/task/';
-        function change_status(task_id, status) {
-            var loaderHTML='<img width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif" class="ajaxloader">';
-            $('#task-status-'+task_id).html(loaderHTML);
-            $.ajax({
-                url: baseURL+task_id+'_'+status+'/',
-                success: function(data) {
-                    $('#task-status-'+task_id).html(data);
+        $(function(){
+            function show_status_actions(td) {
+                $(td).children('img').hide();  // hide "loading..." image
+                $(td).children('.task_status_display').show();
+                perms = $(td).data('perms').split(' ');
+                for (var i = 0; i < perms.length; i++) {
+                    action_class = '.perms_' + perms[i];
+                    $(td).find(action_class).show();  // show permitted action
                 }
-            });
-        }
-        $(document).ready(function () {
-            $('.task-status').each(function(){
-                var task_id=$(this).data('taskid');
-                var url=baseURL+task_id+'_get/';
-                $(this).load(url);
+            }
+
+            $('td.task-status').each(function(){show_status_actions(this)});
+
+            $(document).on('click', 'td.task-status a', function () {
+                td = $(this).closest('td')
+                td.children().hide().filter('img').show();  // hide contents, show "loading..." image
+                $.post($(this).attr('href'))
+                    .done(function(new_data) {
+                        td.data('perms', new_data.perms);
+                        td.children('.task_status_display').html(new_data.status_display);
+                        show_status_actions(td);
+                    })
+                    .fail(function() {
+                        // Permision denied or error
+                        show_status_actions(td);  // just show previous state
+                    })
+                return false;
             });
         });
     </script>
@@ -61,65 +73,65 @@
         {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
     {% endif %}
 {% endblock %}
-{% block nav_sidebar_title %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}<h1>{{ monitoring.name }}</h1>{% endif %}{% endblock %}
-{% block content_class %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}sidebar-ident{% endif %}{% endblock %}
+{% block nav_sidebar_title %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        <h1>{{ monitoring.name }}</h1>
+    {% endif %}
+{% endblock %}
+{% block content_class %}
+    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
+        sidebar-ident
+    {% endif %}
+{% endblock %}
 
 {% block content_title %}{% trans "Tasks" %}{% endblock %}
 {% block content %}
-{% check_object_permission exmo2010.admin_monitoring monitoring as perm_admin %}
 <div id=task_list>
 <table>
   {% table_header headers %}
   <tbody>
-    {% if perm_admin %}
+    {% if monitoring.perms.admin_monitoring %}
         <tr>
             <td colspan=5>
-            {% if organization %}
-                <a href="{% url exmo2010:org_task_add monitoring.pk organization.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>
-            {% else %}
-                <a href="{% url exmo2010:task_add monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>
-            {% endif %}
+                <a href="{% url 'exmo2010:task_add' monitoring.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new task' %}
+                    &nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>
             </td>
         </tr>
     {% endif %}
-    {% for object in object_list %}
-    <tr id="task{{ object.pk }}">
+    {% for task in object_list %}
+        <tr id="task{{ task.pk }}">
+            <td>
+                <a href="{% url 'exmo2010:score_list_by_task' task.pk %}" title="{{ task.organization.name}}">{{ task.organization.name|truncatewords:10 }}</a>
+                {% if monitoring.perms.admin_monitoring %}
+                    &nbsp;<a href="{% url 'exmo2010:task_update' task.pk %}{{ request.GET.urlencode }}">
+                        <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                {% endif %}
+                {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
+                    <a href="{% url 'exmo2010:task_delete' task.pk %}?{{ request.GET.urlencode }}">
+                        <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif"></a>
+                {% endif %}
+            </td>
+            {% if monitoring.perms.admin_monitoring or user.userprofile.is_expertA %}
+                <td>
+                    {{ task.user.userprofile.legal_name }}
+                </td>
+            {% endif %}
+            {% if user.is_superuser or user.userprofile.is_expert %}
+                <td id="task-status-{{ task.pk }}" class="task-status" data-perms="{{task.perms}}">
+                    <img class="ajaxloader hidden" width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
+                    <span class="task_status_display">{{task.get_status_display}}</span>
+                    <span class="perms_close_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_close' task.pk %}">{% trans 'close' %}</a></span>
+                    <span class="perms_approve_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_approve' task.pk %}">{% trans 'approve' %}</a></span>
+                    <span class="perms_open_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_open' task.pk %}">{% trans 'open' %}</a></span>
+                </td>
 
-      <td>
-        <a href="{% url exmo2010:score_list_by_task object.pk %}" title="{{ object.organization.name}}">{{ object.organization.name|truncatewords:10 }}</a>
-        {% if perm_admin %}
-            &nbsp;<a href="{% url exmo2010:task_update object.pk %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
-        {% endif %}
-        {% if perm_admin and not monitoring.is_published %}
-            <a href="{% url exmo2010:task_delete object.pk %}?{%if organization%}organization=1&{%endif%}{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif"></a>
-        {% endif %}
-      </td>
-      {% if perm_admin or user.userprofile.is_expertA %}
-          <td>
-              {{ object.user.userprofile.legal_name }}
-          </td>
-      {% endif %}
-      {% if user.is_superuser or user.userprofile.is_expert %}
-      <td id="task-status-{{ object.pk }}" class="task-status" data-taskid="{{ object.pk }}">
-          <img src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif" class="ajaxloader">
-      </td>
-      {% endif %}
-
-      {% if user.profile.is_expert %}
-      <td>
-          <a href="{% url exmo2010:score_list_by_task object.pk %}">
-              {{ object.complete_sql|floatformat:1 }}
-          </a>
-      </td>
-      {% endif %}
-
-      {% if organization %}
-      <td>
-          {{ object.openness|floatformat:3 }}
-      </td>
-      {% endif %}
-
-    </tr>
+                <td>
+                    <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">
+                        {{ task.complete_sql|floatformat:1 }}
+                    </a>
+                </td>
+            {% endif %}
+        </tr>
     {% endfor %}
   </tbody>
 </table>

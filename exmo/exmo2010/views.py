@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from collections import OrderedDict
+from urllib import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -261,11 +262,7 @@ class CertificateOrderView(SessionWizardView):
             reverse('exmo2010:tasks_by_monitoring', args=[organization.monitoring.pk])
         )
 
-        organization_url = '%s://%s%s' % (
-            protocol,
-            current_site.domain,
-            reverse('exmo2010:tasks_by_monitoring_and_organization', args=[organization.monitoring.pk, organization.pk])
-        )
+        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': organization.name}))
 
         context = {
             'email': request.user.email,

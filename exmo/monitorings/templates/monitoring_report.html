@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n model_status %}
+{% load i18n %}
 {% block extrahead %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
@@ -85,7 +85,7 @@
             {% if not monitoring.is_published %}
             <tr>
                 <td>{% trans 'Monitoring status' %}</td>
-                <td class="value">{% monitoring_status monitoring.status %}</td>
+                <td class="value">{{ monitoring.get_status_display }}</td>
             </tr>
             {% endif %}
             <tr>

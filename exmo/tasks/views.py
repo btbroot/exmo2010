@@ -24,21 +24,24 @@ import string
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import Group, User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.urlresolvers import reverse
+from django.forms.models import modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, QueryDict
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
+from django.views.generic import View
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 import reversion
 
 from accounts.forms import SettingsInvCodeForm
+from core.helpers import table
+from core.response import JSONResponse
 from core.utils import UnicodeReader, UnicodeWriter
 from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory
-from core.helpers import table
-from tasks.forms import TaskForm
+from perm_utils import annotate_exmo_perms
 
 
 def task_export(request, task_pk):
@@ -216,198 +219,119 @@ def task_import(request, task_pk):
     })
 
 
-# TODO: replace with tasks_by_monitoring
-def tasks_by_monitoring_and_organization(request, monitoring_pk, org_pk):
-    """
-    We have 3 generic group: experts, customers, organizations.
-    Superusers: all tasks
-    Experts: only own tasks
-    Customers: all approved tasks
-    organizations: all approved tasks of organizations that belongs to user
-    Also for every ogranization we can have group.
+class AjaxTaskActionView(View):
+    def post(self, request, task_pk):
+        task = get_object_or_404(Task, pk=task_pk)
+        annotate_exmo_perms(task, request.user)
+        if request.user.has_perm(self.permission_required, task):
+            try:
+                self.action(task)
+            except ValidationError as e:
+                # Action was not sucessful, task was not saved in the db
+                # We should return actual task status from db, not the one that was modified in action
+                task = get_object_or_404(Task, pk=task_pk)
+                annotate_exmo_perms(task, request.user)
+                # Add error message to the status
+                status_display = '%s [%s]' % (task.get_status_display(), e.message_dict.get('__all__')[0])
+                return JSONResponse(status_display=status_display, perms=str(task.perms))
+        elif not request.user.has_perm('exmo2010.view_task', task):
+            raise PermissionDenied
+        return JSONResponse(status_display=task.get_status_display(), perms=str(task.perms))
 
-    """
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
-    organization = get_object_or_404(Organization, pk = org_pk)
-    user = request.user
-    profile = None
-    if user.is_active: profile = user.profile
-    if not user.has_perm('exmo2010.view_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    title = _('Task list for %s') % organization.name
-    queryset = Task.objects.filter(organization = organization)
-    # Or, filtered by user
-    if user.has_perm('exmo2010.admin_monitoring', monitoring):
-      headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('expert'), 'user__username', 'user__username', None, None),
-                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), None, None, None, None),
-                (_('openness, %'), None, None, None, None),
-      )
-    elif profile and profile.is_expert:
-    # Or, without Expert
-      headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-                (_('complete, %'), None, None, None, None),
-                (_('openness, %'), None, None, None, None)
-      )
-    else:
-      queryset = Task.approved_tasks.all()
-      queryset = queryset.filter(organization = organization)
-      headers = (
-                (_('organization'), 'organization__name', 'organization__name', None, None),
-                (_('openness, %'), None, None, None, None)
-              )
-    task_list = []
-    for task in queryset:
-        if user.has_perm('exmo2010.view_task', task): task_list.append(task.pk)
-    queryset = Task.objects.filter(pk__in = task_list)
 
-    return table(request, headers, queryset=queryset, paginate_by=15,
-                 extra_context={
-                     'monitoring': monitoring,
-                     'organization': organization,
-                     'title': title,
-                 },
-                 template_name="task_list.html",)
+class AjaxTaskCloseView(AjaxTaskActionView):
+    permission_required = 'exmo2010.close_task'
+    action = lambda self, task: task._set_ready(True)
+
+
+class AjaxTaskOpenView(AjaxTaskActionView):
+    permission_required = 'exmo2010.open_task'
+    action = lambda self, task: task._set_open(True)
+
+
+class AjaxTaskApproveView(AjaxTaskActionView):
+    permission_required = 'exmo2010.approve_task'
+    action = lambda self, task: task._set_approved(True)
 
 
 @reversion.create_revision()
 @login_required
-def task_add(request, monitoring_pk, org_pk=None):
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
-    if org_pk:
-        organization = get_object_or_404(Organization, pk = org_pk)
-        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization', args=[monitoring.pk, organization.pk]), request.GET.urlencode())
-        title = _('Add new task for %s') % organization.name
-    else:
-        organization = None
-        redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk]), request.GET.urlencode())
-        title = _('Add new task for %s') % monitoring
-
-    redirect = redirect.replace("%","%%")
-    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        if request.method == 'GET':
-            form = TaskForm(initial={'organization': organization}, monitoring=monitoring)
-        elif request.method == 'POST':
-            form = TaskForm(request.POST, monitoring=monitoring)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(redirect)
-
-        return TemplateResponse(request, 'exmo2010/task_form.html', {
-            'monitoring': monitoring,
-            'organization': organization,
-            'title': title,
-            'form': form
-        })
-    else:
+def task_add(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
+    title = _('Add new task for %s') % monitoring
+
+    formdata = [request.POST] if request.method == 'POST' else []
+    form = modelform_factory(Task)(*formdata)
+    form.fields['organization'].queryset = monitoring.organization_set.all()
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        redirect = reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk])
+        redirect = ('%s?%s' % (redirect, request.GET.urlencode()))
+        return HttpResponseRedirect(redirect)
+
+    return TemplateResponse(request, 'exmo2010/task_form.html', {
+        'monitoring': monitoring,
+        'title': title,
+        'form': form
+    })
 
 
 class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     model = Task
     context_object_name = "object"
-    form_class = TaskForm
-    template_name = "task_status.html"
     extra_context = {}
     pk_url_kwarg = 'task_pk'
 
     def get_redirect(self, request, monitoring, organization, org_pk=None):
-        organization_from_get = request.GET.get('organization', '')
-        if org_pk or organization_from_get:
-            q = request.GET.copy()
-            if organization_from_get:
-                q.pop('organization')
-            redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring_and_organization',
-                                  args=[monitoring.pk, organization.pk]), q.urlencode())
-        else:
-            redirect = '%s?%s' % (reverse('exmo2010:tasks_by_monitoring',
-                                          args=[monitoring.pk]), request.GET.urlencode())
-        redirect = redirect.replace("%", "%%")
-        return redirect
+        redirect = reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk])
+        return ('%s?%s' % (redirect, request.GET.urlencode())).replace("%", "%%")
 
     def get_context_data(self, **kwargs):
         context = super(TaskManagerView, self).get_context_data(**kwargs)
         context.update(self.extra_context)
         return context
 
+    def get_form(self, *args):
+        form = super(TaskManagerView, self).get_form(*args)
+        form.fields['organization'].queryset = self.monitoring.organization_set.all()
+        return form
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         organization = self.object.organization
-        monitoring = organization.monitoring
+        self.monitoring = organization.monitoring
         org_pk = self.kwargs.get('org_pk')
-        self.success_url = self.get_redirect(request, monitoring, organization, org_pk)
+        self.success_url = self.get_redirect(request, self.monitoring, organization, org_pk)
 
-        valid_methods = ['delete', 'approve', 'close',
-                         'open', 'update', 'get', ]
+        valid_methods = ['delete', 'update']
         if self.kwargs["method"] not in valid_methods:
             HttpResponseForbidden(_('Forbidden'))
 
         if self.kwargs["method"] == 'delete':
             title = _('Delete task %s') % self.object
-            if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            if not request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
                 return HttpResponseForbidden(_('Forbidden'))
             else:
                 self.template_name = "exmo2010/task_confirm_delete.html"
                 self.extra_context = {
-                    'monitoring': monitoring,
+                    'monitoring': self.monitoring,
                     'organization': organization,
                     'title': title,
                     'deleted_objects': Score.objects.filter(task=self.object)
                 }
 
-        if self.kwargs["method"] == 'close':
-            title = _('Close task %s') % self.object
-            if not request.user.has_perm('exmo2010.close_task', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
-            else:
-                if self.object.open:
-                    try:
-                        reversion.set_comment(_('Task ready'))
-                        self.object.ready = True
-                    except ValidationError, e:
-                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-                else:
-                    return HttpResponse(_('Already closed'))
-
-        if self.kwargs["method"] == 'approve':
-            title = _('Approve task for %s') % self.object
-            if not request.user.has_perm('exmo2010.approve_task', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
-            else:
-                if not self.object.approved:
-                    try:
-                        reversion.set_comment(_('Task approved'))
-                        self.object.approved = True
-                    except ValidationError, e:
-                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-                else:
-                    return HttpResponse(_('Already approved'))
-        if self.kwargs["method"] == 'open':
-            title = _('Open task %s') % self.object
-            if not request.user.has_perm('exmo2010.open_task', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
-            else:
-                if not self.object.open:
-                    try:
-                        reversion.set_comment(_('Task openned'))
-                        self.object.open = True
-                    except ValidationError, e:
-                        return HttpResponse('%s' % e.message_dict.get('__all__')[0])
-                else:
-                    return HttpResponse(_('Already open'))
         if self.kwargs["method"] == 'update':
             title = _('Edit task %s') % self.object
             self.template_name = "exmo2010/task_form.html"
-            if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            if not request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
                 return HttpResponseForbidden(_('Forbidden'))
             else:
                 reversion.set_comment(_('Task updated'))
                 self.extra_context = {
-                    'monitoring': monitoring,
+                    'monitoring': self.monitoring,
                     'organization': organization,
                     'title': title,
                 }
@@ -418,9 +342,9 @@ class TaskManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Process
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         organization = self.object.organization
-        monitoring = organization.monitoring
+        self.monitoring = organization.monitoring
         org_pk = self.kwargs.get('org_pk')
-        self.success_url = self.get_redirect(request, monitoring, organization, org_pk)
+        self.success_url = self.get_redirect(request, self.monitoring, organization, org_pk)
         if self.kwargs["method"] == 'delete':
             self.object = self.get_object()
             self.object.delete()
@@ -506,7 +430,7 @@ def tasks_by_monitoring(request, monitoring_pk):
         queryset = queryset,
         paginate_by = 50,
         extra_context = {
-            'monitoring': monitoring,
+            'monitoring': annotate_exmo_perms(monitoring, request.user),
             'title': title,
             'invcodeform': SettingsInvCodeForm(),
         },

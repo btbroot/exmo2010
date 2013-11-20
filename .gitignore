@@ -14,6 +14,7 @@ _build
 *.kate-swp
 .kateproject
 .kateproject.d
+eml_mails
 .DS_Store
 
 /env

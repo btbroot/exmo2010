@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,34 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-"""
-Возвращает строку с наименованием статуса по номеру статуса
-"""
+from exmo import config  # livesettings init
 
-from exmo2010.models import Task
-from exmo2010.models import MONITORING_STATUS
-from django import template
-from django.utils.translation import ugettext as _
-
-register = template.Library()
-
-
-def model_status(choices, status):
-    for code, text in choices:
-        if status == code:
-            return text
-        elif not isinstance(status, (int, long)) and _(status) == text:
-            return code
-    else:
-        return ""
-
-
-def monitoring_status(status):
-    return model_status(MONITORING_STATUS, status)
-
-
-def task_status(status):
-    return model_status(Task.TASK_STATUS, status)
-
-register.simple_tag(task_status)
-register.simple_tag(monitoring_status)
+from .claim import *
+from .clarification import *
+from .monitoring import *
+from .openness_expression import *
+from .organization import *
+from .parameter import *
+from .questionnaire import *
+from .score import *
+from .task import *
+from .userprofile import *

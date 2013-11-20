@@ -385,6 +385,7 @@ def toggle_comment(request):
 def score_list_by_task(request, task_pk, print_report_type=None):
     task = get_object_or_404(Task, pk=task_pk)
     title = task.organization.name
+
     if not request.user.has_perm('exmo2010.view_task', task):
         return HttpResponseForbidden(_('Forbidden'))
     monitoring = task.organization.monitoring

@@ -181,11 +181,15 @@ class CanonicalViewKwargsTestCase(TestCase):
     ajax_urls = set([
         'get_qq',
         'get_qqt',
+        'ajax_task_approve',
+        'ajax_task_open',
+        'ajax_task_close',
     ])
 
     urls_excluded = [
         'auth_logout',   # do not logout during test
-        'ratingUpdate',  # requires GET params, should be tested explicitly
+        'ratingUpdate',  # requires GET params, should be tested explicitly,
+        'certificate_order'  # require org permissions, should be tested explicitly
     ]
 
     test_patterns = set([p.name for p in exmo_urlpatterns]) - set(urls_excluded)

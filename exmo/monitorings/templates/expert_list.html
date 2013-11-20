@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia monitoring_stats model_status check_object_permission %}
+{% load table_header i18n adminmedia monitoring_stats check_object_permission %}
 
 {% block nav_sidebar %}
     {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
@@ -39,13 +39,13 @@
                             <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.userprofile.legal_name }}</a>
                         </td>
                         <td>
-                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'opened' %}">{{ object.open_tasks }}</a>
+                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={{models.Task.TASK_OPEN}}">{{ object.open_tasks }}</a>
                         </td>
                         <td>
-                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'closed' %}">{{ object.ready_tasks }}</a>
+                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={{models.Task.TASK_CLOSED}}">{{ object.ready_tasks }}</a>
                         </td>
                         <td>
-                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={%task_status 'approved' %}">{{ object.approved_tasks }}</a>
+                            <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}&filter2={{models.Task.TASK_APPROVED}}">{{ object.approved_tasks }}</a>
                         </td>
                         <td>
                             <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>

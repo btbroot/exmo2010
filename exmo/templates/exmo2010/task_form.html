@@ -29,14 +29,14 @@
 <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
   <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
   {% if object %}
-  <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
+    <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
   {% else %}
-  <p>{{form.status.as_hidden}}</p>
+    <p>{{form.status.as_hidden}}</p>
   {% endif %}
   {% if organization %}
-  <p>{{form.organization.as_hidden}}</p>
+    <p>{{form.organization.as_hidden}}</p>
   {% else %}
-  <p>{{form.organization.label_tag}}{{ form.organization }} {{ form.organization.errors }}</p>
+    <p>{{form.organization.label_tag}}{{ form.organization }} {{ form.organization.errors }}</p>
   {% endif %}
   <p><input type="submit" /><input class="button" type="reset" /></p>
 </form>

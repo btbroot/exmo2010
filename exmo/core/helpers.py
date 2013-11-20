@@ -26,6 +26,7 @@ from django.utils import translation
 from django.utils.functional import wraps
 
 from core.sort_headers import SortHeaders
+from perm_utils import annotate_exmo_perms
 
 
 def table_prepare_queryset(request, headers, queryset):
@@ -98,7 +99,7 @@ def object_list(request, queryset, paginate_by=None, page=None,
         except InvalidPage:
             raise Http404
         context = {
-            '%s_list' % template_object_name: page_obj.object_list,
+            '%s_list' % template_object_name: annotate_exmo_perms(page_obj.object_list, request.user),
             'paginator': paginator,
             'page_obj': page_obj,
             'is_paginated': page_obj.has_other_pages(),
@@ -119,7 +120,7 @@ def object_list(request, queryset, paginate_by=None, page=None,
         }
     else:
         context = {
-            '%s_list' % template_object_name: queryset,
+            '%s_list' % template_object_name: annotate_exmo_perms(queryset, request.user),
             'paginator': None,
             'page_obj': None,
             'is_paginated': False,

@@ -101,7 +101,11 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
             self.object.delete()
             return HttpResponseRedirect(self.get_success_url())
 
-        self.update(request, task)
+        self.extra_context = {
+            'title': _('Edit parameter %s') % self.object,
+            'edit': True,
+            'media': CORE_MEDIA + ParameterForm().media
+        }
         return super(ParameterManagerView, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):

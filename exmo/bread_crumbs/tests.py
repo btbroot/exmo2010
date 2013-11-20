@@ -25,7 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from exmo2010.models import Group, Monitoring, Organization, Task, MONITORING_PUBLISHED
+from exmo2010.models import Monitoring, Organization, Task, MONITORING_PUBLISHED
 from core.utils import get_named_patterns
 
 
@@ -51,9 +51,9 @@ class ExmoBreadcrumbsTestCase(TestCase):
         organization = mommy.make(Organization, monitoring=monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
 
-        # AND superuser account
-        admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        admin.groups.add(Group.objects.get(name=admin.profile.expertA_group))
+        # AND expertA account
+        expertA = User.objects.create_user('expertA', 'u@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
 
         # AND kwargs to reverse view urls
         self.kwargs = {
@@ -85,8 +85,8 @@ class ExmoBreadcrumbsTestCase(TestCase):
     def test_crumbs(self, urlname, expected_crumbs, is_expert=False):
         client = Client()
         if is_expert:
-            # WHEN i login as admin (with expertA rights)
-            client.login(username='admin', password='password')
+            # WHEN i login as expertA
+            client.login(username='expertA', password='password')
 
         # WHEN i get the page
         res = client.get(self._reverse(urlname))
