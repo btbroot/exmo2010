@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,31 +18,35 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n future %}
+
 <ul id="errors-header">
     <li class="brand">
-        <a href="{% url exmo2010:index %}">
-            {% trans 'Exmo' %}
-        </a>
+        <a href="{% url 'exmo2010:index' %}"></a>
     </li>
     <li>
-        <a href="{% url exmo2010:index %}">
+        <a href="{% url 'exmo2010:index' %}">
             {% trans 'Dashboard' %}
         </a>
     </li>
     <li>
-        <a href="{% url exmo2010:ratings %}">
+        <a href="{% url 'exmo2010:ratings' %}">
             {% trans 'Rating' %}
         </a>
     </li>
     <li>
-        <a href="{% url exmo2010:monitoring_report %}">
+        <a href="{% url 'exmo2010:monitoring_report' %}">
             {% trans 'Statistics' %}
         </a>
     </li>
     <li>
-        <a href="{% url exmo2010:help %}">
+        <a href="{% url 'exmo2010:help' %}">
             {% trans 'Help' %}
+        </a>
+    </li>
+    <li class="portal">
+        <a href="http://infometer.org/" target="_blank">
+            {% trans 'To portal' %}
         </a>
     </li>
 </ul>

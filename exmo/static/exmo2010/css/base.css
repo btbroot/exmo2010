@@ -789,43 +789,54 @@ div.breadcrumbs
 
 /* ERRORS HEADER */
 
-ul#errors-header
-{
+ul#errors-header {
     list-style: none;
+    padding: 0;
     margin: 0;
-    padding: 10px 0 0 15px;
-    height: 30px;
+    line-height: 40px;
     background-color: #666;
 }
 
-ul#errors-header li
-{
-    display: inline;
-    padding-right: 25px;
+ul#errors-header li {
+    display: inline-block;
+    padding: 0 10px;
 }
 
-ul#errors-header li.brand
-{
-    position: relative;
-    top: 2px;
+ul#errors-header li.brand {
+    margin: 0 20px;
+    padding: 0;
+    width: 140px;
 }
 
-ul#errors-header li a
-{
+ul#errors-header li.brand a {
+    background: url(../../dashboard/img/my_logo.png) 0 0 no-repeat;
+    width: 110px;
+    margin: 5px 0;
+    padding: 6px 70px;
+}
+
+ul#errors-header li.brand a:hover {
+    background-position: 0 -35px;
+}
+
+ul#errors-header li a {
     color: #fff;
-    font-family: Arial;
     font-size: 14px;
 }
 
-ul#errors-header li a:hover
-{
+ul#errors-header li a:hover {
     color: #ccc;
 }
 
-ul#errors-header li.brand a
-{
-    font-size: 20px;
-    text-transform: uppercase;
+ul#errors-header li.portal {
+    float: right;
+    padding: 0 20px;
+    background-color: #bbb;
+    font-weight: bold;
+}
+
+ul#errors-header li.portal a:hover {
+    color: #005C9C;
 }
 
 .jdatefield {

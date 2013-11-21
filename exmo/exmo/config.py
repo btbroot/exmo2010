@@ -93,7 +93,20 @@ config_register_list(
     ),
 )
 
-GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=1)
+LINKS_GROUP = ConfigurationGroup('Links', _('Links'), ordering=1)
+
+config_register_list(
+    StringValueWidget(
+        LINKS_GROUP,
+        'LINK_TO_PORTAL',
+        description=_('Link'),
+        ordering=0,
+        default='http://infometer.org/',
+        help_text=_('Link to portal'),
+    ),
+)
+
+GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=2)
 
 config_register_list(
     StringValueWidget(

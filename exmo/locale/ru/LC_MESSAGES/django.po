@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-19 18:49+0400\n"
+"POT-Creation-Date: 2013-11-21 18:59+0400\n"
 "PO-Revision-Date: 2013-11-13 03:42+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: \n"
@@ -645,6 +645,10 @@ msgstr "Адрес с которого осуществляется отправ
 #: exmo/config.py:92
 msgid "Certificate order notification email"
 msgstr "Адресат уведомлений о заказах сертификатов"
+
+#: exmo/config.py:101
+msgid "Link to portal"
+msgstr "Ссылка на портал"
 
 #: exmo/config.py:96
 msgid "Global Parameters"
@@ -2737,9 +2741,9 @@ msgstr ""
 "Для правильной работы сайта необходимо разрешить хранение cookies в "
 "настройках вашего браузера."
 
-#: templates/errors_header.html:25 templates/user_dashboard/menu.html:87
-msgid "Exmo"
-msgstr "Эксмо"
+#: templates/errors_header.html:50 templates/user_dashboard/menu.html:101
+msgid "To portal"
+msgstr "На портал"
 
 #: templates/admin/base_site.html:24
 msgid "EXMO admin"
@@ -3480,7 +3484,3 @@ msgstr ""
 #: templates/user_dashboard/dashboard.html:83
 msgid "Modules"
 msgstr "Модули"
-
-#: templates/user_dashboard/menu.html:57
-msgid "Please enter a name for the bookmark"
-msgstr ""

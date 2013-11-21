@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,50 +18,52 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-
 #header #navigation-menu {
-    background-image: none;
-    background-color: #3678A2;
+    background: #30659E none;
     height: 40px;
-    padding-right: 20px;
+    border-top: 1px solid #356A95;
+    border-bottom: 1px solid #356A95;
+    clear: both;
 }
 
 #header ul#navigation-menu li {
     padding: 0;
     margin: 0;
-    line-height: 18px;
-    height: auto;
+    height: 40px;
+}
+
+#header #account-menu {
+    float: right;
+    margin-right: 10px;
+}
+
+#header #account-menu li {
+    display: inline-block;
+    line-height: 30px;
+    margin: 0 10px;
+
 }
 
 #header ul#navigation-menu li.brand a {
-    font-family: Arial;
-    font-size: 20px;
-    text-transform: uppercase;
-    padding-left: 21px;
+    background: url(../img/my_logo.png) no-repeat;
+    margin: 5px 20px;
+    padding: 15px;
+    width: 110px;
 }
 
-#header ul#navigation-menu li.person {
-    position: absolute;
-    right: 0;
-    z-index: 99;
-    text-align: right;
-    outline: none;
-}
-
-#header ul#navigation-menu li.person a {
-    outline: none;
+#header ul#navigation-menu li.brand a:hover {
+    background-position: 0 -35px;
 }
 
 #header ul#navigation-menu li a {
     display: block;
     text-transform: none;
     text-decoration: none;
-    padding: 11px 10px;
+    padding: 12px 10px;
     border-right: none;
     color: #fff;
-    background-color: #3678A2;
+    background-color: #30659E;
     margin: 0;
-    font-family: Arial;
     font-size: 14px;
 }
 
@@ -78,16 +80,14 @@
 }
 
 #header ul#navigation-menu li.first a {
-    margin: 0px;
+    margin: 0;
     padding-top: 11px;
-    text-indent: 0px;
-    background-image: none;
-    background-color: #3678A2;
+    text-indent: 0;
+    background: #30659E none;
 }
 
 #header ul#navigation-menu li.selected a {
-    background-image: none;
-    background-color: #005c9c;
+    background: #1C518A none;
 }
 
 #header ul#navigation-menu li span {
@@ -99,14 +99,7 @@
     height: 10px;
     width: 10px;
     /* dropdown icon */
-    background-image: url(../img/menu_arrow_down.png);
-    background-position: 1px 0px;
-}
-
-#header ul#navigation-menu li.person span {
-    height: 10px;
-    width: 21px;
-    background-position: 1px 0px;
+    background: url(../img/menu_arrow_down.png) 1px 0;
 }
 
 #header ul#navigation-menu li ul {
@@ -117,107 +110,66 @@
     padding: 0;
     float: none;
     background: none;
+    height: 27px;
     z-index: 9999;
 }
 
 #header ul#navigation-menu li ul li a,
 #header ul#navigation-menu li.selected ul li a {
     padding: 5px 10px;
-    font-family: Arial;
     font-size: 13px;
-    color: #005c9c;
+    color: #1C518A;
     background-color: #fff;
     display: block;
-    border: 1px solid #ededed;
     border-width: 0 1px;
     text-transform: none;
     min-width: 88px;
-    height: 100%;
 }
 
 #header ul#navigation-menu li ul li a:hover,
 #header ul#navigation-menu li.selected ul li a:hover {
-    color: #005c9c;
+    color: #1C518A;
     text-decoration: underline;
 }
 
-.menuitem-hover
-{
+.menuitem-hover {
     background-color: #fff !important;
     color: #333 !important;
 }
 
-.menuarrow-hover
-{
+.menuarrow-hover {
     background-image: url(../img/menu_arrow_up.png) !important;
 }
 
-#userarea {
-    padding: 0;
-    z-index: inherit;
-    text-align: right;
-    z-index: 9999;
-}
-
-#userarea div {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-width: 0 0 1px 1px;
-    padding-top: 3px;
-    padding-bottom: 5px;
-    padding-left: 7px;
-}
-
-#header ul#navigation-menu div#userarea a {
-    padding: 0;
-    padding-right: 27px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    height: 18px;
-    background: none;
-    font-family: Arial;
-    font-size: 13px;
-    color: #005C9C;
-}
-
-#header ul#navigation-menu div#userarea div.auth a:first-child {
-    background: transparent url(../img/settings.png) no-repeat 10px 3px;
-    padding-left: 30px;
-}
-
-#header ul#navigation-menu div#userarea div.auth a {
-    background: transparent url(../img/exit.png) no-repeat 0px 3px;
-    padding-left: 20px;
-}
-
-#header ul#navigation-menu div#userarea a:hover {
-    text-decoration: underline;
-}
-
-#header ul#navigation-menu div#userarea img {
-    display: inline;
-    vertical-align: middle;
-    padding-right: 3px;
-    position: relative;
-    top: -1px;
-    z-index: 9999;
-}
-
-.hidden
-{
-    display: none;
-}
-
-#header ul#navigation-menu li.auth-menu {
-    float: right;
-}
-
 #header ul#navigation-menu li:hover ul,
-#header ul#navigation-menu li.over ul,
-#header ul#navigation-menu li ul li:hover ul,
-#header ul#navigation-menu li ul li.over ul {
+#header ul#navigation-menu li.over ul {
     display: none;
+}
+
+.pref-icon {
+    padding-left: 20px;
+    background:url(../img/settings.png) no-repeat 0 9px;
+}
+
+.logout-icon {
+    padding-left: 20px;
+    background:url(../img/exit.png) no-repeat 0 9px;
+}
+
+#header ul#navigation-menu li.portal {
+    float: right;
+    border-top: 1px solid #829ACA;
+    border-bottom: 1px solid #829ACA;
+    padding: 0;
+    margin-top: -1px;
+}
+
+#header ul#navigation-menu li.portal a {
+    background-color: #96AEDE;
+    font-weight: bold;
+    padding: 12px 20px;
+}
+
+#header ul#navigation-menu li.portal a:hover {
+    color: #005C9C;
 }

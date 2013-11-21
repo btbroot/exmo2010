@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,33 +18,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n static %}
+
 {% spaceless %}
-{% load i18n %}
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
+        <head>
+            <title>
+                {% block title %}{% endblock title %}
+            </title>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
-<head>
-    <title>
-        {% block title %}{% endblock title %}
-    </title>
-    <link rel="stylesheet" type="text/css" href="/static/exmo2010/css/base.css" />
-    <!--[if lte IE 7]>
-        <link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" />
-    <![endif]-->
-</head>
-<body>
-    <div id="container">
-        {% include 'errors_header.html' %}
-        {% block header_content %}{% endblock header_content %}
+            <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
+            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base.css' %}" />
+        </head>
 
-            <div id="content">
-                <div id="int_content">
-                    {% block content %}{% endblock content %}
-                </div>
+        <body>
+            <div id="container">
+                {% include 'errors_header.html' %}
+                {% block header_content %}{% endblock header_content %}
+
+                    <div id="content">
+                        <div id="int_content">
+                            {% block content %}{% endblock content %}
+                        </div>
+                    </div>
+
+                <div id="push"></div>
             </div>
-
-        <div id="push"></div>
-    </div>
-    {% include "exmo2010/footer.html" %}
-    </body>
-</html>
+            {% include "exmo2010/footer.html" %}
+        </body>
+    </html>
 {% endspaceless %}

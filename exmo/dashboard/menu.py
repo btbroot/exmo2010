@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -25,10 +25,10 @@ To activate your custom menu add the following to your settings.py::
     ADMIN_TOOLS_MENU = 'exmo.menu.CustomMenu'
 """
 
+from admin_tools.menu import items, Menu
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
-
-from admin_tools.menu import items, Menu
+from livesettings import config_value
 
 
 class CustomMenu(Menu):
@@ -37,6 +37,11 @@ class CustomMenu(Menu):
 
     """
     template = 'user_dashboard/menu.html'
+
+    def __init__(self, **kwargs):
+        super(CustomMenu, self).__init__(**kwargs)
+        self.auth = []
+        self.link_to_portal = config_value('Links', 'LINK_TO_PORTAL')
 
     class Media:
         js = (
@@ -47,63 +52,41 @@ class CustomMenu(Menu):
         )
 
     def init_with_context(self, context):
-        self.auth = []
         self.children = [
             items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
         ]
         request = context['request']
 
         if request.user.is_superuser:
-            self.children.append(items.MenuItem(_('Admin'),
-                                                reverse('admin:index')))
+            self.children.append(items.MenuItem(_('Admin'), reverse('admin:index')))
 
         if request.user.is_authenticated() and request.user.profile.is_organization:
             task_id = request.user.profile.get_task_review_id()
             if task_id is not None:
                 self.children += [
                     items.MenuItem(_('Scores of my organisation'),
-                                   reverse('exmo2010:score_list_by_task',
-                                           args=[task_id])),
+                                   reverse('exmo2010:score_list_by_task', args=[task_id])),
                 ]
 
         if request.user.is_active and request.user.profile.is_expertB and not request.user.profile.is_expertA:
             communication_children = [
-                items.MenuItem(_('Comments'),
-                               reverse('exmo2010:comment_list')),
-                items.MenuItem(_('Clarifications'),
-                               reverse('exmo2010:clarification_list')),
-                items.MenuItem(_('Claims'),
-                               reverse('exmo2010:claim_list'))
+                items.MenuItem(_('Comments'), reverse('exmo2010:comment_list')),
+                items.MenuItem(_('Clarifications'), reverse('exmo2010:clarification_list')),
+                items.MenuItem(_('Claims'), reverse('exmo2010:claim_list'))
             ]
             self.children.append(items.MenuItem(_('Messages'),
                                                 children=communication_children,
                                                 template='user_dashboard/item_dropdown.html'))
 
-        self.children.append(items.MenuItem(_('Ratings'),
-                                            reverse('exmo2010:ratings')))
-
-        self.children.append(items.MenuItem(_('Statistics'),
-                                            reverse('exmo2010:monitoring_report')))
-
-        self.children.append(items.MenuItem(_('Help'),
-                                            reverse('exmo2010:help')))
+        self.children.append(items.MenuItem(_('Ratings'), reverse('exmo2010:ratings')))
+        self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
+        self.children.append(items.MenuItem(_('Help'), reverse('exmo2010:help')))
 
         if request.user.is_authenticated():
-            children_auth = [
-                items.MenuItem(_('Preferences'), reverse('exmo2010:settings')),
-                items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout')),
-            ]
-            if request.user.get_full_name():
-                welcome_msg = request.user.get_full_name()
-            else:
-                welcome_msg = request.user.userprofile.legal_name
-            msg = welcome_msg
-            self.auth.append(items.MenuItem(msg, children=children_auth,
+            self.auth.append(items.MenuItem(request.user.userprofile.legal_name,
                                             template='user_dashboard/item_userarea.html'))
+            self.auth.append(items.MenuItem(_('Preferences'), reverse('exmo2010:settings'), css_classes=['pref-icon']))
+            self.auth.append(items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout'), css_classes=['logout-icon']))
         else:
-            self.auth.append(items.MenuItem(_('Log in'),
-                                            reverse('exmo2010:auth_login'),
-                                            template='user_dashboard/item_auth.html'))
-            self.auth.append(items.MenuItem(_('Registration'),
-                                            reverse('exmo2010:registration_register'),
-                                            template='user_dashboard/item_auth.html'))
+            self.auth.append(items.MenuItem(_('Registration'), reverse('exmo2010:registration_register')))
+            self.auth.append(items.MenuItem(_('Log in'), reverse('exmo2010:auth_login')))

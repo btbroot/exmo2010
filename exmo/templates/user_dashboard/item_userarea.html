@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,21 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load admin_tools_menu_tags %}
 
-{% load i18n admin_tools_menu_tags %}
 {% spaceless %}
     {% if not item.is_empty %}
-        <li class="menu-item person">
-            <a href="{{ item.url }}">
-                {{ item.title }}<span class="icon"></span>
-            </a>
-            <div id="userarea" class="hidden">
-                <div class="auth">
-                    {% for child in item.children %}
-                        <a href="{{ child.url }}">{{ child.title }}</a>
-                    {% endfor %}
-                </div>
-            </div>
+        <li class="menu-item">
+            {{ item.title }}
+            {% for child in item.children %}
+                <a href="{{ child.url }}">{{ child.title }}</a>
+            {% endfor %}
         </li>
     {% endif %}
 {% endspaceless %}
