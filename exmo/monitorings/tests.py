@@ -30,6 +30,7 @@ from django.utils import simplejson
 from django.utils.translation import ungettext
 from model_mommy import mommy
 from nose_parameterized import parameterized
+from BeautifulSoup import BeautifulSoup
 
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
@@ -41,7 +42,8 @@ from parameters.forms import ParameterDynForm
 class RatingsTableValuesTestCase(TestCase):
     # Scenario: Output to Ratings Table
     def setUp(self):
-        # GIVEN published monitoring
+        # GIVEN published monitoring with a particular
+        # name and published date
         self.client = Client()
         self.today = datetime.date.today()
         self.monitoring_name = "Name"
@@ -51,6 +53,7 @@ class RatingsTableValuesTestCase(TestCase):
             name=self.monitoring_name,
             publish_date=self.today
         )
+        # AND one organization connected to monitoring
         organization = mommy.make(Organization, monitoring=monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
 
@@ -66,10 +69,16 @@ class RatingsTableValuesTestCase(TestCase):
         monitoring = response.context['monitoring_list'][0]
         # THEN server returns "OK" response
         self.assertEqual(response.status_code, 200)
-        # AND output data equals initial data
+
+        # AND output name equals initial name
         self.assertEqual(monitoring.name, self.monitoring_name)
+
+        # AND output date equals initial date
         self.assertEqual(monitoring.publish_date, self.today)
+
+        # AND output quantity of organizations equals one
         self.assertEqual(monitoring.org_count, 1)
+
         # AND average openness is None because all parameters weight is 0
         self.assertEqual(monitoring.average, None)
 
@@ -239,6 +248,8 @@ class RatingActiveRepresentativesTestCase(TestCase):
         self.score2 = mommy.make(Score, pk=2, task=task2, parameter=parameter2)
         self.content_type = ContentType.objects.get_for_model(Score)
         self.site = Site.objects.get_current()
+        # AND superuser
+        self.admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
 
     def test_first_org_active_users(self):
         # WHEN representative adds a comment to first task's score
@@ -295,6 +306,18 @@ class RatingActiveRepresentativesTestCase(TestCase):
         self.assertEqual(t1.active_repr_len, 0)
         self.assertEqual(t2.active_repr_len, 0)
 
+    def test_representatives_quantities_rendered(self):
+        # WHEN superuser logs in (to see full table)
+        self.client.login(username="admin", password="password")
+        # AND requests rating page for monitoring
+        response = self.client.get(self.url)
+
+        soup = BeautifulSoup(response.content)
+        td = soup.find('td', {'class': 'representatives'})
+        representatives = td.strong.string
+
+        # THEN table cell contents string with correct order of users quantity
+        self.assertEqual(representatives, "1 / 0")
 
 class HiddenMonitoringVisibilityTestCase(TestCase):
     def setUp(self):

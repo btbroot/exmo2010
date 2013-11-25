@@ -216,7 +216,7 @@
             </td>
 
             {% if is_expert and user.profile.rt_representatives %}
-                <td>{{ object.active_repr_len }} / {{ object.repr_len }}</td>
+                <td>{{ object.repr_len }} / {{ object.active_repr_len }}</td>
             {% endif %}
 
             {% if is_expert and user.profile.rt_comment_quantity %}
@@ -264,8 +264,9 @@
             </td>
 
             {% if is_expert and user.profile.rt_representatives %}
-                <td>
-                    <strong>{{ average.active_repr_len }} / {{ average.repr_len }}</strong>
+                {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
+                <td class="representatives">
+                    <strong>{{ average.repr_len }} / {{ average.active_repr_len }}</strong>
                 </td>
             {% endif %}
 
