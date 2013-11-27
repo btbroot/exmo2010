@@ -30,7 +30,9 @@ from livesettings import config_value
 from core.helpers import use_locale
 
 
-@task(default_retry_delay=10 * 60, max_retries=5, rate_limit="500/h")
+@task(default_retry_delay=settings.EMAIL_DEFAULT_RETRY_DELAY,
+      max_retries=settings.EMAIL_MAX_RETRIES,
+      rate_limit=settings.EMAIL_RATE_LIMIT)
 @use_locale
 def send_email(recipients, subject, template_name, **kwargs):
     """
