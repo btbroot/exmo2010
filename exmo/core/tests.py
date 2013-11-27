@@ -16,11 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.test import TestCase
-
+from livesettings import config_value
 from nose_parameterized import parameterized
 
+from core.mail_tests import LocmemBackendTests
+from core.tasks import generate_email_message
 from core.utils import urlize
 
 
@@ -33,3 +34,31 @@ class UrlizeTestCase(TestCase):
     ])
     def test_urlize(self, data, expected_result):
         self.assertEqual(urlize(data), expected_result)
+
+
+class GeneratedEmailMessageTestCase(LocmemBackendTests, TestCase):
+    # Scenario: Check generating email function
+
+    @parameterized.expand([
+        ('example1@email.ru', 'subject1', 'score_claim'),
+        ('example2@email.ru', 'subject2', 'score_comment'),
+        ('example3@email.ru', 'subject3', 'score_clarification'),
+        ('example4@email.ru', 'subject4', 'certificate_order_email'),
+    ])
+    def test_generated_email_headers(self, to, subject, template_name):
+        from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+        # WHEN message is generated
+        msg = generate_email_message(to, subject, template_name)
+        # THEN message has expected headers
+        self.assertEqual(msg.message()['To'].encode(), to)
+        self.assertEqual(msg.message()['Subject'].encode(), subject)
+        self.assertEqual(msg.message()['From'].encode(), from_email)
+        # AND message has plaintext and html payload
+        payload0 = msg.message().get_payload(0)
+        self.assertMessageHasHeaders(payload0, {
+            ('Content-Type', 'text/plain; charset="utf-8"'),
+        })
+        payload1 = msg.message().get_payload(1)
+        self.assertMessageHasHeaders(payload1, {
+            ('Content-Type', 'text/html; charset="utf-8"'),
+        })

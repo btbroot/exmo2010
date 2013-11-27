@@ -21,11 +21,15 @@ import imaplib
 import re
 import sys
 
-from celery.task import periodic_task
+from celery.task import periodic_task, task
 from celery.task.schedules import crontab
 from django.conf import settings
+from django.core.mail.utils import DNS_NAME
+from livesettings import config_value
 
-from exmo2010.models import EmailTasks, Organization, Score
+from core.helpers import use_locale
+from core.tasks import generate_email_message
+from exmo2010.models import Organization, Score
 
 
 @periodic_task(run_every=crontab(minute="*/30"))
@@ -57,14 +61,12 @@ def check_mdn_emails():
 
                 if email_body.find('message/disposition-notification') != -1:
                     # email is MDN
-                    match = re.search("Original-Message-ID: <(?P<task>[\w\d.-]+)@(?P<host>[\w\d.-]+)>", email_body)
-
+                    match = re.search("Original-Message-ID: <(?P<invitation_code>[\w\d]+)@(?P<host>[\w\d.-]+)>",
+                                      email_body)
                     if match:
-                        task_id = match.group('task')
-
-                        task = EmailTasks.objects.get(task_id=task_id)
+                        invitation_code = match.group('invitation_code')
                         m.store(email_id, '+FLAGS', '\\Deleted')  # add 'delete' flag
-                        org = Organization.objects.get(pk=task.organization_id)
+                        org = Organization.objects.get(inv_code=invitation_code)
                         if org.inv_status in ['SNT', 'NTS']:
                             org.inv_status = 'RD'
                             org.save()
@@ -86,3 +88,34 @@ def change_inv_status():
         if is_active:
             org.inv_status = 'ACT'
             org.save()
+
+
+@task(default_retry_delay=settings.EMAIL_DEFAULT_RETRY_DELAY,
+      max_retries=settings.EMAIL_MAX_RETRIES,
+      rate_limit=settings.EMAIL_RATE_LIMIT)
+@use_locale
+def send_org_email(recipients, subject, template_name, org_pk, context):
+    """
+    Send email to organizations representatives
+    with message delivery notification and
+    change invitation status from 'not sent' to 'sent'.
+
+    """
+    organization = Organization.objects.get(pk=org_pk)
+    invitation_code = organization.inv_code
+
+    from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+
+    headers = {
+        'Disposition-Notification-To': from_email,
+        'X-Confirm-Reading-To': from_email,
+        'Return-Receipt-To': from_email,
+        'Message-ID': '<%s@%s>' % (invitation_code, DNS_NAME),
+    }
+
+    msg = generate_email_message(recipients, subject, template_name, headers=headers, context=context)
+    msg.send()
+
+    if organization.inv_status == 'NTS':
+        organization.inv_status = 'SNT'
+        organization.save()

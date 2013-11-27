@@ -67,6 +67,8 @@ DATABASES = {
 # Tests
 TEST = 'test' in sys.argv
 if TEST:
+    # execute celery tasks immediately
+    CELERY_ALWAYS_EAGER = True
     # in-memory SQLite used for testing.
     DATABASES = {
         'default': {

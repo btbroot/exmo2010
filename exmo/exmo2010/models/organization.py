@@ -81,7 +81,7 @@ class EmailsField(models.TextField):
             addresses += email
         return addresses.rstrip(", ")
 
-add_introspection_rules([], ["^exmo2010\.models\.EmailsField"])
+add_introspection_rules([], ["^exmo2010\.models\.organization\.EmailsField"])
 
 
 class PhonesField(models.TextField):
@@ -105,7 +105,7 @@ class PhonesField(models.TextField):
             numbers += number
         return numbers.rstrip(", ")
 
-add_introspection_rules([], ["^exmo2010\.models\.PhonesField"])
+add_introspection_rules([], ["^exmo2010\.models\.organization\.PhonesField"])
 
 
 class Organization(BaseModel):
@@ -123,7 +123,7 @@ class Organization(BaseModel):
         unique_together = (('name', 'monitoring'),)
 
     name = models.CharField(max_length=255, verbose_name=_('name'))
-    url = models.URLField(max_length=255, null=True, blank=True, verify_exists=False, verbose_name=_('url'))
+    url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('url'))
     keywords = TagField(null=True, blank=True, verbose_name=_('keywords'))
     email = EmailsField(null=True, blank=True, verbose_name=_('email'))
     phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
@@ -164,13 +164,3 @@ class InviteOrgs(BaseModel):
     inv_status = models.CharField(max_length=3,
                                   choices=INV_STATUS_ALL, default='ALL',
                                   verbose_name=_('Invitation status'))
-
-
-class EmailTasks(BaseModel):
-    """
-    Model with tasks ids for each organization (used by celery).
-
-    """
-    organization = models.ForeignKey(Organization, verbose_name=_('organization'))
-    task_id = models.CharField(max_length=60, verbose_name=_('task id'), db_index=True)
-

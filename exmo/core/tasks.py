@@ -23,7 +23,6 @@ from email.mime.image import MIMEImage
 from celery.task import task
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.core.mail.utils import DNS_NAME
 from django.template import loader, Context
 from livesettings import config_value
 
@@ -40,42 +39,8 @@ def send_email(recipients, subject, template_name, **kwargs):
 
     """
     attachments = kwargs.get("attachments", {})
-    context = kwargs.get("context", {})
-    mdn = kwargs.get("mdn", {})
 
-    if not isinstance(recipients, (tuple, list)):
-        recipients = [recipients, ]
-
-    t_txt = loader.get_template('.'.join([template_name, 'txt']))
-    t_html = loader.get_template('.'.join([template_name, 'html']))
-
-    c = Context(context)
-
-    message_txt = t_txt.render(c)
-    message_html = t_html.render(c)
-
-    from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
-
-    task_id = send_email.request.id
-
-    if mdn:
-        headers = {
-            'Disposition-Notification-To': from_email,
-            'X-Confirm-Reading-To': from_email,
-            'Return-Receipt-To': from_email,
-            'Message-ID': '<%s@%s>' % (task_id, DNS_NAME),
-        }
-    else:
-        headers = {}
-
-    msg = EmailMultiAlternatives(
-        subject,
-        message_txt,
-        from_email,
-        recipients,
-        headers=headers
-    )
-    msg.attach_alternative(message_html, "text/html")
+    msg = generate_email_message(recipients, subject, template_name, **kwargs)
 
     for cid in attachments:
         try:
@@ -91,3 +56,33 @@ def send_email(recipients, subject, template_name, **kwargs):
         msg.attach(msgImage)
 
     msg.send()
+
+
+def generate_email_message(recipients, subject, template_name, headers=None, context=None):
+    """
+    Function for generating email message with html content.
+
+    """
+    if not isinstance(recipients, (tuple, list)):
+        recipients = [recipients, ]
+
+    t_txt = loader.get_template('.'.join([template_name, 'txt']))
+    t_html = loader.get_template('.'.join([template_name, 'html']))
+
+    c = Context(context)
+
+    message_txt = t_txt.render(c)
+    message_html = t_html.render(c)
+
+    from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+
+    msg = EmailMultiAlternatives(
+        subject,
+        message_txt,
+        from_email,
+        recipients,
+        headers=headers
+    )
+    msg.attach_alternative(message_html, "text/html")
+
+    return msg

@@ -25,6 +25,7 @@ Some particular portions of EXMO2010 are third-party works.
 ---
 
 exmo/exmo2010/static/exmo2010/icon_yellow.gif
+exmo/core/mail_tests.py
 
 Copyright (c) Django Software Foundation and individual contributors.
 All rights reserved.

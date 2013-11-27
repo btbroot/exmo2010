@@ -16,14 +16,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.test import TestCase
-from django.test.client import Client
+import re
+
 from django.conf import settings
 from django.contrib.auth.models import User, Group
+from django.core import mail
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.test.client import Client
+from livesettings import config_value
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from core.mail_tests import LocmemBackendTests
 from exmo2010.models import *
 
 
@@ -72,3 +77,55 @@ class TestOrganizationsPage(TestCase):
         resp = self.client.get(url)
         # THEN only admin and expert A have access
         self.assertEqual(resp.status_code, response_code)
+
+
+class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
+    # Scenario: send and check emails
+    def setUp(self):
+        self.client = Client()
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND ten organizations connected to monitoring
+        self.organizations = mommy.make(Organization, monitoring=self.monitoring, email='test@test.ru',
+                                        inv_status='NTS', _quantity=10)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+
+    def test_sending_emails(self):
+        from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+        url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+        # WHEN I am logged in as expertA
+        self.client.login(username='expertA', password='password')
+        # AND I submit email sending form
+        resp = self.client.post(
+            url,
+            {
+                'comment': ['Invitation'],
+                'inv_status': ['ALL'],
+                'monitoring': ['%d' % self.monitoring.pk],
+                'submit_invite': [''],
+            },
+            follow=True
+        )
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(resp.status_code, 200)
+        # AND expert A should be redirected to the same url with get parameter and hash
+        self.assertRedirects(resp, url + '?alert=success#all')
+        # AND we should have 10 emails in our outbox
+        self.assertEqual(len(mail.outbox), 10)
+        # AND emails should have expected headers
+        email = mail.outbox[0].message()
+        self.assertEqual(email['From'].encode(), from_email)
+        self.assertEqual(email['To'].encode(), self.organizations[0].email)
+        # AND should have headers for Message Delivery Notification
+        self.assertEqual(email['Disposition-Notification-To'].encode(), from_email)
+        self.assertEqual(email['Return-Receipt-To'].encode(), from_email)
+        self.assertEqual(email['X-Confirm-Reading-To'].encode(), from_email)
+        # AND message ID should contain organizations invitation code
+        match = re.search("<(?P<invitation_code>[\w\d]+)@(?P<host>[\w\d.-]+)>", email['Message-ID'].encode())
+        invitation_code = match.group('invitation_code')
+        self.assertIn(invitation_code, [org.inv_code for org in self.organizations])
+        # AND invitation status should change from 'Not sent' to 'Sent'
+        for org in Organization.objects.all():
+            self.assertEqual(org.inv_status, 'SNT')

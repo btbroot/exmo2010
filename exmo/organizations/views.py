@@ -19,7 +19,6 @@
 #
 from datetime import datetime
 
-from celery.result import AsyncResult
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -31,13 +30,17 @@ from django.views.generic.edit import ProcessFormView, ModelFormMixin
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
-from core.tasks import send_email
-from exmo2010.models import EmailTasks, Monitoring, Organization, InviteOrgs, Task, INV_STATUS
+from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from organizations.forms import OrganizationForm, InviteOrgsForm
+from organizations.tasks import send_org_email
 
 
 @login_required
 def organization_list(request, monitoring_pk):
+    """
+    Organization page view.
+
+    """
     name_filter = invite_filter = None
     alert = request.GET.get('alert', False)
     if request.method == "GET":
@@ -50,18 +53,6 @@ def organization_list(request, monitoring_pk):
     title = _('Organizations for monitoring %s') % monitoring
 
     all_orgs = Organization.objects.filter(monitoring=monitoring)
-    orgs = all_orgs.filter(inv_status='NTS')
-
-    for org in orgs:
-        org_tasks = org.emailtasks_set.all()
-
-        for task in org_tasks:
-            res = AsyncResult(task.task_id)
-            if res.successful():
-                org.inv_status = 'SNT'
-                org.save()
-                break
-
     sent = all_orgs.exclude(inv_status='NTS')
 
     initial = {'monitoring': monitoring}
@@ -89,12 +80,7 @@ def organization_list(request, monitoring_pk):
                     emails = filter(None, org.email.split(', '))
                 else:
                     continue
-                task_id = send_email.delay(emails, subject, 'organizations/invitation_email', context=context, mdn=True)
-
-                task = EmailTasks()
-                task.task_id = task_id
-                task.organization = org
-                task.save()
+                send_org_email.delay(emails, subject, 'organizations/invitation_email', org.pk, context)
 
             redirect = reverse('exmo2010:organization_list', args=[monitoring_pk])+"?alert=success#all"
             return HttpResponseRedirect(redirect)
