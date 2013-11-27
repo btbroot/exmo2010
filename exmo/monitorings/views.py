@@ -59,6 +59,7 @@ from monitorings.forms import MonitoringForm, MonitoringFilterForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
 
 
+@login_required
 def set_npa_params(request, m_id):
     """
     Страница 'Выбрать согласованные параметры'.

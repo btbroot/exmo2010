@@ -37,6 +37,7 @@ from exmo2010.models import EmailTasks, Monitoring, Organization, InviteOrgs, Ta
 from organizations.forms import OrganizationForm, InviteOrgsForm
 
 
+@login_required
 def organization_list(request, monitoring_id):
     name_filter = invite_filter = None
     alert = request.GET.get('alert', False)
@@ -45,7 +46,7 @@ def organization_list(request, monitoring_id):
         invite_filter = request.GET.get('invite_filter', False)
 
     monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
-    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Organizations for monitoring %s') % monitoring
 

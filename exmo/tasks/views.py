@@ -508,8 +508,10 @@ def task_history(request, task_id):
 
 from django.http import QueryDict
 
-def tasks_by_monitoring(request, monitorgin_id):
-    monitoring = get_object_or_404(Monitoring, pk=monitorgin_id)
+
+@login_required
+def tasks_by_monitoring(request, monitoring_id):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_id)
     profile = None
     if request.user.is_active:
         profile = request.user.profile
