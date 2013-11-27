@@ -368,6 +368,7 @@ def task_history(request, task_pk):
     })
 
 
+@login_required
 def tasks_by_monitoring(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     profile = None
