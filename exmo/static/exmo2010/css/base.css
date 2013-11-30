@@ -811,8 +811,7 @@ ul#errors-header li.brand {
 ul#errors-header li.brand a {
     background: url(../../dashboard/img/my_logo.png) 0 0 no-repeat;
     width: 110px;
-    margin: 5px 0;
-    padding: 6px 70px;
+    padding: 4px 70px 8px;
 }
 
 ul#errors-header li.brand a:hover {

@@ -46,7 +46,7 @@
 
 #header ul#navigation-menu li.brand a {
     background: url(../img/my_logo.png) no-repeat;
-    margin: 5px 20px;
+    margin: 7px 20px 3px;
     padding: 15px;
     width: 110px;
 }
