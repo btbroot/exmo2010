@@ -269,7 +269,7 @@ class CertificateOrderView(SessionWizardView):
             reverse('exmo2010:tasks_by_monitoring', args=[organization.monitoring.pk])
         )
 
-        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': organization.name}))
+        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': organization.name.encode('utf8')}))
 
         context = {
             'email': request.user.email,

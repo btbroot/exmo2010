@@ -46,7 +46,7 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
         # AND published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, publish_date=date.today())
         # AND organzation at this monitoring
-        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        self.organization = mommy.make(Organization, name=u'ы', monitoring=self.monitoring)
         # AND task for expert B
         self.task = mommy.make(
             Task,

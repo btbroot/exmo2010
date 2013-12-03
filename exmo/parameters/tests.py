@@ -48,10 +48,10 @@ class ParameterEditAccessTestCase(TestCase):
         User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
         # AND expert B
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.is_expertB = True
+        expertB.profile.is_expertB = True
         # AND expert A
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.is_expertA = True
+        expertA.profile.is_expertA = True
         # AND organization representative
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [organization]
