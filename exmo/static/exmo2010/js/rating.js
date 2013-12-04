@@ -77,12 +77,10 @@ $(document).ready(function() {
     $('#user-defined').click(function( e ) {
         $('.switcher > li > a').each(function() {
             $(this).parent().removeClass('active');
-            $(this).removeClass('pseudo-off');
-            $(this).addClass('pseudo');
+            $(this).removeClass('off');
         });
 
-        $(this).removeClass('pseudo');
-        $(this).addClass('pseudo-off');
+        $(this).addClass('off');
         $(this).parent().addClass('active');
 
         $("#user-defined-parameters").removeClass('hidden');
@@ -112,7 +110,7 @@ $(document).ready(function() {
     /* User defined mode, submit button ability */
 
     var $submit = $('#pselect_form > input[type="submit"]'),
-        $checkboxes = $('#pselect_form > div >input[type="checkbox"]');
+        $checkboxes = $('#pselect_form > div input[type="checkbox"]');
 
     function isAnyChecked() {
         var any_checked = false

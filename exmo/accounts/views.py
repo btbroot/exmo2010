@@ -169,14 +169,3 @@ def settings(request):
         "inv_code_form_err": inv_code_form_err,
         "ch_pass_form_err": ch_pass_form_err
     })
-
-
-def get_experts():
-    """
-    Возвращает пользователей из групп expertA и expertB_manager.
-
-    """
-    return User.objects.filter(groups__name__in=[UserProfile.expertA_group, UserProfile.expertB_manager_group],
-                               is_active=True,
-                               email__isnull=False)\
-        .exclude(email__exact='').distinct()

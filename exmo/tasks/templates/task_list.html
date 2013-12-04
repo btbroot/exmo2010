@@ -21,10 +21,7 @@
 {% endcomment %}
 {% load url from future %}
 {% load table_header i18n adminmedia monitoring_stats %}
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
-{% endblock %}
+
 {% block extrahead %}{{ block.spuer }}
     <style>
         .ajaxloader {
@@ -65,8 +62,6 @@
         });
     </script>
 {% endblock %}
-
-{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
 {% block nav_sidebar %}
     {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
@@ -116,21 +111,19 @@
                     {{ task.user.userprofile.legal_name }}
                 </td>
             {% endif %}
-            {% if user.is_superuser or user.userprofile.is_expert %}
-                <td id="task-status-{{ task.pk }}" class="task-status" data-perms="{{task.perms}}">
-                    <img class="ajaxloader hidden" width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
-                    <span class="task_status_display">{{task.get_status_display}}</span>
-                    <span class="perms_close_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_close' task.pk %}">{% trans 'close' %}</a></span>
-                    <span class="perms_approve_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_approve' task.pk %}">{% trans 'approve' %}</a></span>
-                    <span class="perms_open_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_open' task.pk %}">{% trans 'open' %}</a></span>
-                </td>
+            <td id="task-status-{{ task.pk }}" class="task-status" data-perms="{{task.perms}}">
+                <img class="ajaxloader hidden" width="8" height="8" src="{{ STATIC_URL }}exmo2010/img/ajax-loader.gif">
+                <span class="task_status_display">{{task.get_status_display}}</span>
+                <span class="perms_close_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_close' task.pk %}">{% trans 'close' %}</a></span>
+                <span class="perms_approve_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_approve' task.pk %}">{% trans 'approve' %}</a></span>
+                <span class="perms_open_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_open' task.pk %}">{% trans 'open' %}</a></span>
+            </td>
 
-                <td>
-                    <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">
-                        {{ task.complete_sql|floatformat:1 }}
-                    </a>
-                </td>
-            {% endif %}
+            <td>
+                <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">
+                    {{ task.complete_sql|floatformat:1 }}
+                </a>
+            </td>
         </tr>
     {% endfor %}
   </tbody>

@@ -22,56 +22,40 @@
  Помощники для бекенда. По помощнику на каждый класс модели.
 """
 
-from exmo2010.models import (Task, Monitoring, Score, Organization, Parameter,
+from exmo2010.models import (Task, Monitoring, Score, Parameter,
                              MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED)
 
 
 def monitoring_permission(user, priv, monitoring):
-    #определяет показывать ссылку на рейтинг или на задачи
-    if priv == 'exmo2010.view_tasks':
-        if monitoring.is_published:
-            if user.is_active and user.profile.is_expert:
-                return True
-        else:
-            return True
-
     if priv in ('exmo2010.admin_monitoring',
                 'exmo2010.create_monitoring',
                 'exmo2010.edit_monitoring'):
-        if user.is_active:
-            if user.profile.is_manager_expertB:
-                return True
+        if user.is_expertA:
+            return True
 
     if priv == 'exmo2010.delete_monitoring':
-        if user.is_active:
-            if user.profile.is_manager_expertB and not monitoring.is_published:
-                return True
-
-    if priv in ('exmo2010.view_monitoring', 'exmo2010.rating_monitoring'):
-        if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB:
-                return True
-        # monitoring have one approved task for anonymous and publish and not hidden
-        if Task.approved_tasks.filter(organization__monitoring=monitoring).exists() \
-                and monitoring.is_published \
-                and not monitoring.hidden:
+        if user.is_expertA and not monitoring.is_published:
             return True
-        if user.is_active:  # minimaze query
-            profile = user.profile
-            if profile.is_expert \
-                    and Task.objects.filter(organization__monitoring=monitoring, user=user).exists() \
-                    and monitoring.is_active:
-                return True
-            elif profile.is_organization \
-                and Task.approved_tasks.filter(
-                    organization__monitoring=monitoring,
-                    organization__monitoring__status__in=(
-                        MONITORING_INTERACTION,
-                        MONITORING_FINALIZING,
-                        MONITORING_PUBLISHED,
-                    ),
-                    organization__in=profile.organization.all()).exists():
-                return True
+
+    if priv == 'exmo2010.view_monitoring':
+        if Task.approved_tasks.filter(organization__monitoring=monitoring).exists() \
+           and monitoring.is_published and not monitoring.hidden:
+            return True
+
+        if user.is_superuser or user.is_expertA:
+            return True
+        elif user.is_expertB and monitoring.is_active and \
+                Task.objects.filter(organization__monitoring=monitoring, user=user).exists():
+            return True
+        elif user.is_organization and Task.approved_tasks.filter(
+                organization__monitoring=monitoring,
+                organization__monitoring__status__in=(
+                    MONITORING_INTERACTION,
+                    MONITORING_FINALIZING,
+                    MONITORING_PUBLISHED,
+                ),
+                organization__in=user.profile.organization.all()).exists():
+            return True
 
     return False
 
@@ -81,7 +65,7 @@ def task_permission(user, priv, task):
         return False
 
     if user.is_active:
-        if user.profile.is_expertA or user.profile.is_manager_expertB:
+        if user.profile.is_expertA:
             return True
         profile = user.profile
 
@@ -215,32 +199,10 @@ def score_permission(user, priv, score):
     return False
 
 
-def organization_permission(user, priv, organization):
-    """
-    strange permission.
-    don't know why we need see organization without tasks for this organization.
-    don't use this. generate organization list from tasks list and exmo2010.view_task.
-
-    """
-    if priv == 'exmo2010.view_organization':
-        if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB:
-                return True
-            profile = user.profile
-            if profile.is_expertB:
-                if Task.objects.filter(organization=organization, user=user).count() > 0:
-                    return True
-            elif (profile.is_organization or profile.is_customer) and \
-                            profile.organization.filter(pk=organization.pk).count() > 0:
-                return True
-    return False
-
-
 def parameter_permission(user, priv, parameter):
     if priv == 'exmo2010.exclude_parameter':
-        if user.is_active:
-            if user.profile.is_expertA or user.profile.is_manager_expertB:
-                return True
+        if user.is_expertA:
+            return True
     return False
 
 
@@ -261,12 +223,10 @@ def check_permission(user, priv, context=None):
 _existing_permissions = {
     Monitoring: [
         'view_monitoring',
-        'rating_monitoring',
         'delete_monitoring',
         'edit_monitoring',
         'create_monitoring',
         'admin_monitoring',
-        'view_tasks'
     ],
     Task: [
         'fill_task',
@@ -285,7 +245,6 @@ _existing_permissions = {
         # score
         'delete_score', 'edit_score', 'view_score'
     ],
-    Organization: ['view_organization'],
     Parameter: ['exclude_parameter']
 }
 

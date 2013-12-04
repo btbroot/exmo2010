@@ -20,20 +20,22 @@
 import copy
 import csv
 import os
-import re
 import tempfile
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict, OrderedDict
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib import messages
 from django.db.models import Count, Q
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple
+from django.forms.models import modelformset_factory, modelform_factory
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -43,21 +45,19 @@ from django.template.response import TemplateResponse
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.utils.translation import ungettext
 from django.utils import simplejson
-from django.forms.models import modelformset_factory
 
-from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
-from monitorings.forms import MonitoringForm, TableSettingsForm
-from parameters.forms import ParamCritScoreFilterForm, ParameterDynForm, ParameterTypeForm
+from monitorings.forms import MonitoringForm
+from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
+from perm_utils import annotate_exmo_perms
 
 
 @login_required
@@ -98,49 +98,25 @@ def _get_monitoring_list(request):
             monitorings_pk.append(m.pk)
     queryset = Monitoring.objects.filter(
         pk__in=monitorings_pk).order_by('-publish_date')
-    return queryset
+    return annotate_exmo_perms(queryset, request.user)
 
 
-def monitoring_list(request):
+def monitorings_list(request):
     """
-    Список мониторингов.
-
+    List of monitorings for experts
     """
+
+    if not request.user.is_active or not request.user.userprofile.is_expert:
+        raise PermissionDenied
+
     queryset = _get_monitoring_list(request)
 
-    headers =   (
-                (_('monitoring'), 'name', 'name', None, None),
-                (_('status'), 'status', 'status', int, MONITORING_STATUS),
-                )
-    title = _('Monitoring list')
-
-    #todo: remove this
-    active_tasks = None
-    if request.user.is_active and request.user.userprofile.is_organization:
-        active_tasks = Task.objects.filter(
-            organization__monitoring__status=MONITORING_INTERACTION,
-            organization__in=request.user.profile.organization.all(),
-            status=Task.TASK_APPROVED,
-        )
-        invcodeform = SettingsInvCodeForm()
-    else:
-        invcodeform = None
-
-    if not queryset.count() and not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
-        return HttpResponseForbidden(_('Forbidden'))
-
-    return table(
-        request,
-        headers,
-        queryset = queryset,
-        paginate_by = 25,
-        extra_context = {
-            'title': title,
-            'fakeobject': Monitoring(),
-            'active_tasks': active_tasks,
-            'invcodeform': invcodeform,
-        },
+    headers = (
+        (_('monitoring'), 'name', 'name', None, None),
+        (_('status'), 'status', 'status', int, MONITORING_STATUS),
     )
+
+    return table(request, headers, queryset=queryset, paginate_by=25, template_name='exmo2010/monitoring_list.html')
 
 
 class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
@@ -156,7 +132,7 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
     pk_url_kwarg = 'monitoring_pk'
 
     def get_redirect(self, request):
-        redirect = '%s?%s' % (reverse('exmo2010:monitoring_list'), request.GET.urlencode())
+        redirect = '%s?%s' % (reverse('exmo2010:monitorings_list'), request.GET.urlencode())
         redirect = redirect.replace("%", "%%")
         return redirect
 
@@ -254,67 +230,124 @@ def monitoring_add(request):
 
 
 def monitoring_rating(request, monitoring_pk):
-    """Return a response containing the rating table,
+    """
+    Return a response containing the rating table,
     the table settings form, and the parameter selection form.
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring) \
-            or not request.user.is_anonymous() and request.user.profile.is_expertB \
-            and not request.user.is_superuser and monitoring.status != 5:
-        return HttpResponseForbidden(_('Forbidden'))
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
+        raise PermissionDenied
 
-    has_npa = monitoring.has_npa
-    rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, has_npa)
-    rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
-
-    total_orgs = _total_orgs_translate(avg, rating_list, rating_type)
-
-    name_filter = request.GET.get('name_filter', '')
-
-    if name_filter:
-        tasks = set(Task.objects.order_by().filter(organization__name__icontains=name_filter).values_list('pk', flat=True))
-        rating_list = [t for t in rating_list if t.pk in tasks]
+    # Process rating_columns_form data to know what columns to show in table
+    # Fields are boolean values for every permitted column
+    column_fields = ['rt_final_openness', 'rt_difference']
+    if monitoring.status in Monitoring.after_interaction_status:
+        column_fields.append('rt_initial_openness')
 
     if request.user.is_active:
-        profile = request.user.profile
-        representatives = request.GET.get('representatives', None)
-        comment_quantity = request.GET.get('comment_quantity', None)
-        initial_openness = request.GET.get('initial_openness', None)
-        final_openness = request.GET.get('final_openness', None)
-        difference = request.GET.get('difference', None)
+        if request.user.profile.is_expert:
+            column_fields += ['rt_representatives', 'rt_comment_quantity']
 
-        if representatives is not None or comment_quantity is not None or initial_openness is not None or final_openness is not None or difference is not None:
-            table_settings = TableSettingsForm(request.GET)
-            if table_settings.is_valid():
-                data = table_settings.cleaned_data
-                profile.rt_representatives = data['representatives']
-                profile.rt_comment_quantity = data['comment_quantity']
-                profile.rt_initial_openness = data['initial_openness']
-                profile.rt_final_openness = data['final_openness']
-                profile.rt_difference = data['difference']
-                profile.save()
+        # Displayed rating columns options are saved in UserProfile.rt_* fields
+        RatingColumnsForm = modelform_factory(UserProfile, fields=column_fields)
+
+        if set(column_fields) & set(request.GET):
+            # Options was provided in GET request.
+            rating_columns_form = RatingColumnsForm(request.GET, instance=request.user.profile)
+
+            if rating_columns_form.is_valid():
+                rating_columns_form.save()  # Save changes in UserProfile
         else:
-            table_settings = TableSettingsForm(initial={'representatives': profile.rt_representatives,
-                                                    'comment_quantity': profile.rt_comment_quantity,
-                                                    'initial_openness': profile.rt_initial_openness,
-                                                    'final_openness': profile.rt_final_openness,
-                                                    'difference': profile.rt_difference, })
+            # Use default rating columns options from UserProfile
+            rating_columns_form = RatingColumnsForm(instance=request.user.profile)
     else:
-        table_settings = TableSettingsForm()
+        # Inactive and AnonymousUser wll see all permitted rating columns
+        rating_columns_form = modelform_factory(UserProfile, fields=column_fields)()
 
-    return TemplateResponse(request, 'rating.html', {
+    # Process params_form - it will contain chosen params if rating_type is 'user'
+    params_form = Form(request.GET)
+    params_form.fields['params'] = ModelMultipleChoiceField(
+        monitoring.parameter_set.all(), widget=CheckboxSelectMultiple)
+
+    params = params_form.cleaned_data['params'] if params_form.is_valid() else None
+
+    rating_type = request.GET.get('type', 'all')
+    rating_list = monitoring.rating(params, rating_type)
+
+    context = {
         'monitoring': monitoring,
-        'has_npa': has_npa,
-        'object_list': rating_list,
         'rating_type': rating_type,
-        'average': avg,
-        'total_orgs': total_orgs,
-        'title': monitoring.name,
-        'form': form,
-        'table_form': table_settings,
-        'name_filter': name_filter,
-        'show_initial_openness': monitoring.status in Monitoring.after_interaction_status,
-    })
+        'params_form': params_form,
+        'rating_columns_form': rating_columns_form,
+    }
+
+    if request.user.is_organization and not monitoring.is_published:
+        orgs = set(request.user.profile.organization.values_list('pk', flat=True))
+        rating_list = [t for t in rating_list if t.organization.pk in orgs]
+        context.update({'rating_list': rating_list})
+    else:
+        name_filter = request.GET.get('name_filter', '')
+        if name_filter:
+            orgs = set(monitoring.organization_set.filter(name__icontains=name_filter).values_list('pk', flat=True))
+            rating_list = [t for t in rating_list if t.organization.pk in orgs]
+
+        approved_tasks = Task.approved_tasks.filter(organization__monitoring=monitoring).distinct()
+        num_rated_tasks = len(rating_list)
+        if num_rated_tasks > 0:
+            rating_stats = dict(
+                _comments_stats(rating_list),
+                num_rated_tasks=num_rated_tasks,
+                num_approved_tasks=approved_tasks.count(),
+                openness=sum(t.task_openness for t in rating_list) / num_rated_tasks,
+                openness_initial=sum(t.task_openness_initial for t in rating_list) / num_rated_tasks,
+                openness_delta=sum(t.openness_delta for t in rating_list) / num_rated_tasks)
+        else:
+            rating_stats = dict(_comments_stats(rating_list), num_approved_tasks=approved_tasks.count())
+            rating_stats.update({k: 0 for k in 'num_rated_tasks openness openness_initial openness_delta'.split()})
+
+        context.update({
+            'rating_list': rating_list,
+            'rating_stats': rating_stats,
+            'name_filter': name_filter,
+        })
+
+    return TemplateResponse(request, 'rating.html', context)
+
+
+def _comments_stats(tasks):
+    '''
+    Calculate and annotate each task in the list with comment statistics
+    Return summary comment statistics.
+    '''
+    ntasks = len(tasks)
+    if ntasks == 0:
+        return {k: 0 for k in 'repr_len active_repr_len comments'.split()}
+
+    orgusers_by_task, orgcomments_by_task = defaultdict(list), defaultdict(list)
+
+    orgusers = User.objects.filter(userprofile__organization__task__in=tasks)\
+                           .values_list('pk', 'userprofile__organization__task')
+    for uid, tid in orgusers:
+        orgusers_by_task[tid].append(uid)
+
+    orgcomments = Comment.objects.filter(user__in=[uid for uid, tid in orgusers])\
+                                 .values_list('user_id', 'object_pk')
+
+    scores = Score.objects.filter(pk__in=[sid for uid, sid in orgcomments])
+    tasks_by_scores = dict(scores.values_list('pk', 'task_id'))
+    for uid, sid in orgcomments:
+        if int(sid) in tasks_by_scores:
+            orgcomments_by_task[tasks_by_scores[int(sid)]].append(uid)
+
+    for task in tasks:
+        task.comments = len(orgcomments_by_task[task.pk])
+        task.repr_len = len(orgusers_by_task[task.pk])
+        task.active_repr_len = len(set(orgcomments_by_task[task.pk]))
+
+    return {
+        'repr_len': sum(t.repr_len for t in tasks) / ntasks,
+        'active_repr_len': sum(t.active_repr_len for t in tasks) / ntasks,
+        'comments': sum(t.comments for t in tasks) / ntasks}
 
 
 @login_required
@@ -721,7 +754,7 @@ def monitoring_organization_import(request, monitoring_pk):
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not 'orgfile' in request.FILES:
-        return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
+        return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
     reader = UnicodeReader(request.FILES['orgfile'])
     errLog = []
     indexes = {}
@@ -812,7 +845,7 @@ def monitoring_parameter_import(request, monitoring_pk):
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     if not 'paramfile' in request.FILES:
-        return HttpResponseRedirect(reverse('exmo2010:monitoring_list'))
+        return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
     reader = UnicodeReader(request.FILES['paramfile'])
     errLog = []
     rowOKCount = 0
@@ -1065,149 +1098,6 @@ def replace_string(cell):
     return cell
 
 
-def _total_orgs_translate(avg, rating_list, rating_type):
-    """
-    Returns string containing organization count.
-
-    Accepts arguments:
-    avg - dictionary of average values of monitoring rating
-    rating_list - list of rating data for monitoring
-    rating_type - string/unicode type of monitoring, may be 'user' for example
-    """
-    text = ungettext(
-        'Altogether, there is %(count)d organization in the monitoring cycle',
-        'Altogether, there are %(count)d organizations in the monitoring cycle',
-        avg['total_tasks']
-    ) % {'count': avg['total_tasks']}
-
-    if rating_type == 'user':
-        text_for_users = ungettext(
-            ', %(count)d of them has at least 1 relevant setting from users sample',
-            ', %(count)d of them have at least 1 relevant setting from users sample',
-            len(rating_list)
-        ) % {'count': len(rating_list)}
-        text += text_for_users
-    text += '.'
-    return text
-
-
-def _rating_type_parameter(request, monitoring, has_npa=False):
-    """
-    Функция подготовки списка параметров и формы выбора параметров.
-
-    """
-    data = {}
-    parameter_list = []
-
-    rating_type_list = ('all', 'user')
-    if has_npa:
-        rating_type_list += ('npa', 'other')
-    rating_type = request.GET.get('type', 'all')
-    if rating_type not in rating_type_list:
-        raise Http404
-
-    parameters = Parameter.objects.filter(monitoring=monitoring)
-
-    if rating_type == 'npa':
-        parameter_list = parameters.filter(npa=True)
-    elif rating_type == 'other':
-        parameter_list = parameters.filter(npa=False)
-    elif rating_type == 'user':
-        data = request.GET
-        query_string = request.META.get('QUERY_STRING')
-        if query_string:
-            parameter_ids = re.findall(r'\d+', query_string)
-            parameter_list = parameters.filter(pk__in=parameter_ids)
-
-    form = ParameterDynForm(data=data, monitoring=monitoring)
-
-    return rating_type, parameter_list, form
-
-
-def rating(monitoring, parameters=None, rating_type=None):
-    """
-    Create monitoring rating with or without parameters.
-    Rerturns sorted tasks queryset and average openness dictionary.
-
-    """
-    tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)\
-                               .filter(score__pk__isnull=False)\
-                               .order_by().distinct()
-
-    avg = {
-        'openness': None,
-        'openness_initial': None,
-        'openness_delta': None,
-        'total_tasks': 0,
-    }
-
-    if parameters and rating_type == 'user':
-        params_list = Parameter.objects.filter(pk__in=parameters)
-        non_relevant = set(params_list[0].exclude.all())
-        for item in params_list[1:]:
-            non_relevant &= set(item.exclude.all())
-
-        tasks = tasks.exclude(organization__in=list(non_relevant))
-
-    if tasks.exists():
-        openness = monitoring.openness_expression
-        sql_openness = openness.get_sql_openness(parameters)
-        sql_openness_initial = openness.get_sql_openness(parameters, initial=True)
-
-        tasks = tasks.select_related('organization').extra(
-            select={'task_openness': sql_openness, 'task_openness_initial': sql_openness_initial},
-            where=['%s IS NOT NULL' % sql_openness],
-            order_by=['-task_openness'])
-
-        if tasks:
-            max_rating = tasks[0].task_openness
-            total_tasks = len(tasks)
-
-            avg['total_tasks'] = total_tasks
-            avg['openness'] = sum([t.task_openness for t in tasks]) / total_tasks
-            avg['openness_initial'] = sum([t.task_openness_initial for t in tasks]) / total_tasks
-            avg['openness_delta'] = round(avg['openness'] - avg['openness_initial'], 3)
-
-            orgusers_by_task, orgcomments_by_task = defaultdict(list), defaultdict(list)
-
-            orgusers = User.objects.filter(userprofile__organization__task__in=tasks)\
-                                   .values_list('pk', 'userprofile__organization__task')
-            for uid, tid in orgusers:
-                orgusers_by_task[tid].append(uid)
-
-            orgcomments = Comment.objects.filter(user__in=[uid for uid, tid in orgusers])\
-                                         .values_list('user_id', 'object_pk')
-
-            scores = Score.objects.filter(pk__in=[sid for uid, sid in orgcomments])
-            tasks_by_scores = dict(scores.values_list('pk', 'task_id'))
-            for uid, sid in orgcomments:
-                if int(sid) in tasks_by_scores:
-                    orgcomments_by_task[tasks_by_scores[int(sid)]].append(uid)
-
-            place = 1
-            for task in tasks:
-                users = orgusers_by_task[task.pk]
-                comments = orgcomments_by_task[task.pk]
-
-                task.comments = len(comments)
-                task.repr_len = len(users)
-                task.active_repr_len = len(set(comments))
-                openness_delta_float = float(task.task_openness) - float(task.task_openness_initial)
-                task.openness_delta = round(openness_delta_float, 3)
-
-                if task.task_openness < max_rating:
-                    place += 1
-                    max_rating = task.task_openness
-
-                task.place = place
-
-            avg['repr_len'] = sum([t.repr_len for t in tasks]) / total_tasks
-            avg['active_repr_len'] = sum([t.active_repr_len for t in tasks]) / total_tasks
-            avg['comments'] = sum([t.comments for t in tasks]) / total_tasks
-
-    return tasks, avg
-
-
 class MonitoringExport(object):
     #отсортированные критерии для экспорта в csv
     CSV_CRITERIONS = [
@@ -1351,7 +1241,7 @@ def monitoring_export(request, monitoring_pk):
 
     export_format = request.GET.get('format', 'json')
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.rating_monitoring', monitoring):
+    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     export = MonitoringExport(monitoring)
     r = HttpResponseForbidden(_('Forbidden'))

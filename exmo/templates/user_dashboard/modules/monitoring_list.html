@@ -19,45 +19,45 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load check_object_permission i18n %}
+{% load i18n %}
 {% block module_content %}
     {% spaceless %}
     {% for child in module.children %}
-        {% if child.title %}<h2>child.title</h2>{% endif %}
-        <ul class="{{ module.layout }}">
-        {% if child.object_list %}
-        {% with obj=child.object_list|first %}
-            {% check_object_permission exmo2010.create_monitoring obj as perm %}
-        {% if perm %}
-            <li><a href="{% url exmo2010:monitoring_add %}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a></li>
-        {% endif %}
-        {% endwith %}
-        {% endif %}
 
-        {% for object in child.object_list %}
-            <li class="{% cycle 'odd' 'even' %}">
-            {% check_object_permission exmo2010.view_tasks object as perm %}
-            {% if not perm %}
-                <a href="{% url exmo2010:monitoring_rating object.pk %}">{{ object }}</a>
-            {% else %}
-                <a href="{{ object.get_absolute_url }}">{{ object }}</a>
-                {% check_object_permission exmo2010.edit_monitoring object as perm %}
-                {% if perm %}
-                    &nbsp;
-                    <a href="{% url exmo2010:monitoring_update object.pk %}">
-                        <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" >
-                    </a>
-                {% endif %}
-                {% check_object_permission exmo2010.delete_monitoring object as perm %}
-                {% if perm %}
-                    &nbsp;
-                    <a href="{% url exmo2010:monitoring_delete object.pk %}">
-                        <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" >
-                    </a>
-                {% endif %}
+        {% if child.title %}<h2>child.title</h2>{% endif %}
+
+        <ul class="{{ module.layout }}">
+            {% if child.object_list %}
+                {% with monitoring=child.object_list|first %}
+                    {% if monitoring.perms.create_monitoring %}
+                        <li><a href="{% url exmo2010:monitoring_add %}">
+                            {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
+                        </a></li>
+                    {% endif %}
+                {% endwith %}
             {% endif %}
-            </li>
-        {% endfor %}
+
+            {% for monitoring in child.object_list %}
+                <li class="{% cycle 'odd' 'even' %}">
+                {% if request.user.is_expert %}
+                    <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{{ monitoring }}</a>
+                    {% if monitoring.perms.edit_monitoring %}
+                        &nbsp;
+                        <a href="{% url exmo2010:monitoring_update monitoring.pk %}">
+                            <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" >
+                        </a>
+                    {% endif %}
+                    {% if monitoring.perms.delete_monitoring %}
+                        &nbsp;
+                        <a href="{% url exmo2010:monitoring_delete monitoring.pk %}">
+                            <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" >
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url exmo2010:monitoring_rating monitoring.pk %}">{{ monitoring }}</a>
+                {% endif %}
+                </li>
+            {% endfor %}
         </ul>
     {% endfor %}
     {% endspaceless %}

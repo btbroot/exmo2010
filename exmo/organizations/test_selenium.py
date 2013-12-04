@@ -54,8 +54,7 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         submit = self.find(self.submit_button)
         submit.click()
         # THEN warning window should be displayed
-        warning = self.wait_visible('div.warning')
-        self.assertEqual(warning, True)
+        self.wait_visible('div.warning')
 
     def test_success_message_at_send_mail_page(self):
         # WHEN I login as expert A
@@ -73,7 +72,9 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         # AND submit form
         submit = self.find(self.submit_button)
         submit.click()
-        # THEN mail outbox should have 1 email
+        # THEN success window should be displayed
+        self.wait_visible('p.success')
+        # AND mail outbox should have 1 email
         self.assertEqual(len(mail.outbox), 1)
         # AND current url should contain expected path
         current_url = urlparse(self.webdrv.current_url)
@@ -82,6 +83,3 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         self.assertEqual(current_url.query, 'alert=success')
         # AND current url should contain expected hash
         self.assertEqual(current_url.fragment, 'all')
-        # AND success window should be displayed
-        success = self.wait_visible('p.success')
-        self.assertEqual(success, True)

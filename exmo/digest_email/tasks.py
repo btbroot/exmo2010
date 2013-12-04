@@ -57,7 +57,7 @@ def send_digest(timestamp=datetime.now()):
         if timestamp - last_date < timedelta(hours=interval):
             continue
 
-        if profile.is_expertA or profile.is_manager_expertB:
+        if profile.is_expertA:
             score_pk = Score.objects.all()
         elif profile.is_expertB:
             score_pk = Score.objects.filter(task__user=user)

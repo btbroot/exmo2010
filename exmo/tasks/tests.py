@@ -19,12 +19,15 @@
 import json
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 from model_mommy import mommy
+from nose_parameterized import parameterized
+
 
 from exmo2010.models import (
     Monitoring, User, Organization, TaskHistory, Task, Score,
@@ -417,3 +420,84 @@ class ReassignTaskTestCase(TestCase):
         # AND task should stay assigned to expertB_1
         task = Task.objects.get(pk=self.task.pk)
         self.assertEqual(task.user.username, self.expertB_1.username)
+
+        
+class TaskListAccessTestCase(TestCase):
+    # SHOULD forbid access to monitoring tasks list page for non-experts or expertB without
+    # tasks in the monitoring.
+    # AND allow expertA see all tasks, expertB - see only assigned tasks
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN INTERACTION monitoring
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND there is 2 organizations in this monitoring
+        org1 = mommy.make(Organization, monitoring=monitoring)
+        org2 = mommy.make(Organization, monitoring=monitoring)
+        # AND expertA
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+
+        # AND expertB without tasks (expertB_free)
+        expertB_free = User.objects.create_user('expertB_free', 'usr@svobodainfo.org', 'password')
+        expertB_free.profile.is_expertB = True
+
+        # AND 2 expertB with task in this Monitoring
+        expertB_engaged1 = User.objects.create_user('expertB_engaged1', 'usr@svobodainfo.org', 'password')
+        expertB_engaged1.profile.is_expertB = True
+        self.task1 = mommy.make(Task, organization=org1, user=expertB_engaged1)
+
+        expertB_engaged2 = User.objects.create_user('expertB_engaged2', 'usr@svobodainfo.org', 'password')
+        expertB_engaged2.profile.is_expertB = True
+        mommy.make(Task, organization=org2, user=expertB_engaged2)
+
+        # AND org repersentative, with Organization from this monitoring
+        org_user = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
+        org_user.profile.organization = [org1]
+
+        # AND just registered user
+        user = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+
+        self.url = reverse('exmo2010:tasks_by_monitoring', args=[monitoring.pk])
+
+    @parameterized.expand([
+        ('org_user',),
+        ('user',),
+        ('expertB_free',),
+    ])
+    def test_forbid_unrelated_user_access_task_list(self, username):
+        # WHEN i log in as unrelated user
+        self.client.login(username=username, password='password')
+
+        # AND i request task list page
+        response = self.client.get(self.url)
+
+        # THEN response status_code is 403
+        self.assertEqual(response.status_code, 403)
+
+    def test_redirect_anonymous_to_login(self):
+        # WHEN AnonymousUser request task list page
+        response = self.client.get(self.url)
+        # THEN response redirects to login page
+        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
+
+    def test_allow_expertA_see_full_task_list(self):
+        # WHEN i log in as expertA
+        self.client.login(username='expertA', password='password')
+
+        # AND i request task list page
+        response = self.client.get(self.url)
+
+        # THEN response context contains 2 tasks in the list
+        self.assertEqual(len(response.context['object_list']), 2)
+
+    def test_allow_expertB_see_only_assigned_task_list(self):
+        # WHEN i log in as expertB (with a task in this Monitoring)
+        self.client.login(username='expertB_engaged1', password='password')
+
+        # AND i request task list page
+        response = self.client.get(self.url)
+
+        # THEN response context contains list of only 1 task, and it is assigned to me
+        pks = [task.pk for task in response.context['object_list']]
+        self.assertEqual(pks, [self.task1.pk])

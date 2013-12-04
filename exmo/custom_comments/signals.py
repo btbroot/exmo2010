@@ -45,10 +45,9 @@ def comment_notification(sender, **kwargs):
         user.email = comment.user_email
         user.save()
 
-    # get emails by superusers, experts A, experts B managers and experts B:
+    # get emails by superusers, experts A and experts B:
     experts_emails = User.objects.filter(Q(is_superuser=True, email__isnull=False) |
-                                         Q(groups__name__in=[UserProfile.expertA_group,
-                                                             UserProfile.expertB_manager_group]) |
+                                         Q(groups__name=UserProfile.expertA_group) |
                                          Q(pk=score.task.user.pk),
                                          is_active=True,
                                          email__isnull=False,

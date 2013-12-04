@@ -85,87 +85,22 @@ class Monitoring(BaseModel):
     }
 
     name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
-    status = models.PositiveIntegerField(
-        choices=MONITORING_STATUS,
-        default=MONITORING_PREPARE,
-        verbose_name=_('status')
-    )
+    status = models.PositiveIntegerField(choices=MONITORING_STATUS, default=MONITORING_PREPARE, verbose_name=_('status'))
     openness_expression = models.ForeignKey("OpennessExpression", default=8, verbose_name=_('openness expression'))
-    map_link = models.URLField(
-        null=True,
-        blank=True,
-        verbose_name=_('Link to map')
-    )
+    map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))
     # Максимальное время ответа в днях.
-    time_to_answer = models.PositiveSmallIntegerField(
-        default=3,
-        verbose_name=_('Maximum time to answer'))
-    no_interact = models.BooleanField(
-        default=False,
-        verbose_name=_('No interact stage')
-    )
-    hidden = models.BooleanField(
-        default=False,
-        verbose_name=_('Hidden monitoring')
-    )
-    prepare_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('prepare date'),
-    )
-    rate_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('Monitoring rate begin date'),
-    )
-    interact_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('Monitoring interact start date'),
-    )
-    result_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('result date'),
-    )
-    publish_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('Monitoring publish date'),
-    )
-    finishing_date = models.DateField(
-        null=True,
-        blank=True,
-        verbose_name=_('Monitoring interact end date'),
-    )
+    time_to_answer = models.PositiveSmallIntegerField(default=3, verbose_name=_('Maximum time to answer'))
+    no_interact = models.BooleanField(default=False, verbose_name=_('No interact stage'))
+    hidden = models.BooleanField(default=False, verbose_name=_('Hidden monitoring'))
+    prepare_date = models.DateField(null=True, blank=True, verbose_name=_('prepare date'))
+    rate_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring rate begin date'))
+    interact_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring interact start date'))
+    result_date = models.DateField(null=True, blank=True, verbose_name=_('result date'))
+    publish_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring publish date'))
+    finishing_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring interact end date'))
 
     def __unicode__(self):
         return '%s' % self.name
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('exmo2010:tasks_by_monitoring', [str(self.id)])
-
-    def _get_prepare(self):
-        return self.status == MONITORING_PREPARE
-
-    def _get_rate(self):
-        return self.status == MONITORING_RATE
-
-    def _get_interact(self):
-        return self.status == MONITORING_INTERACTION
-
-    def _get_result(self):
-        return self.status == MONITORING_RESULT
-
-    def _get_finishing(self):
-        return self.status == MONITORING_FINALIZING
-
-    def _get_published(self):
-        return self.status == MONITORING_PUBLISHED
-
-    def _get_active(self):
-        return not self.is_prepare
 
     def has_questionnaire(self):
         return Questionnaire.objects.filter(monitoring=self).exists()
@@ -203,6 +138,47 @@ class Monitoring(BaseModel):
         else:
             return False
 
+    def rating(self, parameters=None, rating_type=None):
+        """
+        Calculate monitoring rating, annotate each approved task with openness and place in the resulting
+         rating list
+        Rerturns sorted tasks queryset
+        Kwargs:
+            rating_type (str): possible values are ['user', 'other', 'npa']
+
+            parameters (QuerySet): parameters that will form calculated openness, used
+             only if rating_type == 'user'
+
+        """
+        from .task import Task
+
+        if rating_type == 'npa':
+            parameters = self.parameter_set.filter(npa=True)
+        elif rating_type == 'other':
+            parameters = self.parameter_set.filter(npa=False)
+        elif rating_type != 'user':
+            parameters = self.parameter_set.all()
+
+        sql_openness = self.openness_expression.get_sql_openness(parameters)
+        sql_openness_initial = self.openness_expression.get_sql_openness(parameters, initial=True)
+
+        tasks = Task.approved_tasks.filter(organization__monitoring=self).extra(
+            select={'task_openness': sql_openness, 'task_openness_initial': sql_openness_initial},
+            where=['%s IS NOT NULL' % sql_openness],
+            order_by=['-task_openness']).select_related('organization').distinct()
+
+        previous_openness = None
+        place = 0
+        # NOTE: Tasks with equal openness SHOULD share same place!
+        for task in tasks:
+            if task.task_openness != previous_openness:
+                previous_openness = task.task_openness
+                place += 1
+            task.place = place
+            task.openness_delta = round(float(task.task_openness) - float(task.task_openness_initial), 3)
+
+        return tasks
+
     def statistics(self):
         """
         Метод, возвращающий словарь со статистикой по мониторингу.
@@ -210,7 +186,6 @@ class Monitoring(BaseModel):
         """
         from .task import Task
         from .score import Score
-        from monitorings.views import rating
 
         stat = MONITORING_STAT_DICT
         stat['organization'] = self.organization_set.count()
@@ -222,10 +197,8 @@ class Monitoring(BaseModel):
             userprofile__organization__in=self.organization_set.all()
         ).count()
         stat['organization_users_active'] = MonitoringInteractActivity.\
-            objects.filter(monitoring=self,).count()
-        stat['expert'] = Task.objects.filter(
-            organization__monitoring=self
-        ).aggregate(count=Count('user', distinct=True))['count']
+            objects.filter(monitoring=self).count()
+        stat['expert'] = User.objects.filter(task__organization__monitoring=self).distinct().count()
         stat['comment_organization'] = Comment.objects.filter(
             content_type__model='score',
             object_pk__in=Score.objects.filter(task__organization__monitoring=self),
@@ -239,9 +212,12 @@ class Monitoring(BaseModel):
             user__in=User.objects.exclude(groups__name='organizations')
         ).count()
 
-        rating_list, avg = rating(self)
-        stat['avg_openness'] = avg['openness']
-        stat['avg_openness_initial'] = avg['openness_initial']
+        rating_list = self.rating()
+        if rating_list:
+            stat['avg_openness'] = sum(t.task_openness for t in rating_list) / len(rating_list)
+            stat['avg_openness_initial'] = sum(t.task_openness_initial for t in rating_list) / len(rating_list)
+        else:
+            stat.update(avg_openness=None, avg_openness_initial=None)
         return stat
 
     @property
@@ -263,14 +239,12 @@ class Monitoring(BaseModel):
 
     after_interaction_status = [MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED]
 
-    is_prepare = property(_get_prepare)
-    is_rate = property(_get_rate)
-    is_interact = property(_get_interact)
-    is_result = property(_get_result)
-    is_finishing = property(_get_finishing)
-    is_published = property(_get_published)
-    is_active = property(_get_active)
-
+    is_prepare = property(lambda self: self.status == MONITORING_PREPARE)
+    is_rate = property(lambda self: self.status == MONITORING_RATE)
+    is_interact = property(lambda self: self.status == MONITORING_INTERACTION)
+    is_finishing = property(lambda self: self.status == MONITORING_FINALIZING)
+    is_published = property(lambda self: self.status == MONITORING_PUBLISHED)
+    is_active = property(lambda self: self.status != MONITORING_PREPARE)
 
 
 class MonitoringInteractActivity(BaseModel):

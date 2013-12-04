@@ -30,14 +30,6 @@
     }
   },
   {
-    "pk": 3,
-    "model": "auth.group",
-    "fields": {
-      "name": "expertsB_manager",
-      "permissions": []
-    }
-  },
-  {
     "pk": 4,
     "model": "auth.group",
     "fields": {

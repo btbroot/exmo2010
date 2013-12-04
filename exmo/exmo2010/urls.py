@@ -87,7 +87,7 @@ scores_patterns += named_urls('',
 )
 
 monitoring_patterns = named_urls('monitorings.views',
-    (r'^$', 'monitoring_list'),
+    (r'^$', 'monitorings_list'),
     (r'^add/$', 'monitoring_add'),
     (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
     (r'^(?P<monitoring_pk>\d+)/comment_report/$', 'monitoring_comment_report'),
@@ -221,7 +221,7 @@ def crumbs_tree(is_expert=False):
             'monitoring_rating': _('Rating')
         }),
 
-        'monitoring_list': (_('Monitoring cycles'), {
+        'monitorings_list': (_('Monitoring cycles'), {
             'monitoring_add':    _('Add monitoring cycle'),
             'monitoring_delete': _('Delete monitoring cycle'),
             'monitoring_update': _('Edit monitoring cycle'),
@@ -281,9 +281,6 @@ def crumbs_tree(is_expert=False):
             }),
         }),
         'certificate_order': _('Openness certificate'),
-        'monitoring_list': (_('Monitoring cycles'), {
-            'tasks_by_monitoring': _('Monitoring cycle'),
-         })
     }
 
     common_tree.update(expert_tree if is_expert else nonexpert_tree)

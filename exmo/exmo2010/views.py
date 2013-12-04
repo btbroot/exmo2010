@@ -38,7 +38,6 @@ from livesettings import config_value
 from core.tasks import send_email
 from exmo2010.forms import FeedbackForm
 from exmo2010.models import *
-from monitorings.views import rating, _rating_type_parameter
 
 
 def feedback(request):
@@ -173,15 +172,14 @@ class CertificateOrderView(SessionWizardView):
 
                 for task in tasks:
                     monitoring = task.organization.monitoring
-                    rating_type, parameter_list, form = _rating_type_parameter(request, monitoring, monitoring.has_npa)
-                    rating_list, avg = rating(monitoring, parameters=parameter_list, rating_type=rating_type)
+                    rating_list = monitoring.rating(rating_type=rating_type)
                     place = {t.pk: t.place for t in rating_list}.get(task.pk, None)
 
                     object_list[task.pk] = {
                         'openness': task.openness,
                         'org_name': task.organization.name,
                         'place': place,
-                        'publish_date': task.organization.monitoring.publish_date,
+                        'publish_date': monitoring.publish_date,
                         'url': task.organization.url,
                     }
 

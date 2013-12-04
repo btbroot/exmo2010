@@ -109,12 +109,13 @@ a:hover, .dashboard-module-content a:hover
     color: #005580;
 }
 
-.pseudo-off {
+.pseudo-off, .pseudo.off {
     color: #222 !important;
     cursor: text !important;
+    border-bottom: none;
 }
 
-pseudo-off:hover, a.pseudo-off:hover {
+pseudo-off:hover, a.pseudo-off:hover, .pseudo.off:hover {
     text-decoration: none ;
 }
 

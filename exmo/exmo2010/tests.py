@@ -58,6 +58,34 @@ class TestMonitoring(TestCase):
         self.assertRaises(ValidationError, monitoring.sql_scores)
 
 
+class NegativeParamMonitoringRatingTestCase(TestCase):
+    # Parameters with negative weight SHOULD affect openness
+
+    def setUp(self):
+        # GIVEN monitoring with parameter that has negative weight
+        self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
+        # AND parameter with weight -1
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=None,
+                                    complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        # AND parameter with weight 2
+        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=None,
+                                    complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        # AND organization, approved task
+        org = mommy.make(Organization, monitoring=self.monitoring)
+        task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+
+        # AND equal scores for 2 parameters
+        kwargs = dict(found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        mommy.make(Score, task=task, parameter=self.parameter, **kwargs)
+        mommy.make(Score, task=task, parameter=self.parameter2, **kwargs)
+
+    def test_rating_with_negative_param(self):
+        # WHEN rating is calculated for monitoring with parameter that has negative weight
+        task = self.monitoring.rating()[0]
+        # THEN task openness is 50%
+        self.assertEqual(task.task_openness, 50)
+
+
 class TestOpennessExpression(TestCase):
     # Scenario: openness expression model test
     parameters_count = 10

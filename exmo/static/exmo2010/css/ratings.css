@@ -94,6 +94,13 @@ ul.utils > li {
     overflow-y: scroll;
 }
 
+.param_scroll ul li {
+    list-style-type: none;
+    padding: 0px;
+    left: -30px;
+    position: relative;
+}
+
 .scroll input[type="checkbox"]
 {
     margin-right: 10px;

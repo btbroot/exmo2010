@@ -71,7 +71,7 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         modal = self.find(self.modal_window)
         modal.click()
         # AND enable initial openness checkbox
-        checkbox_init_openness = self.find('#id_initial_openness')
+        checkbox_init_openness = self.find('#id_rt_initial_openness')
         checkbox_init_openness.click()
         # AND submit my changes
         submit = self.find('#buttons span input')

@@ -104,14 +104,3 @@ class MonitoringFilterForm(forms.Form):
         empty_label=_('monitoring not select'),
     )
 
-
-class TableSettingsForm(forms.Form):
-    representatives = forms.BooleanField(required=False, label=_('Representatives'))
-    comment_quantity = forms.BooleanField(required=False, label=_('Comment quantity'))
-    initial_openness = forms.BooleanField(required=False, label=_('Initial openness'))
-    final_openness = forms.BooleanField(required=False, label=_('Final Openness'))
-    difference = forms.BooleanField(required=False, label=_('Difference'))
-
-
-
-

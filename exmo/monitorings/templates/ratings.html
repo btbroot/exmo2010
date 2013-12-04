@@ -64,31 +64,26 @@
         </tr>
     </thead>
     <tbody>
-        {% for m in monitoring_list %}
+        {% for monitoring in monitoring_list %}
         <tr>
             <td>
-                {% check_object_permission exmo2010.view_tasks m as perm %}
-                {% if not perm %}
-                    <a href="{% url exmo2010:monitoring_rating m.pk %}">{{ m }}</a>
-                {% else %}
-                    <a href="{{ m.get_absolute_url }}">{{ m }}</a>
+                <a href="{% url exmo2010:monitoring_rating monitoring.pk %}">{{ monitoring }}</a>
+            </td>
+
+            <td class="map">
+                {% if monitoring.map_link %}
+                    <a href="{{ monitoring.map_link }}" target="_blank"><i class="icon icon-map"></i></a>
                 {% endif %}
             </td>
 
-            <td class="map">{% if m.map_link %}
-                <a href="{{ m.map_link }}" target="_blank">
-                    <i class="icon icon-map"></i>
-                </a>{% endif %}
-            </td>
-
             <td class="published">
-                <span class="machine">{{ m.publish_date|date:"d/m/Y" }}</span>
-                <span class="verbose">{{ m.publish_date }}</span>
+                <span class="machine">{{ monitoring.publish_date|date:"d/m/Y" }}</span>
+                <span class="verbose">{{ monitoring.publish_date }}</span>
             </td>
 
-            <td class="sites">{{ m.org_count }}</td>
+            <td class="sites">{{ monitoring.org_count }}</td>
 
-            <td>{{ m.average }}&nbsp;%</td>
+            <td>{{ monitoring.average }}&nbsp;%</td>
         </tr>
         {% endfor %}
     </tbody>

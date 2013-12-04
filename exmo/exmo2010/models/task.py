@@ -188,14 +188,8 @@ class Task(BaseModel):
         рейтинге относительно прочих задач
 
         """
-        from monitorings.views import rating
-        place = None
-        rating_list, avg = rating(self.organization.monitoring, parameters)
-        for rating_object in rating_list:
-            if rating_object == self:
-                place = rating_object.place
-                break
-        return place
+        task_places = {t.pk: t.place for t in self.organization.monitoring.rating(parameters)}
+        return task_places.get(self.pk)
 
     @property
     def rating_place(self):

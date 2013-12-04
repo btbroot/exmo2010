@@ -38,8 +38,6 @@ from BeautifulSoup import BeautifulSoup
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
-from monitorings.views import rating, _total_orgs_translate, _rating_type_parameter
-from parameters.forms import ParameterDynForm
 
 
 class MonitoringEditAccessTestCase(TestCase):
@@ -160,44 +158,118 @@ class RatingsTableValuesTestCase(TestCase):
         self.assertEqual(monitoring.average, None)
 
 
-class RatingTableSettingsTestCase(TestCase):
-    # Scenario: User settings for Rating Table columns
+class RatingTableColumnOptionsTestCase(TestCase):
+    # SHOULD display only permitted rating table columns for users
+    # AND allow to choose displayed columns for registered users and remember that choice
+
+    rt_fields_nonexpert = ['rt_initial_openness', 'rt_final_openness', 'rt_difference']
+    rt_fields_all = rt_fields_nonexpert + ['rt_representatives', 'rt_comment_quantity']
+
     def setUp(self):
-        # GIVEN User and UserProfile model instances
         self.client = Client()
-        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
-        # AND published monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-        self.monitoring_id = monitoring.pk
-        organization = mommy.make(Organization, monitoring=monitoring)
+        # GIVEN expert and regular nonexpert user
+        self.expertA = User.objects.create_user('expert', 'usr@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        self.user = User.objects.create_user('nonexpert', 'usr@svobodainfo.org', 'password')
+        # AND a Score for a Parameter in an APPROVED Task for an Organization in a PUBLISHED Monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        parameter = mommy.make(Parameter, monitoring=self.monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring)
-        score = mommy.make(Score, task=task, parameter=parameter)
+        mommy.make(Score, task=task, parameter=parameter)
 
-    def test_rt_settings_exist(self):
-        # WHEN User instance is created
-        # THEN visibility of "Representatives" column setting is True
-        self.assertEqual(self.usr.profile.rt_representatives, True)
-        # AND visibility of "Comments" column setting is True
-        self.assertEqual(self.usr.profile.rt_comment_quantity, True)
-        # AND visibility of "Initial" openness column setting is False
-        self.assertEqual(self.usr.profile.rt_initial_openness, False)
-        # AND visibility of "Openness" column setting is True
-        self.assertEqual(self.usr.profile.rt_final_openness, True)
-        # AND visibility of "Difference" column setting is True
-        self.assertEqual(self.usr.profile.rt_difference, True)
+        # AND default options values for each user
+        self.default_options = {
+            'expert': {
+                'rt_initial_openness': False,
+                'rt_final_openness': True,
+                'rt_difference': True,
+                'rt_representatives': True,
+                'rt_comment_quantity': True
+            },
+            'nonexpert': {
+                'rt_initial_openness': False,
+                'rt_final_openness': True,
+                'rt_difference': True,
+            }
+        }
 
-    def test_rt_settings_change(self):
-        # WHEN User logging in
-        self.client.login(username='usr', password='password')
-        # AND changes settings via web-interface
-        url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
-        self.client.get(url, {'initial_openness': 'on'})
-        # THEN changes are stored in user's profile
-        self.assertEqual(self.usr.profile.rt_representatives, False)
-        self.assertEqual(self.usr.profile.rt_comment_quantity, False)
-        self.assertEqual(self.usr.profile.rt_final_openness, False)
-        self.assertEqual(self.usr.profile.rt_difference, False)
+    def profile_fields(self, username, fields):
+        ''' Get dictionary of field-value from UserProfile for given user '''
+        return UserProfile.objects.filter(user__username=username).values(*fields)[0]
+
+    def get_response_columns_options(self, *args):
+        ''' Get dictionary of rt_* field values from response to rating_url with given *args (GET params) '''
+        rating_url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
+        response = self.client.get(rating_url, *args)
+        columns_form = response.context['rating_columns_form']
+        return {f: bool(columns_form[f].value()) for f in columns_form.fields}
+
+    @parameterized.expand([
+        ('nonexpert', rt_fields_nonexpert),
+        ('expert', rt_fields_all),
+    ])
+    def test_rt_columns_default(self, username, fields):
+        # WHEN User just created
+        # THEN default options are stored in user's profile
+        self.assertEqual(self.default_options[username], self.profile_fields(username, fields))
+
+        # WHEN User logs in
+        self.client.login(username=username, password='password')
+
+        # AND requests rating page without GET parameters
+        columns_options = self.get_response_columns_options()
+
+        # THEN default columns are displayed (columns_form values are equal defaults)
+        self.assertEqual(columns_options, self.default_options[username])
+
+        # AND default options are still stored in user's profile
+        self.assertEqual(self.default_options[username], self.profile_fields(username, fields))
+
+    @parameterized.expand([
+        ('nonexpert', rt_fields_nonexpert),
+        ('expert', rt_fields_all),
+    ])
+    def test_rt_columns_store(self, username, fields):
+        # WHEN User logs in
+        self.client.login(username=username, password='password')
+
+        # AND user requests rating page with only rt_final_openness column (GET parameter "on")
+        changed_options = self.get_response_columns_options({'rt_final_openness': 'on'})
+
+        # THEN only rt_final_openness column is displayed (only this value is True in columns_form)
+        expected = {f: False for f in fields}
+        expected['rt_final_openness'] = True
+        self.assertEqual(changed_options, expected)
+
+        # AND changes are stored in user's profile
+        self.assertEqual(changed_options, self.profile_fields(username, fields))
+
+        # WHEN user requests rating page again, but without GET parameters
+        requested_again_options = self.get_response_columns_options()
+
+        # THEN only columns that was saved before as enabled are displayed (only rt_final_openness)
+        self.assertEqual(requested_again_options, changed_options)
+
+        # AND previously changed options are still stored in user's profile
+        self.assertEqual(changed_options, self.profile_fields(username, fields))
+
+    def test_rt_columns_nonexpert_forbidden(self):
+        # WHEN user logs in
+        self.client.login(username='nonexpert', password='password')
+
+        # AND user requests rating page with forbidden rt_representatives column (GET parameter "on")
+        forbidden_options = self.get_response_columns_options({'rt_representatives': 'on'})
+
+        # THEN default columns are displayed, and forbidden column is not
+        self.assertEqual(forbidden_options, self.default_options['nonexpert'])
+
+    def test_rt_columns_anonymous(self):
+        # WHEN AnonymousUser requests rating page without GET parameters
+        columns_options = self.get_response_columns_options()
+
+        # THEN default columns are displayed
+        self.assertEqual(columns_options, self.default_options['nonexpert'])
 
 
 class RatingTableValuesTestCase(TestCase):
@@ -216,7 +288,7 @@ class RatingTableValuesTestCase(TestCase):
     def test_rt_row_output(self):
         # WHEN user requests rating page
         response = self.client.get(self.url)
-        o = response.context['object_list'][0]
+        o = response.context['rating_list'][0]
         # THEN output data equals default values for organization
         self.assertEqual(o, self.task)
         self.assertEqual(o.place, 1)
@@ -227,30 +299,19 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(o.openness_initial, 0)
         self.assertEqual(o.openness_delta, 0.0)
 
-    def test_rt_average_output(self):
+    def test_rt_stats_output(self):
         # WHEN user requests rating page
         response = self.client.get(self.url)
-        a = response.context['average']
+        a = response.context['rating_stats']
         # THEN output average data equals expected values
-        self.assertEqual(a['total_tasks'], 1)
+        self.assertEqual(a['num_approved_tasks'], 1)
+        self.assertEqual(a['num_rated_tasks'], 1)
         self.assertEqual(a['repr_len'], 0)
         self.assertEqual(a['active_repr_len'], 0)
         self.assertEqual(a['comments'], 0)
         self.assertEqual(a['openness'], 0)
         self.assertEqual(a['openness_initial'], 0)
         self.assertEqual(a['openness_delta'], 0.0)
-
-    def test_organizations_count(self):
-        # WHEN function accepts monitoring and parameters data
-        rating_list, avg = rating(self.monitoring, [self.parameter])
-        text = _total_orgs_translate(avg, rating_list, '')
-        # THEN expected text and organization count exist in returned text
-        expected_text = ungettext(
-        'Altogether, there is %(count)d organization in the monitoring cycle',
-        'Altogether, there are %(count)d organizations in the monitoring cycle',
-        avg['total_tasks']
-        ) % {'count': 1}
-        self.assertTrue(expected_text in text)
 
 
 class NameFilterRatingTestCase(TestCase):
@@ -275,30 +336,18 @@ class NameFilterRatingTestCase(TestCase):
 
         self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
 
-    def test_one_org_filter(self):
-        # WHEN user requests rating page with name_filter 'org1'
-        response = self.client.get(self.url, {'name_filter':'org1'})
+    @parameterized.expand([
+        ('org1', ['org1']),
+        ('org', ['org1', 'org2']),
+        ('qwe', []),
+    ])
+    def test_org_filter(self, filter_str, expected_org_names):
+        # WHEN user requests rating page with name_filter
+        response = self.client.get(self.url, {'name_filter': filter_str})
 
-        # THEN only org1 should be shown
-        orgs = set(t.organization.name for t in response.context['object_list'])
-        self.assertEqual(set(['org1']), orgs)
-
-    def test_all_orgs_filter(self):
-        # WHEN user requests rating page with name_filter that matches all orgs
-        response = self.client.get(self.url, {'name_filter':'org'})
-
-        # THEN org1 and org2 should be shown (all orgs)
-        orgs = set(t.organization.name for t in response.context['object_list'])
-        self.assertEqual(set(['org1', 'org2']), orgs)
-
-    def test_no_orgs_filter(self):
-        # WHEN user requests rating page with name_filter that does not match any org
-        response = self.client.get(self.url, {'name_filter':'qwe'})
-
-        # THEN no orgs should be shown
-        orgs = set(t.organization.name for t in response.context['object_list'])
-        self.assertEqual(set(), orgs)
-
+        # THEN only expected orgs should be shown
+        org_names = set(t.organization.name for t in response.context['rating_list'])
+        self.assertEqual(set(expected_org_names), org_names)
 
 
 class RatingActiveRepresentativesTestCase(TestCase):
@@ -335,7 +384,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
         # AND requests rating page for monitoring
         response = self.client.get(self.url)
-        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        tasks = dict((t.organization.name, t) for t in response.context['rating_list'])
         t1 = tasks['org1']
         t2 = tasks['org2']
 
@@ -358,7 +407,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
         # AND requests rating page for monitoring
         response = self.client.get(self.url)
-        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        tasks = dict((t.organization.name, t) for t in response.context['rating_list'])
         t2 = tasks['org2']
 
         # THEN active representatives quantity for second organization equals 1
@@ -371,7 +420,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
         # WHEN user requests rating page for monitoring
         response = self.client.get(self.url)
-        tasks = dict((t.organization.name, t) for t in response.context['object_list'])
+        tasks = dict((t.organization.name, t) for t in response.context['rating_list'])
         t1 = tasks['org1']
         t2 = tasks['org2']
 
@@ -395,6 +444,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
         # THEN table cell contents string with correct order of users quantity
         self.assertEqual(representatives, "1 / 0")
+
 
 class HiddenMonitoringVisibilityTestCase(TestCase):
     def setUp(self):
@@ -473,7 +523,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertEqual(len(response_monitoring_list), 0)
 
 
-class EmptyMonitoringTestCase(TestCase):
+class EmptyMonitoringRatingTestCase(TestCase):
     def setUp(self):
         # GIVEN monitoring without tasks
         self.client = Client()
@@ -500,41 +550,19 @@ class TestMonitoringExport(TestCase):
         # GIVEN предопределены все code OPENNESS_EXPRESSION
         for code in OpennessExpression.OPENNESS_EXPRESSIONS:
             # AND для каждого code есть опубликованный мониторинг
-            monitoring = mommy.make(
-                Monitoring,
-                openness_expression__code=code,
-                status=MONITORING_PUBLISHED)
+            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=MONITORING_PUBLISHED)
             # AND в каждом мониторинге есть организация
-            organization = mommy.make(Organization, monitoring=monitoring)
+            org = mommy.make(Organization, monitoring=monitoring)
             # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
             expert = mommy.make_recipe('exmo2010.active_user')
             expert.profile.is_expertB = True
             # AND в каждой организации есть одобренная задача для expert
-            task = mommy.make(
-                Task,
-                organization=organization,
-                user=expert,
-                status=Task.TASK_APPROVED,
-            )
+            task = mommy.make(Task, organization=org, user=expert, status=Task.TASK_APPROVED,)
             # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
-            parameter = mommy.make(
-                Parameter,
-                monitoring=monitoring,
-                complete=False,
-                weight=1,
-            )
-            # AND в каждой задаче есть оценка по parameter
-            score = mommy.make(
-                Score,
-                task=task,
-                parameter=parameter,
-            )
-            score = mommy.make(
-                Score,
-                task=task,
-                parameter=parameter,
-                revision=Score.REVISION_INTERACT,
-            )
+            parameter = mommy.make(Parameter, monitoring=monitoring, complete=False, weight=1)
+            # AND в каждой задаче есть две ревизии оценки по parameter
+            score = mommy.make(Score, task=task, parameter=parameter)
+            score = mommy.make(Score, task=task, parameter=parameter, revision=Score.REVISION_INTERACT)
 
     def parameter_type(self, score):
         return 'npa' if score.parameter.npa else 'other'
@@ -701,158 +729,100 @@ class TestMonitoringExportApproved(TestCase):
         self.assertEqual(len(csv), 1)
 
 
-class TestRatingTypeParameter(TestCase):
-    # Scenario: check '_rating_type_parameter' function
+class OrgUserRatingAccessTestCase(TestCase):
+    # SHOULD allow org representatives to see only related orgs in unpublished ratings
 
     def setUp(self):
-        self.request = HttpRequest()
+
+        # GIVEN MONITORING_INTERACT monitoring with 2 organizations
+        self.monitoring_related = mommy.make(Monitoring, status=MONITORING_INTERACT)
+        organization = mommy.make(Organization, monitoring=self.monitoring_related)
+        organization_unrelated = mommy.make(Organization, monitoring=self.monitoring_related)
+
+        # AND representative user for one organization
+        user = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        user.groups.add(Group.objects.get(name=user.profile.organization_group))
+        user.profile.organization = [organization]
+
+        # AND MONITORING_INTERACT monitoring with organization, not connected to representative user
+        self.monitoring_unrelated = mommy.make(Monitoring, status=MONITORING_INTERACT)
+        organization_unrelated2 = mommy.make(Organization, monitoring=self.monitoring_unrelated)
+
+        # AND approved task for each organization
+        self.task_related = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        mommy.make(Task, organization=organization_unrelated, status=Task.TASK_APPROVED)
+        mommy.make(Task, organization=organization_unrelated2, status=Task.TASK_APPROVED)
+
+        self.client = Client()
+        # AND i am logged in as orguser
+        self.client.login(username='orguser', password='password')
+
+        def test_forbid_org_access_to_unrelated_unpublished_rating(self):
+            url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_unrelated.pk])
+            # WHEN i get unrelated unpublished rating page
+            response = self.client.get(url)
+            # THEN response status_code is 403 (forbidden)
+            self.assertEqual(response.status_code, 403)
+
+        def test_allow_org_see_related_org_unpublished_rating(self):
+            url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_related.pk])
+            # WHEN i get related unpublished rating page
+            response = self.client.get(url)
+            # THEN response status_code is 200 (OK)
+            self.assertEqual(response.status_code, 200)
+            tasks = [task.pk for task in response.context['rating_list']]
+            # AND i see only my own task in the list
+            self.assertEqual(tasks, [self.task_related.pk])
+
+
+class RatingStatsTestCase(TestCase):
+    # SHOULD properly calculate rating statistics
+
+    def setUp(self):
         # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring)
-        # AND 2 parameters with npa
-        self.parameter1 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, code=1)
-        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, npa=True, code=2)
-        # AND 3 parameters without npa
-        self.parameters3 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=3)
-        self.parameters4 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=4)
-        self.parameters5 = mommy.make(Parameter, monitoring=self.monitoring, npa=False, code=5)
-
-    @parameterized.expand([
-        ('all', False, 0),
-        ('all', True, 0),
-        ('npa', True, 2),
-        ('other', True, 3),
-    ])
-    def test__rating_type_parameter(self, rating_type_initial, has_npa, expected_parameters_len):
-        # WHEN rating type in ('all', 'npa', 'other')
-        self.request.GET = {'type': rating_type_initial}
-        rating_type, parameter_list, form = _rating_type_parameter(self.request, self.monitoring, has_npa)
-        # THEN function returns the same rating type
-        self.assertEqual(rating_type_initial, rating_type)
-        # AND expected count of parameters
-        self.assertEqual(len(parameter_list), expected_parameters_len)
-        # AND form without data
-        self.assertTrue(isinstance(form, ParameterDynForm))
-        self.assertEqual(form.data, {})
-
-    @parameterized.expand([
-        ('user', 5, False),
-        ('user', 5, True),
-    ])
-    def test__rating_type_parameter_user(self, rating_type_initial, expected_parameters_len, has_npa):
-        # WHEN rating type is 'user'
-        self.request.GET = {'type': rating_type_initial}
-        # AND we have query string in url
-        for param in Parameter.objects.all():
-            key = 'parameter_%s' % param.pk
-            self.request.GET.update({key: 'on'})
-        uri = urllib.urlencode(self.request.GET)
-        self.request.META['QUERY_STRING'] = uri
-        rating_type, parameter_list, form = _rating_type_parameter(self.request, self.monitoring, has_npa)
-        # THEN function returns the same rating type
-        self.assertEqual(rating_type_initial, rating_type)
-        # AND expected count of parameters
-        self.assertEqual(len(parameter_list), expected_parameters_len)
-        # AND form without data
-        self.assertTrue(isinstance(form, ParameterDynForm))
-        self.assertEqual(form.data, self.request.GET)
-
-    @parameterized.expand([
-        ('npa', False),
-        ('other', False),
-        ('error', True),
-        ('error', False),
-    ])
-    def test__rating_type_parameter_error(self, rating_type_initial, has_npa):
-        # WHEN parameters in disallowable range
-        self.request.GET = {'type': rating_type_initial}
-        # THEN raises Http404
-        self.assertRaises(Http404, _rating_type_parameter, self.request, self.monitoring, has_npa)
-
-
-class TestRating(TestCase):
-    # Scenario: check 'rating' function
-
-    def setUp(self):
-        # GIVEN 2 monitorings
-        self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
-        self.monitoring2 = mommy.make(Monitoring, openness_expression__code=8)
-        # AND 1 organization for each monitoring
+        self.monitoring = mommy.make(Monitoring, openness_expression__code=8, status=MONITORING_PUBLISHED)
+        # AND 1 organization in this monitoring
         self.organization = mommy.make(Organization, monitoring=self.monitoring)
-        self.organization2 = mommy.make(Organization, monitoring=self.monitoring2)
-        # AND 2 approved tasks for first organization
+        # AND 2 approved tasks
         self.tasks = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED, _quantity=2)
-        # AND 1 approved task for second organization
-        self.task = mommy.make(Task, organization=self.organization2, status=Task.TASK_APPROVED)
         # AND 2 parameters with positive weight
         self.parameters = mommy.make(Parameter, monitoring=self.monitoring, weight=1, exclude=None, _quantity=2,
                                      complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
-        # AND 1 parameters with negative weight
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=None,
-                                    complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND 2 scores for each parameter
-        self.score1 = mommy.make(Score, task=self.tasks[0], parameter=self.parameters[0],
-                                 found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
-        self.score2 = mommy.make(Score, task=self.tasks[0], parameter=self.parameters[1],
-                                 found=1, complete=3, topical=3, accessible=2, hypertext=1, document=1, image=1)
-        self.score3 = mommy.make(Score, task=self.tasks[1], parameter=self.parameters[0],
-                                 found=1, complete=2, topical=3, accessible=3, hypertext=1, document=1, image=1)
-        self.score4 = mommy.make(Score, task=self.tasks[1], parameter=self.parameters[1],
-                                 found=1, complete=3, topical=3, accessible=1, hypertext=1, document=1, image=1)
-        # AND 1 score for parameter with negative weight
-        self.score = mommy.make(Score, task=self.task, parameter=self.parameter,
-                                found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        mommy.make(Score, task=self.tasks[0], parameter=self.parameters[0],
+                   found=1, complete=3, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        mommy.make(Score, task=self.tasks[0], parameter=self.parameters[1],
+                   found=1, complete=3, topical=3, accessible=2, hypertext=1, document=1, image=1)
+        mommy.make(Score, task=self.tasks[1], parameter=self.parameters[0],
+                   found=1, complete=2, topical=3, accessible=3, hypertext=1, document=1, image=1)
+        mommy.make(Score, task=self.tasks[1], parameter=self.parameters[1],
+                   found=1, complete=3, topical=3, accessible=1, hypertext=1, document=1, image=1)
+
+        self.client = Client()
+        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
+
+    def test_rating_without_params(self):
+        # WHEN rating is requested without parameters
+        response = self.client.get(self.url)
+        stats = response.context['rating_stats']
+
+        # THEN stats have expected results
+        self.assertEqual(stats['openness'], 83.75)
+        self.assertEqual(stats['openness_initial'], 83.75)
+        self.assertEqual(stats['openness_delta'], 0.0)
+        self.assertEqual(stats['num_rated_tasks'], len(self.tasks))
 
     @parameterized.expand([
-        (None,),
-        ('user',),
-        ('error',),
+        (0, 75.0),
+        (1, 92.5),
     ])
-    def test_rating_without_parameters(self, rating_type):
-        # WHEN function calls without parameters
-        tasks, avg = rating(self.monitoring, rating_type=rating_type)
-        # THEN function returns expected results
-        self.assertEqual(avg['openness'], 83.75)
-        self.assertEqual(avg['openness_initial'], 83.75)
-        self.assertEqual(avg['openness_delta'], 0.0)
-        self.assertEqual(avg['total_tasks'], len(self.tasks))
+    def test_rating_with_parameters(self, param_index, expected_openness):
+        # WHEN rating is requested for one parameter
+        response = self.client.get(self.url, {'type': 'user', 'params': [self.parameters[param_index].pk]})
+        stats = response.context['rating_stats']
 
-    @parameterized.expand([
-        (None,),
-        ('user',),
-        ('error',),
-    ])
-    def test_rating_with_parameters(self, rating_type):
-        # WHEN function calls only for the first parameter
-        parameters = [self.parameters[0].pk]
-        tasks, avg = rating(self.monitoring, parameters, rating_type=rating_type)
-        # THEN function returns expected results
-        self.assertEqual(avg['openness'], 75.0)
-        self.assertEqual(avg['openness_initial'], 75.0)
-        self.assertEqual(avg['openness_delta'], 0.0)
-        self.assertEqual(avg['total_tasks'], len(self.tasks))
-        # WHEN function calls only for the second parameter
-        parameters = [self.parameters[1].pk]
-        tasks, avg = rating(self.monitoring, parameters, rating_type=rating_type)
-        # THEN function returns expected results
-        self.assertEqual(avg['openness'], 92.5)
-        self.assertEqual(avg['openness_initial'], 92.5)
-        self.assertEqual(avg['openness_delta'], 0.0)
-        self.assertEqual(avg['total_tasks'], len(self.tasks))
-
-    @parameterized.expand([
-        (True, None,),
-        (False, None,),
-        (True, 'user',),
-        (False, 'user',),
-        (True, 'error',),
-        (False, 'error',),
-    ])
-    def test_rating_without_openness(self, parameters, rating_type):
-        # WHEN function calls for parameter with negative weight
-        parameters = [self.parameter.pk] if parameters else []
-        tasks, avg = rating(self.monitoring2, parameters, rating_type=rating_type)
-        # THEN function returns expected results
-        self.assertEqual(avg['openness'], None)
-        self.assertEqual(avg['openness_initial'], None)
-        self.assertEqual(avg['openness_delta'], None)
-        self.assertEqual(avg['total_tasks'], 0)
+        # THEN stats have expected results
+        self.assertEqual(stats['openness'], expected_openness)
+        self.assertEqual(stats['openness_initial'], expected_openness)
+        self.assertEqual(stats['openness_delta'], 0.0)
+        self.assertEqual(stats['num_rated_tasks'], len(self.tasks))

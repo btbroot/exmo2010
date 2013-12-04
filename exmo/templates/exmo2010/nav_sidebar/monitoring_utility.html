@@ -85,12 +85,9 @@
                 <!-- {% trans "Experts" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Experts" %}
 
-                {% check_object_permission exmo2010.rating_monitoring monitoring as can_rating %}
-                {% if perm %}
-                    {% url exmo2010:monitoring_parameter_found_report monitoring.pk as url %}
-                    <!-- {% trans "Presence of the parameter" %} -->
-                    {% include "exmo2010/nav_sidebar/item.html" with url=url title="Presence of the parameter" %}
-                {% endif %}
+                {% url exmo2010:monitoring_parameter_found_report monitoring.pk as url %}
+                <!-- {% trans "Presence of the parameter" %} -->
+                {% include "exmo2010/nav_sidebar/item.html" with url=url title="Presence of the parameter" %}
             {% endif %}
 
             {% if not request.user.profile.is_expertB or request.user.is_superuser or monitoring.status == 5 %}

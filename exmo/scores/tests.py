@@ -255,7 +255,7 @@ class ScoreBreadcrumbsTestCase(TestCase):
     def setUp(self):
         # GIVEN breadcrumbs data
         self.crumbs = {
-            'Monitoring': (_('Monitoring cycles'), reverse('exmo2010:monitoring_list')),
+            'Monitoring': (_('Monitoring cycles'), reverse('exmo2010:monitorings_list')),
             'Ratings': (_('Ratings'), reverse('exmo2010:ratings')),
         }
         self.breadcrumb_html = '<span class="breadcrumb-arrow"></span><a href="%s">%s</a>'

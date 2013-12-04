@@ -122,4 +122,5 @@ class ExmoPermsMixin(AnnotatePermsMixin):
     perm_prefix = 'exmo2010.'
 
 
-annotate_exmo_perms = lambda objs, user: annotate_perms(objs, user, perm_prefix='exmo2010.')
+def annotate_exmo_perms(objs, user):
+    return annotate_perms(objs, user, perm_prefix='exmo2010.')

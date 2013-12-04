@@ -19,26 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia check_object_permission %}
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
-{% endblock %}
-{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
-{% block content %}
-    {% if active_tasks %}
-        <div id=active_tasks>
-            <h2>{% trans 'Active tasks' %}</h2>
-            <table>
-                {% for task in active_tasks %}
-                    <tr><td>
-                        <a href="{% url exmo2010:score_list_by_task task.pk %}">{{task.organization.monitoring.name}}:&nbsp;{{ task.organization.name|truncatewords:10 }}</a>
-                    </td></tr>
-                {% endfor %}
-            </table>
-        </div>
-    {% endif %}
+{% load table_header i18n %}
 
+{% block title %}{% trans 'Monitoring list' %}{% endblock %}
+
+{% block content %}
     <div id=monitoring_list>
         <h2>{% trans 'Monitoring cycles' %}</h2>
         <table>
@@ -46,32 +31,28 @@
             <tbody>
             <tr>
                 <td colspan=2>
-                    {% check_object_permission exmo2010.create_monitoring fakeobject as perm %}
-                    {% if perm %}
-                        <a href="{% url exmo2010:monitoring_add %}?{{ request.GET.urlencode }}">{% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>&nbsp;
+                    {% if request.user.is_expertA %}
+                        <a href="{% url exmo2010:monitoring_add %}?{{ request.GET.urlencode }}">
+                            {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
+                        </a>&nbsp;
                     {% endif %}
                 </td>
             </tr>
-            {% for object in object_list %}
+            {% for monitoring in object_list %}
                 <tr>
                     <td>
-                        {% check_object_permission exmo2010.view_tasks object as perm %}
-                        {% if not perm %}
-                            <a href="{% url exmo2010:monitoring_rating object.pk %}">{{ object }}</a>
-                        {% else %}
-                            <a href="{% url exmo2010:tasks_by_monitoring object.pk %}">{{ object.name }}</a>
-                            {% check_object_permission exmo2010.edit_monitoring object as perm %}
-                            {% if perm %}
-                                &nbsp;<a href="{% url exmo2010:monitoring_update object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
-                            {% endif %}
-                            {% check_object_permission exmo2010.admin_monitoring object as perm %}
-                            {% if perm and not object.is_published %}
-                                &nbsp;<a href="{% url exmo2010:monitoring_delete object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
-                            {% endif %}
+                        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{{ monitoring.name }}</a>
+                        {% if monitoring.perms.edit_monitoring %}
+                            &nbsp;<a href="{% url exmo2010:monitoring_update monitoring.pk %}?{{ request.GET.urlencode }}">
+                                <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                        {% endif %}
+                        {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
+                            &nbsp;<a href="{% url exmo2010:monitoring_delete monitoring.pk %}?{{ request.GET.urlencode }}">
+                                <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                         {% endif %}
                     </td>
                     <td>
-                        {{ object.get_status_display }}
+                        {{ monitoring.get_status_display }}
                     </td>
                 </tr>
             {% endfor %}

@@ -18,12 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.contrib.auth.models import Group, User
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import Group, User, AnonymousUser
 from django.db import models
-from django.db.models import Q
 from django.db.models.signals import post_save, m2m_changed
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from .base import BaseModel
 from .claim import Claim
@@ -35,30 +33,22 @@ from .organization import Organization
 from .score import Score
 
 
-class ExtUPManager(models.Manager):
-    """
-    Выдает только внешних пользователей.
-    """
-    def get_query_set(self):
-        return super(ExtUPManager, self).\
-            get_query_set().\
-            exclude(user__is_superuser=True).\
-            exclude(user__is_staff=True).\
-            exclude(user__groups__name__in=UserProfile.expert_groups).\
-            distinct()
+def check_role(user, groups):
+    if user.is_superuser:
+        return True
+    return bool(set(groups) & set(user.groups.values_list('name', flat=True)))
 
 
-class IntUPManager(models.Manager):
-    """
-    Выдает только внутренних пользователей.
-    """
-    def get_query_set(self):
-        return super(IntUPManager, self).\
-            get_query_set().\
-            filter(
-                Q(user__is_superuser=True) | Q(user__is_staff=True) |
-                Q(user__groups__name__in=UserProfile.expert_groups)).\
-            distinct()
+def group_property(group):
+    ''' Create profile property to set and check user relation with given group '''
+
+    def _setter(self, val):
+        action = self.user.groups.add if val else self.user.groups.remove
+        action(Group.objects.get(name=group))
+
+    _getter = lambda self: check_role(self.user, [group])
+
+    return property(_getter, _setter)
 
 
 class UserProfile(BaseModel):
@@ -66,6 +56,9 @@ class UserProfile(BaseModel):
     Custom user profile model.
 
     """
+    class Meta(BaseModel.Meta):
+        verbose_name = _('user profile')
+
     SEX_CHOICES = (
         (0, _("not set")),
         (1, _("male")),
@@ -89,10 +82,6 @@ class UserProfile(BaseModel):
         (24, _("Once in 24 hours")),
     )
 
-    objects = models.Manager()  # Все пользователи.
-    externals = ExtUPManager()  # Только внешние.
-    internals = IntUPManager()  # Только внутренние.
-
     user = models.ForeignKey(User, unique=True)
     organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
@@ -103,7 +92,7 @@ class UserProfile(BaseModel):
     # Rating table settings
     rt_representatives = models.BooleanField(verbose_name=_("Representatives"), default=True)
     rt_comment_quantity = models.BooleanField(verbose_name=_("Comment quantity"), default=True)
-    rt_initial_openness = models.BooleanField(verbose_name=_("Representatives"), default=False)
+    rt_initial_openness = models.BooleanField(verbose_name=_("Initial Openness"), default=False)
     rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
     rt_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
 
@@ -117,53 +106,6 @@ class UserProfile(BaseModel):
     notification_self = models.BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
     notification_thread = models.BooleanField(verbose_name=_("Send whole comment thread"), default=False)
     digest_date_journal = models.DateTimeField(verbose_name=_('Last digest sending date'), blank=True, null=True)
-
-    def is_internal(self):
-        """Внутренний пользователь или внешний."""
-        try:
-            UserProfile.externals.get(pk=self.pk)
-        except ObjectDoesNotExist:
-            return True
-        else:
-            return False
-
-    def check_role(self, groups):
-        if self.user.is_superuser:
-            return True
-        if not hasattr(self, 'groups'):
-            self.groups = self.user.groups.values_list('name', flat=True)
-        ret = bool(set(groups) & set(self.groups))
-        return ret
-
-    def _is_expert(self):
-        return self.check_role(self.expert_groups)
-
-    def _is_expertB(self):
-        return self.check_role([self.expertB_group])
-
-    def _set_expertB(self, val):
-        if val:
-            self.user.groups.add(Group.objects.get(name=self.expertB_group))
-        else:
-            self.user.groups.remove(Group.objects.get(name=self.expertB_group))
-
-    def _is_expertA(self):
-        return self.check_role([self.expertA_group])
-
-    def _set_expertA(self, val):
-        if val:
-            self.user.groups.add(Group.objects.get(name=self.expertA_group))
-        else:
-            self.user.groups.remove(Group.objects.get(name=self.expertA_group))
-
-    def _is_manager_expertB(self):
-        return self.check_role([self.expertB_manager_group])
-
-    def _is_customer(self):
-        return self.check_role([self.customer_group])
-
-    def _is_organization(self):
-        return self.check_role([self.organization_group])
 
     @property
     def bubble_info(self):
@@ -364,26 +306,23 @@ class UserProfile(BaseModel):
         else:
             return u"{0}".format(self.user.email)
 
-    is_expert = property(_is_expert)
-    is_expertB = property(_is_expertB, _set_expertB)
-    is_expertA = property(_is_expertA, _set_expertA)
-    is_manager_expertB = property(_is_expertA)
-    is_customer = property(_is_customer)
-    is_organization = property(_is_organization)
-
     expertA_group = 'expertsA'
     expertB_group = 'expertsB'
-    expertB_manager_group = 'expertsB_manager'
     organization_group = 'organizations'
     customer_group = 'customers'
 
-    expert_groups = [expertA_group, expertB_group, expertB_manager_group]
+    expert_groups = [expertA_group, expertB_group]
+
+    is_expert = property(lambda self: check_role(self.user, self.expert_groups))
+    is_expertB = group_property(expertB_group)
+    is_expertA = group_property(expertA_group)
+    is_customer = group_property(customer_group)
+    is_organization = group_property(organization_group)
+
+    is_internal = lambda self: self.user.is_superuser or self.user.is_staff or self.is_expert
 
     def __unicode__(self):
         return self.user.username
-
-    class Meta(BaseModel.Meta):
-        verbose_name = _('user profile')
 
 
 def create_user_profile(sender, instance, created, **kwargs):
@@ -398,6 +337,18 @@ post_save.connect(create_user_profile, sender=User)
 
 User.userprofile = property(lambda u: u.get_profile())
 User.profile = property(lambda u: u.get_profile())
+
+User.is_expert = property(lambda u: u.is_active and u.profile.is_expert)
+User.is_expertB = property(lambda u: u.is_active and u.profile.is_expertB)
+User.is_expertA = property(lambda u: u.is_active and u.profile.is_expertA)
+User.is_customer = property(lambda u: u.is_active and u.profile.is_customer)
+User.is_organization = property(lambda u: u.is_active and u.profile.is_organization)
+
+AnonymousUser.is_expert = False
+AnonymousUser.is_expertB = False
+AnonymousUser.is_expertA = False
+AnonymousUser.is_customer = False
+AnonymousUser.is_organization = False
 
 
 def org_changed(sender, instance, action, **kwargs):

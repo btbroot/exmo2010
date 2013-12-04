@@ -318,35 +318,32 @@ def task_history(request, task_pk):
 
 @login_required
 def tasks_by_monitoring(request, monitoring_pk):
+    if not request.user.is_expert:
+        raise PermissionDenied
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    profile = None
-    if request.user.is_active:
-        profile = request.user.profile
+    profile = request.user.profile
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     title = _('Task list for %(monitoring)s') % {'monitoring': monitoring}
     task_list = []
-    queryset = Task.objects.filter(organization__monitoring=monitoring).\
-    select_related()
+    queryset = Task.objects.filter(organization__monitoring=monitoring).select_related()
     for task in queryset:
         if request.user.has_perm('exmo2010.view_task', task):
             task_list.append(task.pk)
-    if not task_list and not \
-    request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+    if not task_list and not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
     queryset = Task.objects.filter(pk__in=task_list).extra(
         select={'complete_sql': Task.complete_sql_extra()}).select_related()
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        users = User.objects.filter(task__organization__monitoring = monitoring).distinct()
+        users = User.objects.filter(task__organization__monitoring=monitoring).distinct()
         UserChoice = [(u.username, u.profile.legal_name) for u in users]
         headers = (
-            (_('organization'), 'organization__name', 'organization__name',
-             None, None),
+            (_('organization'), 'organization__name', 'organization__name', None, None),
             (_('expert'), 'user__username', 'user__username', None, UserChoice),
             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
             (_('complete, %'), None, None, None, None),
-            )
-    elif profile and profile.is_expertB and not profile.is_expertA:
+        )
+    elif profile.is_expertB and not profile.is_expertA:
         filter1 = request.GET.get('filter1')
         if filter1:
             try:
@@ -355,23 +352,16 @@ def tasks_by_monitoring(request, monitoring_pk):
                 q = QueryDict('')
                 request.GET = q
         headers = (
-            (_('organization'), 'organization__name', 'organization__name',
-             None, None),
-             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-             (_('complete, %'), None, None, None, None),
-            )
-    elif profile and profile.is_expert:
-        headers = (
-            (_('organization'), 'organization__name', 'organization__name',
-             None, None),
-             (_('status'), 'status', 'status', int, Task.TASK_STATUS),
-             (_('complete, %'), None, None, None, None),
-            )
+            (_('organization'), 'organization__name', 'organization__name', None, None),
+            (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+            (_('complete, %'), None, None, None, None),
+        )
     else:
         headers = (
-            (_('organization'), 'organization__name', 'organization__name',
-             None, None),
-            )
+            (_('organization'), 'organization__name', 'organization__name', None, None),
+            (_('status'), 'status', 'status', int, Task.TASK_STATUS),
+            (_('complete, %'), None, None, None, None),
+        )
 
     return table(
         request,
@@ -395,7 +385,7 @@ def task_mass_assign_tasks(request, monitoring_pk):
     organizations = Organization.objects.filter(monitoring = monitoring)
     title = _('Mass assign tasks')
     groups = []
-    for group_name in ['expertsA','expertsB','expertsB_manager']:
+    for group_name in ['expertsA','expertsB']:
         group, created = Group.objects.get_or_create(name = group_name)
         groups.append(group)
     users = User.objects.filter(is_active = True).filter(groups__in = groups)

@@ -40,7 +40,7 @@ class ExmoBreadcrumbsTestCase(TestCase):
     nonexpert_task_scores = rating + [('score_list_by_task', _('Organization'))]
 
     expert_task_scores = index + [
-        ('monitoring_list', _('Monitoring cycles')),
+        ('monitorings_list', _('Monitoring cycles')),
         ('tasks_by_monitoring', _('Monitoring cycle')),
         ('score_list_by_task', _('Organization'))
     ]

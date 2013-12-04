@@ -17,8 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.dispatch import Signal
 from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -27,10 +29,9 @@ from django.utils.translation import ugettext as _
 from django.utils import simplejson
 from livesettings import config_value
 
-from accounts.views import get_experts
 from claims.forms import ClaimAddForm, ClaimReportForm
 from core.tasks import send_email
-from exmo2010.models import Claim, Monitoring, Score
+from exmo2010.models import Claim, Monitoring, Score, UserProfile
 
 
 @login_required
@@ -212,12 +213,10 @@ def claim_notification(sender, **kwargs):
          'current_user': request.user.userprofile.legal_name,
          }
 
-    recipients = list(get_experts().values_list('email', flat=True))
+    recipients = User.objects.filter(
+        Q(groups__name=UserProfile.expertA_group, is_active=True) | Q(pk=score.task.user.pk))
 
-    if score.task.user.email and score.task.user.email not in recipients:
-        recipients.append(score.task.user.email)
-
-    for r in recipients:
+    for r in recipients.distinct().exclude(email__exact='', email__isnull=True):
         send_email.delay(r, subject, 'score_claim', context=c)
 
 
