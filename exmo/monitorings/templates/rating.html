@@ -176,7 +176,7 @@
             {% endif %}
 
             {% if show_initial_openness %}
-                {% if not user.is_active or user.profile.rt_initial_openness %}
+                {% if user.is_active and user.profile.rt_initial_openness %}
                     <th class="init-openness">
                         <span>{% trans "Init. openness" %}</span>&nbsp;<span class="arrow"></span>
                     </th>
@@ -224,7 +224,7 @@
             {% endif %}
 
             {% if show_initial_openness %}
-                {% if not user.is_active or user.profile.rt_initial_openness %}
+                {% if user.is_active and user.profile.rt_initial_openness %}
                     <td class="init-openness">{{ object.task_openness_initial|floatformat:3 }}%</td>
                 {% endif %}
             {% endif %}
@@ -277,7 +277,7 @@
             {% endif %}
 
             {% if show_initial_openness %}
-                {% if not user.is_active or user.profile.rt_initial_openness %}
+                {% if user.is_active and user.profile.rt_initial_openness %}
                     <td class="init-openness">
                         <strong>{{ average.openness_initial|floatformat:3 }}%</strong>
                     </td>
