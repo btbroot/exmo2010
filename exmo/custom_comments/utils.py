@@ -39,7 +39,7 @@ def comment_report(monitoring):
     fail_comments_with_reply = []
     active_organization_stats = []
     total_org = Organization.objects.filter(monitoring=monitoring)
-    reg_org = total_org.filter(userprofile__isnull=False)
+    organizations_with_representatives = total_org.filter(userprofile__isnull=False).distinct()
     start_date = monitoring.interact_date
     end_date = datetime.today()
     time_to_answer = monitoring.time_to_answer
@@ -47,17 +47,17 @@ def comment_report(monitoring):
     scores = Score.objects.filter(
         task__organization__monitoring=monitoring)
 
-    iifd_all_comments = CommentExmo.objects.filter(
+    operator_all_comments = CommentExmo.objects.filter(
         content_type__model='score',
         object_pk__in=scores,
         user__in=User.objects.exclude(
-            groups__name='organizations')).order_by('submit_date')
+            groups__name='organizations'))
 
     org_all_comments = CommentExmo.objects.filter(
         content_type__model='score',
         object_pk__in=scores,
         user__in=User.objects.filter(
-            groups__name='organizations')).order_by('submit_date')
+            groups__name='organizations'))
 
     org_comments = org_all_comments.filter(
         status=CommentExmo.OPEN
@@ -82,8 +82,8 @@ def comment_report(monitoring):
              'comments_count': active_org_comments_count,
              'task': task})
 
-    active_iifd_person_stats = User.objects.filter(
-        comment_comments__pk__in=iifd_all_comments).annotate(
+    active_operator_person_stats = User.objects.filter(
+        comment_comments__pk__in=operator_all_comments).annotate(
             comments_count=Count('comment_comments'))
 
     for org_comment in org_comments:
@@ -117,13 +117,13 @@ def comment_report(monitoring):
     #лист словарей: [{'org': org1, 'comments_count': 1}, ...]
     result['active_organization_stats'] = active_organization_stats
     #статистика ответов по экспертам
-    result['active_iifd_person_stats'] = active_iifd_person_stats
+    result['active_operator_person_stats'] = active_operator_person_stats
     #комментарии экспертов
-    result['iifd_all_comments'] = iifd_all_comments
+    result['operator_all_comments'] = operator_all_comments
     #всего огранизаций
     result['total_org'] = total_org
-    #зарегистрированных организаций
-    result['reg_org'] = reg_org
+    #организаций, имеющих хотя бы одного представителя
+    result['organizations_with_representatives'] = organizations_with_representatives
     #дата начала взаимодействия
     result['start_date'] = start_date
     #дата окончания отчетного периода

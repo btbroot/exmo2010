@@ -916,11 +916,11 @@ def monitoring_comment_report(request, monitoring_pk):
     comments_with_reply = report.get('comments_with_reply')
     org_comments = report.get('org_comments')
     org_all_comments = report.get('org_all_comments')
-    iifd_all_comments = report.get('iifd_all_comments')
+    operator_all_comments = report.get('operator_all_comments')
     active_organization_stats = report.get('active_organization_stats')
     total_org = report.get('total_org')
-    reg_org = report.get('reg_org')
-    active_iifd_person_stats = report.get('active_iifd_person_stats')
+    organizations_with_representatives = report.get('organizations_with_representatives')
+    active_operator_person_stats = report.get('active_operator_person_stats')
 
     return TemplateResponse(request, 'monitoring_comment_report.html', {
         'form': form,
@@ -931,11 +931,11 @@ def monitoring_comment_report(request, monitoring_pk):
         'comments_with_reply': comments_with_reply,
         'org_comments': org_comments,
         'org_all_comments': org_all_comments,
-        'iifd_comments': iifd_all_comments,
+        'operator_all_comments': operator_all_comments,
         'active_organization_stats': active_organization_stats,
         'total_org': total_org.count(),
-        'reg_org': reg_org.count(),
-        'active_iifd_person_stats': active_iifd_person_stats,
+        'organizations_with_representatives': organizations_with_representatives.count(),
+        'active_operator_person_stats': active_operator_person_stats,
         'time_to_answer': time_to_answer,
         'monitoring': monitoring,
         'title': title,

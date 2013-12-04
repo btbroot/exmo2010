@@ -1,7 +1,8 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,7 +27,7 @@ Limit is {{limit}} days.
 
 Statistics:
 Total organizations in monitoring: {{ total_org_count }}
-Registered organizations: {{ reg_org_count }}
+Registered organizations: {{ organizations_with_representatives_count }}
 Organizations with comments from organization: {{ active_organization_stats|length }}
 Comments count from organizations: {{ org_comments_count }}
 Comments count from organizations with reply date in limit: {{ comments_with_reply|length }}
@@ -41,10 +42,10 @@ Statistics by organization:
 {% endfor %}
 
 Statistics by iifd employers:
-{% for active_iifd_person in active_iifd_person_stats %}
-{{ active_iifd_person }}: {{ active_iifd_person.comments_count }}
+{% for active_operator_person in active_operator_person_stats %}
+{{ active_operator_person }}: {{ active_operator_person.comments_count }}
 {% endfor %}
-Total: {{ iifd_comments_count }}
+Total: {{ operator_comments_count }}
 
 
 Comments list from organizations without reply and date out of limit ({{ fail_comments_without_reply|length }}):

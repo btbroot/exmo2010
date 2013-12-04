@@ -59,11 +59,11 @@ fail_soon_comments_without_reply = report.get('fail_soon_comments_without_reply'
 fail_comments_with_reply = report.get('fail_comments_with_reply')
 comments_with_reply = report.get('comments_with_reply')
 org_comments = report.get('org_comments')
-iifd_all_comments = report.get('iifd_all_comments')
+operator_all_comments = report.get('operator_all_comments')
 active_organization_stats = report.get('active_organization_stats')
 total_org = report.get('total_org')
-reg_org = report.get('reg_org')
-active_iifd_person_stats = report.get('active_iifd_person_stats')
+organizations_with_representatives = report.get('organizations_with_representatives')
+active_operator_person_stats = report.get('active_operator_person_stats')
 
 t = loader.get_template('exmo2010/helpers/score_comments_stat.html')
 c = Context({
@@ -76,10 +76,10 @@ c = Context({
     'comments_with_reply': comments_with_reply,
     'org_comments_count': org_comments.count(),
     'total_org_count': total_org.count(),
-    'reg_org_count': reg_org.count(),
-    'iifd_comments_count': iifd_all_comments.count(),
+    'organizations_with_representatives_count': organizations_with_representatives.count(),
+    'operator_comments_count': operator_all_comments.count(),
     'active_organization_stats': active_organization_stats,
-    'active_iifd_person_stats': active_iifd_person_stats,
+    'active_operator_person_stats': active_operator_person_stats,
     'limit': time_to_answer,
     'site': Site.objects.get_current(),
 })
