@@ -117,7 +117,7 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
         if send:
             c = {}
 
-            param_pk = self.kwargs["pk"]
+            param_pk = self.kwargs["parameter_pk"]
             parameter = form.cleaned_data['name']
 
             subject = _('%(prefix)sParameter has been changed: %(parameter)s') % {

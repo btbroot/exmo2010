@@ -16,15 +16,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core import mail
+from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.test import TestCase
 from django.test.client import Client
-from django.conf import settings
-from django.contrib.auth.models import User, Group
-from django.core.urlresolvers import reverse
+
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from exmo2010.models import *
+from exmo2010.models import Monitoring, Organization, Parameter, Task, MONITORING_INTERACTION
 
 
 class ParameterEditAccessTestCase(TestCase):
@@ -44,10 +48,10 @@ class ParameterEditAccessTestCase(TestCase):
         User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
         # AND expert B
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        expertB.is_expertB = True
         # AND expert A
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+        expertA.is_expertA = True
         # AND organization representative
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [organization]
@@ -91,3 +95,47 @@ class ParameterEditAccessTestCase(TestCase):
         initial_fields = {f: getattr(self.parameter, f) for f in 'weight code name'.split()}
         new_param_fields = Parameter.objects.values(*initial_fields).get(pk=self.parameter.pk)
         self.assertEqual(new_param_fields, initial_fields)
+
+
+class ParamEditEmailNotifyTestCase(TestCase):
+    # SHOULD send notification email to related experts if expertA clicked "save and notify" on parameter edit page
+
+    def setUp(self):
+        self.client = Client()
+
+        # GIVEN expertA and expertB:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.expertB = User.objects.create_user('expertB', 'B@ya.ru', 'password')
+        self.expertB.profile.is_expertB = True
+
+        # AND i am logged in as expertA:
+        self.client.login(username='expertA', password='password')
+
+        # AND Monitoring with Organization and Parameter
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        self.parameter = mommy.make(Parameter, monitoring=monitoring)
+
+        # AND Task assigned to expertB
+        self.task = mommy.make(Task, organization=organization, user=self.expertB)
+
+        # NOTE: pop message about task assignment to expertB
+        # TODO: get rid of this automatic email on Task creation, move to the view
+        mail.outbox.pop()
+
+    def test_email_notify(self):
+        url = reverse('exmo2010:parameter_update', args=[self.task.pk, self.parameter.pk])
+
+        # WHEN i submit parameter form with "save and notify" button
+        formdata = dict(model_to_dict(self.parameter), submit_and_send=True)
+        response = self.client.post(url, follow=True, data=formdata)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND there should be 2 email messages in the outbox
+        self.assertEqual(len(mail.outbox), 2)
+
+        # AND both expertA and expertB should get the email
+        self.assertEqual(set(tuple(m.to) for m in mail.outbox), set([('A@ya.ru',), ('B@ya.ru',)]))
