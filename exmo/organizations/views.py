@@ -279,6 +279,8 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
 
     def post(self, request, *args, **kwargs):
         monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_id"])
+        if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
         self.success_url = self.get_redirect(request, monitoring)
         if self.kwargs["method"] == 'add':
             self.add(request, monitoring)

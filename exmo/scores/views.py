@@ -116,6 +116,8 @@ class ScoreAddView(ScoreMixin, CreateView):
     def post(self, request, *args, **kwargs):
         self.task = get_object_or_404(Task, pk=args[0])
         self.parameter = get_object_or_404(Parameter, pk=args[1])
+        if not request.user.has_perm('exmo2010.fill_task', self.task):
+            return HttpResponseForbidden(_('Forbidden'))
         self.success_url = self.get_redirect(request)
         result = super(ScoreAddView, self).post(request, *args, **kwargs)
 
@@ -144,6 +146,10 @@ class ScoreAddView(ScoreMixin, CreateView):
 
         return context
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ScoreAddView, self).dispatch(*args, **kwargs)
+
 
 class ScoreDeleteView(ScoreMixin, DeleteView):
     template_name = "exmo2010/score_confirm_delete.html"
@@ -153,6 +159,7 @@ class ScoreDeleteView(ScoreMixin, DeleteView):
         return super(ScoreDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
         title = _('Delete score %s') % self.object.parameter
         if not request.user.has_perm('exmo2010.delete_score', self.object):
             return HttpResponseForbidden(_('Forbidden'))
@@ -161,6 +168,9 @@ class ScoreDeleteView(ScoreMixin, DeleteView):
         return super(ScoreDeleteView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not request.user.has_perm('exmo2010.delete_score', self.object):
+            return HttpResponseForbidden(_('Forbidden'))
         self.success_url = self.get_redirect(request)
         return super(ScoreDeleteView, self).post(request, *args, **kwargs)
 

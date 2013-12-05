@@ -102,6 +102,9 @@ class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, Pr
 
     def post(self, request, *args, **kwargs):
         task = get_object_or_404(Task, pk=self.kwargs["task_id"])
+        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
+            return HttpResponseForbidden(_('Forbidden'))
+
         self.success_url = self.get_redirect(request, task)
         self.object = self.get_object()
 

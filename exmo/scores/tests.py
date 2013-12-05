@@ -25,6 +25,8 @@ from django.test.client import Client
 from django.utils.crypto import salted_hmac
 from model_mommy import mommy
 
+from nose_parameterized import parameterized
+
 from exmo2010.models import *
 from scores.forms import ScoreFormWithComment
 
@@ -111,3 +113,139 @@ class ScoreViewsTestCase(TestCase):
 
         form = ScoreFormWithComment(self.score, data=form_data)
         self.assertEqual(form.is_valid(), True)
+
+
+class ScoreDeleteAccessTestCase(TestCase):
+    # only expertB assigned to score's task SHOULD be allowed to delete score
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN monitoring with organization and parameter
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND superuser
+        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+        # AND organization representative
+        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        org.profile.organization = [organization]
+
+        # AND score with task assigned to expertB
+        task = mommy.make(Task, organization=organization, user=expertB)
+        self.score = mommy.make(Score, task=task, parameter=parameter)
+
+        self.url = reverse('exmo2010:score_delete', args=[self.score.pk])
+
+    def test_redirect_anonymous_on_score_deletion(self):
+        # WHEN anonymous user gets score deletion page
+        response = self.client.get(self.url)
+        # THEN he is redirected to login page
+        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
+
+    @parameterized.expand([
+        ('user', 403),
+        ('org', 403),
+        ('expertB', 200),
+        ('expertA', 200),
+        ('admin', 200),
+    ])
+    def test_score_deletion_get(self, username, expected_response_code):
+        self.client.login(username=username, password='password')
+
+        # WHEN user gets score deletion page
+        response = self.client.get(self.url)
+
+        # THEN response status_code equals expected
+        self.assertEqual(response.status_code, expected_response_code)
+
+    @parameterized.expand([
+        ('user',),
+        ('org',),
+    ])
+    def test_forbid_unauthorized_score_deletion(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN unauthorized user POSTs score deletion request
+        self.client.post(self.url)
+
+        # THEN score does not get deleted
+        self.assertEqual(set([(self.score.pk,)]), set(Score.objects.values_list('pk')))
+
+
+class ScoreAddccessTestCase(TestCase):
+    # only expertB assigned to score's task SHOULD be allowed to create score
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN monitoring with organization and parameter
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        self.parameter = mommy.make(Parameter, monitoring=monitoring)
+
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND superuser
+        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+        # AND organization representative
+        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        org.profile.organization = [organization]
+
+        # AND score with task assigned to expertB
+        self.task = mommy.make(Task, organization=organization, user=expertB)
+
+        self.url = reverse('exmo2010:score_add', args=[self.task.pk, self.parameter.pk])
+
+    def test_redirect_anonymous_on_score_creation(self):
+        # WHEN anonymous user gets score creation page
+        response = self.client.get(self.url)
+        # THEN he is redirected to login page
+        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
+
+    @parameterized.expand([
+        ('user', 403),
+        ('org', 403),
+        ('expertB', 200),
+        ('expertA', 200),
+        ('admin', 200),
+    ])
+    def test_score_creation_get(self, username, expected_response_code):
+        self.client.login(username=username, password='password')
+
+        # WHEN user gets score creation page
+        response = self.client.get(self.url)
+
+        # THEN response status_code equals expected
+        self.assertEqual(response.status_code, expected_response_code)
+
+    @parameterized.expand([
+        ('user',),
+        ('org',),
+    ])
+    def test_forbid_unauthorized_score_creation(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN unauthorized user forges and POSTs score creation form
+        self.client.post(self.url, {
+            'score-found': 0,
+            'score-task': self.task.pk,
+            'score-parameter': self.parameter.pk,
+            'score-revision': Score.REVISION_DEFAULT
+        })
+
+        # THEN score does not get created
+        self.assertEqual(0, Score.objects.count())
