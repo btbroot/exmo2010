@@ -57,11 +57,12 @@ def organization_list(request, monitoring_pk):
 
     initial = {'monitoring': monitoring}
 
-    org_type = 'all'
+    tab = 'all'
 
     if request.method == "POST" and "submit_invite" in request.POST:
         inv_form = InviteOrgsForm(request.POST)
         comment = inv_form.data['comment']
+        subject = inv_form.data['subject']
         inv_status = inv_form.data['inv_status']
         if inv_form.is_valid():
             inv_form.save()
@@ -70,7 +71,6 @@ def organization_list(request, monitoring_pk):
                 all_orgs = all_orgs.filter(inv_status=inv_status)
 
             for org in all_orgs:
-                subject = _('Invitation to interact with Infometer system')
                 message = comment.replace('%code%', org.inv_code)
                 context = {
                     'subject': subject,
@@ -87,8 +87,8 @@ def organization_list(request, monitoring_pk):
         else:
             initial.update({'comment': comment, 'inv_status': inv_status})
             alert = 'fail'
-
-    inv_form = InviteOrgsForm(initial=initial)
+    else:
+        inv_form = InviteOrgsForm(initial=initial)
 
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring=monitoring).extra(
@@ -143,7 +143,7 @@ def organization_list(request, monitoring_pk):
             form.save()
             form = OrganizationForm(initial=initial)
         else:
-            org_type = 'add'
+            tab = 'add'
 
     inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
 
@@ -159,10 +159,10 @@ def organization_list(request, monitoring_pk):
             finish_datetime = datetime.strptime("%s 23:59:59" % date_filter_history, '%d.%m.%Y %H:%M:%S')
             inv_history = inv_history.filter(timestamp__gt=start_datetime,
                                              timestamp__lt=finish_datetime)
-            org_type = 'history'
+            tab = 'mail_history'
         if invite_filter_history and invite_filter_history != 'ALL':
             inv_history = inv_history.filter(inv_status=invite_filter_history)
-            org_type = 'history'
+            tab = 'mail_history'
 
     return table(
         request,
@@ -174,7 +174,7 @@ def organization_list(request, monitoring_pk):
             'sent': sent,
             'inv_form': inv_form,
             'alert': alert,
-            'org_type': org_type,
+            'tab': tab,
             'inv_status': INV_STATUS,
             'monitoring': monitoring,
             'invcodeform': SettingsInvCodeForm(),
@@ -202,7 +202,7 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
         title = _('Add new organization for %s') % monitoring
         self.extra_context = {
             'title': title,
-            'org_type': 'add',
+            'tab': 'add',
             'monitoring': monitoring
         }
 

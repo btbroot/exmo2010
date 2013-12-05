@@ -160,7 +160,7 @@
 
                 <div class="person_group">
                     <div class="left_field">
-                        {{ form.name.label_tag }} <span class="star_color">*</span>
+                        {{ form.name.label_tag }} <span class="required">*</span>
                     </div>
                     <div class="right_field">
                         {{ form.name }}
@@ -176,7 +176,7 @@
 
                 <div class="email_group">
                     <div class="left_field">
-                        {{ form.email.label_tag }} <span class="star_color">*</span>
+                        {{ form.email.label_tag }} <span class="required">*</span>
                     </div>
                     <div class="right_field">
                         {{ form.email }}
@@ -187,21 +187,21 @@
                     <h2>{%  trans 'Mail address of the recipient' %}</h2>
 
                     <div class="left_field">
-                        {{ form.for_whom.label_tag }} <span class="star_color">*</span>
+                        {{ form.for_whom.label_tag }} <span class="required">*</span>
                     </div>
                     <div class="right_field">
                         {{ form.for_whom }}
                     </div>
 
                     <div class="left_field">
-                        {{ form.zip_code.label_tag }} <span class="star_color">*</span>
+                        {{ form.zip_code.label_tag }} <span class="required">*</span>
                     </div>
                     <div class="right_field">
                         {{ form.zip_code }}
                     </div>
 
                     <div class="left_field">
-                        {{ form.address.label_tag }} <span class="star_color">*</span>
+                        {{ form.address.label_tag }} <span class="required">*</span>
                     </div>
                     <div class="right_field">
                         {{ form.address }}

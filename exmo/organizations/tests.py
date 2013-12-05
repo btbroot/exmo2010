@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import re
+from email.header import decode_header
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -91,18 +92,25 @@ class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
         # AND expert A account
         self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+        # AND 'from' email
+        self.from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+        # AND organization page url
+        self.url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
 
-    def test_sending_emails(self):
-        from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
-        url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+    @parameterized.expand([
+        (u'Тема', u'Содержание', 'NTS'),
+        ('Subject', 'Content', 'ALL'),
+    ])
+    def test_sending_emails(self, email_subject, email_content, invitation_status):
         # WHEN I am logged in as expertA
         self.client.login(username='expertA', password='password')
         # AND I submit email sending form
         resp = self.client.post(
-            url,
+            self.url,
             {
-                'comment': ['Invitation'],
-                'inv_status': ['ALL'],
+                'comment': [email_content],
+                'subject': [email_subject],
+                'inv_status': [invitation_status],
                 'monitoring': ['%d' % self.monitoring.pk],
                 'submit_invite': [''],
             },
@@ -111,17 +119,21 @@ class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
         # THEN response status_code is 200 (OK)
         self.assertEqual(resp.status_code, 200)
         # AND expert A should be redirected to the same url with get parameter and hash
-        self.assertRedirects(resp, url + '?alert=success#all')
+        self.assertRedirects(resp, self.url + '?alert=success#all')
         # AND we should have 10 emails in our outbox
         self.assertEqual(len(mail.outbox), 10)
         # AND emails should have expected headers
         email = mail.outbox[0].message()
-        self.assertEqual(email['From'].encode(), from_email)
+        self.assertEqual(email['From'].encode(), self.from_email)
+        subject, encoding = decode_header(email['Subject'])[0]
+        if encoding:
+            subject = subject.decode(encoding)
+        self.assertEqual(subject, email_subject)
         self.assertEqual(email['To'].encode(), self.organizations[0].email)
         # AND should have headers for Message Delivery Notification
-        self.assertEqual(email['Disposition-Notification-To'].encode(), from_email)
-        self.assertEqual(email['Return-Receipt-To'].encode(), from_email)
-        self.assertEqual(email['X-Confirm-Reading-To'].encode(), from_email)
+        self.assertEqual(email['Disposition-Notification-To'].encode(), self.from_email)
+        self.assertEqual(email['Return-Receipt-To'].encode(), self.from_email)
+        self.assertEqual(email['X-Confirm-Reading-To'].encode(), self.from_email)
         # AND message ID should contain organizations invitation code
         match = re.search("<(?P<invitation_code>[\w\d]+)@(?P<host>[\w\d.-]+)>", email['Message-ID'].encode())
         invitation_code = match.group('invitation_code')

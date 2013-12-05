@@ -1,6 +1,7 @@
 // This file is part of EXMO2010 software.
-// Copyright 2010, 2011 Al Nikolov
-// Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+// Copyright 2010, 2011, 2013 Al Nikolov
+// Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -16,9 +17,13 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function () {
+    var hash = window.location.hash;
+
+    hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+
     $("td.comment").click(function( e ) {
         $(this).children('div.preview-container').toggle();
-        $(this).children('div.full').toggle();
+        $(this).children('div.hidden').toggle();
     });
 
     $(function() {

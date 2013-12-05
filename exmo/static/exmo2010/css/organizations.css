@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -18,157 +18,141 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-
-.clearfix
-{
+.clearfix {
     float: left;
 }
 
-.clearfix div
-{
+.clearfix div {
     float: left;
     padding: 0 0 3px 0;
 }
 
-.clearfix div.title
-{
-    width: 90px;
+.clearfix div.title {
+    width: 94px;
     padding: 3px 10px 0 0;
     text-align: right;
+    clear: both;
 }
 
-.clearfix div.content
-{
+.clearfix div.content {
+    margin-bottom: 10px;
     width: 600px;
 }
 
-.clearfix div.content select
-{
+.clearfix div.content select {
     width: 200px;
 }
 
-.clearfix div.content input[type="submit"]
-{
+.clearfix div.content input[type="submit"] {
     width: 100px;
 }
 
-.clearfix div.notification
-{
+.clearfix div.notification {
     float: none;
     margin-left: 700px;
     padding-left: 10px;
 }
 
-.clearfix div.content textarea
-{
+.clearfix div.content textarea {
     width: 100%;
     height: 300px;
 }
 
-.table-implicit td:first-child
-{
+.table-implicit td:first-child {
     text-align: right;
 }
 
-.table-implicit td textarea
-{
+.table-implicit td textarea {
     width: 250px;
     height: 85px;
 }
 
-.table-implicit td input[type="text"]
-{
+.table-implicit td input[type="text"] {
     width: 250px;
 }
 
-.table-implicit td input[type="text"]#id_org-name
-{
+.table-implicit td input[type="text"]#id_org-name {
     width: 600px;
 }
 
-.errorlist
-{
+.errorlist {
     text-align: left;
 }
 
-.heading td a
-{
+.heading td a {
     color: #222;
     border-bottom: 1px #222 dotted;
 }
 
-.heading td a:hover
-{
+.heading td a:hover {
     text-decoration: none;
     border-bottom: none;
 }
 
-.heading td
-{
+.heading td {
     font-weight: bold;
 }
 
-.base-table.history
-{
+.base-table.mail_history {
     width: 100%;
 }
 
-.base-table.history td:first-child
-{
+.base-table.mail_history td:first-child {
     width: 120px;
 }
 
-.base-table.history td.invitation
-{
+.base-table.mail_history td.invitation {
     width: 190px;
 }
 
-.base-table.history td.comment
-{
+.base-table.mail_history td.comment {
     cursor: pointer;
 }
 
-.base-table.history td input[name="date_filter_history"]
-{
+.base-table.mail_history td input[name="date_filter_history"] {
     width: 140px;
 }
 
-.base-table.history td select[name="invite_filter_history"]
-{
+.base-table.mail_history td select[name="invite_filter_history"] {
     width: 190px;
 }
 
-.base-table.history form {
+.base-table.mail_history form {
     width: 500px;
 }
 
-.base-table.history form > * {
+.base-table.mail_history form > * {
     display: block;
     float: left;
 }
 
-.base-table.history form > img {
+.base-table.mail_history form > img {
     position: relative;
     top: 7px;
 }
 
-.base-table.history form > select, .base-table.history form > input[type="submit"] {
+.base-table.mail_history form > select, .base-table.mail_history form > input[type="submit"] {
     position: relative;
     top: 1px;
 }
 
-.base-table.history form > select {
+.base-table.mail_history form > select {
     margin-left: 4px;
     margin-right: 4px;
 }
 
 .notification .alert-info
 {
+    margin-top: 41px;
     width: 270px;
 }
 
-.clearfix.invite-form {
+.clearfix.send-mail-form {
     width: 100%;
+}
+
+.send-mail-form input[type="text"] {
+    width: 590px;
 }
 
 td.comment .preview-container {
@@ -178,12 +162,9 @@ td.comment .preview-container {
     overflow: hidden;
 }
 
-#help-text
-{
+#help-text {
     position: absolute;
     width: 450px;
-    background-image: url(../img/registration-triangle.png);
-    background-position: 0px 10px;
-    background-repeat: no-repeat;
+    background: url(../img/registration-triangle.png) 0 10px no-repeat;
     padding-left: 9px;
 }

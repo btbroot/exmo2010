@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011б 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
 #
@@ -56,4 +56,5 @@ class InviteOrgsForm(forms.ModelForm):
         exclude = ('timestamp',)
         widgets = {
             'monitoring': forms.HiddenInput,
+            'subject': forms.TextInput,
         }

@@ -70,12 +70,12 @@ class BaseSeleniumTestCase(LiveServerTestCase):
     def wait_visible(self, selector, is_visible=True, timeout=3):
         def condition(*args):
             return self.find(selector).is_displayed() == is_visible
-        WebDriverWait(self.webdrv, timeout).until(condition)
+        return WebDriverWait(self.webdrv, timeout).until(condition)
 
     def wait_enabled(self, selector, is_enabled=True, timeout=3):
         def condition(*args):
             return self.find(selector).is_enabled() == is_enabled
-        WebDriverWait(self.webdrv, timeout).until(condition)
+        return WebDriverWait(self.webdrv, timeout).until(condition)
 
     def get(self, url):
         self.webdrv.get(self.live_server_url + url)

@@ -19,25 +19,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load static %}
 
 {% load table_header i18n adminmedia monitoring_stats check_object_permission first_element %}
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/jquery-ui.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/organizations.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/jquery-ui.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/organizations.css' %}"/>
 {% endblock %}
 
 {% block extrahead %}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.min.js" ></script>
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery-ui.min.js" ></script>
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.placeholder.min.js"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery-ui.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
     <script type="text/javascript">jQuery('input[placeholder], textarea[placeholder]').placeholder();</script>
-    {% include "tabs_js.html" %}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/organizations.js"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/bootstrap-tab.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/organizations.js' %}"></script>
+    <script>
+        $(function(){
+            if (!window.location.hash) {
+                $('#{{ tab }}').addClass('active');
+                $('a[href="#{{ tab }}"]').closest('li').addClass('active');
+            }
+        })
+    </script>
 {% endblock %}
-
-{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
 {% block nav_sidebar %}
     {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
@@ -48,8 +53,6 @@
 
 {% block content_title %}
     {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-
-
 {% endblock %}
 
 {% block content_class %}sidebar-ident{% endblock %}
@@ -61,28 +64,28 @@
     <div id="top-menu">
         <h2>{% trans "Organizations" %}</h2>
         <ul class="nav-tabs">
-            <li{% if org_type == "all" %} class="active"{% endif %}>
+            <li>
                 <span>
                     <a href="#all" data-toggle="tab" class="pseudo">{% trans 'all' %}</a>
                 </span>
             </li>
 
-            <li{% if org_type == "invite" %} class="active"{% endif %}>
+            <li>
                 <span>
-                    <a href="#invite" data-toggle="tab" class="pseudo">{% trans 'invite' %}</a>
+                    <a href="#send_mail" data-toggle="tab" class="pseudo">{% trans 'send mail' %}</a>
                 </span>
             </li>
 
-            <li{% if org_type == "history" %} class="active"{% endif %}>
+            <li>
                 <span>
-                    <a href="#history" data-toggle="tab" class="pseudo">
-                        {% trans 'history' %}
+                    <a href="#mail_history" data-toggle="tab" class="pseudo">
+                        {% trans 'mail history' %}
                     </a>
                 </span>
             </li>
 
             {% if perm %}
-                <li{% if org_type == "add" %} class="active"{% endif %}>
+                <li>
                     <span>
                         <a href="#add" data-toggle="tab" class="pseudo">
                             {% trans 'add' %}
@@ -94,20 +97,20 @@
     </div>
 
     <div class="tab-content">
-        <div class="tab-pane{% if org_type == "all" %} active{% endif %}" id="all">
+        <div class="tab-pane" id="all">
             {% include "organizations/all.html" %}
         </div>
 
-        <div class="tab-pane{% if org_type == "invite" %} active{% endif %}" id="invite">
-            {% include "organizations/invite.html" %}
+        <div class="tab-pane" id="send_mail">
+            {% include "organizations/organization_email_form.html" %}
         </div>
 
-        <div class="tab-pane{% if org_type == "history" %} active{% endif %}" id=history>
-            {% include "organizations/history.html" %}
+        <div class="tab-pane" id=mail_history>
+            {% include "organizations/mail_history.html" %}
         </div>
 
         {% if perm %}
-            <div class="tab-pane{% if org_type == "add" %} active{% endif %}" id="add">
+            <div class="tab-pane" id="add">
                 {% include "organizations/form.html" %}
             </div>
         {% endif %}

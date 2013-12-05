@@ -52,8 +52,8 @@
     border-bottom: none;
 }
 
-.score-table td:first-child {
-    border-left: #fff 1px solid;
+.score-table td:first-child, .score-table th:first-child {
+    border-left: none;
 }
 
 .criteria {
