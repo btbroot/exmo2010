@@ -192,6 +192,10 @@ class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, P
     def post(self, request, *args, **kwargs):
         self.success_url = self.get_redirect(request)
         self.object = self.get_object()
+
+        if not request.user.has_perm('exmo2010.edit_monitoring', self.object):
+            return HttpResponseForbidden(_('Forbidden'))
+
         if self.kwargs["method"] == 'delete':
             self.object = self.get_object()
             self.object.delete()
