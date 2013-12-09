@@ -16,7 +16,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
@@ -143,3 +142,42 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
         # THEN submit button should turn disabled
         self.wait_enabled('#submit_score_and_comment', False)
+
+
+class PrintfullPageTestCase(BaseSeleniumTestCase):
+    # Scenario: checking comments fields
+
+    def setUp(self):
+        # GIVEN expertB account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND monitoring with organization, parameter, and task
+        monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expertB,
+        )
+        # AND score with 'found' equals 1 and 2 comments
+        self.score = mommy.make(
+            Score,
+            task=task,
+            parameter=parameter,
+            found=1,
+            foundComment='found comment',
+            imageComment='image comment',
+        )
+        # AND I am logged in as expertB
+        self.login('expertB', 'password')
+        # AND I am on score printfull page
+        self.get(reverse('exmo2010:score_list_by_task', args=[task.pk]) + 'printfull')
+
+    def test_comments_fields_existing(self):
+        # WHEN I try to get comments texts of 'found' and 'image' fields
+        found_comment = self.find('tbody > tr:nth-child(2) > td:nth-child(2) > p').text
+        image_comment = self.find('tbody > tr:nth-child(3) > td:nth-child(2) > p').text
+        # THEN texts should be existed
+        self.assertEqual(found_comment, self.score.foundComment)
+        self.assertEqual(image_comment, self.score.imageComment)

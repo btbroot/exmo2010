@@ -52,7 +52,7 @@ class ParameterEditAccessTestCase(TestCase):
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [organization]
 
-        self.url = reverse('exmo2010:parameter_manager', args=[task.pk, self.parameter.pk, 'update'])
+        self.url = reverse('exmo2010:parameter_update', args=[task.pk, self.parameter.pk])
 
     def test_anonymous_param_edit_get(self):
         # WHEN anonymous user gets parameter edit page

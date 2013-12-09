@@ -16,9 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import datetime
 import urllib
 from cStringIO import StringIO
-from datetime import datetime
 
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
@@ -66,7 +66,7 @@ class MonitoringEditAccessTestCase(TestCase):
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [organization]
 
-        self.url = reverse('exmo2010:monitoring_manager', args=[self.monitoring.pk, 'update'])
+        self.url = reverse('exmo2010:monitoring_update', args=[self.monitoring.pk])
 
     def test_anonymous_monitoring_edit_get(self):
         # WHEN anonymous user gets monitoring edit page
@@ -99,7 +99,7 @@ class MonitoringEditAccessTestCase(TestCase):
         self.client.login(username=username, password='password')
 
         input_format = get_format('DATE_INPUT_FORMATS')[0]
-        now = datetime.now().strftime(input_format)
+        now = datetime.datetime.now().strftime(input_format)
 
         # WHEN unauthorized user forges and POSTs monitoring edit form with changed name
         self.client.post(self.url, {

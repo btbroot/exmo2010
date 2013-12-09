@@ -57,7 +57,7 @@ class OrganizationEditAccessTestCase(TestCase):
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [self.organization]
 
-        self.url = reverse('exmo2010:organization_manager', args=[self.monitoring.pk, self.organization.pk, 'update'])
+        self.url = reverse('exmo2010:organization_update', args=[self.monitoring.pk, self.organization.pk])
 
     def test_anonymous_org_edit_get(self):
         # WHEN anonymous user gets organization edit page
