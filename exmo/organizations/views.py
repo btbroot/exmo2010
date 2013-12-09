@@ -20,6 +20,7 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.comments import signals
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -30,8 +31,10 @@ from django.views.generic.edit import ProcessFormView, ModelFormMixin
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
+from custom_comments.models import CommentExmo
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from organizations.forms import OrganizationForm, InviteOrgsForm
+from organizations.signals import change_organization_status
 from organizations.tasks import send_org_email
 
 
@@ -267,3 +270,6 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(OrganizationManagerView, self).dispatch(*args, **kwargs)
+
+
+signals.comment_was_posted.connect(change_organization_status, sender=CommentExmo)

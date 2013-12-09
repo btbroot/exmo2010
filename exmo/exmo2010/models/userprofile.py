@@ -406,10 +406,9 @@ def org_changed(sender, instance, action, **kwargs):
 
     """
     if action == 'post_add':
-        for org in instance.organization.all():
-            if org.userprofile_set.count():
-                org.inv_status = 'RGS'
-                org.save()
+        instance.organization.exclude(inv_status='ACT')\
+                             .filter(userprofile__isnull=False)\
+                             .update(inv_status='RGS')
 
 # invoke signal when 'organization' field at UserProfile was changed
 m2m_changed.connect(org_changed, sender=UserProfile.organization.through)

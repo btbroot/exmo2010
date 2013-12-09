@@ -17,19 +17,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import re
+import time
 from email.header import decode_header
 
 from django.contrib.auth.models import User, Group
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
+from django.utils.crypto import salted_hmac
 from livesettings import config_value
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.mail_tests import LocmemBackendTests
+from custom_comments.models import CommentExmo
 from exmo2010.models import *
 
 
@@ -210,3 +215,93 @@ class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
         # AND invitation status should change from 'Not sent' to 'Sent'
         for org in Organization.objects.all():
             self.assertEqual(org.inv_status, 'SNT')
+
+
+class OrganizationRegisteredStatusTestCase(TestCase):
+    # Scenario: Organization SHOULD change invitation status to 'registered'
+    # when first representative is registered. Different organizations of
+    # single representative SHOULD NOT affect each other.
+
+    def setUp(self):
+        self.client = Client()
+        site = Site.objects.get_current()
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN published monitoring
+        monitoring1 = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND interaction monitoring
+        monitoring2 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND organization with 'activated' invitation status connected to published monitoring
+        organization1 = mommy.make(Organization, name='org1', monitoring=monitoring1, inv_status='ACT')
+        # AND organization with 'read' invitation status connected to interaction monitoring
+        self.organization2 = mommy.make(Organization, name='org2', monitoring=monitoring2, inv_status='RD')
+        # AND corresponding task, parameter, and score connected to organization1
+        task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring1, weight=1)
+        score1 = mommy.make(Score, task=task1, parameter=parameter1)
+        # AND representative connected to organization1
+        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        profile = self.user.get_profile()
+        profile.organization = [organization1]
+        # AND representatives comment connected to score1
+        mommy.make(CommentExmo, content_type=content_type, object_pk=score1.pk, user=self.user, site=site)
+
+    def test_registered_status(self):
+        # WHEN I am logged in as organizations representative
+        self.client.login(username='user', password='password')
+        # AND I submit form with invitation code of organization2
+        url = reverse('exmo2010:settings')
+        data = {
+            'invitation_code': self.organization2.inv_code,
+        }
+        self.client.post(url, data)
+        #THEN organization2 status should be 'registered'
+        status = Organization.objects.get(pk=self.organization2.pk).inv_status
+        self.assertEqual(status, 'RGS')
+
+
+class OrganizationActiveStatusTestCase(TestCase):
+    # Scenario: Organization SHOULD change invitation status to 'activated'
+    # when representative posts comment to relevant task's score.
+
+    def setUp(self):
+        self.client = Client()
+        self.site = Site.objects.get_current()
+        self.content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN interaction monitoring
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND organization with 'registered' invitation status connected to interaction monitoring
+        self.organization = mommy.make(Organization, name='org2', monitoring=monitoring, inv_status='RGS')
+        # AND corresponding task, parameter, and score for organization
+        task = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED)
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        self.score = mommy.make(Score, task=task, parameter=parameter)
+        # AND representative connected to organization
+        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        profile = self.user.get_profile()
+        profile.organization = [self.organization]
+
+    def test_activated_status(self):
+        # WHEN I am logged in as organizations representative
+        self.client.login(username='user', password='password')
+        # AND I post comment
+        url = reverse('comments-post-comment')
+        key_salt = "django.contrib.forms.CommentSecurityForm"
+        timestamp = str(int(time.time()))
+        object_pk = str(self.score.pk)
+        content_type = '.'.join([self.content_type.app_label, self.content_type.model])
+        value = "-".join([content_type, object_pk, timestamp])
+        security_hash = salted_hmac(key_salt, value).hexdigest()
+        data = {
+            'status': '0',
+            'comment': 'Comment',
+            'timestamp': timestamp,
+            'object_pk': object_pk,
+            'security_hash': security_hash,
+            'content_type': content_type,
+        }
+        self.client.post(url, data)
+        # THEN organization should become 'activated'
+        status = Organization.objects.get(pk=self.organization.pk).inv_status
+        self.assertEqual(status, 'ACT')

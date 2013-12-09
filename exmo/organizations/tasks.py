@@ -75,21 +75,6 @@ def check_mdn_emails():
         m.expunge()
 
 
-@periodic_task(run_every=crontab(minute="*/30"))
-def change_inv_status():
-    """
-    Check all organizations with 'registrated' invitation status for activity.
-
-    """
-    orgs = Organization.objects.filter(inv_status='RGS')
-    for org in orgs:
-        scores = Score.objects.filter(task__organization=org)
-        is_active = org.userprofile_set.filter(user__comment_comments__object_pk__in=scores).exists()
-        if is_active:
-            org.inv_status = 'ACT'
-            org.save()
-
-
 @task(default_retry_delay=settings.EMAIL_DEFAULT_RETRY_DELAY,
       max_retries=settings.EMAIL_MAX_RETRIES,
       rate_limit=settings.EMAIL_RATE_LIMIT)
