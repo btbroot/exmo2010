@@ -19,6 +19,7 @@
 #
 from functools import wraps
 
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
@@ -85,7 +86,6 @@ def comments_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NA
 
     """
     actual_decorator = _user_passes_test(
-        lambda u: u.is_authenticated(),
         login_url=login_url,
         redirect_field_name=redirect_field_name
     )
@@ -94,21 +94,17 @@ def comments_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NA
     return actual_decorator
 
 
-def _user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
+def _user_passes_test(login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
 
     def decorator(view_func):
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
-            if test_func(request.user):
+            if request.user.is_authenticated():
                 return view_func(request, *args, **kwargs)
             path = request.build_absolute_uri()
-
-            from django.contrib.auth.views import redirect_to_login
-            try:
-                score_id = request.POST['object_pk']
-                path = '%s' % reverse('exmo2010:score_detail', args=[score_id])
-            except AttributeError:
-                pass
+            score_id = request.POST.get('object_pk')
+            if score_id:
+                path = reverse('exmo2010:score_detail', args=[score_id])
             return redirect_to_login(path, login_url, redirect_field_name)
         return _wrapped_view
     return decorator

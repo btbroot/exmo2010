@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from model_mommy import mommy
 
@@ -49,3 +49,14 @@ class CommentReportTestCase(TestCase):
         report = comment_report(self.monitoring)
         # THEN count of organizations with representatives equals 1
         self.assertEqual(len(report['organizations_with_representatives']), 1)
+
+
+class CommentGetQueryAccessTestCase(TestCase):
+    # Scenario: should disallow to send get-query
+
+    def test_anonymous_send_get_query(self):
+        # WHEN anonymous user send GET-query
+        url = reverse('comments-post-comment')
+        response = self.client.get(url, follow=True)
+        # THEN response status_code should be 405 (Method Not Allowed)
+        self.assertEqual(response.status_code, 405)
