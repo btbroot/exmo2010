@@ -21,15 +21,19 @@
 {% endcomment %}
 {% load i18n %}
 
+{% block title %}
+    {% blocktrans %}Delete task {{task}}{% endblocktrans %}
+{% endblock %}
+
 {% block content %}
-{% if deleted_objects %}
-{% trans 'When you delete task you also delete this scores:'%}<br>
-{% for do in deleted_objects %}
-<a href="{% url exmo2010:score_view do.pk %}">{{ do }}</a><br>
-{% endfor %}
-{% endif %}
-<form method="post" action="{% url exmo2010:task_delete object.pk %}?{{ request.GET.urlencode }}">{% csrf_token %}
-  <p>{% trans 'Delete this task?' %}</p>
-  <p><input type="submit" /></p>
-</form>
+    {% if task.score_set.all %}
+        {% trans 'When you delete task you also delete this scores:'%}<br>
+        {% for score in task.score_set.all %}
+            <a href="{% url exmo2010:score_view score.pk %}">{{score}}</a><br>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url exmo2010:task_delete object.pk %}?{{ request.GET.urlencode }}">{% csrf_token %}
+    <p>{% trans 'Delete this task?' %}</p>
+    <p><input type="submit" /></p>
+    </form>
 {% endblock %}

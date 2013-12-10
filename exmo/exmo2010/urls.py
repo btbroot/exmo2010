@@ -31,7 +31,7 @@ from monitorings.views import MonitoringManagerView
 from organizations.views import OrganizationManagerView
 from parameters.views import ParameterManagerView
 from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
-from tasks.views import TaskManagerView, AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView
+from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 
 
 def named_urls(module, *urlpatterns):
@@ -107,7 +107,7 @@ monitoring_patterns = named_urls('monitorings.views',
 
 monitoring_patterns += named_urls('tasks.views',
     (r'^(?P<monitoring_pk>\d+)/mass_assign_tasks/$', 'task_mass_assign_tasks'),
-    (r'^(?P<monitoring_pk>\d+)/task/add/$', 'task_add'),
+    (r'^(?P<monitoring_pk>\d+)/task/add/$', TaskEditView, 'task_add'),
     (r'^(?P<monitoring_pk>\d+)/tasks/$', 'tasks_by_monitoring'),
 )
 
@@ -131,10 +131,8 @@ monitoring_patterns += named_urls('',
 
 
 tasks_patterns = named_urls('tasks.views',
-    (r'^task/(?P<task_pk>\d+)_update/$',
-        reversion.create_revision()(TaskManagerView.as_view()), 'task_update', {'method': 'update'}),
-    (r'^task/(?P<task_pk>\d+)_delete/$',
-        reversion.create_revision()(TaskManagerView.as_view()), 'task_delete', {'method': 'delete'}),
+    (r'^task/(?P<task_pk>\d+)_update/$', reversion.create_revision()(TaskEditView.as_view()), 'task_update'),
+    (r'^task/(?P<task_pk>\d+)_delete/$', reversion.create_revision()(TaskDeleteView.as_view()), 'task_delete'),
     (r'^task/(?P<task_pk>\d+)_ajax_approve/$', AjaxTaskApproveView, 'ajax_task_approve'),
     (r'^task/(?P<task_pk>\d+)_ajax_close/$', AjaxTaskCloseView, 'ajax_task_close'),
     (r'^task/(?P<task_pk>\d+)_ajax_open/$', AjaxTaskOpenView, 'ajax_task_open'),

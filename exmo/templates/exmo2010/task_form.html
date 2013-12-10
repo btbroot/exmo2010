@@ -22,22 +22,19 @@
 {% load i18n adminmedia %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
 
+{% block title %}
+    {% if task %}
+        {% blocktrans %}Edit task {{task}}{% endblocktrans %}
+    {% else %}
+        {% blocktrans %}Add new task for {{view.monitoring}}{% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
+    <p>{{ form.non_field_errors }}</p>
 
-<p>{{ form.non_field_errors }}</p>
-
-<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-  <p>{{form.user.label_tag}}{{ form.user }} {{ form.user.errors }}</p>
-  {% if object %}
-    <p>{{form.status.label_tag}}{{ form.status }} {{ form.status.errors }}</p>
-  {% else %}
-    <p>{{form.status.as_hidden}}</p>
-  {% endif %}
-  {% if organization %}
-    <p>{{form.organization.as_hidden}}</p>
-  {% else %}
-    <p>{{form.organization.label_tag}}{{ form.organization }} {{ form.organization.errors }}</p>
-  {% endif %}
-  <p><input type="submit" /><input class="button" type="reset" /></p>
-</form>
+    <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
+        {{form.as_p}}
+        <p><input type="submit" /><input class="button" type="reset" /></p>
+    </form>
 {% endblock %}

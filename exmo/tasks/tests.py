@@ -313,3 +313,72 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         self.assertTrue(res_pattern.match(res['status_display']))
         # AND ajax response  permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
         self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+
+
+class TaskDeletionTestCase(TestCase):
+    # SHOULD delete Task after expertA confirmation on deletion page
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN monitoring with organization
+        self.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND there is a task for this organization
+        self.task = mommy.make(Task, organization=organization)
+
+        # AND i am logged-in as expertA
+        expertA = User.objects.create_user('expertA', 'usr1@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_delete_task(self):
+        # WHEN I post task deletion confirmation
+        url = reverse('exmo2010:task_delete', args=[self.task.pk])
+        response = self.client.post(url, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND task should get deleted from database
+        self.assertEqual(0, Task.objects.filter(pk=self.task.pk).count())
+
+
+class TaskEditTestCase(TestCase):
+    # SHOULD update Task after expertA edits it on edit page
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN 2 expertB accounts
+        self.expertB1 = User.objects.create_user('expertB1', 'expertB1@svobodainfo.org', 'password')
+        self.expertB1.profile.is_expertB = True
+        self.expertB2 = User.objects.create_user('expertB2', 'expertB2@svobodainfo.org', 'password')
+        self.expertB2.profile.is_expertB = True
+
+        # AND monitoring with organization
+        self.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND task for this organization assigned to expertB1
+        self.task = mommy.make(Task, organization=organization, user=self.expertB1)
+
+        # AND i am logged-in as expertA
+        expertA = User.objects.create_user('expertA', 'usr1@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_update_task(self):
+        # WHEN I get task edit page
+        url = reverse('exmo2010:task_update', args=[self.task.pk])
+        response = self.client.get(url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # WHEN I post task edit form with user changed to expertB2
+        formdata = dict(response.context['form'].initial, user=self.expertB2.pk)
+        response = self.client.post(url, follow=True, data=formdata)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND assigned expertB user of this task should get changed to expertB2 in database
+        self.assertEqual(self.expertB2.pk, Task.objects.filter(pk=self.task.pk).get().user.pk)

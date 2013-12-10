@@ -103,7 +103,7 @@
             <td>
                 <a href="{% url 'exmo2010:score_list_by_task' task.pk %}" title="{{ task.organization.name}}">{{ task.organization.name|truncatewords:10 }}</a>
                 {% if monitoring.perms.admin_monitoring %}
-                    &nbsp;<a href="{% url 'exmo2010:task_update' task.pk %}{{ request.GET.urlencode }}">
+                    &nbsp;<a href="{% url 'exmo2010:task_update' task.pk %}?{{request.GET.urlencode}}">
                         <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
                 {% endif %}
                 {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
