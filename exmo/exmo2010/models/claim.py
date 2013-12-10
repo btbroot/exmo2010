@@ -54,7 +54,7 @@ class Claim(BaseModel):
         return self
 
     def __unicode__(self):
-        return _('claim for %(score)s from %(creator)s') % self.__dict__
+        return _('claim for {self.score} from {self.creator}').format(self=self)
 
     def save(self, *args, **kwargs):
         """
