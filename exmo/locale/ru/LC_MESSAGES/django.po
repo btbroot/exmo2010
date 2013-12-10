@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-09 12:50+0400\n"
+"POT-Creation-Date: 2013-12-10 22:23+0400\n"
 "PO-Revision-Date: 2013-11-22 01:47+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: \n"
@@ -2637,11 +2637,7 @@ msgstr "Администрирование АИС Инфометр"
 msgid "Infometer administration"
 msgstr "Администрирование АИС Инфометр"
 
-#: templates/exmo2010/base.html:30
-msgid "AIS Exmo"
-msgstr "АИС EXMO"
-
-#: templates/exmo2010/base_site.html:32
+#: templates/exmo2010/base.html:30 templates/exmo2010/base_site.html:32
 #: templates/registration/activation_complete.html:39
 #: templates/registration/password_change_done.html:39
 #: templates/registration/password_reset_complete.html:39
@@ -3334,10 +3330,12 @@ msgid "In order to reset your password, please follow the link:"
 msgstr "Для восстановления пароля, пожалуйста, перейдите по ссылке:"
 
 #: templates/registration/password_reset_email.html:36
-msgid "Then you'll be able to enter a new password for your account."
+msgid ""
+"Then you'll get to a new password page, in which you'll be able to log in "
+"Infometer."
 msgstr ""
 "После этого вы попадете на страницу ввода нового пароля, по которому сможете "
-"входить в систему EXMO."
+"входить в систему Инфометр."
 
 #: templates/registration/password_reset_form.html:34
 msgid ""
