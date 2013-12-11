@@ -104,8 +104,17 @@ class HelpView(TemplateView):
     template_name = 'exmo2010/help.html'
 
     def get_context_data(self, **kwargs):
+        current_site = Site.objects.get_current()
+        protocol = self.request.is_secure() and 'https' or 'http'
+
+        registration_url = '%s://%s%s' % (
+            protocol,
+            current_site.domain,
+            reverse('exmo2010:registration_register')
+        )
         return {
-            'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')
+            'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
+            'registration_url': registration_url,
         }
 
 
