@@ -16,10 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 import json
 import re
 
+from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -382,3 +382,38 @@ class TaskEditTestCase(TestCase):
 
         # AND assigned expertB user of this task should get changed to expertB2 in database
         self.assertEqual(self.expertB2.pk, Task.objects.filter(pk=self.task.pk).get().user.pk)
+
+
+class ReassignTaskTestCase(TestCase):
+    # Scenario: SHOULD allow only expertA to reassign task
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN two experts B
+        self.expertB_1 = User.objects.create_user('expertB_1', 'expertB_1@svobodainfo.org', 'password')
+        self.expertB_1.profile.is_expertB = True
+        self.expertB_2 = User.objects.create_user('expertB_2', 'expertB_2@svobodainfo.org', 'password')
+        self.expertB_2.profile.is_expertB = True
+        # AND interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND organization in this monitoring
+        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND opened task
+        self.task = mommy.make(Task, organization=self.organization, user=self.expertB_1, status=Task.TASK_OPEN)
+
+    def test_reassign_task(self):
+        # WHEN I am logged-in as expertB_1
+        self.client.login(username='expertB_1', password='password')
+        # AND submit task update form
+        url = reverse('exmo2010:task_update', args=[self.task.pk])
+        data = {
+            'organization': self.organization.pk,
+            'status': Task.TASK_OPEN,
+            'user': self.expertB_2.pk,
+        }
+        response = self.client.post(url, data)
+        # THEN response status_code should be 403 (Forbidden)
+        self.assertEqual(response.status_code, 403)
+        # AND task should stay assigned to expertB_1
+        task = Task.objects.get(pk=self.task.pk)
+        self.assertEqual(task.user.username, self.expertB_1.username)
