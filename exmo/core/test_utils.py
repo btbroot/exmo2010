@@ -25,6 +25,8 @@ from django.utils.decorators import method_decorator
 
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.remote.webelement import WebElement
+from selenium.common.exceptions import TimeoutException
 
 
 class BaseSeleniumTestCase(LiveServerTestCase):
@@ -67,15 +69,36 @@ class BaseSeleniumTestCase(LiveServerTestCase):
     def findall(self, selector):
         return self.webdrv.find_elements_by_css_selector(selector)
 
-    def wait_visible(self, selector, is_visible=True, timeout=3):
+    def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=5):
         def condition(*args):
-            return self.find(selector).is_displayed() == is_visible
-        return WebDriverWait(self.webdrv, timeout).until(condition)
+            element = self.find(selector)
+            if element:
+                return method(element) == expected_result
+        WebDriverWait(self.webdrv, wait_timeout).until(condition)
 
-    def wait_enabled(self, selector, is_enabled=True, timeout=3):
-        def condition(*args):
-            return self.find(selector).is_enabled() == is_enabled
-        return WebDriverWait(self.webdrv, timeout).until(condition)
+    def assertVisible(self, selector, wait_timeout=5):
+        try:
+            self._assertWebElementMethod(selector, WebElement.is_displayed, True, wait_timeout)
+        except TimeoutException:
+            raise AssertionError('Element is missing or not visible: %s' % selector)
+
+    def assertHidden(self, selector, wait_timeout=5):
+        try:
+            self._assertWebElementMethod(selector, WebElement.is_displayed, False, wait_timeout)
+        except TimeoutException:
+            raise AssertionError('Element is missing or not hidden: %s' % selector)
+
+    def assertEnabled(self, selector, wait_timeout=5):
+        try:
+            self._assertWebElementMethod(selector, WebElement.is_enabled, True, wait_timeout)
+        except TimeoutException:
+            raise AssertionError('Element is missing or not enabled: %s' % selector)
+
+    def assertDisabled(self, selector, wait_timeout=5):
+        try:
+            self._assertWebElementMethod(selector, WebElement.is_enabled, False, wait_timeout)
+        except TimeoutException:
+            raise AssertionError('Element is missing or not disabled: %s' % selector)
 
     def get(self, url):
         self.webdrv.get(self.live_server_url + url)

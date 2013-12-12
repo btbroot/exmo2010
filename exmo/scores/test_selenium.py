@@ -127,21 +127,21 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         self.find('#id_found_2').click()
 
         # THEN submit button should stay disabled
-        self.wait_enabled('#submit_score_and_comment', False)
+        self.assertDisabled('#submit_score_and_comment')
 
         with self.frame('iframe'):
             # WHEN i type something in the comment area
             self.find('body').send_keys('hi')
 
         # THEN submit button should be enabled
-        self.wait_enabled('#submit_score_and_comment')
+        self.assertEnabled('#submit_score_and_comment')
 
         with self.frame('iframe'):
             # WHEN i erase text in the comment area
             self.find('body').send_keys('\b\b')
 
         # THEN submit button should turn disabled
-        self.wait_enabled('#submit_score_and_comment', False)
+        self.assertDisabled('#submit_score_and_comment')
 
 
 class PrintfullPageTestCase(BaseSeleniumTestCase):

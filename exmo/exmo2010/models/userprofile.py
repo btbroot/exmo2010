@@ -343,12 +343,14 @@ User.is_expertB = property(lambda u: u.is_active and u.profile.is_expertB)
 User.is_expertA = property(lambda u: u.is_active and u.profile.is_expertA)
 User.is_customer = property(lambda u: u.is_active and u.profile.is_customer)
 User.is_organization = property(lambda u: u.is_active and u.profile.is_organization)
+User.represents = lambda u, org: u.is_active and u.profile.organization.filter(pk=org.pk).exists()
 
 AnonymousUser.is_expert = False
 AnonymousUser.is_expertB = False
 AnonymousUser.is_expertA = False
 AnonymousUser.is_customer = False
 AnonymousUser.is_organization = False
+AnonymousUser.represents = lambda u, org: False
 
 
 def org_changed(sender, instance, action, **kwargs):

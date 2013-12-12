@@ -18,13 +18,13 @@
 #
 from urlparse import urlparse
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import *
+from exmo2010.models import Monitoring, Organization
 
 
 class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
@@ -34,7 +34,7 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
     def setUp(self):
         # GIVEN expert A account
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+        expertA.profile.is_expertA = True
         # AND monitoring
         self.monitoring = mommy.make(Monitoring)
         # AND organization with email connected to monitoring
@@ -48,13 +48,11 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         # AND I get the page
         self.get(self.url)
         # AND click on 'send mail' tab
-        tab = self.find('a[href="#send_mail"]')
-        tab.click()
+        self.find('a[href="#send_mail"]').click()
         # AND submit form
-        submit = self.find(self.submit_button)
-        submit.click()
+        self.find(self.submit_button).click()
         # THEN warning window should be displayed
-        self.wait_visible('div.warning')
+        self.assertVisible('div.warning')
 
     def test_success_message_at_send_mail_page(self):
         # WHEN I login as expert A
@@ -62,18 +60,15 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         # AND I get the page
         self.get(self.url)
         # AND click on 'send mail' tab
-        tab = self.find('a[href="#send_mail"]')
-        tab.click()
+        self.find('a[href="#send_mail"]').click()
         # AND post form data
-        subject = self.find('#id_subject')
-        subject.send_keys(['Subject'])
-        content = self.find('#cke_contents_id_comment iframe')
-        content.send_keys(['Content'])
+        self.find('#id_subject').send_keys('Subject')
+        with self.frame('#cke_contents_id_comment iframe'):
+            self.find('body').send_keys('Content')
         # AND submit form
-        submit = self.find(self.submit_button)
-        submit.click()
+        self.find(self.submit_button).click()
         # THEN success window should be displayed
-        self.wait_visible('p.success')
+        self.assertVisible('p.success')
         # AND mail outbox should have 1 email
         self.assertEqual(len(mail.outbox), 1)
         # AND current url should contain expected path

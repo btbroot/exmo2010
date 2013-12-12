@@ -450,7 +450,6 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
     def setUp(self):
         # GIVEN hidden and published monitoring
         self.client = Client()
-        self.url = reverse('exmo2010:ratings')
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
         self.monitoring_id = self.monitoring.pk
 
@@ -475,9 +474,9 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.su = User.objects.create_superuser('su', 'su@svobodainfo.org', 'password')
 
         # AND task, parameter and score
-        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED, user=self.expertB)
+        self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED, user=self.expertB)
         parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
-        self.score = mommy.make(Score, task=task, parameter=parameter)
+        self.score = mommy.make(Score, task=self.task, parameter=parameter)
 
         # AND regular user
         self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
@@ -500,7 +499,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # WHEN user logging in
         self.client.login(username=username, password='password')
         # AND requests ratings page
-        response = self.client.get(self.url)
+        response = self.client.get(reverse('exmo2010:ratings'))
         response_monitoring = response.context['monitoring_list'][0]
         # THEN response's context contains hidden monitoring in monitoring list
         # for connected organization representative, connected expertB, expertA and superuser
@@ -516,11 +515,43 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # WHEN user logging in
         self.client.login(username=username, password='password')
         # AND requests ratings page
-        response = self.client.get(self.url)
+        response = self.client.get(reverse('exmo2010:ratings'))
         response_monitoring_list = response.context['monitoring_list']
         # THEN response's context contains no monitoring in monitoring list
         # for disconnected organization representative, disconnected expertB, anonymous and regular user
         self.assertEqual(len(response_monitoring_list), 0)
+
+    @parameterized.expand([
+        (None,),
+        ('usr',),
+        ('expertB_out',),
+        ('org_out',)
+    ])
+    def test_forbid_hidden_score_page(self, username):
+        # WHEN i log in
+        self.client.login(username=username, password='password')
+
+        # AND i request score page
+        response = self.client.get(reverse('exmo2010:score_view', args=[self.score.pk]))
+
+        # THEN response status_code is 403 (forbidden)
+        self.assertEqual(response.status_code, 403)
+
+    @parameterized.expand([
+        (None,),
+        ('usr',),
+        ('expertB_out',),
+        ('org_out',)
+    ])
+    def test_forbid_hidden_task_page(self, username):
+        # WHEN i log in
+        self.client.login(username=username, password='password')
+
+        # WHEN i request task page
+        response = self.client.get(reverse('exmo2010:score_list_by_task', args=[self.task.pk]))
+
+        # THEN response status_code is 403 (forbidden)
+        self.assertEqual(response.status_code, 403)
 
 
 class EmptyMonitoringRatingTestCase(TestCase):

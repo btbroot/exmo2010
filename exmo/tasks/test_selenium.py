@@ -19,7 +19,6 @@
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
-from selenium.webdriver.support.wait import WebDriverWait
 
 from core.test_utils import BaseSeleniumTestCase
 from exmo2010.models import User, Monitoring, Organization, Task, Parameter, Score, MONITORING_RATE
@@ -70,16 +69,16 @@ class TaskListAjaxActionTestCase(BaseSeleniumTestCase):
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         self.assertEqual(self.find(td + ' .task_status_display').text, open_status_display)
         # AND 'close' action link should be visible
-        self.wait_visible(td + ' .perms_close_task a')
+        self.assertVisible(td + ' .perms_close_task a')
         # AND 'open' and 'approve' action links should be hidden
-        self.wait_visible(td + ' .perms_open_task a', False)
-        self.wait_visible(td + ' .perms_approve_task a', False)
+        self.assertHidden(td + ' .perms_open_task a')
+        self.assertHidden(td + ' .perms_approve_task a')
         # WHEN i click 'close' action link
         self.find(td + ' .perms_close_task a').click()
         # THEN 'open' action link should become visible
-        self.wait_visible(td + ' .perms_open_task a')
+        self.assertVisible(td + ' .perms_open_task a')
         # AND 'close' action link should become hidden
-        self.wait_visible(td + ' .perms_close_task a', False)
+        self.assertHidden(td + ' .perms_close_task a')
         # AND new (TASK_CLOSED) status_display should be displayed
         closed_status_display = dict(Task.TASK_STATUS).get(Task.TASK_CLOSED)
         self.assertEqual(self.find(td + ' .task_status_display').text, closed_status_display)
