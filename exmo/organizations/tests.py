@@ -278,15 +278,16 @@ class OrganizationActiveStatusTestCase(TestCase):
         parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
         self.score = mommy.make(Score, task=task, parameter=parameter)
         # AND representative connected to organization
-        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        profile = self.user.get_profile()
+        self.org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        self.org.groups.add(Group.objects.get(name=self.org.profile.organization_group))
+        profile = self.org.get_profile()
         profile.organization = [self.organization]
 
     def test_activated_status(self):
         # WHEN I am logged in as organizations representative
-        self.client.login(username='user', password='password')
+        self.client.login(username='org', password='password')
         # AND I post comment
-        url = reverse('comments-post-comment')
+        url = reverse('login-required-post-comment')
         key_salt = "django.contrib.forms.CommentSecurityForm"
         timestamp = str(int(time.time()))
         object_pk = str(self.score.pk)

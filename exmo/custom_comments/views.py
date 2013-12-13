@@ -24,6 +24,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
@@ -99,10 +100,13 @@ def _user_passes_test(login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
     def decorator(view_func):
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
+            score_id = request.POST.get('object_pk')
             if request.user.is_authenticated():
+                score = get_object_or_404(Score, pk=score_id)
+                if not request.user.has_perm('exmo2010.add_comment_score', score):
+                    return HttpResponseForbidden(_('Forbidden'))
                 return view_func(request, *args, **kwargs)
             path = request.build_absolute_uri()
-            score_id = request.POST.get('object_pk')
             if score_id:
                 path = reverse('exmo2010:score_detail', args=[score_id])
             return redirect_to_login(path, login_url, redirect_field_name)
