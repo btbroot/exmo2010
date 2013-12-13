@@ -268,7 +268,7 @@ def mkdir_ifnotexist(path):
     os.path.exists(path) or os.makedirs(path)
     return path
 
-if DEVEL:
+if DEVEL or TEST:
     PROJECT_DIR = os.path.abspath(PROJECT_NAME)
     path_to_project = lambda *a: os.path.join(PROJECT_DIR, *a)
     CACHE_PATH = mkdir_ifnotexist(path_to_project('../../cache'))
