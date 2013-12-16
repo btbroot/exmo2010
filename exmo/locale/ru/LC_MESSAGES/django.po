@@ -3041,10 +3041,6 @@ msgstr "Веб-адрес"
 msgid "List is empty"
 msgstr "Список пуст"
 
-#: templates/exmo2010/score_confirm_delete.html:26
-msgid "Delete this score?"
-msgstr "Удалить оценку?"
-
 #: templates/exmo2010/task_confirm_delete.html:25
 #, python-format
 msgid "Delete task %(task)s"
@@ -3460,6 +3456,3 @@ msgstr ""
 #: templates/user_dashboard/dashboard.html:83
 msgid "Modules"
 msgstr "Модули"
-
-#~ msgid "Task updated"
-#~ msgstr "Задача  обновлена"

@@ -19,18 +19,17 @@
 #
 import types
 
+import reversion
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext as _
-
-import reversion
 
 from exmo2010.forms import CertificateOrderForm
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringManagerView
 from organizations.views import OrganizationManagerView
 from parameters.views import ParameterManagerView
-from scores.views import ScoreAddView, ScoreEditView, ScoreDeleteView, ScoreDetailView
+from scores.views import ScoreAddView, ScoreEditView, ScoreDetailView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 
 
@@ -76,7 +75,6 @@ scores_patterns = named_urls('scores.views',
     (r'^(?P<score_pk>\d+)/$', 'score_view'),
     (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', ScoreAddView, 'score_add'),
     (r'^(?P<score_pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), 'score_edit'),
-    (r'^(?P<score_pk>\d+)/delete/$', reversion.create_revision()(ScoreDeleteView.as_view()), 'score_delete'),
     (r'^(?P<score_pk>\d+)/detail/$', ScoreDetailView, 'score_detail'),
     (r'^rating_update$', 'ratingUpdate'),
 )
@@ -262,7 +260,6 @@ def crumbs_tree(is_expert=False):
                     'score_add':    _('Parameter'),
                     'score_view':   _('Parameter'),
                     'score_edit':   _('Parameter'),
-                    'score_delete': _('Delete score'),
                     # Parameter
                     'parameter_add':    _('Add parameter'),
                     'parameter_update': _('Edit parameter'),

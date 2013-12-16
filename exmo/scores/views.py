@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 import datetime
 import json
 
@@ -38,8 +37,7 @@ from django.utils.decorators import method_decorator
 from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
-from django.views.decorators.csrf import csrf_protect
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from livesettings import config_value
 
@@ -49,8 +47,7 @@ from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
 from custom_comments.signals import comment_notification
-from exmo2010.models import Claim, Clarification, MonitoringInteractActivity, Parameter, QAnswer, QQuestion
-from exmo2010.models import Score, Task, UserProfile, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_FINALIZING
+from exmo2010.models import *
 from questionnaire.forms import QuestionnaireDynForm
 from scores.forms import ScoreForm, ScoreFormWithComment
 
@@ -143,28 +140,6 @@ class ScoreAddView(ScoreMixin, CreateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ScoreAddView, self).dispatch(*args, **kwargs)
-
-
-class ScoreDeleteView(ScoreMixin, DeleteView):
-    template_name = "exmo2010/score_confirm_delete.html"
-    pk_url_kwarg = 'score_pk'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ScoreDeleteView, self).dispatch(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        if not request.user.has_perm('exmo2010.delete_score', self.get_object()):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        return super(ScoreDeleteView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if not request.user.has_perm('exmo2010.delete_score', self.object):
-            return HttpResponseForbidden(_('Forbidden'))
-        self.success_url = self.get_redirect(request)
-        return super(ScoreDeleteView, self).post(request, *args, **kwargs)
 
 
 class ScoreEditView(UpdateView):

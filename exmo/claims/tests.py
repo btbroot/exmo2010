@@ -71,7 +71,7 @@ class ClaimEmailNotifyTestCase(TestCase):
         mail.outbox.pop()
 
     def test_notification_on_delete(self):
-        url = reverse('exmo2010:ajax_claim_delete')
+        url = reverse('exmo2010:claim_delete')
 
         # WHEN i post claim deletion ajax request
         response = self.client.post(url, data={'pk': self.claim.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
