@@ -195,10 +195,10 @@ def clarification_notification(sender, **kwargs):
          'clarification': clarification,
          'url': url}
 
-    recipients = User.objects.filter(
+    recipients = User.objects.exclude(email__exact='').exclude(email__isnull=True).distinct().filter(
         Q(groups__name=UserProfile.expertA_group, is_active=True) | Q(pk=score.task.user.pk))
 
-    for r in recipients.distinct().exclude(email__exact='', email__isnull=True):
+    for r in recipients.values_list('email', flat=True):
         send_email.delay(r, subject, 'score_clarification', context=c)
 
 
