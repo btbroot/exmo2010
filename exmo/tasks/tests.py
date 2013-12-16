@@ -28,14 +28,14 @@ from django.test.client import Client
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-
 from exmo2010.models import (
-    Monitoring, User, Organization, TaskHistory, Task, Score,
+    Monitoring, Organization, TaskHistory, Task, Score,
     Parameter, MONITORING_INTERACTION, MONITORING_RATE)
 
 
 class TaskAssignSideEffectsTestCase(TestCase):
-    # Scenario: Should notify user and create TaskHistory on Task creation/assign
+    # Scenario: when task is created/assigned SHOULD create TaskHistory
+    # and notify expertB if he has email
 
     def setUp(self):
         self.client = Client()
@@ -45,15 +45,18 @@ class TaskAssignSideEffectsTestCase(TestCase):
         # AND there is 2 organizations in this monitoring
         self.organization1 = mommy.make(Organization, monitoring=self.monitoring)
         self.organization2 = mommy.make(Organization, monitoring=self.monitoring)
-        # AND i am logged-in as expertA
-        usr = User.objects.create_user('expA', 'usr@svobodainfo.org', 'password')
+        # AND i am logged-in as expert A
+        usr = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         usr.profile.is_expertA = True
-        self.client.login(username='expA', password='password')
-        # AND there is 2 active expertsB
-        self.expertB1 = mommy.make_recipe('exmo2010.active_user')
+        self.client.login(username='expertA', password='password')
+        # AND there is 2 active experts B
+        self.expertB1 = User.objects.create_user('expertB1', 'expertB1@svobodainfo.org', 'password')
         self.expertB1.profile.is_expertB = True
-        self.expertB2 = mommy.make_recipe('exmo2010.active_user')
+        self.expertB2 = User.objects.create_user('expertB2', 'expertB1@svobodainfo.org', 'password')
         self.expertB2.profile.is_expertB = True
+        # AND expert B account without email
+        self.expertB3 = User.objects.create_user('expertB3', '', 'password')
+        self.expertB3.profile.is_expertB = True
 
     def test_mass_assign_tasks(self):
         # WHEN I mass-asign Tasks for 2 organizations to 2 users
@@ -92,6 +95,23 @@ class TaskAssignSideEffectsTestCase(TestCase):
         self.assertEqual(history.status, task.organization.monitoring.status)
         # AND expertB should receive Email notification about her new assigned Task
         self.assertEqual(len(mail.outbox), 1)
+
+    def test_assign_with_empty_email(self):
+        # WHEN I get task add page
+        url = reverse('exmo2010:task_add', args=[self.monitoring.pk])
+        # AND I post task add form with user assigned to expert B
+        data = {
+            'organization': self.organization1.pk,
+            'user': self.expertB3.pk,
+        }
+        response = self.client.post(url, data=data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND assigned expert B user of this task should get changed to expertB in database
+        self.assertEqual(self.expertB3.pk, Task.objects.all().get().user.pk)
+        # AND expert B shouldn't receive Email notification about her new assigned Task
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class ExpertBTaskAjaxActionsTestCase(TestCase):

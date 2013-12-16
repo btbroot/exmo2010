@@ -17,8 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -35,6 +33,8 @@ def task_assign_user_notify(sender, **kwargs):
     """
     task = sender
     email = task.user.email
+    if not email:
+        return
     subject = _('You have an assigned task')
     if Site._meta.installed:
         site = Site.objects.get_current()
