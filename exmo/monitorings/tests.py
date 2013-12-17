@@ -114,48 +114,48 @@ class MonitoringEditAccessTestCase(TestCase):
         self.assertEqual(self.monitoring.name, new_name)
 
 
-class RatingsTableValuesTestCase(TestCase):
-    # Scenario: Output to Ratings Table
+class RatingsAverageTestCase(TestCase):
+    # Ratings page should correctly display average openness
+
     def setUp(self):
-        # GIVEN published monitoring with a particular
-        # name and published date
         self.client = Client()
-        self.today = datetime.date.today()
-        self.monitoring_name = "Name"
-        monitoring = mommy.make(
-            Monitoring,
-            status=MONITORING_PUBLISHED,
-            name=self.monitoring_name,
-            publish_date=self.today
-        )
-        # AND one organization connected to monitoring
-        organization = mommy.make(Organization, monitoring=monitoring)
-        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        attrs = {a: False for a in 'complete accessible topical hypertext document image npa'.split()}
 
-        # AND parameter with zero weight
-        parameter = mommy.make(Parameter, monitoring=monitoring, weight=0)
+        # GIVEN published monitoring with zero weight parameter (hence zero openness)
+        self.monitoring_zero_weight = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        task = mommy.make(Task, organization__monitoring=self.monitoring_zero_weight, status=Task.TASK_APPROVED)
+        parameter = mommy.make(Parameter, monitoring=self.monitoring_zero_weight, weight=0, **attrs)
+        mommy.make(Score, task=task, parameter=parameter, found=1)
 
-        # AND score of this parameter
-        score = mommy.make(Score, task=task, parameter=parameter)
+        # AND published monitoring with zero score (score found === 0)
+        self.monitoring_zero_score = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        task = mommy.make(Task, organization__monitoring=self.monitoring_zero_score, status=Task.TASK_APPROVED)
+        parameter = mommy.make(Parameter, monitoring=self.monitoring_zero_score, weight=1, **attrs)
+        mommy.make(Score, task=task, parameter=parameter, found=0)
+
+        # AND published monitoring with nonzero score (score found === 1)
+        self.monitoring_nonzero_score = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        task = mommy.make(Task, organization__monitoring=self.monitoring_nonzero_score, status=Task.TASK_APPROVED)
+        parameter = mommy.make(Parameter, monitoring=self.monitoring_nonzero_score, weight=1, **attrs)
+        mommy.make(Score, task=task, parameter=parameter, found=1)
 
     def test_values(self):
         # WHEN user requests ratings page
         response = self.client.get(reverse('exmo2010:ratings'))
-        monitoring = response.context['monitoring_list'][0]
+
         # THEN server returns "OK" response
         self.assertEqual(response.status_code, 200)
 
-        # AND output name equals initial name
-        self.assertEqual(monitoring.name, self.monitoring_name)
+        # AND output contains all three monitorings
+        monitorings = {m.pk: m for m in response.context['monitoring_list']}
+        self.assertEqual(len(monitorings), 3)
 
-        # AND output date equals initial date
-        self.assertEqual(monitoring.publish_date, self.today)
-
-        # AND output quantity of organizations equals one
-        self.assertEqual(monitoring.org_count, 1)
-
-        # AND average openness is None because all parameters weight is 0
-        self.assertEqual(monitoring.average, None)
+        # AND monitoring_zero_weight average openness should be None
+        self.assertEqual(monitorings[self.monitoring_zero_weight.pk].average, None)
+        # AND monitoring_zero_score average openness should be 0.0
+        self.assertEqual(monitorings[self.monitoring_zero_score.pk].average, 0.0)
+        # AND monitoring_nonzero_score average openness should be 100.0
+        self.assertEqual(monitorings[self.monitoring_nonzero_score.pk].average, 100.0)
 
 
 class RatingTableColumnOptionsTestCase(TestCase):
