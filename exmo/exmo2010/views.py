@@ -173,12 +173,12 @@ class CertificateOrderView(SessionWizardView):
                 for task in tasks:
                     monitoring = task.organization.monitoring
                     rating_list = monitoring.rating(rating_type=rating_type)
-                    place = {t.pk: t.place for t in rating_list}.get(task.pk, None)
+                    task = {t.pk: t for t in rating_list}.get(task.pk, None)
 
                     object_list[task.pk] = {
-                        'openness': task.openness,
+                        'openness': task.task_openness,
                         'org_name': task.organization.name,
-                        'place': place,
+                        'place': task.place,
                         'publish_date': monitoring.publish_date,
                         'url': task.organization.url,
                     }
