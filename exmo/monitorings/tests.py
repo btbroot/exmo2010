@@ -857,3 +857,46 @@ class RatingStatsTestCase(TestCase):
         self.assertEqual(stats['openness_initial'], expected_openness)
         self.assertEqual(stats['openness_delta'], 0.0)
         self.assertEqual(stats['num_rated_tasks'], len(self.tasks))
+
+
+class RatingStatsOrgCountTestCase(TestCase):
+    # Rating stats with 'user' rating_type SHOULD
+    # proprely count rated and total organizations
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND 2 organizations
+        organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
+        organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
+        # AND 2 tasks
+        self.task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        self.task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
+        # AND parameter with excluded organization2
+        self.parameter1 = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        self.parameter1.exclude.add(organization2)
+        # AND parameter without excluded organizations
+        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        # AND 2 scores for each task
+        mommy.make(Score, task=self.task1, parameter=self.parameter1)
+        mommy.make(Score, task=self.task1, parameter=self.parameter2)
+        mommy.make(Score, task=self.task2, parameter=self.parameter1)
+        mommy.make(Score, task=self.task2, parameter=self.parameter2)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        # AND monitoring rating page url
+        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
+        # AND I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_count_tasks(self):
+        # WHEN I get monitoring rating page with users parameters
+        response = self.client.get(self.url, {'type': 'user', 'params': self.parameter1.pk})
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND count of approved tasks should be 2
+        self.assertEqual(response.context['rating_stats']['num_approved_tasks'], 2)
+        # AND count of rated tasks should be 1
+        self.assertEqual(response.context['rating_stats']['num_rated_tasks'], 1)
