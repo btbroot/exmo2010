@@ -24,6 +24,7 @@ import tempfile
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict, OrderedDict
+from operator import attrgetter
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -58,6 +59,16 @@ from exmo2010.models import *
 from monitorings.forms import MonitoringForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
+
+
+def avg(attr, items):
+    '''
+    Calculate average attribute value for list of items, given attribute name.
+    Values of None will be excluded from calcualtions. If resulting list is empty,
+    average will be None
+    '''
+    values = [val for val in map(attrgetter(attr), items) if val is not None]
+    return round(sum(values) / len(values), 3) if values else None
 
 
 @login_required
@@ -292,18 +303,13 @@ def monitoring_rating(request, monitoring_pk):
             rating_list = [t for t in rating_list if t.organization.pk in orgs]
 
         approved_tasks = Task.approved_tasks.filter(organization__monitoring=monitoring).distinct()
-        num_rated_tasks = len(rating_list)
-        if num_rated_tasks > 0:
-            rating_stats = dict(
-                _comments_stats(rating_list),
-                num_rated_tasks=num_rated_tasks,
-                num_approved_tasks=approved_tasks.count(),
-                openness=sum(t.task_openness for t in rating_list) / num_rated_tasks,
-                openness_initial=sum(t.task_openness_initial for t in rating_list) / num_rated_tasks,
-                openness_delta=sum(t.openness_delta for t in rating_list) / num_rated_tasks)
-        else:
-            rating_stats = dict(_comments_stats(rating_list), num_approved_tasks=approved_tasks.count())
-            rating_stats.update({k: 0 for k in 'num_rated_tasks openness openness_initial openness_delta'.split()})
+        rating_stats = dict(_comments_stats(rating_list), **{
+            'num_approved_tasks': approved_tasks.count(),
+            'num_rated_tasks': len(rating_list),
+            'openness': avg('task_openness', rating_list),
+            'openness_initial': avg('task_openness_initial', rating_list),
+            'openness_delta': avg('openness_delta', rating_list)
+        })
 
         context.update({
             'rating_list': rating_list,
@@ -1064,17 +1070,9 @@ def ratings(request):
     monitoring_list = monitoring_list.annotate(org_count=Count('organization'))
 
     for m in monitoring_list:
-        openness = m.openness_expression
-        sql_openness = openness.get_sql_openness()
-        sql_openness_initial = openness.get_sql_openness(initial=True)
-
-        tasks = Task.approved_tasks.filter(organization__monitoring=m)
-        tasks = tasks.extra(select={'task_openness': sql_openness,
-                                    'task_openness_initial': sql_openness_initial},
-                            order_by=['-task_openness'])
-        openness_list = [t.task_openness for t in tasks if t.task_openness is not None]
-        avg = reduce(lambda x, y: x + y, openness_list) / len(openness_list) if openness_list else None
-        m.average = round(avg, 3) if avg else None
+        sql_openness = m.openness_expression.get_sql_openness()
+        tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
+        m.average = avg('_openness', tasks)
 
     context = {
         'title': title,
