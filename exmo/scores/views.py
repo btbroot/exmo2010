@@ -45,6 +45,7 @@ from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table_prepare_queryset
+from core.response import JSONResponse
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
@@ -626,19 +627,25 @@ def ratingUpdate(request):
     AJAX-view for rating counting.
 
     """
-    rating = {}
     if request.method == "GET" and request.is_ajax():
 
         task_id = json.loads(request.GET['task_id'])
 
         if task_id:
             task = get_object_or_404(Task, pk=task_id)
-            rating_names = dict(request.GET)['rating_names']
 
-            for item in rating_names:
-                attr = 'rating_' + item
-                rating[item] = getattr(task, attr)
+            if task.organization.monitoring.has_npa:
+                rating_types = ['all', 'other', 'npa']
+            else:
+                rating_types = ['all']
 
-            return HttpResponse(json.dumps(rating), mimetype='application/json')
+            result = {}
+            for rating_type in rating_types:
+                for t in task.organization.monitoring.rating(rating_type=rating_type):
+                    if t.pk == task.pk:
+                        result['place_' + rating_type] = t.place
+                        break
+
+            return JSONResponse(result)
     else:
         raise Http404

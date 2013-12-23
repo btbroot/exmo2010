@@ -17,32 +17,19 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    var $rating_names = [];
-    var $result = {};
-
     $.ajaxSetup({
         traditional: true
     });
 
-    var $task_id = $('#place').data('task_id');
-    if ($task_id) {
-        $result['task_id'] = $task_id;
-        $('.get-rating').each(function(){
-            $rating_names.push($(this).attr('id'));
-        });
-        $result['rating_names'] = $rating_names;
-
-        $.getJSON("/exmo2010/score/rating_update", $result)
-            .success(function(data) {
-                $.each(data, function(key, val) {
-                    var $key = '#' + key;
-                    if (val) {
-                        $($key).show();
-                        $($key + '_span').text(val + ' ' + gettext('place'));
-                    }
-                    $($key + '_img').remove();
-                });
+    $.getJSON("/exmo2010/score/rating_update", {task_id: $('#place_all').data('task_id')})
+        .success(function(data) {
+            $.each(data, function(key, val) {
+                var $key = '#' + key;
+                if (val) {
+                    $($key).show();
+                    $($key + '_span').text(val + ' ' + gettext('place'));
+                }
+                $($key + '_img').remove();
             });
-    }
-
+        });
 });

@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import json
 import time
 
 from django.conf import settings
@@ -249,3 +250,45 @@ class ScoreViewsTestCase(TestCase):
 
         form = ScoreFormWithComment(self.score, data=form_data)
         self.assertEqual(form.is_valid(), True)
+
+
+class AjaxGetRatingPlacesTestCase(TestCase):
+    # Ajax request SHOULD return correct rating places for valid rating types
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN interaction monitoring
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND there are 2 approved tasks with organizations
+        self.task1 = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
+        self.task2 = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
+        # AND 2 parameters (normative and recommendatory)
+        kwargs = dict(complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=None, npa=True, **kwargs)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=None, **kwargs)
+        # AND 2 scores for each task
+        kwargs1 = dict(found=1, complete=2, topical=3, accessible=2, hypertext=1, document=1, image=1)
+        kwargs2 = dict(found=1, complete=3, topical=1, accessible=1, hypertext=0, document=1, image=1)
+        mommy.make(Score, task=self.task1, parameter=parameter1, **kwargs1)
+        mommy.make(Score, task=self.task1, parameter=parameter2, **kwargs2)
+        mommy.make(Score, task=self.task2, parameter=parameter1, **kwargs2)
+        mommy.make(Score, task=self.task2, parameter=parameter2, **kwargs1)
+        # AND expert A account
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_places_in_rating(self):
+        # WHEN I get rating places with ajax
+        url = reverse('exmo2010:ratingUpdate')
+        response = self.client.get(url, {'task_id': self.task1.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        result = json.loads(response.content)
+        # AND place by all parameters should be 2
+        self.assertEqual(result['place_all'], 2)
+        # AND place by normative parameters should be 1
+        self.assertEqual(result['place_npa'], 1)
+        # AND place by recommendatory parameters should be 2
+        self.assertEqual(result['place_other'], 2)
