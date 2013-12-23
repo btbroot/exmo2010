@@ -30,7 +30,7 @@ from core.utils import get_named_patterns
 from exmo2010.forms import CertificateOrderForm
 from exmo2010.models import (
     Group, Monitoring, Organization, Parameter, Questionnaire, Score,
-    Task, OpennessExpression, ValidationError)
+    Task, OpennessExpression, ValidationError, MONITORING_PUBLISHED)
 
 
 class TestMonitoring(TestCase):
@@ -334,3 +334,46 @@ class CertificateOrderFormTestCase(TestCase):
         form = CertificateOrderForm(data=form_data)
         # THEN form is invalid
         self.assertEqual(form.is_valid(), False)
+
+
+class CertificateOpennessTypeTestCase(TestCase):
+    # SHOULD display correct openness value of requested rating type
+
+    def setUp(self):
+        # GIVEN published monitoring
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND organization
+        organization = mommy.make(Organization, name='org1', monitoring=monitoring)
+        # AND approved task
+        self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
+        # AND normative parameter
+        kwargs = dict(complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=None, npa=True, **kwargs)
+        # AND recommendatory parameter
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=None, npa=False, **kwargs)
+        # AND not equal scores for 2 parameters
+        kwargs1 = dict(found=1, complete=2, topical=2, accessible=3, hypertext=1, document=1, image=0)
+        kwargs2 = dict(found=1, complete=3, topical=3, accessible=2, hypertext=0, document=1, image=1)
+        mommy.make(Score, task=self.task, parameter=parameter1, **kwargs1)
+        mommy.make(Score, task=self.task, parameter=parameter2, **kwargs2)
+        # AND organization representative account
+        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        org.groups.add(Group.objects.get(name=org.profile.organization_group))
+        org.profile.organization.add(organization)
+        # AND I am logged in as organization representative
+        self.client = Client()
+        self.client.login(username='org', password='password')
+
+    @parameterized.expand([
+        ('all', 26.125),
+        ('npa', 40.375),
+        ('other', 19.0),
+    ])
+    def test_openness(self, rating_type, expected_openness):
+        # WHEN I get certificate page with specific rating
+        url = reverse('exmo2010:certificate_order')
+        response = self.client.get(url, {'type': rating_type})
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected openness value
+        self.assertEqual(response.context['object_list'][self.task.pk]['openness'], expected_openness)
