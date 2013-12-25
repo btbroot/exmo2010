@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@ from django.forms.widgets import Textarea
 from django.utils import formats
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
 
@@ -39,25 +39,6 @@ CORE_JS = (
 )
 
 CORE_MEDIA = forms.Media(js=CORE_JS)
-
-
-def add_required_label_tag(original_function):
-    """Adds the 'required' CSS class and an asterisks to required field labels."""
-    def required_label_tag(self, contents=None, attrs=None):
-        contents = contents or escape(self.label)
-        if self.field.required:
-            if not self.label.endswith("*"):
-                self.label += "*"
-                contents += "*"
-            attrs = {'class': 'required'}
-        return original_function(self, contents, attrs)
-    return required_label_tag
-
-
-def decorate_bound_field():
-    from django.forms.forms import BoundField
-    BoundField.label_tag = add_required_label_tag(BoundField.label_tag)
-decorate_bound_field()
 
 
 class HorizRadioRenderer(forms.RadioSelect.renderer):
@@ -105,24 +86,34 @@ class FeedbackForm(forms.Form):
 
 
 class CertificateOrderForm(forms.Form):
-    CERTIFICATE_FOR_CHOICES = (
-        (0, _('to organization')),
-        (1, _('to employee')),
-    )
+    ADDRESSEE_CHOICES = (('org', _('to organization')), ('user', _('to employee')))
+    DELIVERY_METHOD_CHOICES = (('email', _('by email')), ('post', _('by post')))
 
-    DELIVERY_METHOD_CHOICES = (
-        (0, _('by email')),
-        (1, _('by post')),
-    )
-
-    task_id = forms.IntegerField(required=False)
-    certificate_for = forms.ChoiceField(label=_('Certificate for'), choices=CERTIFICATE_FOR_CHOICES,
-                                        widget=forms.RadioSelect(), initial=0, required=False)
+    task_id = forms.IntegerField()
+    rating_type = forms.ChoiceField(choices=zip(* [('all', 'npa', 'other')] * 2), initial='all', required=False)
+    addressee = forms.ChoiceField(label=_('Certificate for'), choices=ADDRESSEE_CHOICES,
+                                  widget=forms.RadioSelect(), initial='org', required=False)
     delivery_method = forms.ChoiceField(label=_('Send'), choices=DELIVERY_METHOD_CHOICES, widget=forms.RadioSelect(),
-                                        initial=0, required=False)
+                                        initial='email', required=False)
     name = forms.CharField(label=_('Name'), max_length=100, required=False)
     wishes = forms.CharField(label=_('Wishes'), widget=Textarea(), required=False)
     email = forms.EmailField(label=_('Email'), max_length=100, required=False)
     for_whom = forms.CharField(label=_('For whom'), max_length=100, required=False)
     zip_code = forms.CharField(label=_('Zip code'), max_length=6, min_length=6, required=False)
     address = forms.CharField(label=_('Address'), widget=Textarea(), required=False)
+
+    def full_clean(self):
+        '''
+        Determine required fields from 'addressee' and 'delivery_method' values
+        '''
+        if self._raw_value('delivery_method') == 'post':
+            self.fields['for_whom'].required = True
+            self.fields['zip_code'].required = True
+            self.fields['address'].required = True
+        else:
+            self.fields['email'].required = True
+
+        if self._raw_value('addressee') == 'user':
+            self.fields['name'].required = True
+
+        return super(CertificateOrderForm, self).full_clean()

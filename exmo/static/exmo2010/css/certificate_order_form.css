@@ -43,8 +43,12 @@
     margin-bottom: 15px;
 }
 
-input[type="text"]:not([name="0-zip_code"]) {
+input[type="text"]:not([name="zip_code"]) {
     min-width: 450px;
+}
+
+input[name="zip_code"] {
+    width: 60px !important;
 }
 
 input[type="text"]:not([name="name_filter"]) {
@@ -80,4 +84,23 @@ textarea {
 
 .radio_group {
     margin-bottom: 5px;
+}
+
+ul.errorlist > li {
+    background: #f5d2cc !important;
+    border: #e58a83 1px solid !important;
+    color: #000000 !important;
+}
+
+.confirm h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.confirm {
+    margin-top: 15px;
+}
+
+.confirm input {
+    margin-right: 20px;
 }

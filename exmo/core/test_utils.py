@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -69,32 +69,32 @@ class BaseSeleniumTestCase(LiveServerTestCase):
     def findall(self, selector):
         return self.webdrv.find_elements_by_css_selector(selector)
 
-    def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=5):
+    def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=6):
         def condition(*args):
             element = self.find(selector)
             if element:
                 return method(element) == expected_result
         WebDriverWait(self.webdrv, wait_timeout).until(condition)
 
-    def assertVisible(self, selector, wait_timeout=5):
+    def assertVisible(self, selector, wait_timeout=6):
         try:
             self._assertWebElementMethod(selector, WebElement.is_displayed, True, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not visible: %s' % selector)
 
-    def assertHidden(self, selector, wait_timeout=5):
+    def assertHidden(self, selector, wait_timeout=6):
         try:
             self._assertWebElementMethod(selector, WebElement.is_displayed, False, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not hidden: %s' % selector)
 
-    def assertEnabled(self, selector, wait_timeout=5):
+    def assertEnabled(self, selector, wait_timeout=6):
         try:
             self._assertWebElementMethod(selector, WebElement.is_enabled, True, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not enabled: %s' % selector)
 
-    def assertDisabled(self, selector, wait_timeout=5):
+    def assertDisabled(self, selector, wait_timeout=6):
         try:
             self._assertWebElementMethod(selector, WebElement.is_enabled, False, wait_timeout)
         except TimeoutException:

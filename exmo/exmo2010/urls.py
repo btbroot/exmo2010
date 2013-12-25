@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -170,8 +170,7 @@ urlpatterns = named_urls('',
     (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
         'monitorings.views.monitoring_report', 'monitoring_report_finished'),
 
-    (r'^certificate_order/$', CertificateOrderView.as_view([CertificateOrderForm, CertificateOrderForm]),
-     'certificate_order'),
+    (r'^certificate_order/$', CertificateOrderView, 'certificate_order'),
     (r'^claim/delete/$', 'claims.views.claim_delete'),
     (r'^toggle_comment/$', 'scores.views.toggle_comment'),
     (r'^ratings/$', 'monitorings.views.ratings'),

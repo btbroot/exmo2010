@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,21 +22,21 @@ from urllib import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.formtools.wizard.views import SessionWizardView
 from django.contrib.sites.models import Site
+from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.template import Context, loader
 from django.template.response import TemplateResponse
 from django.utils import dateformat
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 from livesettings import config_value
 
 from core.tasks import send_email
-from exmo2010.forms import FeedbackForm
+from exmo2010.forms import FeedbackForm, CertificateOrderForm
 from exmo2010.models import *
 
 
@@ -125,166 +125,141 @@ class OpenDataView(TemplateView):
     template_name = 'exmo2010/opendata.html'
 
 
-class CertificateOrderView(SessionWizardView):
-    template_names = ["certificate_order_form.html", "certificate_order_confirm.html"]
+class CertificateOrderView(FormView):
+    template_name = "certificate_order_form.html"
+    form_class = CertificateOrderForm
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        if request.user.profile.is_organization and not request.user.is_superuser:
-            return super(CertificateOrderView, self).dispatch(request, *args, **kwargs)
+        if not request.user.is_organization:
+            raise PermissionDenied
+        return super(CertificateOrderView, self).dispatch(request, *args, **kwargs)
 
-        return HttpResponseForbidden(_('Forbidden'))
+    def get_form(self, form_class):
+        form = super(CertificateOrderView, self).get_form(form_class)
+        self.rating_type = form['rating_type'].value()
 
-    def get_form_initial(self, step):
-        if self.steps.current == self.steps.first:
-            initial_data = {
-                'name': self.request.user.profile.legal_name,
-                'email': self.request.user.email,
-            }
-            self.initial_dict.update({self.steps.current: initial_data})
-        result = super(CertificateOrderView, self).get_form_initial(step)
+        orgs = self.request.user.profile.organization.filter(monitoring__status=MONITORING_PUBLISHED)
+        _tasks = Task.objects.filter(organization__in=orgs, status=Task.TASK_APPROVED)
+        if not _tasks.exists():
+            # User don't have published and approved tasks, certificate order is unavailable
+            self.template_name = "certificate_order_unavailable.html"
+            return None
 
-        return result
-
-    def get_context_data(self, form, **kwargs):
-        context = super(CertificateOrderView, self).get_context_data(form=form, **kwargs)
-        first_step = self.steps.first
-        request = self.request
-        rating_type = request.GET.get('type', 'all')
-
-        if self.steps.current == first_step:
-            context_data = {}
-            organizations = request.user.profile.organization.filter(monitoring__status=MONITORING_PUBLISHED)
-            tasks = Task.objects.filter(organization__in=organizations, status=Task.TASK_APPROVED)
-
-            if tasks.exists():
-                has_npa = organizations.filter(monitoring__parameter__npa=True)
-
-                name_filter = request.GET.get('name_filter')
-                if name_filter:
-                    tasks = tasks.filter(organization__name__icontains=name_filter)
-                    has_npa = has_npa.filter(name__icontains=name_filter)
-
-                if rating_type in ['npa', 'other']:
-                    tasks = tasks.filter(organization__monitoring__parameter__npa=True).distinct()
-
-                object_list = OrderedDict()
-
-                for task in tasks:
-                    monitoring = task.organization.monitoring
-                    rating_list = monitoring.rating(rating_type=rating_type)
-                    task = {t.pk: t for t in rating_list}.get(task.pk, None)
-
-                    object_list[task.pk] = {
-                        'openness': task.task_openness,
-                        'org_name': task.organization.name,
-                        'place': task.place,
-                        'publish_date': monitoring.publish_date,
-                        'url': task.organization.url,
-                    }
-
-                context_data = {
-                    'has_npa': has_npa,
-                    'object_list': object_list,
-                    'rating_type': rating_type,
-                }
-
-                self.storage.extra_data = {'object_list': object_list}
-
+        # Check if rating_type filter should be displayed
+        pks = Monitoring.objects.filter(organization__in=orgs).values_list('pk', flat=True)
+        if set(pks.filter(parameter__npa=True).distinct()) & set(pks.filter(parameter__npa=False).distinct()):
+            # There is Monitoring with both npa and non-npa parameters
+            self.vary_rating_type = True
         else:
-            by_type = {
-                'all': _('by all'),
-                'npa': _('by normative'),
-                'other': _('by recommendatory'),
-            }
+            self.vary_rating_type = False
 
-            form_data = self.get_cleaned_data_for_step(first_step)
-            task = self.storage.extra_data['object_list'].get(form_data['task_id'])
+        # Apply user provided filters
+        if self.request.GET.get('name_filter'):
+            orgs = orgs.filter(name__icontains=self.request.GET['name_filter'])
 
-            description = _('For %(name)s organization, which took %(place)d place with %(openness).3f%% openness in '
-                            'rating %(type)s parameters, which published %(date)s.') %\
-                {
-                    'name': task['org_name'],
-                    'place': task['place'],
-                    'openness': task['openness'],
-                    'type': by_type[rating_type],
-                    'date': dateformat.format(task['publish_date'], "j E Y"),
-                }
+        _org_pks = set(orgs.values_list('pk', flat=True))
+        _filter = {'organization__in': _org_pks}
 
-            if form_data['delivery_method'] == "1":
-                on_address = _('On address %(zip_code)s, %(address)s, %(for_whom)s.') % \
-                    {
-                        'zip_code': form_data['zip_code'],
-                        'address': form_data['address'],
-                        'for_whom': form_data['for_whom'],
-                    }
-            else:
-                on_address = _('On email address %s.') % form_data['email']
+        if self.rating_type in ['npa', 'other']:
+            # NOTE: This logic works only because currently there are only 3 types of monitoring:
+            # 1) Monitoring with both npa and non-npa parameters.
+            # 2) Monitoring with only npa parameters.
+            # 3) Monitoring with only non-npa parameters in DB, but really it does not differentiate parameters
+            #    and should only be visible when "all" rating type chosen.
+            # Therefore if "non-npa" ("other") rating chosen - we can first select all monitorings that have npa parameter.
+            # Then caluclate "non-npa" rating. Resulting rated tasks list will be empty if there are only npa
+            # parameters in monitoring (see Monitoring.rating). As a result only organizations from
+            # monitorings with both npa and non-npa parameters (case 1) will be displayed
+            #
+            # This logic will break when real monitoring with all-non-npa parameters will be introduced.
+            # It should be visible when "non-npa" rating is chosen, but filter below will exclude it :(
+            _filter['parameter__npa'] = True
 
-            context_data = {
-                'description': description,
-                'on_address': on_address,
-                'special_wishes': form_data['wishes'],
-                'breadcrumbs': [{'url': reverse('exmo2010:index')},
-                                {'url': reverse('exmo2010:certificate_order'), 'title': _('Openness certificate')},
-                                {'title': _('Confirmation of a certificate ordering')}]
-            }
+        # Build rated tasks ordered dict to display
+        self.tasks = OrderedDict()
+        for monitoring in Monitoring.objects.filter(**_filter).select_related('openness_expression').distinct():
+            for t in monitoring.rating(rating_type=self.rating_type):
+                if t.organization.pk in _org_pks:
+                    self.tasks[t.pk] = t
 
-            if form_data['certificate_for'] == "1":
-                prepare_for = _('Prepare a certificate in the name of %s.') % form_data['name']
-                context_data.update({'prepare_for': prepare_for})
+        if not self.tasks:
+            self.bad_org_filter = True
+        return form
 
-        title = _('Openness certificate')
+    def form_valid(self, form):
+        if 'back' in self.request.POST:
+            return self.render_to_response(self.get_context_data(form=form))
 
-        if self.steps.current != first_step:
-            self.storage.extra_data.update({'email_context': context_data})
-            title = _('Confirmation of a certificate ordering')
+        email_data = self.prerender_email_text(form.cleaned_data)
 
-        context_data.update({
-            'title': title,
-        })
-        context.update(context_data)
+        if 'confirm' in self.request.POST:
+            return self.done(email_data)
+        return self.render_to_response(self.get_context_data(form=form, form_hidden='hidden', **email_data))
 
-        return context
-
-    def get_template_names(self):
-        return [self.template_names[self.steps.step0]]
-
-    def done(self, form_list, **kwargs):
-        request = self.request
-        task_id = self.get_cleaned_data_for_step(self.steps.first)['task_id']
-        task = Task.objects.get(pk=task_id)
-        organization = task.organization
-        organization_name = organization.name
-        monitoring_name = organization.monitoring.name
-        subject = ' '.join([_('Ordering openness certificate for'), organization_name])
-        rcpt = config_value('EmailServer', 'CERTIFICATE_ORDER_NOTIFICATION_EMAIL')
-
-        current_site = Site.objects.get_current()
-        protocol = request.is_secure() and 'https' or 'http'
-
-        monitoring_url = '%s://%s%s' % (
-            protocol,
-            current_site.domain,
-            reverse('exmo2010:tasks_by_monitoring', args=[organization.monitoring.pk])
-        )
-
-        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': organization.name.encode('utf8')}))
-
-        context = {
-            'email': request.user.email,
-            'monitoring_name': monitoring_name,
-            'monitoring_url': monitoring_url,
-            'organization_name': organization_name,
-            'organization_url': organization_url,
-            'subject': subject,
-            'user_name': request.user.profile.legal_name,
+    def get_initial(self):
+        return {
+            'name': self.request.user.profile.legal_name,
+            'email': self.request.user.email,
+            'rating_type': self.request.REQUEST.get('rating_type', 'all'),
         }
 
-        context.update(self.storage.extra_data['email_context'])
+    def get_context_data(self, **kwargs):
+        context = super(CertificateOrderView, self).get_context_data(**kwargs)
+        return dict(context, view=self)
+
+    def prerender_email_text(self, form_data):
+        rating_type_text = {'all': _('by all'), 'npa': _('by normative'), 'other': _('by recommendatory')}
+        task = self.tasks[form_data['task_id']]
+
+        #xgettext:no-python-format
+        description = _('For {task.organization.name} organization, which took '
+                        '{task.place} place with {task.task_openness:.3f}% openness'
+                        ' in rating {rating_type} parameters, which published {date}.').format(
+            task=task,
+            rating_type=rating_type_text[form_data['rating_type']],
+            date=dateformat.format(task.organization.monitoring.publish_date, "j E Y"))
+
+        if form_data['delivery_method'] == "post":
+            on_address = _('On address {zip_code}, {address}, {addressee}.').format(**form_data)
+        else:
+            on_address = _('On email address %s.') % form_data['email']
+
+        context_data = {
+            'organization': task.organization,
+            'description': description,
+            'on_address': on_address,
+            'special_wishes': form_data['wishes']
+        }
+
+        if form_data['addressee'] == "user":
+            prepare_for = _('Prepare a certificate in the name of %s.') % form_data['name']
+            context_data.update({'prepare_for': prepare_for})
+
+        return context_data
+
+    def done(self, email_data):
+        org = email_data['organization']
+        subject = ' '.join([_('Ordering openness certificate for'), org.name])
+        monitoring_url = self.request.build_absolute_uri(
+            reverse('exmo2010:tasks_by_monitoring', args=[org.monitoring.pk]))
+
+        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': org.name.encode('utf8')}))
+
+        context = dict(email_data, **{
+            'email': self.request.user.email,
+            'monitoring_name': org.monitoring.name,
+            'monitoring_url': monitoring_url,
+            'organization_name': org.name,
+            'organization_url': organization_url,
+            'subject': subject,
+            'user_name': self.request.user.profile.legal_name,
+        })
+
+        rcpt = config_value('EmailServer', 'CERTIFICATE_ORDER_NOTIFICATION_EMAIL')
 
         send_email.delay(rcpt, subject, 'certificate_order_email', context=context)
-        messages.success(request, _("You ordered an openness certificate. Certificate "
+        messages.success(self.request, _("You ordered an openness certificate. Certificate "
                                     "will be prepared and sent within 5 working days."))
 
         return HttpResponseRedirect(reverse('exmo2010:index'))

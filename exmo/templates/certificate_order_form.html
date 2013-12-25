@@ -1,7 +1,7 @@
 {% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,9 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/certificate_order_form.js' %}"></script>
 {% endblock %}
 
+{% block title %} {% trans 'Openness certificate' %}{% endblock %}
+{% block content_title %} {% trans 'Openness certificate' %}{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
@@ -36,14 +39,29 @@
 {% endblock %}
 
 {% block content %}
-    {% if not object_list %}
-        <p>
-            {% trans 'After a cycle of the website monitoring is completed you will have the opportunity to order a certificate of informational openness for yourself, your organization or colleagues working on the website.' %}
-            {% trans 'We will prepare an individual certificate and send it to your e-mail address or use Russian post services.' %}
-        </p>
-    {% else %}
-        {% with wizard.form as form %}
 
+    {% if not view.tasks %}
+        <p class="warning"> {% trans 'Organization list is empty, please change the organization filter' %} </p>
+    {% endif %}
+
+    {% if form_hidden %}
+        <div class="confirm">
+            <p>{% trans 'Openness certificate will be prepared and sent within 5 working days.' %}</p>
+
+            <h2>{% trans 'Deliver' %}</h2>
+            <p>{{ on_address }}</p>
+
+            <h2>{% trans 'Content of the certificate' %}</h2>
+            <p>{{ description }}</p>
+            {% if prepare_for %} <p> {{prepare_for}} </p> {% endif %}
+            {% if special_wishes %} <p> {{special_wishes}} </p> {% endif %}
+
+            <input type="submit" id="confirm" value="{% trans "Confirm order" %}"/>
+            <a id="previous_form">{% trans "Back to certificate ordering" %}</a>
+        </div>
+    {% endif %}
+
+    <div class="{{form_hidden}}">
         <p>
             {% trans 'You can order a certificate of informational openness for yourself, your organization or colleagues working on the website.' %}
             {% trans 'We will prepare an individual certificate and send it to your e-mail address or use Russian post services.' %}
@@ -53,21 +71,21 @@
             <h2>{% trans "Rating" %}</h2>
 
             <ul class="switcher">
-                <li {% if rating_type == "all" %}class="active"{% endif %}>
-                    <a href="?type=all" class="pseudo{% if rating_type == "all" %}-off{% endif %}">
+                <li {% if view.rating_type == "all" %}class="active"{% endif %}>
+                    <a href="?rating_type=all" class="pseudo{% if view.rating_type == "all" %}-off{% endif %}">
                         {% trans 'common' %}
                     </a>
                 </li>
 
-                {% if has_npa %}
-                    <li {% if rating_type == "npa" %}class="active"{% endif %}>
-                        <a href="?type=npa" class="pseudo{% if rating_type == "npa" %}-off{% endif %}">
+                {% if view.vary_rating_type %}
+                    <li {% if view.rating_type == "npa" %}class="active"{% endif %}>
+                        <a href="?rating_type=npa" class="pseudo{% if view.rating_type == "npa" %}-off{% endif %}">
                             {% trans 'normative' %}
                         </a>
                     </li>
 
-                    <li {% if rating_type == "other" %}class="active"{% endif %}>
-                        <a href="?type=other" class="pseudo{% if rating_type == "other" %}-off{% endif %}">
+                    <li {% if view.rating_type == "other" %}class="active"{% endif %}>
+                        <a href="?rating_type=other" class="pseudo{% if view.rating_type == "other" %}-off{% endif %}">
                             {% trans 'recommendatory' %}
                         </a>
                     </li>
@@ -78,155 +96,105 @@
 
         <form class="filter clearfix" action="" method="GET">
             <div>
-                <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Organization' %}" />
+                <input type=text id="name_filter" name="name_filter" value="{{ request.GET.name_filter }}" placeholder="{% trans 'Organization' %}" />
             </div>
             <input type=submit value="{% trans 'Find' %}" />
         </form>
 
         <form id="certificate_form" action="" method="POST">{% csrf_token %}
-            <table id="rating-data" class="base-table">
-                <thead>
-                    <tr>
-                        <th>
-                            <span>{% trans "Publication date" %}</span>&nbsp;<span class="arrow"></span>
-                        </th>
-                        <th>
-                            <span>{% trans "Organization" %}</span>&nbsp;<span class="arrow"></span>
-                        </th>
-                        <th class="website">
-                            <span>{% trans "Website" %}</span>&nbsp;<span class="arrow"></span>
-                        </th>
-                        <th class="place">
-                            <span>{% trans "Position" %}</span>&nbsp;<span class="arrow"></span>
-                        </th>
-                        <th class="openness">
-                            <span>{% trans "Final openness" %}</span>&nbsp;<span class="arrow"></span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for pk, object in object_list.items %}
-                    <tr>
-                        <td>
-                            <input type="radio" value="{{ pk }}" name="0-task_id"
-                                   {% ifequal form.task_id.value|add:"0" pk %}
-                                       checked="checked"
-                                   {% endifequal %}>
-                            {{ object.publish_date }}
-                        </td>
-                        <td>
-                            <a href="{% url 'exmo2010:score_list_by_task' pk %}">{{ object.org_name }}</a>
-                        </td>
-                        <td>
-                            <a target="_blank" href="{{ object.url }}">{{ object.url }}</a>
-                        </td>
-                        <td class="place">
-                            <span>{{ object.place }}</span>
-                        </td>
-                        <td class="openness">
-                            {{ object.openness|floatformat:3 }}%
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{form.rating_type.as_hidden}}
 
-            {{ form.errors }}
+            <div class="step1">
+                <table id="rating-data" class="base-table">
+                    <thead>
+                        <tr>
+                            <th> <span>{% trans "Publication date" %}</span>&nbsp;<span class="arrow"></span> </th>
+                            <th> <span>{% trans "Organization" %}</span>&nbsp;<span class="arrow"></span> </th>
+                            <th class="website"> <span>{% trans "Website" %}</span>&nbsp;<span class="arrow"></span> </th>
+                            <th class="place"> <span>{% trans "Position" %}</span>&nbsp;<span class="arrow"></span> </th>
+                            <th class="openness"> <span>{% trans "Final openness" %}</span>&nbsp;<span class="arrow"></span> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pk, task in view.tasks.items %}
+                        <tr>
+                            <td>
+                                <input type="radio" value="{{ pk }}" name="task_id"
+                                        {% ifequal form.task_id.value|add:"0" pk %}
+                                            checked="checked"
+                                        {% endifequal %}>
+                                {{ task.organization.monitoring.publish_date }}
+                            </td>
+                            <td> <a href="{% url 'exmo2010:score_list_by_task' pk %}">{{ task.organization.name }}</a> </td>
+                            <td> <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a> </td>
+                            <td class="place"> <span>{{ task.place }}</span> </td>
+                            <td class="openness"> {{ task.task_openness|floatformat:3 }}% </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-            {{ wizard.management_form }}
+                <div class="main_block">
+                    <div class="radio_group">
+                        <div class="left_field"> {{ form.addressee.label_tag }} </div>
+                        <div class="right_field">
+                            {% for radio in form.addressee %} {{ radio.tag }} {{ radio.choice_label }}<br> {% endfor %}
+                        </div>
 
-            <div class="main_block">
-                <div class="radio_group">
-                    <div class="left_field">
-                        {{ form.certificate_for.label_tag }}
-                    </div>
-                    <div class="right_field">
-                        {% for radio in form.certificate_for %}
-                            {{ radio.tag }}
-                            {{ radio.choice_label }}<br>
-                        {% endfor %}
+                        <div class="left_field"> {{ form.delivery_method.label_tag }} </div>
+                        <div class="right_field">
+                            {% for radio in form.delivery_method %} {{ radio.tag }} {{ radio.choice_label }}<br> {% endfor %}
+                        </div>
                     </div>
 
-                    <div class="left_field">
-                        {{ form.delivery_method.label_tag }}
+                    <div class="person_group">
+                        {{ form.name.errors }}
+                        <div class="left_field"> {{ form.name.label_tag }} <span class="required">*</span> </div>
+                        <div class="right_field"> {{ form.name }} </div>
+
+                        <div class="left_field"> {{ form.wishes.label_tag }} </div>
+                        <div class="right_field"> {{ form.wishes }} </div>
                     </div>
-                    <div class="right_field">
-                        {% for radio in form.delivery_method %}
-                            {{ radio.tag }}
-                            {{ radio.choice_label }}<br>
-                        {% endfor %}
+
+                    <div class="email_group">
+                        {{ form.email.errors }}
+                        <div class="left_field"> {{ form.email.label_tag }} <span class="required">*</span> </div>
+                        <div class="right_field"> {{ form.email }} </div>
+                    </div>
+
+                    <div class="post_group">
+                        <h2>{%  trans 'Mail address of the recipient' %}</h2>
+
+                        {{ form.for_whom.errors }}
+                        <div class="left_field"> {{ form.for_whom.label_tag }} <span class="required">*</span> </div>
+                        <div class="right_field"> {{ form.for_whom }} </div>
+
+                        {{ form.zip_code.errors }}
+                        <div class="left_field"> {{ form.zip_code.label_tag }} <span class="required">*</span> </div>
+                        <div class="right_field"> {{ form.zip_code }} </div>
+
+                        {{ form.address.errors }}
+                        <div class="left_field"> {{ form.address.label_tag }} <span class="required">*</span> </div>
+                        <div class="right_field">  {{ form.address }} </div>
+                    </div>
+
+                    <div class="buttons_group">
+                        <div class="left_field"> </div>
+                        <div class="right_field">
+                            <input {% if not view.tasks %}disabled=true{% endif %} type="submit" value="{% trans 'Order certificate' %}"/> </div>
                     </div>
                 </div>
 
-                <div class="person_group">
-                    <div class="left_field">
-                        {{ form.name.label_tag }} <span class="required">*</span>
+                <div class="certificate_group">
+                    <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">
+                        <img src="{% static 'exmo2010/img/certificate.jpg' %}" id="certificate_image">
+                    </a>
+                    <div>
+                        <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">{% trans 'Enlarge example' %}</a>
                     </div>
-                    <div class="right_field">
-                        {{ form.name }}
-                    </div>
-
-                    <div class="left_field">
-                        {{ form.wishes.label_tag }}
-                    </div>
-                    <div class="right_field">
-                        {{ form.wishes }}
-                    </div>
-                </div>
-
-                <div class="email_group">
-                    <div class="left_field">
-                        {{ form.email.label_tag }} <span class="required">*</span>
-                    </div>
-                    <div class="right_field">
-                        {{ form.email }}
-                    </div>
-                </div>
-
-                <div class="post_group">
-                    <h2>{%  trans 'Mail address of the recipient' %}</h2>
-
-                    <div class="left_field">
-                        {{ form.for_whom.label_tag }} <span class="required">*</span>
-                    </div>
-                    <div class="right_field">
-                        {{ form.for_whom }}
-                    </div>
-
-                    <div class="left_field">
-                        {{ form.zip_code.label_tag }} <span class="required">*</span>
-                    </div>
-                    <div class="right_field">
-                        {{ form.zip_code }}
-                    </div>
-
-                    <div class="left_field">
-                        {{ form.address.label_tag }} <span class="required">*</span>
-                    </div>
-                    <div class="right_field">
-                        {{ form.address }}
-                    </div>
-                </div>
-
-                <div class="buttons_group">
-                    <div class="left_field">
-                    </div>
-                    <div class="right_field">
-                        <input type="submit" value="{% trans 'Order certificate' %}"/>
-                    </div>
-                </div>
-            </div>
-
-            <div class="certificate_group">
-                <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">
-                    <img src="{% static 'exmo2010/img/certificate.jpg' %}" id="certificate_image">
-                </a>
-                <div>
-                    <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">{% trans 'Enlarge example' %}</a>
                 </div>
             </div>
         </form>
+    </div>
 
-        {% endwith %}
-    {% endif %}
 {% endblock %}

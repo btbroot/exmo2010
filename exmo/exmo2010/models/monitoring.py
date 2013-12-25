@@ -157,7 +157,11 @@ class Monitoring(BaseModel):
         elif rating_type == 'other':
             parameters = self.parameter_set.filter(npa=False)
         elif rating_type != 'user':
-            parameters = self.parameter_set.all()
+            parameters = None  # Use all parameters
+
+        if not parameters and parameters is not None:
+            # Parameters filter was given empty. Rating calculation is impossible.
+            return []
 
         sql_openness = self.openness_expression.get_sql_openness(parameters)
         sql_openness_initial = self.openness_expression.get_sql_openness(parameters, initial=True)

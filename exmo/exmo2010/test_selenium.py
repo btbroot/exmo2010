@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@
 from datetime import date
 
 from django.contrib.auth.models import Group, User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
@@ -27,176 +28,144 @@ from exmo2010.models import *
 
 
 class CertificateOrderTestCase(BaseSeleniumTestCase):
-    # Scenario: Checking certificate ordering
-    name_element_id = '#id_0-name'
-    wishes_element_id = '#id_0-wishes'
-    email_element_id = '#id_0-email'
-    for_whom_element_id = '#id_0-for_whom'
-    zip_code_element_id = '#id_0-zip_code'
-    address_element_id = '#id_0-address'
+    # Check certificate ordering page
+    name_element_id = '#id_name'
+    wishes_element_id = '#id_wishes'
+    email_element_id = '#id_email'
+    for_whom_element_id = '#id_for_whom'
+    zip_code_element_id = '#id_zip_code'
+    address_element_id = '#id_address'
     submit_button = 'div.buttons_group > div > input'
 
     def setUp(self):
-        self.url = reverse('exmo2010:certificate_order')
-
         # GIVEN expert B account
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
 
         # AND published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, publish_date=date.today())
+        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, publish_date=date.today())
         # AND organzation at this monitoring
-        self.organization = mommy.make(Organization, name=u'ы', monitoring=self.monitoring)
+        org = mommy.make(Organization, name=u'ы', monitoring=monitoring)
         # AND task for expert B
-        self.task = mommy.make(
-            Task,
-            organization=self.organization,
-            user=expertB,
-            status=Task.TASK_APPROVED,
-        )
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
         # AND parameter at monitoring
-        self.parameter = mommy.make(
-            Parameter,
-            monitoring=self.monitoring,
-            weight=1,
-        )
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
         # AND score for parameter
-        self.score = mommy.make(
-            Score,
-            task=self.task,
-            parameter=self.parameter,
-            found=0,
-        )
+        mommy.make(Score, task=task, parameter=parameter, found=0)
         # AND organization representative account
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.groups.add(Group.objects.get(name=org.profile.organization_group))
-        org.profile.organization.add(self.organization)
-        org.first_name = 'Org'
-        org.save()
+        orguser = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization.add(org)
+        orguser.first_name = 'Org'
+        orguser.save()
 
-        # AND org is logged in
+        # NOTE: pop message about task assignment to expertB
+        # TODO: get rid of this automatic email on Task creation, move to the view
+        mail.outbox.pop()
+
+        # AND i am logged in as org representative
         self.login('org', 'password')
+        # AND i open certificate page
+        self.get(reverse('exmo2010:certificate_order'))
 
-    def test_org_goes_to_certificate_order_page(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND get elements
-        name = self.find(self.name_element_id)
-        wishes = self.find(self.wishes_element_id)
-        email = self.find(self.email_element_id)
-        for_whom = self.find(self.for_whom_element_id)
-        zip_code = self.find(self.zip_code_element_id)
-        address = self.find(self.address_element_id)
-        # THEN we should see only email field
-        self.assertEqual(name.is_displayed(), False)
-        self.assertEqual(wishes.is_displayed(), False)
-        self.assertEqual(email.is_displayed(), True)
-        self.assertEqual(for_whom.is_displayed(), False)
-        self.assertEqual(zip_code.is_displayed(), False)
-        self.assertEqual(address.is_displayed(), False)
+    def test_default_visible_formfields(self):
+        # only email field should be visible
+        self.assertVisible(self.email_element_id)
+        self.assertHidden(self.name_element_id)
+        self.assertHidden(self.wishes_element_id)
+        self.assertHidden(self.for_whom_element_id)
+        self.assertHidden(self.zip_code_element_id)
+        self.assertHidden(self.address_element_id)
 
     def test_submit_form_with_empty_email_field(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND submit form with empty email field
-        email = self.find(self.email_element_id)
-        email.clear()
-        submit = self.find(self.submit_button)
-        submit.click()
-        # THEN we should see warning message
-        warning = self.find('p.warning')
-        self.assertEqual(warning.is_displayed(), True)
+        # WHEN i submit form with empty email field
+        self.find(self.email_element_id).clear()
+        self.find(self.submit_button).click()
+        # THEN error message should be displayed
+        self.assertVisible('div.email_group ul.errorlist li')
 
     def test_submit_form_with_incorrect_email_field(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND submit form with incorrect email
-        email = self.find(self.email_element_id)
-        email.clear()
-        email.send_keys('incorrectemail.org')
-        submit = self.find(self.submit_button)
-        submit.click()
-        # THEN we also should see warning message
-        warning = self.find('p.warning')
-        self.assertEqual(warning.is_displayed(), True)
+        # WHEN i submit form with incorrect email
+        self.find(self.email_element_id).clear()
+        self.find(self.email_element_id).send_keys('incorrectemail.org')
+        self.find(self.submit_button).click()
+        # THEN error message should be displayed
+        self.assertVisible('div.email_group ul.errorlist li')
 
     def test_submit_form_with_correct_email_field(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND submit form with correct email
-        email = self.find(self.email_element_id)
-        email.clear()
-        email.send_keys('correct@email.org')
-        submit = self.find(self.submit_button)
-        submit.click()
-        # THEN we should see next page
-        # WHEN org click to previous button
-        prev = self.find('#previous_form')
-        prev.click()
-        # THEN we sould see previous page with inputs data
+        # WHEN i enter some valid email
+        self.find(self.email_element_id).clear()
+        self.find(self.email_element_id).send_keys('correct@email.org')
+        # AND submit form
+        self.find(self.submit_button).click()
+        # THEN next page should be opened with 'back' link
+        self.assertVisible('#previous_form')
+        # WHEN i click 'back' link
+        self.find('#previous_form').click()
+        # THEN previous page should be shown with data enetered before
+        self.assertVisible(self.email_element_id)
         email_value = self.find(self.email_element_id).get_attribute('value')
         self.assertEqual(email_value, 'correct@email.org')
 
-    def test_click_to_certificate_for_radio(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND click to 'certificate for' radio button
-        certificate_for_button_0 = self.find('input[name="0-certificate_for"][value="0"]')
-        certificate_for_button_1 = self.find('input[name="0-certificate_for"][value="1"]')
-        certificate_for_button_1.click()
-        cert1 = certificate_for_button_0.is_selected()
-        self.assertEqual(cert1, False)
-        cert2 = certificate_for_button_1.is_selected()
-        self.assertEqual(cert2, True)
-        # THEN we should see 'name' and 'wishes' fields
-        name = self.find(self.name_element_id)
-        wishes = self.find(self.wishes_element_id)
-        self.assertEqual(name.is_displayed(), True)
-        self.assertEqual(wishes.is_displayed(), True)
+    def test_click_addressee_radio(self):
+        # WHEN i click 'addressee' radio button
+        addressee_0 = self.find('input[name="addressee"][value="org"]')
+        addressee_1 = self.find('input[name="addressee"][value="user"]')
+        addressee_1.click()
+        self.assertEqual(addressee_0.is_selected(), False)
+        self.assertEqual(addressee_1.is_selected(), True)
+        # THEN 'name' and 'wishes' fields should get visible
+        self.assertVisible(self.name_element_id)
+        self.assertVisible(self.wishes_element_id)
 
     def test_click_to_delivery_method_radio(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND click to 'delivery method' radio button
-        delivery_method_button_0 = self.find('input[name="0-delivery_method"][value="0"]')
-        delivery_method_button_1 = self.find('input[name="0-delivery_method"][value="1"]')
-        delivery_method_button_1.click()
-        deliv1 = delivery_method_button_0.is_selected()
-        self.assertEqual(deliv1, False)
-        deliv2 = delivery_method_button_1.is_selected()
-        self.assertEqual(deliv2, True)
-        # THEN we should see 'for whom', 'zip code' and 'address' fields
-        for_whom = self.find(self.for_whom_element_id)
-        zip_code = self.find(self.zip_code_element_id)
-        address = self.find(self.address_element_id)
-        self.assertEqual(for_whom.is_displayed(), True)
-        self.assertEqual(zip_code.is_displayed(), True)
-        self.assertEqual(address.is_displayed(), True)
+        # WHEN i click 'delivery method' radio button
+        delivery_method_0 = self.find('input[name="delivery_method"][value="email"]')
+        delivery_method_1 = self.find('input[name="delivery_method"][value="post"]')
+        delivery_method_1.click()
+        self.assertEqual(delivery_method_0.is_selected(), False)
+        self.assertEqual(delivery_method_1.is_selected(), True)
+        # THEN 'for whom', 'zip code' and 'address' fields should get visible
+        self.assertVisible(self.for_whom_element_id)
+        self.assertVisible(self.zip_code_element_id)
+        self.assertVisible(self.address_element_id)
         # AND 'email' field should disappear
-        email = self.find(self.email_element_id)
-        self.assertEqual(email.is_displayed(), False)
+        self.assertHidden(self.email_element_id)
 
     def test_submit_two_forms(self):
-        # WHEN org get certificate page
-        self.get(self.url)
-        # AND submit form at the fist page
-        certificate_for_button_1 = self.find('input[name="0-certificate_for"][value="1"]')
-        certificate_for_button_1.click()
-        delivery_method_button_1 = self.find('input[name="0-delivery_method"][value="1"]')
-        delivery_method_button_1.click()
-        name = self.find(self.name_element_id)
-        for_whom = self.find(self.for_whom_element_id)
-        zip_code = self.find(self.zip_code_element_id)
-        address = self.find(self.address_element_id)
-        name.send_keys('Name Surname')
-        for_whom.send_keys('Name Surname')
-        zip_code.send_keys('123456')
-        address.send_keys('St.Peterburg, Nevsky st., 1')
-        submit = self.find(self.submit_button)
-        submit.click()
-        # AND submit form at the second page
-        submit = self.find('input[type="submit"]')
-        submit.click()
-        # THEN we should see success message
-        success = self.find('div.success')
-        self.assertEqual(success.is_displayed(), True)
+        # WHEN i fill form properly
+        self.find('input[name="addressee"][value="user"]').click()
+        self.find('input[name="delivery_method"][value="post"]').click()
+        self.find(self.name_element_id).send_keys('Name Surname')
+        self.find(self.for_whom_element_id).send_keys('Name Surname')
+        self.find(self.zip_code_element_id).send_keys('123456')
+        self.find(self.address_element_id).send_keys('St.Peterburg, Nevsky st., 1')
+        # AND submit form
+        self.find(self.submit_button).click()
+        # AND submit confirmation form at the second page
+        self.assertVisible('#confirm')
+        self.find('#confirm').click()
+        # THEN success message should be displayed
+        self.assertVisible('div.success')
+        # AND there should be 1 email message in the outbox
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_browser_back_after_bad_filter(self):
+        # WHEN I submit filter with incorrect organization name
+        self.find('#name_filter').send_keys('!@#&')
+        self.find('form.filter input[type="submit"]').click()
+        # THEN warning message should be displayed
+        self.assertVisible('p.warning')
+        # AND submit bttin should be disabled
+        self.assertDisabled(self.submit_button)
+        # WHEN click on browser 'back' button
+        self.webdrv.back()
+        # AND submit first certificate form
+        self.find(self.submit_button).click()
+        # AND submit second certificate form
+        self.assertVisible('#confirm')
+        self.find('#confirm').click()
+        # THEN success message should be displayed
+        self.assertVisible('div.success')
+        # AND there should be 1 email message in the outbox
+        self.assertEqual(len(mail.outbox), 1)

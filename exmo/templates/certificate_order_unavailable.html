@@ -1,7 +1,7 @@
-/*
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
-# Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,16 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-*/
-h2 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
+{% endcomment %}
+{% load i18n %}
 
-.submit_buttons {
-    margin-top: 15px;
-}
 
-.submit_buttons input {
-    margin-right: 20px;
-}
+{% block title %} {% trans 'Openness certificate' %}{% endblock %}
+
+{% block content %}
+    <p>
+        {% trans 'After a cycle of the website monitoring is completed you will have the opportunity to order a certificate of informational openness for yourself, your organization or colleagues working on the website.' %}
+        {% trans 'We will prepare an individual certificate and send it to your e-mail address or use Russian post services.' %}
+    </p>
+{% endblock %}

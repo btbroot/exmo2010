@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -287,56 +287,35 @@ class CanonicalViewKwargsTestCase(TestCase):
             self.assertEqual(res.status_code, 200)
 
 
-class CertificateOrderFormTestCase(TestCase):
-    # Scenario: Form tests
-    @parameterized.expand([
-        (1, 1, 0, 'name', 'wishes', 'test@mail.com', '', '', ''),
-        (2, 0, 0, '', '', 'test@mail.com', '', '', ''),
-        (3, 0, 1, '', '', 'test@mail.com', 'name', '123456', 'address'),
-    ])
-    def test_valid_form(self, task_id, certificate_for, send, name, wishes, email, for_whom, zip_code, address):
-        # WHEN user send CertificateOrderForm with data
-        form_data = {
-            'task_id': task_id,
-            'certificate_for': certificate_for,
-            'send': send,
-            'name': name,
-            'wishes': wishes,
-            'email': email,
-            'for_whom': for_whom,
-            'zip_code': zip_code,
-            'address': address,
-        }
+class CertificateOrderFormValidationTestCase(TestCase):
+    # CertificateOrderForm should properly validate input data
 
-        form = CertificateOrderForm(data=form_data)
-        # THEN form is valid
+    fields = 'task_id addressee delivery_method name wishes email for_whom zip_code address'.split()
+
+    @parameterized.expand([
+        (1, 'org', 'email', '', 'wishes', 'test@mail.com', '', '', ''),
+        (2, 'user', 'email', 'name', '', 'test@mail.com', '', '', ''),
+        (3, 'user', 'post', 'name', '', 'test@mail.com', 'name', '123456', 'address'),
+    ])
+    def test_valid_form(self, *values):
+        # WHEN form initialized with valid data
+        form = CertificateOrderForm(data=dict(zip(self.fields, values)))
+        # THEN form validation should succeed
         self.assertEqual(form.is_valid(), True)
 
     @parameterized.expand([
-        (1, 1, 0, 'name', 'wishes', 'test@.mail.com', '', '', ''),
-        (3, 0, 1, '', '', 'test@mail.com', 'name', '1234', 'address'),
-        (3, 0, 1, '', '', 'test@mail.com', 'name', 'text', 'address'),
+        (1, 'user', 'email', 'name', 'wishes', 'test@.mail.com', '', '', ''),
+        (3, 'org', 'post', '', '', 'test@mail.com', 'name', '1234', 'address'),
+        (3, 'org', 'post', '', '', 'test@mail.com', 'name', 'text', 'address'),
     ])
-    def test_invalid_form(self, task_id, certificate_for, send, name, wishes, email, for_whom, zip_code, address):
-        # WHEN user send CertificateOrderForm with data
-        form_data = {
-            'task_id': task_id,
-            'certificate_for': certificate_for,
-            'send': send,
-            'name': name,
-            'wishes': wishes,
-            'email': email,
-            'for_whom': for_whom,
-            'zip_code': zip_code,
-            'address': address,
-        }
-
-        form = CertificateOrderForm(data=form_data)
-        # THEN form is invalid
+    def test_invalid_form(self, *values):
+        # WHEN form initialized with invalid data
+        form = CertificateOrderForm(data=dict(zip(self.fields, values)))
+        # THEN form validation should fail
         self.assertEqual(form.is_valid(), False)
 
 
-class CertificateOpennessTypeTestCase(TestCase):
+class CertificateOpennessValuesByTypeTestCase(TestCase):
     # SHOULD display correct openness value of requested rating type
 
     def setUp(self):
@@ -372,8 +351,55 @@ class CertificateOpennessTypeTestCase(TestCase):
     def test_openness(self, rating_type, expected_openness):
         # WHEN I get certificate page with specific rating
         url = reverse('exmo2010:certificate_order')
-        response = self.client.get(url, {'type': rating_type})
+        response = self.client.get(url, {'rating_type': rating_type})
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
         # AND context should contain expected openness value
-        self.assertEqual(response.context['object_list'][self.task.pk]['openness'], expected_openness)
+        self.assertEqual(response.context['view'].tasks[self.task.pk].task_openness, expected_openness)
+
+
+class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
+    # SHOULD display only organizations with requested rating type
+
+    def setUp(self):
+        # GIVEN published monitoring with 1 npa parameter, score and 1 organization
+        org_npa = mommy.make(Organization, name='npa', monitoring__status=MONITORING_PUBLISHED)
+        parameter_npa = mommy.make(Parameter, monitoring=org_npa.monitoring, weight=1, npa=True)
+        mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=org_npa, parameter=parameter_npa, found=1)
+
+        # AND published monitoring with 1 non-npa parameter, score and 1 organization
+        # NOTE: Currently we treat this monitoring params as of "undefined" type
+        # This monitoring should only be visible when "all" rating type is chosen
+        org_non_npa = mommy.make(Organization, name='non-npa', monitoring__status=MONITORING_PUBLISHED)
+        parameter_non_npa = mommy.make(Parameter, monitoring=org_non_npa.monitoring, weight=1, npa=False)
+        mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=org_non_npa, parameter=parameter_non_npa, found=1)
+
+        # AND published monitoring with 2 parameters (npa and non-npa), 2 scores and 1 organization
+        org_all = mommy.make(Organization, name='all', monitoring__status=MONITORING_PUBLISHED)
+        parameter_all_npa = mommy.make(Parameter, monitoring=org_all.monitoring, weight=1, npa=True)
+        parameter_all_non_npa = mommy.make(Parameter, monitoring=org_all.monitoring, weight=1, npa=False)
+        task = mommy.make(Task, organization=org_all, status=Task.TASK_APPROVED)
+        mommy.make(Score, task=task, parameter=parameter_all_npa, found=1)
+        mommy.make(Score, task=task, parameter=parameter_all_non_npa, found=1)
+
+        # AND organization representative account
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization = [org_npa, org_non_npa, org_all]
+        # AND I am logged in as organization representative
+        self.client = Client()
+        self.client.login(username='orguser', password='password')
+
+    @parameterized.expand([
+        ('all', ['all', 'npa', 'non-npa']),
+        ('npa', ['all', 'npa']),
+        ('other', ['all']),
+    ])
+    def test_openness(self, rating_type, expected_orgs):
+        # WHEN I get certificate page with specific rating
+        response = self.client.get(reverse('exmo2010:certificate_order'), {'rating_type': rating_type})
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain only organizations for requested rating type
+        orgs = [t.organization.name for t in response.context['view'].tasks.values()]
+        self.assertEqual(set(orgs), set(expected_orgs))
