@@ -604,7 +604,7 @@ div.system-message p.system-message-title {
 
 #nav-sidebar
 {
-    position: absolute;
+    float: left;
     width: 240px;
     background-color: #f8f8f8;
 }
