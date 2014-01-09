@@ -2698,11 +2698,11 @@ msgstr "Методика"
 #: templates/exmo2010/footer.html:31
 #, python-format
 msgid ""
-"Copyright 2012, 2013 Foundation \"<a href=\"%(url)s\">Institute for "
+"Copyright 2012–2014 Foundation \"<a href=\"%(url)s\">Institute for "
 "Information Freedom Development</a>\""
 msgstr ""
 "© Фонд \"<a href=\"%(url)s\">Институт Развития Свободы Информации</a>\", "
-"2012–2013"
+"2012–2014"
 
 #: templates/exmo2010/footer.html:32
 msgid ""
