@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013, 2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -42,6 +42,10 @@
 
 h2 {
     margin-bottom: 0;
+}
+
+div.rating-menu {
+    height: 26px;
 }
 
 div.rating-menu > h2 {
@@ -110,6 +114,7 @@ form.filter {
     position: relative;
     margin-top: 15px;
     margin-bottom: 10px;
+    height: 26px;
 }
 
 .filter > div {
