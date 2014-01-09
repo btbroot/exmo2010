@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012, 2013, 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -68,7 +68,7 @@
 
     {% if request.user.userprofile.is_expertB and not request.user.is_superuser and not monitoring.is_published %}
     {% else %}
-        {% trans 'Openness for all parameters' %}:&nbsp;{{ task.openness|default_if_none:0|floatformat:3 }}%
+        {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|default_if_none:0|floatformat:3 }}%
         <span id="place_all_img" class="rating-ajax"></span>
         <span class="get-rating" id="place_all" data-task_id="{{ task.id }}" style="display: none;">
             &nbsp;(
@@ -81,7 +81,7 @@
         {% if has_npa %}
             <br />
 
-            {% trans 'Openness for npa parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
+            {% trans 'Openness by normative parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
             <span id="place_npa_img" class="rating-ajax"></span>
             <span class="get-rating" id="place_npa" style="display: none;">
                 &nbsp;(
@@ -92,7 +92,7 @@
             </span>
             <br />
 
-            {% trans 'Openness for other parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
+            {% trans 'Openness by recommendatory parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
             <span id="place_other_img" class="rating-ajax"></span>
             <span class="get-rating" id="place_other" style="display: none;">
                 &nbsp;(
