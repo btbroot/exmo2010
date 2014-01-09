@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012, 2013, 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -246,7 +246,8 @@ def monitoring_rating(request, monitoring_pk):
     the table settings form, and the parameter selection form.
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
+    user = request.user
+    if not user.has_perm('exmo2010.view_monitoring', monitoring):
         raise PermissionDenied
 
     # Process rating_columns_form data to know what columns to show in table
@@ -255,8 +256,8 @@ def monitoring_rating(request, monitoring_pk):
     if monitoring.status in Monitoring.after_interaction_status:
         column_fields.append('rt_initial_openness')
 
-    if request.user.is_active:
-        if request.user.profile.is_expert:
+    if user.is_active:
+        if user.profile.is_expert:
             column_fields += ['rt_representatives', 'rt_comment_quantity']
 
         # Displayed rating columns options are saved in UserProfile.rt_* fields
@@ -264,13 +265,13 @@ def monitoring_rating(request, monitoring_pk):
 
         if set(column_fields) & set(request.GET):
             # Options was provided in GET request.
-            rating_columns_form = RatingColumnsForm(request.GET, instance=request.user.profile)
+            rating_columns_form = RatingColumnsForm(request.GET, instance=user.profile)
 
             if rating_columns_form.is_valid():
                 rating_columns_form.save()  # Save changes in UserProfile
         else:
             # Use default rating columns options from UserProfile
-            rating_columns_form = RatingColumnsForm(instance=request.user.profile)
+            rating_columns_form = RatingColumnsForm(instance=user.profile)
     else:
         # Inactive and AnonymousUser wll see all permitted rating columns
         rating_columns_form = modelform_factory(UserProfile, fields=column_fields)()
@@ -292,8 +293,8 @@ def monitoring_rating(request, monitoring_pk):
         'rating_columns_form': rating_columns_form,
     }
 
-    if request.user.is_organization and not monitoring.is_published:
-        orgs = set(request.user.profile.organization.values_list('pk', flat=True))
+    if user.is_organization and not user.is_superuser and not monitoring.is_published:
+        orgs = set(user.profile.organization.values_list('pk', flat=True))
         rating_list = [t for t in rating_list if t.organization.pk in orgs]
         context.update({'rating_list': rating_list})
     else:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013, 2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -900,3 +900,37 @@ class RatingStatsOrgCountTestCase(TestCase):
         self.assertEqual(response.context['rating_stats']['num_approved_tasks'], 2)
         # AND count of rated tasks should be 1
         self.assertEqual(response.context['rating_stats']['num_rated_tasks'], 1)
+
+
+class SuperuserRatingOrgsVisibilityTestCase(TestCase):
+    # Scenario: superuser SHOULD see all organizations on rating page
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND 2 organizations connected to monitoring
+        organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
+        organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
+        # AND 2 approved tasks connected to organizations
+        self.task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        self.task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
+        # AND parameter connected to monitoring
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        # AND 1 score for each task
+        mommy.make(Score, task=self.task1, parameter=self.parameter)
+        mommy.make(Score, task=self.task2, parameter=self.parameter)
+        # AND superuser account
+        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        # AND monitoring rating page url
+        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
+        # AND I am logged in as superuser
+        self.client.login(username='admin', password='password')
+
+    def test_rating_list(self):
+        # WHEN I get rating page
+        response = self.client.get(self.url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND count of approved tasks should be 2
+        self.assertEqual(len(response.context['rating_list']), 2)
