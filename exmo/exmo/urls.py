@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,8 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf.urls import *
 from django.conf import settings
+from django.conf.urls import *
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect
@@ -29,18 +30,21 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    url(r'^i18n/', include('django.conf.urls.i18n')),
+    url(r'^license.txt$', TemplateView.as_view(template_name='license.txt', content_type='text/plain'), name='license'),
+    url(r'^release$', TemplateView.as_view(template_name='release', content_type='text/plain'), name='release'),
+)
+
+urlpatterns += i18n_patterns('',
     url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comments/', include('custom_comments.urls')),
-    url(r'^$', lambda request: HttpResponsePermanentRedirect(
-        reverse('exmo2010:index'))),
+    url(r'^$', lambda request: HttpResponsePermanentRedirect(reverse('exmo2010:index'))),
     url(r'^exmo2010/', include(exmo.urls)),
     url(r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
     url(r'^admin_tools/', include('admin_tools.urls')),
-    url(r'^license.txt$', TemplateView.as_view(template_name='license.txt', content_type='text/plain'), name='license'),
     url(r'^ckeditor/', include('ckeditor.urls')),
-    url(r'^release$', TemplateView.as_view(template_name='release', content_type='text/plain'), name='release'),
 )
 
 if 'debug_toolbar' in settings.INSTALLED_APPS:

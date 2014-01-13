@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from collections import namedtuple
 from copy import copy
 
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import resolve, reverse, reverse_lazy, RegexURLPattern
 
 from core.utils import get_named_patterns
 
@@ -66,7 +65,7 @@ def crumbs_dict(crumbs_tree):
         pat = patterns[urlname]
         if len(pat.regex.groupindex) == 0:
             # pattern does not have arguments and can be reversed right now as optimization
-            pat = reverse(pat._full_name)
+            pat = reverse_lazy(pat._full_name)
         crumbs_dict[urlname] = Crumb(urlname, title, pat, parents)
     return crumbs_dict
 
@@ -81,16 +80,16 @@ def walk_crumb_path(urlname, crumbs_dict):
 
 
 class BreadcrumbsMiddleware(object):
-    '''
+    """
     This middleware constructs breadcrumbs and adds them to the response context.
-    '''
+    """
     def process_template_response(self, request, response):
-        '''
+        """
         Constructs breadcrumbs -- list of dicts {url, urlname, title}
         Adds two items to response.context_data:
           'breadcrumbs': constructed breadcrumbs
           'breadcrumb_last': last item in the breadcrumbs
-        '''
+        """
         if response.is_rendered:
             # response was rendered (fetched from cache), do nothing
             return response
@@ -115,42 +114,42 @@ class BreadcrumbsMiddleware(object):
         kwargs = self.infer_kwargs(urlmatch.kwargs)
         breadcrumbs = self.get_breadcrumbs(crumb_path, kwargs)
         response.context_data.update(
-            breadcrumbs = breadcrumbs,
-            breadcrumb_last = breadcrumbs[-1]
+            breadcrumbs=breadcrumbs,
+            breadcrumb_last=breadcrumbs[-1]
         )
         return response
 
     def get_breadcrumbs(self, crumb_path, kwargs):
-        '''
+        """
         Builds breadcrumbs from path of Crumb nodes, reversing their urlpatterns
 
         :param crumb_path: list of Crumb nodes from root to current page
         :param kwargs: dict of all needed kwargs to reverse patterns
 
         :returns: breadcrumbs -- list of dicts {url, urlname, title}
-        '''
+        """
         breadcrumbs = []
         for crumb in crumb_path:
             pat = crumb.pattern
-            if isinstance(pat, (str, unicode)):
-                # pattern is static and was already reversed into url
-                url = pat
-            else:
+            if isinstance(pat, RegexURLPattern):
                 # fetch needed kwargs for reverse
                 url_kwargs = dict((k, kwargs[k]) for k in pat.regex.groupindex if kwargs.get(k))
                 url = reverse(pat._full_name, kwargs=url_kwargs)
+            else:
+                # pattern is static and was already reversed into url
+                url = pat
 
             breadcrumbs.append({'url': url, 'urlname': crumb.urlname, 'title': crumb.title})
 
         return breadcrumbs
 
     def infer_kwargs(self, initial_kwargs):
-        '''
+        """
         Infer all needed kwargs for parent crumbs patterns.
         This method can be overloaded in custom middleware for project
 
         :param initial_kwargs: kwargs for currently requested url
 
         :returns: dict -- all inferred kwargs
-        '''
+        """
         return copy(initial_kwargs)

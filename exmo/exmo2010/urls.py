@@ -22,7 +22,7 @@ import types
 import reversion
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from exmo2010.forms import CertificateOrderForm
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
@@ -76,7 +76,7 @@ scores_patterns = named_urls('scores.views',
     (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', ScoreAddView, 'score_add'),
     (r'^(?P<score_pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), 'score_edit'),
     (r'^(?P<score_pk>\d+)/detail/$', ScoreDetailView, 'score_detail'),
-    (r'^rating_update$', 'ratingUpdate'),
+    (r'^rating_update/$', 'ratingUpdate'),
 )
 
 scores_patterns += named_urls('',
