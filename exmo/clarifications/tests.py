@@ -24,9 +24,96 @@ from django.test.client import Client
 from django.test import TestCase
 from model_mommy import mommy
 
+from nose_parameterized import parameterized
+
 from exmo2010.models import (
-    Monitoring, Organization, Score,
+    Monitoring, Organization, Score, Clarification,
     Task, MONITORING_INTERACTION)
+
+
+class ClarificationActionsAccessTestCase(TestCase):
+    # SHOULD allow only expertA to create clarification
+    # SHOULD allow only expertB to answer clarification
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN organization in INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND superuser
+        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.organization = [org]
+
+        # AND score for expertB task
+        score = mommy.make(Score, task__organization=org, task__user=expertB)
+        # AND clarification in that score
+        self.clarification = mommy.make(Clarification, score=score)
+
+        self.url = reverse('exmo2010:clarification_create', args=[score.pk])
+
+    def test_allow_expertA_clarification_creation(self):
+        self.client.login(username='expertA', password='password')
+
+        # WHEN expertA submits clarification form
+        response = self.client.post(self.url, {'clarification-comment': 'lol'}, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # THEN new clarification should get created in the database (2 clarification should exist)
+        self.assertEqual(Clarification.objects.count(), 2)
+
+    @parameterized.expand([
+        ('user',),
+        ('org',),
+        ('expertB',),
+    ])
+    def test_forbid_unauthorized_clarification_creation(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN unauthorized user forges and POSTs clarification form
+        self.client.post(self.url, {'clarification-comment': 'lol'})
+
+        # THEN clarification should not get created in the database (only one clarification exist)
+        self.assertEqual(Clarification.objects.count(), 1)
+
+    @parameterized.expand([
+        ('user',),
+        ('org',),
+        ('expertA',),
+    ])
+    def test_forbid_unauthorized_clarification_answer(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN unauthorized user forges and POSTs clarification form with answer to existing clarification
+        data = {'clarification-comment': 'lol', 'clarification-clarification_id': self.clarification.pk}
+        self.client.post(self.url, data)
+
+        # THEN clarification answer should not change in the database
+        self.assertEqual(Clarification.objects.get(pk=self.clarification.pk).answer, '')
+
+    def test_allow_expertB_clarification_answer(self):
+        self.client.login(username='expertB', password='password')
+
+        # WHEN expertB submits clarification form with answer to existing clarification
+        data = {'clarification-comment': 'lol', 'clarification-clarification_id': self.clarification.pk}
+        response = self.client.post(self.url, data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # THEN clarification answer should change in the database
+        self.assertEqual(Clarification.objects.get(pk=self.clarification.pk).answer, u'<p>lol</p>')
 
 
 class ClarificationEmailNotifyTestCase(TestCase):
@@ -72,7 +159,7 @@ class ClarificationEmailNotifyTestCase(TestCase):
     def test_notification_on_create(self):
         url = reverse('exmo2010:clarification_create', args=[self.score.pk])
 
-        # WHEN i post new claim
+        # WHEN i post new clarification
         response = self.client.post(url, data={'clarification-comment': 'asd'}, follow=True)
 
         # THEN response status_code is 200 (OK)

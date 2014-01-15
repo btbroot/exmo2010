@@ -19,6 +19,7 @@
 #
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.dispatch import Signal
@@ -44,24 +45,21 @@ def clarification_create(request, score_pk):
     redirect = reverse('exmo2010:score_view', args=[score.pk])
     redirect += '#clarifications'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
-    if request.method == 'POST' and (
-        user.has_perm('exmo2010.add_clarification_score', score) or
-            user.has_perm('exmo2010.answer_clarification_score', score)):
+    if request.method == 'POST':
         form = ClarificationAddForm(request.POST, prefix="clarification")
         if form.is_valid():
-            # Если заполнено поле clarification_id,
-            # значит это ответ на уточнение
-            if form.cleaned_data['clarification_id'] is not None and \
-                    user.has_perm('exmo2010.answer_clarification_score', score):
-                clarification_id = form.cleaned_data['clarification_id']
-                clarification = get_object_or_404(Clarification,
-                                                  pk=clarification_id)
+            if form.cleaned_data['clarification_id'] is not None:
+                # Если заполнено поле clarification_id, значит это ответ на уточнение
+                if not user.has_perm('exmo2010.answer_clarification_score', score):
+                    raise PermissionDenied
+                clarification = get_object_or_404(Clarification, pk=form.cleaned_data['clarification_id'])
                 answer = form.cleaned_data['comment']
                 clarification.add_answer(user, answer)
             else:
                 # Если поле claim_id пустое, значит это выставление уточнения
-                clarification = score.add_clarification(
-                    user, form.cleaned_data['comment'])
+                if not user.has_perm('exmo2010.add_clarification_score', score):
+                    raise PermissionDenied
+                clarification = score.add_clarification(user, form.cleaned_data['comment'])
 
             clarification_was_posted.send(
                 sender=Clarification.__class__,

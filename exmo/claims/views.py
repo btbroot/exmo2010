@@ -19,6 +19,7 @@
 #
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.dispatch import Signal
@@ -45,19 +46,21 @@ def claim_create(request, score_pk):
     redirect = reverse('exmo2010:score_view', args=[score.pk, ])
     redirect += '#claims'  # Named Anchor для открытия нужной вкладки
     title = _('Add new claim for %s') % score
-    if request.method == 'POST' and (
-            user.has_perm('exmo2010.add_claim_score', score) or
-            user.has_perm('exmo2010.answer_claim_score', score)):
+    if request.method == 'POST':
         form = ClaimAddForm(request.POST, prefix="claim")
         if form.is_valid():
-            # Если заполнено поле claim_id, значит это ответ на претензию
-            if form.cleaned_data['claim_id'] is not None and user.has_perm('exmo2010.answer_claim_score', score):
+            if form.cleaned_data['claim_id'] is not None:
+                # Если заполнено поле claim_id, значит это ответ на претензию
+                if not user.has_perm('exmo2010.answer_claim_score', score):
+                    raise PermissionDenied
                 claim_id = form.cleaned_data['claim_id']
                 claim = get_object_or_404(Claim, pk=claim_id)
                 answer = form.cleaned_data['comment']
                 claim.add_answer(user, answer)
             else:
-            # Если поле claim_id пустое, значит это выставление претензии
+                # Если поле claim_id пустое, значит это выставление претензии
+                if not user.has_perm('exmo2010.add_claim_score', score):
+                    raise PermissionDenied
                 claim = score.add_claim(user, form.cleaned_data['comment'])
 
             claim_was_posted_or_deleted.send(
@@ -89,6 +92,8 @@ def claim_delete(request):
         claim_id = request.POST.get('pk')
         if claim_id is not None:
             claim = get_object_or_404(Claim, pk=claim_id)
+            if not request.user.has_perm('exmo2010.delete_claim_score', claim.score):
+                raise PermissionDenied
             claim.delete()
             result = simplejson.dumps({'success': True})
 
