@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -51,100 +51,29 @@ class Score(BaseModel):
     task = models.ForeignKey("Task", verbose_name=_('task'))
     parameter = models.ForeignKey("Parameter", verbose_name=_('parameter'))
 
-    found = models.IntegerField(
-        choices=((0, 0), (1, 1)),
-        verbose_name=_('found'),
-    )
-    foundComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('foundComment'),
-    )
-    complete = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((1, 1), (2, 2), (3, 3)),
-        verbose_name=_('complete'),
-    )
-    completeComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('completeComment'),
-    )
-    topical = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((1, 1), (2, 2), (3, 3)),
-        verbose_name=_('topical'),
-    )
-    topicalComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('topicalComment'),
-    )
-    accessible = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((1, 1), (2, 2), (3, 3)),
-        verbose_name=_('accessible'),
-    )
-    accessibleComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('accessibleComment'),
-    )
-    hypertext = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((0, 0), (1, 1)),
-        verbose_name=_('hypertext'),
-    )
-    hypertextComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('hypertextComment'),
-    )
-    document = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((0, 0), (1, 1)),
-        verbose_name=_('document'),
-    )
-    documentComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('documentComment'),
-    )
-    image = models.IntegerField(
-        null=True,
-        blank=True,
-        choices=((0, 0), (1, 1)),
-        verbose_name=_('image'),
-    )
-    imageComment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('imageComment'),
-    )
-    comment = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_('Recomendations'),
-    )
-    created = models.DateTimeField(
-        null=True,
-        blank=True,
-        auto_now_add=True,
-    )
-    edited = models.DateTimeField(
-        null=True,
-        blank=True,
-        auto_now=True,
-    )
-    revision = models.PositiveIntegerField(
-        default=REVISION_DEFAULT,
-        choices=REVISION_CHOICE,
-    )
+    _01 = ((0, 0), (1, 1))
+    _123 = ((1, 1), (2, 2), (3, 3))
+
+    found = models.IntegerField(choices=_01, verbose_name=_('found'))
+    complete = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('complete'))
+    topical = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('topical'))
+    accessible = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('accessible'))
+    hypertext = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('hypertext'))
+    document = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('document'))
+    image = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('image'))
+
+    foundComment = models.TextField(null=True, blank=True, verbose_name=_('foundComment'))
+    completeComment = models.TextField(null=True, blank=True, verbose_name=_('completeComment'))
+    topicalComment = models.TextField(null=True, blank=True, verbose_name=_('topicalComment'))
+    accessibleComment = models.TextField(null=True, blank=True, verbose_name=_('accessibleComment'))
+    hypertextComment = models.TextField(null=True, blank=True, verbose_name=_('hypertextComment'))
+    documentComment = models.TextField(null=True, blank=True, verbose_name=_('documentComment'))
+    imageComment = models.TextField(null=True, blank=True, verbose_name=_('imageComment'))
+
+    comment = models.TextField(null=True, blank=True, verbose_name=_('Recomendations'))
+    created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    edited = models.DateTimeField(null=True, blank=True, auto_now=True)
+    revision = models.PositiveIntegerField(default=REVISION_DEFAULT, choices=REVISION_CHOICE)
 
     def __unicode__(self):
         return '%s: %s [%d]' % (

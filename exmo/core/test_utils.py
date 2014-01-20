@@ -29,6 +29,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
 
 
+TIMEOUT = getattr(settings, 'SELENIUM_TEST_TIMEOUT', 6)
+
+
 class BaseSeleniumTestCase(LiveServerTestCase):
     '''
     Base class for all selenium tests
@@ -69,32 +72,32 @@ class BaseSeleniumTestCase(LiveServerTestCase):
     def findall(self, selector):
         return self.webdrv.find_elements_by_css_selector(selector)
 
-    def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=6):
+    def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=TIMEOUT):
         def condition(*args):
             element = self.find(selector)
             if element:
                 return method(element) == expected_result
         WebDriverWait(self.webdrv, wait_timeout).until(condition)
 
-    def assertVisible(self, selector, wait_timeout=6):
+    def assertVisible(self, selector, wait_timeout=TIMEOUT):
         try:
             self._assertWebElementMethod(selector, WebElement.is_displayed, True, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not visible: %s' % selector)
 
-    def assertHidden(self, selector, wait_timeout=6):
+    def assertHidden(self, selector, wait_timeout=TIMEOUT):
         try:
             self._assertWebElementMethod(selector, WebElement.is_displayed, False, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not hidden: %s' % selector)
 
-    def assertEnabled(self, selector, wait_timeout=6):
+    def assertEnabled(self, selector, wait_timeout=TIMEOUT):
         try:
             self._assertWebElementMethod(selector, WebElement.is_enabled, True, wait_timeout)
         except TimeoutException:
             raise AssertionError('Element is missing or not enabled: %s' % selector)
 
-    def assertDisabled(self, selector, wait_timeout=6):
+    def assertDisabled(self, selector, wait_timeout=TIMEOUT):
         try:
             self._assertWebElementMethod(selector, WebElement.is_enabled, False, wait_timeout)
         except TimeoutException:

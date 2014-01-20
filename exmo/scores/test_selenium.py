@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -178,6 +178,67 @@ class PrintfullPageTestCase(BaseSeleniumTestCase):
         # WHEN I try to get comments texts of 'found' and 'image' fields
         found_comment = self.find('tbody > tr:nth-child(2) > td:nth-child(2) > p').text
         image_comment = self.find('tbody > tr:nth-child(3) > td:nth-child(2) > p').text
-        # THEN texts should be existed
+        # THEN texts should exist
         self.assertEqual(found_comment, self.score.foundComment)
         self.assertEqual(image_comment, self.score.imageComment)
+
+
+class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
+    ''' On score page if "found" criterion value is not "1", then other criteria inputs should be disabled '''
+
+    def setUp(self):
+        # GIVEN expertA account
+        expertA = User.objects.create_user('expertA', 'expertB@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND expertB account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+
+        # AND organization with task in INTERACTION monitoring
+        org = mommy.make(Organization, name='org', monitoring__status=MONITORING_INTERACTION)
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_OPEN)
+
+        # AND parameter with one ctriteria (for ex. "topical")
+        parameter = mommy.make(
+            Parameter,
+            monitoring=org.monitoring,
+            topical=True,
+            image=False,
+            complete=False,
+            accessible=False,
+            hypertext=False,
+            document=False,
+        )
+        # AND score with "found" ctriterion set to 0
+        score = mommy.make(Score, task=task, parameter=parameter, found=0)
+
+        # AND i am logged in as expertA
+        self.login('expertA', 'password')
+        # AND i am on score page
+        self.get(reverse('exmo2010:score_view', args=(score.pk,)))
+        # AND i clicked 'change score'
+        self.assertVisible('a[href="#change_score"]')
+        self.find('a[href="#change_score"]').click()
+
+    def assert_topical_criterion_enabled(self, is_enabled):
+        # "Topical" criterion comment textarea
+        self.assertEqual(self.find('#id_topicalComment').is_enabled(), is_enabled)
+
+        # "Topical" criterion value radio inputs
+        for radio in self.findall('input[name="topical"]'):
+            self.assertEqual(radio.is_enabled(), is_enabled)
+
+        # BUG 1856: Claim and clarification textareas should always be enabled
+        self.assertEnabled('#id_clarification-comment')
+        self.assertEnabled('#id_claim-comment')
+
+    def test_criteria_inputs_disable(self):
+        # WHEN i just opened page ("found" value equals 0)
+        # THEN "topical" creiterion inputs should be disabled
+        self.assert_topical_criterion_enabled(False)
+
+        # WHEN i set "found" criterion to "1"
+        self.find('#id_found_2').click()
+
+        # THEN "topical" creiterion inputs should get enabled
+        self.assert_topical_criterion_enabled(True)

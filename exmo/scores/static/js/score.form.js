@@ -1,7 +1,7 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011, 2012 Institute for Information Freedom Development
-// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@ jQuery.expr[':'].regex = function(elem, index, match) {
                 matchParams[0].split(':')[0] : 'attr',
             property: matchParams.shift().replace(validLabels,'')
         },
-        regexFlags = 'ig',
+        regexFlags = 'g',
         regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
     return regex.test(jQuery(elem)[attr.method](attr.property));
 };
