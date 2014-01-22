@@ -21,7 +21,9 @@ $(document).ready(function() {
         traditional: true
     });
 
-    $.getJSON("/exmo2010/score/rating_update/", {task_id: $('#place_all').data('task_id')})
+    var url = $("a#ajax_url").attr("href");
+
+    $.getJSON(url, {task_id: $('#place_all').data('task_id')})
         .success(function(data) {
             $.each(data, function(key, val) {
                 var $key = '#' + key;

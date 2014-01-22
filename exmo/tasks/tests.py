@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,6 @@ from django.contrib.auth.models import User, Group
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -38,7 +37,6 @@ class TaskAssignSideEffectsTestCase(TestCase):
     # and notify expertB if he has email
 
     def setUp(self):
-        self.client = Client()
         # GIVEN INTERACTION monitoring without tasks
         self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         self.monitoring_id = self.monitoring.pk
@@ -118,7 +116,6 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
     # Should allow expertB to close and open only own Tasks using ajax actions
 
     def setUp(self):
-        self.client = Client()
         # GIVEN MONITORING_RATE monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
         # AND there are 4 organizations in this monitoring (for every task)
@@ -208,7 +205,7 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
         # AND ajax response status_display should be same old status "open" plus error message
         res = json.loads(res.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
-        res_pattern = re.compile(r'^%s \[.+\]$' % open_status_display)
+        res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
         self.assertTrue(res_pattern.match(res['status_display']))
         # AND ajax response permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
         self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
@@ -244,7 +241,6 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
     # Should allow expertA to approve and reopen Tasks using ajax actions
 
     def setUp(self):
-        self.client = Client()
         # GIVEN MONITORING_RATE monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
         # AND there are 3 organizations in this monitoring (for every task)
@@ -332,7 +328,7 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         # AND ajax response status_display should be same old status "open" plus error message
         res = json.loads(res.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
-        res_pattern = re.compile(r'^%s \[.+\]$' % open_status_display)
+        res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
         self.assertTrue(res_pattern.match(res['status_display']))
         # AND ajax response  permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
         self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
@@ -342,7 +338,6 @@ class TaskDeletionTestCase(TestCase):
     # SHOULD delete Task after expertA confirmation on deletion page
 
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring with organization
         self.monitoring = mommy.make(Monitoring)
         organization = mommy.make(Organization, monitoring=self.monitoring)
@@ -370,7 +365,6 @@ class TaskEditTestCase(TestCase):
     # SHOULD update Task after expertA edits it on edit page
 
     def setUp(self):
-        self.client = Client()
         # GIVEN 2 expertB accounts
         self.expertB1 = User.objects.create_user('expertB1', 'expertB1@svobodainfo.org', 'password')
         self.expertB1.profile.is_expertB = True
@@ -411,7 +405,6 @@ class ReassignTaskTestCase(TestCase):
     # Scenario: SHOULD allow only expertA to reassign task
 
     def setUp(self):
-        self.client = Client()
         # GIVEN two experts B
         self.expertB_1 = User.objects.create_user('expertB_1', 'expertB_1@svobodainfo.org', 'password')
         self.expertB_1.profile.is_expertB = True
@@ -441,14 +434,13 @@ class ReassignTaskTestCase(TestCase):
         task = Task.objects.get(pk=self.task.pk)
         self.assertEqual(task.user.username, self.expertB_1.username)
 
-        
+
 class TaskListAccessTestCase(TestCase):
     # SHOULD forbid access to monitoring tasks list page for non-experts or expertB without
     # tasks in the monitoring.
     # AND allow expertA see all tasks, expertB - see only assigned tasks
 
     def setUp(self):
-        self.client = Client()
         # GIVEN INTERACTION monitoring
         monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND there is 2 organizations in this monitoring
@@ -497,7 +489,7 @@ class TaskListAccessTestCase(TestCase):
 
     def test_redirect_anonymous_to_login(self):
         # WHEN AnonymousUser request task list page
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         # THEN response redirects to login page
         self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
 

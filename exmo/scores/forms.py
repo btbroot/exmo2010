@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,7 +20,7 @@
 from django import forms
 from django.contrib.comments.forms import COMMENT_MAX_LENGTH
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from custom_comments.forms import CustomCommentForm
 from exmo2010.models import Parameter, Score
@@ -105,13 +105,13 @@ class ScoreFormWithComment(CustomCommentForm):
     def clean(self):
         def _checker(criterion):
             if getattr(obj.parameter, criterion) and data[criterion] in ('', None):
-                raise ValidationError(_('%s must be set' % criterion.capitalize()))
+                raise ValidationError(ugettext('%s must be set' % criterion.capitalize()))
 
         data = self.cleaned_data
         obj = self.target_object
 
         if 'found' not in data:
-            raise ValidationError(_('Found must be set'))
+            raise ValidationError(ugettext('Found must be set'))
 
         if int(data['found']):
             for item in Parameter.OPTIONAL_CRITERIONS:
@@ -130,7 +130,7 @@ class ScoreFormWithComment(CustomCommentForm):
             data['documentComment'],
             data['imageComment'],
         )):
-            raise ValidationError(_('Not found, but some excessive data persists'))
+            raise ValidationError(ugettext('Not found, but some excessive data persists'))
 
         return super(ScoreFormWithComment, self).clean()
 

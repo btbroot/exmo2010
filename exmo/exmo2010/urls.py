@@ -24,7 +24,7 @@ from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _
 
-from exmo2010.forms import CertificateOrderForm
+from core.views import TemplateView
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringManagerView
 from organizations.views import OrganizationManagerView
@@ -76,7 +76,7 @@ scores_patterns = named_urls('scores.views',
     (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', ScoreAddView, 'score_add'),
     (r'^(?P<score_pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), 'score_edit'),
     (r'^(?P<score_pk>\d+)/detail/$', ScoreDetailView, 'score_detail'),
-    (r'^rating_update/$', 'ratingUpdate'),
+    (r'^rating_update/$', 'rating_update'),
 )
 
 scores_patterns += named_urls('',
@@ -150,6 +150,7 @@ tasks_patterns += named_urls('parameters.views',
 
 
 urlpatterns = named_urls('',
+    (r'^$', TemplateView.as_view(template_name='index.html'), 'index'),
     (r'^accounts/', include('exmo2010.custom_registration.backends.custom.urls')),
 
     (r'^monitoring/', include(monitoring_patterns)),
@@ -176,6 +177,7 @@ urlpatterns = named_urls('',
     (r'^ratings/$', 'monitorings.views.ratings'),
     (r'^help/$', HelpView, 'help'),
     (r'^about/$', AboutView, 'about'),
+    (r'^change_language/$', 'exmo2010.views.change_language'),
 
     (r'^opendata/$', OpenDataView, 'opendata'),
     (r'^feedback/$', 'exmo2010.views.feedback'),

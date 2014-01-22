@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.test import TestCase
-from django.test.client import Client
-
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -35,7 +32,6 @@ class ParameterEditAccessTestCase(TestCase):
     # SHOULD allow only expertA to edit parameter
 
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring with organization, task and parameter
         self.monitoring = mommy.make(Monitoring)
         organization = mommy.make(Organization, monitoring=self.monitoring)
@@ -60,7 +56,7 @@ class ParameterEditAccessTestCase(TestCase):
 
     def test_anonymous_param_edit_get(self):
         # WHEN anonymous user gets parameter edit page
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         # THEN he is redirected to login page
         self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
 
@@ -101,8 +97,6 @@ class ParamEditEmailNotifyTestCase(TestCase):
     # SHOULD send notification email to related experts if expertA clicked "save and notify" on parameter edit page
 
     def setUp(self):
-        self.client = Client()
-
         # GIVEN expertA and expertB:
         self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
         self.expertA.profile.is_expertA = True

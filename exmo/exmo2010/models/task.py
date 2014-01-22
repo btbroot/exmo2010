@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,12 +17,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.dispatch import Signal
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from core.sql import sql_complete
 from tasks.signals import task_assign_user_notify
@@ -241,14 +240,15 @@ class Task(BaseModel):
         """
         if status in [self.TASK_READY, self.TASK_APPROVED]:
             if self.complete != 100:
-                raise ValidationError(_('Ready task must be 100 percent complete.'))
+                raise ValidationError(ugettext('Ready task must be 100 percent complete.'))
         if status == self.TASK_APPROVED:
             approved = Task.approved_tasks.filter(organization=self.organization)
             if approved and self not in approved:
-                raise ValidationError(_('Approved task for monitoring %(monitoring)s and organization %(organization)s already exist.') % {
-                    'monitoring': self.organization.monitoring,
-                    'organization': self.organization,
-                })
+                raise ValidationError(
+                    ugettext('Approved task for monitoring %(monitoring)s and organization %(organization)s '
+                             'already exist.') % {'monitoring': self.organization.monitoring,
+                                                  'organization': self.organization}
+                )
 
     transitions = ['close_task', 'open_task', 'approve_task']
     state_transitions = {

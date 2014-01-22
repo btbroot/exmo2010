@@ -17,13 +17,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models.aggregates import Count
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from core.sql import sql_monitoring_scores
 from .base import BaseModel

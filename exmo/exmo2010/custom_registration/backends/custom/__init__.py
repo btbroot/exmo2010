@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,11 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.conf import settings
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
 from django.contrib.auth import login
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import RequestSite
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import translation
 from registration import signals
 
 from exmo2010.custom_registration.forms import RegistrationFormFull
@@ -121,21 +122,17 @@ class CustomBackend(object):
             new_user.save()
         # Сохраняем поля профиля пользователя.
         user_profile = UserProfile.objects.get_or_create(user=new_user)[0]
-        up_changed = False
         subscribe = kwargs.get("subscribe")
         if subscribe:
             user_profile.subscribe = subscribe
-            up_changed = True
         status = int(kwargs.get("status"))
         if status == 0:  # представитель организации.
             position = kwargs.get("position")
             if position:
                 user_profile.position = position
-                up_changed = True
             phone = kwargs.get("phone")
             if phone:
                 user_profile.phone = phone
-                up_changed = True
             invitation_code = kwargs.get("invitation_code")
             if invitation_code:
                 try:
@@ -148,8 +145,12 @@ class CustomBackend(object):
                     og = Group.objects.get(name=og_name)
                     new_user.groups.add(og)
                     user_profile.organization.add(organization)
-        if up_changed:
-            user_profile.save()
+        # set language preference
+        language = translation.get_language_from_request(request, check_path=True)
+        user_profile.language = language
+
+        user_profile.save()
+
         signals.user_registered.send(sender=self.__class__,
                                      user=new_user,
                                      request=request)

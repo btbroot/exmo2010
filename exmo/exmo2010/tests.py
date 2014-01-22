@@ -18,19 +18,24 @@
 #
 from textwrap import dedent
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test.client import Client
+from django.http import HttpResponseRedirect
 from django.test import TestCase
+from django.utils import translation
+from mock import MagicMock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.sql import *
 from core.utils import get_named_patterns
 from exmo2010.forms import CertificateOrderForm
+from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
     Group, Monitoring, Organization, Parameter, Questionnaire, Score,
-    Task, OpennessExpression, ValidationError, MONITORING_PUBLISHED)
+    Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
+)
 
 
 class TestMonitoring(TestCase):
@@ -216,7 +221,7 @@ class CanonicalViewKwargsTestCase(TestCase):
 
     urls_excluded = [
         'auth_logout',   # do not logout during test
-        'ratingUpdate',  # requires GET params, should be tested explicitly,
+        'rating_update',  # requires GET params, should be tested explicitly,
         'certificate_order'  # require org permissions, should be tested explicitly
     ]
 
@@ -236,7 +241,6 @@ class CanonicalViewKwargsTestCase(TestCase):
         # AND i am logged-in as superuser
         admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
         admin.groups.add(Group.objects.get(name=admin.profile.expertA_group))
-        self.client = Client()
         self.client.login(username='admin', password='password')
 
         # AND canonical kwargs to reverse view urls
@@ -340,7 +344,6 @@ class CertificateOpennessValuesByTypeTestCase(TestCase):
         org.groups.add(Group.objects.get(name=org.profile.organization_group))
         org.profile.organization.add(organization)
         # AND I am logged in as organization representative
-        self.client = Client()
         self.client.login(username='org', password='password')
 
     @parameterized.expand([
@@ -387,7 +390,6 @@ class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
         orguser.profile.organization = [org_npa, org_non_npa, org_all]
         # AND I am logged in as organization representative
-        self.client = Client()
         self.client.login(username='orguser', password='password')
 
     @parameterized.expand([
@@ -403,3 +405,78 @@ class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
         # AND context should contain only organizations for requested rating type
         orgs = [t.organization.name for t in response.context['view'].tasks.values()]
         self.assertEqual(set(orgs), set(expected_orgs))
+
+
+class ChangeLanguageViewTestCase(TestCase):
+    # Scenario: Change language view tests
+
+    def setUp(self):
+        self.url = reverse('exmo2010:change_language')
+        # GIVEN registered user without any permissions
+        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND this user has not language preference
+        self.user.profile.language = ''
+        self.user.profile.save()
+
+    @parameterized.expand(settings.LANGUAGES)
+    def test_user_change_language(self, language_code, language_name):
+        # WHEN I am logged in as user
+        self.client.login(username='user', password='password')
+        # AND I submit change language form
+        data = {
+            'language': language_code,
+        }
+        self.client.post(self.url, data)
+        # THEN user profile settings should contain posted language code
+        user_profile = UserProfile.objects.get(user=self.user)
+        self.assertEqual(user_profile.language, language_code)
+
+
+class CustomLocaleMiddlewareTest(TestCase):
+    # Scenario: Custom locale middleware tests
+
+    def setUp(self):
+        # GIVEN custom locale middleware
+        self.middleware = CustomLocaleMiddleware()
+        # AND registered user without any permissions
+        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND request object for authentication user
+        self.request = MagicMock()
+        self.request.META = {}
+        self.request.session = {
+            '_auth_user_id': self.user.id,
+            '_auth_user_backend': 'django.contrib.auth.backends.ModelBackend',
+        }
+
+    @parameterized.expand(settings.LANGUAGES)
+    def test_process_request_language_not_in_path(self, language_code, language_name):
+        # WHEN path hasn't a language
+        self.request.path_info = '/'
+        # AND user has language preference
+        self.user.profile.language = language_code
+        self.user.profile.save()
+        # THEN middleware should return nothing
+        self.assertEqual(self.middleware.process_request(self.request), None)
+        # AND project language should be exactly as in user preference
+        self.assertEqual(translation.get_language(), language_code)
+
+    @parameterized.expand(settings.LANGUAGES)
+    def test_process_request_language_in_path_and_language_equal_language_in_path(self, language_code, language_name):
+        # WHEN path has a language
+        self.request.path_info = '/%s/' % language_code
+        # AND user has the same language in preference
+        self.user.profile.language = language_code
+        self.user.profile.save()
+        # THEN middleware should return nothing
+        self.assertEqual(self.middleware.process_request(self.request), None)
+        # AND project language should be exactly as in user preference
+        self.assertEqual(translation.get_language(), language_code)
+
+    def test_process_request_language_in_path_and_language_not_equal_language_in_path(self):
+        # WHEN path has a language
+        self.request.path_info = '/ka/'
+        # AND user has another language preference
+        self.user.profile.language = 'ru'
+        self.user.profile.save()
+        # THEN middleware should return HttpResponseRedirect-object
+        self.assertIsInstance(self.middleware.process_request(self.request), HttpResponseRedirect)

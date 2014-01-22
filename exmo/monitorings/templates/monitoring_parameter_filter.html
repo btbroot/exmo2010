@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,15 +19,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
+{% load i18n adminmedia static future %}
+
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/monitoring_parameter_filter.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/monitoring_parameter_filter.css' %}" />
 {% endblock %}
+
 {% block extrahead %}
     {{ block.super }}
-    <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
     <script>
         $(function () {
             if ({{ hide }}) {
@@ -58,7 +58,7 @@
 
             function getData() {
                 $.ajax({
-                    url: "/exmo2010/get_pc/"
+                    url: "{% url 'exmo2010:get_pc' %}"
                     , type: "POST"
                     , async: false
                     , data: { p_id: $("#id_parameter").val() }
@@ -181,8 +181,8 @@
                 {% for object in object_list %}
                     <tbody>
                     <tr>
-                        <td><a href="{% url exmo2010:score_list_by_task object.task.pk %}">{{ object.task }}</a></td>
-                        <td><a href="{% url exmo2010:score_view object.pk %}">{{ object.parameter }}</a></td>
+                        <td><a href="{% url 'exmo2010:score_list_by_task' object.task.pk %}">{{ object.task }}</a></td>
+                        <td><a href="{% url 'exmo2010:score_view' object.pk %}">{{ object.parameter }}</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 #
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from nose_parameterized import parameterized
 
 from accounts.forms import SubscribeForm, SubscribeAndNotifyForm
@@ -70,7 +69,6 @@ class SettingsViewTestCase(TestCase):
         self.expertb = User.objects.create_user('expertb', 'expertb@svobodainfo.org', 'password')
         self.expertb.groups.add(Group.objects.get(name=self.expertb.profile.expertB_group))
         self.url = reverse('exmo2010:settings')
-        self.client = Client()
 
     def test_user_settings(self):
         # WHEN user login

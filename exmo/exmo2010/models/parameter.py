@@ -17,10 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from ckeditor.fields import RichTextField
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from tagging.models import Tag
 
 from core.fields import TagField
@@ -38,18 +37,15 @@ class Parameter(BaseModel):
         )
 
     code = models.PositiveIntegerField(verbose_name=_('code'))
-    name = models.CharField(max_length=1000, verbose_name=_('name'),
-        db_index=False)
+    name = models.CharField(max_length=1000, verbose_name=_('name'))
     description = RichTextField(blank=True, verbose_name=_('description'))
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'))
-    exclude = models.ManyToManyField("Organization", null=True, blank=True,
-        verbose_name=_('excluded organizations'))
+    exclude = models.ManyToManyField("Organization", null=True, blank=True, verbose_name=_('excluded organizations'))
     weight = models.IntegerField(verbose_name=_('weight'))
     keywords = TagField(blank=True, verbose_name=_('keywords'))
     complete = models.BooleanField(default=True, verbose_name=_('complete'))
     topical = models.BooleanField(default=True, verbose_name=_('topical'))
-    accessible = models.BooleanField(default=True,
-        verbose_name=_('accessible'))
+    accessible = models.BooleanField(default=True, verbose_name=_('accessible'))
     hypertext = models.BooleanField(default=True, verbose_name=_('hypertext'))
     document = models.BooleanField(default=True, verbose_name=_('document'))
     image = models.BooleanField(default=True, verbose_name=_('image'))

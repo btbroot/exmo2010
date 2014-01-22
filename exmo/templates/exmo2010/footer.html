@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,19 +18,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n future %}
+
 <div id="footer">
     <div>
         <p>
-            <a href="{% url exmo2010:about %}">{% trans "About" %}</a> |
+            <a href="{% url 'exmo2010:about' %}">{% trans "About" %}</a> |
             <a href="http://www.svobodainfo.org/ru/node/902" target="_blank">{% trans "Methodology" %}</a> |
-            <a href="{% url exmo2010:opendata %}">{% trans "Open data" %}</a> |
-            <a href="{% url exmo2010:feedback %}">{% trans "Feedback" %}</a>
+            <a href="{% url 'exmo2010:opendata' %}">{% trans "Open data" %}</a> |
+            <a href="{% url 'exmo2010:feedback' %}">{% trans "Feedback" %}</a>
         </p>
         <p class="copyrights">
-            <span>{% blocktrans with url="http://www.svobodainfo.org/" %}Copyright 2012–2014 Foundation "<a href="{{ url }}">Institute for Information Freedom Development</a>"{% endblocktrans %}<br /></span>
-            {% trans 'Copyright 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %}<br />
-            {% trans 'Copyright 2010, 2011, 2013 Al Nikolov' %}<br />
+            <span>{% blocktrans with url="http://www.svobodainfo.org/" %}© 2012–2014 Foundation "<a href="{{ url }}">Institute for Information Freedom Development</a>"{% endblocktrans %}<br /></span>
+            {% trans '© 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %}<br />
+            {% trans '© 2010, 2011, 2013 Al Nikolov' %}<br />
             {% blocktrans with url="http://www.svobodainfo.org/exmo" %}<a href="{{ url }}">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.{% endblocktrans %}
         </p>
     </div>

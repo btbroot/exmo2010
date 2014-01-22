@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013, 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n adminmedia check_object_permission hash %}
+{% load table_header i18n adminmedia check_object_permission hash future %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -61,13 +61,16 @@
 {% endblock %}
 
 {% block content %}
-{% url exmo2010:monitoring_rating task.organization.monitoring.pk as monitoring_rating %}
+{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk as monitoring_rating %}
 <div id=score_list>
 <h2>
     <a href="{{task.organization.url}}">{{task.organization.name}}</a><br />
 
     {% if request.user.userprofile.is_expertB and not request.user.is_superuser and not monitoring.is_published %}
     {% else %}
+        {# empty link used for ajax-request in scores.js #}
+        <a href="{% url 'exmo2010:rating_update' %}" id="ajax_url"></a>
+
         {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|default_if_none:0|floatformat:3 }}%
         <span id="place_all_img" class="rating-ajax"></span>
         <span class="get-rating" id="place_all" data-task_id="{{ task.id }}" style="display: none;">
@@ -107,16 +110,16 @@
 </h2>
 
 <div id=utility>
-     <a href="{% url exmo2010:score_list_by_task task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
-     <a href="{% url exmo2010:score_list_by_task task.pk 'printfull' %}" target="_blank">{% trans "Print with explanations" %}</a>
+     <a href="{% url 'exmo2010:score_list_by_task' task.pk 'print' %}" target="_blank">{% trans "Print" %}</a> /
+     <a href="{% url 'exmo2010:score_list_by_task' task.pk 'printfull' %}" target="_blank">{% trans "Print with explanations" %}</a>
 {% check_object_permission exmo2010.view_task task as export_perm %}
 {% check_object_permission exmo2010.fill_task task as import_perm %}
 {% if export_perm %}
      <br />
-     <a href="{% url exmo2010:task_export task.pk %}">{% trans "Export task to CSV" %}</a> /
+     <a href="{% url 'exmo2010:task_export' task.pk %}">{% trans "Export task to CSV" %}</a> /
 {% endif %}
 {% if import_perm %}
-   <form action="{% url exmo2010:task_import task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
+   <form action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
      <label>{% trans "Import task from CSV" %}: <input type="file" accept=".csv" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    {% if importLog %}<div>{{importLog}}</div>{% endif %}
@@ -132,7 +135,7 @@
         <tr>
             <td colspan=10>
                 {% if perm_admin_monitoring %}
-                    <a href="{% url exmo2010:parameter_add task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>&nbsp;
+                    <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>&nbsp;
                 {%endif%}
             </td>
         </tr>
@@ -155,18 +158,18 @@
                                 {% endwith %}
                             {% endif %}
 
-                            <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                            <a href="{% url 'exmo2010:score_view' score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                         {% else %}
                             {% if perm_fill_task %}
-                                <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                                <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                             {% else %}
                                 {{ parameter.name }}
                             {% endif %}
                         {% endif %}
                             {% if perm_admin_monitoring %}
-                                &nbsp;<a href="{% url exmo2010:parameter_update task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                                &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
                                 {% if not monitoring.is_published %}
-                                    &nbsp;<a href="{% url exmo2010:parameter_delete task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                                    &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                                 {% endif %}
                             {%endif%}
 
@@ -208,19 +211,19 @@
                             {% endwith %}
                         {% endif %}
 
-                        <a href="{% url exmo2010:score_view score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                        <a href="{% url 'exmo2010:score_view' score.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                     {% else %}
                         {% if perm_fill_task %}
-                            <a href="{% url exmo2010:score_add task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
+                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}?{{request.GET.urlencode}}">{{ parameter.name }}</a>
                         {% else %}
                             {{ parameter.name }}
                         {% endif %}
                     {% endif %}
 
                     {% if perm_admin_monitoring %}
-                        &nbsp;<a href="{% url exmo2010:parameter_update task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                        &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
                         {% if not monitoring.is_published %}
-                            &nbsp;<a href="{% url exmo2010:parameter_delete task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                            &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
                         {% endif %}
                     {%endif%}
 
@@ -251,7 +254,7 @@
         {% if task.organization.monitoring.get_questionnaire.comment %}
             <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
         {% endif %}
-        <form action="{% url exmo2010:score_list_by_task task.pk %}#q" method="post">
+        <form action="{% url 'exmo2010:score_list_by_task' task.pk %}#q" method="post">
             {% csrf_token %}
             <div>
                 {% if form.non_field_errors %}

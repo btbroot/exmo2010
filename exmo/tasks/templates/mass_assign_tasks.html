@@ -46,7 +46,7 @@
         <select multiple="multiple" name="organizations">
             {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}
         </select>
-        <input type="submit">
+        <input type="submit" value="{% trans 'Send' %}" />
     </form>
 
 {% endblock %}

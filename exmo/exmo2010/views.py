@@ -33,6 +33,7 @@ from django.utils import dateformat
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView, FormView
+from django.views.i18n import set_language
 from livesettings import config_value
 
 from core.tasks import send_email
@@ -263,3 +264,18 @@ class CertificateOrderView(FormView):
                                     "will be prepared and sent within 5 working days."))
 
         return HttpResponseRedirect(reverse('exmo2010:index'))
+
+
+def change_language(request):
+    """
+    Change user profile language.
+
+    """
+    response = set_language(request)
+    user = request.user
+    if user.is_authenticated() and request.method == 'POST':
+        language_code = request.POST.get('language', None)
+        user.profile.language = language_code
+        user.profile.save()
+
+    return response

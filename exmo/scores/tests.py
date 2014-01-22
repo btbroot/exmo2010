@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,9 +22,7 @@ import time
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django.utils.crypto import salted_hmac
-from django.utils.translation import ugettext as _
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -36,7 +34,6 @@ class ScoreAddccessTestCase(TestCase):
     # only expertB assigned to score's task SHOULD be allowed to create score
 
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring with organization and parameter
         monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         organization = mommy.make(Organization, monitoring=monitoring)
@@ -63,7 +60,7 @@ class ScoreAddccessTestCase(TestCase):
 
     def test_redirect_anonymous_on_score_creation(self):
         # WHEN anonymous user gets score creation page
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         # THEN he is redirected to login page
         self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
 
@@ -104,9 +101,6 @@ class ScoreAddccessTestCase(TestCase):
 
 class ScoreViewsTestCase(TestCase):
     def setUp(self):
-        # with csrf checking:
-        self.client = Client(enforce_csrf_checks=True)
-
         # create expert B:
         self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         self.expertB.profile.is_expertB = True
@@ -138,7 +132,6 @@ class ScoreViewsTestCase(TestCase):
 
         # redirect for anonymous:
         resp = self.client.get(url, follow=True)
-        self.assertEqual(resp.status_code, 200)
         self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + url)
 
         # expert B login:
@@ -190,7 +183,6 @@ class AjaxGetRatingPlacesTestCase(TestCase):
     # Ajax request SHOULD return correct rating places for valid rating types
 
     def setUp(self):
-        self.client = Client()
         # GIVEN interaction monitoring
         monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND there are 2 approved tasks with organizations
@@ -215,7 +207,7 @@ class AjaxGetRatingPlacesTestCase(TestCase):
 
     def test_places_in_rating(self):
         # WHEN I get rating places with ajax
-        url = reverse('exmo2010:ratingUpdate')
+        url = reverse('exmo2010:rating_update')
         response = self.client.get(url, {'task_id': self.task1.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)

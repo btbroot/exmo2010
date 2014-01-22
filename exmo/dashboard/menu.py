@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,7 @@ To activate your custom menu add the following to your settings.py::
 """
 
 from admin_tools.menu import items, Menu
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from livesettings import config_value
@@ -53,7 +54,7 @@ class CustomMenu(Menu):
 
     def init_with_context(self, context):
         self.children = [
-            items.MenuItem(_('Dashboard'), reverse('exmo2010:index')),
+            items.MenuItem(_('Main'), reverse('exmo2010:index')),
         ]
         request = context['request']
 
@@ -86,7 +87,7 @@ class CustomMenu(Menu):
             self.auth.append(items.MenuItem(request.user.userprofile.legal_name,
                                             template='user_dashboard/item_userarea.html'))
             self.auth.append(items.MenuItem(_('Preferences'), reverse('exmo2010:settings'), css_classes=['pref-icon']))
-            self.auth.append(items.MenuItem(_('Log out'), reverse('exmo2010:auth_logout'), css_classes=['logout-icon']))
+            self.auth.append(items.MenuItem(_('Log out'), settings.LOGOUT_URL, css_classes=['logout-icon']))
         else:
             self.auth.append(items.MenuItem(_('Registration'), reverse('exmo2010:registration_register')))
-            self.auth.append(items.MenuItem(_('Log in'), reverse('exmo2010:auth_login')))
+            self.auth.append(items.MenuItem(_('Log in'), settings.LOGIN_URL))

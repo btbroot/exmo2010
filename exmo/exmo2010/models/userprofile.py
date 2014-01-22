@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.contrib.auth.models import Group, User, AnonymousUser
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
@@ -82,6 +81,12 @@ class UserProfile(BaseModel):
         (24, _("Once in 24 hours")),
     )
 
+    LANGUAGE_CHOICES = (
+        ('ru', _('Russian')),
+        ('en', _('English')),
+        ('ka', _('Georgian')),
+    )
+
     user = models.ForeignKey(User, unique=True)
     organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
@@ -106,6 +111,9 @@ class UserProfile(BaseModel):
     notification_self = models.BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
     notification_thread = models.BooleanField(verbose_name=_("Send whole comment thread"), default=False)
     digest_date_journal = models.DateTimeField(verbose_name=_('Last digest sending date'), blank=True, null=True)
+    # language locale settings
+    language = models.CharField(verbose_name=_('Language'), choices=LANGUAGE_CHOICES,
+                                max_length=2, blank=True, null=True)
 
     @property
     def bubble_info(self):

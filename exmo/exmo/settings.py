@@ -17,11 +17,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Django settings for exmo project.
-
 import os
 import sys
+
 import djcelery
+from django.core.urlresolvers import reverse_lazy
+
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -80,7 +81,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Localization
 TIME_ZONE = 'Europe/Moscow'
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'ru'
 LANGUAGES = (
     ('ru', 'Русский'),
     ('en', 'English'),
@@ -143,7 +144,7 @@ if not DEBUG:
 
 MIDDLEWARE_CLASSES += (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    'exmo2010.middleware.CustomLocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -233,14 +234,8 @@ if TEST:
     INSTALLED_APPS += ('django_nose',)
 
 # Admin tools
-ADMIN_TOOLS_INDEX_DASHBOARD = {
-    'core.site': 'dashboard.dashboard.CustomIndexDashboard',
-    'django.contrib.admin.site': 'admin_tools.dashboard.dashboards.DefaultIndexDashboard',
-}
-ADMIN_TOOLS_MENU = {
-    'core.site': 'dashboard.menu.CustomMenu',
-    'django.contrib.admin.site': 'admin_tools.menu.DefaultMenu',
-}
+ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_MENU = 'dashboard.menu.CustomMenu'
 ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
 
 # Customization
@@ -256,9 +251,9 @@ IMAP_PASSWORD = 'password'
 # Registration
 REGISTRATION_OPEN = True
 ACCOUNT_ACTIVATION_DAYS = 30
-LOGIN_URL = '/exmo2010/accounts/login/'
-LOGOUT_URL = '/exmo2010/accounts/logout/'
-LOGIN_REDIRECT_URL = '/exmo2010/'
+LOGIN_URL = reverse_lazy('exmo2010:auth_login')
+LOGOUT_URL = reverse_lazy('exmo2010:auth_logout')
+LOGIN_REDIRECT_URL = reverse_lazy('exmo2010:index')
 AUTH_PROFILE_MODULE = 'exmo2010.UserProfile'
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

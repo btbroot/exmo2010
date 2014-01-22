@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django.utils.crypto import salted_hmac
 from model_mommy import mommy
 
@@ -74,7 +73,6 @@ class PostCommentAccessTestCase(TestCase):
     # Scenario: SHOULD forbid unauthorized user to post score comments
 
     def setUp(self):
-        self.client = Client()
         self.site = Site.objects.get_current()
         self.content_type = ContentType.objects.get_for_model(Score)
 

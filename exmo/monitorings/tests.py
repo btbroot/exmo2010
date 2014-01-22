@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013, 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -17,20 +17,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import datetime
-import urllib
 from cStringIO import StringIO
 
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpRequest, Http404
 from django.test import TestCase
-from django.test.client import Client
 from django.utils import simplejson
 from django.utils.formats import get_format
-from django.utils.translation import ungettext
 from model_mommy import mommy
 from nose_parameterized import parameterized
 from BeautifulSoup import BeautifulSoup
@@ -44,7 +40,6 @@ class MonitoringEditAccessTestCase(TestCase):
     # SHOULD allow only expertA to edit monitoring
 
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring with organization and openness_expression
         #openness_expression = mommy.make(OpennessExpression, openness_expression)
         self.monitoring = mommy.make(Monitoring, name='initial', status=MONITORING_PREPARE)
@@ -68,7 +63,7 @@ class MonitoringEditAccessTestCase(TestCase):
 
     def test_anonymous_monitoring_edit_get(self):
         # WHEN anonymous user gets monitoring edit page
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         # THEN he is redirected to login page
         self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
 
@@ -118,7 +113,6 @@ class RatingsAverageTestCase(TestCase):
     # Ratings page should correctly display average openness
 
     def setUp(self):
-        self.client = Client()
         attrs = {a: False for a in 'complete accessible topical hypertext document image npa'.split()}
 
         # GIVEN published monitoring with zero weight parameter (hence zero openness)
@@ -166,7 +160,6 @@ class RatingTableColumnOptionsTestCase(TestCase):
     rt_fields_all = rt_fields_nonexpert + ['rt_representatives', 'rt_comment_quantity']
 
     def setUp(self):
-        self.client = Client()
         # GIVEN expert and regular nonexpert user
         self.expertA = User.objects.create_user('expert', 'usr@svobodainfo.org', 'password')
         self.expertA.profile.is_expertA = True
@@ -276,7 +269,6 @@ class RatingTableValuesTestCase(TestCase):
     # Scenario: Output to Rating Table
     def setUp(self):
         # GIVEN published monitoring
-        self.client = Client()
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         self.monitoring_id = self.monitoring.pk
         self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
@@ -318,8 +310,6 @@ class NameFilterRatingTestCase(TestCase):
     ''' If name filter given on rating page, should show only filtered orgs '''
 
     def setUp(self):
-        self.client = Client()
-
         # GIVEN monitoring with 2 organizations
         monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         monitoring_id = monitoring.pk
@@ -355,7 +345,6 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
     def setUp(self):
         # GIVEN User instance and two connected organizations to it
-        self.client = Client()
         monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         monitoring_id = monitoring.pk
         organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
@@ -449,7 +438,6 @@ class RatingActiveRepresentativesTestCase(TestCase):
 class HiddenMonitoringVisibilityTestCase(TestCase):
     def setUp(self):
         # GIVEN hidden and published monitoring
-        self.client = Client()
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
         self.monitoring_id = self.monitoring.pk
 
@@ -557,7 +545,6 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
 class EmptyMonitoringRatingTestCase(TestCase):
     def setUp(self):
         # GIVEN monitoring without tasks
-        self.client = Client()
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         self.monitoring_id = self.monitoring.pk
         self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
@@ -577,7 +564,6 @@ class EmptyMonitoringRatingTestCase(TestCase):
 class TestMonitoringExport(TestCase):
     # Scenario: Экспорт данных мониторинга
     def setUp(self):
-        self.client = Client()
         # GIVEN предопределены все code OPENNESS_EXPRESSION
         for code in OpennessExpression.OPENNESS_EXPRESSIONS:
             # AND для каждого code есть опубликованный мониторинг
@@ -700,7 +686,6 @@ class TestMonitoringExport(TestCase):
 class TestMonitoringExportApproved(TestCase):
     # Scenario: Экспорт данных мониторинга
     def setUp(self):
-        self.client = Client()
         self.monitoring = mommy.make(
             Monitoring,
             pk=999,
@@ -784,7 +769,6 @@ class OrgUserRatingAccessTestCase(TestCase):
         mommy.make(Task, organization=organization_unrelated, status=Task.TASK_APPROVED)
         mommy.make(Task, organization=organization_unrelated2, status=Task.TASK_APPROVED)
 
-        self.client = Client()
         # AND i am logged in as orguser
         self.client.login(username='orguser', password='password')
 
@@ -829,7 +813,6 @@ class RatingStatsTestCase(TestCase):
         mommy.make(Score, task=self.tasks[1], parameter=self.parameters[1],
                    found=1, complete=3, topical=3, accessible=1, hypertext=1, document=1, image=1)
 
-        self.client = Client()
         self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
 
     def test_rating_without_params(self):
@@ -864,7 +847,6 @@ class RatingStatsOrgCountTestCase(TestCase):
     # proprely count rated and total organizations
 
     def setUp(self):
-        self.client = Client()
         # GIVEN interaction monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND 2 organizations
@@ -906,7 +888,6 @@ class SuperuserRatingOrgsVisibilityTestCase(TestCase):
     # Scenario: superuser SHOULD see all organizations on rating page
 
     def setUp(self):
-        self.client = Client()
         # GIVEN interaction monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND 2 organizations connected to monitoring

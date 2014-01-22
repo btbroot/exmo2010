@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 #
 from django import forms
 from django.conf import settings
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from exmo2010.models import Monitoring, MONITORING_STATUS, MONITORING_PUBLISHED
 
@@ -29,10 +29,8 @@ class MonitoringForm(forms.ModelForm):
     Форма редактирования/создания мониторинга.
 
     """
-    status = forms.ChoiceField(choices=MONITORING_STATUS,
-                               label=_('Status'))
-    add_questionnaire = forms.BooleanField(required=False,
-                                           label=_('Add questionnaire'))
+    status = forms.ChoiceField(choices=MONITORING_STATUS, label=_('Status'))
+    add_questionnaire = forms.BooleanField(required=False, label=_('Add questionnaire'))
 
     def __init__(self, *args, **kwargs):
         super(MonitoringForm, self).__init__(*args, **kwargs)
@@ -103,4 +101,3 @@ class MonitoringFilterForm(forms.Form):
         required=False,
         empty_label=_('monitoring not select'),
     )
-

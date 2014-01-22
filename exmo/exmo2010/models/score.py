@@ -17,10 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from core.utils import clean_message
 
@@ -91,17 +90,17 @@ class Score(BaseModel):
         """
         if self.found:
             if self.parameter.complete and self.complete in ('', None):
-                raise ValidationError(_('Complete must be set'))
+                raise ValidationError(ugettext('Complete must be set'))
             if self.parameter.topical and self.topical in ('', None):
-                raise ValidationError(_('Topical must be set'))
+                raise ValidationError(ugettext('Topical must be set'))
             if self.parameter.accessible and self.accessible in ('', None):
-                raise ValidationError(_('Accessible must be set'))
+                raise ValidationError(ugettext('Accessible must be set'))
             if self.parameter.hypertext and self.hypertext in ('', None):
-                raise ValidationError(_('Hypertext must be set'))
+                raise ValidationError(ugettext('Hypertext must be set'))
             if self.parameter.document and self.document in ('', None):
-                raise ValidationError(_('Document must be set'))
+                raise ValidationError(ugettext('Document must be set'))
             if self.parameter.image and self.image in ('', None):
-                raise ValidationError(_('Image must be set'))
+                raise ValidationError(ugettext('Image must be set'))
         elif any((
                 self.complete != None,
                 self.topical != None,
@@ -115,7 +114,7 @@ class Score(BaseModel):
                 self.hypertextComment,
                 self.documentComment,
                 self.imageComment)):
-            raise ValidationError(_('Not found, but some excessive data persists'))
+            raise ValidationError(ugettext('Not found, but some excessive data persists'))
 
     def unique_error_message(self, model_class, unique_check):
         # A unique field
@@ -123,7 +122,7 @@ class Score(BaseModel):
             result = super(Score, self).unique_error_message(model_class, unique_check)
         # unique_together
         else:
-            result = _(u"A technical error of scores evaluation. To edit the score start from the task page.")
+            result = ugettext(u"A technical error of scores evaluation. To edit the score start from the task page.")
 
         return result
 

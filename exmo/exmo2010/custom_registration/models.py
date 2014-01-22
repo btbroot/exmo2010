@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,9 @@
 #
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
+from django.template import loader, Context
+from django.utils.translation import ugettext as _
 from livesettings import config_value
 from registration.models import RegistrationProfile
 
@@ -31,21 +33,31 @@ class CustomRegistrationProfile(RegistrationProfile):
 
     def send_activation_email(self, site):
         """
-        Sending emails with html or txt content.
+        Send activation email.
 
         """
-        ctx_dict = {'activation_key': self.activation_key,
-                    'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                    'site': site}
-        subject = render_to_string('registration/activation_email_subject.txt', ctx_dict)
-        subject = ''.join(subject.splitlines())
+        protocol = 'http'
+        subject = _('Registration on ') + unicode(site)
+        from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+        activation_url = "%s://%s%s" % (protocol, site, reverse('exmo2010:registration_activate', args=[self.activation_key]))
+        login_url = "%s://%s%s" % (protocol, site, settings.LOGIN_URL)
 
-        message_text = render_to_string('registration/activation_email.txt', ctx_dict)
-        message_html = render_to_string('registration/activation_email.html', ctx_dict)
+        context = {
+            'activation_url': activation_url,
+            'login_url': login_url,
+            'site': site,
+            'subject': subject,
+        }
 
-        msg = EmailMultiAlternatives(subject,
-                                     message_text,
-                                     config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                     [self.user.email])
-        msg.attach_alternative(message_html, "text/html")
+        t_txt = loader.get_template('registration/activation_email.txt')
+        t_html = loader.get_template('registration/activation_email.html')
+        c = Context(context)
+
+        msg = EmailMultiAlternatives(
+            subject,
+            t_txt.render(c),
+            from_email,
+            [self.user.email],
+        )
+        msg.attach_alternative(t_html.render(c), "text/html")
         msg.send()

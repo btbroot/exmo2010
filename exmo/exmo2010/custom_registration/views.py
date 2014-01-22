@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,27 +19,26 @@
 #
 import re
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.shortcuts import redirect
-from django.template import Context, Template
-from django.template.response import TemplateResponse
-from django.utils.http import base36_to_int, is_safe_url
-from django.core.urlresolvers import reverse
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
 from django.conf import settings
-from django.forms.fields import Field
-from django.views.csrf import CSRF_FAILURE_TEMPLATE
-from django.middleware.csrf import REASON_NO_CSRF_COOKIE
-from django.middleware.csrf import REASON_NO_REFERER
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as auth_login
 from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.views import password_reset_done as auth_password_reset_done
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import RequestSite, Site
+from django.core.urlresolvers import reverse
+from django.forms.fields import Field
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.middleware.csrf import REASON_NO_CSRF_COOKIE, REASON_NO_REFERER
+from django.shortcuts import redirect
+from django.template import Context, Template
+from django.template.response import TemplateResponse
+from django.utils.http import base36_to_int, is_safe_url
+from django.utils import translation
+from django.views.csrf import CSRF_FAILURE_TEMPLATE
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
 from registration.backends import get_backend
 
 from auth.forms import CustomPasswordResetForm
@@ -181,10 +180,6 @@ def login_test_cookie(request, template_name='registration/login.html',
     context = {}
 
     if request.method == "POST":
-
-        if request.user.is_authenticated():
-            return redirect('exmo2010:index')
-
         if not request.session.test_cookie_worked():
             return TemplateResponse(request, 'cookies.html')
 
@@ -205,6 +200,12 @@ def login_test_cookie(request, template_name='registration/login.html',
             else:
                 # Okay, security check complete. Log the user in.
                 auth_login(request, user)
+
+                # set language preference if does not exist
+                if not user.profile.language:
+                    language = translation.get_language_from_request(request, check_path=True)
+                    user.profile.language = language
+                    user.profile.save()
 
                 if request.session.test_cookie_worked():
                     request.session.delete_test_cookie()
@@ -300,7 +301,7 @@ def activate_redirect(request, backend,
                 return redirect(success_url)
 
         # если ключ правильный, но пользователь уже активирован
-        return redirect('exmo2010:auth_login')
+        return settings.LOGIN_URL
 
     # если ключ активации неправильный
     if extra_context is None:

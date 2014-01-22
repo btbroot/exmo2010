@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,14 +20,13 @@ import re
 import time
 from email.header import decode_header
 
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django.utils.crypto import salted_hmac
 from livesettings import config_value
 from model_mommy import mommy
@@ -42,7 +41,6 @@ class OrganizationEditAccessTestCase(TestCase):
     # SHOULD allow only expertA to edit organization
 
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring with organization
         self.monitoring = mommy.make(Monitoring)
         self.organization = mommy.make(
@@ -66,7 +64,7 @@ class OrganizationEditAccessTestCase(TestCase):
 
     def test_anonymous_org_edit_get(self):
         # WHEN anonymous user gets organization edit page
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
         # THEN he is redirected to login page
         self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
 
@@ -110,7 +108,6 @@ class OrganizationEditAccessTestCase(TestCase):
 class TestOrganizationsPage(TestCase):
     # Scenario: try to get organizations page by any users
     def setUp(self):
-        self.client = Client()
         # GIVEN published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND organization for this monitoring
@@ -133,9 +130,8 @@ class TestOrganizationsPage(TestCase):
     def test_anonymous_organizations_page_access(self):
         url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
         # WHEN anonymous user get organizations page
-        resp = self.client.get(url)
+        resp = self.client.get(url, follow=True)
         # THEN redirect to login page
-        self.assertEqual(resp.status_code, 302)
         self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + url)
 
     @parameterized.expand([
@@ -157,7 +153,6 @@ class TestOrganizationsPage(TestCase):
 class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
     # Scenario: send and check emails
     def setUp(self):
-        self.client = Client()
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
         # AND ten organizations connected to monitoring
@@ -223,7 +218,6 @@ class OrganizationRegisteredStatusTestCase(TestCase):
     # single representative SHOULD NOT affect each other.
 
     def setUp(self):
-        self.client = Client()
         site = Site.objects.get_current()
         content_type = ContentType.objects.get_for_model(Score)
 
@@ -265,7 +259,6 @@ class OrganizationActiveStatusTestCase(TestCase):
     # when representative posts comment to relevant task's score.
 
     def setUp(self):
-        self.client = Client()
         self.site = Site.objects.get_current()
         self.content_type = ContentType.objects.get_for_model(Score)
 

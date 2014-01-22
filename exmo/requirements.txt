@@ -35,6 +35,7 @@ django-ckeditor==3.6.2.1
 django-extensions==0.6
 django-keyedcache==1.4-6
 django-livesettings==1.4-12
+django-modeltranslation==0.7.3
 django-picklefield==0.3.0
 django-registration==0.8
 django-reversion==1.6.0
@@ -50,7 +51,6 @@ python-dateutil==1.5
 pytils==0.2.3
 pytz==2013b
 simplejson==2.6.2
-django-modeltranslation==0.7.3
 git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
@@ -60,4 +60,5 @@ hg+https://bitbucket.org/bsavelev/django-admin-tools
 django-nose==1.2
 nose-parameterized==0.3.1
 model_mommy==1.1
+mock==1.0.1
 selenium

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,39 +18,128 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n %}
 
 <div id="legend">
-<p class="c15"><span class="c20">Легенда цветовой </span><span class="c18">схемы </span><span class="c20">используемой для визуализации поставленных оценок</span></p>
-<table class="c6" cellpadding="0" cellspacing="0">
-<tbody>
-  <tr class="c5">
-    <td class="c28"><p class="c15"><span class="c4">Критерию присвоена высокая оценка.</span></p></td>
-    <td class="c3"><p class="c15"><span class="c11">Критерии: </span><span class="c4">Наличие, Html доступность, Файловая доступность, Графическая доступность &nbsp;- Оценка «1».</span></p><p class="c15"><span class="c11">Критерии: </span><span class="c4">Полнота, Актуальность, Навигационная доступность - &nbsp;Оценка «3» </span><span class="c11">.</span></p></td>
-  </tr>
-  <tr class="c5">
-    <td class="c1"><p class="c15"><span class="c4">Критерию присвоена средняя оценка.</span></p></td>
-    <td class="c3"><p class="c15"><span class="c11">Критерии: </span><span class="c4">Полнота, Актуальность, Навигационная доступность - &nbsp;Оценка «2».</span></p></td></tr><tr class="c5"><td class="c14"><p class="c15"><span class="c4">Критерию присвоена низкая &nbsp;оценка.</span></p></td><td class="c3"><p class="c15"><span class="c11">Критерии: </span><span class="c4">Полнота, Актуальность, Навигационная доступность - Оценка «1».</span></p></td></tr><tr class="c5"><td class="c24 c31"><p class="c15"><span class="c4">Информация на сайте не найдена</span></p></td><td class="c3"><p class="c15"><span class="c11">Критерии: </span><span class="c4">Наличие, Полнота, Актуальность, Навигационная доступность </span><span class="c11">- </span><span class="c4">Оценка «0»</span><span class="c11">, информация на сайте не найдена.</span></p><p class="c15"><span class="c11">Критерии: </span><span class="c4">Html доступность, Файловая доступность, Графическая доступность &nbsp;- Оценка «0»</span><span class="c11">, в указанных форматах информация на сайте не найдена.</span></p></td></tr><tr class="c5"><td class="c16 c34"><p class="c15"><span class="c4">Критерий не подлежит оценке (не релевантны</span><span class="c11">й</span><span class="c4">&nbsp;для данного параметра)</span></p></td><td class="c3"><p class="c15"><span class="c11">Критерии:
- Полнота, Актуальность, Навигационная доступность, Html доступность, 
-Файловая доступность, Графическая доступность &nbsp; &nbsp; &nbsp;не 
-подлежат оценки для данного параметра.</span></p>
-    </td>
-  </tr>
-</tbody>
-</table>
-<p class="c13 c12"><span class="c11"></span></p><p class="c13"><span class="c20">Таблица возможных вариантов оценок </span><span class="c18">критериев</span></p><table class="c6" cellpadding="0" cellspacing="0"><tbody><tr class="c5"><td class="c19"><p class="c0"><span class="c4 c8">Наименование параметра / Наименование критерия</span></p></td><td class="c26"><p class="c0"><span class="c4 c8">Наличие</span></p></td><td class="c22"><p class="c0"><span class="c4 c8">Полнота</span></p></td><td class="c23"><p class="c0"><span class="c4 c8">Актуальность</span></p></td><td class="c30"><p class="c0"><span class="c4 c8">Навигационная доступность</span></p></td><td class="c10"><p class="c0"><span class="c4 c8">Html доступность</span></p></td><td class="c10"><p class="c0"><span class="c4 c8">Файловая доступность</span></p></td><td class="c10"><p class="c0"><span class="c4 c8">Графическая доступность</span></p></td></tr><tr class="c5"><td class="c19" rowspan="4"><p class="c0 c12"><span class="c4 c8"></span></p><p class="c0"><span class="c4">Параметр 1</span></p></td><td class="c21" rowspan="4"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c22 c28"><p class="c0"><span class="c4">Оценка «3»</span></p></td><td class="c9"><p class="c0"><span class="c4">Оценка «3»</span></p></td><td class="c30 c28"><p class="c0"><span class="c4">Оценка «3»</span></p></td><td class="c10 c28"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c10 c28"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c10 c28"><p class="c0"><span class="c4">Оценка «1»</span></p></td></tr><tr class="c5"><td class="c22 c33"><p class="c0"><span class="c4">Оценка «2»</span></p></td><td class="c23 c33"><p class="c0"><span class="c4">Оценка «2»</span></p></td><td class="c30 c33"><p class="c0"><span class="c4">Оценка «2»</span></p></td><td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td><td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td><td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td></tr><tr class="c5"><td class="c22 c32"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c23 c32"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c29"><p class="c0"><span class="c4">Оценка «1»</span></p></td><td class="c10 c16" rowspan="2"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c10 c16" rowspan="2"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c10 c16" rowspan="2"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td></tr><tr class="c5"><td class="c17"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c23 c16"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c30 c16"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td></tr>
-  <tr class="c5">
-    <td class="c19" rowspan="2"><p class="c0"><span class="c4">Параметр 2</span></p></td>
-    <td class="c26 c24" rowspan="2"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c22 c24"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c23 c24"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c30 c24"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-    <td class="c7"><p class="c0"><span class="c4">Оценка «0»</span></p></td>
-  </tr>
-  <tr class="c5">
-    <td class="c17"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c16 c23"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c30 c16"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c10 c25"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c10 c25"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td><td class="c10 c25"><p class="c0"><span class="c4">Параметр по данному критерию не оценивается</span></p></td></tr></tbody></table><p class="c12 c27"><span class="c4"></span></p><p class="c27"><span class="c18">Более
- подробную информацию о методике проведения исследования и используемых 
-критериях оценки параметров Вы можете получить в <a href="http://www.svobodainfo.org/ru/node/902">Методике мониторинга</a>.
-</span></p>
+    <h3>{% trans 'Color legend' %}</h3>
+
+    <table id="table_color">
+        <tbody>
+            <tr>
+                <td class="first_column green">
+                    {% trans 'Criterion has a high value.' %}
+                </td>
+                <td>
+                    {% trans 'Criteria' %}: {% trans 'Found' %}, {% trans 'Hypertext' %}, {% trans 'Document' %}, {% trans 'Image' %} - {% trans 'Score' %} «1».<br />
+                    {% trans 'Criteria' %}: {% trans 'Complete' %}, {% trans 'Topical' %}, {% trans 'Accessible' %} - {% trans 'Score' %} «3».
+                </td>
+            </tr>
+            <tr>
+                <td class="first_column yellow">
+                    {% trans 'Criterion has a middle value.' %}
+                </td>
+                <td>
+                    {% trans 'Criteria' %}: {% trans 'Complete' %}, {% trans 'Topical' %}, {% trans 'Accessible' %} - {% trans 'Score' %} «2».
+                </td>
+            </tr>
+            <tr>
+                <td class="first_column orange">
+                    {% trans 'Criterion has a low value.' %}
+                </td>
+                <td>
+                    {% trans 'Criteria' %}: {% trans 'Complete' %}, {% trans 'Topical' %}, {% trans 'Accessible' %} - {% trans 'Score' %} «1».
+                </td>
+            </tr>
+            <tr>
+                <td class="first_column red">
+                    {% trans 'Information was not found on the website.' %}
+                </td>
+                <td>
+                    {% trans 'Criteria' %}: {% trans 'Found' %}, {% trans 'Complete' %}, {% trans 'Topical' %}, {% trans 'Accessible' %} - {% trans 'Score' %} «0», {% trans 'information was not found on the website' %}.<br />
+                    {% trans 'Criteria' %}: {% trans 'Hypertext' %}, {% trans 'Document' %}, {% trans 'Image' %} - {% trans 'Score' %} «0», {% trans 'information in the indicated formats was not found on the website' %}.
+                </td>
+            </tr>
+            <tr>
+                <td class="first_column gray">
+                    {% trans 'Criterion is not considered for the parameter.' %}
+                </td>
+                <td>
+                    {% trans 'Criteria' %}: {% trans 'Complete' %}, {% trans 'Topical' %}, {% trans 'Accessible' %}, {% trans 'Hypertext' %}, {% trans 'Document' %}, {% trans 'Image' %} {% trans 'are not considered for this parameter' %}.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>{% trans 'Table of the possible variants of criteria values' %}</h3>
+
+    <table id="table_variant">
+        <thead>
+            <tr>
+                <th>{% trans 'Parameter name' %} / {% trans 'Criterion name' %}</th>
+                <th>{% trans 'Found' %}</th>
+                <th>{% trans 'Complete' %}</th>
+                <th>{% trans 'Topical' %}</th>
+                <th>{% trans 'Accessible' %}</th>
+                <th>{% trans 'Hypertext' %}</th>
+                <th>{% trans 'Document' %}</th>
+                <th>{% trans 'Image' %}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="first_column" rowspan="4">{% trans 'Parameter' %} 1</td>
+                <td class="green" rowspan="4">{% trans 'Score' %} «1»</td>
+                <td class="green">{% trans 'Score' %} «3»</td>
+                <td class="green">{% trans 'Score' %} «3»</td>
+                <td class="green">{% trans 'Score' %} «3»</td>
+                <td class="green">{% trans 'Score' %} «1»</td>
+                <td class="green">{% trans 'Score' %} «1»</td>
+                <td class="green">{% trans 'Score' %} «1»</td>
+            </tr>
+            <tr>
+                <td class="yellow">{% trans 'Score' %} «2»</td>
+                <td class="yellow">{% trans 'Score' %} «2»</td>
+                <td class="yellow">{% trans 'Score' %} «2»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+            </tr>
+            <tr>
+                <td class="orange">{% trans 'Score' %} «1»</td>
+                <td class="orange">{% trans 'Score' %} «1»</td>
+                <td class="orange">{% trans 'Score' %} «1»</td>
+                <td class="gray" rowspan="2">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray" rowspan="2">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray" rowspan="2">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+            </tr>
+            <tr>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+            </tr>
+
+            <tr>
+                <td class="first_column" rowspan="2">{% trans 'Parameter' %} 2</td>
+                <td class="red" rowspan="2">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+                <td class="red">{% trans 'Score' %} «0»</td>
+            </tr>
+            <tr>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+                <td class="gray">{% trans 'Parameter is not evaluated on this criterion' %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>{% blocktrans with url="http://www.svobodainfo.org/ru/node/902" %}You can find more detailed information about research methods and criteria for evaluating of parameters in <a href="{{ url }}" target="_blank">Methodology of the Monitoring</a>.{% endblocktrans %}</h3>
+
 </div>

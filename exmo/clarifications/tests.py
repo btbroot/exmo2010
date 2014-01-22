@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,14 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.test.client import Client
 from django.test import TestCase
 from model_mommy import mommy
-
 from nose_parameterized import parameterized
 
 from exmo2010.models import (
@@ -36,7 +33,6 @@ class ClarificationActionsAccessTestCase(TestCase):
     # SHOULD allow only expertB to answer clarification
 
     def setUp(self):
-        self.client = Client()
         # GIVEN organization in INTERACTION monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
 
@@ -149,7 +145,6 @@ class ClarificationEmailNotifyTestCase(TestCase):
         self.score = mommy.make(Score, task=task, parameter__monitoring=monitoring)
 
         # AND i logged in as expertA
-        self.client = Client()
         self.client.login(username='expertA', password='password')
 
         # NOTE: pop message about task assignment to expertB1
@@ -170,5 +165,3 @@ class ClarificationEmailNotifyTestCase(TestCase):
 
         # AND both notifiee should get the email
         self.assertEqual(set(tuple(m.to) for m in mail.outbox), set([('expertB1@ya.ru',), ('expertA@ya.ru',)]))
-
-

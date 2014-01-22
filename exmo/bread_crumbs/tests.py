@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -19,14 +19,12 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import Client
 from django.utils.translation import ugettext_lazy as _
-
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from exmo2010.models import Monitoring, Organization, Task, MONITORING_PUBLISHED
 from core.utils import get_named_patterns
+from exmo2010.models import Monitoring, Organization, Task, MONITORING_PUBLISHED
 
 
 class ExmoBreadcrumbsTestCase(TestCase):
@@ -83,13 +81,12 @@ class ExmoBreadcrumbsTestCase(TestCase):
         ('score_list_by_task', expert_task_scores, True),
     ])
     def test_crumbs(self, urlname, expected_crumbs, is_expert=False):
-        client = Client()
         if is_expert:
             # WHEN i login as expertA
-            client.login(username='expertA', password='password')
+            self.client.login(username='expertA', password='password')
 
         # WHEN i get the page
-        res = client.get(self._reverse(urlname))
+        res = self.client.get(self._reverse(urlname))
         # THEN status code is 200
         self.assertEqual(res.status_code, 200)
 
