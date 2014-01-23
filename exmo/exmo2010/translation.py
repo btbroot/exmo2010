@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,16 +15,29 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib import admin
-from reversion.admin import VersionAdmin
 
-from exmo2010.models import Organization
+from modeltranslation.translator import translator, TranslationOptions
+
+from . import models
 
 
-class OrganizationAdmin(VersionAdmin):
-    list_display = ('pk', 'name', 'inv_code')
-    search_fields = ('name', 'inv_code')
-    list_filter = ('monitoring',)
-    readonly_fields = ('inv_code',)
+def register(model):
+    def wrapper(cls):
+        translator.register(model, cls)
+        return cls
+    return wrapper
 
-admin.site.register(Organization, OrganizationAdmin)
+
+@register(models.Monitoring)
+class MonitoringTranslationOptions(TranslationOptions):
+    fields = ('name',)
+
+
+@register(models.Parameter)
+class ParameterTranslationOptions(TranslationOptions):
+    fields = ('name', 'description')
+
+
+@register(models.Organization)
+class OrganizationTranslationOptions(TranslationOptions):
+    fields = ('name',)

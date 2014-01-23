@@ -89,6 +89,11 @@ LANGUAGES = (
 USE_L10N = True
 SITE_ID = 1
 USE_I18N = True
+
+# MODELTRANSLATION_FALLBACK_LANGUAGES will be used as fallback language if some model does not
+# have transalted field to other language.
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru')
+
 USE_ETAGS = True
 DATETIME_FORMAT = "Y-m-d, H:i"
 DATE_INPUT_FORMATS = (
@@ -206,6 +211,7 @@ INSTALLED_APPS = (
     'registration',
     'django_wysiwyg',
     'ckeditor',
+    'modeltranslation',
     # Local apps:
     'accounts',
     'auth',
@@ -279,3 +285,4 @@ if DEVEL or TEST:
     CACHE_PATH = mkdir_ifnotexist(path_to_project('../../cache'))
     MEDIA_ROOT = mkdir_ifnotexist(path_to_project('../../media'))
     STATIC_ROOT = mkdir_ifnotexist(path_to_project('../../static'))
+

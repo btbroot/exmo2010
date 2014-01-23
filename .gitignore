@@ -12,12 +12,16 @@ _build
 .idea
 *.swp
 *.kate-swp
+*.orig
 .kateproject
 .kateproject.d
 eml_mails
 .DS_Store
+.coverage
+.coveragerc
 
 /env
+cover/
 /venv
 /cache/*
 /static/*

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,8 +18,46 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin
+from reversion.admin import VersionAdmin
 
-from exmo2010.models import OpennessExpression
+from . import models
 
 
-admin.site.register(OpennessExpression)
+def register(model):
+    def wrapper(cls):
+        admin.site.register(model, cls)
+        return cls
+    return wrapper
+
+
+admin.site.register(models.OpennessExpression)
+
+
+@register(models.Monitoring)
+class MonitoringAdmin(TranslationAdmin, VersionAdmin):
+    list_display = ('name',)
+
+
+@register(models.MonitoringInteractActivity)
+class MonitoringInteractActivityAdmin(admin.ModelAdmin):
+    search_fields = ('user__username', )
+    list_filter = ('monitoring',)
+
+
+@register(models.Organization)
+class OrganizationAdmin(TranslationAdmin, VersionAdmin):
+    list_display = ('pk', 'name', 'inv_code')
+    search_fields = ('name', 'inv_code')
+    list_filter = ('monitoring',)
+    readonly_fields = ('inv_code',)
+
+
+@register(models.Parameter)
+class ParameterAdmin(TabbedTranslationAdmin, VersionAdmin):
+    class Media:
+        css = {"all": ("exmo2010/css/selector.css",)}
+
+    raw_id_fields = ('exclude',)
+    list_display = search_fields = ('code', 'name',)
+    list_filter = ('monitoring', 'npa')

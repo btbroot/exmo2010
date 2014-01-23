@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -84,7 +84,7 @@ class Monitoring(BaseModel):
         MONITORING_PUBLISHED: _('Monitoring publish date'),
     }
 
-    name = models.CharField(max_length=255, default="-", verbose_name=_('name'))
+    name = models.CharField(max_length=255, verbose_name=_('name'), blank=True)
     status = models.PositiveIntegerField(choices=MONITORING_STATUS, default=MONITORING_PREPARE, verbose_name=_('status'))
     openness_expression = models.ForeignKey("OpennessExpression", default=8, verbose_name=_('openness expression'))
     map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))

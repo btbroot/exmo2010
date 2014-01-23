@@ -1,7 +1,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -50,6 +50,7 @@ python-dateutil==1.5
 pytils==0.2.3
 pytz==2013b
 simplejson==2.6.2
+django-modeltranslation==0.7.3
 git+https://github.com/bsavelev/django403.git
 git+https://github.com/bsavelev/django-tagging.git
 git+https://github.com/bsavelev/django-tagging-autocomplete.git
