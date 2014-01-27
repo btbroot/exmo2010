@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -181,3 +181,53 @@ class PrintfullPageTestCase(BaseSeleniumTestCase):
         # THEN texts should be existed
         self.assertEqual(found_comment, self.score.foundComment)
         self.assertEqual(image_comment, self.score.imageComment)
+
+
+class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):
+    # Scenario: on task page rating place SHOULD be visible and requested by ajax only if task is approved
+
+    def setUp(self):
+        # GIVEN expert A account
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND expert B account
+        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        self.expertB.profile.is_expertB = True
+        # AND INTERACTION monitoring with two organizations
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        organization_1 = mommy.make(Organization, monitoring=monitoring, name='org1')
+        organization_2 = mommy.make(Organization, monitoring=monitoring, name='org2')
+        # AND one opened task
+        self.opened_task = mommy.make(
+            Task,
+            organization=organization_1,
+            user=self.expertB,
+            status=Task.TASK_OPEN,
+        )
+        # AND one approved task
+        self.approved_task = mommy.make(
+            Task,
+            organization=organization_2,
+            user=self.expertB,
+            status=Task.TASK_APPROVED,
+        )
+        # AND parameter with positive weight
+        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
+        # AND score with zero initial values for parameter attributes
+        mommy.make(Score, task=self.approved_task, parameter=parameter, found=0)
+        # AND I am logged in as expert A
+        self.login('expertA', 'password')
+
+    def test_opened_task_rating_hidden(self):
+        url = reverse('exmo2010:score_list_by_task', args=(self.opened_task.pk,))
+        # WHEN I am on score page for opened task
+        self.get(url)
+        # THEN rating place should be hidden
+        self.assertHidden('#place_all')
+
+    def test_approved_task_rating_visible(self):
+        url = reverse('exmo2010:score_list_by_task', args=(self.approved_task.pk,))
+        # WHEN I am on score page for approved task
+        self.get(url)
+        # THEN rating place should be visible
+        self.assertVisible('#place_all')

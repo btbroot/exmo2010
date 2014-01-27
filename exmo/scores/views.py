@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +24,7 @@ import reversion
 from django.contrib.auth.decorators import login_required
 from django.contrib.comments import signals
 from django.contrib.comments.views.comments import post_comment
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Max
 from django.dispatch import Signal
@@ -492,6 +492,7 @@ def score_list_by_task(request, task_pk, print_report_type=None):
         else:
             show_link = True
         extra_context.update({
+            'view_openness_perm': user.has_perm('exmo2010.view_openness', task),
             'score_interact_dict': score_interact_dict,
             'parameters_npa': parameters_npa,
             'parameters_other': parameters_other,
@@ -609,18 +610,21 @@ def ratingUpdate(request):
         if task_id:
             task = get_object_or_404(Task, pk=task_id)
 
-            if task.organization.monitoring.has_npa:
-                rating_types = ['all', 'other', 'npa']
+            if request.user.has_perm('exmo2010.view_openness', task) and task.approved:
+                if task.organization.monitoring.has_npa:
+                    rating_types = ['all', 'other', 'npa']
+                else:
+                    rating_types = ['all']
+
+                result = {}
+                for rating_type in rating_types:
+                    for t in task.organization.monitoring.rating(rating_type=rating_type):
+                        if t.pk == task.pk:
+                            result['place_' + rating_type] = t.place
+                            break
+
+                return JSONResponse(result)
             else:
-                rating_types = ['all']
+                raise PermissionDenied
 
-            result = {}
-            for rating_type in rating_types:
-                for t in task.organization.monitoring.rating(rating_type=rating_type):
-                    if t.pk == task.pk:
-                        result['place_' + rating_type] = t.place
-                        break
-
-            return JSONResponse(result)
-    else:
-        raise Http404
+    raise Http404

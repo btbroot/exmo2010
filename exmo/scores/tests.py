@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -226,3 +226,102 @@ class AjaxGetRatingPlacesTestCase(TestCase):
         self.assertEqual(result['place_npa'], 1)
         # AND place by recommendatory parameters should be 2
         self.assertEqual(result['place_other'], 2)
+
+
+class AjaxOpennessAccessTestCase(TestCase):
+    # Scenario: SHOULD allow to get rating place via ajax only if task is approved
+    # AND forbid access for expertB and regular user if monitoring is not published
+
+    def setUp(self):
+        self.client = Client()
+        # GIVEN interaction monitoring
+        monitoring1 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND published monitoring
+        monitoring2 = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND there are 3 organizations in interaction monitoring
+        org1 = mommy.make(Organization, monitoring=monitoring1, name='org1')
+        org2 = mommy.make(Organization, monitoring=monitoring1, name='org2')
+        org3 = mommy.make(Organization, monitoring=monitoring1, name='org3')
+        # AND there are 3 organizations in published monitoring
+        org4 = mommy.make(Organization, monitoring=monitoring2, name='org4')
+        org5 = mommy.make(Organization, monitoring=monitoring2, name='org5')
+        org6 = mommy.make(Organization, monitoring=monitoring2, name='org6')
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND expert B without tasks (expertB_free)
+        expertB_free = User.objects.create_user('expertB_free', 'usr@svobodainfo.org', 'password')
+        expertB_free.profile.is_expertB = True
+        # AND expert B with 3 tasks in each monitoring
+        expertB_engaged = User.objects.create_user('expertB_engaged', 'usr@svobodainfo.org', 'password')
+        expertB_engaged.profile.is_expertB = True
+        self.task_approved_interaction = mommy.make(
+            Task, organization=org1, user=expertB_engaged, status=Task.TASK_APPROVED)
+        self.task_open_interaction = mommy.make(
+            Task, organization=org2, user=expertB_engaged, status=Task.TASK_OPEN)
+        self.task_closed_interaction = mommy.make(
+            Task, organization=org3, user=expertB_engaged, status=Task.TASK_CLOSED)
+        self.task_approved_published = mommy.make(
+            Task, organization=org4, user=expertB_engaged, status=Task.TASK_APPROVED)
+        self.task_open_published = mommy.make(
+            Task, organization=org5, user=expertB_engaged, status=Task.TASK_OPEN)
+        self.task_closed_published = mommy.make(
+            Task, organization=org6, user=expertB_engaged, status=Task.TASK_CLOSED)
+        # AND org repersentative
+        org_user = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
+        org_user.profile.organization = [org1, org2]
+        # AND just registered user
+        User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+
+        self.url = reverse('exmo2010:ratingUpdate')
+
+    @parameterized.expand([
+        ('expertA', 200),
+        ('org_user', 200),
+        ('user', 403),
+        ('expertB_free', 403),
+        ('expertB_engaged', 403),
+    ])
+    def test_interaction_monitoring_and_approved_task_access(self, username, response_code):
+        # WHEN I logged in
+        self.client.login(username=username, password='password')
+        # AND I sent ajax-request
+        response = self.client.get(self.url, {'task_id': self.task_approved_interaction.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # THEN response should have expected status_code
+        self.assertEqual(response.status_code, response_code)
+
+    @parameterized.expand([
+        ('expertA',),
+        ('org_user',),
+        ('user',),
+        ('expertB_free',),
+        ('expertB_engaged',),
+    ])
+    def test_published_approved_task_allow_all(self, username):
+        # WHEN I logged in
+        self.client.login(username=username, password='password')
+        # AND I sent ajax-request
+        response = self.client.get(self.url, {'task_id': self.task_approved_published.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # THEN response should have expected status_code
+        self.assertEqual(response.status_code, 200)
+
+    @parameterized.expand([
+        ('expertA',),
+        ('org_user',),
+        ('user',),
+        ('expertB_free',),
+        ('expertB_engaged',),
+    ])
+    def test_unapproved_task_forbid_all(self, username):
+        # WHEN I logged in
+        self.client.login(username=username, password='password')
+        # AND I sent ajax-request to not approved tasks
+        for task_id in [
+            self.task_open_published.pk,
+            self.task_open_interaction.pk,
+            self.task_closed_interaction.pk,
+            self.task_closed_published.pk
+        ]:
+            response = self.client.get(self.url, {'task_id': task_id}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            # THEN response should have expected status_code
+            self.assertEqual(response.status_code, 403)

@@ -1,7 +1,7 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -17,19 +17,17 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    $.ajaxSetup({
-        traditional: true
-    });
-
-    $.getJSON("/exmo2010/score/rating_update", {task_id: $('#place_all').data('task_id')})
-        .success(function(data) {
+    // insert loader image
+    $('<span/>', {'class': 'rating-ajax'}).insertBefore( '.get-rating' );
+    // get rating places
+    $.getJSON("/exmo2010/score/rating_update", {task_id: $('#task_id').data('task_id')})
+        .done(function(data) {
             $.each(data, function(key, val) {
-                var $key = '#' + key;
                 if (val) {
-                    $($key).show();
-                    $($key + '_span').text(val + ' ' + gettext('place'));
+                    $('.get-rating').show();
+                    $('#' + key).text(val + ' ' + gettext('place'));
                 }
-                $($key + '_img').remove();
             });
+            $('.rating-ajax').remove();
         });
 });
