@@ -17,21 +17,18 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    $.ajaxSetup({
-        traditional: true
-    });
-
     var url = $("a#ajax_url").attr("href");
-
-    $.getJSON(url, {task_id: $('#place_all').data('task_id')})
-        .success(function(data) {
+    // insert loader image
+    $('<span/>', {'class': 'rating-ajax'}).insertBefore( '.get-rating' );
+    // get rating places
+    $.getJSON(url, {task_id: $('#task_id').data('task_id')})
+        .done(function(data) {
             $.each(data, function(key, val) {
-                var $key = '#' + key;
                 if (val) {
-                    $($key).show();
-                    $($key + '_span').text(val + ' ' + gettext('place'));
+                    $('.get-rating').show();
+                    $('#' + key).text(val + ' ' + gettext('place'));
                 }
-                $($key + '_img').remove();
             });
+            $('.rating-ajax').remove();
         });
 });

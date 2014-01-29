@@ -30,7 +30,9 @@
 
 {% block extrahead %}
     {{ block.super }}
-    <script src="{{ STATIC_URL }}exmo2010/js/scores.js"></script>
+    {% if view_openness_perm and task.approved %}
+        <script src="{{ STATIC_URL }}js/scores.js"></script>
+    {% endif %}
 {% endblock %}
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
@@ -66,17 +68,15 @@
 <h2>
     <a href="{{task.organization.url}}">{{task.organization.name}}</a><br />
 
-    {% if request.user.userprofile.is_expertB and not request.user.is_superuser and not monitoring.is_published %}
-    {% else %}
+    {% if view_openness_perm %}
         {# empty link used for ajax-request in scores.js #}
         <a href="{% url 'exmo2010:rating_update' %}" id="ajax_url"></a>
-
-        {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|default_if_none:0|floatformat:3 }}%
-        <span id="place_all_img" class="rating-ajax"></span>
-        <span class="get-rating" id="place_all" data-task_id="{{ task.id }}" style="display: none;">
+        
+        {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|floatformat:3 }}%
+        <span class="get-rating hidden" id="task_id" data-task_id="{{ task.id }}">
             &nbsp;(
             {% if show_link %}<a target="_blank" href="{{ monitoring_rating }}">{% endif %}
-                <span id="place_all_span"></span>
+                <span id="place_all"></span>
             {% if show_link %}</a>{% endif %}
             )
         </span>
@@ -85,22 +85,20 @@
             <br />
 
             {% trans 'Openness by normative parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
-            <span id="place_npa_img" class="rating-ajax"></span>
-            <span class="get-rating" id="place_npa" style="display: none;">
+            <span class="get-rating hidden">
                 &nbsp;(
                 {% if show_link %}<a target="_blank" href="{{ monitoring_rating }}?type=npa">{% endif %}
-                    <span id="place_npa_span"></span>
+                    <span id="place_npa"></span>
                 {% if show_link %}</a>{% endif %}
                 )
             </span>
             <br />
 
             {% trans 'Openness by recommendatory parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
-            <span id="place_other_img" class="rating-ajax"></span>
-            <span class="get-rating" id="place_other" style="display: none;">
+            <span class="get-rating hidden">
                 &nbsp;(
                 {% if show_link %}<a target="_blank" href="{{ monitoring_rating }}?type=other">{% endif %}
-                    <span id="place_other_span"></span>
+                    <span id="place_other"></span>
                 {% if show_link %}</a>{% endif %}
                 )
             </span>

@@ -303,8 +303,9 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         res = json.loads(res.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         self.assertEqual(res['status_display'], open_status_display)
-        # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+        # AND new permitted actions should be in the ajax response
+        # ('close_task', 'fill_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
 
     def test_allow_approve_complete_task_action(self):
         # WHEN I try to approve closed complete Task
@@ -316,8 +317,9 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         res = json.loads(res.content)
         approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
         self.assertEqual(res['status_display'], approved_status_display)
-        # AND new permitted actions should be in the ajax response ('open_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['open_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+        # AND new permitted actions should be in the ajax response
+        # ('open_task', 'fill_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['open_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
 
     def test_forbid_approve_open_task_action(self):
         # WHEN I try to approve opened Task
@@ -330,8 +332,9 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
         self.assertTrue(res_pattern.match(res['status_display']))
-        # AND ajax response  permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+        # AND ajax response  permitted actions should be same as before
+        # ('close_task', 'fill_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
 
 
 class TaskDeletionTestCase(TestCase):
