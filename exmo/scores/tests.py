@@ -30,7 +30,7 @@ from exmo2010.models import *
 from scores.forms import ScoreFormWithComment
 
 
-class ScoreAddccessTestCase(TestCase):
+class ScoreAddAccessTestCase(TestCase):
     # only expertB assigned to score's task SHOULD be allowed to create score
 
     def setUp(self):

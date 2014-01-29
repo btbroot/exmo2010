@@ -23,8 +23,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from core.sql import sql_monitoring_scores
+from core.sql import iter_i18n_fields_sql, sql_monitoring_scores
 from .base import BaseModel
+from .organization import Organization
+from .parameter import Parameter
 from .questionnaire import Questionnaire, QAnswer
 
 
@@ -229,11 +231,15 @@ class Monitoring(BaseModel):
     def sql_scores(self):
         sql_openness_initial = self.openness_expression.get_sql_openness(initial=True)
         sql_openness = self.openness_expression.get_sql_openness()
+        sql_organization_languages = ', '.join(iter_i18n_fields_sql(Organization, 'name'))
+        sql_parameter_languages = ', '.join(iter_i18n_fields_sql(Parameter, 'name'))
 
         result = sql_monitoring_scores % {
             'sql_monitoring': self.openness_expression.sql_monitoring(),
             'sql_openness_initial': sql_openness_initial,
             'sql_openness': sql_openness,
+            'sql_organization_languages': sql_organization_languages,
+            'sql_parameter_languages': sql_parameter_languages,
             'monitoring_pk': self.pk,
         }
 

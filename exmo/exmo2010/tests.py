@@ -41,24 +41,9 @@ from exmo2010.models import (
 class TestMonitoring(TestCase):
     # Scenario: monitoring model test
 
-    @parameterized.expand([(code,) for code in OpennessExpression.OPENNESS_EXPRESSIONS])
-    def test_sql_scores_valid(self, code):
-        # WHEN openness code in allowable range
-        monitoring = mommy.make(Monitoring, openness_expression__code=code)
-        openness = monitoring.openness_expression
-        expected_result = sql_monitoring_scores % {
-            'sql_monitoring': openness.sql_monitoring(),
-            'sql_openness_initial': openness.get_sql_openness(initial=True),
-            'sql_openness': openness.get_sql_openness(),
-            'monitoring_pk': monitoring.pk,
-        }
-        # THEN function return expected result
-        self.assertEqual(monitoring.sql_scores(), expected_result)
-
-    @parameterized.expand([(2,)])
-    def test_sql_scores_invalid(self, code):
+    def test_sql_scores_invalid(self):
         # WHEN openness code in disallowable range
-        monitoring = mommy.make(Monitoring, openness_expression__code=code)
+        monitoring = mommy.make(Monitoring, openness_expression__code=2)
         # THEN raises exception
         self.assertRaises(ValidationError, monitoring.sql_scores)
 
@@ -442,6 +427,8 @@ class CustomLocaleMiddlewareTest(TestCase):
         self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
         # AND request object for authentication user
         self.request = MagicMock()
+        self.request.get_host = lambda: 'test'
+        self.request.is_secure = lambda: False
         self.request.META = {}
         self.request.session = {
             '_auth_user_id': self.user.id,
@@ -479,4 +466,7 @@ class CustomLocaleMiddlewareTest(TestCase):
         self.user.profile.language = 'ru'
         self.user.profile.save()
         # THEN middleware should return HttpResponseRedirect-object
-        self.assertIsInstance(self.middleware.process_request(self.request), HttpResponseRedirect)
+        response = self.middleware.process_request(self.request)
+        self.assertIsInstance(response, HttpResponseRedirect)
+        # AND response should have expected url to redirect
+        self.assertEqual(response['Location'], 'http://test/ru/')

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.utils.translation import get_language
+from modeltranslation.utils import resolution_order
+
 
 # Calculate Openness for each score (with openness code = 1)
 sql_score_openness_v1 = """
@@ -392,11 +395,12 @@ SELECT
     %(sql_monitoring)s,
     `exmo2010_parameter`.`weight`,
     `exmo2010_parameter`.`name` as parameter_name,
+    COALESCE(%(sql_parameter_languages)s) as parameter_name,
     `exmo2010_parameter`.`id` as parameter_id,
     `exmo2010_organization`.`id` as organization_id,
     `exmo2010_organization`.`url`,
     `exmo2010_parameter`.`npa` as parameter_npa,
-    `exmo2010_organization`.`name` as organization_name,
+    COALESCE(%(sql_organization_languages)s) as organization_name,
     `exmo2010_task`.`status` as task_status,
     (%(sql_openness_initial)s) as openness_initial,
     (%(sql_openness)s) as task_openness
@@ -416,3 +420,9 @@ WHERE (
     )
 ORDER BY task_openness DESC, organization_name ASC
 """
+
+
+def iter_i18n_fields_sql(model, field_name):
+    table = model._meta.db_table
+    for lang in resolution_order(get_language()):
+        yield "NULLIF(`%(table)s`.`%(field_name)s_%(lang)s`, '')" % locals()

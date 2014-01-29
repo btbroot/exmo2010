@@ -81,7 +81,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Localization
 TIME_ZONE = 'Europe/Moscow'
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'en'
 LANGUAGES = (
     ('ru', 'Русский'),
     ('en', 'English'),

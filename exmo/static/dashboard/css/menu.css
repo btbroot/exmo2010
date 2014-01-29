@@ -67,7 +67,7 @@
     background: url(../img/my_logo_ru.png) no-repeat;
 }
 
-#header ul#navigation-menu li.brand a.ru:hover {
+#header ul#navigation-menu li.brand a.logo_ru:hover {
     background-position: 0 -35px;
 }
 
