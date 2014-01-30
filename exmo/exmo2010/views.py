@@ -22,17 +22,17 @@ from urllib import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.template import Context, loader
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
-from django.utils import dateformat
+from django.utils import dateformat, translation
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, DetailView, FormView
 from django.views.i18n import set_language
 from livesettings import config_value
 
@@ -100,26 +100,37 @@ def _send_feedback_mail(email_to, email_from, comment, t_txt, t_html, user=None)
     letter.send()
 
 
-class HelpView(TemplateView):
-    template_name = 'exmo2010/help.html'
+class StaticPageView(DetailView):
+    template_name = 'exmo2010/static_page.html'
 
-    def get_context_data(self, **kwargs):
-        current_site = Site.objects.get_current()
-        protocol = self.request.is_secure() and 'https' or 'http'
+    def get_object(self):
+        """ Create static page if it does not exist yet. Fill in default content_en if empty. """
+        page, created = StaticPage.objects.get_or_create(pk=self.static_page_pk)
+        if not page.content_en:
+            with translation.override('en'):
+                page.content_en = render_to_string(self.default_content, self.get_default_context())
+            page.save()
+        return page
 
-        registration_url = '%s://%s%s' % (
-            protocol,
-            current_site.domain,
-            reverse('exmo2010:registration_register')
-        )
+    def get_default_context(self):
+        """ Override this method to pass custom context when default content is rendered. """
+        return {}
+
+
+class HelpView(StaticPageView):
+    static_page_pk = 'help'
+    default_content = 'exmo2010/static_pages/help.html'
+
+    def get_default_context(self):
         return {
             'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
-            'registration_url': registration_url,
+            'registration_url': self.request.build_absolute_uri(reverse('exmo2010:registration_register'))
         }
 
 
-class AboutView(TemplateView):
-    template_name = 'exmo2010/about.html'
+class AboutView(StaticPageView):
+    static_page_pk = 'about'
+    default_content = 'exmo2010/static_pages/about.html'
 
 
 class OpenDataView(TemplateView):

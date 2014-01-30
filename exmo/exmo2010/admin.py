@@ -55,3 +55,8 @@ class ParameterAdmin(TabbedTranslationAdmin, VersionAdmin):
     raw_id_fields = ('exclude',)
     list_display = search_fields = ('code', 'name',)
     list_filter = ('monitoring', 'npa')
+
+
+@register(models.StaticPage)
+class StaticPageAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
+    list_display = search_fields = ('id', 'description')

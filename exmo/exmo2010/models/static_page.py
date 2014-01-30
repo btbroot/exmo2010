@@ -15,34 +15,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ckeditor.fields import RichTextField
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
-from modeltranslation.translator import translator, TranslationOptions
-
-from . import models
-
-
-def register(model):
-    def wrapper(cls):
-        translator.register(model, cls)
-        return cls
-    return wrapper
+from .base import BaseModel
 
 
-@register(models.Monitoring)
-class MonitoringTranslationOptions(TranslationOptions):
-    fields = ('name',)
+class StaticPage(BaseModel):
+    """
+    Model for simple web pages editable by staff. View and url should be added statically.
+    StaticPage is identified by its name as primary key, for example: "help", "about".
+    """
+    id = models.CharField(max_length=255, primary_key=True, verbose_name=_('identifier'))
+    description = models.TextField(default='', blank=True, verbose_name=_('description'))
+    content = RichTextField(default='', blank=True, verbose_name=_('content'))
 
-
-@register(models.Parameter)
-class ParameterTranslationOptions(TranslationOptions):
-    fields = ('name', 'description')
-
-
-@register(models.Organization)
-class OrganizationTranslationOptions(TranslationOptions):
-    fields = ('name',)
-
-
-@register(models.StaticPage)
-class StaticPageTranslationOptions(TranslationOptions):
-    fields = ('description', 'content')
+    def __unicode__(self):
+        return u'%s (%s)' % (self.id, self.description)

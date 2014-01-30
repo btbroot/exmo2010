@@ -93,7 +93,7 @@ USE_I18N = True
 
 # MODELTRANSLATION_FALLBACK_LANGUAGES will be used as fallback language if some model does not
 # have transalted field to other language.
-MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru')
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka')
 
 USE_ETAGS = True
 DATETIME_FORMAT = "Y-m-d, H:i"
@@ -143,6 +143,7 @@ if not DEBUG:
     )
 
 MIDDLEWARE_CLASSES += (
+    'exmo2010.middleware.StaticPagesInitMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'exmo2010.middleware.CustomLocaleMiddleware',
     'django.middleware.common.CommonMiddleware',

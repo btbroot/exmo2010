@@ -16,10 +16,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import auth
+from django.contrib.sites.models import Site
+from django.core.exceptions import MiddlewareNotUsed
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.middleware.locale import LocaleMiddleware
+from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.encoding import iri_to_uri
+from livesettings import config_value
 
 
 class CustomLocaleMiddleware(LocaleMiddleware):
@@ -42,3 +47,37 @@ class CustomLocaleMiddleware(LocaleMiddleware):
 
         translation.activate(language)
         request.LANGUAGE_CODE = translation.get_language()
+
+
+class StaticPagesInitMiddleware(object):
+    """
+    TODO: Remove this after upgrade to Django 1.7, use new Apps framework for initialization.
+
+    This middleware is a hacky way to initialize default StaticPage model instances on
+    server startup. It will create non-existent pages, and if content is empty, fill in
+    default english content, rendering default templates.
+    This middleware will remove itself from the stack, raising MiddlewareNotUsed after init.
+    """
+    def __init__(*args, **kwargs):
+        from . import models
+
+        registration_url = 'http://%s%s' % (
+            Site.objects.get_current().domain,
+            reverse('exmo2010:registration_register'))
+        context = {
+            'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
+            'registration_url': registration_url,
+        }
+
+        pages = {
+            'help': 'exmo2010/static_pages/help.html',
+            'about': 'exmo2010/static_pages/about.html'}
+
+        for page_id, template in pages.items():
+            page, created = models.StaticPage.objects.get_or_create(id=page_id)
+            if not page.content_en:
+                with translation.override('en'):
+                    page.content_en = render_to_string(template, context)
+                page.save()
+
+        raise MiddlewareNotUsed  # remove this middleware from stack
