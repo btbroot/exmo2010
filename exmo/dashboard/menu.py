@@ -56,20 +56,20 @@ class CustomMenu(Menu):
         self.children = [
             items.MenuItem(_('Main'), reverse('exmo2010:index')),
         ]
-        request = context['request']
+        user = context['request'].user
 
-        if request.user.is_superuser:
+        if user.is_superuser or user.is_staff:
             self.children.append(items.MenuItem(_('Admin'), reverse('admin:index')))
 
-        if request.user.is_authenticated() and request.user.profile.is_organization:
-            task_id = request.user.profile.get_task_review_id()
+        if user.is_authenticated() and user.profile.is_organization:
+            task_id = user.profile.get_task_review_id()
             if task_id is not None:
                 self.children += [
                     items.MenuItem(_('Scores of my organisation'),
                                    reverse('exmo2010:score_list_by_task', args=[task_id])),
                 ]
 
-        if request.user.is_active and request.user.profile.is_expertB and not request.user.profile.is_expertA:
+        if user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
             communication_children = [
                 items.MenuItem(_('Comments'), reverse('exmo2010:comment_list')),
                 items.MenuItem(_('Clarifications'), reverse('exmo2010:clarification_list')),
@@ -83,8 +83,8 @@ class CustomMenu(Menu):
         self.children.append(items.MenuItem(_('Statistics'), reverse('exmo2010:monitoring_report')))
         self.children.append(items.MenuItem(_('Help'), reverse('exmo2010:help')))
 
-        if request.user.is_authenticated():
-            self.auth.append(items.MenuItem(request.user.userprofile.legal_name,
+        if user.is_authenticated():
+            self.auth.append(items.MenuItem(user.userprofile.legal_name,
                                             template='user_dashboard/item_userarea.html'))
             self.auth.append(items.MenuItem(_('Preferences'), reverse('exmo2010:settings'), css_classes=['pref-icon']))
             self.auth.append(items.MenuItem(_('Log out'), settings.LOGOUT_URL, css_classes=['logout-icon']))

@@ -225,7 +225,6 @@ class AjaxOpennessAccessTestCase(TestCase):
     # AND forbid access for expertB and regular user if monitoring is not published
 
     def setUp(self):
-        self.client = Client()
         # GIVEN interaction monitoring
         monitoring1 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND published monitoring
@@ -265,7 +264,7 @@ class AjaxOpennessAccessTestCase(TestCase):
         # AND just registered user
         User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
 
-        self.url = reverse('exmo2010:ratingUpdate')
+        self.url = reverse('exmo2010:rating_update')
 
     @parameterized.expand([
         ('expertA', 200),

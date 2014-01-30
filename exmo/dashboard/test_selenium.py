@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ from datetime import date
 from urlparse import urlparse
 
 from django.contrib.auth.models import Group, User
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -50,18 +50,18 @@ MSG = {
 }
 
 URLS = {
-    'index': reverse('exmo2010:index'),
-    'login': reverse('exmo2010:auth_login'),
-    'logout': reverse('exmo2010:auth_logout'),
-    'registration': reverse('exmo2010:registration_register'),
-    'settings': reverse('exmo2010:settings'),
-    'admin': reverse('admin:index'),
-    'comment': reverse('exmo2010:comment_list'),
-    'clarification': reverse('exmo2010:clarification_list'),
-    'claim': reverse('exmo2010:claim_list'),
-    'ratings': reverse('exmo2010:ratings'),
-    'statistics': reverse('exmo2010:monitoring_report'),
-    'help': reverse('exmo2010:help'),
+    'index': reverse_lazy('exmo2010:index'),
+    'login': reverse_lazy('exmo2010:auth_login'),
+    'logout': reverse_lazy('exmo2010:auth_logout'),
+    'registration': reverse_lazy('exmo2010:registration_register'),
+    'settings': reverse_lazy('exmo2010:settings'),
+    'admin': reverse_lazy('admin:index'),
+    'comment': reverse_lazy('exmo2010:comment_list'),
+    'clarification': reverse_lazy('exmo2010:clarification_list'),
+    'claim': reverse_lazy('exmo2010:claim_list'),
+    'ratings': reverse_lazy('exmo2010:ratings'),
+    'statistics': reverse_lazy('exmo2010:monitoring_report'),
+    'help': reverse_lazy('exmo2010:help'),
 }
 
 
@@ -69,7 +69,7 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
     # Scenario: Checking items in header menu
 
     def setUp(self):
-        self.url = reverse('exmo2010:index')
+        self.url = reverse_lazy('exmo2010:index')
 
         # GIVEN admin account
         admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
@@ -81,6 +81,11 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
         # AND expert B account
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+
+        # AND staff user account
+        staff = User.objects.create_user('staff', 'staff@svobodainfo.org', 'password')
+        staff.is_staff = True
+        staff.save()
 
         # AND published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, publish_date=date.today())
@@ -125,6 +130,11 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
             MSG[2]: URLS['clarification'],
             MSG[3]: URLS['claim']
         }),
+        ('staff', {
+            ACCOUNT[2]: URLS['settings'],
+            ACCOUNT[3]: URLS['logout'],
+            NAVIGATION[3]: URLS['admin']
+        }),
     ])
     def test_menu(self, user, params):
         # WHEN user is logged in
@@ -145,7 +155,7 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
 
         if user == 'org':
             self.assertEqual(self.get_url_path(NAVIGATION[3]),
-                             reverse('exmo2010:score_list_by_task', args=[self.task.id]))
+                             reverse_lazy('exmo2010:score_list_by_task', args=[self.task.id]))
 
     def get_url_path(self, selector):
         """
