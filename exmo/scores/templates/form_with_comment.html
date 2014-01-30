@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,24 +19,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia check_object_permission criteria_css_class wysiwyg urlize_target_blank %}
+{% load i18n adminmedia check_object_permission criteria_css_class wysiwyg urlize_target_blank future static %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_list-parameter-colours.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tables.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_messages.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_list-parameter-colours.css' %}" />
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.autosize.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/score.tabs.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/ccc-tabs.js"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.autosize.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/score.form.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/score.tabs.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
     {% if object %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/score.comments.js"></script>
+        <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
     {% endif %}
 {% endblock %}
 
@@ -44,7 +44,7 @@
 {% block content %}
 
 {% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
+<script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
 
 {% if object %}
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}
@@ -80,7 +80,7 @@
 
     <input type="hidden" name="name" value="{{ user }}" />
     <input type="hidden" name="email" value="{{ user.email }}" />
-    <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
+    <input type="hidden" name="next" value="{% url 'exmo2010:score_view' object.pk %}" />
     <input type="hidden" name="tabs" value="" />
 
     <p>{{ form.non_field_errors }}</p>
@@ -116,7 +116,7 @@
                     <span class="edit_table">{{ form.found }}</span>
                 </td>
                 <td class="explanation">
-                    <span class="non_edit_table">{{ object.foundComment|default:""|urlize_target_blank:url_length }}</span>
+                    <span class="non_edit_table">{{ object.foundComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                     <span class="edit_table part_edit_table">{{ form.foundComment }}</span>
                 </td>
             </tr>
@@ -134,7 +134,7 @@
                         <span class="edit_table">{{ form.complete }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.completeComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.completeComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.completeComment }}</span>
                     </td>
                 </tr>
@@ -153,7 +153,7 @@
                         <span class="edit_table">{{ form.topical }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.topicalComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.topicalComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.topicalComment }}</span>
                     </td>
                 </tr>
@@ -172,7 +172,7 @@
                         <span class="edit_table">{{ form.accessible }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.accessibleComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.accessibleComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.accessibleComment }}</span>
                     </td>
                 </tr>
@@ -191,7 +191,7 @@
                         <span class="edit_table">{{ form.hypertext }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.hypertextComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.hypertextComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.hypertextComment }}</span>
                     </td>
                 </tr>
@@ -210,7 +210,7 @@
                         <span class="edit_table">{{ form.document }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.documentComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.documentComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.documentComment }}</span>
                     </td>
                 </tr>
@@ -229,7 +229,7 @@
                         <span class="edit_table">{{ form.image }}</span>
                     </td>
                     <td class="explanation">
-                        <span class="non_edit_table">{{ object.imageComment|default:""|urlize_target_blank:url_length }}</span>
+                        <span class="non_edit_table">{{ object.imageComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
                         <span class="edit_table part_edit_table">{{ form.imageComment }}</span>
                     </td>
                 </tr>
@@ -249,7 +249,7 @@
         </span>
     </p>
     <span class="non_edit_table">
-        {{ object.comment|default:""|urlize_target_blank:url_length }}
+        {{ object.comment|default:""|urlize_target_blank:url_length|linebreaksbr }}
     </span>
     <span class="edit_table part_edit_table">
         {{ form.recomendation }}
@@ -264,7 +264,7 @@
             <span class="non_relevant_button">
             <input type="button"
                    value="{% trans 'Set non-relevant' %}"
-                   onclick="window.location.href='{% url exmo2010:parameter_exclude task.pk parameter.pk %}?{{ request.GET.urlencode }}'" />
+                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' task.pk parameter.pk %}?{{ request.GET.urlencode }}'" />
             </span>
         {% endif %}
     </div>
