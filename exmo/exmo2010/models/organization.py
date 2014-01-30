@@ -83,26 +83,27 @@ class EmailsField(models.TextField):
 add_introspection_rules([], ["^exmo2010\.models\.organization\.EmailsField"])
 
 
+def format_phone(phone):
+    if not isinstance(phone, (unicode, str)):
+        return None
+    phone = phone.strip()
+    if not phone_re.match(phone):
+        return None
+    if re.search(r'[ \-]', phone):
+        return phone
+    else:
+        ntmp = re.findall(phone_re_reverse, phone[::-1])[0]
+        return ntmp[3][::-1] + ntmp[2][::-1] + "-" + ntmp[1][::-1] + "-" + ntmp[0][::-1]
+
+
 class PhonesField(models.TextField):
     def to_python(self, value):
         sub_phones = re.sub(phone_re, '', value)
         sub_phones = re.sub(delimiters_re, '', sub_phones)
         if sub_phones:
             raise ValidationError(ugettext('Illegal symbols in phone field.'))
-        phones = re.split(r',|\n', value)
-        numbers = ""
-        for p in phones:
-            p = p.rstrip()
-            p = p.lstrip()
-            if " " in p or "-" in p:
-                number = p
-            else:
-                ntmp = re.findall(phone_re_reverse, p[::-1])[0]
-                number = ntmp[3][::-1] + ntmp[2][::-1] + "-" + ntmp[1][::-1] + "-" + ntmp[0][::-1]
+        return ', '.join(filter(None, map(format_phone, re.split(r'[,\n\r]+', value))))
 
-            number += ", "
-            numbers += number
-        return numbers.rstrip(", ")
 
 add_introspection_rules([], ["^exmo2010\.models\.organization\.PhonesField"])
 

@@ -33,19 +33,20 @@ from core.utils import get_named_patterns
 from exmo2010.forms import CertificateOrderForm
 from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
-    Group, Monitoring, Organization, Parameter, Questionnaire, Score,
+    Group, Monitoring, Organization, Parameter, Questionnaire, Score, PhonesField,
     Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
 )
 
 
-class TestMonitoring(TestCase):
-    # Scenario: monitoring model test
+class TestPhonesFieldValidation(TestCase):
+    """ PhonesField should accept only valid input """
 
-    def test_sql_scores_invalid(self):
-        # WHEN openness code in disallowable range
-        monitoring = mommy.make(Monitoring, openness_expression__code=2)
-        # THEN raises exception
-        self.assertRaises(ValidationError, monitoring.sql_scores)
+    def test_phones_field(self):
+        field = PhonesField()
+        # All combinations of delimeters should be properly stripped
+        # Spaces should only be stripped on edges
+        self.assertEqual(field.to_python('\t,\r1-2345\n   1 23 45,\t \n12345,\n\r, '), '1-2345, 1 23 45, 1-23-45')
+        self.assertEqual(field.to_python("+7(868)876-45-56, +7(868)876-45-56"), "+7(868)876-45-56, +7(868)876-45-56")
 
 
 class NegativeParamMonitoringRatingTestCase(TestCase):
