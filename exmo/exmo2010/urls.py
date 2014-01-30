@@ -241,6 +241,8 @@ def crumbs_tree(is_expert=False):
 
             'organization_list': _('Monitoring cycle'),
 
+            'set_npa_params': _('Monitoring cycle'),
+
             'task_mass_assign_tasks': _('Monitoring cycle'),
 
             'tasks_by_monitoring': (_('Monitoring cycle'), {
