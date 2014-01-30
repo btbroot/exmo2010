@@ -51,7 +51,7 @@
 
     <ul id="navigation-menu">
         <li class="menu-item brand">
-            <a href="{% url 'exmo2010:index' %}"></a>
+            <a class="logo_{{ LANGUAGE_CODE }}" href="{% url 'exmo2010:index' %}"></a>
         </li>
 
         {% for item in menu.children %}

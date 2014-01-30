@@ -50,14 +50,24 @@
 
 }
 
+/* logo (en) */
 #header ul#navigation-menu li.brand a {
-    background: url(../img/my_logo.png) no-repeat;
+    background: url(../img/my_logo_en.png) no-repeat;
     margin: 7px 20px 3px;
     padding: 15px;
     width: 110px;
 }
 
 #header ul#navigation-menu li.brand a:hover {
+    background-position: 0 -36px;
+}
+
+/* logo (ru) */
+#header ul#navigation-menu li.brand a.logo_ru {
+    background: url(../img/my_logo_ru.png) no-repeat;
+}
+
+#header ul#navigation-menu li.brand a.ru:hover {
     background-position: 0 -35px;
 }
 
