@@ -813,7 +813,7 @@ msgid "Edit organization"
 msgstr "Редактировать организацию"
 
 #: exmo2010/urls.py:250
-msgid "Delte organization"
+msgid "Delete organization"
 msgstr "Удалить орган/организацию"
 
 #: exmo2010/urls.py:253
@@ -829,7 +829,7 @@ msgid "Edit task"
 msgstr "Редактировать задачу"
 
 #: exmo2010/urls.py:257
-msgid "Delte task"
+msgid "Delete task"
 msgstr "Удалить задачу"
 
 #: exmo2010/urls.py:258
@@ -855,7 +855,7 @@ msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
 #: exmo2010/urls.py:267
-msgid "Delte parameter"
+msgid "Delete parameter"
 msgstr "Удалить параметр"
 
 #: exmo2010/urls.py:281 templates/certificate_order_form.html:32

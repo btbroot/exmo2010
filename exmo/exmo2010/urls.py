@@ -215,10 +215,7 @@ def crumbs_tree(is_expert=False):
         'comment_list': _('Comments'),
         'claim_list':   _('Claims'),
         'clarification_list': _('Clarifications'),
-
-        'ratings': (_('Ratings'), {
-            'monitoring_rating': _('Rating')
-        }),
+        'ratings': _('Ratings'),
 
         'monitorings_list': (_('Monitoring cycles'), {
             'monitoring_add':    _('Add monitoring cycle'),
@@ -245,18 +242,20 @@ def crumbs_tree(is_expert=False):
 
             'task_mass_assign_tasks': _('Monitoring cycle'),
 
+            'monitoring_rating': _('Monitoring cycle'),
+
             'tasks_by_monitoring': (_('Monitoring cycle'), {
                 'task_add':     _('Add task'),
 
                 'organization_update':    _('Edit organization'),
-                'organization_delete':    _('Delte organization'),
+                'organization_delete':    _('Delete organization'),
 
                 'score_list_by_task': (_('Organization'), {
                     'clarification_create': _('Create clarification'),
                     'claim_create':         _('Create claim'),
                     # Task
                     'task_update':  _('Edit task'),
-                    'task_delete':  _('Delte task'),
+                    'task_delete':  _('Delete task'),
                     'task_import':  _('Import task'),
                     'task_history': _('Organization'),
                     # Score
@@ -266,7 +265,7 @@ def crumbs_tree(is_expert=False):
                     # Parameter
                     'parameter_add':    _('Add parameter'),
                     'parameter_update': _('Edit parameter'),
-                    'parameter_delete': _('Delte parameter'),
+                    'parameter_delete': _('Delete parameter'),
                 })
             })
         })

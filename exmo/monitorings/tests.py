@@ -152,6 +152,149 @@ class RatingsAverageTestCase(TestCase):
         self.assertEqual(monitorings[self.monitoring_nonzero_score.pk].average, 100.0)
 
 
+class ExpertARatingsTableVisibilityTestCase(TestCase):
+    # On ratings page expert A SHOULD see only published monitorings (including hidden)
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND published hidden monitoring
+        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND interaction monitoring
+        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+
+        # AND expert A account
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+
+        # AND I logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_visible_monitorings(self):
+        # WHEN I get ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected monitorings count
+        expected_pks = {self.mon_published.pk, self.mon_published_hidden.pk}
+        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
+
+
+class ExpertBRatingsTableVisibilityTestCase(TestCase):
+    # On ratings page expert B SHOULD see only published monitorings that are not hidden
+    # and published monitorings with assigned tasks (hidden or not)
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND published hidden monitoring
+        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND published hidden monitoring with expert B task
+        self.mon_published_hidden_with_task = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND interaction monitoring
+        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        # AND interaction monitoring with expert B task
+        self.mon_interaction_with_task = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring with expert B task
+        self.mon_interaction_hidden_with_task = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        # AND 1 organization in published hidden monitoring
+        organization_1 = mommy.make(Organization, monitoring=self.mon_published_hidden_with_task)
+        # AND 1 organization in interaction monitoring
+        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_with_task)
+        # AND 1 organization in interaction hidden monitoring
+        organization_3 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_task)
+
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        mommy.make(Task, organization=organization_1, user=expertB, status=Task.TASK_APPROVED)
+        mommy.make(Task, organization=organization_2, user=expertB, status=Task.TASK_APPROVED)
+        mommy.make(Task, organization=organization_3, user=expertB, status=Task.TASK_APPROVED)
+
+        # AND I logged in as expert B
+        self.client.login(username='expertB', password='password')
+
+    def test_visible_monitorings(self):
+        # WHEN I get ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected monitorings count
+        expected_pks = {self.mon_published.pk, self.mon_published_hidden_with_task.pk}
+        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
+
+
+class OrgUserRatingsTableVisibilityTestCase(TestCase):
+    # On ratings page organization representative SHOULD see only
+    # published monitorings and those with related organizations
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND published hidden monitoring
+        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND interaction monitoring
+        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        # AND interaction monitoring with representative
+        self.mon_interaction_with_representative = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring with representative
+        self.mon_interaction_hidden_with_representative = mommy.make(Monitoring, status=MONITORING_INTERACTION,
+                                                                     hidden=True)
+        # AND 1 organization in interaction monitoring with representative
+        organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_representative)
+        # AND 1 organization in interaction hidden monitoring with representative
+        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_representative)
+
+        # AND organization representative account
+        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        org.groups.add(Group.objects.get(name=org.profile.organization_group))
+        org.profile.organization = [organization_1, organization_2]
+
+        # AND I logged in as organization representative
+        self.client.login(username='org', password='password')
+
+    def test_visible_monitorings(self):
+        # WHEN I get ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected monitorings count
+        expected_pks = {self.mon_published.pk,
+                        self.mon_interaction_with_representative.pk,
+                        self.mon_interaction_hidden_with_representative.pk}
+        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
+
+
+class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
+    # On ratings page anonymous and regular users SHOULD see only
+    # published monitorings that are not hidden
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND published hidden monitoring
+        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND interaction monitoring
+        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+
+    def test_visible_monitorings(self):
+        # WHEN I get ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected monitorings count
+        expected_pks = {self.mon_published.pk}
+        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
+
+
 class RatingTableColumnOptionsTestCase(TestCase):
     # SHOULD display only permitted rating table columns for users
     # AND allow to choose displayed columns for registered users and remember that choice

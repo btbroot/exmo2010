@@ -252,9 +252,7 @@ def monitoring_rating(request, monitoring_pk):
 
     # Process rating_columns_form data to know what columns to show in table
     # Fields are boolean values for every permitted column
-    column_fields = ['rt_final_openness', 'rt_difference']
-    if monitoring.status in Monitoring.after_interaction_status:
-        column_fields.append('rt_initial_openness')
+    column_fields = ['rt_initial_openness', 'rt_final_openness', 'rt_difference']
 
     if user.is_active:
         if user.profile.is_expert:
@@ -1045,35 +1043,39 @@ def monitoring_report(request, report_type='inprogress', monitoring_pk=None):
 
 
 def ratings(request):
-    """Returns table of monitorings' rating data,
-    optionally filters table by monitoring
     """
+    Returns table of monitorings rating data, optionally filters table by monitoring.
 
+    """
     title = _('Ratings')
-
-    name_filter = request.GET.get('name_filter', '')
-    if name_filter:
-        monitoring_list = Monitoring.objects.filter(status=MONITORING_PUBLISHED,
-                                                    name__icontains=name_filter).order_by('-publish_date')
-    else:
-        monitoring_list = Monitoring.objects.filter(status=MONITORING_PUBLISHED).order_by('-publish_date')
-
     user = request.user
+    name_filter = request.GET.get('name_filter', '')
 
-    if not user.is_authenticated() or (user.is_active and not user.profile.is_organization
-                                       and not user.profile.is_expert):
-        monitoring_list = monitoring_list.filter(hidden=False)
-    elif user.is_active and user.profile.is_organization and not user.profile.is_expert:
-        monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__userprofile__user=user, hidden=True))
-    elif user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
-        monitoring_list = monitoring_list.filter(Q(hidden=False) | Q(organization__task__user=user, hidden=True))
+    monitoring_list = Monitoring.objects.all()
+    if name_filter:
+        monitoring_list = monitoring_list.filter(name__icontains=name_filter)
 
-    monitoring_list = monitoring_list.annotate(org_count=Count('organization'))
+    if user.is_expertA or user.is_superuser:
+        monitoring_list = monitoring_list.filter(status=MONITORING_PUBLISHED)
+    elif user.is_expertB:
+        monitoring_list = monitoring_list.filter(
+            Q(status=MONITORING_PUBLISHED), Q(hidden=False) | Q(organization__task__user=user)
+        )
+    elif user.is_organization:
+        monitoring_list = monitoring_list.filter(
+            Q(hidden=False, status=MONITORING_PUBLISHED) | Q(organization__userprofile__user=user)
+        )
+    else:
+        # anonymous or registered user without any permissions
+        monitoring_list = monitoring_list.filter(status=MONITORING_PUBLISHED, hidden=False)
+
+    monitoring_list = monitoring_list.annotate(org_count=Count('organization')).order_by('-publish_date')
 
     for m in monitoring_list:
-        sql_openness = m.openness_expression.get_sql_openness()
-        tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
-        m.average = avg('_openness', tasks)
+        if m.status == MONITORING_PUBLISHED:
+            sql_openness = m.openness_expression.get_sql_openness()
+            tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
+            m.average = avg('_openness', tasks)
 
     context = {
         'title': title,

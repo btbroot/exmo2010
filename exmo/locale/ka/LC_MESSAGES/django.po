@@ -807,7 +807,7 @@ msgid "Edit organization"
 msgstr "საჯარო დაწესებულების რედაქტირება"
 
 #: exmo2010/urls.py:250
-msgid "Delte organization"
+msgid "Delete organization"
 msgstr "საჯარო დაწესებულების წაშლა"
 
 #: exmo2010/urls.py:253
@@ -823,7 +823,7 @@ msgid "Edit task"
 msgstr "ამოცანის რედაქტირება"
 
 #: exmo2010/urls.py:257
-msgid "Delte task"
+msgid "Delete task"
 msgstr "ამოცანის წაშლა"
 
 #: exmo2010/urls.py:258
@@ -849,7 +849,7 @@ msgid "Edit parameter"
 msgstr "პარამეტრის რედაქტირება"
 
 #: exmo2010/urls.py:267
-msgid "Delte parameter"
+msgid "Delete parameter"
 msgstr "პარამეტრის წაშლა"
 
 #: exmo2010/urls.py:281 templates/certificate_order_form.html:32
