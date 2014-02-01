@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments days_until date_until pytils_dt wysiwyg trim_links %}
+{% load i18n comments days_until date_until pytils_dt wysiwyg trim_links future %}
 
 {% if view_comment %}
     {% get_comment_list for object as comment_list %}
@@ -66,7 +66,7 @@
 
                         {% if close_comment and not comment.user_is_expert and comment.status != 1 %}
                         <div class="toggle-comment-container">
-                            {% url exmo2010:toggle_comment as toggle_url %}
+                            {% url 'exmo2010:toggle_comment' as toggle_url %}
                             <a class="toggle-comment"
                                href="{{ toggle_url }}"
                                rel="{{ comment.pk }}">
@@ -116,7 +116,7 @@
                 {% endif %}
                 {{ form.comment }}
                 {% wysiwyg_editor "id_comment" %}
-                <input type="hidden" name="next" value="{% url exmo2010:score_view object.pk %}" />
+                <input type="hidden" name="next" value="{% url 'exmo2010:score_view' object.pk %}" />
                 <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />
             </form>
         </div>

@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,8 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n %}
+{% load i18n future %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -31,7 +30,7 @@
     <h1>{% trans 'Log in the system' %}</h1>
     {% if request.user.is_authenticated %}
         <p>{% trans 'You are already logged in' %}.</p>
-        {% url exmo2010:auth_logout as auth_logout_url %}
+        {% url 'exmo2010:auth_logout' as auth_logout_url %}
         <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
     {% else %}
         <noscript>
@@ -86,7 +85,7 @@
                     {% if resend_email %}
                         <tr>
                             <td colspan="2">
-                                <a href="{% url exmo2010:auth_resend_email %}">
+                                <a href="{% url 'exmo2010:auth_resend_email' %}">
                                     {% trans 'Send the activation letter again' %}?
                                 </a>
                             </td>
@@ -116,7 +115,7 @@
                         </td>
                         <td class="login-submit">
                             <input type="submit" value="{% trans 'Log in' %}"/>
-                            <a href="{% url exmo2010:auth_password_reset %}" class="forgot-password">{% trans 'Forgot your password' %}?</a>
+                            <a href="{% url 'exmo2010:auth_password_reset' %}" class="forgot-password">{% trans 'Forgot your password' %}?</a>
                         </td>
                     </tr>
                     </tbody>

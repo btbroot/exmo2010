@@ -1,7 +1,7 @@
 {% extends 'exmo2010/base_site.html' %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission %}
+{% load i18n check_object_permission future %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -67,7 +67,7 @@
         {% for monitoring in monitoring_list %}
         <tr>
             <td>
-                <a href="{% url exmo2010:monitoring_rating monitoring.pk %}">{{ monitoring }}</a>
+                <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
             </td>
 
             <td class="map">

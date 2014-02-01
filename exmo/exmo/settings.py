@@ -97,12 +97,12 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru')
 
 USE_ETAGS = True
 DATETIME_FORMAT = "Y-m-d, H:i"
-DATE_INPUT_FORMATS = (
+DATE_INPUT_FORMATS = [
     '%d.%m.%Y',
     '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
     '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
     '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
-)
+]
 LOCALE_PATHS = ('locale',)
 
 MEDIA_URL = '/media/'

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission wysiwyg trim_links %}
+{% load i18n check_object_permission wysiwyg trim_links future %}
 
 {% if view_claim %}
     {% if claim_list %}
@@ -41,7 +41,7 @@
 
                     {% if delete_claim %}
                     <div class="claim-delete-container">
-                        {% url exmo2010:claim_delete as claim_delete_url %}
+                        {% url 'exmo2010:claim_delete' as claim_delete_url %}
                         <a class="delete-claim pseudo"
                            href="{{ claim_delete_url }}"
                            rel="{{ c.pk }}">
@@ -85,7 +85,7 @@
 
 {% if add_claim and claim_form or answer_claim and claim_form %}
     <div id="add-claim"{% if answer_claim and not add_claim %} style="display: none;"{% endif %}>
-        <form action="{% url exmo2010:claim_create object.id %}" method="post">
+        <form action="{% url 'exmo2010:claim_create' object.id %}" method="post">
             {% csrf_token %}
             {% for field in claim_form %}
                 <div class="fieldWrapper">

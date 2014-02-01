@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n future %}
+
 {% block module_content %}
     {% spaceless %}
     {% for child in module.children %}
@@ -30,7 +31,7 @@
             {% if child.object_list %}
                 {% with monitoring=child.object_list|first %}
                     {% if monitoring.perms.create_monitoring %}
-                        <li><a href="{% url exmo2010:monitoring_add %}">
+                        <li><a href="{% url 'exmo2010:monitoring_add' %}">
                             {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
                         </a></li>
                     {% endif %}
@@ -40,21 +41,21 @@
             {% for monitoring in child.object_list %}
                 <li class="{% cycle 'odd' 'even' %}">
                 {% if request.user.is_expert %}
-                    <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}">{{ monitoring }}</a>
+                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring }}</a>
                     {% if monitoring.perms.edit_monitoring %}
                         &nbsp;
-                        <a href="{% url exmo2010:monitoring_update monitoring.pk %}">
+                        <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">
                             <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" >
                         </a>
                     {% endif %}
                     {% if monitoring.perms.delete_monitoring %}
                         &nbsp;
-                        <a href="{% url exmo2010:monitoring_delete monitoring.pk %}">
+                        <a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}">
                             <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" >
                         </a>
                     {% endif %}
                 {% else %}
-                    <a href="{% url exmo2010:monitoring_rating monitoring.pk %}">{{ monitoring }}</a>
+                    <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
                 {% endif %}
                 </li>
             {% endfor %}

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -102,28 +102,12 @@ def object_list(request, queryset, paginate_by=None, page=None,
             '%s_list' % template_object_name: annotate_exmo_perms(page_obj.object_list, request.user),
             'paginator': paginator,
             'page_obj': page_obj,
-            'is_paginated': page_obj.has_other_pages(),
-
-            # Legacy template context stuff. New templates should use page_obj
-            # to access this instead.
-            'results_per_page': paginator.per_page,
-            'has_next': page_obj.has_next(),
-            'has_previous': page_obj.has_previous(),
-            'page': page_obj.number,
-            'next': page_obj.next_page_number(),
-            'previous': page_obj.previous_page_number(),
-            'first_on_page': page_obj.start_index(),
-            'last_on_page': page_obj.end_index(),
-            'pages': paginator.num_pages,
-            'hits': paginator.count,
-            'page_range': paginator.page_range,
         }
     else:
         context = {
             '%s_list' % template_object_name: annotate_exmo_perms(queryset, request.user),
             'paginator': None,
             'page_obj': None,
-            'is_paginated': False,
         }
         if not allow_empty and len(queryset) == 0:
             raise Http404

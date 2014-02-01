@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 #
 {% endcomment %}
 {% spaceless %}
-{% load i18n get_object_by_pk %}
+{% load i18n get_object_by_pk future %}
 Report from {{ start_date }} to {{ end_date }}
 {% with site.domain as baseurl %}
 Note:
@@ -51,19 +51,19 @@ Total: {{ operator_comments_count }}
 Comments list from organizations without reply and date out of limit ({{ fail_comments_without_reply|length }}):
 {% for c in fail_comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
 Comments list from organization that needs to reply today (exclude list above) ({{ fail_soon_comments_without_reply|length }}):
 {% for c in fail_soon_comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
 Comments list from organization that needs to reply (exclude list above) ({{ comments_without_reply|length }}):
 {% for c in comments_without_reply %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url exmo2010:score_view c.object_pk %} ({{score.task.user}})
+{{ c.submit_date }} -- {{ c.user }} -- http://{{ baseurl }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})
 {% endfor %}
 {% endwith %}
 {% endspaceless %}

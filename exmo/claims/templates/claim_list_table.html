@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,19 +19,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n future %}
 {% for c in claims %}
 <tr>
     <td>
         {{ c.open_date|date:"H:i d.m.Y" }}
     </td>
     <td>
-        <a href="{% url exmo2010:score_list_by_task c.score.task.id %}">
+        <a href="{% url 'exmo2010:score_list_by_task' c.score.task.id %}">
             {{ c.score.task.organization }}
         </a>
     </td>
     <td>
-        <a href="{% url exmo2010:score_view c.score.id %}#claims" target="_blank">
+        <a href="{% url 'exmo2010:score_view' c.score.id %}#claims" target="_blank">
             {% trans 'go to claim' %}
         </a>
     </td>

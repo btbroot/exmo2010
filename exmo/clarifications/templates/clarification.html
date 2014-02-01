@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n wysiwyg trim_links %}
+{% load i18n wysiwyg trim_links future %}
 
 {% if view_clarification %}
     {% if clarification_list %}
@@ -74,7 +74,7 @@
 
 {% if add_clarification and clarification_form or answer_clarification and clarification_form %}
     <div id="add-clarification"{% if answer_clarification and not add_clarification %} style="display: none;"{% endif %}>
-        <form action="{% url exmo2010:clarification_create object.id %}" method="post">{% csrf_token %}
+        <form action="{% url 'exmo2010:clarification_create' object.id %}" method="post">{% csrf_token %}
             {% for field in clarification_form %}
                 <div class="fieldWrapper">
                     {{ field.errors }}

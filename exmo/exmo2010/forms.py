@@ -27,7 +27,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-DATETIME_INPUT_FORMATS = formats.get_format('DATETIME_INPUT_FORMATS') + ('%d.%m.%Y %H:%M:%S',)
+DATETIME_INPUT_FORMATS = list(formats.get_format('DATETIME_INPUT_FORMATS')) + ['%d.%m.%Y %H:%M:%S']
 
 # основные JS ресурсы для форм с виджетами из админки
 CORE_JS = (

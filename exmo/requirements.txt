@@ -18,7 +18,7 @@
 #
 
 BeautifulSoup==3.2.1
-Django==1.4.5
+Django==1.4.10
 MySQL-python==1.2.3
 Pillow==1.7.8
 South==0.7.5
@@ -38,7 +38,7 @@ django-livesettings==1.4-12
 django-modeltranslation==0.7.3
 django-picklefield==0.3.0
 django-registration==0.8
-django-reversion==1.6.0
+django-reversion==1.6.6
 django-tagging==0.3.1
 django-tagging-autocomplete==0.3.1
 django-wysiwyg==0.5

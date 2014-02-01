@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,8 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
-{% load i18n wysiwyg %}
+{% load i18n wysiwyg future %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -36,7 +35,7 @@
 {% endif %}
 
 <p>
-{% url exmo2010:help as url %}
+{% url 'exmo2010:help' as url %}
 {% blocktrans %}
 If you've got troubles using system, please, check <a href="{{ url }}">Help page</a> out. If you didn't find an answer for your question, ask our specialists.
 {% endblocktrans %}

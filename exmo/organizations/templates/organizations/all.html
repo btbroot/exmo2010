@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,7 @@
 #
 {% endcomment %}
 
-{% load table_header i18n adminmedia monitoring_stats check_object_permission first_element %}
+{% load table_header i18n monitoring_stats check_object_permission first_element future %}
 
 {% if alert %}
     {% ifequal alert 'success' %}
@@ -60,12 +60,12 @@
             {% for object in object_list %}
                 <tr>
                     <td>
-                        <a href="{% url exmo2010:tasks_by_monitoring monitoring.pk %}?filter0={{object.name|urlencode}}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
+                        <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{object.name|urlencode}}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
                         {% if perm %}
-                            &nbsp;<a href="{% url exmo2010:organization_update monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>
+                            &nbsp;<a href="{% url 'exmo2010:organization_update' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>
                         {%endif%}
                         {% if perm and not monitoring.is_published %}
-                            &nbsp;<a href="{% url exmo2010:organization_delete monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>
+                            &nbsp;<a href="{% url 'exmo2010:organization_delete' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>
                         {%endif%}
                     </td>
 

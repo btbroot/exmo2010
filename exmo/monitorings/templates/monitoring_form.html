@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n adminmedia %}
+{% load i18n future %}
 
 {% block extrahead %}
     {{ block.super }}
@@ -96,19 +96,19 @@
 
 {% block content %}
 {% if object %}
-   <form action="{% url exmo2010:monitoring_organization_import object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-     <a href="{% url exmo2010:monitoring_organization_export object.pk %}">{% trans 'Export organizations' %}</a> /
+   <form action="{% url 'exmo2010:monitoring_organization_import' object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+     <a href="{% url 'exmo2010:monitoring_organization_export' object.pk %}">{% trans 'Export organizations' %}</a> /
      <label>{% trans "Import organizations from CSV" %}: <input type="file" accept=".csv" name="orgfile" value="{% trans 'Save' %}"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
-   <form action="{% url exmo2010:monitoring_parameter_import object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-     <a href="{% url exmo2010:monitoring_parameter_export object.pk %}">{% trans 'Export parameters' %}</a> /
+   <form action="{% url 'exmo2010:monitoring_parameter_import' object.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+     <a href="{% url 'exmo2010:monitoring_parameter_export' object.pk %}">{% trans 'Export parameters' %}</a> /
      <label>{% trans "Import parameters from CSV" %}: <input type="file" accept=".csv" name="paramfile"></label><input type="submit" value="{% trans 'Import' %}" />
    </form>
    {% if not object.has_questions %}
        {% if object.has_questionnaire %}
-           <a id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">{% trans 'Edit questionnaire' %}</a>
+           <a id="addqa" href="{% url 'exmo2010:add_questionnaire' object.pk %}">{% trans 'Edit questionnaire' %}</a>
        {% else %}
-           <a style="display: none;" id="addqa" href="{% url exmo2010:add_questionnaire object.pk %}">{% trans 'Edit questionnaire' %}</a>
+           <a style="display: none;" id="addqa" href="{% url 'exmo2010:add_questionnaire' object.pk %}">{% trans 'Edit questionnaire' %}</a>
            <br />
        {% endif %}
    {% else %}
