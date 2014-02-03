@@ -1119,3 +1119,54 @@ class SuperuserRatingOrgsVisibilityTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         # AND count of approved tasks should be 2
         self.assertEqual(len(response.context['rating_list']), 2)
+
+
+class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
+    # Monitorings statistics SHOULD contain correct count of active users
+
+    def setUp(self):
+        # GIVEN interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND 2 organizations connected to monitoring
+        organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
+        organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
+        # AND 2 approved tasks connected to organizations
+        task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
+        task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
+        # AND parameter connected to monitoring
+        parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        # AND 1 score for each task
+        self.score1 = mommy.make(Score, task=task1, parameter=parameter)
+        self.score2 = mommy.make(Score, task=task2, parameter=parameter)
+        # AND organization representative connected to the first organization
+        self.orguser1 = User.objects.create_user('org1', 'org@svobodainfo.org', 'password')
+        self.orguser1.groups.add(Group.objects.get(name=self.orguser1.profile.organization_group))
+        self.orguser1.profile.organization = [organization1]
+        # AND one more organization representative connected to both organizations
+        self.orguser2 = User.objects.create_user('org2', 'org@svobodainfo.org', 'password')
+        self.orguser2.groups.add(Group.objects.get(name=self.orguser2.profile.organization_group))
+        self.orguser2.profile.organization = [organization1, organization2]
+        # AND content_type
+        self.content_type = ContentType.objects.get_for_model(Score)
+        # AND domain
+        self.site = Site.objects.get_current()
+
+    def test_two_orgs_posted_comments_in_one_organization(self):
+        # WHEN 2 representatives post comments to the same organization
+        comm1 = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.orguser1, site=self.site)
+        comm1.save()
+        comm2 = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.orguser2, site=self.site)
+        comm2.save()
+        statistics = self.monitoring.statistics()
+        # THEN active orgusers count in monitoring statistics should equal 2
+        self.assertEqual(statistics['organization_users_active'], 2)
+
+    def test_one_org_posted_comments_in_two_organization(self):
+        # WHEN 1 representative posts comments to 2 different organizations
+        comm1 = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.orguser2, site=self.site)
+        comm1.save()
+        comm2 = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.orguser2, site=self.site)
+        comm2.save()
+        statistics = self.monitoring.statistics()
+        # THEN active orgusers count in monitoring statistics should equal 1
+        self.assertEqual(statistics['organization_users_active'], 1)

@@ -546,20 +546,6 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
                         param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
 
 
-def log_user_activity(comment, **kwargs):
-    """
-    Signal handler. Organizations representatives activity log at the stage of interaction.
-
-    """
-    score = Score.objects.get(pk=comment.object_pk)
-    monitoring = score.task.organization.monitoring
-    user = comment.user
-    if monitoring.is_interact and user.profile.is_organization and not user.is_superuser:
-        MonitoringInteractActivity.objects.get_or_create(monitoring=monitoring, user=user)
-
-signals.comment_was_posted.connect(log_user_activity, sender=CommentExmo)
-
-
 def create_revision(sender, instance, **kwargs):
     """
     Сохранение ревизии оценки на стадии взаимодействия.

@@ -39,12 +39,6 @@ class MonitoringAdmin(TranslationAdmin, VersionAdmin):
     list_display = ('name',)
 
 
-@register(models.MonitoringInteractActivity)
-class MonitoringInteractActivityAdmin(admin.ModelAdmin):
-    search_fields = ('user__username', )
-    list_filter = ('monitoring',)
-
-
 @register(models.Organization)
 class OrganizationAdmin(TranslationAdmin, VersionAdmin):
     list_display = ('pk', 'name', 'inv_code')

@@ -190,29 +190,35 @@ class Monitoring(BaseModel):
         """
         from .task import Task
         from .score import Score
+        from .userprofile import UserProfile
 
         stat = MONITORING_STAT_DICT
+        scores = Score.objects.filter(task__organization__monitoring=self)
+
         stat['organization'] = self.organization_set.count()
-        stat['organization_rated'] = Task.approved_tasks.filter(
-            organization__monitoring=self
-        ).count()
+
+        stat['organization_rated'] = Task.approved_tasks.filter(organization__monitoring=self).count()
+
         stat['organization_users'] = User.objects.filter(
             groups__name='organizations',
             userprofile__organization__in=self.organization_set.all()
         ).count()
-        stat['organization_users_active'] = MonitoringInteractActivity.\
-            objects.filter(monitoring=self).count()
+
+        stat['organization_users_active'] = UserProfile.objects.filter(user__comment_comments__object_pk__in=scores)\
+                                                               .distinct()\
+                                                               .count()
+
         stat['expert'] = User.objects.filter(task__organization__monitoring=self).distinct().count()
+
         stat['comment_organization'] = Comment.objects.filter(
             content_type__model='score',
-            object_pk__in=Score.objects.filter(task__organization__monitoring=self),
+            object_pk__in=scores,
             user__in=User.objects.filter(groups__name='organizations')
         ).count()
 
         stat['comment_expert'] = Comment.objects.filter(
             content_type__model='score',
-            object_pk__in=Score.objects.filter(
-                task__organization__monitoring=self),
+            object_pk__in=scores,
             user__in=User.objects.exclude(groups__name='organizations')
         ).count()
 
@@ -253,19 +259,3 @@ class Monitoring(BaseModel):
     is_finishing = property(lambda self: self.status == MONITORING_FINALIZING)
     is_published = property(lambda self: self.status == MONITORING_PUBLISHED)
     is_active = property(lambda self: self.status != MONITORING_PREPARE)
-
-
-class MonitoringInteractActivity(BaseModel):
-    """
-    Модель регистрации посещений мониторинга
-    """
-    class Meta(BaseModel.Meta):
-        unique_together = ('user', 'monitoring')
-
-    monitoring = models.ForeignKey(Monitoring)
-    user = models.ForeignKey(User)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return u"%s (%s)" % (self.user.userprofile.legal_name,
-                             self.monitoring.name)
