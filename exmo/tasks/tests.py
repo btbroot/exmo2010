@@ -238,60 +238,33 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
 
 
 class ExpertATaskAjaxActionsTestCase(TestCase):
-    # Should allow expertA to approve and reopen Tasks using ajax actions
+    # Should allow expertA to approve closed complete tasks using ajax actions.
+    # And allow to reopen approved tasks.
+    # And forbid to approve opened task.
 
     def setUp(self):
         # GIVEN MONITORING_RATE monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
-        # AND there are 3 organizations in this monitoring (for every task)
-        organization1 = mommy.make(Organization, monitoring=self.monitoring)
-        organization2 = mommy.make(Organization, monitoring=self.monitoring)
-        organization3 = mommy.make(Organization, monitoring=self.monitoring)
-        # AND one parameter with only 'accessible' attribute
+        monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
+
+        # AND parameter with only 'accessible' attribute
         parameter = mommy.make(
-            Parameter,
-            monitoring = self.monitoring,
-            complete = False,
-            accessible = True,
-            topical = False,
-            hypertext = False,
-            document = False,
-            image = False,
-            npa = False
-        )
+            Parameter, monitoring=monitoring, accessible=True,
+            complete=False, topical=False, hypertext=False, document=False, image=False)
+
+        # AND opened task
+        self.open_task = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_OPEN)
+
+        # AND approved task
+        self.approved_task = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
+
+        # AND closed task which have complete score
+        self.closed_complete_task = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_OPEN)
+        mommy.make(Score, task=self.closed_complete_task, parameter=parameter, found=1, accessible=1)
+
         # AND i am logged-in as expertA
         self.expertA = User.objects.create_user('expertA', 'usr1@svobodainfo.org', 'password')
         self.expertA.profile.is_expertA = True
         self.client.login(username='expertA', password='password')
-
-        # AND expertB account
-        self.expertB = User.objects.create_user('expertB', 'usr2@svobodainfo.org', 'password')
-        self.expertB.profile.is_expertB = True
-
-        # AND there is an open task assigned to expertB
-        self.open_task = mommy.make(
-            Task,
-            organization=organization1,
-            status=Task.TASK_OPEN,
-            user=self.expertB
-        )
-
-        # AND there is closed task assigned to expertB, which have complete score
-        self.closed_complete_task = mommy.make(
-            Task,
-            organization=organization2,
-            status=Task.TASK_OPEN,
-            user=self.expertB
-        )
-        score = mommy.make(Score, task=self.closed_complete_task, parameter=parameter, found=1, accessible=1)
-
-        # AND there is approved task assigned to expertB
-        self.approved_task = mommy.make(
-            Task,
-            organization=organization3,
-            status=Task.TASK_APPROVED,
-            user=self.expertB
-        )
 
     def test_allow_open_approved_task_action(self):
         # WHEN I try to reopen approved Task
@@ -302,7 +275,7 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         # AND new status_display "open" should be in the ajax response
         res = json.loads(res.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
-        self.assertEqual(res['status_display'], open_status_display)
+        self.assertEqual(res['status_display'], unicode(open_status_display))
         # AND new permitted actions should be in the ajax response
         # ('close_task', 'fill_task', 'view_task', 'view_openness')
         self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
@@ -316,7 +289,7 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         # AND new status_display "approved" should be in the ajax response
         res = json.loads(res.content)
         approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
-        self.assertEqual(res['status_display'], approved_status_display)
+        self.assertEqual(res['status_display'], unicode(approved_status_display))
         # AND new permitted actions should be in the ajax response
         # ('open_task', 'fill_task', 'view_task', 'view_openness')
         self.assertEqual(set(['open_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))

@@ -74,8 +74,11 @@ class Task(BaseModel):
         (TASK_APPROVE, _('approved'))
     )
 
-    __experts = {'groups__name__in': UserProfile.expert_groups, 'is_active': True}
-    user = models.ForeignKey(User, verbose_name=_('user'), limit_choices_to=__experts)
+    # Assigned user. Choices should be soft-limited to active experts (limit in the task edit form).
+    # It is ok to have tasks with assigned non-expert or inactive user in DB, since user may
+    # experience change of its activity status or groups after assignment.
+    user = models.ForeignKey(User, verbose_name=_('user'))
+
     organization = models.ForeignKey(Organization, verbose_name=_('organization'))
     status = models.PositiveIntegerField(choices=TASK_STATUS, default=TASK_OPEN, verbose_name=_('status'))
 

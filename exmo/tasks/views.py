@@ -41,7 +41,7 @@ from core.helpers import table
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeReader, UnicodeWriter
-from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory
+from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory, UserProfile
 from perm_utils import annotate_exmo_perms
 
 
@@ -232,8 +232,8 @@ class AjaxTaskActionView(View):
                 # We should return actual task status from db, not the one that was modified in action
                 task = get_object_or_404(Task, pk=task_pk)
                 annotate_exmo_perms(task, request.user)
-                # Add error message to the status
-                status_display = '%s [%s]' % (task.get_status_display(), e.message_dict.get('__all__')[0])
+                # Add error messages to the status (concatenate all errors).
+                status_display = '%s [%s]' % (task.get_status_display(), ' '.join(e.messages))
                 return JSONResponse(status_display=status_display, perms=str(task.perms))
         elif not request.user.has_perm('exmo2010.view_task', task):
             raise PermissionDenied
@@ -273,9 +273,11 @@ class TaskEditView(TaskMixin, UpdateView):
             # New task page
             form_class = modelform_factory(Task, exclude=['status'])
 
-        # Workaround for Django bug https://code.djangoproject.com/ticket/1891
-        form_class.base_fields['user'].queryset = form_class.base_fields['user'].queryset.distinct()
+        # Limit assigned user choices to active experts.
+        _experts = User.objects.filter(groups__name__in=UserProfile.expert_groups, is_active=True)
+        form_class.base_fields['user'].queryset = _experts.distinct()
 
+        # Limit organizations choices to this monitoring.
         form_class.base_fields['organization'].queryset = self.monitoring.organization_set.all()
         return form_class
 
