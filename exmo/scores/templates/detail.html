@@ -3,7 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,22 +19,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission wysiwyg urlize_target_blank criteria_css_class %}
+{% load i18n check_object_permission wysiwyg urlize_target_blank criteria_css_class static %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_list-parameter-colours.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tables.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_messages.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_list-parameter-colours.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
 {% endblock %}
 
 {% if is_expert %}
     {% block extrahead %}
         {{ block.super }}
-        <script type="text/javascript" src="{{STATIC_URL}}js/score.comments.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}js/ccc-tabs.js"></script>
+        <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
     {% endblock %}
 {% endif %}
 
@@ -45,7 +45,7 @@
 {% block content %}
 
 {% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
+<script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
 
 {% if object %}
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}
@@ -78,7 +78,7 @@
             <td class="value {{object|criteria_css_class:'found'}}">
                 {{ object.found|default_if_none:"—" }}
             </td>
-            <td>{{ object.foundComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.foundComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
 
         {% if parameter.complete %}
@@ -87,7 +87,7 @@
             <td class="value {{object|criteria_css_class:'complete'}}">
                 {{ object.complete|default_if_none:"—" }}
             </td>
-            <td>{{ object.completeComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.completeComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
 
@@ -97,7 +97,7 @@
             <td class="value {{object|criteria_css_class:'topical'}}">
                 {{ object.topical|default_if_none:"—" }}
             </td>
-            <td>{{ object.topicalComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.topicalComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
 
@@ -107,7 +107,7 @@
             <td class="value {{object|criteria_css_class:'accessible'}}">
                 {{ object.accessible|default_if_none:"—" }}
             </td>
-            <td>{{ object.accessibleComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.accessibleComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
 
@@ -117,7 +117,7 @@
             <td class="value {{object|criteria_css_class:'hypertext'}}">
                 {{ object.hypertext|default_if_none:"—" }}
             </td>
-            <td>{{ object.hypertextComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.hypertextComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
 
@@ -127,7 +127,7 @@
             <td class="value {{object|criteria_css_class:'document'}}">
                 {{ object.document|default_if_none:"—" }}
             </td>
-            <td>{{ object.documentComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.documentComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
 
@@ -137,7 +137,7 @@
             <td class="value {{object|criteria_css_class:'image'}}">
                 {{ object.image|default_if_none:"—" }}
             </td>
-            <td>{{ object.imageComment|default:""|urlize_target_blank:url_length }}</td>
+            <td>{{ object.imageComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</td>
         </tr>
         {% endif %}
     </tbody>
@@ -150,7 +150,7 @@
     </span>
 </p>
 <span class="non_edit_table">
-    {{ object.comment|default:""|urlize_target_blank:url_length }}
+    {{ object.comment|default:""|urlize_target_blank:url_length|linebreaksbr }}
 </span>
 <br />
 {% endif %}
