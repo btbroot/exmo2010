@@ -49,8 +49,9 @@ EMAIL_RATE_LIMIT = '100/m'
 
 # Databases
 MYSQL_INIT = [
-    'SET storage_engine=INNODB',
+    'SET storage_engine = INNODB',
 ]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -58,7 +59,7 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'OPTIONS': {
-            'init_command': ';'.join(MYSQL_INIT),
+            'init_command': '; '.join(MYSQL_INIT),
         },
         'TEST_CHARSET': 'utf8',
         'TEST_COLLATION': 'utf8_unicode_ci',

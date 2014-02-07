@@ -1,40 +1,64 @@
 [
-  {
-    "pk": 1,
-    "model": "exmo2010.opennessexpression",
-    "fields": {
-      "name": "2010"
+    {
+        "pk": 1,
+        "model": "exmo2010.opennessexpression",
+        "fields": {
+            "name": "2010"
+        }
+    },
+    {
+        "pk": 8,
+        "model": "exmo2010.opennessexpression",
+        "fields": {
+            "name": "2011"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "auth.group",
+        "fields": {
+            "name": "expertsA",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.group",
+        "fields": {
+            "name": "expertsB",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.group",
+        "fields": {
+            "name": "organizations",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.group",
+        "fields": {
+            "name": "translators",
+            "permissions": [
+                [
+                    "change_monitoring",
+                    "exmo2010",
+                    "monitoring"
+                ],
+                [
+                    "change_organization",
+                    "exmo2010",
+                    "organization"
+                ],
+                [
+                    "change_parameter",
+                    "exmo2010",
+                    "parameter"
+                ]
+            ]
+        }
     }
-  },
-  {
-    "pk": 8,
-    "model": "exmo2010.opennessexpression",
-    "fields": {
-      "name": "2011"
-    }
-  },
-  {
-    "pk": 1,
-    "model": "auth.group",
-    "fields": {
-      "name": "expertsA",
-      "permissions": []
-    }
-  },
-  {
-    "pk": 2,
-    "model": "auth.group",
-    "fields": {
-      "name": "expertsB",
-      "permissions": []
-    }
-  },
-  {
-    "pk": 4,
-    "model": "auth.group",
-    "fields": {
-      "name": "organizations",
-      "permissions": []
-    }
-  }
 ]
