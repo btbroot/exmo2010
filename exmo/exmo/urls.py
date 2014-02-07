@@ -27,6 +27,9 @@ from core.views import TemplateView
 admin.autodiscover()
 
 
+handler500 = 'exmo2010.views.server_error'
+
+
 urlpatterns = patterns('',
     url(r'^license.txt$', TemplateView.as_view(template_name='license.txt', content_type='text/plain'), name='license'),
     url(r'^release$', TemplateView.as_view(template_name='release', content_type='text/plain'), name='release'),

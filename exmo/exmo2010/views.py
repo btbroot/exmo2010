@@ -20,18 +20,20 @@
 from collections import OrderedDict
 from urllib import urlencode
 
+from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.template import Context, loader
+from django.template import Context, RequestContext, loader
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import dateformat, translation
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import requires_csrf_token
 from django.views.generic import TemplateView, DetailView, FormView
 from django.views.i18n import set_language
 from livesettings import config_value
@@ -290,3 +292,13 @@ def change_language(request):
         user.profile.save()
 
     return response
+
+
+@requires_csrf_token
+def server_error(request, template_name='500.html'):
+    """
+    Custom 500 error handler. Puts request in context.
+
+    """
+    t = loader.get_template(template_name)
+    return http.HttpResponseServerError(t.render(RequestContext(request)))

@@ -809,12 +809,20 @@ ul#errors-header li.brand {
 }
 
 ul#errors-header li.brand a {
-    background: url(../../dashboard/img/my_logo.png) 0 0 no-repeat;
+    background: url(../../dashboard/img/my_logo_en.png) 0 0 no-repeat;
     width: 110px;
     padding: 4px 70px 8px;
 }
 
 ul#errors-header li.brand a:hover {
+    background-position: 0 -36px;
+}
+
+ul#errors-header li.brand a.logo_ru {
+    background: url(../../dashboard/img/my_logo_ru.png) no-repeat;
+}
+
+ul#errors-header li.brand a.logo_ru:hover {
     background-position: 0 -35px;
 }
 
