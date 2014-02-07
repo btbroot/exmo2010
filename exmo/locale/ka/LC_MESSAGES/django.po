@@ -1217,8 +1217,8 @@ msgstr "საკითხი"
 
 #: exmo2010/models/organization.py:163
 #: organizations/templates/organizations/mail_history.html:47
-msgid "Letter content"
-msgstr "წერილის ტექსტი"
+msgid "Letter subject and content"
+msgstr ""
 
 #: exmo2010/models/parameter.py:39
 msgid "code"
