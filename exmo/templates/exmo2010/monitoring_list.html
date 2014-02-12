@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n future %}
+{% load i18n future %}
 
 {% block title %}{% trans 'Monitoring list' %}{% endblock %}
 
@@ -27,7 +27,8 @@
     <div id=monitoring_list>
         <h2>{% trans 'Monitoring cycles' %}</h2>
         <table>
-            {% table_header headers %}
+            {% include 'exmo2010/table_header.html' with headers=headers %}
+
             <tbody>
             <tr>
                 <td colspan=2>

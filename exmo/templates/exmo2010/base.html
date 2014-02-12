@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -42,8 +42,10 @@
 
             <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
             {{ media|default:"" }}
-            <script src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
-            <script src="{% static 'exmo2010/js/csrf.js' %}"></script>
+            <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
+            <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
+            <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
+            <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
             {% block extrahead %}{% endblock %}
 
             {% include "analytics.html" %}

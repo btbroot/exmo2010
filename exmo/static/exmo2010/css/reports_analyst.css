@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,96 +19,49 @@
 #
 */
 
-.analyst-reports-menu
-{
+.analyst-reports-menu {
     margin: 20px 0 18px 0;
     padding: 0;
 }
 
-.analyst-reports-menu li
-{
+.analyst-reports-menu li {
     padding-right: 20px;
     display: inline;
     font-size: 14px;
     font-weight: bold;
 }
 
-.analyst-reports-menu li a
-{
+.analyst-reports-menu li a {
     text-decoration: underline;
 }
 
-.base-table
-{
-    width: 100%;
+.base-table td:first-child, .base-table td:last-child,
+.base-table th:first-child, .base-table th:last-child {
+    width: 1%;
+    white-space: nowrap;
 }
 
-td.report-title
-{
+td.report-title {
     font-size: 13px;
     font-weight: bold;
 }
 
-td.report-title span
-{
+td.report-title span {
     border-bottom: 1px dashed;
 }
 
-td.report-title.open span
-{
+td.report-title.open span {
     border-bottom-color: #ff0000;
 }
 
-.report-title.open
-{
+.report-title.open {
     color: #ff0000;
 }
 
-.report-title.closed
-{
+.report-title.closed {
     color: #000;
 }
 
-.report-date
-{
-    width: 120px;
-}
-
-.report-link
-{
-    width: 180px;
-}
-
-.heading td
-{
-    font-weight: bold;
-    font-size: 13px;
-    color: #222;
-    border-top: 1px solid;
-    background-color: #fff;
-}
-
-.heading td a
-{
-    color: #222;
-    border-bottom: 1px #222 dotted;
-}
-
-.heading td a:hover
-{
-    text-decoration: none;
-    border-bottom: none;
-}
-
-.shown
-{
+.shown {
     display: block;
-}
-
-.first td
-{
-    padding: 0;
-    height: 1px;
-    border-top: 0px;
-    border-bottom: 0px;
 }

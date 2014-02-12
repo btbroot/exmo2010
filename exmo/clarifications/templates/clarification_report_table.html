@@ -23,7 +23,7 @@
 
 {% for c in clarifications %}
     <tr>
-        <td class="date">{{ c.open_date|date:"H:i d.m.Y" }}</td>
+        <td class="date">{{ c.open_date|date:"SHORT_DATETIME_FORMAT" }}</td>
         <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
         <td class="creator">{{ c.creator.profile.legal_name }}</td>
         <td class="link">

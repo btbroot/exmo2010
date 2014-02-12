@@ -24,7 +24,7 @@
 {% for c in comments %}
 <tr>
     <td>
-        {{ c.submit_date|date:"H:i d.m.Y" }}
+        {{ c.submit_date|date:"SHORT_DATETIME_FORMAT" }}
     </td>
     <td>
         <a href="{% url 'exmo2010:score_list_by_task' c.content_object.task.id %}">

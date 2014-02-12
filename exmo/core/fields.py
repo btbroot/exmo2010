@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,10 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
-A custom Model Field for tagging.
-"""
+from django.forms import DateInput
 from tagging.fields import TagField as TagField_orig
 
 
@@ -46,3 +43,13 @@ try:
     add_introspection_rules([], ["^core\.fields\.TagField"])
 except ImportError:
     pass
+
+
+# TODO: Remove this class after upgrade to Django 1.6. To enable localization for fields,
+# use the localized_fields attribute on the Meta class.
+class LocalizeDateInput(DateInput):
+    """
+    This class is a hacky way to enable localization for date fields in a ModelForm.
+
+    """
+    is_localized = True

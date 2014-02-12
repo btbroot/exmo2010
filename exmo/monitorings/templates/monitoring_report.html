@@ -19,180 +19,179 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring_report.css' %}" />
+{% endblock %}
 
 {% block extrahead %}
-{{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
-<script type="text/javascript">
+    {{ block.super }}
+    <script type="text/javascript">
         $(document).ready(function () {
-            $(".monitoring-status").each(function()
-            {
+            $(".monitoring-status").each(function() {
                 $(this).find("tr:odd").addClass('row1');
                 $(this).find("tr:even").addClass('row2');
-            });
-        });
-</script>
+            })
+        })
+    </script>
 {% endblock %}
-{% block extrastyle %}
-{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/monitoring_report.css" />
-{% endblock %}
-{% block content %}
-<div id="report_menu">
-{% if report_type == 'finished' %}
 
-    <span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'inprogress' %}">{% trans 'In progress' %}</a></span>
-    <span class="menuitem">{% trans 'Finished' %}</span>
+{% block content %}
+    <div id="report_menu">
+    {% if report_type == 'finished' %}
+
+        <span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'inprogress' %}">{% trans 'In progress' %}</a></span>
+        <span class="menuitem">{% trans 'Finished' %}</span>
+
+        {% if monitorings %}
+
+        <h3>{% trans 'Select monitoring' %}</h3>
+
+        <p><select onchange="location = '{% url 'exmo2010:monitoring_report_type' 'finished' %}' + this.options[this.selectedIndex].value;">
+            <option value=""
+              {% if not monitoring_id %}selected{% endif %}>
+                {% trans 'All finished monitorings' %}
+            </option>
+            {% for monitoring in all_monitorings %}
+                <option value="{{ monitoring.pk }}"
+                  {% if monitoring.pk|slugify == monitoring_id %}selected{% endif %}>
+                    {{ monitoring }}
+                </option>
+            {% endfor %}
+        </select></p>
+
+        {% endif %}
+
+    {% else %}
+        <span class="menuitem">{% trans 'In progress' %}</span><span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'finished' %}">{% trans 'Finished' %}</a></span>
+    {% endif %}
+
+    </div>
+    {% if monitorings %}
+        {% if paginator %}
+            {% include 'exmo2010/paginator_paginator.html' %}
+        {% endif %}
+    {% endif %}
 
     {% if monitorings %}
 
-    <h3>{% trans 'Select monitoring' %}</h3>
+    {% for monitoring in monitorings %}
+        <h3 class="monitoring-name">{{ monitoring.name }}</h3>
 
-    <p><select onchange="location = '{% url 'exmo2010:monitoring_report_type' 'finished' %}' + this.options[this.selectedIndex].value;">
-        <option value=""
-          {% if not monitoring_id %}selected{% endif %}>
-            {% trans 'All finished monitorings' %}
-        </option>
-        {% for monitoring in all_monitorings %}
-            <option value="{{ monitoring.pk }}"
-              {% if monitoring.pk|slugify == monitoring_id %}selected{% endif %}>
-                {{ monitoring }}
-            </option>
-        {% endfor %}
-    </select></p>
+        <div class="monitoring-stat clearfix">
+            <div class="monitoring-status-div monitoring-status-left">
+                <table class="monitoring-status">
+                    {% if not monitoring.is_published %}
+                        <tr>
+                            <td>{% trans 'Monitoring status' %}</td>
+                            <td class="value">{{ monitoring.get_status_display }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% trans 'Monitoring rate begin date' %}</td>
+                        <td class="value">{{ monitoring.rate_date }}</td>
+                    </tr>
+                    {% if not monitoring.no_interact %}
+                        <tr>
+                            <td>{% trans 'Monitoring interact start date' %}</td>
+                            <td class="value">{{ monitoring.interact_date }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans 'Monitoring interact end date' %}</td>
+                            <td class="value">{{ monitoring.finishing_date }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td>{% trans 'Monitoring publish date' %}</td>
+                        <td class="value">{{ monitoring.publish_date }}</td>
+                    </tr>
+                </table>
+            </div>
 
-    {% endif %}
+            <div class="monitoring-status-div monitoring-status-right">
+                {% with monitoring.statistics as stat %}
+                    <table class="monitoring-status">
 
-{% else %}
-    <span class="menuitem">{% trans 'In progress' %}</span><span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'finished' %}">{% trans 'Finished' %}</a></span>
-{% endif %}
+                        <tr>
+                            <td>{% trans 'Organization in monitoring' %}</td>
+                            <td class="value">{{ stat.organization }}</td>
+                        </tr>
 
-</div>
-{% if monitorings %}
+                        <tr>
+                            <td>{% trans 'Rated organization' %}</td>
+                            <td class="value">{{ stat.organization_rated }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>{% trans 'Organization registered' %}</td>
+                            <td class="value">{{ stat.organization_users }}</td>
+                        </tr>
+
+                        {% if monitoring.status in monitoring.after_interaction_status %}
+                        <tr>
+                            <td>{% trans 'Organization active' %}</td>
+                            <td class="value">{{ stat.organization_users_active }}</td>
+                        </tr>
+                        {% endif %}
+
+
+                        <tr>
+                            <td>{% trans 'Expert active' %}</td>
+                            <td class="value">{{ stat.expert }}</td>
+                        </tr>
+
+                        {% if monitoring.status in monitoring.after_interaction_status %}
+
+                        <tr>
+                            <td>{% trans 'Organization comments' %}</td>
+                            <td class="value">{{ stat.comment_organization }}</td>
+                        </tr>
+                        <tr>
+                            <td>{% trans 'Expert comments' %}</td>
+                            <td class="value">{{ stat.comment_expert }}</td>
+                        </tr>
+                        {% if stat.avg_openness_initial >= 0 %}
+                        <tr>
+                            <td>{% trans 'Average openness first' %}</td>
+                            <td class="value">{{ stat.avg_openness_initial|floatformat:3 }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>
+                                {% if report_type == 'inprogress' %}
+                                    {% trans 'Average openness' %}
+                                {% else %}
+                                    {% trans 'Average final openness' %}
+                                {% endif %}
+                            </td>
+                            <td class="value">{{ stat.avg_openness|floatformat:3 }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                {% endwith %}
+            </div>
+        </div>
+
+        {% if not forloop.last %}
+            <hr class="monitoring-stat-hr">
+        {% endif %}
+
+    {% endfor %}
+
     {% if paginator %}
         {% include 'exmo2010/paginator_paginator.html' %}
     {% endif %}
-{% endif %}
 
-{% if monitorings %}
+    {% else %}
+        {% if report_type == 'inprogress' %}
+            {% trans "There're no currently inprogress monitorings." %}
+        {% endif %}
 
-{% for monitoring in monitorings %}
-<h3 class="monitoring-name">{{ monitoring.name }}</h3>
-
-<div class="monitoring-stat clearfix">
-    <div class="monitoring-status-div monitoring-status-left">
-        <table class="monitoring-status">
-            {% if not monitoring.is_published %}
-            <tr>
-                <td>{% trans 'Monitoring status' %}</td>
-                <td class="value">{{ monitoring.get_status_display }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>{% trans 'Monitoring rate begin date' %}</td>
-                <td class="value">{{ monitoring.rate_date|date:"d F Y" }}</td>
-            </tr>
-            {% if not monitoring.no_interact %}
-            <tr>
-                <td>{% trans 'Monitoring interact start date' %}</td>
-                <td class="value">{{ monitoring.interact_date|date:"d F Y" }}</td>
-            </tr>
-            <tr>
-                <td>{% trans 'Monitoring interact end date' %}</td>
-                <td class="value">{{ monitoring.finishing_date|date:"d F Y" }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>{% trans 'Monitoring publish date' %}</td>
-                <td class="value">{{ monitoring.publish_date|date:"d F Y" }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="monitoring-status-div monitoring-status-right">
-        {% with monitoring.statistics as stat %}
-        <table class="monitoring-status">
-
-            <tr>
-                <td>{% trans 'Organization in monitoring' %}</td>
-                <td class="value">{{ stat.organization }}</td>
-            </tr>
-
-            <tr>
-                <td>{% trans 'Rated organization' %}</td>
-                <td class="value">{{ stat.organization_rated }}</td>
-            </tr>
-
-            <tr>
-                <td>{% trans 'Organization registered' %}</td>
-                <td class="value">{{ stat.organization_users }}</td>
-            </tr>
-
-            {% if monitoring.status in monitoring.after_interaction_status %}
-            <tr>
-                <td>{% trans 'Organization active' %}</td>
-                <td class="value">{{ stat.organization_users_active }}</td>
-            </tr>
-            {% endif %}
-
-
-            <tr>
-                <td>{% trans 'Expert active' %}</td>
-                <td class="value">{{ stat.expert }}</td>
-            </tr>
-
-            {% if monitoring.status in monitoring.after_interaction_status %}
-
-            <tr>
-                <td>{% trans 'Organization comments' %}</td>
-                <td class="value">{{ stat.comment_organization }}</td>
-            </tr>
-            <tr>
-                <td>{% trans 'Expert comments' %}</td>
-                <td class="value">{{ stat.comment_expert }}</td>
-            </tr>
-            {% if stat.avg_openness_initial >= 0 %}
-            <tr>
-                <td>{% trans 'Average openness first' %}</td>
-                <td class="value">{{ stat.avg_openness_initial|floatformat:3 }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>
-                    {% if report_type == 'inprogress' %}
-                        {% trans 'Average openness' %}
-                    {% else %}
-                        {% trans 'Average final openness' %}
-                    {% endif %}
-                </td>
-                <td class="value">{{ stat.avg_openness|floatformat:3 }}</td>
-            </tr>
-            {% endif %}
-        </table>
-        {% endwith %}
-    </div>
-</div>
-
-{% if not forloop.last %}
-<hr class="monitoring-stat-hr">
-{% endif %}
-
-{% endfor %}
-
-{% if paginator %}
-    {% include 'exmo2010/paginator_paginator.html' %}
-{% endif %}
-
-{% else %}
-    {% if report_type == 'inprogress' %}
-        {% trans "There're no currently inprogress monitorings." %}
+        {% if report_type == 'finished' %}
+            {% trans "There's no any finished monitoring." %}
+        {% endif %}
     {% endif %}
-
-    {% if report_type == 'finished' %}
-        {% trans "There's no any finished monitoring." %}
-    {% endif %}
-{% endif %}
-
 
 {% endblock %}

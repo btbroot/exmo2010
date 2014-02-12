@@ -18,18 +18,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import forms
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from exmo2010.models import Monitoring, MONITORING_STATUS, MONITORING_PUBLISHED
+from core.fields import LocalizeDateInput
+from exmo2010.models import Monitoring, MONITORING_PUBLISHED
 
 
 class MonitoringForm(forms.ModelForm):
     """
-    Форма редактирования/создания мониторинга.
+    Monitoring form.
 
     """
-    status = forms.ChoiceField(choices=MONITORING_STATUS, label=_('Status'))
     add_questionnaire = forms.BooleanField(required=False, label=_('Add questionnaire'))
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +37,10 @@ class MonitoringForm(forms.ModelForm):
         self.fields['interact_date'].required = True
         self.fields['finishing_date'].required = True
         self.fields['publish_date'].required = True
-        self.fields.keyOrder = [
+
+    class Meta:
+        model = Monitoring
+        fields = (
             'name',
             'status',
             'openness_expression',
@@ -50,43 +52,17 @@ class MonitoringForm(forms.ModelForm):
             'interact_date',
             'finishing_date',
             'publish_date',
-        ]
-
-    class Meta:
-        model = Monitoring
-        exclude = ('time_to_answer',
-                   'prepare_date',
-                   'result_date',
-                   )
-        widgets = {
-            'rate_date': forms.DateInput(attrs={
-                'class': 'jdatefield',
-                'maxlength': 300
-            }),
-            'interact_date': forms.DateInput(attrs={
-                'class': 'jdatefield',
-                'maxlength': 300
-            }),
-            'finishing_date': forms.DateInput(attrs={
-                'class': 'jdatefield',
-                'maxlength': 300
-            }),
-            'publish_date': forms.DateInput(attrs={
-                'class': 'jdatefield',
-                'maxlength': 300
-            }),
-        }
-
-    class Media:
-        css = {
-            'all': (
-                settings.STATIC_URL + 'exmo2010/css/jquery-ui.css',
-            )
-        }
-        js = (
-            settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
-            settings.STATIC_URL + 'exmo2010/js/jquery/jquery-ui.min.js',
         )
+        date_field_attributes = {
+            'class': 'datepicker',
+            'maxlength': 10,
+        }
+        widgets = {
+            'rate_date': LocalizeDateInput(attrs=date_field_attributes),
+            'interact_date': LocalizeDateInput(attrs=date_field_attributes),
+            'finishing_date': LocalizeDateInput(attrs=date_field_attributes),
+            'publish_date': LocalizeDateInput(attrs=date_field_attributes),
+        }
 
 
 class MonitoringFilterForm(forms.Form):

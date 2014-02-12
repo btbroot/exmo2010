@@ -3,7 +3,7 @@ state official websites.
 
 Copyright 2010, 2011, 2013 Al Nikolov
 Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -164,24 +164,24 @@ http://www.opensource.org/licenses/mit-license.php
 
 --
 
+exmo/exmo2010/static/jquery-ui/
+
+Copyright 2014 jQuery Foundation and other contributors,
+http://jqueryui.com/
+
+This software consists of voluntary contributions made by many
+individuals (AUTHORS.txt, http://jqueryui.com/about) For exact
+contribution history, see the revision history and logs, available
+at http://jquery-ui.googlecode.com/svn/
+
+License: The MIT License (MIT)
+exmo/exmo2010/static/jquery-ui/MIT-LICENSE.txt
+
+--
+
 exmo/exmo2010/static/exmo2010/js/jquery/jquery.min.js
-exmo/exmo2010/static/exmo2010/js/jquery/jquery-ui.min.js
 
 js_tests/vendor/qunit-1.12.0.css
-
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_flat_0_aaaaaa_40x100.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_flat_75_ffffff_40x100.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_glass_55_fbf9ee_1x400.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_glass_65_ffffff_1x400.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_glass_75_dadada_1x400.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_glass_75_e6e6e6_1x400.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_glass_95_fef1ec_1x400.png
-exmo/exmo2010/static/exmo2010/css/images/ui-bg_highlight-soft_75_cccccc_1x100.png
-exmo/exmo2010/static/exmo2010/css/images/ui-icons_222222_256x240.png
-exmo/exmo2010/static/exmo2010/css/images/ui-icons_2e83ff_256x240.png
-exmo/exmo2010/static/exmo2010/css/images/ui-icons_454545_256x240.png
-exmo/exmo2010/static/exmo2010/css/images/ui-icons_888888_256x240.png
-exmo/exmo2010/static/exmo2010/css/images/ui-icons_cd0a0a_256x240.png
 
 Copyright 2012 jQuery Foundation and other contributors
 http://jquery.com/
@@ -491,14 +491,6 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
-
---
-
-exmo/exmo2010/static/exmo2010/js/jquery/jquery-ui.min.js
-
-Copyright 2012, exmo/exmo2010/static/exmo2010/js/jquery/AUTHORS.txt
-
-Licensed MIT, GPL
 
 --
 

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,10 +19,10 @@
 #
 {% endcomment %}
 
-{% load i18n pytils_dt %}
+{% load i18n %}
 {{ score.task.organization }}: {{ score.parameter }}
 
-{% trans 'Date' %}: {% if claim.close_date %}{{ claim.close_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.close_date|date:"G:i" }}{% else %}{{ claim.open_date|ru_strftime:"%d %B %Y" }} {% trans 'at' %} {{ claim.open_date|date:"G:i" }}{% endif %}
+{% trans 'Date' %}: {% if claim.close_date %}{{ claim.close_date|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ claim.open_date|date:"SHORT_DATETIME_FORMAT" }}{% endif %}
 {% trans 'From who' %}: {{ claim.creator }}
 {% trans 'To whom' %}: {{ claim.addressee }}
 

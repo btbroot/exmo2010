@@ -1,0 +1,118 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n monitoring_stats check_object_permission first_element static future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-ui/jquery-ui-1.10.4.custom.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
+    <script type="text/javascript">jQuery('input[placeholder], textarea[placeholder]').placeholder();</script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/bootstrap-tab.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
+    <script>
+        $(function(){
+            if (!window.location.hash) {
+                $('#{{ tab }}').addClass('active');
+                $('a[href="#{{ tab }}"]').closest('li').addClass('active');
+            }
+        })
+    </script>
+{% endblock %}
+
+{% block nav_sidebar %}
+    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
+{% endblock %}
+
+{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+
+{% block content_title %}
+    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+{% endblock %}
+
+{% block content_class %}sidebar-ident{% endblock %}
+
+{% block content %}
+
+    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
+
+    <div id="top-menu">
+        <h2>{% trans "Organizations" %}</h2>
+        <ul class="nav-tabs">
+            <li>
+                <span>
+                    <a href="#all" data-toggle="tab" class="pseudo">{% trans 'all' %}</a>
+                </span>
+            </li>
+
+            <li>
+                <span>
+                    <a href="#send_mail" data-toggle="tab" class="pseudo">{% trans 'send mail' %}</a>
+                </span>
+            </li>
+
+            <li>
+                <span>
+                    <a href="#mail_history" data-toggle="tab" class="pseudo">
+                        {% trans 'mail history' %}
+                    </a>
+                </span>
+            </li>
+
+            {% if perm %}
+                <li>
+                    <span>
+                        <a href="#add" data-toggle="tab" class="pseudo">
+                            {% trans 'add' %}
+                        </a>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane" id="all">
+            {% include "all.html" %}
+        </div>
+
+        <div class="tab-pane" id="send_mail">
+            {% include "organization_email_form.html" %}
+        </div>
+
+        <div class="tab-pane" id=mail_history>
+            {% include "mail_history.html" %}
+        </div>
+
+        {% if perm %}
+            <div class="tab-pane" id="add">
+                {% include "organization_form.html" %}
+            </div>
+        {% endif %}
+    </div>
+
+{%endblock%}

@@ -97,13 +97,7 @@ USE_I18N = True
 MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka')
 
 USE_ETAGS = True
-DATETIME_FORMAT = "Y-m-d, H:i"
-DATE_INPUT_FORMATS = [
-    '%d.%m.%Y',
-    '%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%b %d %Y',
-    '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
-    '%B %d, %Y', '%d %B %Y', '%d %B, %Y'
-]
+FORMAT_MODULE_PATH = 'formats'
 LOCALE_PATHS = ('locale',)
 
 MEDIA_URL = '/media/'
@@ -203,7 +197,6 @@ INSTALLED_APPS = (
     'admin_tools.dashboard',
     'livesettings',
     'keyedcache',
-    'pytils',
     'reversion',
     'south',
     'djcelery',

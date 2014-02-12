@@ -1,0 +1,106 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n monitoring_stats check_object_permission first_element static future %}
+
+{% if alert %}
+    {% ifequal alert 'success' %}
+        <p class="{{ alert }}">
+            {% trans 'Mails sent.' %}
+        </p>
+    {% endifequal %}
+{% endif %}
+
+<form id="search_form" action="" method="GET">
+    <table>
+        <tr>
+            <td>
+                <input id="name_filter" name="name_filter" value="" placeholder="{% trans 'Organization' %}">
+            </td>
+
+            {% if sent %}
+                <td>
+                    <select name="invite_filter">
+                        <option value="ALL">{% trans 'All invitations' %}</option>
+                        {% for status in inv_status %}
+                            <option value="{{ status.0 }}">{{ status.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            {% endif %}
+
+            <td>
+                <input type="submit" id="search_button" value="{% trans 'Find' %}" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+<table class="base-table">
+    {% include 'exmo2010/table_header.html' with headers=headers %}
+
+    <tbody>
+        {% for object in object_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{object.name|urlencode}}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
+                    {% if perm %}
+                        &nbsp;<a href="{% url 'exmo2010:organization_update' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
+                    {%endif%}
+                    {% if perm and not monitoring.is_published %}
+                        &nbsp;<a href="{% url 'exmo2010:organization_delete' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>
+                    {%endif%}
+                </td>
+
+                <td>
+                    {{ object.email|default_if_none:''|first_element }}
+                </td>
+
+                <td>
+                    {{ object.phone|default_if_none:''|first_element }}
+                </td>
+
+                <td>
+                    {{ object.inv_code|default_if_none:'' }}
+                </td>
+
+                {% if perm %}
+                    <td>
+                        {{ object.task__count }}
+                    </td>
+                {% endif %}
+                {% if sent %}
+                    {% with object.inv_status as status %}
+                        <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
+                            {{ object.get_inv_status_display|default_if_none:'' }}
+                        </td>
+                    {% endwith %}
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include "exmo2010/paginator.html" %}
+
+{% if perm %}
+    <br />
+    {% monitoring_stats monitoring %}
+{% endif %}

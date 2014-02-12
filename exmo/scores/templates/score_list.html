@@ -19,19 +19,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n check_object_permission hash future %}
+{% load i18n check_object_permission hash static future %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/changelists.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/score_list.css" />
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/bubble.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/changelists.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_list.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
     {% if view_openness_perm and task.approved %}
-        <script src="{{ STATIC_URL }}js/scores.js"></script>
+        <script src="{% static 'js/scores.js' %}"></script>
     {% endif %}
 {% endblock %}
 
@@ -128,12 +128,13 @@
 {% check_object_permission exmo2010.admin_monitoring monitoring as perm_admin_monitoring %}
 
 <table>
-    {% table_header headers %}
+    {% include 'exmo2010/table_header.html' with headers=headers %}
+
     <tbody>
         <tr>
             <td colspan=10>
                 {% if perm_admin_monitoring %}
-                    <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif"></a>&nbsp;
+                    <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">{% trans 'Add new parameter' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}"></a>&nbsp;
                 {%endif%}
             </td>
         </tr>
@@ -165,14 +166,14 @@
                             {% endif %}
                         {% endif %}
                             {% if perm_admin_monitoring %}
-                                &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                                &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
                                 {% if not monitoring.is_published %}
-                                    &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                                    &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>&nbsp;
                                 {% endif %}
                             {%endif%}
 
                         {% if parameter.url %}
-                            <a href="{{ parameter.url }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png" class="unreaded_comment" /></a>
+                            <a href="{{ parameter.url }}"><img src="{% static 'exmo2010/icon_newcomment.png' %}" class="unreaded_comment" /></a>
                         {% endif %}
 
                         </td>
@@ -219,14 +220,14 @@
                     {% endif %}
 
                     {% if perm_admin_monitoring %}
-                        &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                        &nbsp;<a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
                         {% if not monitoring.is_published %}
-                            &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                            &nbsp;<a href="{% url 'exmo2010:parameter_delete' task.pk parameter.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>&nbsp;
                         {% endif %}
                     {%endif%}
 
                     {% if parameter.url %}
-                        <a href="{{ parameter.url }}"><img src="{{ STATIC_URL }}exmo2010/icon_newcomment.png" class="unreaded_comment" /></a>
+                        <a href="{{ parameter.url }}"><img src="{% static 'exmo2010/icon_newcomment.png' %}" class="unreaded_comment" /></a>
                     {% endif %}
 
                 </td>

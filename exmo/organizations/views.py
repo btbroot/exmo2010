@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,13 +17,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import datetime
+from datetime import datetime, time
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.comments import signals
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.utils import formats
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
@@ -83,7 +84,7 @@ def organization_list(request, monitoring_pk):
                     emails = filter(None, org.email.split(', '))
                 else:
                     continue
-                send_org_email.delay(emails, subject, 'organizations/invitation_email', org.pk, context)
+                send_org_email.delay(emails, subject, 'invitation_email', org.pk, context)
 
             redirect = reverse('exmo2010:organization_list', args=[monitoring_pk])+"?alert=success#all"
             return HttpResponseRedirect(redirect)
@@ -158,10 +159,11 @@ def organization_list(request, monitoring_pk):
         invite_filter_history = request.GET.get('invite_filter_history', False)
 
         if date_filter_history:
-            start_datetime = datetime.strptime("%s 00:00:00" % date_filter_history, '%d.%m.%Y %H:%M:%S')
-            finish_datetime = datetime.strptime("%s 23:59:59" % date_filter_history, '%d.%m.%Y %H:%M:%S')
-            inv_history = inv_history.filter(timestamp__gt=start_datetime,
-                                             timestamp__lt=finish_datetime)
+            input_format = formats.get_format('DATE_INPUT_FORMATS')[0]
+            start_datetime = datetime.strptime(date_filter_history, input_format)
+            finish_datetime = datetime.combine(start_datetime, time.max)
+            inv_history = inv_history.filter(timestamp__range=(start_datetime, finish_datetime))
+
             tab = 'mail_history'
         if invite_filter_history and invite_filter_history != 'ALL':
             inv_history = inv_history.filter(inv_status=invite_filter_history)
@@ -172,6 +174,7 @@ def organization_list(request, monitoring_pk):
         headers,
         queryset=queryset,
         paginate_by=100,
+        template_name='organization_list.html',
         extra_context={
             'title': title,
             'sent': sent,
@@ -191,11 +194,12 @@ def organization_list(request, monitoring_pk):
 
 class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     """
-    Generic view to edit or delete monitoring
+    Generic view to edit or delete organization
+
     """
     model = Organization
     form_class = OrganizationForm
-    template_name = "exmo2010/organization_form.html"
+    template_name = "edit_organization.html"
     context_object_name = "object"
     extra_context = {}
     pk_url_kwarg = 'org_pk'
@@ -239,7 +243,7 @@ class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin,
 
         if self.kwargs["method"] == 'delete':
             self.object = self.get_object()
-            self.template_name = "exmo2010/organization_confirm_delete.html"
+            self.template_name = "organization_confirm_delete.html"
             title = _('Delete organization %s') % monitoring
             self.extra_context = {
                 'title': title,

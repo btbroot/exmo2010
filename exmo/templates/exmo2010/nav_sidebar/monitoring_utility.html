@@ -78,7 +78,7 @@
                 <!-- {% trans "Clarifications" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Clarifications" %}
 
-                {% url 'exmo2010:claim_report monitoring.pk' as url %}
+                {% url 'exmo2010:claim_report' monitoring.pk as url %}
                 <!-- {% trans "Claims" %} -->
                 {% include "exmo2010/nav_sidebar/item.html" with url=url title="Claims" %}
 

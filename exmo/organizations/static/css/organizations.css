@@ -1,0 +1,127 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+.clearfix {
+    float: left;
+}
+
+.clearfix div {
+    float: left;
+    padding: 0 0 3px 0;
+}
+
+.clearfix div.title {
+    width: 94px;
+    padding: 3px 10px 0 0;
+    text-align: right;
+    clear: both;
+}
+
+.clearfix div.content {
+    margin-bottom: 10px;
+    width: 600px;
+}
+
+.clearfix div.content select {
+    width: 200px;
+}
+
+.clearfix div.content input[type="submit"] {
+    width: 100px;
+}
+
+.clearfix div.notification {
+    float: none;
+    margin-left: 700px;
+    padding-left: 10px;
+}
+
+.clearfix div.content textarea {
+    width: 100%;
+    height: 300px;
+}
+
+.table-implicit td:first-child {
+    text-align: right;
+}
+
+.table-implicit td textarea {
+    width: 250px;
+    height: 85px;
+}
+
+.table-implicit td input[type="text"] {
+    width: 250px;
+}
+
+.table-implicit td input[type="text"]#id_org-name {
+    width: 600px;
+}
+
+.errorlist {
+    text-align: left;
+}
+
+/* Mail history table */
+
+.mail_history td:first-child, .mail_history td:last-child,
+.mail_history th:first-child, .mail_history th:last-child {
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* Mail history search form */
+
+#mail_history_search_form > input[name="date_filter_history"] {
+    width: 140px;
+}
+
+#mail_history_search_form > select {
+    width: 190px;
+    margin: 10px 4px;
+}
+
+.notification .alert-info
+{
+    margin-top: 41px;
+    width: 270px;
+}
+
+.clearfix.send-mail-form {
+    width: 100%;
+}
+
+.send-mail-form input[type="text"] {
+    width: 590px;
+}
+
+td.comment .preview-container {
+    display: block;
+    width: 100%;
+    height: 17px;
+    overflow: hidden;
+}
+
+#help-text {
+    position: absolute;
+    width: 450px;
+    background: url(../../../static/exmo2010/img/registration-triangle.png) 0 10px no-repeat;
+    padding-left: 9px;
+}

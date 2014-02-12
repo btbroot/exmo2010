@@ -32,7 +32,7 @@
                     </span>
 
                     <span class="messages-date">
-                        {{ c.open_date|date:"H:i d.m.Y" }}
+                        {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }}
                     </span>
 
                     <div class="messages-content">
@@ -45,7 +45,7 @@
                             {{ c.close_user.profile.legal_name }}
                         </span>
                         <span class="messages-date">
-                            {{ c.close_date|date:"H:i d.m.Y" }}
+                            {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }}
                         </span>
                         <div class="messages-content">
                             {{ c.answer|safe|trim_links:url_length }}

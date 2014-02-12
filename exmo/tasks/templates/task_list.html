@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n monitoring_stats future %}
+{% load i18n monitoring_stats future %}
 
 {% block extrahead %}{{ block.spuer }}
     <style>
@@ -82,7 +82,8 @@
 {% block content %}
 <div id=task_list>
 <table>
-  {% table_header headers %}
+  {% include 'exmo2010/table_header.html' with headers=headers %}
+
   <tbody>
     {% if monitoring.perms.admin_monitoring %}
         <tr>

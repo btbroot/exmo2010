@@ -18,32 +18,34 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load static future %}
+{% load static %}
 
 <thead>
-<tr class="heading">
-  {% for header in headers %}
-    <td{{ header.class_attr|safe }}>
-      {% if header.sortable %}<a href="?{{ header.url|escape }}">{% endif %}
-      {{ header.text|capfirst }}
-      {% if header.sortable %}</a>{% endif %}
-      {% if header.filterable %}
-        <form action="." method="GET">
-        {% if header.select %}
-            <select name="filter{{ header.i }}">
-                <option value="">---</option>
-                {% for option in header.select %}
-                <option value="{{option.0}}">{{ option.1 }}</option>
-                {% endfor %}
-            </select>
-            <input type="image" src="{% get_static_prefix %}admin/img/tooltag-arrowright_over.gif">
-        {% else %}<input name="filter{{ header.i }}" value="{{ header.filter }}">
-        {% endif %}
-        <input name="o" value="{{ header.o }}" type="hidden">
-        <input name="ot" value="{{ header.ot }}" type="hidden">
-        </form>
-      {% endif %}
-    </td>
-  {% endfor %}
-</tr>
+    <tr class="heading">
+        {% for header in headers %}
+            <th{{ header.class_attr|safe }}>
+                {% if header.sortable %}<a href="?{{ header.url|escape }}">{% endif %}
+                {{ header.text|capfirst }}
+                {% if header.sortable %}</a>{% endif %}
+
+                {% if header.filterable %}
+                    <form action="." method="GET">
+                        {% if header.select %}
+                            <select name="filter{{ header.i }}">
+                                <option value="">---</option>
+                                {% for option in header.select %}
+                                    <option value="{{option.0}}">{{ option.1 }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="image" src="{% get_static_prefix %}admin/img/tooltag-arrowright_over.gif">
+                        {% else %}
+                            <input name="filter{{ header.i }}" value="{{ header.filter }}">
+                        {% endif %}
+                        <input name="o" value="{{ header.o }}" type="hidden">
+                        <input name="ot" value="{{ header.ot }}" type="hidden">
+                    </form>
+                {% endif %}
+            </th>
+        {% endfor %}
+    </tr>
 </thead>

@@ -19,19 +19,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n check_object_permission hash future %}
+{% load i18n check_object_permission hash static future %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_analyst.css"/>
-{% endblock %}
-
-{% block extrahead %}
-    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
 {% endblock %}
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
-
 
 {% block nav_sidebar %}
     {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
@@ -59,50 +54,19 @@
 
     <table class="base-table">
         <tbody>
-
-        <tr class="first">
-            <td class="report-date">
-            </td>
-            <td class="report-organization">
-            </td>
-            <td class="report-link">
-            </td>
-        </tr>
-        <tr class="heading">
-            <td>{% trans 'Time and date' %} <span class="arrow">↓</span></td>
-            <td>{% trans 'Expert' %}</td>
-            <td>{% trans 'Stage' %}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <table class="base-table open">
-        <tbody>
-        <tr class="first">
-            <td class="report-date">
-            </td>
-            <td class="report-organization">
-            </td>
-            <td class="report-link">
-            </td>
-        </tr>
-
-        {% for item in history %}
             <tr>
-                <td>
-                    {{ item.timestamp|date:"d.m.Y, H:i" }}
-                </td>
-
-                <td>
-                    {{ item.user.userprofile.legal_name }}
-                </td>
-
-                <td>
-                    {{ item.get_status_display }}
-                </td>
+                <th>{% trans 'Time and date' %} <span class="arrow">↓</span></th>
+                <th>{% trans 'Expert' %}</th>
+                <th>{% trans 'Stage' %}</th>
             </tr>
-        {% endfor %}
 
+            {% for item in history %}
+                <tr>
+                    <td>{{ item.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
+                    <td>{{ item.user.userprofile.legal_name }}</td>
+                    <td>{{ item.get_status_display }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 

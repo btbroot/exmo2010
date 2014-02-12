@@ -48,7 +48,6 @@ lxml==2.3.5
 mercurial
 pymongo==2.1
 python-dateutil==1.5
-pytils==0.2.3
 pytz==2013b
 simplejson==2.6.2
 git+https://github.com/bsavelev/django403.git

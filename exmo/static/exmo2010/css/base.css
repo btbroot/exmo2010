@@ -369,16 +369,8 @@ table.base-table tr:nth-child(even) {
 
 /* SORTABLE TABLES */
 
-thead th a:link, thead th a:visited {
-    display: block;
-}
-
 table thead th.sorted {
     background-position: bottom left !important;
-}
-
-table thead th.sorted a {
-    padding-right: 13px;
 }
 
 table thead th.ascending a {
@@ -388,6 +380,28 @@ table thead th.ascending a {
 table thead th.descending a {
     background: url(../../admin/img/arrow-down.gif) right .4em no-repeat;
 }
+
+
+/* SORTABLE TABLES HEADERS */
+
+.heading th {
+    background-color: #fff;
+}
+
+.heading th a {
+    color: #222;
+    border-bottom: 1px #222 dotted;
+}
+
+.heading th a:hover {
+    text-decoration: none;
+    border-bottom: none;
+}
+
+.heading > th> form {
+    margin: 5px 0 0;
+}
+
 
 /* ORDERABLE TABLES */
 
@@ -846,7 +860,9 @@ ul#errors-header li.portal a:hover {
     color: #005C9C;
 }
 
-.jdatefield {
+/* Calendar */
+
+.datepicker {
     width: 150px;
     height: 20px;
 }

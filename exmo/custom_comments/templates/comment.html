@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments days_until date_until pytils_dt wysiwyg trim_links future %}
+{% load i18n comments days_until date_until wysiwyg trim_links future %}
 
 {% if view_comment %}
     {% get_comment_list for object as comment_list %}
@@ -50,7 +50,7 @@
                         </span>
 
                         <span class="messages-date">
-                        {{ comment.submit_date|date:"H:i d.m.Y" }}
+                        {{ comment.submit_date|date:"SHORT_DATETIME_FORMAT" }}
                         </span>
 
                         <div class="messages-content">
@@ -60,7 +60,7 @@
                         {% if not is_expert and is_organization and comment.user_is_organization and not comment.user_is_expert and comment.status == 0 %}
                         <div class="notification-peremptory">
                             {% trans 'Peremptory day to answer your question is' %}
-                            {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|ru_strftime:"%d %B %Y" }}
+                            {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|date:"SHORT_DATE_FORMAT" }}
                         </div>
                         {% endif %}
 

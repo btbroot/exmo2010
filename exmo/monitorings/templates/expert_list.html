@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load table_header i18n monitoring_stats check_object_permission future %}
+{% load i18n monitoring_stats check_object_permission future %}
 
 {% block nav_sidebar %}
     {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
@@ -30,7 +30,8 @@
 {% block content %}
     <div id=expert_list>
         <table>
-            {% table_header headers %}
+            {% include 'exmo2010/table_header.html' with headers=headers %}
+
             <tbody>
             <tr><td>
                 {% for object in object_list %}
