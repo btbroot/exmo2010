@@ -22,7 +22,7 @@
 
 {% if sent %}
     <form id="mail_history_search_form" action="" method="GET">
-        <input name="date_filter_history" class="datepicker date-picker" maxlength="10" type="text"{% if date_filter_history %} value="{{ date_filter_history }}"{% endif %}/>
+        <input name="date_filter_history" class="date-picker" maxlength="10" type="text"{% if date_filter_history %} value="{{ date_filter_history }}"{% endif %}/>
         <select name="invite_filter_history">
             <option value="ALL">{% trans 'All invitations' %}</option>
             {% for status in inv_status %}

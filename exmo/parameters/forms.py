@@ -18,11 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django import forms
-from django.contrib.admin import widgets
 from django.utils.translation import ugettext_lazy as _
 
-from exmo2010.forms import TagAutocomplete
-from exmo2010.models import Organization, Parameter
+from exmo2010.models import Parameter
 
 
 SCORE_CHOICES1 = (
@@ -74,40 +72,6 @@ class ParamCritScoreFilterForm(forms.Form):
         super(ParamCritScoreFilterForm, self).__init__(*args, **kwargs)
         self.fields['parameter'].queryset = Parameter.objects.filter(
             monitoring=monitoring)
-
-
-class ParameterForm(forms.ModelForm):
-    """
-    Форма редактирования/создания параметра.
-
-    """
-    def __init__(self, *args, **kwargs):
-        """
-        Фильтруем организации для поля exclude
-        """
-        _parameter = kwargs.get('instance')
-        _monitoring = kwargs.get('monitoring')
-        if _monitoring:
-            kwargs.pop('monitoring')
-        super(ParameterForm, self).__init__(*args, **kwargs)
-        if _parameter:
-            self.fields['exclude'].queryset = Organization.objects.filter(monitoring=_parameter.monitoring)
-        if _monitoring:
-            self.fields['exclude'].queryset = Organization.objects.filter(monitoring=_monitoring)
-            self.fields['monitoring'].initial = _monitoring
-
-    class Meta:
-        model = Parameter
-        widgets = {
-            'keywords': TagAutocomplete,
-            'exclude': widgets.FilteredSelectMultiple('', is_stacked=False),
-            'monitoring': forms.widgets.HiddenInput,
-        }
-
-    class Media:
-        css = {
-            "all": ("exmo2010/css/selector.css",)
-        }
 
 
 class ParameterTypeForm(forms.ModelForm):

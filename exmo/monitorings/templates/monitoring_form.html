@@ -19,7 +19,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static future widget_tweaks %}
+
+
+{% block title %}
+    {% if monitoring %}
+        {% blocktrans %}Edit monitoring {{monitoring}}{% endblocktrans %}
+    {% else %}
+        {% blocktrans %}Add new monitoring{% endblocktrans %}
+    {% endif %}
+{% endblock %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -53,7 +62,20 @@
         <table>
             <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
             {{ form.non_field_errors }}
-            {{ form.as_table }}
+
+            {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
+            {% if form.status %}
+                {% include "_form_field.html" with field=form.status %}
+            {% endif %}
+            {% include "_form_field.html" with field=form.openness_expression %}
+            {% include "_form_field.html" with field=form.map_link %}
+            {% include "_form_field.html" with field=form.add_questionnaire %}
+            {% include "_form_field.html" with field=form.no_interact %}
+            {% include "_form_field.html" with field=form.hidden %}
+            {% include "_form_field.html" with field=form.rate_date|add_class:"datepicker"|attr:"max_length:10" %}
+            {% include "_form_field.html" with field=form.interact_date|add_class:"datepicker"|attr:"max_length:10" %}
+            {% include "_form_field.html" with field=form.finishing_date|add_class:"datepicker"|attr:"max_length:10" %}
+            {% include "_form_field.html" with field=form.publish_date|add_class:"datepicker"|attr:"max_length:10" %}
         </table>
         <input type="submit" name="submit" class="button" value="{% trans 'Send' %}">
     </form>

@@ -39,14 +39,13 @@ urlpatterns += i18n_patterns('',
     url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comments/', include('custom_comments.urls')),
-    url(r'^tagging_autocomplete/', include('tagging_autocomplete.urls')),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
     url(r'^', include('exmo2010.urls', namespace='exmo2010', app_name='exmo2010')),
 )
 
-if 'debug_toolbar' in settings.INSTALLED_APPS:
+if 'debug_toolbar_user_panel' in settings.INSTALLED_APPS:
     urlpatterns += (url(r'', include('debug_toolbar_user_panel.urls')),)
 
 

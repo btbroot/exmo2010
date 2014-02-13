@@ -22,13 +22,13 @@
  Помощники для бекенда. По помощнику на каждый класс модели.
 """
 
+from types import NoneType
 from exmo2010.models import (Task, Monitoring, Score, Parameter,
                              MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED)
 
 
 def monitoring_permission(user, priv, monitoring):
     if priv in ('exmo2010.admin_monitoring',
-                'exmo2010.create_monitoring',
                 'exmo2010.edit_monitoring'):
         if user.is_expertA:
             return True
@@ -195,26 +195,38 @@ def parameter_permission(user, priv, parameter):
     return False
 
 
-def check_permission(user, priv, context=None):
+def check_permission(user, priv, context_obj=None):
     """
-    check user permission for context
-    врапер для функций выше. точка входа для бекенда авторизации django
-    делает eval на имя класса.
+    Check user permission for context object or global permissions that has no
+    context object.
+    """
+    if context_obj is not None:
+        # Call object permission handler
+        handler = perm_handlers[context_obj.__class__]
+        return handler(user, priv, context_obj)
+    else:
+        # Global permissions
+        if priv == 'exmo2010.create_monitoring':
+            return user.is_expertA
 
-    """
-    if context is None:
-        return False
-    func = eval(context._meta.object_name.lower() + '_permission')
-    return func(user, priv, context)
+
+perm_handlers = {
+    Monitoring: monitoring_permission,
+    Task: task_permission,
+    Score: score_permission,
+    Parameter: parameter_permission
+}
 
 
 # all permissions that are used in the project should be defined here
 _existing_permissions = {
+    NoneType: [  # Global permissions
+        'create_monitoring',
+    ],
     Monitoring: [
         'view_monitoring',
         'delete_monitoring',
         'edit_monitoring',
-        'create_monitoring',
         'admin_monitoring',
     ],
     Task: [

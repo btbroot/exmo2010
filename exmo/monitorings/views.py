@@ -35,7 +35,7 @@ from django.db.models import Count, Q
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError, PermissionDenied
-from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple
+from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField
 from django.forms.models import modelformset_factory, modelform_factory
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.http import HttpResponse
@@ -43,20 +43,18 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.views.generic.edit import ProcessFormView, ModelFormMixin
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.utils.decorators import method_decorator
+from django.views.generic import UpdateView, DeleteView
 from django.utils.translation import ugettext as _
-from django.utils.translation import ungettext
 from django.utils import simplejson
 
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
+from core.views import LoginRequiredMixin
 from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
-from monitorings.forms import MonitoringForm
+from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
 
@@ -130,114 +128,69 @@ def monitorings_list(request):
     return table(request, headers, queryset=queryset, paginate_by=25, template_name='exmo2010/monitoring_list.html')
 
 
-class MonitoringManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
-    """
-    Generic view to edit or delete monitoring
-    """
-
-    model = Monitoring
-    context_object_name = "object"
-    form_class = MonitoringForm
-    template_name = "monitoring_form.html"
-    extra_context = {}
+class MonitoringMixin(LoginRequiredMixin):
+    context_object_name = "monitoring"
     pk_url_kwarg = 'monitoring_pk'
 
-    def get_redirect(self, request):
-        redirect = '%s?%s' % (reverse('exmo2010:monitorings_list'), request.GET.urlencode())
-        redirect = redirect.replace("%", "%%")
-        return redirect
+    def get_success_url(self):
+        return '%s?%s' % (reverse('exmo2010:monitorings_list'), self.request.GET.urlencode())
 
-    def get_context_data(self, **kwargs):
-        context = super(MonitoringManagerView, self).get_context_data(**kwargs)
-        context.update(self.extra_context)
-        return context
 
-    def get(self, request, *args, **kwargs):
-        self.success_url = self.get_redirect(request)
-        self.object = self.get_object()
-        if self.kwargs["method"] == 'delete':
-            if not request.user.has_perm('exmo2010.delete_monitoring', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
+class MonitoringEditView(MonitoringMixin, UpdateView):
+    """
+    Generic view to edit or add monitoring
+    """
+    template_name = "monitoring_form.html"
 
-            title = _('Delete monitoring %s') % self.object
-            self.template_name = "exmo2010/monitoring_confirm_delete.html"
-            self.extra_context = {
-                'title': title,
-                'deleted_objects': Task.objects.filter(organization__monitoring=self.object),
-            }
+    def get_object(self):
+        if 'monitoring_pk' in self.kwargs:
+            # Existing monitoring edit page
+            monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
+            if not self.request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+                raise PermissionDenied
+            return monitoring
+        else:
+            # New monitoring page
+            if not self.request.user.has_perm('exmo2010.create_monitoring'):
+                raise PermissionDenied
+            return None
 
-        if self.kwargs["method"] == 'update':
-            if not request.user.has_perm('exmo2010.edit_monitoring', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
-            title = _('Edit monitoring %s') % self.object
-            self.extra_context = {
-                'title': title,
-            }
+    def get_form_class(self):
+        _modelform_kwargs = dict(model=Monitoring, form=CurLocaleModelForm, exclude=['time_to_answer'])
+        if not self.object:
+            # New monitoring form, status should be default (MONITORING_PREPARE)
+            _modelform_kwargs['exclude'].append('status')
 
-        return super(MonitoringManagerView, self).get(request, *args, **kwargs)
+        form_class = modelform_factory(**_modelform_kwargs)
 
-    def post(self, request, *args, **kwargs):
-        self.success_url = self.get_redirect(request)
-        self.object = self.get_object()
+        # Add pseudo-field to toggle questionnaire addition in the form
+        form_class.base_fields['add_questionnaire'] = BooleanField(required=False, label=_('Add questionnaire'))
 
-        if not request.user.has_perm('exmo2010.edit_monitoring', self.object):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        if self.kwargs["method"] == 'delete':
-            self.object = self.get_object()
-            self.object.delete()
-            return HttpResponseRedirect(self.get_success_url())
-        elif self.kwargs["method"] == 'update':
-            return super(MonitoringManagerView, self).post(request, *args, **kwargs)
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(MonitoringManagerView, self).dispatch(*args, **kwargs)
+        return form_class
 
     def form_valid(self, form):
-        cd = form.cleaned_data
-        m = form.save()
-        questionnaire = m.get_questionnaire()
-        if cd.get("add_questionnaire") and questionnaire:
-            questionnaire.delete()
-        elif cd.get("add_questionnaire") and not questionnaire:
-            questionnaire = Questionnaire(monitoring=m)
-            questionnaire.save()
-        return super(MonitoringManagerView, self).form_valid(form)
+        with transaction.commit_on_success():
+            monitoring = form.save()
+            if form.cleaned_data.get("add_questionnaire"):
+                if 'monitoring_pk' in self.kwargs and monitoring.get_questionnaire():
+                    Questionnaire.objects.filter(monitoring=monitoring).delete()
+                else:
+                    Questionnaire.objects.create(monitoring=monitoring)
+        return HttpResponseRedirect(self.get_success_url())
 
 
-@login_required
-def monitoring_add(request):
-    """
-    Create monitoring.
+class MonitoringDeleteView(MonitoringMixin, DeleteView):
+    template_name = "exmo2010/monitoring_confirm_delete.html"
 
-    """
-    if not request.user.has_perm('exmo2010.create_monitoring', Monitoring()):
-        return HttpResponseForbidden(_('Forbidden'))
-    if request.method == 'POST':
-        form = MonitoringForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            with transaction.commit_on_success():
-                # Чтобы нельзя было создать удачно мониторинг, а потом словить
-                # ошибку создания опроса для него.
-                monitoring = form.save()
-                if cd.get("add_questionnaire"):
-                    questionnaire = Questionnaire(monitoring=monitoring)
-                    questionnaire.save()
-            redirect = reverse('exmo2010:monitoring_update', kwargs={'monitoring_pk': monitoring.pk})
-            return HttpResponseRedirect(redirect)
-    else:
-        form = MonitoringForm()
-        form.fields['status'].choices = Monitoring.MONITORING_STATUS_NEW
+    def get_object(self):
+        monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
+        if not self.request.user.has_perm('exmo2010.delete_monitoring', monitoring):
+            raise PermissionDenied
+        return monitoring
 
-    context = {
-        'media': form.media,
-        'form': form,
-        'title': _('Add new monitoring'),
-        'formset': None
-    }
-    return TemplateResponse(request, 'monitoring_form.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(MonitoringDeleteView, self).get_context_data(**kwargs)
+        return dict(context, tasks=Task.objects.filter(organization__monitoring=self.object))
 
 
 def monitoring_rating(request, monitoring_pk):
@@ -685,7 +638,6 @@ def monitoring_parameter_export(request, monitoring_pk):
         'Document',
         'Image',
         'Weight',
-        'Keywords',
     ])
     for p in parameters:
         out = (
@@ -700,8 +652,6 @@ def monitoring_parameter_export(request, monitoring_pk):
             int(p.image),
             p.weight
         )
-        keywords = ", ".join([k.name for k in p.tags])
-        out += (keywords,)
         writer.writerow(out)
     return response
 
@@ -725,8 +675,6 @@ def monitoring_organization_export(request, monitoring_pk):
         'Url',
         'Email',
         'Phone',
-        'Comments',
-        'Keywords',
     ])
     for o in organizations:
         out = (
@@ -734,10 +682,7 @@ def monitoring_organization_export(request, monitoring_pk):
             o.url,
             o.email,
             o.phone,
-            o.comments,
         )
-        keywords = ", ".join([k.name for k in o.tags])
-        out += (keywords,)
         writer.writerow(out)
     return response
 
@@ -769,7 +714,7 @@ def monitoring_organization_import(request, monitoring_pk):
     try:
         for row in reader:
             if rowALLCount == 0 and row[0] and row[0].startswith('#'):
-                for key in ['name', 'url', 'email', 'phone', 'comments', 'keywords']:
+                for key in ['name', 'url', 'email', 'phone']:
                     for item in row:
                         if item and key in item.lower():
                             indexes[key] = row.index(item)
@@ -890,7 +835,6 @@ def monitoring_parameter_import(request, monitoring_pk):
                 parameter.document = bool(int(row[7]))
                 parameter.image = bool(int(row[8]))
                 parameter.weight = row[9]
-                parameter.keywords = row[10]
                 parameter.full_clean()
                 parameter.save()
             except ValidationError, e:

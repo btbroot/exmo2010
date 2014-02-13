@@ -20,49 +20,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from core.fields import LocalizeDateInput
 from exmo2010.models import Monitoring, MONITORING_PUBLISHED
-
-
-class MonitoringForm(forms.ModelForm):
-    """
-    Monitoring form.
-
-    """
-    add_questionnaire = forms.BooleanField(required=False, label=_('Add questionnaire'))
-
-    def __init__(self, *args, **kwargs):
-        super(MonitoringForm, self).__init__(*args, **kwargs)
-        self.fields['rate_date'].required = True
-        self.fields['interact_date'].required = True
-        self.fields['finishing_date'].required = True
-        self.fields['publish_date'].required = True
-
-    class Meta:
-        model = Monitoring
-        fields = (
-            'name',
-            'status',
-            'openness_expression',
-            'map_link',
-            'add_questionnaire',
-            'no_interact',
-            'hidden',
-            'rate_date',
-            'interact_date',
-            'finishing_date',
-            'publish_date',
-        )
-        date_field_attributes = {
-            'class': 'datepicker',
-            'maxlength': 10,
-        }
-        widgets = {
-            'rate_date': LocalizeDateInput(attrs=date_field_attributes),
-            'interact_date': LocalizeDateInput(attrs=date_field_attributes),
-            'finishing_date': LocalizeDateInput(attrs=date_field_attributes),
-            'publish_date': LocalizeDateInput(attrs=date_field_attributes),
-        }
 
 
 class MonitoringFilterForm(forms.Form):

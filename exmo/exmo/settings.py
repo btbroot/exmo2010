@@ -202,12 +202,11 @@ INSTALLED_APPS = (
     'djcelery',
     'django403',
     'django_extensions',
-    'tagging',
-    'tagging_autocomplete',
     'registration',
     'django_wysiwyg',
     'ckeditor',
     'modeltranslation',
+    'widget_tweaks',
     # Local apps:
     'accounts',
     'auth',

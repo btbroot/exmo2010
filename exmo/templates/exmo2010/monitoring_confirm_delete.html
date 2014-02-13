@@ -21,15 +21,19 @@
 {% endcomment %}
 {% load i18n future %}
 
+{% block title %}
+    {% blocktrans %}Delete monitoring {{monitoring}}{% endblocktrans %}
+{% endblock %}
+
 {% block content %}
-{% if deleted_objects %}
-{% trans 'When you delete monitoring you also delete this tasks:'%}<br>
-{% for do in deleted_objects %}
-<a href="{% url 'exmo2010:score_list_by_task' do.pk %}">{{ do }}</a><br>
-{% endfor %}
-{% endif %}
-<form method="post" action="{% url 'exmo2010:monitoring_delete' object.pk %}?{{request.GET.urlencode}}">{% csrf_token %}
-  <p>{% trans 'Delete this monitoring?' %}</p>
-  <p><input type="submit" value="{% trans 'Send' %}"/></p>
-</form>
+    {% if tasks %}
+        {% trans 'When you delete monitoring you also delete this tasks:'%}<br>
+            {% for task in tasks %}
+                <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">{{ task }}</a><br>
+            {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{request.GET.urlencode}}">{% csrf_token %}
+        <p>{% trans 'Delete this monitoring?' %}</p>
+        <p><input type="submit" value="{% trans 'Send' %}"/></p>
+    </form>
 {% endblock %}

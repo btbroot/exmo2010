@@ -39,8 +39,6 @@ django-modeltranslation==0.7.3
 django-picklefield==0.3.0
 django-registration==0.8
 django-reversion==1.6.6
-django-tagging==0.3.1
-django-tagging-autocomplete==0.3.1
 django-wysiwyg==0.5
 feedparser==5.1.2
 kombu==2.5.10
@@ -51,9 +49,8 @@ python-dateutil==1.5
 pytz==2013b
 simplejson==2.6.2
 git+https://github.com/bsavelev/django403.git
-git+https://github.com/bsavelev/django-tagging.git
-git+https://github.com/bsavelev/django-tagging-autocomplete.git
 hg+https://bitbucket.org/bsavelev/django-admin-tools
+django-widget-tweaks
 
 #for testing:
 django-nose==1.2

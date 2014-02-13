@@ -219,6 +219,7 @@ class CertificateOrderView(FormView):
         }
 
     def get_context_data(self, **kwargs):
+        # TODO: Remove this after upgrade to Django 1.5
         context = super(CertificateOrderView, self).get_context_data(**kwargs)
         return dict(context, view=self)
 

@@ -21,17 +21,24 @@
 {% endcomment %}
 {% load i18n future %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />{% endblock %}
+{% block title %}
+    {% blocktrans %}Delete parameter {{param}}{% endblocktrans %}
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+{% endblock %}
 
 {% block content %}
-{% if deleted_objects %}
-{% trans 'When you delete parameter you also delete this scores:'%}<br>
-{% for do in deleted_objects %}
-<a href="{% url 'exmo2010:score_view' do.pk %}">{{ do }}</a><br>
-{% endfor %}
-{% endif %}
-<form method="post" action="{% url 'exmo2010:parameter_delete' task.pk object.pk %}">{% csrf_token %}
-  <p>{% trans 'Delete this parameter?' %}</p>
-  <p><input type="submit" /></p>
-</form>
+    {% if param.score_set.all %}
+        {% trans 'When you delete parameter you also delete this scores:'%}<br>
+        {% for score in param.score_set.all %}
+            <a href="{% url 'exmo2010:score_view' score.pk %}">{{ score }}</a><br>
+        {% endfor %}
+    {% endif %}
+    <form method="post">{% csrf_token %}
+        <p>{% trans 'Delete this parameter?' %}</p>
+        <p><input type="submit" value="{% trans 'Confirm' %}" /></p>
+    </form>
 {% endblock %}

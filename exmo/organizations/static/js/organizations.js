@@ -27,11 +27,10 @@ $(document).ready(function () {
     });
 
     // calendar initializing
-    var lang = $('html').attr('lang');
-    var settings = $.datepicker.regional[ lang ];
+    var settings = $.datepicker.regional[$('html').attr('lang')];
     settings['numberOfMonths'] = 3;
     settings['showCurrentAtPos'] = 1;
-    $('.datepicker').datepicker(settings);
+    $('input[name="date_filter_history"]').datepicker(settings);
 
     function helptextHandler( e ) {
         var top = $(e.target).position().top;

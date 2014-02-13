@@ -1,7 +1,6 @@
-/*
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,8 +15,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-*/
+{% endcomment %}
 
-input {
-    margin-right: 15px;
-}
+{% if field.errors %}
+    <tr>
+        <td colspan="2">
+            <ul class="errorlist"> {% for error in field.errors %} <li>{{ error }}</li> {% endfor %} </ul>
+        </td>
+    </tr>
+{% endif %}
+
+<tr>
+    <td>
+        <label>
+            {{ field.label }} {% if field.field.required %}<span class="required">*</span>{% endif %}
+        </label>
+    </td>
+    <td> {{ field }} </td>
+</tr>

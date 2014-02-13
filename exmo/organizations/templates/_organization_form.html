@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,14 +18,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n widget_tweaks %}
 
 <form method="post" action="?{{request.GET.urlencode}}">
     {% csrf_token %}
-
-    {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
 
     {% if form.non_field_errors %}
         <ul class="errorlist">
@@ -36,35 +32,11 @@
     {% endif %}
 
     <table class="table-implicit">
-         {% for field in form %}
-            {% if field.errors %}
-                <tr>
-                    <td colspan="2">
-                        <ul class="errorlist">
-                        {% for error in field.errors %}
-                           <li>{{ error }}</li>
-                        {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
-            {% endif %}
-        {% if field.field != form.fields.monitoring %}
+        {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
+        {% include "_form_field.html" with field=form.url %}
+        {% include "_form_field.html" with field=form.phone %}
+        {% include "_form_field.html" with field=form.email %}
         <tr>
-            <td>
-                <label>
-                    {% if field.label == form.url.label %}{% trans 'Website' %}{% else %}{{ field.label }}{% endif %}{% if field.field.required %}<span class="required">*</span>{% endif %}
-                </label>
-            </td>
-            <td>
-                {{ field }}
-            </td>
-         </tr>
-        {% endif %}
-        {% endfor %}
-        <tr>
-            <td>
-                {{ form.monitoring }}
-            </td>
             <td>
                 <input type="submit" name="submit_add" value="{% if tab == "add" or tab == "all" %}{% trans "Add" %}{% else %}{% trans "Save" %}{% endif %}"/>
             </td>

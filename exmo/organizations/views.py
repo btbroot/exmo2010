@@ -21,20 +21,22 @@ from datetime import datetime, time
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.comments import signals
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.forms.models import modelform_factory
+from django.forms import TextInput
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import formats
-from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from django.views.generic import DeleteView, UpdateView
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
+from core.views import LoginRequiredMixin
 from custom_comments.models import CommentExmo
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
-from organizations.forms import OrganizationForm, InviteOrgsForm
+from modeltranslation_utils import CurLocaleModelForm
 from organizations.signals import change_organization_status
 from organizations.tasks import send_org_email
 
@@ -59,12 +61,13 @@ def organization_list(request, monitoring_pk):
     all_orgs = Organization.objects.filter(monitoring=monitoring)
     sent = all_orgs.exclude(inv_status='NTS')
 
-    initial = {'monitoring': monitoring}
-
     tab = 'all'
 
+    InviteOrgsForm = modelform_factory(InviteOrgs, widgets={'subject': TextInput})
+    kwargs = {'instance': InviteOrgs(monitoring=monitoring)}
+
     if request.method == "POST" and "submit_invite" in request.POST:
-        inv_form = InviteOrgsForm(request.POST)
+        inv_form = InviteOrgsForm(request.POST, **kwargs)
         comment = inv_form.data['comment']
         subject = inv_form.data['subject']
         inv_status = inv_form.data['inv_status']
@@ -86,13 +89,12 @@ def organization_list(request, monitoring_pk):
                     continue
                 send_org_email.delay(emails, subject, 'invitation_email', org.pk, context)
 
-            redirect = reverse('exmo2010:organization_list', args=[monitoring_pk])+"?alert=success#all"
+            redirect = reverse('exmo2010:organization_list', args=[monitoring_pk]) + "?alert=success#all"
             return HttpResponseRedirect(redirect)
         else:
-            initial.update({'comment': comment, 'inv_status': inv_status})
             alert = 'fail'
     else:
-        inv_form = InviteOrgsForm(initial=initial)
+        inv_form = InviteOrgsForm(**kwargs)
 
     if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         queryset = Organization.objects.filter(monitoring=monitoring).extra(
@@ -139,15 +141,17 @@ def organization_list(request, monitoring_pk):
     if invite_filter and invite_filter != 'ALL':
         queryset = queryset.filter(inv_status=invite_filter)
 
-    initial = {'monitoring': monitoring}
-    form = OrganizationForm(initial=initial)
+    OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
+    kwargs = {'instance': Organization(monitoring=monitoring), 'prefix': 'org'}
+
     if request.method == "POST" and "submit_add" in request.POST:
-        form = OrganizationForm(request.POST)
+        form = OrgForm(request.POST, **kwargs)
         if form.is_valid():
             form.save()
-            form = OrganizationForm(initial=initial)
         else:
             tab = 'add'
+    else:
+        form = OrgForm(**kwargs)
 
     inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
 
@@ -192,88 +196,36 @@ def organization_list(request, monitoring_pk):
     )
 
 
-class OrganizationManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
-    """
-    Generic view to edit or delete organization
+class OrgMixin(LoginRequiredMixin):
+    context_object_name = 'org'
 
-    """
-    model = Organization
-    form_class = OrganizationForm
-    template_name = "edit_organization.html"
-    context_object_name = "object"
-    extra_context = {}
-    pk_url_kwarg = 'org_pk'
-
-    def add(self, request, monitoring):
-        self.object = None
-        title = _('Add new organization for %s') % monitoring
-        self.extra_context = {
-            'title': title,
-            'tab': 'add',
-            'monitoring': monitoring
-        }
-
-    def update(self, request, monitoring):
-        self.object = self.get_object()
-        title = _('Edit organization %s') % monitoring
-        self.extra_context = {
-            'title': title,
-            'monitoring': monitoring
-        }
-
-    def get_redirect(self, request, monitoring):
-        redirect = '%s?%s' % (reverse('exmo2010:organization_list', args=[monitoring.pk]), request.GET.urlencode())
-        redirect = redirect.replace("%", "%%")
-        return redirect
+    def get_success_url(self):
+        url = reverse('exmo2010:organization_list', args=[self.object.monitoring.pk])
+        return '%s?%s' % (url, self.request.GET.urlencode())
 
     def get_context_data(self, **kwargs):
-        context = super(OrganizationManagerView, self).get_context_data(**kwargs)
-        context.update(self.extra_context)
-        return context
+        # TODO: Remove this after upgrade to Django 1.5
+        context = super(OrgMixin, self).get_context_data(**kwargs)
+        return dict(context, view=self)
 
-    def get(self, request, *args, **kwargs):
-        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_pk"])
-        if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        self.success_url = self.get_redirect(request, monitoring)
-        self.initial = {'monitoring': monitoring}
+    def get_object(self):
+        org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', org.monitoring):
+            raise PermissionDenied
+        return org
 
-        if self.kwargs["method"] == 'add':
-            self.add(request, monitoring)
 
-        if self.kwargs["method"] == 'delete':
-            self.object = self.get_object()
-            self.template_name = "organization_confirm_delete.html"
-            title = _('Delete organization %s') % monitoring
-            self.extra_context = {
-                'title': title,
-                'monitoring': monitoring,
-                'deleted_objects': Task.objects.filter(organization=self.object)
-            }
-        if self.kwargs["method"] == 'update':
-            self.update(request, monitoring)
+class OrgEditView(OrgMixin, UpdateView):
+    """
+    Generic view to edit Organization
+    """
+    template_name = "edit_organization.html"
 
-        return super(OrganizationManagerView, self).get(request, *args, **kwargs)
+    def get_form_class(self):
+        return modelform_factory(Organization, form=CurLocaleModelForm)
 
-    def post(self, request, *args, **kwargs):
-        monitoring = get_object_or_404(Monitoring, pk=self.kwargs["monitoring_pk"])
-        if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
-        self.success_url = self.get_redirect(request, monitoring)
-        if self.kwargs["method"] == 'add':
-            self.add(request, monitoring)
-            return super(OrganizationManagerView, self).post(request, *args, **kwargs)
-        if self.kwargs["method"] == 'delete':
-            self.object = self.get_object()
-            self.object.delete()
-            return HttpResponseRedirect(self.get_success_url())
-        elif self.kwargs["method"] == 'update':
-            self.update(request, monitoring)
-            return super(OrganizationManagerView, self).post(request, *args, **kwargs)
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(OrganizationManagerView, self).dispatch(*args, **kwargs)
-
+class OrgDeleteView(OrgMixin, DeleteView):
+    template_name = "organization_confirm_delete.html"
 
 signals.comment_was_posted.connect(change_organization_status, sender=CommentExmo)

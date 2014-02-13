@@ -25,9 +25,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
-from tagging.models import Tag
 
-from core.fields import TagField
 from .base import BaseModel
 
 
@@ -84,7 +82,7 @@ add_introspection_rules([], ["^exmo2010\.models\.organization\.EmailsField"])
 
 
 def format_phone(phone):
-    if not isinstance(phone, (unicode, str)):
+    if not phone:
         return None
     phone = phone.strip()
     if not phone_re.match(phone):
@@ -123,16 +121,18 @@ class Organization(BaseModel):
         unique_together = (('name', 'monitoring'),)
 
     name = models.CharField(max_length=255, verbose_name=_('name'))
-    url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('url'))
-    keywords = TagField(null=True, blank=True, verbose_name=_('keywords'))
+    url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('Website'))
     email = EmailsField(null=True, blank=True, verbose_name=_('email'))
     phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
-    comments = models.TextField(null=True, blank=True, verbose_name=_('comments'))
-    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'))
-    inv_code = models.CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True)
-    inv_status = models.CharField(max_length=3,
-                                  choices=INV_STATUS, default='NTS',
-                                  verbose_name=_('Invitation status'))
+    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
+
+    inv_code = models.CharField(
+        verbose_name=_("Invitation code"), blank=True,
+        max_length=6, unique=True, editable=False)
+
+    inv_status = models.CharField(
+        max_length=3, choices=INV_STATUS, default='NTS',
+        verbose_name=_('Invitation status'), editable=False)
 
     objects = OrganizationMngr()
 
@@ -144,22 +144,14 @@ class Organization(BaseModel):
     def __unicode__(self):
         return self.name
 
-    def _get_tags(self):
-        return Tag.objects.get_for_object(self)
-
-    def _set_tags(self, tag_list):
-        Tag.objects.update_tags(self, tag_list)
-
-    tags = property(_get_tags, _set_tags)
-
 
 class InviteOrgs(BaseModel):
     """
     Invites organizations history.
 
     """
-    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('date and time'))
-    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'))
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('date and time'), editable=False)
+    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
     subject = models.TextField(verbose_name=_('subject'))
     comment = models.TextField(verbose_name=_('Letter subject and content'))
     inv_status = models.CharField(max_length=3,

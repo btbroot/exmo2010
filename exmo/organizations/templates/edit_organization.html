@@ -21,6 +21,10 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}
+    {% blocktrans %}Edit organization {{org}}{% endblocktrans %}
+{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
@@ -33,14 +37,4 @@
     <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
 {% endblock %}
 
-{% if form.non_field_errors %}
-    <ul class="errorlist">
-        {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% block content %}
-    {% include "organization_form.html" %}
-{% endblock %}
+{% block content %} {% include "_organization_form.html" %} {% endblock %}

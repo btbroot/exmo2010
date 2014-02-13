@@ -28,14 +28,10 @@
         {% if child.title %}<h2>child.title</h2>{% endif %}
 
         <ul class="{{ module.layout }}">
-            {% if child.object_list %}
-                {% with monitoring=child.object_list|first %}
-                    {% if monitoring.perms.create_monitoring %}
-                        <li><a href="{% url 'exmo2010:monitoring_add' %}">
-                            {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
-                        </a></li>
-                    {% endif %}
-                {% endwith %}
+            {% if "exmo2010.create_monitoring" in request.user.get_all_permissions %}
+                <li><a href="{% url 'exmo2010:monitoring_add' %}">
+                    {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
+                </a></li>
             {% endif %}
 
             {% for monitoring in child.object_list %}

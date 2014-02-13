@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,184 +19,123 @@
 #
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponse
+from django.forms import HiddenInput, Media
+from django.forms.models import modelform_factory
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import get_object_or_404
-from django.template.response import TemplateResponse
-from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
+from django.utils.translation import get_language, ugettext as _
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.edit import ProcessFormView, ModelFormMixin
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from django.views.generic.edit import UpdateView, DeleteView
 from livesettings import config_value
 
 from core.tasks import send_email
+from core.views import LoginRequiredMixin
 from exmo2010.forms import CORE_MEDIA
-from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
-from parameters.forms import ParameterForm
+from exmo2010.models import Organization, Parameter, Task, UserProfile
+from modeltranslation_utils import CurLocaleModelForm
 
 
-class ParameterManagerView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
-    model = Parameter
-    form_class = ParameterForm
-    template_name = "parameter_form.html"
-    context_object_name = "object"
-    extra_context = {}
-    pk_url_kwarg = 'parameter_pk'
+def parameter_exclude(request, parameter_pk, task_pk):
+    param = get_object_or_404(Parameter, pk=parameter_pk)
+    if not request.user.has_perm('exmo2010.exclude_parameter', param):
+        raise PermissionDenied
+    task = get_object_or_404(Task, pk=task_pk)
+    if task.organization not in param.exclude.all():
+        param.exclude.add(task.organization)
+    base_url = reverse('exmo2010:score_list_by_task', args=[task.pk])
+    return HttpResponseRedirect('%s?%s' % (base_url, request.GET.urlencode()))
 
-    def get_redirect(self, request, task):
-        redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
-        redirect = redirect.replace("%", "%%")
-        return redirect
+
+class ParameterMixin(LoginRequiredMixin):
+    context_object_name = 'param'
+
+    def get_success_url(self):
+        base_url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        return '%s?%s' % (base_url, self.request.GET.urlencode())
 
     def get_context_data(self, **kwargs):
-        context = super(ParameterManagerView, self).get_context_data(**kwargs)
-        context.update(self.extra_context)
-        return context
+        # TODO: Remove this after upgrade to Django 1.5
+        context = super(ParameterMixin, self).get_context_data(**kwargs)
+        return dict(context, view=self)
 
-    def get(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
-        self.success_url = self.get_redirect(request, task)
-        self.object = self.get_object()
 
-        if self.kwargs["method"] == 'delete':
-            if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-                return HttpResponseForbidden(_('Forbidden'))
-            self.template_name = "exmo2010/parameter_confirm_delete.html"
-            title = _('Delete parameter %s') % self.object
-            self.extra_context = {
-                'title': title,
-                'task': task,
-                'deleted_objects': Score.objects.filter(parameter=self.object),
-            }
+class ParamEditView(ParameterMixin, UpdateView):
+    template_name = "parameter_form.html"
 
-        if self.kwargs["method"] == 'exclude':
-            if not request.user.has_perm('exmo2010.exclude_parameter', self.object):
-                return HttpResponseForbidden(_('Forbidden'))
-            if task.organization not in self.object.exclude.all():
-                self.object.exclude.add(task.organization)
-            return HttpResponseRedirect(self.success_url)
+    def get_context_data(self, **kwargs):
+        context = super(ParamEditView, self).get_context_data(**kwargs)
+        return dict(context, media=CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]}))
 
-        if self.kwargs["method"] == 'update':
-            if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-                return HttpResponseForbidden(_('Forbidden'))
-            self.extra_context = {
-                'title': _('Edit parameter %s') % self.object,
-                'edit': True,
-                'media': CORE_MEDIA + ParameterForm().media
-            }
+    def get_object(self):
+        self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.task.organization.monitoring):
+            raise PermissionDenied
 
-        return super(ParameterManagerView, self).get(request, *args, **kwargs)
+        if 'parameter_pk' in self.kwargs:
+            # Existing parameter edit page
+            param = get_object_or_404(Parameter, pk=self.kwargs['parameter_pk'])
+        else:
+            # New parameter page
+            param = Parameter(monitoring=self.task.organization.monitoring)
 
-    def post(self, request, *args, **kwargs):
-        task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
-        if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-            return HttpResponseForbidden(_('Forbidden'))
+        return param
 
-        self.success_url = self.get_redirect(request, task)
-        self.object = self.get_object()
+    def get_form_class(self):
+        widgets = {'exclude': FilteredSelectMultiple('', is_stacked=False)}
+        form_class = modelform_factory(model=Parameter, form=CurLocaleModelForm, widgets=widgets)
 
-        if self.kwargs["method"] == 'delete':
-            self.object.delete()
-            return HttpResponseRedirect(self.get_success_url())
-
-        self.extra_context = {
-            'title': _('Edit parameter %s') % self.object,
-            'edit': True,
-            'media': CORE_MEDIA + ParameterForm().media
-        }
-        return super(ParameterManagerView, self).post(request, *args, **kwargs)
+        # Limit organizations choices to this monitoring.
+        form_class.base_fields['exclude'].queryset = self.object.monitoring.organization_set.all()
+        return form_class
 
     def form_valid(self, form):
-        send = "submit_and_send" in self.request.POST
-        result = super(ParameterManagerView, self).form_valid(form)
-        if send:
-            c = {}
+        param = form.save()
+        if "submit_and_send" in self.request.POST:
+            fields = 'code name_{lang} description_{lang} weight'.format(lang=get_language()).split()
+            criteria = 'accessible hypertext npa topical document image complete'.split()
 
-            param_pk = self.kwargs["parameter_pk"]
-            parameter = form.cleaned_data['name']
+            old_excluded_org_pk = form.initial.get('exclude', form.fields['exclude'].initial)
 
-            subject = _('%(prefix)sParameter has been changed: %(parameter)s') % {
-                'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-                'parameter': parameter,
-            }
+            context = dict(
+                monitoring=param.monitoring,
+                old_features=[(f, form.initial.get(f, form.fields[f].initial)) for f in fields],
+                new_features=[(f, getattr(param, f, None)) for f in fields],
+                old_criteria=[c for c in criteria if form.initial.get(c, form.fields[c].initial)],
+                new_criteria=[c for c in criteria if getattr(param, c, None)],
+                old_excluded_org=Organization.objects.filter(pk__in=old_excluded_org_pk),
+                new_excluded_org=param.exclude.all())
 
-            parameter = Parameter.objects.get(pk=param_pk)
-            orgs = Organization.objects.filter(monitoring=parameter.monitoring).exclude(pk__in=parameter.exclude.all())
+            subject = _('{subject_prefix}Parameter has been changed: {param}').format(
+                subject_prefix=config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'), param=param.name)
+
+            orgs = Organization.objects.filter(monitoring=param.monitoring).exclude(pk__in=param.exclude.all())
 
             rcpts = User.objects.filter(
                 Q(groups__name=UserProfile.expertA_group) |
                 Q(task__organization__in=orgs),
                 is_active=True,
-            ).exclude(email__exact='').values_list('email', flat=True)
+            ).exclude(email__exact='')
 
-            rcpts = list(set(rcpts))
+            for rcpt in rcpts.distinct().values_list('email', flat=True):
+                send_email.delay(rcpt, subject, 'parameter_email', context=context)
 
-            c['monitoring'] = form.cleaned_data['monitoring']
-
-            old_features = []
-            new_features = []
-            features = ['code', 'name', 'description', 'weight']
-            for field in features:
-                old_features.append((field, form.initial.get(field, form.fields[field].initial)))
-                new_features.append((field, form.cleaned_data.get(field, None)))
-
-            c['old_features'] = old_features
-            c['new_features'] = new_features
-
-            old_criteria = []
-            new_criteria = []
-            criteria = ['accessible', 'hypertext', 'npa', 'topical', 'document', 'image', 'complete']
-            for field in criteria:
-                item_was = form.initial.get(field, form.fields[field].initial)
-                item_now = form.cleaned_data.get(field, None)
-                if item_was:
-                    old_criteria.append(field)
-                if item_now:
-                    new_criteria.append(field)
-
-            c['old_criteria'] = old_criteria
-            c['new_criteria'] = new_criteria
-
-            old_excluded_org_pk = form.initial.get('exclude', form.fields['exclude'].initial)
-            c['old_excluded_org'] = Organization.objects.filter(pk__in=old_excluded_org_pk)
-            c['new_excluded_org'] = form.cleaned_data.get('exclude', None)
-
-            for rcpt in rcpts:
-                send_email.delay(rcpt, subject, 'parameter_email', context=c)
-        return result
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ParameterManagerView, self).dispatch(*args, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
 
 
-@login_required
-def parameter_add(request, task_pk):
-    task = get_object_or_404(Task, pk=task_pk)
-    if not request.user.has_perm('exmo2010.admin_monitoring', task.organization.monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    redirect = '%s?%s' % (reverse('exmo2010:score_list_by_task', args=[task.pk]), request.GET.urlencode())
-    redirect = redirect.replace("%", "%%")
-    title = _('Add parameter for %s') % task
-    form = None
-    if request.method == 'GET':
-        form = ParameterForm(monitoring=task.organization.monitoring)
-    elif request.method == 'POST':
-        form = ParameterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(redirect)
+class ParamDeleteView(ParameterMixin, DeleteView):
+    template_name = "exmo2010/parameter_confirm_delete.html"
 
-    return TemplateResponse(request, 'parameter_form.html', {
-        'form': form,
-        'title': title,
-        'media': CORE_MEDIA + form.media,
-    })
+    def get_object(self):
+        self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.task.organization.monitoring):
+            raise PermissionDenied
+
+        return get_object_or_404(Parameter, pk=self.kwargs['parameter_pk'])
 
 
 @csrf_exempt

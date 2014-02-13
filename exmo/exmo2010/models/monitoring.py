@@ -75,8 +75,6 @@ class Monitoring(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ('name',)
 
-    MONITORING_STATUS_NEW = ((MONITORING_PREPARE, _('prepare')),)
-
     MONITORING_EDIT_STATUSES = {
         MONITORING_RATE: _('Monitoring rate begin date'),
         MONITORING_INTERACTION: _('Monitoring interact start date'),
@@ -84,20 +82,20 @@ class Monitoring(BaseModel):
         MONITORING_PUBLISHED: _('Monitoring publish date'),
     }
 
-    name = models.CharField(max_length=255, verbose_name=_('name'), blank=True)
+    name = models.CharField(max_length=255, verbose_name=_('name'))
     status = models.PositiveIntegerField(choices=MONITORING_STATUS, default=MONITORING_PREPARE, verbose_name=_('status'))
+    hidden = models.BooleanField(default=False, verbose_name=_('Hidden monitoring'))
     openness_expression = models.ForeignKey("OpennessExpression", default=8, verbose_name=_('openness expression'))
     map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))
+
     # Максимальное время ответа в днях.
     time_to_answer = models.PositiveSmallIntegerField(default=3, verbose_name=_('Maximum time to answer'))
     no_interact = models.BooleanField(default=False, verbose_name=_('No interact stage'))
-    hidden = models.BooleanField(default=False, verbose_name=_('Hidden monitoring'))
-    prepare_date = models.DateField(null=True, blank=True, verbose_name=_('prepare date'))
-    rate_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring rate begin date'))
-    interact_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring interact start date'))
-    result_date = models.DateField(null=True, blank=True, verbose_name=_('result date'))
-    publish_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring publish date'))
-    finishing_date = models.DateField(null=True, blank=True, verbose_name=_('Monitoring interact end date'))
+
+    rate_date = models.DateField(verbose_name=_('Monitoring rate begin date'))
+    interact_date = models.DateField(verbose_name=_('Monitoring interact start date'))
+    publish_date = models.DateField(verbose_name=_('Monitoring publish date'))
+    finishing_date = models.DateField(verbose_name=_('Monitoring interact end date'))
 
     def __unicode__(self):
         return '%s' % self.name

@@ -97,20 +97,20 @@
 
     <div class="tab-content">
         <div class="tab-pane" id="all">
-            {% include "all.html" %}
+            {% include "_org_list.html" %}
         </div>
 
         <div class="tab-pane" id="send_mail">
-            {% include "organization_email_form.html" %}
+            {% include "_organization_email_form.html" %}
         </div>
 
         <div class="tab-pane" id=mail_history>
-            {% include "mail_history.html" %}
+            {% include "_mail_history.html" %}
         </div>
 
         {% if perm %}
             <div class="tab-pane" id="add">
-                {% include "organization_form.html" %}
+                {% include "_organization_form.html" %}
             </div>
         {% endif %}
     </div>

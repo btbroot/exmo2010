@@ -19,13 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n future widget_tweaks %}
 
 {% block extrahead %}
     {{ block.super }}
-    {{ media }}
-    {% load wysiwyg %}
-    {% wysiwyg_setup %}
+    {{ form.media }}
 {% endblock %}
 
 {% block extrastyle %}
@@ -34,22 +32,30 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/parameter.css" />
 {% endblock %}
 
-<p>{{ form.non_field_errors }}</p>
-
 {% block content %}
-<form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-    <table>
-        {{ form.as_table }}
-    </table>
+    <p>{{ form.non_field_errors }}</p>
 
-    <input type="submit" value="{% trans 'Save' %}" />
-    {% if edit %}
-        <input type="submit" name="submit_and_send" value="{% trans 'Save and send notifications' %}" />
-    {% else %}
-        <input type="reset" class="button" value="{% trans 'Reset' %}"/>
-    {% endif %}
-</form>
+    <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
+        <table id="param_form">
+            {% include "_form_field.html" with field=form.code %}
+            {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
+            {% include "_form_field.html" with field=form.trans_fields.description %}
+            {% include "_form_field.html" with field=form.exclude %}
+            {% include "_form_field.html" with field=form.weight %}
+            {% include "_form_field.html" with field=form.complete %}
+            {% include "_form_field.html" with field=form.topical %}
+            {% include "_form_field.html" with field=form.accessible %}
+            {% include "_form_field.html" with field=form.hypertext %}
+            {% include "_form_field.html" with field=form.document %}
+            {% include "_form_field.html" with field=form.image %}
+            {% include "_form_field.html" with field=form.npa %}
+        </table>
 
-{% wysiwyg_editor "id_description" %}
-
+        <input type="submit" value="{% trans 'Save' %}" />
+        {% if param.pk %}
+            <input type="submit" name="submit_and_send" value="{% trans 'Save and send notifications' %}" />
+        {% else %}
+            <input type="reset" class="button" value="{% trans 'Reset' %}"/>
+        {% endif %}
+    </form>
 {% endblock %}

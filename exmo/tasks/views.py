@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -259,6 +259,11 @@ class TaskMixin(LoginRequiredMixin):
     def get_success_url(self):
         url = reverse('exmo2010:tasks_by_monitoring', args=[self.monitoring.pk])
         return '%s?%s' % (url, self.request.GET.urlencode())
+
+    def get_context_data(self, **kwargs):
+        # TODO: Remove this after upgrade to Django 1.5
+        context = super(TaskMixin, self).get_context_data(**kwargs)
+        return dict(context, view=self)
 
 
 class TaskEditView(TaskMixin, UpdateView):

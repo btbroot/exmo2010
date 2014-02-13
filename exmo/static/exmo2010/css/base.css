@@ -1061,3 +1061,8 @@ ul.nav-tabs li.active a
 .hidden {
     display: none;
 }
+
+
+form table td input.name_input[type="text"] {
+    width: 600px;
+}

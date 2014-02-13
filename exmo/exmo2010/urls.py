@@ -26,9 +26,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.views import TemplateView
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
-from monitorings.views import MonitoringManagerView
-from organizations.views import OrganizationManagerView
-from parameters.views import ParameterManagerView
+from monitorings.views import MonitoringEditView, MonitoringDeleteView
+from organizations.views import OrgEditView, OrgDeleteView
+from parameters.views import ParamEditView, ParamDeleteView
 from scores.views import ScoreAddView, ScoreEditView, ScoreDetailView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 
@@ -86,7 +86,7 @@ scores_patterns += named_urls('',
 
 monitoring_patterns = named_urls('monitorings.views',
     (r'^$', 'monitorings_list'),
-    (r'^add/$', 'monitoring_add'),
+    (r'^add/$', MonitoringEditView, 'monitoring_add'),
     (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
     (r'^(?P<monitoring_pk>\d+)/comment_report/$', 'monitoring_comment_report'),
     (r'^(?P<monitoring_pk>\d+)/experts/$', 'monitoring_by_experts'),
@@ -98,8 +98,8 @@ monitoring_patterns = named_urls('monitorings.views',
     (r'^(?P<monitoring_pk>\d+)/parameter_import/$', 'monitoring_parameter_import'),
     (r'^(?P<monitoring_pk>\d+)/rating/$', 'monitoring_rating'),
     (r'^(?P<monitoring_pk>\d+)/set_npa_params/$', 'set_npa_params'),
-    (r'^(?P<monitoring_pk>\d+)_update/$', MonitoringManagerView, 'monitoring_update', {'method': 'update'}),
-    (r'^(?P<monitoring_pk>\d+)_delete/$', MonitoringManagerView, 'monitoring_delete', {'method': 'delete'}),
+    (r'^(?P<monitoring_pk>\d+)_update/$', MonitoringEditView, 'monitoring_update'),
+    (r'^(?P<monitoring_pk>\d+)_delete/$', MonitoringDeleteView, 'monitoring_delete'),
     (r'^(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
 )
 
@@ -110,10 +110,8 @@ monitoring_patterns += named_urls('tasks.views',
 )
 
 monitoring_patterns += named_urls('organizations.views',
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_delete/$',
-        OrganizationManagerView, 'organization_delete', {'method': 'delete'}),
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_update/$',
-        OrganizationManagerView, 'organization_update', {'method': 'update'}),
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_delete/$', OrgDeleteView, 'organization_delete'),
+    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_update/$', OrgEditView, 'organization_update'),
     (r'^(?P<monitoring_pk>\d+)/organizations/$', 'organization_list'),
 )
 
@@ -139,13 +137,10 @@ tasks_patterns = named_urls('tasks.views',
 )
 
 tasks_patterns += named_urls('parameters.views',
-    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_update/$',
-        ParameterManagerView, 'parameter_update', {'method': 'update'}),
-    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_delete/$',
-        ParameterManagerView, 'parameter_delete', {'method': 'delete'}),
-    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_exclude/$',
-        ParameterManagerView, 'parameter_exclude', {'method': 'exclude'}),
-    (r'^task/(?P<task_pk>\d+)/parameter/add/$', 'parameter_add',),
+    (r'^task/(?P<task_pk>\d+)/parameter/add/$', ParamEditView, 'parameter_add',),
+    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_update/$', ParamEditView, 'parameter_update'),
+    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_delete/$', ParamDeleteView, 'parameter_delete'),
+    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_exclude/$', 'parameter_exclude'),
 )
 
 
