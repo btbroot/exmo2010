@@ -1,7 +1,7 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011, 2012 Institute for Information Freedom Development
-// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,9 @@ $(document).ready(function() {
                 , $input = $(sender.container.$)
                         .closest('form')
                         .children('input[type="submit"]');
+        var editor_body = $(sender.document.$).find('body');
 
-        var $cke_sender = sender.document.getBody().getChild(0);
-        // special condition for IE and Opera (if text in field exists and not a new line only)
-        if($cke_sender && $cke_sender.getText() && $cke_sender.getText() != String.fromCharCode(10)) {
+        if(editor_body && editor_body.text().trim() != '') {
             $input.prop('disabled', false);
         } else {
             $input.prop('disabled', true);
