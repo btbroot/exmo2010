@@ -231,3 +231,53 @@ class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):
         self.get(url)
         # THEN rating place should be visible
         self.assertVisible('#place_all')
+
+
+class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
+    # On score page comment submit button should be disabled if input text is empty
+
+    def setUp(self):
+        # GIVEN INTERACTION monitoring with organization
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring=monitoring)
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND organization representative account
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.is_organization = True
+        orguser.profile.organization = [org]
+        # AND approved task assigned to expert B
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
+        # AND parameter
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        # AND score with zero initial values for parameter attributes
+        self.score = mommy.make(Score, task=task, parameter=parameter)
+
+        # AND I am logged in as organization representative
+        self.login('orguser', 'password')
+        # AND I am on score page
+        self.get(reverse('exmo2010:score_view', args=(self.score.pk,)))
+
+    def test_disable_submit(self):
+        # WHEN I am on score page
+        # THEN submit button should be disabled
+        self.assertDisabled('#submit-comment')
+
+        with self.frame('iframe'):
+            # WHEN I type new line character in the comment area
+            self.find('body').send_keys('\n')
+        # THEN submit button still should be disabled
+        self.assertDisabled('#submit-comment')
+
+        with self.frame('iframe'):
+            # WHEN I type something in the comment area
+            self.find('body').send_keys('hi')
+        # THEN submit button should turn enabled
+        self.assertEnabled('#submit-comment')
+
+        with self.frame('iframe'):
+            # WHEN I erase all literal text symbols
+            self.find('body').send_keys('\b\b')
+        # THEN submit button should turn disabled
+        self.assertDisabled('#submit-comment')
