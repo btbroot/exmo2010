@@ -1,6 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2013 Al Nikolov
-// Copyright 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -177,8 +177,11 @@ $(document).ready(function() {
     }
 
     function deleteAllAutoScoreCommentBricks(){
-        $($cke_comment.document.$).find('.autoscore').remove();
-        $($cke_comment.document.$).find('#autoscore-break').remove();
+        // if CKEditor instance is not ready, skip this part
+        if ($cke_comment.document) {
+            $($cke_comment.document.$).find('.autoscore').remove();
+            $($cke_comment.document.$).find('#autoscore-break').remove();
+        }
     }
 
     // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js

@@ -19,29 +19,28 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission wysiwyg future %}
+{% load i18n check_object_permission wysiwyg static future %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/tables.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}css/score_messages.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tables.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/score_messages.css' %}" />
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.autosize.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/score.form.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/ccc-tabs.js"></script>
+    {% wysiwyg_setup %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.autosize.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/score.form.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
     {% if object %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/score.comments.js"></script>
+        <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
     {% endif %}
 {% endblock %}
 
 {% block content %}
-
-{% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
 
 {% if object %}
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}

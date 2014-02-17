@@ -31,6 +31,8 @@
 
 {% block extrahead %}
     {{ block.super }}
+    {% wysiwyg_setup %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.autosize.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/score.form.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/score.tabs.js' %}"></script>
@@ -40,11 +42,7 @@
     {% endif %}
 {% endblock %}
 
-
 {% block content %}
-
-{% wysiwyg_setup %}
-<script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
 
 {% if object %}
     {% check_object_permission exmo2010.view_comment_score object as view_comment %}

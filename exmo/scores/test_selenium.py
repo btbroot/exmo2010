@@ -342,3 +342,36 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
             self.find('body').send_keys('\b\b')
         # THEN submit button should turn disabled
         self.assertDisabled('#submit-comment')
+
+
+class EnableCommentSubmitTestCase(BaseSeleniumTestCase):
+    # On score page comment submit button should be enabled with or without hash in url
+
+    def setUp(self):
+        # GIVEN INTERACTION monitoring with organization
+        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring=monitoring)
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND approved task assigned to expert B
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
+        # AND parameter
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        # AND score with zero initial values for parameter attributes
+        self.score = mommy.make(Score, task=task, parameter=parameter)
+        # AND I am logged in as expert B
+        self.login('expertB', 'password')
+        # AND I am on score page with 'reply' hash
+        self.get('{}#reply'.format(reverse('exmo2010:score_view', args=(self.score.pk,))))
+
+    def test_enable_submit(self):
+        # WHEN I am on score page
+        # THEN submit button should be existed and should be disabled
+        self.assertDisabled('#submit_comment')
+
+        with self.frame('iframe'):
+            # WHEN I type something in the comment area
+            self.find('body').send_keys('hi')
+        # THEN submit button should turn enabled
+        self.assertEnabled('#submit_comment')
