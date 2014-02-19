@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,8 @@ from datetime import timedelta, datetime
 from django.contrib.auth.models import User
 from django.db.models import Count
 
+from core.utils import workday_count
+from custom_comments.models import CommentExmo
 from exmo2010.models import Organization, Score, Task
 
 
@@ -29,20 +31,37 @@ def comment_report(monitoring):
     """
     Вернет словарь с основной статистикой по комментариям.
 
-    """
-    from custom_comments.models import CommentExmo
+    org_comments - неотвеченные комментарии представителей
+    operator_all_comments - комментарии экспертов
+    total_org - всего огранизаций
+    comments_without_reply - комментарии без ответа
+    fail_comments_without_reply - просроченные комментарии без ответа
+    comments_with_reply - комментарии с ответом
+    fail_soon_comments_without_reply - комментарии без ответа, срок ответа которых истечет в течении суток
+    fail_comments_with_reply - комментарии с ответом, но ответ был позже срока
+    org_all_comments - все комментарии экспертов
+    active_organization_stats - статистика активных организаций (т.е. оставивших хоть один комментарий)
+        вернет список словарей: [{'org': org1, 'comments_count': 1}, ...]
+    active_operator_person_stats - статистика ответов по экспертам
+    organizations_with_representatives - организаций, имеющих хотя бы одного представителя
+    start_date - дата начала взаимодействия
+    end_date - дата окончания отчетного периода
+    time_to_answer - срок ответа на комментарии (в днях)
+    monitoring_name - название мониторинга
 
-    result = {}
+    """
     comments_without_reply = []
     fail_comments_without_reply = []
     fail_soon_comments_without_reply = []
     fail_comments_with_reply = []
     active_organization_stats = []
     total_org = Organization.objects.filter(monitoring=monitoring)
-    organizations_with_representatives = total_org.filter(userprofile__isnull=False).distinct()
+    organizations_with_representatives = total_org.filter(userprofile__isnull=False).distinct().count()
+    total_org = total_org.count()
+    monitoring_name = monitoring.name
+    time_to_answer = monitoring.time_to_answer
     start_date = monitoring.interact_date
     end_date = datetime.today()
-    time_to_answer = monitoring.time_to_answer
 
     scores = Score.objects.filter(
         task__organization__monitoring=monitoring)
@@ -87,7 +106,6 @@ def comment_report(monitoring):
             comments_count=Count('comment_comments'))
 
     for org_comment in org_comments:
-        from core.utils import workday_count
         delta = timedelta(days=1)
         #check time_to_answer
         if workday_count(org_comment.submit_date.date() + delta,
@@ -99,36 +117,7 @@ def comment_report(monitoring):
         else:
             comments_without_reply.append(org_comment)
 
-    #комментарии без ответа
-    result['comments_without_reply'] = comments_without_reply
-    #просроченные комментарии без ответа
-    result['fail_comments_without_reply'] = fail_comments_without_reply
-    #комментарии с ответом
-    result['comments_with_reply'] = comments_with_reply
-    #комментарии без ответа; срок ответа истечет в течении суток
-    result['fail_soon_comments_without_reply'] = fail_soon_comments_without_reply
-    #комментарии с ответом, но ответ был позже срока
-    result['fail_comments_with_reply'] = fail_comments_with_reply
-    #неотвеченные комментарии представителей
-    result['org_comments'] = org_comments
-    #все комментарии экспертов
-    result['org_all_comments'] = org_all_comments
-    #статистика активных (оставивших хоть один комментарий) организаций
-    #лист словарей: [{'org': org1, 'comments_count': 1}, ...]
-    result['active_organization_stats'] = active_organization_stats
-    #статистика ответов по экспертам
-    result['active_operator_person_stats'] = active_operator_person_stats
-    #комментарии экспертов
-    result['operator_all_comments'] = operator_all_comments
-    #всего огранизаций
-    result['total_org'] = total_org
-    #организаций, имеющих хотя бы одного представителя
-    result['organizations_with_representatives'] = organizations_with_representatives
-    #дата начала взаимодействия
-    result['start_date'] = start_date
-    #дата окончания отчетного периода
-    result['end_date'] = end_date
-    #срок ответа на комментарии (в днях)
-    result['time_to_answer'] = time_to_answer
+    org_comments = org_comments.count()
+    operator_all_comments = operator_all_comments.count()
 
-    return result
+    return locals()

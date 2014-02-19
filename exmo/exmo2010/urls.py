@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from core.views import TemplateView
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
-from monitorings.views import MonitoringEditView, MonitoringDeleteView
+from monitorings.views import MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView
 from organizations.views import OrgEditView, OrgDeleteView
 from parameters.views import ParamEditView, ParamDeleteView
 from scores.views import ScoreAddView, ScoreEditView, ScoreDetailView
@@ -88,7 +88,7 @@ monitoring_patterns = named_urls('monitorings.views',
     (r'^$', 'monitorings_list'),
     (r'^add/$', MonitoringEditView, 'monitoring_add'),
     (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
-    (r'^(?P<monitoring_pk>\d+)/comment_report/$', 'monitoring_comment_report'),
+    (r'^(?P<monitoring_pk>\d+)/comment_report/$', MonitoringCommentReportView, 'monitoring_comment_report'),
     (r'^(?P<monitoring_pk>\d+)/experts/$', 'monitoring_by_experts'),
     (r'^(?P<monitoring_pk>\d+)/organization_export/$', 'monitoring_organization_export'),
     (r'^(?P<monitoring_pk>\d+)/organization_import/$', 'monitoring_organization_import'),

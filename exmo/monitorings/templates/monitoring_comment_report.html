@@ -19,50 +19,47 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission future %}
+{% load i18n check_object_permission static future %}
 
-{% block extrahead %}{{ block.super }}
-    <script type="text/javascript">
-        function toggle(el) {
-            django.jQuery('#' + el).toggle();
-        }
-    </script>
-    {{ media }}
-{% endblock %}
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
     <style>
-        #{{ form.time_to_answer.name }}-label
-        {
-            padding-right: 10px;
+        label[for='id_time_to_answer'] {
             font-weight: bold !important;
             color: #333;
         }
 
-        #report-submit
-        {
-            padding-left: 10px;
+        #id_time_to_answer {
+            margin: 0 10px;
         }
     </style>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function toggle(el) {$('#' + el).toggle();}
+    </script>
 {% endblock %}
 
 {% block nav_sidebar %}
     {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
 {% endblock %}
 
-{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+{% block nav_sidebar_title %}
+    <h1>{{ monitoring_name }}</h1>
+{% endblock %}
+
 {% block content_class %}sidebar-ident{% endblock %}
+
 {% block content %}
-    <div id=monitoring_comment_stat_form>
-        <form method="get" action="">
-            <label id="{{ form.time_to_answer.name }}-label">{{ form.time_to_answer.label }}</label>
-            {{ form.time_to_answer }}
-  <span id="report-submit">
-    <input type="submit" value="{% trans 'Save' %}"/>
-  </span>
-        </form>
-    </div>
+    <form method="post" action="">{% csrf_token %}
+        {{ form.time_to_answer.label_tag }}
+        {{ form.time_to_answer }}
+        <input type="submit" value="{% trans 'Save' %}"/>
+    </form>
+
     {% if org_all_comments %}
         <div id="monitoring_comment_stat">
             <h3>{% trans 'Statistics' %}</h3>
@@ -103,7 +100,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    Total: {{ operator_all_comments|length }}
+                    Total: {{ operator_all_comments }}
                 {% endif %}
             </div>
 

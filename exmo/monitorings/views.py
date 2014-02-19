@@ -37,22 +37,20 @@ from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField
 from django.forms.models import modelformset_factory, modelform_factory
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.views.generic import UpdateView, DeleteView
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
+from django.views.generic import UpdateView, DeleteView
 
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import LoginRequiredMixin
-from custom_comments.forms import MonitoringCommentStatForm
 from custom_comments.utils import comment_report
-from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
@@ -866,67 +864,30 @@ def monitoring_parameter_import(request, monitoring_pk):
     })
 
 
-@login_required
-@csrf_protect
-def monitoring_comment_report(request, monitoring_pk):
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    time_to_answer = monitoring.time_to_answer
-    if not (request.user.profile.is_expertA or request.user.is_superuser):
-        return HttpResponseForbidden(_('Forbidden'))
-    title = _('Comment report for %s') % monitoring
+class MonitoringCommentReportView(UpdateView):
+    template_name = 'monitoring_comment_report.html'
+    pk_url_kwarg = 'monitoring_pk'
+    model = Monitoring
 
-    form = MonitoringCommentStatForm(
-        monitoring=monitoring,
-        initial={'time_to_answer': time_to_answer})
+    def get_form_class(self):
+        return modelform_factory(Monitoring, fields=['time_to_answer'])
 
-    start_date = monitoring.interact_date
-    if not start_date:
-        return TemplateResponse(request, "msg.html", {
-                'msg': _('Start date for interact not defined.')
-            })
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_expertA:
+            raise PermissionDenied
 
-    if request.method == "GET" and request.GET.__contains__('time_to_answer'):
-        form = MonitoringCommentStatForm(request.GET, monitoring=monitoring)
-        if form.is_valid():
-            time_to_answer = int(form.cleaned_data['time_to_answer'])
-            if time_to_answer != monitoring.time_to_answer:
-                monitoring.time_to_answer = time_to_answer
-                monitoring.save()
+        return super(MonitoringCommentReportView, self).dispatch(request, *args, **kwargs)
 
-    report = comment_report(monitoring)
+    def get_success_url(self):
+        return reverse('exmo2010:monitoring_comment_report', args=[self.object.pk])
 
-    comments_without_reply = report.get('comments_without_reply')
-    fail_comments_without_reply = report.get('fail_comments_without_reply')
-    fail_soon_comments_without_reply = report.get('fail_soon_comments_without_reply')
-    fail_comments_with_reply = report.get('fail_comments_with_reply')
-    comments_with_reply = report.get('comments_with_reply')
-    org_comments = report.get('org_comments')
-    org_all_comments = report.get('org_all_comments')
-    operator_all_comments = report.get('operator_all_comments')
-    active_organization_stats = report.get('active_organization_stats')
-    total_org = report.get('total_org')
-    organizations_with_representatives = report.get('organizations_with_representatives')
-    active_operator_person_stats = report.get('active_operator_person_stats')
+    def get_context_data(self, **kwargs):
+        context = super(MonitoringCommentReportView, self).get_context_data(**kwargs)
+        context.update(comment_report(self.object))
+        context.update({'title': _('Comment report for %s') % self.object.name})
 
-    return TemplateResponse(request, 'monitoring_comment_report.html', {
-        'form': form,
-        'comments_without_reply': comments_without_reply,
-        'fail_comments_without_reply': fail_comments_without_reply,
-        'fail_soon_comments_without_reply': fail_soon_comments_without_reply,
-        'fail_comments_with_reply': fail_comments_with_reply,
-        'comments_with_reply': comments_with_reply,
-        'org_comments': org_comments,
-        'org_all_comments': org_all_comments,
-        'operator_all_comments': operator_all_comments,
-        'active_organization_stats': active_organization_stats,
-        'total_org': total_org.count(),
-        'organizations_with_representatives': organizations_with_representatives.count(),
-        'active_operator_person_stats': active_operator_person_stats,
-        'time_to_answer': time_to_answer,
-        'monitoring': monitoring,
-        'title': title,
-        'media': CORE_MEDIA,
-        })
+        return context
 
 
 def monitoring_report(request, report_type='inprogress', monitoring_pk=None):

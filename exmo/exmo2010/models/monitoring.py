@@ -22,6 +22,7 @@ from django.contrib.comments.models import Comment
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext_lazy
 
 from core.sql import iter_i18n_fields_sql, sql_monitoring_scores
 from .base import BaseModel
@@ -70,6 +71,8 @@ MONITORING_STATUS = (
     (MONITORING_PUBLISHED, _('published')),
 )
 
+ANSWER_TIME_CHOICES = [(d, ungettext_lazy('%(count)d day', '%(count)d days', d) % {"count": d}) for d in range(1, 11)]
+
 
 class Monitoring(BaseModel):
     class Meta(BaseModel.Meta):
@@ -89,7 +92,8 @@ class Monitoring(BaseModel):
     map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))
 
     # Максимальное время ответа в днях.
-    time_to_answer = models.PositiveSmallIntegerField(default=3, verbose_name=_('Maximum time to answer'))
+    time_to_answer = models.PositiveSmallIntegerField(choices=ANSWER_TIME_CHOICES, default=3,
+                                                      verbose_name=_('Maximum time to answer'))
     no_interact = models.BooleanField(default=False, verbose_name=_('No interact stage'))
 
     rate_date = models.DateField(verbose_name=_('Monitoring rate begin date'))

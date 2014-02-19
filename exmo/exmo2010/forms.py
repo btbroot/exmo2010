@@ -19,11 +19,9 @@
 #
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Textarea
 from django.utils import formats
-from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
