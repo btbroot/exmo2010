@@ -34,10 +34,8 @@
     {{ block.super }}
     {% wysiwyg_setup %}
     <script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
-    {% if is_expert %}
-        <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
-    {% endif %}
+    <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
 {% endblock %}
 
 {% block title %}{{ parameter }}{% endblock %}
