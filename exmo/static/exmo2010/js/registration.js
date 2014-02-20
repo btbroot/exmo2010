@@ -1,7 +1,7 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011 Al Nikolov
 // Copyright 2010, 2011, 2012 Institute for Information Freedom Development
-// Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -19,31 +19,34 @@
 $(document).ready(function () {
     if ($("#id_status").val() == '1') {
         $("#id_err_position").hide();
-        $("#id_position").val("");
+        $("#id_position").attr('disabled', true);
         $("#id_row_position").hide();
         $("#id_err_phone").hide();
-        $("#id_phone").val("");
+        $("#id_phone").attr('disabled', true);
         $("#id_row_phone").hide();
         $("#id_err_invitation_code").hide();
-        $("#id_invitation_code").val("");
+        $("#id_invitation_code").attr('disabled', true);
         $("#id_row_invitation_code").hide();
     }
 
     $('#id_status').change(function () {
         if ($("#id_status").val() == '0') {
             $("#id_row_position").show();
+            $("#id_position").attr('disabled', false);
             $("#id_row_phone").show();
+            $("#id_phone").attr('disabled', false);
             $("#id_row_invitation_code").show();
+            $("#id_invitation_code").attr('disabled', false);
         }
         else {
             $("#id_err_position").hide();
-            $("#id_position").val("");
+            $("#id_position").attr('disabled', true);
             $("#id_row_position").hide();
             $("#id_err_phone").hide();
-            $("#id_phone").val("");
+            $("#id_phone").attr('disabled', true);
             $("#id_row_phone").hide();
             $("#id_err_invitation_code").hide();
-            $("#id_invitation_code").val("");
+            $("#id_invitation_code").attr('disabled', true);
             $("#id_row_invitation_code").hide();
         }
     });

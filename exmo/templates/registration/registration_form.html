@@ -67,14 +67,9 @@
                     {% if field.errors %}
                     <li id="id_err_{{ field.name }}">
                         {% for error in field.errors %}
-                        <span class="form-error">
-                            {% if error == required_error %}
-                                {{ field.label }}
-                                {% trans 'is required field' %}.
-                            {% else %}
+                            <span class="form-error">
                                 {{ error }}
-                            {% endif %}
-                        </span>
+                            </span>
                         {% endfor %}
                     </li>
                 {% endif %}
@@ -100,27 +95,21 @@
                         </tr>
                         {% endif %}
                     {% endfor %}
-                        <tr id="id_row_required">
+                        <tr>
+                            <td></td>
                             <td>
-                            </td>
-                            <td colspan="2">
                                 <span class="required">*</span> {% trans "required fields" %}
                             </td>
                         </tr>
-                        <tr id="id_row_{{ form.subscribe.name }}">
-                            <td class="label-registration">
-                                <label>
-                                    {{ form.subscribe.label }}{% if form.subscribe.required %}<span class="required">*</span>{% endif %}
-                                </label>
-                            </td>
-                            <td class="subscribe" colspan="2">
-                                {{ form.subscribe }} {{ form.subscribe.help_text }}
+                        <tr>
+                            <td></td>
+                            <td>
+                                {{ form.subscribe }} {{ form.subscribe.label }}
                             </td>
                         </tr>
-                        <tr id="id_row_submit">
+                        <tr>
+                            <td></td>
                             <td>
-                            </td>
-                            <td colspan="2">
                                 <input type="submit" value="{% trans 'Register' %}"/>
                             </td>
                         </tr>

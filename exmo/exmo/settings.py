@@ -243,7 +243,7 @@ IMAP_LOGIN = 'example@example.com'
 IMAP_PASSWORD = 'password'
 
 # Registration
-REGISTRATION_OPEN = True
+CUSTOM_REGISTRATION_BACKEND = 'exmo2010.custom_registration.backends.CustomBackend'
 ACCOUNT_ACTIVATION_DAYS = 30
 LOGIN_URL = reverse_lazy('exmo2010:auth_login')
 LOGOUT_URL = reverse_lazy('exmo2010:auth_logout')

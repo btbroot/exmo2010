@@ -25,13 +25,22 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import translation
 from registration import signals
+from registration.backends import get_backend as get_registration_backend
+from registration.backends.default import DefaultBackend
 
-from exmo2010.custom_registration.forms import RegistrationFormFull
+from exmo2010.custom_registration.forms import RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.models import CustomRegistrationProfile
 from exmo2010.models import UserProfile, Organization
 
 
-class CustomBackend(object):
+def get_backend(path):
+    if not path:
+        path = getattr(settings, 'CUSTOM_REGISTRATION_BACKEND')
+
+    return get_registration_backend(path)
+
+
+class CustomBackend(DefaultBackend):
     """
     A registration backend which follows a simple workflow:
 
@@ -68,7 +77,7 @@ class CustomBackend(object):
     an instance of ``registration.models.RegistrationProfile``. See
     that model and its custom manager for full documentation of its
     fields and supported operations.
-    
+
     """
     def register(self, request, **kwargs):
         """
@@ -165,44 +174,34 @@ class CustomBackend(object):
         ``registration.signals.user_activated`` will be sent, with the
         newly activated ``User`` as the keyword argument ``user`` and
         the class of this backend as the sender.
-        
+
         """
         activated = CustomRegistrationProfile.objects.activate_user(activation_key)
         if activated:
-            activated.backend='django.contrib.auth.backends.ModelBackend'
+            activated.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, activated)
             signals.user_activated.send(sender=self.__class__,
                                         user=activated,
                                         request=request)
         return activated
 
-    def registration_allowed(self, request):
-        """
-        Indicate whether account registration is currently permitted,
-        based on the value of the setting ``REGISTRATION_OPEN``. This
-        is determined as follows:
-
-        * If ``REGISTRATION_OPEN`` is not specified in settings, or is
-          set to ``True``, registration is permitted.
-
-        * If ``REGISTRATION_OPEN`` is both specified and set to
-          ``False``, registration is not permitted.
-        
-        """
-        return getattr(settings, 'REGISTRATION_OPEN', True)
-
     def get_form_class(self, request):
         """
         Return the default form class used for user registration.
-        
+
         """
-        return RegistrationFormFull
+        form_class = RegistrationFormFull
+        if request.method == 'POST':
+            if not 'invitation_code' in request.POST:
+                form_class = RegistrationFormShort
+
+        return form_class
 
     def post_registration_redirect(self, request, user):
         """
         Return the name of the URL to redirect to after successful
         user registration.
-        
+
         """
         return 'exmo2010:registration_complete', (), {}
 
@@ -210,6 +209,6 @@ class CustomBackend(object):
         """
         Return the name of the URL to redirect to after successful
         account activation.
-        
+
         """
         return 'exmo2010:index', (), {}

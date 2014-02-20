@@ -146,7 +146,7 @@ tasks_patterns += named_urls('parameters.views',
 
 urlpatterns = named_urls('',
     (r'^$', TemplateView.as_view(template_name='index.html'), 'index'),
-    (r'^accounts/', include('exmo2010.custom_registration.backends.custom.urls')),
+    (r'^accounts/', include('exmo2010.custom_registration.urls')),
 
     (r'^monitoring/', include(monitoring_patterns)),
 

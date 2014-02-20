@@ -55,7 +55,7 @@ class CommentReportTestCase(TestCase):
         # WHEN comment report is generated for monitoring with two organizations
         report = comment_report(self.monitoring)
         # THEN count of organizations with representatives equals 1
-        self.assertEqual(len(report['organizations_with_representatives']), 1)
+        self.assertEqual(report['organizations_with_representatives'], 1)
 
 
 class CommentGetQueryAccessTestCase(TestCase):

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@ from django.core.validators import BaseValidator
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from annoying.decorators import autostrip
@@ -49,60 +50,46 @@ class RegistrationFormShort(forms.Form):
     в поле first_name модели User.
     """
     status = forms.ChoiceField(label=_("Status"), choices=STATUS_CHOICES)
-    first_name = forms.CharField(label=_("First name"),
-        help_text=_("Enter your first name in order the system can address "
-                    "you with it"),
-        widget=forms.TextInput(attrs={"maxlength": 14}),
-        required=False, max_length=14)
-    patronymic = forms.CharField(label=_("Patronymic"),
-        help_text=_("Enter your patronymic in order the system can address "
-                    "you with it"),
-        widget=forms.TextInput(attrs={"maxlength": 14}),
-        required=False, max_length=14)
-    last_name = forms.CharField(label=_("Last name"),
-        help_text=_("Enter your last name in order the system can address "
-                    "you with it"),
-        widget=forms.TextInput(attrs={"maxlength": 30}),
-        required=False, max_length=30)
+    first_name = forms.CharField(label=_("First name"), required=False,
+                                 widget=forms.TextInput(attrs={"maxlength": 14}))
+    patronymic = forms.CharField(label=_("Patronymic"), required=False,
+                                 widget=forms.TextInput(attrs={"maxlength": 14}))
+    last_name = forms.CharField(label=_("Last name"), required=False,
+                                widget=forms.TextInput(attrs={"maxlength": 30}))
     email = forms.EmailField(label=_("E-mail"),
-        help_text=_("E-mail is required for confirming registration and "
-                    "loggin in"),
-        widget=forms.TextInput({"maxlength": 75}))
+                             widget=forms.TextInput({"maxlength": 75}))
     password = forms.CharField(label=_("Password"),
-        widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}),
-        help_text=_("Create a complicated password using latin characters "
-                    "(A-Z, a-z) and digits (0-9)"))
-    subscribe = forms.BooleanField(label="",
-        help_text=_("Subscribe to news"),
-        required=False)
+                               widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}))
+    subscribe = forms.BooleanField(label=_("Subscribe to news"), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationFormShort, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if field.required:
+                field.error_messages.update({
+                    'required': _('{fieldname} is required field.').format(fieldname=field.label)
+                })
 
     def clean_password(self):
         """Проверка пароля на наличие недопустимых символов."""
         password = self.cleaned_data.get('password')
         for char in password:
             if char not in PASSWORD_ALLOWED_CHARS:
-                raise forms.ValidationError(_("Password contains unallowed "
-                                              "characters. Please use only "
-                                              "latin letters and digits."))
+                raise forms.ValidationError(_("Password contains unallowed characters. "
+                                              "Please use only latin letters and digits."))
         return password
 
     def clean_email(self):
         """
-        Validate that the supplied email address is unique for the
-        site.
+        Validate that the supplied email address is unique for the site.
 
         """
         email = self.cleaned_data['email']
-        if (User.objects.filter(email__iexact=email).exists() or
-            User.objects.filter(username__iexact=email).exists()):
-            raise forms.ValidationError(_("This email address is already in "
-                                          "use. Please supply a different "
-                                          "email address."))
+        if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
+            raise forms.ValidationError(_("This email address is already in use. "
+                                          "Please supply a different email address."))
         return email
 
-    def __init__(self, *args, **kwargs):
-        super(RegistrationFormShort, self).__init__(*args, **kwargs)
-        self.label_suffix = ""  # Убираем двоеточие после названия поля.
 
 class InvCodeMinLengthValidator(BaseValidator):
     compare = lambda self, a, b: a < b
@@ -110,11 +97,13 @@ class InvCodeMinLengthValidator(BaseValidator):
     message = _(u'Ensure invitation code has at least %(limit_value)d characters (it has %(show_value)d).')
     code = 'min_length'
 
+
 class InvCodeMaxLengthValidator(BaseValidator):
     compare = lambda self, a, b: a > b
     clean   = lambda self, x: len(x)
     message = _(u'Ensure invitation code has at most %(limit_value)d characters (it has %(show_value)d).')
     code = 'max_length'
+
 
 @autostrip
 class RegistrationFormFull(RegistrationFormShort):
@@ -123,33 +112,27 @@ class RegistrationFormFull(RegistrationFormShort):
     На имя и отчество выделено по 15 символов, чтобы они вместе вместились
     в поле first_name модели User.
     """
-    position = forms.CharField(label=_("Seat"),
-        widget=forms.TextInput(attrs={"maxlength": 48}),
-        required=False, max_length=48)
-    phone = forms.CharField(label=_("Phone"),
-        widget=forms.TextInput(attrs={"maxlength": 30}),
-        required=False, max_length=30)
+    position = forms.CharField(label=_("Seat"), required=False,
+                               widget=forms.TextInput(attrs={"maxlength": 48}))
+    phone = forms.CharField(label=_("Phone"), required=False,
+                            widget=forms.TextInput(attrs={"maxlength": 30}))
     invitation_code = forms.CharField(label=_("Invitation code"),
-        help_text=_("Required to get access to your organization scores"),
-        widget=forms.TextInput(attrs={"maxlength": 6}),
-        validators=[InvCodeMinLengthValidator(6), InvCodeMaxLengthValidator(6),])
+                                      widget=forms.TextInput(attrs={"maxlength": 6}),
+                                      validators=[InvCodeMinLengthValidator(6), InvCodeMaxLengthValidator(6)])
 
     def clean_invitation_code(self):
         """
         Проверить, что код приглашения существует.
         """
         invitation_code = self.cleaned_data.get('invitation_code')
-        try:
-            organization = Organization.objects.get(inv_code=invitation_code)
-        except ObjectDoesNotExist:
+        if not Organization.objects.filter(inv_code=invitation_code).exists():
             time.sleep(3)  # Чтобы усложнить перебор.
-            raise forms.ValidationError(_("Submitted invitation code does not "
-                                          "exist. Please enter correct one."))
+            raise forms.ValidationError(_("Submitted invitation code does not exist. Please enter correct one."))
         else:
             return invitation_code
-        
+
     def __init__(self, *args, **kwargs):
-        super(RegistrationFormShort, self).__init__(*args, **kwargs)
+        super(RegistrationFormFull, self).__init__(*args, **kwargs)
         # Правильно упорядочиваем поля.
         self.fields.keyOrder = ['status', 'first_name', 'patronymic',
                                 'last_name', 'position', 'phone', 'email',

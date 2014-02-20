@@ -39,9 +39,9 @@ from django.utils import translation
 from django.views.csrf import CSRF_FAILURE_TEMPLATE
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
-from registration.backends import get_backend
 
 from auth.forms import CustomPasswordResetForm
+from exmo2010.custom_registration.backends import get_backend
 from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
 from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
 from exmo2010.custom_registration.models import CustomRegistrationProfile
@@ -103,7 +103,7 @@ def password_reset_confirm(request, uidb36=None, token=None,
     return TemplateResponse(request, template_name, context, current_app=current_app)
 
 
-def register_test_cookie(request, backend, success_url=None, form_class=None,
+def register_test_cookie(request, backend=None, success_url=None, form_class=None,
                          disallowed_url='registration_disallowed',
                          template_name='registration/registration_form.html',
                          extra_context=None):
@@ -113,46 +113,35 @@ def register_test_cookie(request, backend, success_url=None, form_class=None,
     путем добавления в начале проверки включенности cookies в браузере,
     и фокусов с формой в зависимости от статуса регистрирующегося.
     """
+    backend = get_backend(backend)
+    if not backend.registration_allowed(request):
+        return redirect(disallowed_url)
+    if form_class is None:
+        form_class = backend.get_form_class(request)
+
     if request.method == 'POST':
         if request.session.test_cookie_worked():
             request.session.delete_test_cookie()
         else:
             return TemplateResponse(request, 'cookies.html')
 
-    request.session.set_test_cookie()
-    backend = get_backend(backend)
-    if not backend.registration_allowed(request):
-        return redirect(disallowed_url)
-
-    if request.method == 'POST':
-        status = int(request.POST.get("status", u"0"))
-        if status == 1:  # интересующийся гражданин.
-            form = RegistrationFormShort(data=request.POST,
-                files=request.FILES)
-        else:  # представитель организации.
-            form = RegistrationFormFull(data=request.POST, files=request.FILES)
-
+        form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
             new_user = backend.register(request, **form.cleaned_data)
             if success_url is None:
-                to, args, kwargs = backend.post_registration_redirect(request,
-                    new_user)
+                to, args, kwargs = backend.post_registration_redirect(request, new_user)
                 return redirect(to, *args, **kwargs)
             else:
                 return redirect(success_url)
         else:
-            if status == 1:
-                form = RegistrationFormFull(data=request.POST,
-                                            files=request.FILES)
+            form = RegistrationFormFull(data=request.POST, files=request.FILES)
     else:
-        form = RegistrationFormFull()
+        form = form_class()
+
+    request.session.set_test_cookie()
 
     if extra_context is None:
         extra_context = {}
-
-    extra_context.update({'required_error':
-                              Field.default_error_messages['required']})
-
     context = {'form': form}
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
@@ -274,7 +263,7 @@ def csrf_failure(request, reason=""):
         return HttpResponseForbidden(t.render(c), mimetype='text/html')
 
 
-def activate_redirect(request, backend,
+def activate_redirect(request, backend=None,
              template_name='registration/activate.html',
              success_url=None, extra_context=None, **kwargs):
     """
