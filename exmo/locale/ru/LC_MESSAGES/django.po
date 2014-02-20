@@ -1047,8 +1047,8 @@ msgstr "кому выставили"
 
 #: exmo2010/models/claim.py:57
 #, python-brace-format
-msgid "claim for {self.score} from {self.creator}"
-msgstr "претензия для {self.score} от {self.creator}"
+msgid "claim for {obj.score} from {obj.creator}"
+msgstr "претензия для {obj.score} от {obj.creator}"
 
 #: exmo2010/models/clarification.py:37
 msgid "clarification open"
@@ -1060,8 +1060,8 @@ msgstr "уточнение закрыто"
 
 #: exmo2010/models/clarification.py:59
 #, python-brace-format
-msgid "clarification for {self.score} from {self.creator}"
-msgstr "уточнение для {self.score} от {self.creator}"
+msgid "clarification for {obj.score} from {obj.creator}"
+msgstr "уточнение для {obj.score} от {obj.creator}"
 
 #: exmo2010/models/monitoring.py:65
 msgid "prepare"

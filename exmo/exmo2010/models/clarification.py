@@ -56,7 +56,7 @@ class Clarification(BaseModel):
         return self
 
     def __unicode__(self):
-        return _('clarification for {self.score} from {self.creator}').format(self=self)
+        return _('clarification for {obj.score} from {obj.creator}').format(obj=self)
 
     class Meta(BaseModel.Meta):
         permissions = (("view_clarification", "Can view clarification"),)
