@@ -34,7 +34,7 @@
             function show_status_actions(td) {
                 $(td).children('img').hide();  // hide "loading..." image
                 $(td).children('.task_status_display').show();
-                perms = $(td).data('perms').split(' ');
+                var perms = $(td).data('perms').split(' ');
                 for (var i = 0; i < perms.length; i++) {
                     action_class = '.perms_' + perms[i];
                     $(td).find(action_class).show();  // show permitted action
@@ -44,7 +44,7 @@
             $('td.task-status').each(function(){show_status_actions(this)});
 
             $(document).on('click', 'td.task-status a', function () {
-                td = $(this).closest('td')
+                var td = $(this).closest('td')
                 td.children().hide().filter('img').show();  // hide contents, show "loading..." image
                 $.post($(this).attr('href'))
                     .done(function(new_data) {
