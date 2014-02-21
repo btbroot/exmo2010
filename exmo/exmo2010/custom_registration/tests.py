@@ -15,6 +15,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import os
+
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from model_mommy import mommy
 from nose_parameterized import parameterized
@@ -74,3 +78,15 @@ class RegistrationFormTestCase(TestCase):
         form = RegistrationFormFull(data=dict(zip(self.orguser_fields, values)))
         # THEN form validation should fail
         self.assertEqual(form.is_valid(), False)
+
+
+class ActivationTestCase(TestCase):
+    # SHOULD allow activation with correct activation key only
+
+    def test_activation_with_invalid_key(self):
+        # WHEN anonymous user tries to activate account with the right length random key
+        activation_key = os.urandom(20).encode('hex')
+        url = reverse('exmo2010:registration_activate', args=[activation_key])
+        response = self.client.get(url, follow=True)
+        # THEN anonymous should be redirected to the login page
+        self.assertRedirects(response, unicode(settings.LOGIN_URL))

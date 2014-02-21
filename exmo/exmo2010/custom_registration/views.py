@@ -264,8 +264,8 @@ def csrf_failure(request, reason=""):
 
 
 def activate_redirect(request, backend=None,
-             template_name='registration/activate.html',
-             success_url=None, extra_context=None, **kwargs):
+                      template_name='registration/activate.html',
+                      success_url=None, extra_context=None, **kwargs):
     """
     Вью на основании registration, добавлен редирект на страницу
     логина, если backend.activate() возвращает False
@@ -283,14 +283,13 @@ def activate_redirect(request, backend=None,
         if account:
             # успех
             if success_url is None:
-                to, args, kwargs = backend.post_activation_redirect(request,
-                                                                    account)
+                to, args, kwargs = backend.post_activation_redirect(request, account)
                 return redirect(to, *args, **kwargs)
             else:
                 return redirect(success_url)
 
         # если ключ правильный, но пользователь уже активирован
-        return settings.LOGIN_URL
+        return HttpResponseRedirect(settings.LOGIN_URL)
 
     # если ключ активации неправильный
     if extra_context is None:
