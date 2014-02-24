@@ -18,9 +18,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-21 13:12+0400\n"
-"PO-Revision-Date: 2014-01-15 21:05+0400\n"
-"Last-Translator: Valeriy Okulichev <vokulichev@svobodainfo.org>\n"
+"POT-Creation-Date: 2014-02-24 12:22+0400\n"
+"PO-Revision-Date: 2014-02-24 12:17+0400\n"
+"Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Georgian <iifd-list@svobodainfo.org>\n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
@@ -122,10 +122,10 @@ msgstr "ელ-ფოსტა"
 #: accounts/templates/user_settings.html:73
 #: accounts/templates/user_settings.html:193
 #: monitorings/templates/monitoring_comment_report.html:60
-#: monitorings/templates/monitoring_form.html:48
+#: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/_organization_form.html:41
-#: parameters/templates/parameter_form.html:54 scores/templates/form.html:261
+#: parameters/templates/parameter_form.html:73 scores/templates/form.html:261
 #: scores/templates/form_with_comment.html:258
 #: scores/templates/score_list.html:283
 msgid "Save"
@@ -139,7 +139,7 @@ msgid "Invitation code"
 msgstr "მოწვევის კოდი"
 
 #: accounts/templates/user_settings.html:110 exmo2010/forms.py:71
-#: monitorings/templates/monitoring_form.html:80
+#: monitorings/templates/monitoring_form.html:89
 #: organizations/templates/organization_confirm_delete.html:38
 #: tasks/templates/mass_assign_tasks.html:49
 #: templates/exmo2010/feedback.html:77
@@ -393,7 +393,8 @@ msgstr "განმარტებების ანგარიში \"%s\""
 msgid "Clarifications"
 msgstr "განმარტებები"
 
-#: clarifications/views.py:185
+#: clarifications/views.py:185 exmo2010/email_notify.py:58
+#: exmo2010/emails.py:65
 msgid "New clarification"
 msgstr "ახალი განმარტება"
 
@@ -465,18 +466,22 @@ msgid "Comments"
 msgstr "კომენტარები"
 
 #: custom_comments/templates/comment.html:62
+#: scores/templates/_score_comments.html:61
 msgid "Peremptory day to answer your question is"
 msgstr "თქვენს კითხვაზე პასუხის გაცემის ბოლო ვადაა:"
 
 #: custom_comments/templates/comment.html:74
+#: scores/templates/_score_comments.html:73
 msgid "Close without answer"
 msgstr "დახურვა პასუხის გარეშე"
 
 #: custom_comments/templates/comment.html:76
+#: scores/templates/_score_comments.html:75
 msgid "Open comment"
 msgstr "კომენტარის გახსნა"
 
 #: custom_comments/templates/comment.html:87
+#: scores/templates/_score_comments.html:86
 msgid "There are no comments"
 msgstr "არ არის კომენტარი"
 
@@ -645,6 +650,10 @@ msgstr "ინფორმაციის თავისუფლების �
 #: exmo/config.py:118
 msgid "Default organization`s expert"
 msgstr "განსაზღვრული ორგანიზაციის ექსპერტი"
+
+#: exmo2010/emails.py:79 exmo2010/views.py:258
+msgid "Ordering openness certificate for"
+msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
 
 #: exmo2010/forms.py:60
 msgid "Your problem"
@@ -847,6 +856,7 @@ msgid ""
 msgstr ""
 
 #: exmo2010/views.py:239
+#, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr ""
 
@@ -859,10 +869,6 @@ msgstr "ელ-ფოსტის მისამართზე %s."
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "სერთიფიკატის მომზადება ვის სახელზე %s."
-
-#: exmo2010/views.py:258
-msgid "Ordering openness certificate for"
-msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
 
 #: exmo2010/views.py:277
 msgid ""
@@ -893,6 +899,7 @@ msgid "Subscribe to news"
 msgstr "გამოიწერეთ ახალი ამბები"
 
 #: exmo2010/custom_registration/forms.py:70
+#, python-brace-format
 msgid "{fieldname} is required field."
 msgstr "{fieldname} სავალდებულო ველი."
 
@@ -988,6 +995,7 @@ msgid "addressee"
 msgstr "ადრესატი"
 
 #: exmo2010/models/claim.py:57
+#, python-brace-format
 msgid "claim for {obj.score} from {obj.creator}"
 msgstr "მოთხოვნა ვის {obj.score} ვისგან {obj.creator}"
 
@@ -1000,6 +1008,7 @@ msgid "clarification close"
 msgstr "განმარტება დახურულია"
 
 #: exmo2010/models/clarification.py:59
+#, python-brace-format
 msgid "clarification for {obj.score} from {obj.creator}"
 msgstr "განმარტება ვის {obj.score} ვისგან {obj.creator}"
 
@@ -1032,8 +1041,6 @@ msgstr "გამოქვეყნებული შედეგები"
 msgid "%(count)d day"
 msgid_plural "%(count)d days"
 msgstr[0] "%(count)d დღე"
-msgstr[1] "%(count)d დღე"
-msgstr[2] "%(count)d დღე"
 
 #: exmo2010/models/monitoring.py:82 exmo2010/models/monitoring.py:99
 #: monitorings/templates/monitoring_report.html:93
@@ -1223,7 +1230,7 @@ msgid "Choose a variant"
 msgstr "ვარიანტის არჩევა"
 
 #: exmo2010/models/questionnaire.py:36
-#: monitorings/templates/monitoring_form.html:63
+#: monitorings/templates/monitoring_form.html:72
 msgid "Monitoring"
 msgstr "მონიტორინგის ციკლი"
 
@@ -1661,44 +1668,46 @@ msgstr ""
 msgid "Haven't comments from organizations"
 msgstr "არ არის კომენტარები საჯარო დაწესებულებებიდან"
 
-#: monitorings/templates/monitoring_form.html:27
+#: monitorings/templates/monitoring_form.html:26
+#: monitorings/templates/monitoring_form.html:35
 #, python-format
 msgid "Edit monitoring %(monitoring)s"
 msgstr ""
 
-#: monitorings/templates/monitoring_form.html:29
+#: monitorings/templates/monitoring_form.html:28
+#: monitorings/templates/monitoring_form.html:37
 #: templates/exmo2010/monitoring_list.html:37
 #: templates/user_dashboard/modules/monitoring_list.html:33
 msgid "Add new monitoring"
 msgstr "ახალი მონიტორინგის ციკლის დამატება"
 
-#: monitorings/templates/monitoring_form.html:47
+#: monitorings/templates/monitoring_form.html:56
 msgid "Export organizations"
 msgstr "საჯარო დაწესებულებების ექსპორტი"
 
-#: monitorings/templates/monitoring_form.html:48
+#: monitorings/templates/monitoring_form.html:57
 msgid "Import organizations from CSV"
 msgstr "CSV-დან საჯარო დაწესებულებების იმპორტი"
 
-#: monitorings/templates/monitoring_form.html:48
-#: monitorings/templates/monitoring_form.html:52
+#: monitorings/templates/monitoring_form.html:57
+#: monitorings/templates/monitoring_form.html:61
 #: scores/templates/score_list.html:121
 msgid "Import"
 msgstr "იმპორტი"
 
-#: monitorings/templates/monitoring_form.html:51
+#: monitorings/templates/monitoring_form.html:60
 msgid "Export parameters"
 msgstr "პარამეტრების ექსპორტი"
 
-#: monitorings/templates/monitoring_form.html:52
+#: monitorings/templates/monitoring_form.html:61
 msgid "Import parameters from CSV"
 msgstr "CSV-დან პარამეტრების იმპორტი"
 
-#: monitorings/templates/monitoring_form.html:55
+#: monitorings/templates/monitoring_form.html:64
 msgid "Edit questionnaire"
 msgstr "კითხვარის რედაქტირება"
 
-#: monitorings/templates/monitoring_form.html:58
+#: monitorings/templates/monitoring_form.html:67
 msgid ""
 "Questionnaire is already created. To delete it turn off \"Add questionnaire"
 "\" checkbox and save changes"
@@ -1927,12 +1936,6 @@ msgid_plural ""
 msgstr[0] ""
 "\n"
 "მთლიანად მონიტორინგის ციკლი მოიცავს %(count)s საჯარო დაწესებულებას"
-msgstr[1] ""
-"\n"
-"მთლიანად მონიტორინგის ცილი მოიცავს %(count)s საჯარო დაწესებულებას"
-msgstr[2] ""
-"\n"
-"მთლიანად მონიტორინგის ციკლი მოიცავს %(count)s საჯარო დაწესებულებას"
 
 #: monitorings/templates/rating.html:328
 #, python-format
@@ -1947,14 +1950,6 @@ msgid_plural ""
 "users sample\n"
 "            "
 msgstr[0] ""
-"\n"
-", მათგან %(count)s მინიმუმ ერთს აქვს მომხმარებლის ნიმუშიდან შესაბამისი "
-"პარამეტრი"
-msgstr[1] ""
-"\n"
-", მათგან %(count)s მინიმუმ ერთს აქვს მომხმარებლის ნიმუშიდან შესაბამისი "
-"პარამეტრი"
-msgstr[2] ""
 "\n"
 ", მათგან %(count)s მინიმუმ ერთს აქვს მომხმარებლის ნიმუშიდან შესაბამისი "
 "პარამეტრი"
@@ -2049,10 +2044,11 @@ msgid ""
 "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by "
 "commas or newlines."
 msgstr ""
-"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები +x(xxx)"
-"xxx-xx-xxფორმატში."
+"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები "
+"+x(xxx)xxx-xx-xxფორმატში."
 
 #: organizations/templates/edit_organization.html:25
+#: organizations/templates/edit_organization.html:29
 #, python-format
 msgid "Edit organization %(org)s"
 msgstr ""
@@ -2154,6 +2150,7 @@ msgid "Image"
 msgstr "გრაფიკული ხელმისაწვდომობა"
 
 #: parameters/views.py:113
+#, python-brace-format
 msgid "{subject_prefix}Parameter has been changed: {param}"
 msgstr ""
 
@@ -2186,11 +2183,23 @@ msgstr "ამჟამინდელი მახასიათებლე�
 msgid "We recommend to check the scores of current parameter."
 msgstr "სასურველია ამჟამინდელი პარამეტრის ქულების შემოწმება."
 
-#: parameters/templates/parameter_form.html:56
+#: parameters/templates/parameter_form.html:38
+#: parameters/templates/parameter_form.html:47
+#, fuzzy, python-format
+msgid "Edit parameter %(param)s"
+msgstr "პარამეტრის რედაქტირება"
+
+#: parameters/templates/parameter_form.html:40
+#: parameters/templates/parameter_form.html:49
+#: scores/templates/score_list.html:137
+msgid "Add new parameter"
+msgstr "ახალი პარამეტრის დამატება"
+
+#: parameters/templates/parameter_form.html:75
 msgid "Save and send notifications"
 msgstr "შეტყობინების შენახვა და გაგზავნა"
 
-#: parameters/templates/parameter_form.html:58 scores/templates/form.html:266
+#: parameters/templates/parameter_form.html:77 scores/templates/form.html:266
 #: templates/exmo2010/task_form.html:40
 msgid "Reset"
 msgstr "გადატვირთვა"
@@ -2328,10 +2337,6 @@ msgstr "ამოცანის ექსპორტი CSV-ად"
 #: scores/templates/score_list.html:121
 msgid "Import task from CSV"
 msgstr "ამოცანის იმპორტი CSV-დან"
-
-#: scores/templates/score_list.html:137
-msgid "Add new parameter"
-msgstr "ახალი პარამეტრის დამატება"
 
 #: scores/templates/score_list.html:142
 msgid "Normative parameters"
@@ -3346,8 +3351,6 @@ msgstr "აის ინფომეტრი"
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] "გთხოვთ შეცვალოთ აღმოჩენილი შეცდომები"
-msgstr[1] "გთხოვთ შეცვალოთ აღმოჩენილი შეცდომები"
-msgstr[2] "გთხოვთ შეცვალოთ აღმოჩენილი შეცდომები"
 
 #: templates/registration/password_change_form.html:54
 msgid ""

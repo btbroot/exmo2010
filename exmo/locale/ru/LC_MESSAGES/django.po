@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-21 13:12+0400\n"
-"PO-Revision-Date: 2014-02-17 00:31+0400\n"
+"POT-Creation-Date: 2014-02-24 11:52+0400\n"
+"PO-Revision-Date: 2014-02-24 12:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
 "Language: ru\n"
@@ -126,10 +126,10 @@ msgstr "Электронная почта"
 #: accounts/templates/user_settings.html:73
 #: accounts/templates/user_settings.html:193
 #: monitorings/templates/monitoring_comment_report.html:60
-#: monitorings/templates/monitoring_form.html:48
+#: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/_organization_form.html:41
-#: parameters/templates/parameter_form.html:54 scores/templates/form.html:261
+#: parameters/templates/parameter_form.html:73 scores/templates/form.html:261
 #: scores/templates/form_with_comment.html:258
 #: scores/templates/score_list.html:283
 msgid "Save"
@@ -143,7 +143,7 @@ msgid "Invitation code"
 msgstr "Код приглашения"
 
 #: accounts/templates/user_settings.html:110 exmo2010/forms.py:71
-#: monitorings/templates/monitoring_form.html:80
+#: monitorings/templates/monitoring_form.html:89
 #: organizations/templates/organization_confirm_delete.html:38
 #: tasks/templates/mass_assign_tasks.html:49
 #: templates/exmo2010/feedback.html:77
@@ -397,7 +397,8 @@ msgstr "Отчет по уточнениям для \"%s\""
 msgid "Clarifications"
 msgstr "Уточнения"
 
-#: clarifications/views.py:185
+#: clarifications/views.py:185 exmo2010/email_notify.py:58
+#: exmo2010/emails.py:65
 msgid "New clarification"
 msgstr "Новое уточнение"
 
@@ -469,18 +470,22 @@ msgid "Comments"
 msgstr "Комментарии"
 
 #: custom_comments/templates/comment.html:62
+#: scores/templates/_score_comments.html:61
 msgid "Peremptory day to answer your question is"
 msgstr "Крайний срок ответа на ваш комментарий:"
 
 #: custom_comments/templates/comment.html:74
+#: scores/templates/_score_comments.html:73
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
 #: custom_comments/templates/comment.html:76
+#: scores/templates/_score_comments.html:75
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
 #: custom_comments/templates/comment.html:87
+#: scores/templates/_score_comments.html:86
 msgid "There are no comments"
 msgstr "Комментариев нет"
 
@@ -649,6 +654,10 @@ msgstr "Эксперт Фонда Свободы Информации"
 #: exmo/config.py:118
 msgid "Default organization`s expert"
 msgstr "Эксперт организации по умолчанию"
+
+#: exmo2010/emails.py:79 exmo2010/views.py:258
+msgid "Ordering openness certificate for"
+msgstr "Заказ сертификата открытости для"
 
 #: exmo2010/forms.py:60
 msgid "Your problem"
@@ -854,6 +863,7 @@ msgstr ""
 "опубликованном {date}."
 
 #: exmo2010/views.py:239
+#, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr "На адрес {zip_code}, {address}, {addressee}."
 
@@ -866,10 +876,6 @@ msgstr "На адрес электронной почты %s."
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "Подготовить диплом на имя %s."
-
-#: exmo2010/views.py:258
-msgid "Ordering openness certificate for"
-msgstr "Заказ сертификата открытости для"
 
 #: exmo2010/views.py:277
 msgid ""
@@ -900,6 +906,7 @@ msgid "Subscribe to news"
 msgstr "Подписаться на рассылку новостей"
 
 #: exmo2010/custom_registration/forms.py:70
+#, python-brace-format
 msgid "{fieldname} is required field."
 msgstr "{fieldname} является обязательным полем."
 
@@ -998,6 +1005,7 @@ msgid "addressee"
 msgstr "кому выставили"
 
 #: exmo2010/models/claim.py:57
+#, python-brace-format
 msgid "claim for {obj.score} from {obj.creator}"
 msgstr "претензия для {obj.score} от {obj.creator}"
 
@@ -1010,6 +1018,7 @@ msgid "clarification close"
 msgstr "уточнение закрыто"
 
 #: exmo2010/models/clarification.py:59
+#, python-brace-format
 msgid "clarification for {obj.score} from {obj.creator}"
 msgstr "уточнение для {obj.score} от {obj.creator}"
 
@@ -1233,7 +1242,7 @@ msgid "Choose a variant"
 msgstr "Один из списка"
 
 #: exmo2010/models/questionnaire.py:36
-#: monitorings/templates/monitoring_form.html:63
+#: monitorings/templates/monitoring_form.html:72
 msgid "Monitoring"
 msgstr "Цикл мониторинга"
 
@@ -1668,44 +1677,46 @@ msgstr ""
 msgid "Haven't comments from organizations"
 msgstr "Нет комментариев от органов/организаций"
 
-#: monitorings/templates/monitoring_form.html:27
+#: monitorings/templates/monitoring_form.html:26
+#: monitorings/templates/monitoring_form.html:35
 #, python-format
 msgid "Edit monitoring %(monitoring)s"
 msgstr "Редактировать цикл мониторинга %(monitoring)s"
 
-#: monitorings/templates/monitoring_form.html:29
+#: monitorings/templates/monitoring_form.html:28
+#: monitorings/templates/monitoring_form.html:37
 #: templates/exmo2010/monitoring_list.html:37
 #: templates/user_dashboard/modules/monitoring_list.html:33
 msgid "Add new monitoring"
 msgstr "Добавить цикл мониторинга"
 
-#: monitorings/templates/monitoring_form.html:47
+#: monitorings/templates/monitoring_form.html:56
 msgid "Export organizations"
 msgstr "Экспортировать органы/организации"
 
-#: monitorings/templates/monitoring_form.html:48
+#: monitorings/templates/monitoring_form.html:57
 msgid "Import organizations from CSV"
 msgstr "Импортировать органы/организации из CSV"
 
-#: monitorings/templates/monitoring_form.html:48
-#: monitorings/templates/monitoring_form.html:52
+#: monitorings/templates/monitoring_form.html:57
+#: monitorings/templates/monitoring_form.html:61
 #: scores/templates/score_list.html:121
 msgid "Import"
 msgstr "Импорт"
 
-#: monitorings/templates/monitoring_form.html:51
+#: monitorings/templates/monitoring_form.html:60
 msgid "Export parameters"
 msgstr "Экспортировать параметры"
 
-#: monitorings/templates/monitoring_form.html:52
+#: monitorings/templates/monitoring_form.html:61
 msgid "Import parameters from CSV"
 msgstr "Импортировать параметры из CSV"
 
-#: monitorings/templates/monitoring_form.html:55
+#: monitorings/templates/monitoring_form.html:64
 msgid "Edit questionnaire"
 msgstr "Редактировать анкету"
 
-#: monitorings/templates/monitoring_form.html:58
+#: monitorings/templates/monitoring_form.html:67
 msgid ""
 "Questionnaire is already created. To delete it turn off \"Add questionnaire"
 "\" checkbox and save changes"
@@ -2061,6 +2072,7 @@ msgstr ""
 "или переносами строки."
 
 #: organizations/templates/edit_organization.html:25
+#: organizations/templates/edit_organization.html:29
 #, python-format
 msgid "Edit organization %(org)s"
 msgstr "Редактировать организацию %(org)s"
@@ -2162,6 +2174,7 @@ msgid "Image"
 msgstr "Графическая доступность"
 
 #: parameters/views.py:113
+#, python-brace-format
 msgid "{subject_prefix}Parameter has been changed: {param}"
 msgstr "{subject_prefix}Изменен параметр: {param}"
 
@@ -2194,11 +2207,23 @@ msgstr "Текущие характеристики"
 msgid "We recommend to check the scores of current parameter."
 msgstr "Рекомендуется проверить оценки по данному параметру."
 
-#: parameters/templates/parameter_form.html:56
+#: parameters/templates/parameter_form.html:38
+#: parameters/templates/parameter_form.html:47
+#, python-format
+msgid "Edit parameter %(param)s"
+msgstr "Редактировать параметр %(param)s"
+
+#: parameters/templates/parameter_form.html:40
+#: parameters/templates/parameter_form.html:49
+#: scores/templates/score_list.html:137
+msgid "Add new parameter"
+msgstr "Добавить новый параметр"
+
+#: parameters/templates/parameter_form.html:75
 msgid "Save and send notifications"
 msgstr "Сохранить и отправить уведомление экспертам"
 
-#: parameters/templates/parameter_form.html:58 scores/templates/form.html:266
+#: parameters/templates/parameter_form.html:77 scores/templates/form.html:266
 #: templates/exmo2010/task_form.html:40
 msgid "Reset"
 msgstr "Сбросить"
@@ -2334,10 +2359,6 @@ msgstr "Экспортировать задачу в CSV"
 #: scores/templates/score_list.html:121
 msgid "Import task from CSV"
 msgstr "Импортировать задачу из CSV"
-
-#: scores/templates/score_list.html:137
-msgid "Add new parameter"
-msgstr "Добавить новый параметр"
 
 #: scores/templates/score_list.html:142
 msgid "Normative parameters"
@@ -3542,3 +3563,4 @@ msgstr ""
 #: templates/user_dashboard/dashboard.html:86
 msgid "Modules"
 msgstr "Модули"
+

@@ -21,13 +21,22 @@
 {% endcomment %}
 {% load i18n static future widget_tweaks %}
 
-
 {% block title %}
     {% if monitoring %}
         {% blocktrans %}Edit monitoring {{monitoring}}{% endblocktrans %}
     {% else %}
         {% blocktrans %}Add new monitoring{% endblocktrans %}
     {% endif %}
+{% endblock %}
+
+{% block h1 %}
+    <h1>
+        {% if monitoring %}
+            {% blocktrans %}Edit monitoring {{monitoring}}{% endblocktrans %}
+        {% else %}
+            {% blocktrans %}Add new monitoring{% endblocktrans %}
+        {% endif %}
+    </h1>
 {% endblock %}
 
 {% block extrastyle %}

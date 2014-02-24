@@ -25,6 +25,10 @@
     {% blocktrans %}Edit organization {{org}}{% endblocktrans %}
 {% endblock %}
 
+{% block h1 %}
+    <h1> {% blocktrans %}Edit organization {{org}}{% endblocktrans %} </h1>
+{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>

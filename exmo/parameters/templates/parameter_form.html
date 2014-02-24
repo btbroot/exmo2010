@@ -32,6 +32,25 @@
     <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/parameter.css" />
 {% endblock %}
 
+
+{% block title %}
+    {% if param.pk %}
+        {% blocktrans %}Edit parameter {{param}}{% endblocktrans %}
+    {% else %}
+        {% blocktrans %}Add new parameter{% endblocktrans %}
+    {% endif %}
+{% endblock %}
+
+{% block h1 %}
+    <h1>
+        {% if param.pk %}
+            {% blocktrans %}Edit parameter {{param}}{% endblocktrans %}
+        {% else %}
+            {% blocktrans %}Add new parameter{% endblocktrans %}
+        {% endif %}
+    </h1>
+{% endblock %}
+
 {% block content %}
     <p>{{ form.non_field_errors }}</p>
 
