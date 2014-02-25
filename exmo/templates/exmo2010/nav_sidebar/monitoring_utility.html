@@ -18,7 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission future %}
+{% load i18n check_object_permission static future %}
+
+<script type="text/javascript" src="{% static 'exmo2010/js/monitoring_utility.js' %}"></script>
 
 {% if monitoring %}
     <div id="nav-sidebar">
