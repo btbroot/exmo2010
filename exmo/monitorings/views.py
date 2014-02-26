@@ -46,6 +46,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.utils import simplejson
 from django.views.generic import UpdateView, DeleteView
+from reversion.revisions import default_revision_manager as revision
 
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
@@ -692,7 +693,6 @@ def monitoring_organization_import(request, monitoring_pk):
     Импорт организаций из CSV.
 
     """
-    from reversion import revision
     must_register = False
     if revision.is_registered(Organization):
         revision.unregister(Organization)
@@ -700,35 +700,30 @@ def monitoring_organization_import(request, monitoring_pk):
 
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
     if not 'orgfile' in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
     reader = UnicodeReader(request.FILES['orgfile'])
-    errLog = []
+    errors = []
     indexes = {}
     rowOKCount = 0
-    rowALLCount = 0
-
+    row_num = 0
     try:
-        for row in reader:
-            if rowALLCount == 0 and row[0] and row[0].startswith('#'):
+        for row_num, row in enumerate(reader, start=1):
+            if row_num == 1 and row[0] and row[0].startswith('#'):
                 for key in ['name', 'url', 'email', 'phone']:
                     for item in row:
                         if item and key in item.lower():
                             indexes[key] = row.index(item)
+                errors.append("row %d. Starts with '#'. Skipped" % row_num)
                 continue
 
             if not 'name' in indexes:
-                errLog.append("header row (csv). Field 'Name' does not exist")
+                errors.append("header row (csv). Field 'Name' does not exist")
                 break
 
-            rowALLCount += 1
-
-            if row[0] and row[0].startswith('#'):
-                errLog.append("row %d. Starts with '#'. Skipped" % rowALLCount)
-                continue
             if row[indexes['name']] == '':
-                errLog.append("row %d (csv). Empty organization name" % rowALLCount)
+                errors.append("row %d (csv). Empty organization name" % row_num)
                 continue
             try:
                 organization = Organization.objects.get(monitoring=monitoring, name=row[indexes['name']])
@@ -736,7 +731,7 @@ def monitoring_organization_import(request, monitoring_pk):
                 organization = Organization()
                 organization.monitoring = monitoring
             except Exception, e:
-                errLog.append("row %d. %s" % (rowALLCount, e))
+                errors.append("row %d. %s" % (row_num, e))
                 continue
             try:
                 for key in indexes.keys():
@@ -748,31 +743,31 @@ def monitoring_organization_import(request, monitoring_pk):
                 organization.full_clean()
                 organization.save()
             except ValidationError, e:
-                errLog.append("row %d (validation). %s" % (
-                    rowALLCount,
+                errors.append("row %d (validation). %s" % (
+                    row_num,
                     '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
             except Exception, e:
-                errLog.append("row %d. %s" % (rowALLCount, e))
+                errors.append("row %d. %s" % (row_num, e))
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+        errors.append(_("row %(row)d (csv). %(raw)s") % {'row': row_num, 'raw': e})
     except UnicodeError:
-        errLog.append(_("File, you are loading is not valid CSV."))
+        errors.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
-        errLog.append(_("Import error: %s." % e))
+        errors.append(_("Import error: %s." % e))
     title = _('Import organizations from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Organization)
 
-    return TemplateResponse(request, 'monitoring_import_log.html', {
-        'monitoring': monitoring,
-        'file': request.FILES['orgfile'],
-        'errLog': errLog,
-        'rowOKCount': rowOKCount,
-        'rowALLCount': rowALLCount,
+    return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
         'title': title,
+        'errors': errors,
+        'row_count': '{}/{}'.format(rowOKCount, row_num),
+        'result_title': '{}/{}'.format(monitoring, request.FILES['orgfile']),
+        'back_url': reverse('exmo2010:monitoring_update', args=[monitoring.pk]),
+        'back_title': _('Back to the monitoring'),
     })
 
 
@@ -783,7 +778,6 @@ def monitoring_parameter_import(request, monitoring_pk):
     Импорт параметров из CSV.
 
     """
-    from reversion import revision
     must_register = False
     if revision.is_registered(Parameter):
         revision.unregister(Parameter)
@@ -791,34 +785,32 @@ def monitoring_parameter_import(request, monitoring_pk):
 
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
     if not 'paramfile' in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
     reader = UnicodeReader(request.FILES['paramfile'])
-    errLog = []
+    errors = []
     rowOKCount = 0
-    rowALLCount = 0
+    row_num = 0
     try:
-        for row in reader:
-            rowALLCount += 1
+        for row_num, row in enumerate(reader, start=1):
             if row[0].startswith('#'):
-                errLog.append("row %d. Starts with '#'. Skipped" % reader.line_num)
+                errors.append("row %d. Starts with '#'. Skipped" % row_num)
                 continue
             if row[0] == '':
-                errLog.append("row %d (csv). Empty code" % reader.line_num)
+                errors.append("row %d (csv). Empty code" % row_num)
                 continue
             if row[1] == '':
-                errLog.append("row %d (csv). Empty name" % reader.line_num)
+                errors.append("row %d (csv). Empty name" % row_num)
                 continue
             try:
                 code = row[0]
                 name = row[1]
-                parameter = Parameter.objects.get(monitoring=monitoring,
-                    code=code, name=name)
+                parameter = Parameter.objects.get(monitoring=monitoring, code=code, name=name)
             except Parameter.DoesNotExist:
                 parameter = Parameter()
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errors.append("row %d. %s" % (row_num, e))
                 continue
             try:
                 parameter.monitoring = monitoring
@@ -836,31 +828,31 @@ def monitoring_parameter_import(request, monitoring_pk):
                 parameter.full_clean()
                 parameter.save()
             except ValidationError, e:
-                errLog.append("row %d (validation). %s" % (
-                    reader.line_num,
+                errors.append("row %d (validation). %s" % (
+                    row_num,
                     '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])))
             except Exception, e:
-                errLog.append("row %d. %s" % (reader.line_num, e))
+                errors.append("row %d. %s" % (row_num, e))
             else:
                 rowOKCount += 1
     except csv.Error, e:
-           errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+        errors.append(_("row %(row)d (csv). %(raw)s") % {'row': row_num, 'raw': e})
     except UnicodeError:
-        errLog.append(_("File, you are loading is not valid CSV."))
+        errors.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
-        errLog.append(_("Import error: %s." % e))
+        errors.append(_("Import error: %s." % e))
     title = _('Import parameters from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Parameter)
 
-    return TemplateResponse(request, 'monitoring_import_log.html', {
-      'monitoring': monitoring,
-      'file': request.FILES['paramfile'],
-      'errLog': errLog,
-      'rowOKCount': rowOKCount,
-      'rowALLCount': rowALLCount,
-      'title': title,
+    return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
+        'title': title,
+        'errors': errors,
+        'row_count': '{}/{}'.format(rowOKCount, row_num),
+        'result_title': '{}/{}'.format(monitoring, request.FILES['paramfile']),
+        'back_url': reverse('exmo2010:monitoring_update', args=[monitoring.pk]),
+        'back_title': _('Back to the monitoring'),
     })
 
 

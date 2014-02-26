@@ -153,26 +153,25 @@ def task_export(request, task_pk):
 def task_import(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.fill_task', task):
-        return HttpResponseForbidden(_('Forbidden'))
-    if not request.FILES.has_key('taskfile'):
+        raise PermissionDenied
+    if 'taskfile' not in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[task_pk]))
     reader = UnicodeReader(request.FILES['taskfile'])
-    errLog = []
+    errors = []
     rowOKCount = 0
-    rowALLCount = 0
+    row_num = 0
     try:
-        for row in reader:
-            rowALLCount += 1
+        for row_num, row in enumerate(reader, start=1):
             if row[0].startswith('#'):
-                errLog.append(_("row %d. Starts with '#'. Skipped") % reader.line_num)
+                errors.append(_("row %d. Starts with '#'. Skipped") % row_num)
                 continue
             try:
                 code = re.match('^(\d+)$', row[0])
                 if not code:
-                    errLog.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
+                    errors.append(_("row %(row)d (csv). Not a code: %(raw)s") % {'row': row_num, 'raw': row[0]})
                     continue
                 if not any(row[2:16]):
-                    errLog.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': reader.line_num, 'raw': row[0]})
+                    errors.append(_("row %(row)d (csv). Empty score: %(raw)s") % {'row': row_num, 'raw': row[0]})
                     continue
                 parameter = Parameter.objects.get(code=code.group(1), monitoring=task.organization.monitoring)
                 try:
@@ -189,34 +188,34 @@ def task_import(request, task_pk):
                 score.full_clean()
                 score.save()
             except ValidationError, e:
-                errLog.append(_("row %(row)d (validation). %(raw)s") % {
-                    'row': reader.line_num,
+                errors.append(_("row %(row)d (validation). %(raw)s") % {
+                    'row': row_num,
                     'raw': '; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()])})
             except Parameter.DoesNotExist:
-                errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row': reader.line_num,
+                errors.append(_("row %(row)d. %(raw)s") % {
+                    'row': row_num,
                     'raw': _('Parameter matching query does not exist')})
             except Exception, e:
-                errLog.append(_("row %(row)d. %(raw)s") % {
-                    'row': reader.line_num,
+                errors.append(_("row %(row)d. %(raw)s") % {
+                    'row': row_num,
                     'raw': filter(lambda x: x in string.printable, e.__str__())})
             else:
                 rowOKCount += 1
     except csv.Error, e:
-        errLog.append(_("row %(row)d (csv). %(raw)s") % {'row': reader.line_num, 'raw': e})
+        errors.append(_("row %(row)d (csv). %(raw)s") % {'row': row_num, 'raw': e})
     except UnicodeError:
-        errLog.append(_("File, you are loading is not valid CSV."))
+        errors.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
-        errLog.append(_("Import error: %s." % e))
+        errors.append(_("Import error: %s." % e))
     title = _('Import CSV for task %s') % task
 
-    return TemplateResponse(request, 'task_import_log.html', {
-        'task': task,
-        'file': request.FILES['taskfile'],
-        'errLog': errLog,
-        'rowOKCount': rowOKCount,
-        'rowALLCount': rowALLCount,
+    return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
         'title': title,
+        'errors': errors,
+        'row_count': '{}/{}'.format(rowOKCount, row_num),
+        'result_title': '{}/{}'.format(task, request.FILES['taskfile']),
+        'back_url': reverse('exmo2010:score_list_by_task', args=[task.pk]),
+        'back_title': _('Back to the task'),
     })
 
 

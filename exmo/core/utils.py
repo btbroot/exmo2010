@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -85,11 +85,6 @@ class UnicodeReader(object):
 
     def __iter__(self):
         return self
-
-    def _line_num(self):
-        return self.reader.line_num
-
-    line_num = property(_line_num)
 
 
 class UnicodeWriter(object):

@@ -23,6 +23,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import simplejson
@@ -886,6 +887,35 @@ class TestMonitoringExportApproved(TestCase):
         csv = [line for line in UnicodeReader(StringIO(response.content))]
         #only header
         self.assertEqual(len(csv), 1)
+
+
+class UploadParametersCSVTest(TestCase):
+    # Upload parameters.
+
+    def setUp(self):
+        # GIVEN interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        # AND url for csv-file importing
+        self.url = reverse('exmo2010:monitoring_parameter_import', args=[self.monitoring.pk])
+        # AND I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_empty_name_param_upload(self):
+        csv_data = unicode(
+            # code,name,description,complete,topical,accessible,hypertext,document,image,weight
+            '1,name1,,1,1,1,1,0,0,3\n'
+            '2,name2,,1,1,1,1,0,0,3\n'
+            '3,\n'   # incomplete row
+            '4,name4,,1,1,1,1,0,0,3')
+        f = ContentFile(csv_data.encode('utf-16'), name='temp.csv')
+
+        # WHEN I upload csv file with incomplete third row, missing name and all columns after
+        response = self.client.post(self.url, data={'paramfile': f, 'monitoring_pk': self.monitoring.pk})
+        # THEN response should display error in third line
+        self.assertEqual(response.context['errors'], ['row 3 (csv). Empty name'])
 
 
 class TranslatedMonitoringScoresDataExportTestCase(TestCase):

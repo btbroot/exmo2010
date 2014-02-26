@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,8 @@ from model_mommy import mommy
 
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
-from exmo2010.models import Score, Monitoring, Task, MONITORING_PUBLISHED, MONITORING_INTERACTION, Organization
+from exmo2010.models import (Monitoring, Organization, Parameter, Score, Task,
+                             MONITORING_PUBLISHED, MONITORING_INTERACTION)
 
 
 class CommentReportTestCase(TestCase):
