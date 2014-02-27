@@ -118,12 +118,15 @@
                     <tbody>
                     {% for pk, task in view.tasks.items %}
                         <tr>
-                            <td>
+                            <td class="published">
                                 <input type="radio" value="{{ pk }}" name="task_id"
                                         {% ifequal form.task_id.value|add:"0" pk %}
                                             checked="checked"
                                         {% endifequal %}>
-                                {{ task.organization.monitoring.publish_date }}
+
+                                <span data-verbose="{{ task.organization.monitoring.publish_date }}">
+                                    {{ task.organization.monitoring.publish_date|date:"Y.m.d" }}
+                                </span>
                             </td>
                             <td> <a href="{% url 'exmo2010:score_list_by_task' pk %}">{{ task.organization.name }}</a> </td>
                             <td> <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a> </td>

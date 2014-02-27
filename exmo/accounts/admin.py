@@ -18,27 +18,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import admin
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.models import Group, User
-from django.db.models import ManyToManyField
 
+from core.admin_utils import VerboseAdminMixin
 from exmo2010.models import UserProfile
 
 
-class UserProfileInline(admin.StackedInline):
+class UserProfileInline(VerboseAdminMixin, admin.StackedInline):
     model = UserProfile
     fk_name = 'user'
     max_num = 1
-    formfield_overrides = {
-        ManyToManyField: {
-            'widget': FilteredSelectMultiple('', is_stacked=False)
-        },
-    }
+    raw_id_fields_verbose = ('organization', )
 
     class Media:
         css = {
-            "all": ("exmo2010/css/selector.css",)
+            "all": ("exmo2010/css/selector.css", "exmo2010/css/admin_user_edit.css")
         }
 
 

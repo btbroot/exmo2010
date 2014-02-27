@@ -22,17 +22,11 @@ $(document).ready(function() {
     jQuery('input[placeholder]').placeholder();
 
     /* Sortable table */
-
     $("#rating-data").tablesorter({sortList: [[0, 1]]});
 
-    // remove verbose date before table initialization
-    var v = $('td.published span.verbose').remove();
-
-    $("#ratings-data").tablesorter({sortList: [[2, 1]], dateFormat: "ddmmyyyy"});
-
     // replace machine readable date with verbose one
-    $('td.published span.machine').each(function(i) {
-        $(this).replaceWith(v[i]);
+    $('td.published span').each(function() {
+        $(this).replaceWith($(this).data('verbose'));
     });
 
     // checked first radio button

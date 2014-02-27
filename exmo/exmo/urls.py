@@ -45,9 +45,6 @@ urlpatterns += i18n_patterns('',
     url(r'^', include('exmo2010.urls', namespace='exmo2010', app_name='exmo2010')),
 )
 
-if 'debug_toolbar_user_panel' in settings.INSTALLED_APPS:
-    urlpatterns += (url(r'', include('debug_toolbar_user_panel.urls')),)
-
 
 # Serve media files when DEBUG is True.
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
