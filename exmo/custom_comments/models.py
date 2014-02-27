@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext as _
 from django.contrib.comments.models import Comment
@@ -38,6 +39,7 @@ class CommentExmo(Comment):
     )
 
     status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
+    answered_date = models.DateTimeField(default=datetime.min)
 
     def user_is_expert(self):
         return self.user.userprofile.is_expert

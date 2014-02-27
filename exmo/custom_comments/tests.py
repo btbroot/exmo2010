@@ -16,9 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime, timedelta
 import time
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
@@ -28,34 +29,78 @@ from model_mommy import mommy
 
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
-from exmo2010.models import *
+from exmo2010.models import Score, Monitoring, Task, MONITORING_PUBLISHED, MONITORING_INTERACTION, Organization
 
 
 class CommentReportTestCase(TestCase):
-    # Scenario: Check comment report function
+    # Test comment report generation
 
     def setUp(self):
         # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization connected to monitoring
-        self.organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
-        # AND two registered organizations representatives
-        self.user1 = User.objects.create_user('user1')
-        user_profile1 = self.user1.get_profile()
-        user_profile1.organization.add(self.organization1)
-        user_profile1.save()
-        self.user2 = User.objects.create_user('user2')
-        user_profile2 = self.user2.get_profile()
-        user_profile2.organization.add(self.organization1)
-        user_profile2.save()
-        # AND organization without representatives
-        self.organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, time_to_answer=3)
+        # AND 3 organizations
+        self.org1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
+        self.org2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
+        self.org_orphan = mommy.make(Organization, monitoring=self.monitoring)
+        # AND 2 organization representatives for org1
+        org1user1 = mommy.make(User)
+        org1user1.profile.organization.add(self.org1)
+        org1user2 = mommy.make(User)
+        org1user2.profile.organization.add(self.org1)
+        # AND 1 organization representative for org2
+        org2user1 = mommy.make(User)
+        org2user1.profile.organization.add(self.org2)
+        # AND expertA
+        expertA = mommy.make(User)
+        expertA.profile.is_expertA = True
+        # AND expertB
+        expertB = mommy.make(User, username='expertB')
+        expertB.profile.is_expertB = True
+
+        # AND approved task for org1 and org2
+        task1 = mommy.make(Task, status=Task.TASK_APPROVED, organization=self.org1, user=expertB)
+        task2 = mommy.make(Task, status=Task.TASK_APPROVED, organization=self.org2, user=expertB)
+        # AND scores for tasks
+        score1 = mommy.make(Score, task=task1)
+        score2 = mommy.make(Score, task=task2)
+
+        init_date = datetime.today() - timedelta(days=30)
+        late = init_date + timedelta(days=25)
+
+        # AND comment by org1user1 that was answered in time
+        mommy.make(
+            CommentExmo, object_pk=score1.pk, user=org1user1, submit_date=init_date,
+            status=CommentExmo.ANSWERED, answered_date=init_date)
+
+        # AND 1 comment by org2user1 that was not answered
+        mommy.make(
+            CommentExmo, object_pk=score2.pk, user=org2user1, submit_date=init_date,
+            status=CommentExmo.OPEN)
+        # AND 1 comment by org2user1 that was answered late
+        mommy.make(
+            CommentExmo, object_pk=score2.pk, user=org2user1, submit_date=init_date,
+            status=CommentExmo.ANSWERED, answered_date=late)
+
+        # AND 1 comment by expertB for org1
+        mommy.make(CommentExmo, object_pk=score1.pk, user=expertB)
+        # AND 1 comment by expertB for org2
+        mommy.make(CommentExmo, object_pk=score2.pk, user=expertB)
 
     def test_count_of_organizations_with_representatives(self):
-        # WHEN comment report is generated for monitoring with two organizations
         report = comment_report(self.monitoring)
-        # THEN count of organizations with representatives equals 1
-        self.assertEqual(report['organizations_with_representatives'], 1)
+        self.assertEqual(report['num_orgs_with_user'], 2)
+
+        active_orgs = set(tuple(x.items()) for x in report['active_orgs'])
+        expected = [
+            (('num_comments', 1), ('name', u'org1'), ('expert', u'expertB')),
+            (('num_comments', 2), ('name', u'org2'), ('expert', u'expertB'))]
+        self.assertEqual(active_orgs, set(expected))
+
+        active_experts = set((e.username, e.num_comments) for e in report['active_experts'])
+        self.assertEqual(active_experts, set([('expertB', 2)]))
+
+        self.assertEqual(report['num_answered'], 2)
+        self.assertEqual(report['num_answered_late'], 1)
 
 
 class CommentGetQueryAccessTestCase(TestCase):

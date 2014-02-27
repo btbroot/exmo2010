@@ -23,8 +23,6 @@ import csv
 import re
 
 from BeautifulSoup import BeautifulSoup
-from dateutil import rrule
-from dateutil.rrule import DAILY
 from django.conf import settings
 from django.core.urlresolvers import get_resolver, RegexURLResolver
 from django.utils.safestring import mark_safe
@@ -33,17 +31,13 @@ from lxml.html.clean import Cleaner
 from core.templatetags.urlize_target_blank import urlize_target_blank
 
 
-def workday_count(alpha, omega):
+def workday_count(start, end):
     """
-    Расчёт рабочих дней с учетов выходных.
-
+    Count days diff excluding weekends.
     """
-    dates = rrule.rruleset()  # create an rrule.rruleset instance
-    dates.rrule(rrule.rrule(DAILY, dtstart=alpha, until=omega))  # this set is INCLUSIVE of alpha and omega
-    dates.exrule(rrule.rrule(DAILY,
-                             byweekday=(rrule.SA, rrule.SU),
-                             dtstart=alpha))  # here's where we exclude the weekend dates
-    return len(list(dates))  # there's probably a faster way to handle this
+    daydiff = end.weekday() - start.weekday()
+    nweeks = ((end - start).days - daydiff) / 7
+    return nweeks * 5 + min(daydiff, 5)
 
 
 def safeConvert(string):

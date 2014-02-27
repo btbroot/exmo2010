@@ -20,104 +20,74 @@
 from datetime import timedelta, datetime
 
 from django.contrib.auth.models import User
-from django.db.models import Count
 
 from core.utils import workday_count
 from custom_comments.models import CommentExmo
-from exmo2010.models import Organization, Score, Task
+from exmo2010.models import Score, Task
 
 
 def comment_report(monitoring):
     """
     Вернет словарь с основной статистикой по комментариям.
 
-    org_comments - неотвеченные комментарии представителей
-    operator_all_comments - комментарии экспертов
-    total_org - всего огранизаций
-    comments_without_reply - комментарии без ответа
-    fail_comments_without_reply - просроченные комментарии без ответа
-    comments_with_reply - комментарии с ответом
-    fail_soon_comments_without_reply - комментарии без ответа, срок ответа которых истечет в течении суток
-    fail_comments_with_reply - комментарии с ответом, но ответ был позже срока
-    org_all_comments - все комментарии экспертов
-    active_organization_stats - статистика активных организаций (т.е. оставивших хоть один комментарий)
-        вернет список словарей: [{'org': org1, 'comments_count': 1}, ...]
-    active_operator_person_stats - статистика ответов по экспертам
-    organizations_with_representatives - организаций, имеющих хотя бы одного представителя
-    start_date - дата начала взаимодействия
-    end_date - дата окончания отчетного периода
-    time_to_answer - срок ответа на комментарии (в днях)
-    monitoring_name - название мониторинга
+    expired - list: просроченные комментарии без ответа
+    expiring - list: комментарии без ответа, срок ответа которых истечет в течении суток
+    pending - list: остальные комментарии без ответа
+    num_answered - количество комментариев с ответом (включая просроченные)
+    num_answered_late - количество комментариев с просроченным ответом
+    num_org_comments - количество комментариев представителей организаций
+    num_expert_comments - количество комментариев экспертов
+    active_experts - list: активные эксперты (с доп. атрибутом num_comments)
+    active_orgs - list: активные организации (dict c ключами 'name', 'expert' и 'num_comments')
+    num_orgs_with_user - количество организаций, имеющих хотя бы одного представителя
 
     """
-    comments_without_reply = []
-    fail_comments_without_reply = []
-    fail_soon_comments_without_reply = []
-    fail_comments_with_reply = []
-    active_organization_stats = []
-    total_org = Organization.objects.filter(monitoring=monitoring)
-    organizations_with_representatives = total_org.filter(userprofile__isnull=False).distinct().count()
-    total_org = total_org.count()
-    monitoring_name = monitoring.name
-    time_to_answer = monitoring.time_to_answer
-    start_date = monitoring.interact_date
-    end_date = datetime.today()
+    org_users = User.objects.filter(userprofile__organization__monitoring=monitoring)
+    org_users = set(org_users.distinct().values_list('pk', flat=True))
 
-    scores = Score.objects.filter(
-        task__organization__monitoring=monitoring)
+    scores = Score.objects.filter(task__organization__monitoring=monitoring, task__status=Task.TASK_APPROVED)
 
-    operator_all_comments = CommentExmo.objects.filter(
-        content_type__model='score',
-        object_pk__in=scores,
-        user__in=User.objects.exclude(
-            groups__name='organizations'))
+    _scores = scores.values_list('pk', 'task__organization_id', 'task__organization__name', 'task__user__username')
+    score_org_expert = dict((str(pk), (org_pk, org_name, expert)) for pk, org_pk, org_name, expert in _scores)
 
-    org_all_comments = CommentExmo.objects.filter(
-        content_type__model='score',
-        object_pk__in=scores,
-        user__in=User.objects.filter(
-            groups__name='organizations'))
+    # Dict by pk. Later this will become a list of active_experts and active_orgs.
+    dict_active_experts, dict_active_orgs = {}, {}
+    pending, expiring, expired = [], [], []
+    num_org_comments = num_answered = num_answered_late = 0
 
-    org_comments = org_all_comments.filter(
-        status=CommentExmo.OPEN
-    )
+    for comment in CommentExmo.objects.filter(object_pk__in=scores).prefetch_related('user'):
+        if comment.user.pk in org_users:
+            org_pk, org_name, expert = score_org_expert[comment.object_pk]
+            dict_active_orgs.setdefault(org_pk, {'num_comments': 0, 'name': org_name, 'expert': expert})
+            dict_active_orgs[org_pk]['num_comments'] += 1
 
-    comments_with_reply = org_all_comments.filter(
-        status=CommentExmo.ANSWERED
-    )
-
-    active_organizations = set([Score.objects.get(
-        pk=oco.object_pk).task.organization for oco in org_all_comments])
-    for active_organization in active_organizations:
-        active_org_comments_count = org_all_comments.filter(
-            object_pk__in=scores.filter(
-                task__organization=active_organization)).count()
-        try:
-            task = Task.approved_tasks.get(organization=active_organization)
-        except Task.DoesNotExist:
-            task = None
-        active_organization_stats.append(
-            {'org': active_organization,
-             'comments_count': active_org_comments_count,
-             'task': task})
-
-    active_operator_person_stats = User.objects.filter(
-        comment_comments__pk__in=operator_all_comments).annotate(
-            comments_count=Count('comment_comments'))
-
-    for org_comment in org_comments:
-        delta = timedelta(days=1)
-        #check time_to_answer
-        if workday_count(org_comment.submit_date.date() + delta,
-                         end_date) == time_to_answer:
-            fail_soon_comments_without_reply.append(org_comment)
-        elif workday_count(org_comment.submit_date.date() + delta,
-                           end_date) > time_to_answer:
-            fail_comments_without_reply.append(org_comment)
+            num_org_comments += 1
+            tstart = comment.submit_date + timedelta(days=1)
+            if comment.status == CommentExmo.ANSWERED:
+                num_answered += 1
+                if workday_count(tstart, comment.answered_date) > monitoring.time_to_answer:
+                    num_answered_late += 1
+            elif comment.status == CommentExmo.OPEN:
+                days_passed = workday_count(tstart, datetime.today())
+                if days_passed == monitoring.time_to_answer:
+                    expiring.append(comment)
+                elif days_passed > monitoring.time_to_answer:
+                    expired.append(comment)
+                else:
+                    pending.append(comment)
         else:
-            comments_without_reply.append(org_comment)
+            # Comment by expert.
+            if comment.user.pk in dict_active_experts:
+                dict_active_experts[comment.user.pk].num_comments += 1
+            else:
+                comment.user.num_comments = 1
+                dict_active_experts[comment.user.pk] = comment.user
 
-    org_comments = org_comments.count()
-    operator_all_comments = operator_all_comments.count()
+    active_orgs = dict_active_orgs.values()
+    active_experts = dict_active_experts.values()
+    num_expert_comments = sum(e.num_comments for e in active_experts)
+    num_orgs_with_user = monitoring.organization_set.filter(userprofile__isnull=False).distinct().count()
 
+    # Clean unneeded intermediate local variables before returning the rest as result dictionary.
+    del scores, _scores, dict_active_experts, dict_active_orgs, org_users
     return locals()

@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import date
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
@@ -58,11 +60,8 @@ class Command(BaseCommand):
             report = comment_report(monitoring)
             report.update({'site': 'http://' + Site.objects.get_current().domain})
 
-            subject = "Comment report from %(start_date)s to %(end_date)s for %(monitoring_name)s" % {
-                'start_date': report.get('start_date'),
-                'end_date': report.get('end_date'),
-                'monitoring_name': report.get('monitoring_name'),
-            }
+            subject = u"Comment report from {monitoring.interact_date} to {today} for {monitoring.name}"
+            subject = subject.format(today=date.today(), monitoring=monitoring)
 
             rcpt = [x[1] for x in settings.ADMINS]
             rcpt.append(config_value('EmailServer', 'NOTIFY_LIST_REPORT'))
