@@ -88,7 +88,7 @@
                     {{ field }}
                 </div>
             {% endfor %}
-            <input type="submit" class="submit-post" value="{% if add_clarification %}{% trans 'Specify' %}{% else %}{% trans 'Reply' %}{% endif %}">
+            <input type="submit" class="submit-post" value="{% if add_clarification %}{% trans 'Clarify' %}{% else %}{% trans 'Reply' %}{% endif %}">
             {% wysiwyg_editor "id_clarification-comment" %}
         </form>
     </div>

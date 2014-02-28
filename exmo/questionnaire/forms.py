@@ -53,6 +53,5 @@ class QuestionnaireDynForm(forms.Form):
         cleaned_data = self.cleaned_data
         for answ in cleaned_data.items():
             if answ[0].startswith("q_") and not answ[1] and self.task and self.task.approved:
-                raise forms.ValidationError(_('Cannot delete answer for '
-                                              'approved task. Edit answer instead.'))
+                raise forms.ValidationError(_('Answer cannot be deleted for approved task. Edit answer instead.'))
         return cleaned_data

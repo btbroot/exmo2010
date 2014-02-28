@@ -23,7 +23,7 @@
 {{ score.task.organization }}: {{ score.parameter }}
 
 {% trans 'Date' %}: {% if clarification.close_date %}{{ clarification.close_date|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ clarification.open_date|date:"SHORT_DATETIME_FORMAT" }}{% endif %}
-{% trans 'From who' %}: {{ clarification.creator }}
+{% trans 'From whom' %}: {{ clarification.creator }}
 {% trans 'To whom' %}: {{ clarification.addressee }}
 
 {% trans 'Clarification' %}:

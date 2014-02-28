@@ -32,7 +32,7 @@
             {{ claim.open_date|date:"SHORT_DATETIME_FORMAT" }}
         {% endif %}
     </p>
-    <p><b>{% trans 'From who' %}:</b> {{ claim.creator }}</p>
+    <p><b>{% trans 'From whom' %}:</b> {{ claim.creator }}</p>
     <p><b>{% trans 'To whom' %}:</b> {{ claim.addressee }}</p>
     <p><b>{% trans 'Claim' %}:</b></p>
     <p>{{ claim.comment|safe }}</p>
@@ -43,6 +43,6 @@
     {% if creation %}
         <p><b>{% trans 'Link' %}:</b> <a href="{{ url }}#claims">{{ url }}#claims</a></p>
     {% else %}
-        <p><b>{% trans 'Claim was deleted by' %}:</b> {{ current_user }}</p>
+        <p><b>{% trans 'Claim was deleted by head of the cycle' %}:</b> {{ current_user }}</p>
     {% endif %}
 {% endblock content %}

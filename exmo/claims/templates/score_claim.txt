@@ -23,7 +23,7 @@
 {{ score.task.organization }}: {{ score.parameter }}
 
 {% trans 'Date' %}: {% if claim.close_date %}{{ claim.close_date|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ claim.open_date|date:"SHORT_DATETIME_FORMAT" }}{% endif %}
-{% trans 'From who' %}: {{ claim.creator }}
+{% trans 'From whom' %}: {{ claim.creator }}
 {% trans 'To whom' %}: {{ claim.addressee }}
 
 {% trans 'Claim' %}:
@@ -37,5 +37,5 @@
 {% if creation %}
     {% trans 'Link' %}: {{ url }}#claims
 {% else %}
-    {% trans 'Claim was deleted by' %}: {{ current_user }}
+    {% trans 'Claim was deleted by head of the cycle' %}: {{ current_user }}
 {% endif %}

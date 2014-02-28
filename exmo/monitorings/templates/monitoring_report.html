@@ -47,7 +47,7 @@
 
         {% if monitorings %}
 
-        <h3>{% trans 'Select monitoring' %}</h3>
+        <h3>{% trans 'Select monitoring cycle' %}</h3>
 
         <p><select onchange="location = '{% url 'exmo2010:monitoring_report_type' 'finished' %}' + this.options[this.selectedIndex].value;">
             <option value=""
@@ -90,7 +90,7 @@
                         </tr>
                     {% endif %}
                     <tr>
-                        <td>{% trans 'Monitoring rate begin date' %}</td>
+                        <td>{% trans 'Monitoring evaluation begin date' %}</td>
                         <td class="value">{{ monitoring.rate_date }}</td>
                     </tr>
                     {% if not monitoring.no_interact %}
@@ -115,7 +115,7 @@
                     <table class="monitoring-status">
 
                         <tr>
-                            <td>{% trans 'Organization in monitoring' %}</td>
+                            <td>{% trans 'Organizations in monitoring' %}</td>
                             <td class="value">{{ stat.organization }}</td>
                         </tr>
 
@@ -154,16 +154,16 @@
                         </tr>
                         {% if stat.avg_openness_initial >= 0 %}
                         <tr>
-                            <td>{% trans 'Average openness first' %}</td>
+                            <td>{% trans 'Initial average openness' %}</td>
                             <td class="value">{{ stat.avg_openness_initial|floatformat:3 }}</td>
                         </tr>
                         {% endif %}
                         <tr>
                             <td>
                                 {% if report_type == 'inprogress' %}
-                                    {% trans 'Average openness' %}
+                                    {% trans 'Actual average openness' %}
                                 {% else %}
-                                    {% trans 'Average final openness' %}
+                                    {% trans 'Final average openness' %}
                                 {% endif %}
                             </td>
                             <td class="value">{{ stat.avg_openness|floatformat:3 }}</td>

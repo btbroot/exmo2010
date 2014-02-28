@@ -31,7 +31,7 @@
             {{ clarification.open_date|date:"SHORT_DATETIME_FORMAT" }}
         {% endif %}
     </p>
-    <p><b>{% trans 'From who' %}:</b> {{ clarification.creator }}</p>
+    <p><b>{% trans 'From whom' %}:</b> {{ clarification.creator }}</p>
     <p><b>{% trans 'To whom' %}:</b> {{ clarification.addressee }}</p>
     <p><b>{% trans 'Clarification' %}:</b></p>
     <p>{{ clarification.comment|safe }}</p>

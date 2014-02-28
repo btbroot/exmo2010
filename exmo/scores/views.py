@@ -231,8 +231,8 @@ class ScoreEditView(UpdateView):
     def form_invalid(self, form):
         if not self.valid:
             error = form._errors.setdefault('__all__', ErrorList())
-            error.append(_('Couldn`t save a new version of the existing score since the existing score is incomplete. '
-                           'Contact your Supervisor.'))
+            error.append(_('New version of the existing score couldn`t be saved since '
+                           'the existing score is incomplete. Contact your Supervisor.'))
         return super(ScoreEditView, self).form_invalid(form)
 
     def get_redirect(self, request):

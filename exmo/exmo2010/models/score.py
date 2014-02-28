@@ -43,8 +43,8 @@ class Score(BaseModel):
     }
 
     REVISION_CHOICE = (
-        (REVISION_DEFAULT, _('default revision')),
-        (REVISION_INTERACT, _('interact revision')),
+        (REVISION_DEFAULT, _('latest revision')),
+        (REVISION_INTERACT, _('pre-interact revision')),
     )
 
     task = models.ForeignKey("Task", verbose_name=_('task'))
@@ -122,7 +122,8 @@ class Score(BaseModel):
             result = super(Score, self).unique_error_message(model_class, unique_check)
         # unique_together
         else:
-            result = ugettext(u"A technical error of scores evaluation. To edit the score start from the task page.")
+            result = ugettext(u"A technical error of scores evaluation. To edit the score start from the go back "
+                              u"to task page and skip to page of parameter evaluation by link from score table.")
 
         return result
 

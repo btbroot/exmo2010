@@ -69,7 +69,7 @@
                                         {% if score.hypertextComment and score.parameter.hypertext %}</tr><tr><td>{% trans "explanation for 'Hypertext' criterion" %}</td><td colspan=10>{{ score.hypertextComment|linebreaks }}</td>{% endif %}
                                         {% if score.documentComment and score.parameter.document %}</tr><tr><td>{% trans "explanation for 'Document' criterion" %}</td><td colspan=10>{{ score.documentComment|linebreaks }}</td>{% endif %}
                                         {% if score.imageComment and score.parameter.image %}</tr><tr><td>{% trans "explanation for 'Image' criterion" %}</td><td colspan=10>{{ score.imageComment|linebreaks }}</td>{% endif %}
-                                        {% if score.comment %}</tr><tr><td>{% trans 'recomendations' %}</td><td colspan=10>{{ score.comment|linebreaks }}</td>{% endif %}
+                                        {% if score.comment %}</tr><tr><td>{% trans 'recommendations' %}</td><td colspan=10>{{ score.comment|linebreaks }}</td>{% endif %}
                                     {% endif %}
                                 {%else%}
                                     <td colspan=10></td>

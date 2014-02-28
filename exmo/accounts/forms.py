@@ -58,10 +58,10 @@ class SettingsPersInfFormFull(SettingsPersInfForm):
     Версия для пользователя, являющегося представителем организации.
 
     """
-    position = forms.CharField(label=_("Seat"),
+    position = forms.CharField(label=_("Job title"),
                                widget=forms.TextInput(attrs={"maxlength": 48}),
                                required=False, max_length=48)
-    phone = forms.CharField(label=_("Phone"),
+    phone = forms.CharField(label=_("Phone number"),
                             widget=forms.TextInput(attrs={"maxlength": 30}),
                             required=False, max_length=30)
 

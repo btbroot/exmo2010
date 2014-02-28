@@ -96,9 +96,8 @@ def settings(request):
                     # Безопасно так делать, даже если он уже там.
                     user.groups.add(og)
                     profile.organization.add(organization)
-                    inv_code_form_mess = "%s: %s" % (_("You are associated "
-                                                       "with"),
-                                     organization.name)
+                    inv_code_form_mess = "%s: %s" % (_("You are associated with the organization with"),
+                                                     organization.name)
                     is_organization = True
                 else:
                     inv_code_form_err = _("Submitted invitation code does not "

@@ -33,7 +33,7 @@ QUESTION_TYPE_CHOICES = (
 
 class Questionnaire(BaseModel):
     """Анкета, привязанная к мониторингу"""
-    monitoring = models.ForeignKey("Monitoring", verbose_name=_("Monitoring"), unique=True)
+    monitoring = models.ForeignKey("Monitoring", verbose_name=_("Monitoring cycle"), unique=True)
     title = models.CharField(max_length=300, verbose_name=_("Questionnaire name"), blank=True)
     comment = models.CharField(max_length=600, verbose_name=_("Questionnaire comment"), blank=True)
 
@@ -70,7 +70,7 @@ class QAnswer(BaseModel):
     question = models.ForeignKey(QQuestion, verbose_name=_("Question"))
     text_answer = models.CharField(_("Text answer"), max_length=300, blank=True)
     numeral_answer = models.PositiveIntegerField(_("Numerical answer"), blank=True, null=True)
-    variance_answer = models.ForeignKey(AnswerVariant, verbose_name=_("Variance choice"), blank=True, null=True)
+    variance_answer = models.ForeignKey(AnswerVariant, verbose_name=_("Variant choice"), blank=True, null=True)
 
     def answer(self, for_form=False):
         if self.question.qtype == 0:

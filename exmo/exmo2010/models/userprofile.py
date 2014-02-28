@@ -91,8 +91,8 @@ class UserProfile(BaseModel):
     organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
     subscribe = models.BooleanField(verbose_name=_("Subscribe to news"), default=False)
-    position = models.CharField(verbose_name=_("Seat"), max_length=48,  blank=True)
-    phone = models.CharField(verbose_name=_("Phone"), max_length=30, blank=True)
+    position = models.CharField(verbose_name=_("Job title"), max_length=48,  blank=True)
+    phone = models.CharField(verbose_name=_("Phone number"), max_length=30, blank=True)
 
     # Rating table settings
     rt_representatives = models.BooleanField(verbose_name=_("Representatives"), default=True)

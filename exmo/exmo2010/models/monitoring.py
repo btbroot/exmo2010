@@ -64,8 +64,8 @@ MONITORING_PUBLISHED = 5
 MONITORING_FINALIZING = 7
 MONITORING_STATUS = (
     (MONITORING_PREPARE, _('prepare')),
-    (MONITORING_RATE, _('initial rate')),
-    (MONITORING_RESULT, _('result')),
+    (MONITORING_RATE, _('initial evaluation')),
+    (MONITORING_RESULT, _('results')),
     (MONITORING_INTERACTION, _('interact')),
     (MONITORING_FINALIZING, _('finishing')),
     (MONITORING_PUBLISHED, _('published')),
@@ -79,7 +79,7 @@ class Monitoring(BaseModel):
         ordering = ('name',)
 
     MONITORING_EDIT_STATUSES = {
-        MONITORING_RATE: _('Monitoring rate begin date'),
+        MONITORING_RATE: _('Monitoring evaluation begin date'),
         MONITORING_INTERACTION: _('Monitoring interact start date'),
         MONITORING_FINALIZING: _('Monitoring interact end date'),
         MONITORING_PUBLISHED: _('Monitoring publish date'),
@@ -88,15 +88,16 @@ class Monitoring(BaseModel):
     name = models.CharField(max_length=255, verbose_name=_('name'))
     status = models.PositiveIntegerField(choices=MONITORING_STATUS, default=MONITORING_PREPARE, verbose_name=_('status'))
     hidden = models.BooleanField(default=False, verbose_name=_('Hidden monitoring'))
-    openness_expression = models.ForeignKey("OpennessExpression", default=8, verbose_name=_('openness expression'))
+    openness_expression = models.ForeignKey("OpennessExpression", default=8,
+                                            verbose_name=_('formula for calculating IACoef'))
     map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))
 
     # Максимальное время ответа в днях.
     time_to_answer = models.PositiveSmallIntegerField(choices=ANSWER_TIME_CHOICES, default=3,
-                                                      verbose_name=_('Maximum time to answer'))
+                                                      verbose_name=_('Maximum time for answer'))
     no_interact = models.BooleanField(default=False, verbose_name=_('No interact stage'))
 
-    rate_date = models.DateField(verbose_name=_('Monitoring rate begin date'))
+    rate_date = models.DateField(verbose_name=_('Monitoring evaluation begin date'))
     interact_date = models.DateField(verbose_name=_('Monitoring interact start date'))
     publish_date = models.DateField(verbose_name=_('Monitoring publish date'))
     finishing_date = models.DateField(verbose_name=_('Monitoring interact end date'))

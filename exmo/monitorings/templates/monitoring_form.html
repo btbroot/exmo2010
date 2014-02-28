@@ -69,7 +69,7 @@
     {% endif %}
     <form action="." method="post" class="monitoring_form" id="main_form">{% csrf_token %}
         <table>
-            <tr><td><h2>{% trans 'Monitoring' %}</h2></td></tr>
+            <tr><td><h2>{% trans 'Monitoring cycle' %}</h2></td></tr>
             {{ form.non_field_errors }}
 
             {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}

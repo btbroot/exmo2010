@@ -761,7 +761,7 @@ def monitoring_organization_import(request, monitoring_pk):
         errLog.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
         errLog.append(_("Import error: %s." % e))
-    title = _('Import organization from CSV for monitoring %s') % monitoring
+    title = _('Import organizations from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Organization)
@@ -849,7 +849,7 @@ def monitoring_parameter_import(request, monitoring_pk):
         errLog.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
         errLog.append(_("Import error: %s." % e))
-    title = _('Import parameter from CSV for monitoring %s') % monitoring
+    title = _('Import parameters from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Parameter)

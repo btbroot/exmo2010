@@ -38,7 +38,7 @@ PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
 STATUS_CHOICES = (
     (0, _('representative')),
-    (1, _('concerned person')),
+    (1, _('private person')),
 )
 
 
@@ -112,9 +112,9 @@ class RegistrationFormFull(RegistrationFormShort):
     На имя и отчество выделено по 15 символов, чтобы они вместе вместились
     в поле first_name модели User.
     """
-    position = forms.CharField(label=_("Seat"), required=False,
+    position = forms.CharField(label=_("Job title"), required=False,
                                widget=forms.TextInput(attrs={"maxlength": 48}))
-    phone = forms.CharField(label=_("Phone"), required=False,
+    phone = forms.CharField(label=_("Phone number"), required=False,
                             widget=forms.TextInput(attrs={"maxlength": 30}))
     invitation_code = forms.CharField(label=_("Invitation code"),
                                       widget=forms.TextInput(attrs={"maxlength": 6}),

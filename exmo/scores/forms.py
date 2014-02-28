@@ -86,7 +86,7 @@ class ScoreFormWithComment(CustomCommentForm):
     documentComment = forms.CharField(label=_('documentComment'), widget=forms.Textarea(), required=False)
     image = forms.ChoiceField(label=_('image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
     imageComment = forms.CharField(label=_('imageComment'), widget=forms.Textarea(), required=False)
-    recomendation = forms.CharField(label=_('recomendations'), widget=forms.Textarea(), required=False)
+    recomendation = forms.CharField(label=_('recommendations'), widget=forms.Textarea(), required=False)
     comment = forms.CharField(label=_('comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
 
     # overwrite method from CustomCommentForm

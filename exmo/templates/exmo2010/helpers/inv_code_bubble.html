@@ -24,7 +24,7 @@
         {% if bubble_info.0 %}
             <div class="bubble">
                 {% if bubble_info.1 %}
-                    <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" didn't started yet. You cannot leave comments.{% endblocktrans %}</p>
+                    <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" haven't started yet. You cannot leave comments.{% endblocktrans %}</p>
                 {% else %}
                     <p>
                         {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" is finished and published. You can watch it but cannot leave comments.{% endblocktrans %}

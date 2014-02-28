@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-24 12:22+0400\n"
+"POT-Creation-Date: 2014-02-28 17:19+0400\n"
 "PO-Revision-Date: 2014-02-24 12:17+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Georgian <iifd-list@svobodainfo.org>\n"
@@ -45,13 +45,13 @@ msgstr "გვარი"
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:115
 #: exmo2010/models/userprofile.py:94
-msgid "Seat"
-msgstr "თანამდებობა"
+msgid "Job title"
+msgstr ""
 
 #: accounts/forms.py:64 exmo2010/custom_registration/forms.py:117
 #: exmo2010/models/userprofile.py:95
-msgid "Phone"
-msgstr "ტელეფონი"
+msgid "Phone number"
+msgstr ""
 
 #: accounts/forms.py:75
 msgid "New code"
@@ -79,18 +79,18 @@ msgstr ""
 "ასოებსა (A-Z, a-z) და ციფრებს (0-9)"
 
 #: accounts/views.py:99
-msgid "You are associated with"
-msgstr "ახლა ასოცირდებით "
+msgid "You are associated with the organization with"
+msgstr ""
 
-#: accounts/views.py:104
+#: accounts/views.py:103
 msgid "Submitted invitation code does not exist."
 msgstr "შეყვანილი მოწვევის კოდი არ არსებობს."
 
-#: accounts/views.py:114
+#: accounts/views.py:113
 msgid "Password changed"
 msgstr "პაროლი შეცვლილია "
 
-#: accounts/views.py:123
+#: accounts/views.py:122
 msgid "E-mail notification settings saved"
 msgstr "ელ-ფოსტის შეტყობინების პარამეტრები შენახულია "
 
@@ -105,12 +105,12 @@ msgstr ""
 "აქ შეგიძლიათ შეცვალოთ თქვენი ანგარიში, პაროლი და შეტყობინების პარამეტრები."
 
 #: accounts/templates/user_settings.html:38
-msgid "Personal info"
-msgstr "პერსონალური ინფორმაცია"
+msgid "Personal information"
+msgstr ""
 
 #: accounts/templates/user_settings.html:42
-msgid "Personal info changed successfully"
-msgstr "პერსონალური ინფორმაცია წარმატებით შეიცვალა"
+msgid "Personal information successfully changed"
+msgstr ""
 
 #: accounts/templates/user_settings.html:54 exmo2010/forms.py:59
 #: exmo2010/custom_registration/forms.py:59
@@ -178,7 +178,7 @@ msgstr "რეიტინგები"
 #: bread_crumbs/tests.py:36 exmo2010/urls.py:271
 #: monitorings/templates/rating.html:77
 #: templates/certificate_order_form.html:71 templates/errors_header.html:34
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:96
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:98
 msgid "Rating"
 msgstr "რეიტინგი"
 
@@ -209,6 +209,8 @@ msgstr "მონიტორინგის ციკლები"
 #: exmo2010/urls.py:225 exmo2010/urls.py:226 exmo2010/urls.py:228
 #: exmo2010/urls.py:229 exmo2010/urls.py:234 exmo2010/urls.py:236
 #: exmo2010/urls.py:238 exmo2010/urls.py:240 exmo2010/urls.py:242
+#: exmo2010/models/questionnaire.py:36
+#: monitorings/templates/monitoring_form.html:72
 #: monitorings/templates/ratings.html:38 monitorings/templates/ratings.html:47
 #: parameters/templates/parameter_email.html:27
 #: parameters/templates/parameter_email.txt:25
@@ -236,8 +238,8 @@ msgid "Add new claim for %s"
 msgstr "მოთხოვნის დამატება %s"
 
 #: claims/views.py:118 claims/views.py:180 clarifications/views.py:90
-#: clarifications/views.py:157 custom_comments/views.py:42
-#: custom_comments/views.py:107 monitorings/views.py:78
+#: clarifications/views.py:157 custom_comments/views.py:43
+#: custom_comments/views.py:109 monitorings/views.py:78
 #: monitorings/views.py:318 monitorings/views.py:411 monitorings/views.py:468
 #: monitorings/views.py:560 monitorings/views.py:622 monitorings/views.py:665
 #: monitorings/views.py:703 monitorings/views.py:794 monitorings/views.py:1151
@@ -258,7 +260,7 @@ msgstr "მოთხოვნების ანგარიში \"%s\""
 
 #: claims/views.py:188 dashboard/dashboard.py:119 dashboard/menu.py:76
 #: exmo2010/urls.py:211 scores/templates/tabs.html:43
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:82
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:84
 msgid "Claims"
 msgstr "მოთხოვნები"
 
@@ -343,8 +345,8 @@ msgstr "დრო"
 #: claims/templates/score_claim.html:35 claims/templates/score_claim.txt:26
 #: clarifications/templates/score_clarification.html:34
 #: clarifications/templates/score_clarification.txt:26
-msgid "From who"
-msgstr "ვისგან"
+msgid "From whom"
+msgstr ""
 
 #: claims/templates/score_claim.html:36 claims/templates/score_claim.txt:27
 #: clarifications/templates/score_clarification.html:35
@@ -377,8 +379,8 @@ msgid "Link"
 msgstr "ბმული"
 
 #: claims/templates/score_claim.html:46 claims/templates/score_claim.txt:40
-msgid "Claim was deleted by"
-msgstr "მოთხოვნა წაშლილია ხელმძღვანელის მიერ"
+msgid "Claim was deleted by head of the cycle"
+msgstr ""
 
 #: clarifications/forms.py:28
 msgid "Your clarification"
@@ -391,12 +393,11 @@ msgstr "განმარტებების ანგარიში \"%s\""
 
 #: clarifications/views.py:167 dashboard/dashboard.py:115 dashboard/menu.py:75
 #: exmo2010/urls.py:212 scores/templates/tabs.html:35
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:78
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:80
 msgid "Clarifications"
 msgstr "განმარტებები"
 
-#: clarifications/views.py:185 exmo2010/email_notify.py:58
-#: exmo2010/emails.py:65
+#: clarifications/views.py:185
 msgid "New clarification"
 msgstr "ახალი განმარტება"
 
@@ -410,8 +411,8 @@ msgid "There are no clarifications"
 msgstr "არ არის განმარტებები"
 
 #: clarifications/templates/clarification.html:91
-msgid "Specify"
-msgstr "დაზუსტება"
+msgid "Clarify"
+msgstr ""
 
 #: clarifications/templates/clarification_list.html:44
 #: clarifications/templates/clarification_report.html:52
@@ -436,22 +437,22 @@ msgstr "განმარტების ავტორი"
 msgid "Clarification"
 msgstr "განმარტება"
 
-#: custom_comments/forms.py:31 custom_comments/models.py:40
+#: custom_comments/forms.py:31 custom_comments/models.py:41
 #: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:83
 #: exmo2010/models/task.py:283 monitorings/views.py:123 tasks/views.py:350
 #: tasks/views.py:363 tasks/views.py:369
 msgid "status"
 msgstr "სტატუსი"
 
-#: custom_comments/models.py:35
+#: custom_comments/models.py:36
 msgid "Comment is open"
 msgstr "კომენტარი ღიაა"
 
-#: custom_comments/models.py:36
+#: custom_comments/models.py:37
 msgid "Comment is closed and answered"
 msgstr "კომენტარი დახურული და პასუხგაცემულია"
 
-#: custom_comments/models.py:37
+#: custom_comments/models.py:38
 msgid "Comment is closed and not answered"
 msgstr "კომენტარი დახურული და პასუხგაუცემელია"
 
@@ -460,30 +461,26 @@ msgstr "კომენტარი დახურული და პასუ
 msgid "%(prefix)s Email digest"
 msgstr "%(prefix)s დაიჯესტი"
 
-#: custom_comments/views.py:52 dashboard/dashboard.py:111 dashboard/menu.py:74
+#: custom_comments/views.py:53 dashboard/dashboard.py:111 dashboard/menu.py:74
 #: exmo2010/urls.py:210 scores/templates/detail.html:161
 #: scores/templates/tabs.html:27
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:70
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:72
 msgid "Comments"
 msgstr "კომენტარები"
 
 #: custom_comments/templates/comment.html:62
-#: scores/templates/_score_comments.html:61
-msgid "Peremptory day to answer your question is"
-msgstr "თქვენს კითხვაზე პასუხის გაცემის ბოლო ვადაა:"
+msgid "Deadline for answer to your comment is:"
+msgstr ""
 
 #: custom_comments/templates/comment.html:74
-#: scores/templates/_score_comments.html:73
 msgid "Close without answer"
 msgstr "დახურვა პასუხის გარეშე"
 
 #: custom_comments/templates/comment.html:76
-#: scores/templates/_score_comments.html:75
 msgid "Open comment"
 msgstr "კომენტარის გახსნა"
 
 #: custom_comments/templates/comment.html:87
-#: scores/templates/_score_comments.html:86
 msgid "There are no comments"
 msgstr "არ არის კომენტარი"
 
@@ -653,10 +650,6 @@ msgstr "ინფორმაციის თავისუფლების �
 msgid "Default organization`s expert"
 msgstr "განსაზღვრული ორგანიზაციის ექსპერტი"
 
-#: exmo2010/emails.py:79 exmo2010/views.py:258
-msgid "Ordering openness certificate for"
-msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
-
 #: exmo2010/forms.py:60
 msgid "Your problem"
 msgstr "თქვენი პრობლემა"
@@ -721,9 +714,9 @@ msgstr "ღია მონაცემები"
 msgid "Settings"
 msgstr "პარამეტრები"
 
-#: exmo2010/urls.py:199
-msgid "Login"
-msgstr "შესვლა"
+#: exmo2010/urls.py:199 templates/registration/login.html:30
+msgid "Log in the system"
+msgstr "სისტემაში შესვლა"
 
 #: exmo2010/urls.py:200
 msgid "Password reset (step 1 from 3)"
@@ -774,8 +767,8 @@ msgid "Import parameter"
 msgstr "პარამეტრების იმპორტი"
 
 #: exmo2010/urls.py:232
-msgid "Import organization"
-msgstr "საჯარო დაწესებულების იმპორტი"
+msgid "Import organizations"
+msgstr ""
 
 #: exmo2010/urls.py:243
 msgid "Add task"
@@ -858,7 +851,6 @@ msgid ""
 msgstr ""
 
 #: exmo2010/views.py:239
-#, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr ""
 
@@ -871,6 +863,10 @@ msgstr "ელ-ფოსტის მისამართზე %s."
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "სერთიფიკატის მომზადება ვის სახელზე %s."
+
+#: exmo2010/views.py:258
+msgid "Ordering openness certificate for"
+msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
 
 #: exmo2010/views.py:277
 msgid ""
@@ -885,8 +881,8 @@ msgid "representative"
 msgstr "წარმომადგენელი"
 
 #: exmo2010/custom_registration/forms.py:41
-msgid "concerned person"
-msgstr "კერძო პირი"
+msgid "private person"
+msgstr ""
 
 #: exmo2010/custom_registration/forms.py:52
 msgid "Status"
@@ -901,7 +897,6 @@ msgid "Subscribe to news"
 msgstr "გამოიწერეთ ახალი ამბები"
 
 #: exmo2010/custom_registration/forms.py:70
-#, python-brace-format
 msgid "{fieldname} is required field."
 msgstr "{fieldname} სავალდებულო ველი."
 
@@ -997,7 +992,6 @@ msgid "addressee"
 msgstr "ადრესატი"
 
 #: exmo2010/models/claim.py:57
-#, python-brace-format
 msgid "claim for {obj.score} from {obj.creator}"
 msgstr "მოთხოვნა ვის {obj.score} ვისგან {obj.creator}"
 
@@ -1010,7 +1004,6 @@ msgid "clarification close"
 msgstr "განმარტება დახურულია"
 
 #: exmo2010/models/clarification.py:59
-#, python-brace-format
 msgid "clarification for {obj.score} from {obj.creator}"
 msgstr "განმარტება ვის {obj.score} ვისგან {obj.creator}"
 
@@ -1019,12 +1012,12 @@ msgid "prepare"
 msgstr "მომზადება"
 
 #: exmo2010/models/monitoring.py:67
-msgid "initial rate"
-msgstr "საწყისი ქულა"
+msgid "initial evaluation"
+msgstr ""
 
 #: exmo2010/models/monitoring.py:68
-msgid "result"
-msgstr "შედეგი"
+msgid "results"
+msgstr ""
 
 #: exmo2010/models/monitoring.py:69
 msgid "interact"
@@ -1044,22 +1037,22 @@ msgid "%(count)d day"
 msgid_plural "%(count)d days"
 msgstr[0] "%(count)d დღე"
 
-#: exmo2010/models/monitoring.py:82 exmo2010/models/monitoring.py:99
+#: exmo2010/models/monitoring.py:82 exmo2010/models/monitoring.py:100
 #: monitorings/templates/monitoring_report.html:93
-msgid "Monitoring rate begin date"
-msgstr "პირველადი შეფასების დაწყების დრო"
+msgid "Monitoring evaluation begin date"
+msgstr ""
 
-#: exmo2010/models/monitoring.py:83 exmo2010/models/monitoring.py:100
+#: exmo2010/models/monitoring.py:83 exmo2010/models/monitoring.py:101
 #: monitorings/templates/monitoring_report.html:98
 msgid "Monitoring interact start date"
 msgstr "ინტერაქციის ეტაპის დაწყების თარიღი"
 
-#: exmo2010/models/monitoring.py:84 exmo2010/models/monitoring.py:102
+#: exmo2010/models/monitoring.py:84 exmo2010/models/monitoring.py:103
 #: monitorings/templates/monitoring_report.html:102
 msgid "Monitoring interact end date"
 msgstr "ინტერაქციის ეტაპის დასრულების თარიღი"
 
-#: exmo2010/models/monitoring.py:85 exmo2010/models/monitoring.py:101
+#: exmo2010/models/monitoring.py:85 exmo2010/models/monitoring.py:102
 #: monitorings/templates/monitoring_report.html:107
 msgid "Monitoring publish date"
 msgstr "მონიტორინგის შედეგების გამოქვეყნების თარიღი"
@@ -1073,19 +1066,19 @@ msgstr "დასახელება"
 msgid "Hidden monitoring"
 msgstr "დამალული მონიტორინგის ციკლი"
 
-#: exmo2010/models/monitoring.py:91
-msgid "openness expression"
-msgstr "ღიაობის დაანგარიშების ფორმულა "
-
 #: exmo2010/models/monitoring.py:92
+msgid "formula for calculating IACoef"
+msgstr ""
+
+#: exmo2010/models/monitoring.py:93
 msgid "Link to map"
 msgstr "რუკის ბმული"
 
-#: exmo2010/models/monitoring.py:96
-msgid "Maximum time to answer"
-msgstr "პასუხის გაცემის მაქსიმუმი დრო"
-
 #: exmo2010/models/monitoring.py:97
+msgid "Maximum time for answer"
+msgstr ""
+
+#: exmo2010/models/monitoring.py:98
 msgid "No interact stage"
 msgstr "ინტერაქციის ეტაპის გარეშე"
 
@@ -1165,8 +1158,7 @@ msgid "subject"
 msgstr "საკითხი"
 
 #: exmo2010/models/organization.py:156
-#: organizations/templates/_mail_history.html:40
-msgid "Letter subject and content"
+msgid "Letter content"
 msgstr ""
 
 #: exmo2010/models/parameter.py:37
@@ -1231,11 +1223,6 @@ msgstr "რიცხვი"
 msgid "Choose a variant"
 msgstr "ვარიანტის არჩევა"
 
-#: exmo2010/models/questionnaire.py:36
-#: monitorings/templates/monitoring_form.html:72
-msgid "Monitoring"
-msgstr "მონიტორინგის ციკლი"
-
 #: exmo2010/models/questionnaire.py:37
 #: questionnaire/templates/add_questionnaire.html:40
 msgid "Questionnaire name"
@@ -1247,7 +1234,7 @@ msgid "Questionnaire comment"
 msgstr "კომენტარი კითხვარზე"
 
 #: exmo2010/models/questionnaire.py:46
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:122
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:124
 msgid "Questionnaire"
 msgstr "კითხვარი"
 
@@ -1273,16 +1260,16 @@ msgid "Numerical answer"
 msgstr "რიცხვობრივი პასუხი"
 
 #: exmo2010/models/questionnaire.py:73
-msgid "Variance choice"
-msgstr "პასუხის ასარჩევი ვარიანტი"
+msgid "Variant choice"
+msgstr ""
 
 #: exmo2010/models/score.py:46
-msgid "default revision"
-msgstr "ბოლო შემოწმება"
+msgid "latest revision"
+msgstr ""
 
 #: exmo2010/models/score.py:47
-msgid "interact revision"
-msgstr "ინტერაქციის გადახედვა"
+msgid "pre-interact revision"
+msgstr ""
 
 #: exmo2010/models/score.py:50 exmo2010/models/task.py:278
 msgid "task"
@@ -1358,12 +1345,10 @@ msgstr "ვერ მოიძებნა, თუმცა არსებო�
 
 #: exmo2010/models/score.py:125
 msgid ""
-"A technical error of scores evaluation. To edit the score start from the "
-"task page."
+"A technical error of scores evaluation. To edit the score start from the go "
+"back to task page and skip to page of parameter evaluation by link from "
+"score table."
 msgstr ""
-"პარამეტრების შეფასების ტექნიკური პრობლემა. პარამეტრების ქულების შესაცვლელად "
-"დაბრუნდით ამოცანის გვერდზე და ქულების ცხრილში მოცემული ბმულით გადადით "
-"პარამეტრების ქულების გვერდზე."
 
 #: exmo2010/models/static_page.py:30
 msgid "identifier"
@@ -1579,13 +1564,13 @@ msgstr "იმპორტის შეცდომა: %s."
 
 #: monitorings/views.py:764
 #, python-format
-msgid "Import organization from CSV for monitoring %s"
-msgstr "საჯარო დაწესებულების იმპორტი CSV-დან მონიტორინგისთვის %s"
+msgid "Import organizations from CSV for monitoring %s"
+msgstr ""
 
 #: monitorings/views.py:852
 #, python-format
-msgid "Import parameter from CSV for monitoring %s"
-msgstr "პარამეტრების იმპორტი CSV-დან მონიტორინგისთვის %s"
+msgid "Import parameters from CSV for monitoring %s"
+msgstr ""
 
 #: monitorings/views.py:888
 #, python-format
@@ -1606,38 +1591,32 @@ msgid "Registered organizations"
 msgstr "დარეგისტრირებული საჯარო დაწესებულებები"
 
 #: monitorings/templates/monitoring_comment_report.html:69
-msgid "Organizations with comments from organization"
-msgstr "საჯარო დაწესებულებები წარმომადგენლების კომენტარებით"
+msgid "Organizations with comments from Representatives"
+msgstr ""
 
 #: monitorings/templates/monitoring_comment_report.html:70
-msgid "Comments count from organizations"
-msgstr "საჯარო დაწესებულებებიდან კომენტარების რაოდენობა"
+msgid "Number of comments from organizations"
+msgstr ""
 
 #: monitorings/templates/monitoring_comment_report.html:71
-msgid "Comments count from organizations with reply date in limit"
-msgstr "კომენტარების რაოდენობა საჯარო დაწესებულებებიდან დროული პასუხებით "
+msgid "Number of comments from organizations with reply before deadline"
+msgstr ""
 
 #: monitorings/templates/monitoring_comment_report.html:72
-msgid "Comments count from organizations with reply date out of limit"
-msgstr "კომენტარების რაოდენობა საჯარო დაწესებულებებიდან დაგვიანებული პასუხებით"
+msgid "Number of comments from organizations with reply after deadline"
+msgstr ""
 
 #: monitorings/templates/monitoring_comment_report.html:73
-msgid "Comments count from organizations without reply and date in limit"
+msgid "Number of comments from organizations without reply"
 msgstr ""
-"კომენტარების რაოდენობა საჯარო დაწესებულებებიდან პასუხების გარეშე, რომელთა "
-"საპასუხოდ დრო კიდევ არსებობს "
 
 #: monitorings/templates/monitoring_comment_report.html:74
-msgid ""
-"Comments count from organizations without reply and should be answered today"
+msgid "Number of comments from organizations which should be answered today"
 msgstr ""
-"კომენტარების რაოდენობა საჯარო დაწესებულებებიდან, რაზეც დღეს პასუხის გაცემა "
-"აუცილებელია"
 
 #: monitorings/templates/monitoring_comment_report.html:75
-msgid "Comments count from organizations without reply and date out of limit"
+msgid "Number of comments from organizations without reply before deadline"
 msgstr ""
-"კომენტარების რაოდენობა საჯარო დაწესებულებებიდან დროული პასუხების გარეშე"
 
 #: monitorings/templates/monitoring_comment_report.html:79
 msgid "Statistics by organization"
@@ -1648,27 +1627,23 @@ msgid "Statistics by iifd employers"
 msgstr "სტატისტიკა IIFD-ის წევრების მიხედვით"
 
 #: monitorings/templates/monitoring_comment_report.html:108
-msgid "Comments list from organizations without reply and date out of limit"
-msgstr "კომენტარები საჯარო დაწესებულებებიდან დროული პასუხების გარეშე"
+msgid "Comments list from organizations without reply before deadline"
+msgstr ""
 
 #: monitorings/templates/monitoring_comment_report.html:120
 msgid ""
-"Comments list from organization that needs to reply today (exclude list "
+"Comments list from organization that should be replied today (exclude list "
 "above)"
 msgstr ""
-"კომენტარები საჯარო დაწესებულებებიდან, რომლებზეც პასუხის გაცემა დღეს არის "
-"საჭირო (ზემოთ მოცემული სიის გამოკლებით)"
 
 #: monitorings/templates/monitoring_comment_report.html:132
 msgid ""
-"Comments list from organization that needs to reply (exclude list above)"
+"Comments list from organization that should be replied (exclude list above)"
 msgstr ""
-"კომენტარები საჯარო დაწესებულებებიდან, რომლებზეც პასუხის გაცემა არის საჭირო "
-"(ზემოთ მოცემული სიის გამოკლებით)"
 
 #: monitorings/templates/monitoring_comment_report.html:145
-msgid "Haven't comments from organizations"
-msgstr "არ არის კომენტარები საჯარო დაწესებულებებიდან"
+msgid "No comments from organizations"
+msgstr ""
 
 #: monitorings/templates/monitoring_form.html:26
 #: monitorings/templates/monitoring_form.html:35
@@ -1756,13 +1731,13 @@ msgstr "ამოცანა"
 
 #: monitorings/templates/monitoring_parameter_found_report.html:64
 #: organizations/templates/organization_list.html:64
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:39
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:41
 msgid "Organizations"
 msgstr "საჯარო დაწესებულებები"
 
 #: monitorings/templates/monitoring_parameter_found_report.html:65
-msgid "Organizations with 'found=1'"
-msgstr "საჯარო დაწესებულებები პარამეტრით 'არსებული'"
+msgid "Organizations with found parameters"
+msgstr ""
 
 #: monitorings/templates/monitoring_parameter_found_report.html:79
 msgid "Total"
@@ -1779,8 +1754,8 @@ msgid "Finished"
 msgstr "დასრულებული მონიტორინგი"
 
 #: monitorings/templates/monitoring_report.html:50
-msgid "Select monitoring"
-msgstr "მონიტორინგის ციკლის შერჩევა"
+msgid "Select monitoring cycle"
+msgstr ""
 
 #: monitorings/templates/monitoring_report.html:55
 msgid "All finished monitorings"
@@ -1791,8 +1766,8 @@ msgid "Monitoring status"
 msgstr "მონიტორინგის ციკლის სტატუსი"
 
 #: monitorings/templates/monitoring_report.html:118
-msgid "Organization in monitoring"
-msgstr "მონიტორინგის ციკლში არსებული ვებ-გვერდები "
+msgid "Organizations in monitoring"
+msgstr ""
 
 #: monitorings/templates/monitoring_report.html:123
 msgid "Rated organization"
@@ -1819,16 +1794,16 @@ msgid "Expert comments"
 msgstr "ექსპერტის კომენტარები"
 
 #: monitorings/templates/monitoring_report.html:157
-msgid "Average openness first"
-msgstr "პირველადი საშუალო ღიაობა"
+msgid "Initial average openness"
+msgstr ""
 
 #: monitorings/templates/monitoring_report.html:164
-msgid "Average openness"
-msgstr "საშუალო ღიაობა"
+msgid "Actual average openness"
+msgstr ""
 
 #: monitorings/templates/monitoring_report.html:166
-msgid "Average final openness"
-msgstr "საბოლოო საშუალო ღიაობა"
+msgid "Final average openness"
+msgstr ""
 
 #: monitorings/templates/monitoring_report.html:189
 msgid "There're no currently inprogress monitorings."
@@ -2007,6 +1982,10 @@ msgstr "ამოცანები"
 msgid "invitation"
 msgstr "მოწვევა"
 
+#: organizations/templates/_mail_history.html:40
+msgid "Letter subject and content"
+msgstr ""
+
 #: organizations/templates/_mail_history.html:41
 #: organizations/templates/_organization_email_form.html:56
 msgid "Invitation"
@@ -2046,8 +2025,8 @@ msgid ""
 "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by "
 "commas or newlines."
 msgstr ""
-"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები "
-"+x(xxx)xxx-xx-xxფორმატში."
+"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები +x(xxx)"
+"xxx-xx-xxფორმატში."
 
 #: organizations/templates/edit_organization.html:25
 #: organizations/templates/edit_organization.html:29
@@ -2152,7 +2131,6 @@ msgid "Image"
 msgstr "გრაფიკული ხელმისაწვდომობა"
 
 #: parameters/views.py:113
-#, python-brace-format
 msgid "{subject_prefix}Parameter has been changed: {param}"
 msgstr ""
 
@@ -2187,9 +2165,9 @@ msgstr "სასურველია ამჟამინდელი პა�
 
 #: parameters/templates/parameter_form.html:38
 #: parameters/templates/parameter_form.html:47
-#, fuzzy, python-format
+#, python-format
 msgid "Edit parameter %(param)s"
-msgstr "პარამეტრის რედაქტირება"
+msgstr ""
 
 #: parameters/templates/parameter_form.html:40
 #: parameters/templates/parameter_form.html:49
@@ -2207,10 +2185,8 @@ msgid "Reset"
 msgstr "გადატვირთვა"
 
 #: questionnaire/forms.py:56
-msgid "Cannot delete answer for approved task. Edit answer instead."
+msgid "Answer cannot be deleted for approved task. Edit answer instead."
 msgstr ""
-"შეუძლებელია დადასტურებული ამოცანისთვის პასუხის წაშლა. ამის ნაცვლად, "
-"დაარედაქტირეთ პასუხი."
 
 #: questionnaire/views.py:88
 #, python-format
@@ -2230,7 +2206,7 @@ msgid "Save questionnaire"
 msgstr "კითხვარის შენახვა"
 
 #: scores/forms.py:89 scores/templates/task_report.html:72
-msgid "recomendations"
+msgid "recommendations"
 msgstr "რეკომენდაციები"
 
 #: scores/forms.py:108
@@ -2253,11 +2229,9 @@ msgstr "და"
 
 #: scores/views.py:234
 msgid ""
-"Couldn`t save a new version of the existing score since the existing score "
+"New version of the existing score couldn`t be saved since the existing score "
 "is incomplete. Contact your Supervisor."
 msgstr ""
-"შეუძლებალია არსებული ქულის ახალი ვერსიის შეცვლა, რადგან არსებული ქულა "
-"არასრულია. დაუკავშირდით მონიტორინგის ციკლის ხელმძღვანელს."
 
 #: scores/views.py:379 scores/templates/task_report.html:40
 msgid "Code"
@@ -2453,7 +2427,7 @@ msgid "Mass assign tasks"
 msgstr "მასობრივი ამოცანები"
 
 #: tasks/templates/mass_assign_tasks.html:29
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:46
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:48
 msgid "Task assignment"
 msgstr "ამოცანის მინიჭება"
 
@@ -2475,7 +2449,7 @@ msgid "Back to the task"
 msgstr "ამოცანაზე დაბრუნება"
 
 #: tasks/templates/task_list.html:81
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:34
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:36
 msgid "Tasks"
 msgstr "ამოცანები "
 
@@ -2731,8 +2705,8 @@ msgid "Delete this monitoring?"
 msgstr "წაიშალოს მონიტორინგის ციკლი?"
 
 #: templates/exmo2010/monitoring_list.html:24
-msgid "Monitoring list"
-msgstr "მონიტორინგის ციკლები"
+msgid "Monitoring cycles list"
+msgstr ""
 
 #: templates/exmo2010/monitoring_stats.html:24
 msgid "Organizations count"
@@ -2780,19 +2754,19 @@ msgstr ""
 msgid "Structure of JSON dataset to download"
 msgstr "JSON ფორმატში გადმოსატვირთი ღია მონაცემების სტრუქტურა"
 
-#: templates/exmo2010/opendata.html:46 templates/exmo2010/opendata.html:354
+#: templates/exmo2010/opendata.html:46 templates/exmo2010/opendata.html:350
 msgid "Designation"
 msgstr "დასახელება"
 
-#: templates/exmo2010/opendata.html:49 templates/exmo2010/opendata.html:357
+#: templates/exmo2010/opendata.html:49 templates/exmo2010/opendata.html:353
 msgid "Description"
 msgstr "აღწერა"
 
-#: templates/exmo2010/opendata.html:52 templates/exmo2010/opendata.html:360
+#: templates/exmo2010/opendata.html:52 templates/exmo2010/opendata.html:356
 msgid "Possible values"
 msgstr "შესაძლო მნიშვნელობა"
 
-#: templates/exmo2010/opendata.html:71 templates/exmo2010/opendata.html:371
+#: templates/exmo2010/opendata.html:71 templates/exmo2010/opendata.html:367
 msgid "Name of monitoring cycle"
 msgstr "მონიტორინგის ციკლის დასახელება"
 
@@ -2800,11 +2774,11 @@ msgstr "მონიტორინგის ციკლის დასახ�
 msgid "Organizations array within monitoring cycle"
 msgstr "მონიტორინგის ციკლში არსებული საჯარო დაწესებულები"
 
-#: templates/exmo2010/opendata.html:93 templates/exmo2010/opendata.html:399
+#: templates/exmo2010/opendata.html:93 templates/exmo2010/opendata.html:395
 msgid "Organization's ID in database"
 msgstr "მონაცემთა ბაზაში საჯარო დაწესებულების საიდენტიფიკაციო ნომერი"
 
-#: templates/exmo2010/opendata.html:104 templates/exmo2010/opendata.html:385
+#: templates/exmo2010/opendata.html:104 templates/exmo2010/opendata.html:381
 msgid "Organization's name"
 msgstr "საჯარო დაწესებულების დასახელება"
 
@@ -2812,15 +2786,15 @@ msgstr "საჯარო დაწესებულების დასა�
 msgid "Organization's site URL"
 msgstr "საჯარო დაწესებულების ვებ-გვერდის URL"
 
-#: templates/exmo2010/opendata.html:126 templates/exmo2010/opendata.html:413
+#: templates/exmo2010/opendata.html:126 templates/exmo2010/opendata.html:409
 msgid "Organization's place in rating"
 msgstr "რეიტინგში საჯარო დაწესებულების ადგილი"
 
-#: templates/exmo2010/opendata.html:129 templates/exmo2010/opendata.html:416
+#: templates/exmo2010/opendata.html:129 templates/exmo2010/opendata.html:412
 msgid "Natural number"
 msgstr "ნატურალური რიცხვი"
 
-#: templates/exmo2010/opendata.html:137 templates/exmo2010/opendata.html:427
+#: templates/exmo2010/opendata.html:137 templates/exmo2010/opendata.html:423
 msgid ""
 "Score of organization's site openness before interaction of organization's "
 "representatives with experts"
@@ -2829,16 +2803,16 @@ msgstr ""
 "ინტერაქციამდე"
 
 #: templates/exmo2010/opendata.html:140 templates/exmo2010/opendata.html:151
-#: templates/exmo2010/opendata.html:430 templates/exmo2010/opendata.html:444
+#: templates/exmo2010/opendata.html:426 templates/exmo2010/opendata.html:440
 msgid "From"
 msgstr "საიდან"
 
 #: templates/exmo2010/opendata.html:140 templates/exmo2010/opendata.html:151
-#: templates/exmo2010/opendata.html:430 templates/exmo2010/opendata.html:444
+#: templates/exmo2010/opendata.html:426 templates/exmo2010/opendata.html:440
 msgid "to"
 msgstr "სადამდე"
 
-#: templates/exmo2010/opendata.html:148 templates/exmo2010/opendata.html:441
+#: templates/exmo2010/opendata.html:148 templates/exmo2010/opendata.html:437
 msgid "Final score of site's openness"
 msgstr "ვებ-გვერდის ღიაობის საბოლოო ქულა"
 
@@ -2848,7 +2822,7 @@ msgstr ""
 "მონიტორინგის ციკლში საჯარო დაწესებულებების ვებ-გვერდების ქულა პარამეტრების "
 "მიხედვით"
 
-#: templates/exmo2010/opendata.html:172 templates/exmo2010/opendata.html:455
+#: templates/exmo2010/opendata.html:172 templates/exmo2010/opendata.html:451
 msgid "Parameters's name"
 msgstr "პარამეტრის სახელი"
 
@@ -2856,124 +2830,106 @@ msgstr "პარამეტრის სახელი"
 msgid "Scores's ID in database"
 msgstr "მონაცემთა ბაზაში ქულების საიდენტიფიკაციო ნომერი"
 
-#: templates/exmo2010/opendata.html:196 templates/exmo2010/opendata.html:469
+#: templates/exmo2010/opendata.html:196 templates/exmo2010/opendata.html:465
 msgid "Parameters's ID in database"
 msgstr "მონაცემთა ბაზაში პარამეტრების საიდენტიფიკაციო ნომერი"
 
-#: templates/exmo2010/opendata.html:208 templates/exmo2010/opendata.html:581
+#: templates/exmo2010/opendata.html:208 templates/exmo2010/opendata.html:577
 msgid "Value of social importance factor"
 msgstr "სოციალური მნიშვნელობის კოეფიციენტის სიდიდე"
 
 #: templates/exmo2010/opendata.html:220 templates/exmo2010/opendata.html:232
 #: templates/exmo2010/opendata.html:244 templates/exmo2010/opendata.html:256
 #: templates/exmo2010/opendata.html:268 templates/exmo2010/opendata.html:280
-#: templates/exmo2010/opendata.html:292 templates/exmo2010/opendata.html:483
-#: templates/exmo2010/opendata.html:497 templates/exmo2010/opendata.html:511
-#: templates/exmo2010/opendata.html:525 templates/exmo2010/opendata.html:539
-#: templates/exmo2010/opendata.html:553 templates/exmo2010/opendata.html:567
+#: templates/exmo2010/opendata.html:292 templates/exmo2010/opendata.html:479
+#: templates/exmo2010/opendata.html:493 templates/exmo2010/opendata.html:507
+#: templates/exmo2010/opendata.html:521 templates/exmo2010/opendata.html:535
+#: templates/exmo2010/opendata.html:549 templates/exmo2010/opendata.html:563
 msgid "Factor's value"
 msgstr "კოეფიციენტის მნიშვნელობა"
 
-#: templates/exmo2010/opendata.html:220 templates/exmo2010/opendata.html:483
+#: templates/exmo2010/opendata.html:220 templates/exmo2010/opendata.html:479
 msgid "\"Found\""
 msgstr "«არსებული»"
 
-#: templates/exmo2010/opendata.html:232 templates/exmo2010/opendata.html:497
+#: templates/exmo2010/opendata.html:232 templates/exmo2010/opendata.html:493
 msgid "\"Complete\""
 msgstr "«სრული»"
 
-#: templates/exmo2010/opendata.html:244 templates/exmo2010/opendata.html:511
+#: templates/exmo2010/opendata.html:244 templates/exmo2010/opendata.html:507
 msgid "\"Topical\""
 msgstr "«აქტუალურობა»"
 
-#: templates/exmo2010/opendata.html:256 templates/exmo2010/opendata.html:525
+#: templates/exmo2010/opendata.html:256 templates/exmo2010/opendata.html:521
 msgid "\"Accessible\""
 msgstr "«ნავიგაციური ხელმისაწვდომობა»"
 
-#: templates/exmo2010/opendata.html:268 templates/exmo2010/opendata.html:539
+#: templates/exmo2010/opendata.html:268 templates/exmo2010/opendata.html:535
 msgid "\"Hypertext\""
 msgstr "«HTML-ხელმისაწვდომობა»"
 
-#: templates/exmo2010/opendata.html:280 templates/exmo2010/opendata.html:553
+#: templates/exmo2010/opendata.html:280 templates/exmo2010/opendata.html:549
 msgid "\"Document\""
 msgstr "«დოკუმენტის ხელმისაწვდომობა»"
 
-#: templates/exmo2010/opendata.html:292 templates/exmo2010/opendata.html:567
+#: templates/exmo2010/opendata.html:292 templates/exmo2010/opendata.html:563
 msgid "\"Image\""
 msgstr "«გრაფიკული ხელმისაწვდომობა»"
 
-#: templates/exmo2010/opendata.html:304 templates/exmo2010/opendata.html:595
+#: templates/exmo2010/opendata.html:304 templates/exmo2010/opendata.html:591
 msgid "Parameter's type"
 msgstr "პარამეტრის ტიპი"
 
-#: templates/exmo2010/opendata.html:316 templates/exmo2010/opendata.html:609
+#: templates/exmo2010/opendata.html:316 templates/exmo2010/opendata.html:605
 msgid "Parameter's score version"
 msgstr "პარამეტრის ქულის ვარიანტი"
 
-#: templates/exmo2010/opendata.html:325 templates/exmo2010/opendata.html:618
+#: templates/exmo2010/opendata.html:325 templates/exmo2010/opendata.html:614
 msgid "Dataset description"
 msgstr "ღია მონაცემების აღწერა"
 
-#: templates/exmo2010/opendata.html:329 templates/exmo2010/opendata.html:622
+#: templates/exmo2010/opendata.html:329 templates/exmo2010/opendata.html:618
 msgid ""
-"Quantity of parameters from different organizations may not be same because "
-"some parameters are relevant only for several organizations.\n"
+"Quantity of parameters from different organizations may not be the same "
+"because some parameters are relevant only for several organizations."
 msgstr ""
-"სხვადასხვა საჯარო დაწესებულებისთვის პარამეტრების რაოდენობა შეიძლება "
-"განსხვავდებოდეს, რადგან ზოგიერთი პარამეტრი მხოლოდ რამდენიმე საჯარო "
-"დაწესებულებას შეესაბამება.\n"
 
-#: templates/exmo2010/opendata.html:333 templates/exmo2010/opendata.html:626
+#: templates/exmo2010/opendata.html:332 templates/exmo2010/opendata.html:621
 msgid ""
-"Within estimate may be absent such criteries as Fullness, Actuality, "
+"Within estimate absent may be such criteria as Fullness, Actuality, "
 "Navigation accessibility, HTML accessibility, File accessibility, Graphical "
-"accessibility because they may be not relevant for parameter\n"
+"accessibility as they may be not relevant for parameter."
 msgstr ""
-"პარამეტრების შეფასებაში შეიძლება აკლდეს კრიტერიუმები «სრული», «აქტუალურობა», "
-"«ნავიგაციური ხელმისაწვდომობა», «HTML-ხელმისაწვდომობა», «დოკუმენტის "
-"ხელმისაწვდომობა», «გრაფიკული ხელმისაწვდომობა», რადგანაც შეიძლება შესაბამო "
-"იყოს პარამეტრისთვის.\n"
 
-#: templates/exmo2010/opendata.html:337 templates/exmo2010/opendata.html:630
+#: templates/exmo2010/opendata.html:335 templates/exmo2010/opendata.html:624
 msgid ""
 "Parameter type can have two values: 1) \"other\" for formulated by experts "
-"parameters; 2) \"npa\" for formulated by normative legal acts parameters.\n"
+"parameters; 2) \"npa\" for formulated by normative legal acts parameters."
 msgstr ""
-"პარამეტრის ტიპს შეიძლება ჰქონდეს ორი მნიშვნელობა: 1) «other», ექსპერტების "
-"პარამეტრებით ფორმულირებულისთვის; 2) «npa», ნორმატიული სამართლებრივი აქტების "
-"პარამეტრებით ფორმულირებულისთვის.\n"
 
-#: templates/exmo2010/opendata.html:341 templates/exmo2010/opendata.html:634
+#: templates/exmo2010/opendata.html:338 templates/exmo2010/opendata.html:627
 msgid ""
 "Version of parameter's estimate can have two values: 1) \"initial\" for "
 "parameter's estimate before interaction of organization's representatives "
-"with experts; 2) \"default\" for final parameter's estimate after "
+"with experts; 2) \\\"default\\\" for final parameter's estimate after "
 "interaction of organization's representatives with experts. Within dataset "
-"may be absent parameters with \"initial\" value if parameter's estimate was "
-"not changed during interaction.\n"
+"parameters with \\\"initial\\\" value may be absent if parameter's estimate "
+"was not changed during interaction."
 msgstr ""
-"პარამეტრის შეფასების ვერსიას შეიძლება ჰქონდეს ორი მნიშვნელობა: 1) «initial», "
-"პარამეტრის შეფასებისთვის საჯარო დაწესებულების წარმომადგენლებისა და "
-"ექსპერტების ინტერაქციამდე; 2) «default», პარამეტრის ბოლო შეფასებისთვის "
-"ექსპერტებისა და საჯარო დაწესებულების წარმომადგენლების ინტერაქციის შემდეგ. "
-"მონაცემთა ბაზაში პარამეტრი «initial» მნიშვნელობით შეიძლება არ იყოს "
-"წარმოდგენილი, თუ პარამეტრის შეფასება არ შეცვლილა ინტერაქციის განმავლობაში.\n"
 
-#: templates/exmo2010/opendata.html:346
+#: templates/exmo2010/opendata.html:342
 msgid "Structure of CSV dataset to download"
 msgstr "CSV ფორმატში გადმოსატვირთი ღია მონაცემების სტრუქტურა"
 
 #: templates/exmo2010/org_user_info.html:29
-msgid "Registration's last step"
-msgstr "რეგისტრაციის ბოლო ეტაპი"
+msgid "Registration last step"
+msgstr ""
 
 #: templates/exmo2010/org_user_info.html:30
 msgid ""
-"Please enter your seat and phone. We need this info to make sure you're "
-"really its representative."
+"Please enter your seat and phone. We need this info to make sure you're a "
+"real representative of organization."
 msgstr ""
-"გთხოვთ, მიუთითოთ თქვენი თანამდებობა და საკონტაქტო ტელეფონი. ეს საჭიროა, რათა "
-"დავრწმუნდეთ, რომ წარმოადგენთ საჯარო დაწესებულებას."
 
 #: templates/exmo2010/org_user_info.html:69
 msgid "Finish registration"
@@ -3168,10 +3124,9 @@ msgstr "პრობლემა"
 
 #: templates/exmo2010/helpers/inv_code_bubble.html:27
 #, python-format
-msgid "Monitoring \"%(mname)s\" didn't started yet. You cannot leave comments."
+msgid ""
+"Monitoring \"%(mname)s\" haven't started yet. You cannot leave comments."
 msgstr ""
-"მონიტორინგის ციკლზე ინტერაქციის ეტაპი \"%(mname)s\" ჯერ არ დაწყებულა. თქვენ "
-"არშეგიძლიათ კომენტარების დატოვება."
 
 #: templates/exmo2010/helpers/inv_code_bubble.html:30
 #, python-format
@@ -3190,39 +3145,39 @@ msgstr ""
 "როდესაც დაიწყება მონიტორინგის ახალი ციკლი, თქვენ მიიღებთ მოწვევის კოდს, "
 "რომელიც აქ უნდა შეიყვანოთ:"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:29
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:31
 msgid "Cycle management"
 msgstr "ციკლების მართვა"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:52
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:54
 msgid "Parameter type"
 msgstr "პარამეტრის ტიპი"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:59
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:61
 msgid "Reports"
 msgstr "ანგარიშები"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:64
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:66
 msgid "Task filtering"
 msgstr "ამოცანის გაფილტვრა"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:86
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:88
 msgid "Experts"
 msgstr "ექსპერტები"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:90
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:92
 msgid "Presence of the parameter"
 msgstr "პარამეტრის არსებობა"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:105
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:107
 msgid "Export"
 msgstr "ექსპორტი"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:110
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:112
 msgid "Criterion"
 msgstr "კრიტერიუმი"
 
-#: templates/exmo2010/nav_sidebar/monitoring_utility.html:118
+#: templates/exmo2010/nav_sidebar/monitoring_utility.html:120
 msgid "You must have approved task for export"
 msgstr "ექსპორტისთვის საჭიროა ამოცანის დადასტურება"
 
@@ -3290,10 +3245,6 @@ msgstr "მოგვიანებით, ვებ-გვერდზე შ�
 msgid "Thank you"
 msgstr "გმადლობთ"
 
-#: templates/registration/login.html:30
-msgid "Log in the system"
-msgstr "სისტემაში შესვლა"
-
 #: templates/registration/login.html:32
 #: templates/registration/registration_form.html:39
 msgid "You are already logged in"
@@ -3333,8 +3284,8 @@ msgstr "დაგავიწყდათ პაროლი"
 
 #: templates/registration/password_change_done.html:39
 #: templates/registration/password_change_done.html:42
-msgid "Password change successful"
-msgstr "პაროლი წარმატებით შეიცვალა"
+msgid "Password  successfully changed"
+msgstr ""
 
 #: templates/registration/password_change_done.html:43
 msgid "Your password was changed."
@@ -3357,10 +3308,8 @@ msgstr[0] "გთხოვთ შეცვალოთ აღმოჩენი�
 #: templates/registration/password_change_form.html:54
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
+"password twice so we can verify you typed it correctly."
 msgstr ""
-"გთხოვთ, შეიყვანოთ თქვენი ძველი პაროლი და შემდეგ ახალი პაროლი შეიყვანეთ "
-"ორჯერ, რათა დავრწმუნდეთ, რომ აკრეფვისას შეცდომა არ დაუშვით."
 
 #: templates/registration/password_change_form.html:73
 msgid "Password (again)"
@@ -3372,8 +3321,8 @@ msgstr "პაროლის შეცვლა"
 
 #: templates/registration/password_reset_complete.html:39
 #: templates/registration/password_reset_complete.html:42
-msgid "Password reset complete"
-msgstr "პაროლის შეცვლა დასრულებულია"
+msgid "Password reset completed"
+msgstr ""
 
 #: templates/registration/password_reset_complete.html:43
 msgid "Your password has been set.  You may go ahead and log in now."

@@ -196,7 +196,7 @@ def crumbs_tree(is_expert=False):
         'monitoring_report_type':     _('Statistics'),
         'monitoring_report_finished': _('Statistics'),
 
-        'auth_login': _('Login'),
+        'auth_login': _('Log in the system'),
         'auth_password_reset':         _('Password reset (step 1 from 3)'),
         'auth_password_reset_done':    _('Password reset (step 2 from 3)'),
         'auth_password_reset_confirm': _('Password reset (step 3 from 3)'),
@@ -229,7 +229,7 @@ def crumbs_tree(is_expert=False):
             'monitoring_parameter_found_report': _('Monitoring cycle'),
 
             'monitoring_parameter_import':    _('Import parameter'),
-            'monitoring_organization_import': _('Import organization'),
+            'monitoring_organization_import': _('Import organizations'),
 
             'organization_list': _('Monitoring cycle'),
 

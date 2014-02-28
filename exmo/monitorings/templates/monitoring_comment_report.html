@@ -66,13 +66,13 @@
             <ul>
                 <li>{% trans 'Total organizations' %}: {{ monitoring.organization_set.count }}</li>
                 <li>{% trans 'Registered organizations' %}: {{ num_orgs_with_user }}</li>
-                <li>{% trans 'Organizations with comments from organization' %}: {{ active_orgs|length }}</li>
-                <li>{% trans 'Comments count from organizations' %}: {{ num_org_comments }}</li>
-                <li>{% trans 'Comments count from organizations with reply date in limit' %}: {{ num_answered }}</li>
-                <li>{% trans 'Comments count from organizations with reply date out of limit' %}: {{ num_answered_late }}</li>
-                <li>{% trans 'Comments count from organizations without reply and date in limit' %}: {{ pending|length }}</li>
-                <li>{% trans 'Comments count from organizations without reply and should be answered today' %}: {{ expiring|length }}</li>
-                <li>{% trans 'Comments count from organizations without reply and date out of limit' %}: {{ expired|length }}</li>
+                <li>{% trans 'Organizations with comments from Representatives' %}: {{ active_orgs|length }}</li>
+                <li>{% trans 'Number of comments from organizations' %}: {{ num_org_comments }}</li>
+                <li>{% trans 'Number of comments from organizations with reply before deadline' %}: {{ num_answered }}</li>
+                <li>{% trans 'Number of comments from organizations with reply after deadline' %}: {{ num_answered_late }}</li>
+                <li>{% trans 'Number of comments from organizations without reply' %}: {{ pending|length }}</li>
+                <li>{% trans 'Number of comments from organizations which should be answered today' %}: {{ expiring|length }}</li>
+                <li>{% trans 'Number of comments from organizations without reply before deadline' %}: {{ expired|length }}</li>
             </ul>
 
             <h3 onClick="toggle('org_stat');" style="cursor: pointer;">
@@ -105,7 +105,7 @@
             </div>
 
             <h3 style="color:red; cursor: pointer;" onClick="toggle('expired');">
-                {% trans 'Comments list from organizations without reply and date out of limit' %} ({{ expired|length }})</h3>
+                {% trans 'Comments list from organizations without reply before deadline' %} ({{ expired|length }})</h3>
             <div id="expired" style="color:red; display: none;">
                 {% if expired %}
                     <ul>
@@ -117,7 +117,7 @@
             </div>
 
             <h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('expiring');">
-                {% trans 'Comments list from organization that needs to reply today (exclude list above)' %} ({{ expiring|length }})</h3>
+                {% trans 'Comments list from organization that should be replied today (exclude list above)' %} ({{ expiring|length }})</h3>
             <div id="expiring" style="color:#ff9218; display: none;" >
                 {% if expiring %}
                     <ul>
@@ -129,7 +129,7 @@
             </div>
 
             <h3 style="color:green; cursor: pointer;" onClick="toggle('pending');">
-                {% trans 'Comments list from organization that needs to reply (exclude list above)' %} ({{ pending|length }})</h3>
+                {% trans 'Comments list from organization that should be replied (exclude list above)' %} ({{ pending|length }})</h3>
             <div id="pending" style="color:green; display: none;">
                 {% if pending %}
                     <ul>
@@ -142,6 +142,6 @@
 
         </div>
     {% else %}
-        {% trans "Haven't comments from organizations" %}.
+        {% trans "No comments from organizations" %}.
     {% endif %}
 {% endblock %}
