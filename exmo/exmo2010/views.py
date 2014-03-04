@@ -192,13 +192,12 @@ class CertificateOrderView(FormView):
 
         # Build rated tasks ordered dict to display
         self.tasks = OrderedDict()
-        for monitoring in Monitoring.objects.filter(**_filter).select_related('openness_expression').distinct():
+        for monitoring in Monitoring.objects.filter(**_filter).select_related('openness_expression')\
+                                            .distinct().order_by('-publish_date'):
             for t in monitoring.rating(rating_type=self.rating_type):
                 if t.organization.pk in _org_pks:
                     self.tasks[t.pk] = t
 
-        if not self.tasks:
-            self.bad_org_filter = True
         return form
 
     def form_valid(self, form):
