@@ -1,6 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2013 Al Nikolov
-// Copyright 2013 Foundation "Institute for Information Freedom Development"
+// Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -22,27 +22,36 @@ $(document).ready(function() {
     var $tab_content_claims = $('.tab-content-claims');
     var $comments = $('#comments').length;
 
+    // TICKET 1516: inactive CKEditor
+    function redraw_ckeditor_width(editor) {
+        $('#cke_contents_' + editor).children()[1].style.width = '100%';
+    }
+
     // tabs clicking (comment, clarification, claim)
     $('.ccc-tabs').live('click', function(e) {
-        var $link;
+        var $link, editor;
 
         switch (e.target.hash) {
            case '#comments':
               $tab_content_clarifications.hide();
               $tab_content_claims.hide();
               $tab_content_comments.show();
+              editor = 'id_comment';
               break;
            case '#clarifications':
               $tab_content_comments.hide();
               $tab_content_claims.hide();
               $tab_content_clarifications.show();
+              editor = 'id_clarification-comment';
               break;
            case '#claims':
               $tab_content_comments.hide();
               $tab_content_clarifications.hide();
               $tab_content_claims.show();
+              editor = 'id_claim-comment';
               break;
         }
+        redraw_ckeditor_width(editor);
         $link = $('a[href="' + e.target.hash + '"]');
         $link.parent().addClass('active').siblings().removeClass('active');
         window.location.hash = '';

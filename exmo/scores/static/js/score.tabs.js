@@ -184,24 +184,33 @@ $(document).ready(function() {
         }
     }
 
+    // TICKET 1516: inactive CKEditor
+    function redraw_ckeditor_width(editor) {
+        $('#cke_contents_' + editor).children()[1].style.width = '100%';
+    }
+
     // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js
     $('.ccc-tabs').live('click', function(e) {
-
+        var editor;
         deleteAllAutoScoreCommentBricks();
 
         switch (e.target.hash) {
            case '#comments':
               $('.edit-tabs span').removeClass('active');
               $edit_tabs.show();
+              editor = 'id_comment';
               break;
            case '#clarifications':
               $edit_tabs.hide();
+              editor = 'id_clarification-comment';
               break;
            case '#claims':
               $edit_tabs.hide();
+              editor = 'id_claim-comment';
               break;
         }
 
+        redraw_ckeditor_width(editor);
         $edit_table.hide();
         $part_edit_table.hide();
         $non_edit_table.show();
@@ -270,6 +279,7 @@ $(document).ready(function() {
               break;
         }
 
+        redraw_ckeditor_width('id_comment');
         $link = $('a[href="' + e.target.hash + '"]');
         $link.parent().addClass('active').siblings().removeClass('active');
         $(window).resize();
