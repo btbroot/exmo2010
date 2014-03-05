@@ -20,11 +20,12 @@
 from django.conf.urls import *
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
-from exmo2010.custom_registration.views import activate_redirect, login_test_cookie, password_reset_confirm
-from exmo2010.custom_registration.views import password_reset_done
-from exmo2010.custom_registration.views import password_reset_redirect, register_test_cookie, resend_email
+from exmo2010.custom_registration.views import (activate_redirect, login_test_cookie, password_reset_confirm,
+                                                password_reset_done, password_reset_redirect, register_test_cookie,
+                                                resend_email)
 
 
 urlpatterns = patterns('',
@@ -37,8 +38,10 @@ urlpatterns = patterns('',
     # confusing 404.
     url(r'^activate/(?P<activation_key>\w+)/$', activate_redirect, name='registration_activate'),
     url(r'^register/$', register_test_cookie, name='registration_register'),
-    url(r'^register/complete/$', TemplateView.as_view(template_name='registration/registration_complete.html'),
-        name='registration_complete'),
+    url(r'^register/complete/$', TemplateView.as_view(
+        template_name='registration/registration_complete.html',
+        get_context_data=lambda: {'title': _('Registration (step 2 of 2)')}
+        ), name='registration_complete'),
     url(r'^register/closed/$', TemplateView.as_view(template_name='registration/registration_closed.html'),
         name='registration_disallowed'),
     # Auth urls.

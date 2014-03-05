@@ -35,15 +35,15 @@ from django.shortcuts import redirect
 from django.template import Context, Template
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
-from django.utils import translation
+from django.utils.translation import get_language_from_request, ugettext as _
 from django.views.csrf import CSRF_FAILURE_TEMPLATE
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
 from auth.forms import CustomPasswordResetForm
 from exmo2010.custom_registration.backends import get_backend
-from exmo2010.custom_registration.forms import ExmoAuthenticationForm, RegistrationFormFull, RegistrationFormShort
-from exmo2010.custom_registration.forms import ResendEmailForm, SetPasswordForm
+from exmo2010.custom_registration.forms import (ExmoAuthenticationForm, RegistrationFormFull,
+                                                ResendEmailForm, SetPasswordForm)
 from exmo2010.custom_registration.models import CustomRegistrationProfile
 
 
@@ -142,7 +142,10 @@ def register_test_cookie(request, backend=None, success_url=None, form_class=Non
 
     if extra_context is None:
         extra_context = {}
-    context = {'form': form}
+    context = {
+        'form': form,
+        'title': _('Registration (step 1 of 2)'),
+    }
     for key, value in extra_context.items():
         context[key] = callable(value) and value() or value
 
@@ -192,7 +195,7 @@ def login_test_cookie(request, template_name='registration/login.html',
 
                 # set language preference if does not exist
                 if not user.profile.language:
-                    language = translation.get_language_from_request(request, check_path=True)
+                    language = get_language_from_request(request, check_path=True)
                     user.profile.language = language
                     user.profile.save()
 

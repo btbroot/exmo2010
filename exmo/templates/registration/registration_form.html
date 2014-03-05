@@ -19,21 +19,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static future %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/auth.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/auth.css' %}"/>
 {% endblock %}
 
 {% block extrahead %}
     {{ block.super }}
-    <script src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
-    <script src="{{ STATIC_URL }}exmo2010/js/registration.js"></script>
+    <script src="{% static 'exmo2010/js/registration.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-    <h1>{{ current_title }}</h1>
     {% if request.user.is_authenticated %}
         <p>
             {% trans 'You are already logged in' %}.
