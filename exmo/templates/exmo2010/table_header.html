@@ -31,13 +31,17 @@
                 {% if header.filterable %}
                     <form action="." method="GET">
                         {% if header.select %}
-                            <select name="filter{{ header.i }}">
-                                <option value="">---</option>
-                                {% for option in header.select %}
-                                    <option value="{{option.0}}">{{ option.1 }}</option>
-                                {% endfor %}
-                            </select>
-                            <input type="image" src="{% get_static_prefix %}admin/img/tooltag-arrowright_over.gif">
+                            <div style="display: table-cell">
+                                <select name="filter{{ header.i }}">
+                                    <option value="">---</option>
+                                    {% for option in header.select %}
+                                        <option value="{{option.0}}">{{ option.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div style="display: table-cell">
+                                <input type="image" src="{% static 'admin/img/tooltag-arrowright_over.gif' %}">
+                            </div>
                         {% else %}
                             <input name="filter{{ header.i }}" value="{{ header.filter }}">
                         {% endif %}
