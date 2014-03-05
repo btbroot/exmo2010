@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,11 +17,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import simplejson
+import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseForbidden, Http404
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
@@ -50,16 +51,14 @@ def add_questionnaire(request, monitoring_pk):
 
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    if monitoring.has_questions():
-        return HttpResponseForbidden(_('Forbidden'))
+    if not request.user.has_perm('exmo2010.edit_monitoring', monitoring) or \
+            monitoring.has_questions():
+        raise PermissionDenied
     if request.method == "POST":
         if request.is_ajax():
-            questionset_json = request.POST.get("questionaire")
             try:
-                questionset = simplejson.loads(questionset_json)
-            except simplejson.JSONDecodeError:
+                questionset = json.loads(request.POST.get("questionaire"))
+            except ValueError:
                 questionset = None
             if questionset:
                 a_name, a_comm, qlist = questionset
@@ -83,7 +82,7 @@ def add_questionnaire(request, monitoring_pk):
                             new_answer.save()
             return HttpResponse("Опросник создан!")
         else:
-            return HttpResponseForbidden(_('Forbidden'))
+            raise PermissionDenied
     else:
         title = _('Edit monitoring %s') % monitoring
         # title0 - потому что переменную title ждет темплейт base.html и
@@ -104,7 +103,7 @@ def answers_export(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
 
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
 
     questionnaire = get_object_or_404(Questionnaire, monitoring=monitoring)
     tasks = Task.approved_tasks.filter(organization__monitoring=monitoring)

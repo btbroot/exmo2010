@@ -69,6 +69,7 @@ DATABASES = {
 # Tests
 TEST = 'test' in sys.argv
 if TEST:
+    SOUTH_TESTS_MIGRATE = False
     # execute celery tasks immediately
     CELERY_ALWAYS_EAGER = True
     # in-memory SQLite used for testing.
@@ -202,7 +203,6 @@ INSTALLED_APPS = (
     'south',
     'djcelery',
     'django403',
-    'django_extensions',
     'registration',
     'django_wysiwyg',
     'ckeditor',
