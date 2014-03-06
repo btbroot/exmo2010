@@ -1,0 +1,65 @@
+# This file is part of EXMO2010 software.
+# Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-06 10:28+0400\n"
+"PO-Revision-Date: 2014-03-06 10:28+0400\n"
+"Last-Translator: Valeriy Okulichev <vokulichev@svobodainfo.org>\n"
+"Language-Team: Azerbaijani <iifd-list@svobodainfo.org>\n"
+"Language: az\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: monitorings/static/js/monitoring_form.js:57
+msgid ""
+"You've chosen to delete monitoring's questionnaire. This will lead to "
+"removing all its questions and collected answers. Are you sure?"
+msgstr ""
+
+#: scores/static/js/score.comments.js:80
+msgid "Close without answer"
+msgstr ""
+
+#: scores/static/js/score.comments.js:84
+msgid "Open comment"
+msgstr ""
+
+#: scores/static/js/score.tabs.js:112
+msgid "Score changed to maximum"
+msgstr ""
+
+#: scores/static/js/score.tabs.js:115
+msgid "Score changed"
+msgstr ""
+
+#: scores/static/js/scores.js:29
+msgid "place"
+msgstr ""
+
+#: static/exmo2010/js/rating.js:95
+msgid "hide"
+msgstr ""
+
+#: static/exmo2010/js/rating.js:99
+msgid "show"
+msgstr ""

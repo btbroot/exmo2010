@@ -87,6 +87,7 @@ LANGUAGES = (
     ('ru', 'Русский'),
     ('en', 'English'),
     ('ka', 'ქართული'),
+    ('az', 'Azərbaycanca'),
 )
 USE_L10N = True
 SITE_ID = 1
@@ -94,7 +95,7 @@ USE_I18N = True
 
 # MODELTRANSLATION_FALLBACK_LANGUAGES will be used as fallback language if some model does not
 # have transalted field to other language.
-MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka')
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka', 'az')
 
 USE_ETAGS = True
 FORMAT_MODULE_PATH = 'formats'

@@ -1457,6 +1457,10 @@ msgstr ""
 msgid "Georgian"
 msgstr ""
 
+#: exmo2010/models/userprofile.py:88
+msgid "Azerbaijani"
+msgstr ""
+
 #: exmo2010/models/userprofile.py:91
 msgid "organizations for view"
 msgstr "საჯარო დაწესებულებების გადასახედად"

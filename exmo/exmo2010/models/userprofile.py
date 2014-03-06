@@ -85,6 +85,7 @@ class UserProfile(BaseModel):
         ('ru', _('Russian')),
         ('en', _('English')),
         ('ka', _('Georgian')),
+        ('az', _('Azerbaijani')),
     )
 
     user = models.ForeignKey(User, unique=True)
