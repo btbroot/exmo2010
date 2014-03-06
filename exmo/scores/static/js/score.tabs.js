@@ -186,7 +186,10 @@ $(document).ready(function() {
 
     // TICKET 1516: inactive CKEditor
     function redraw_ckeditor_width(editor) {
-        $('#cke_contents_' + editor).children()[1].style.width = '100%';
+        var iframe = $('#cke_contents_' + editor).children()[1];
+        if (iframe) {
+            iframe.style.width = '100%';
+        }
     }
 
     // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js
