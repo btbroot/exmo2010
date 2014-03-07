@@ -2685,7 +2685,9 @@ msgstr ""
 msgid ""
 "© 2010, 2011 Non-profit Partnership \"Institute of Information Freedom "
 "Development\""
-msgstr "© 2010, 2011 QHT Əməkdaşlığı \"Media Hüququ İnstitutu\""
+msgstr ""
+"© 2010, 2011 Non-profit Partnership \"Institute of Information Freedom "
+"Development\""
 
 #: templates/exmo2010/footer.html:34
 msgid "© 2010, 2011, 2013 Al Nikolov"
