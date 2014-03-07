@@ -112,8 +112,6 @@ class Organization(BaseModel):
     url -- Internet site URL
     email -- list of emails
     phone -- list of phones
-    keywords -- Keywords for autocomplete and search (not used)
-    comments -- Additional comment (not used)
 
     """
     class Meta(BaseModel.Meta):
@@ -135,6 +133,14 @@ class Organization(BaseModel):
         verbose_name=_('Invitation status'), editable=False)
 
     objects = OrganizationMngr()
+
+    def clean(self):
+        result = super(Organization, self).clean()
+        try:
+            self.validate_unique()
+        except ValidationError, e:
+            raise ValidationError(e.update_error_dict({}))
+        return result
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.inv_code:

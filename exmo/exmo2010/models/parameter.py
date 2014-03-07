@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from ckeditor.fields import RichTextField
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -59,6 +60,14 @@ class Parameter(BaseModel):
         'image'
     ]
 
-    #I dont know why, but this breaks reversion while import-(
     def __unicode__(self):
         return self.name
+
+    def clean(self):
+        result = super(Parameter, self).clean()
+        try:
+            self.validate_unique()
+        except ValidationError, e:
+            raise ValidationError(e.update_error_dict({}))
+
+        return result
