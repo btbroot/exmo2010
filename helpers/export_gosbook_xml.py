@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,9 +25,8 @@
 import os
 import sys
 import time
-from lxml import etree
 
-from results import gosbook_id
+from lxml import etree
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exmo.settings")
 
@@ -35,6 +34,7 @@ path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'exmo')
 sys.path.append(path)
 
 from exmo2010.models import Score, Parameter, Task
+from results import gosbook_id
 
 
 timestamp = str(int(time.time()))
@@ -98,65 +98,38 @@ def generate_xml_for_monitoring(tasks):
                 scomment = ""
             etree.SubElement(question, "comment").text = etree.CDATA(scomment)
 
+            # default values
+            complete = topical = accessible = hypertext = document = image = 4
+
             #complete
-            if score.parameter.complete:
-                complete = score.complete or 4
-                comment = score.completeComment or ""
-            else:
-                complete = 4
-                comment = ""
+            if score.parameter.complete and score.complete:
+                complete = score.complete
             etree.SubElement(question, "complete").text = str(complete)
-            etree.SubElement(question, "completeComment").text = etree.CDATA(comment)
 
             #topical
-            if score.parameter.topical:
-                topical = score.topical or 4
-                comment = score.topicalComment or ""
-            else:
-                topical = 4
-                comment = ""
+            if score.parameter.topical and score.topical:
+                topical = score.topical
             etree.SubElement(question, "topical").text = str(topical)
-            etree.SubElement(question, "topicalComment").text = etree.CDATA(comment)
 
             #accessible
-            if score.parameter.accessible:
-                accessible = score.accessible or 4
-                comment = score.accessibleComment or ""
-            else:
-                accessible = 4
-                comment = ""
+            if score.parameter.accessible and score.accessible:
+                accessible = score.accessible
             etree.SubElement(question, "accessible").text = str(accessible)
-            etree.SubElement(question, "accessibleComment").text = etree.CDATA(comment)
 
             #hypertext
-            if score.parameter.hypertext:
-                hypertext = score.hypertext or 4
-                comment = score.hypertextComment or ""
-            else:
-                hypertext = 4
-                comment = ""
+            if score.parameter.hypertext and score.hypertext:
+                hypertext = score.hypertext
             etree.SubElement(question, "hypertext").text = str(hypertext)
-            etree.SubElement(question, "hypertextComment").text = etree.CDATA(comment)
 
             #document
-            if score.parameter.document:
-                document = score.document or 4
-                comment = score.documentComment or ""
-            else:
-                document = 4
-                comment = ""
+            if score.parameter.document and score.document:
+                document = score.document
             etree.SubElement(question, "document").text = str(document)
-            etree.SubElement(question, "documentComment").text = etree.CDATA(comment)
 
             #image
-            if score.parameter.image:
-                image = score.image or 4
-                comment = score.imageComment or ""
-            else:
-                image = 4
-                comment = ""
+            if score.parameter.image and score.image:
+                image = score.image
             etree.SubElement(question, "image").text = str(image)
-            etree.SubElement(question, "imageComment").text = etree.CDATA(comment)
 
             questions.append(question)
         site.append(questions)

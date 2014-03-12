@@ -52,13 +52,6 @@ class ScoreForm(forms.ModelForm):
             'document': forms.RadioSelect(),
             'hypertext': forms.RadioSelect(),
             'image': forms.RadioSelect(),
-            'foundComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'completeComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'topicalComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'accessibleComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'documentComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'hypertextComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
-            'imageComment': forms.Textarea(attrs={'cols': 45, 'rows': 1}),
             'comment': forms.Textarea(attrs={'cols': 45, 'rows': 5}),
             'revision': forms.HiddenInput(),
         }
@@ -73,19 +66,12 @@ class ScoreFormWithComment(CustomCommentForm):
         super(ScoreFormWithComment, self).__init__(instance, **kwargs)
 
     found = forms.ChoiceField(label=_('found'), widget=forms.RadioSelect(), choices=BASE_CHOICE)
-    foundComment = forms.CharField(label=_('foundComment'), widget=forms.Textarea(), required=False)
     complete = forms.ChoiceField(label=_('complete'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
-    completeComment = forms.CharField(label=_('completeComment'), widget=forms.Textarea(), required=False)
     topical = forms.ChoiceField(label=_('topical'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
-    topicalComment = forms.CharField(label=_('topicalComment'), widget=forms.Textarea(), required=False)
     accessible = forms.ChoiceField(label=_('accessible'), widget=forms.RadioSelect(), choices=FULL_CHOICE, required=False)
-    accessibleComment = forms.CharField(label=_('accessibleComment'), widget=forms.Textarea(), required=False)
     hypertext = forms.ChoiceField(label=_('hypertext'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    hypertextComment = forms.CharField(label=_('hypertextComment'), widget=forms.Textarea(), required=False)
     document = forms.ChoiceField(label=_('document'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    documentComment = forms.CharField(label=_('documentComment'), widget=forms.Textarea(), required=False)
     image = forms.ChoiceField(label=_('image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
-    imageComment = forms.CharField(label=_('imageComment'), widget=forms.Textarea(), required=False)
     recomendation = forms.CharField(label=_('recommendations'), widget=forms.Textarea(), required=False)
     comment = forms.CharField(label=_('comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
 
@@ -123,12 +109,6 @@ class ScoreFormWithComment(CustomCommentForm):
             bool(data['hypertext']),
             bool(data['document']),
             bool(data['image']),
-            data['completeComment'],
-            data['topicalComment'],
-            data['accessibleComment'],
-            data['hypertextComment'],
-            data['documentComment'],
-            data['imageComment'],
         )):
             raise ValidationError(ugettext('Not found, but some excessive data persists'))
 
@@ -140,8 +120,6 @@ class ScoreFormWithComment(CustomCommentForm):
 
         for item in ['found'] + Parameter.OPTIONAL_CRITERIONS:
             setattr(score, item, data[item] if data[item] else None)
-            item += 'Comment'
-            setattr(score, item, data[item])
 
         if 'recomendation' in data:
             score.comment = data['recomendation']

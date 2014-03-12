@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -62,13 +62,6 @@
                                     <td>{{ score.parameter.weight }}</td>
                                     {% include "exmo2010/score_criteria_table.html" %}
                                     {% if report == 'printfull' %}
-                                        {% if score.foundComment %}</tr><tr><td>{% trans "explanation for 'Found' criterion" %}</td><td colspan=10>{{ score.foundComment|linebreaks }}</td>{% endif %}
-                                        {% if score.completeComment and score.parameter.complete %}</tr><tr><td>{% trans "explanation for 'Complete' criterion" %}</td><td colspan=10>{{ score.completeComment|linebreaks }}</td>{% endif %}
-                                        {% if score.topicalComment and score.parameter.topical %}</tr><tr><td>{% trans "explanation for 'Topical' criterion" %}</td><td colspan=10>{{ score.topicalComment|linebreaks }}</td>{% endif %}
-                                        {% if score.accessibleComment and score.parameter.accessible %}</tr><tr><td>{% trans "explanation for 'Accessible' criterion" %}</td><td colspan=10>{{ score.accessibleComment|linebreaks }}</td>{% endif %}
-                                        {% if score.hypertextComment and score.parameter.hypertext %}</tr><tr><td>{% trans "explanation for 'Hypertext' criterion" %}</td><td colspan=10>{{ score.hypertextComment|linebreaks }}</td>{% endif %}
-                                        {% if score.documentComment and score.parameter.document %}</tr><tr><td>{% trans "explanation for 'Document' criterion" %}</td><td colspan=10>{{ score.documentComment|linebreaks }}</td>{% endif %}
-                                        {% if score.imageComment and score.parameter.image %}</tr><tr><td>{% trans "explanation for 'Image' criterion" %}</td><td colspan=10>{{ score.imageComment|linebreaks }}</td>{% endif %}
                                         {% if score.comment %}</tr><tr><td>{% trans 'recommendations' %}</td><td colspan=10>{{ score.comment|linebreaks }}</td>{% endif %}
                                     {% endif %}
                                 {%else%}

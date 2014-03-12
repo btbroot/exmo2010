@@ -81,7 +81,7 @@
                 <th>
                     {% trans "Value" %}
                 </th>
-                <th class="explanation">
+                <th>
                     {% trans "Explanation" %}
                 </th>
             </tr>
@@ -96,9 +96,7 @@
                 <td class="value">
                     {{ form.found }}
                 </td>
-                <td class="explanation">
-                    {{ form.foundComment }}
-                </td>
+                <td></td>
             </tr>
 
             {% if form.found.errors %}
@@ -118,9 +116,7 @@
                     <td class="value">
                         {{ form.complete }}
                     </td>
-                    <td class="explanation">
-                        {{ form.completeComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.complete.errors %}
@@ -141,9 +137,7 @@
                     <td class="value">
                         {{ form.topical }}
                     </td>
-                    <td class="explanation">
-                        {{ form.topicalComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.topical.errors %}
@@ -164,9 +158,7 @@
                     <td class="value">
                         {{ form.accessible }}
                     </td>
-                    <td class="explanation">
-                        {{ form.accessibleComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.accessible.errors %}
@@ -187,9 +179,7 @@
                     <td class="value">
                         {{ form.hypertext }}
                     </td>
-                    <td class="explanation">
-                        {{ form.hypertextComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.hypertext.errors %}
@@ -210,9 +200,7 @@
                     <td class="value">
                         {{ form.document }}
                     </td>
-                    <td class="explanation">
-                        {{ form.documentComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.document.errors %}
@@ -233,9 +221,7 @@
                     <td class="value">
                         {{ form.image }}
                     </td>
-                    <td class="explanation">
-                        {{ form.imageComment }}
-                    </td>
+                    <td></td>
                 </tr>
 
                 {% if form.image.errors %}
