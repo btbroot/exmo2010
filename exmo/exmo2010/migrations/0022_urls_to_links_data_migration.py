@@ -43,7 +43,7 @@ class Migration(DataMigration):
                 if textdata:
                     for a in BeautifulSoup(urlize(textdata)).findAll('a'):
                         a['target'] = '_blank'
-                        urls.append(a)
+                        urls.append(unicode(a))
 
             score.foundComment = '\n'.join(urls)
             score.save()
