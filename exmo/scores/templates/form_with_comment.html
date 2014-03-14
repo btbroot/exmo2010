@@ -95,7 +95,7 @@
                 <th>
                     {% trans 'Value' %}
                 </th>
-                <th>
+                <th class="explanation">
                     {% trans 'Explanation' %}
                 </th>
             </tr>
@@ -113,7 +113,10 @@
                     <span class="non_edit_table part_edit_table">{{ object.found|default_if_none:"—" }}</span>
                     <span class="edit_table">{{ form.found }}</span>
                 </td>
-                <td></td>
+                <td class="explanation">
+                    <span class="non_edit_table">{{ object.foundComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                    <span class="edit_table part_edit_table">{{ form.foundComment }}</span>
+                </td>
             </tr>
 
             {# Полнота #}
@@ -128,7 +131,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.complete|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.complete }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.completeComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.completeComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
 
@@ -144,7 +150,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.topical|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.topical }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.topicalComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.topicalComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
 
@@ -160,7 +169,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.accessible|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.accessible }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.accessibleComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.accessibleComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
 
@@ -176,7 +188,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.hypertext|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.hypertext }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.hypertextComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.hypertextComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
 
@@ -192,7 +207,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.document|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.document }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.documentComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.documentComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
 
@@ -208,7 +226,10 @@
                         <span class="non_edit_table part_edit_table">{{ object.image|default_if_none:"—" }}</span>
                         <span class="edit_table">{{ form.image }}</span>
                     </td>
-                    <td></td>
+                    <td class="explanation">
+                        <span class="non_edit_table">{{ object.imageComment|default:""|urlize_target_blank:url_length|linebreaksbr }}</span>
+                        <span class="edit_table part_edit_table">{{ form.imageComment }}</span>
+                    </td>
                 </tr>
             {% endif %}
         </tbody>

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: infometer\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-12 11:39+0400\n"
+"POT-Creation-Date: 2014-03-07 11:20+0400\n"
 "PO-Revision-Date: 2014-03-06 14:57+0000\n"
 "Last-Translator: Teonat <t.turashvili@idfi.ge>\n"
 "Language-Team: Georgian (http://www.transifex.com/projects/p/infometer/"
@@ -127,8 +127,8 @@ msgstr "ელ-ფოსტა"
 #: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/_organization_form.html:41
-#: parameters/templates/parameter_form.html:73 scores/templates/form.html:247
-#: scores/templates/form_with_comment.html:237
+#: parameters/templates/parameter_form.html:73 scores/templates/form.html:261
+#: scores/templates/form_with_comment.html:258
 #: scores/templates/score_list.html:283
 msgid "Save"
 msgstr "შენახვა"
@@ -246,7 +246,7 @@ msgstr "მოთხოვნის დამატება %s"
 #: organizations/views.py:58 organizations/views.py:124 scores/views.py:103
 #: scores/views.py:117 scores/views.py:158 scores/views.py:285
 #: scores/views.py:341 scores/views.py:375 scores/views.py:429
-#: tasks/views.py:50 tasks/views.py:271 tasks/views.py:279 tasks/views.py:329
+#: tasks/views.py:51 tasks/views.py:332 tasks/views.py:340 tasks/views.py:390
 msgid "Forbidden"
 msgstr "აკრძალული"
 
@@ -436,8 +436,8 @@ msgstr "განმარტება"
 
 #: custom_comments/forms.py:31 custom_comments/models.py:41
 #: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:83
-#: exmo2010/models/task.py:283 monitorings/views.py:124 tasks/views.py:288
-#: tasks/views.py:301 tasks/views.py:307
+#: exmo2010/models/task.py:283 monitorings/views.py:124 tasks/views.py:349
+#: tasks/views.py:362 tasks/views.py:368
 msgid "status"
 msgstr "სტატუსი"
 
@@ -482,12 +482,12 @@ msgid "There are no comments"
 msgstr "არ არის კომენტარი"
 
 #: custom_comments/templates/comment.html:96
-#: scores/templates/form_with_comment.html:261
+#: scores/templates/form_with_comment.html:282
 msgid "Your comment"
 msgstr "თქვენი კომენტარი"
 
 #: custom_comments/templates/comment.html:120
-#: scores/templates/form_with_comment.html:263
+#: scores/templates/form_with_comment.html:284
 msgid "Post comment"
 msgstr "კომენტარის დატოვება"
 
@@ -622,7 +622,7 @@ msgstr "ელ-ფოსტის მისამართი, რომლი�
 msgid "Certificate order notification email"
 msgstr "სერთიფიკატის შეკვეთის შესატყობინებელი ელ-ფოსტა"
 
-#: exmo/config.py:96 exmo2010/models/score.py:64
+#: exmo/config.py:96
 msgid "Links"
 msgstr "ბმულები"
 
@@ -967,7 +967,7 @@ msgstr "ქულა"
 
 #: exmo2010/models/claim.py:34 exmo2010/models/claim.py:40
 #: exmo2010/models/clarification.py:36 exmo2010/models/clarification.py:43
-#: scores/forms.py:76
+#: scores/forms.py:90
 msgid "comment"
 msgstr "კომენტარი"
 
@@ -1178,32 +1178,32 @@ msgid "weight"
 msgstr "მნიშვნელობა"
 
 #: exmo2010/models/parameter.py:45 exmo2010/models/score.py:57
-#: scores/forms.py:69
+#: scores/forms.py:77
 msgid "complete"
 msgstr "სრული"
 
 #: exmo2010/models/parameter.py:46 exmo2010/models/score.py:58
-#: scores/forms.py:70
+#: scores/forms.py:79
 msgid "topical"
 msgstr "აქტუალური"
 
 #: exmo2010/models/parameter.py:47 exmo2010/models/score.py:59
-#: scores/forms.py:71
+#: scores/forms.py:81
 msgid "accessible"
 msgstr "ნავიგაციური ხელმისაწვდომობა"
 
 #: exmo2010/models/parameter.py:48 exmo2010/models/score.py:60
-#: scores/forms.py:72
+#: scores/forms.py:83
 msgid "hypertext"
 msgstr "HTML ხელმისაწვდომობა"
 
 #: exmo2010/models/parameter.py:49 exmo2010/models/score.py:61
-#: scores/forms.py:73
+#: scores/forms.py:85
 msgid "document"
 msgstr "დოკუმენტის ხელმისაწვდომობა"
 
 #: exmo2010/models/parameter.py:50 exmo2010/models/score.py:62
-#: scores/forms.py:74
+#: scores/forms.py:87
 msgid "image"
 msgstr "გრაფიკული ხელმისაწვდომობა"
 
@@ -1279,43 +1279,71 @@ msgstr "ამოცანა"
 msgid "parameter"
 msgstr "პარამეტრი"
 
-#: exmo2010/models/score.py:56 scores/forms.py:68
+#: exmo2010/models/score.py:56 scores/forms.py:75
 msgid "found"
 msgstr "არსებობა"
 
-#: exmo2010/models/score.py:65 scores/templates/detail.html:146
+#: exmo2010/models/score.py:64 scores/forms.py:76
+msgid "foundComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'არსებობა' "
+
+#: exmo2010/models/score.py:65 scores/forms.py:78
+msgid "completeComment"
+msgstr "კომენტარების კრიტერიუმისთვის 'სრული'"
+
+#: exmo2010/models/score.py:66 scores/forms.py:80
+msgid "topicalComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'აქტუალური'"
+
+#: exmo2010/models/score.py:67 scores/forms.py:82
+msgid "accessibleComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'ნავიგაციური ხელმისაწვდომობა'"
+
+#: exmo2010/models/score.py:68 scores/forms.py:84
+msgid "hypertextComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'HTML ხელმისაწვდომობა'"
+
+#: exmo2010/models/score.py:69 scores/forms.py:86
+msgid "documentComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'დოკუმენტის ხელმისაწვდომობა'"
+
+#: exmo2010/models/score.py:70 scores/forms.py:88
+msgid "imageComment"
+msgstr "კომენტარები კრიტერიუმისთვის 'გრაფიკული ხელმისაწვდომობა'"
+
+#: exmo2010/models/score.py:72 scores/templates/detail.html:146
 msgid "Recomendations"
 msgstr "რეკომენდაციები"
 
-#: exmo2010/models/score.py:86
+#: exmo2010/models/score.py:93
 msgid "Complete must be set"
 msgstr "კრიტერიუმი 'სრული' შეფასებული არ არის "
 
-#: exmo2010/models/score.py:88
+#: exmo2010/models/score.py:95
 msgid "Topical must be set"
 msgstr "კრიტერიუმი 'აქტუალურობა' შეფასებული არ არის"
 
-#: exmo2010/models/score.py:90
+#: exmo2010/models/score.py:97
 msgid "Accessible must be set"
 msgstr "კრიტერიუმი 'ნავიგაციური ხელმისაწვდომობა' შეფასებული არ არის "
 
-#: exmo2010/models/score.py:92
+#: exmo2010/models/score.py:99
 msgid "Hypertext must be set"
 msgstr "კრიტერიუმი 'Html ხელმისაწვდომობა' შეფასებული არ არის"
 
-#: exmo2010/models/score.py:94
+#: exmo2010/models/score.py:101
 msgid "Document must be set"
 msgstr "კრიტერიუმი 'დოკუმენტის ხელმისაწვდომობა' შეფასებული არ არის"
 
-#: exmo2010/models/score.py:96
+#: exmo2010/models/score.py:103
 msgid "Image must be set"
 msgstr "კრიტერიუმი 'გრაფიკული ხელმისაწვდომობა' შეფასებული არ არის"
 
-#: exmo2010/models/score.py:98 scores/forms.py:113
+#: exmo2010/models/score.py:117 scores/forms.py:133
 msgid "Not found, but some excessive data persists"
 msgstr "ვერ მოიძებნა, თუმცა არსებობს სხვა კრიტერიუმის ქულები"
 
-#: exmo2010/models/score.py:106
+#: exmo2010/models/score.py:125
 msgid ""
 "A technical error of scores evaluation. To edit the score start from the go "
 "back to task page and skip to page of parameter evaluation by link from "
@@ -1350,8 +1378,8 @@ msgid "user"
 msgstr "მომხმარებელი"
 
 #: exmo2010/models/task.py:82 organizations/views.py:110
-#: organizations/views.py:127 tasks/views.py:286 tasks/views.py:300
-#: tasks/views.py:306
+#: organizations/views.py:127 tasks/views.py:347 tasks/views.py:361
+#: tasks/views.py:367
 msgid "organization"
 msgstr "საჯარო დაწესებულება"
 
@@ -1527,16 +1555,16 @@ msgstr "ყველა ამოცანა"
 msgid "Parameter found report of %(monitoring)s"
 msgstr "პარამეტრის 'არსებობა' ანგარიში %(monitoring)s"
 
-#: monitorings/views.py:754 monitorings/views.py:839 tasks/views.py:144
+#: monitorings/views.py:754 monitorings/views.py:839 tasks/views.py:205
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "მწკრივი %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:756 monitorings/views.py:841 tasks/views.py:146
+#: monitorings/views.py:756 monitorings/views.py:841 tasks/views.py:207
 msgid "File, you are loading is not valid CSV."
 msgstr "დოკუმენტი, რომელსაც ტვირთავთ არასწორია ან არ არის CSV დოკუმენტი."
 
-#: monitorings/views.py:758 monitorings/views.py:843 tasks/views.py:148
+#: monitorings/views.py:758 monitorings/views.py:843 tasks/views.py:209
 #, python-format
 msgid "Import error: %s."
 msgstr "იმპორტის შეცდომა: %s."
@@ -2160,7 +2188,7 @@ msgstr "ახალი პარამეტრის დამატება"
 msgid "Save and send notifications"
 msgstr "შეტყობინებების შენახვა და გაგზავნა"
 
-#: parameters/templates/parameter_form.html:77 scores/templates/form.html:252
+#: parameters/templates/parameter_form.html:77 scores/templates/form.html:266
 #: templates/exmo2010/task_form.html:40
 msgid "Reset"
 msgstr "გადატვირთვა"
@@ -2188,16 +2216,16 @@ msgstr "კითხვის დამატება"
 msgid "Save questionnaire"
 msgstr "კითხვარის შენახვა"
 
-#: scores/forms.py:75 scores/templates/task_report.html:65
+#: scores/forms.py:89 scores/templates/task_report.html:72
 msgid "recommendations"
 msgstr "რეკომენდაციები"
 
-#: scores/forms.py:94
+#: scores/forms.py:108
 #, python-format
 msgid "%s must be set"
 msgstr "კრიტერიუმი '%s' შეფასებული არ არის"
 
-#: scores/forms.py:100
+#: scores/forms.py:114
 msgid "Found must be set"
 msgstr "კრიტერიუმი 'არსებობა' შეფასებული არ არის"
 
@@ -2235,7 +2263,7 @@ msgstr "მნიშვნელობა"
 msgid "Explanation"
 msgstr "განმარტება"
 
-#: scores/templates/form.html:260 scores/templates/form_with_comment.html:243
+#: scores/templates/form.html:274 scores/templates/form_with_comment.html:264
 msgid "Set non-relevant"
 msgstr "შეუსაბამოდ ცნობა"
 
@@ -2243,7 +2271,7 @@ msgstr "შეუსაბამოდ ცნობა"
 msgid "Score by criterion"
 msgstr "ქულა კრიტერიუმის მიხედვით"
 
-#: scores/templates/form_with_comment.html:264
+#: scores/templates/form_with_comment.html:285
 msgid "Post comment and change score"
 msgstr "კომენტარის დატოვება და ქულის შეცვლა"
 
@@ -2328,62 +2356,90 @@ msgstr "ამოცანა "
 msgid "Openness"
 msgstr "ღიაობა"
 
+#: scores/templates/task_report.html:65
+msgid "explanation for 'Found' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'არსებობა'"
+
+#: scores/templates/task_report.html:66
+msgid "explanation for 'Complete' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'სრული'"
+
+#: scores/templates/task_report.html:67
+msgid "explanation for 'Topical' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'აქტუალური'"
+
+#: scores/templates/task_report.html:68
+msgid "explanation for 'Accessible' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'ნავიგაციური ხელმისაწვდომობა'"
+
+#: scores/templates/task_report.html:69
+msgid "explanation for 'Hypertext' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'HTML ხელმისაწვდომობა'"
+
+#: scores/templates/task_report.html:70
+msgid "explanation for 'Document' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'დოკუმენტის ხელმისაწვდომობა'"
+
+#: scores/templates/task_report.html:71
+msgid "explanation for 'Image' criterion"
+msgstr "განმარტება კრიტერიუმისთვის 'გრაფიკული ხელმისაწვდომობა'"
+
 #: tasks/signals.py:38 tasks/templates/task_user_assigned.html:28
 msgid "You have an assigned task"
 msgstr "თქვენ მოგენიჭათ ამოცანა"
 
-#: tasks/views.py:106
+#: tasks/views.py:166
 #, python-format
 msgid "row %d. Starts with '#'. Skipped"
 msgstr "მწკრივი %d. იწყება '#'-ით. გამოტოვებული"
 
-#: tasks/views.py:111
+#: tasks/views.py:171
 #, python-format
 msgid "row %(row)d (csv). Not a code: %(raw)s"
 msgstr "მწკრივი %(row)d (csv). კოდი არა: %(raw)s"
 
-#: tasks/views.py:114
+#: tasks/views.py:174
 #, python-format
 msgid "row %(row)d (csv). Empty score: %(raw)s"
 msgstr "მწკრივი %(row)d (csv). ცარიელი ქულა: %(raw)s"
 
-#: tasks/views.py:130
+#: tasks/views.py:191
 #, python-format
 msgid "row %(row)d (validation). %(raw)s"
 msgstr "მწკრივი %(row)d (დამოწმება). %(raw)s"
 
-#: tasks/views.py:134 tasks/views.py:138
+#: tasks/views.py:195 tasks/views.py:199
 #, python-format
 msgid "row %(row)d. %(raw)s"
 msgstr "მწკრივი %(row)d. %(raw)s"
 
-#: tasks/views.py:136
+#: tasks/views.py:197
 msgid "Parameter matching query does not exist"
 msgstr "პარამეტრი ვერ მოიძებნა"
 
-#: tasks/views.py:149
+#: tasks/views.py:210
 #, python-format
 msgid "Import CSV for task %s"
 msgstr "CSV-ის იმპორტი ამოცანისთვის %s"
 
-#: tasks/views.py:157
+#: tasks/views.py:218
 msgid "Back to the task"
 msgstr "ამოცანაზე დაბრუნება"
 
-#: tasks/views.py:272
+#: tasks/views.py:333
 #, python-format
 msgid "Task list for %(monitoring)s"
 msgstr "ამოცანების სია მონიტორინგისთვის %(monitoring)s"
 
-#: tasks/views.py:287
+#: tasks/views.py:348
 msgid "expert"
 msgstr "ექსპერტი"
 
-#: tasks/views.py:289 tasks/views.py:302 tasks/views.py:308
+#: tasks/views.py:350 tasks/views.py:363 tasks/views.py:369
 msgid "complete, %"
 msgstr "შესრულებული, %"
 
-#: tasks/views.py:331
+#: tasks/views.py:392
 msgid "Mass assign tasks"
 msgstr "მასობრივი ამოცანები"
 
@@ -3483,3 +3539,6 @@ msgstr ""
 #: templates/user_dashboard/dashboard.html:86
 msgid "Modules"
 msgstr "მოდულები"
+
+#~ msgid "Peremptory day to answer your question is"
+#~ msgstr "თქვენს კითხვაზე პასუხის გაცემის ბოლო ვადაა:"

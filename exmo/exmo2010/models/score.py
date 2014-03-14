@@ -61,7 +61,14 @@ class Score(BaseModel):
     document = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('document'))
     image = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('image'))
 
-    links = models.TextField(null=True, blank=True, verbose_name=_('Links'))
+    foundComment = models.TextField(null=True, blank=True, verbose_name=_('foundComment'))
+    completeComment = models.TextField(null=True, blank=True, verbose_name=_('completeComment'))
+    topicalComment = models.TextField(null=True, blank=True, verbose_name=_('topicalComment'))
+    accessibleComment = models.TextField(null=True, blank=True, verbose_name=_('accessibleComment'))
+    hypertextComment = models.TextField(null=True, blank=True, verbose_name=_('hypertextComment'))
+    documentComment = models.TextField(null=True, blank=True, verbose_name=_('documentComment'))
+    imageComment = models.TextField(null=True, blank=True, verbose_name=_('imageComment'))
+
     comment = models.TextField(null=True, blank=True, verbose_name=_('Recomendations'))
     created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     edited = models.DateTimeField(null=True, blank=True, auto_now=True)
@@ -94,7 +101,19 @@ class Score(BaseModel):
                 raise ValidationError(ugettext('Document must be set'))
             if self.parameter.image and self.image in ('', None):
                 raise ValidationError(ugettext('Image must be set'))
-        elif any((self.complete, self.topical, self.accessible, self.hypertext, self.document, self.image)):
+        elif any((
+                self.complete != None,
+                self.topical != None,
+                self.accessible != None,
+                self.hypertext != None,
+                self.document != None,
+                self.image != None,
+                self.completeComment,
+                self.topicalComment,
+                self.accessibleComment,
+                self.hypertextComment,
+                self.documentComment,
+                self.imageComment)):
             raise ValidationError(ugettext('Not found, but some excessive data persists'))
 
     def unique_error_message(self, model_class, unique_check):

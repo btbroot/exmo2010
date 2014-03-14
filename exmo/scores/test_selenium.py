@@ -144,6 +144,45 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         self.assertDisabled('#submit_score_and_comment')
 
 
+class PrintfullPageTestCase(BaseSeleniumTestCase):
+    # Scenario: checking comments fields
+
+    def setUp(self):
+        # GIVEN expertB account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND monitoring with organization, parameter, and task
+        monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=monitoring)
+        parameter = mommy.make(Parameter, monitoring=monitoring)
+        task = mommy.make(
+            Task,
+            organization=organization,
+            user=expertB,
+        )
+        # AND score with 'found' equals 1 and 2 comments
+        self.score = mommy.make(
+            Score,
+            task=task,
+            parameter=parameter,
+            found=1,
+            foundComment='found comment',
+            imageComment='image comment',
+        )
+        # AND I am logged in as expertB
+        self.login('expertB', 'password')
+        # AND I am on score printfull page
+        self.get(reverse('exmo2010:score_list_by_task', args=[task.pk]) + 'printfull')
+
+    def test_comments_fields_existing(self):
+        # WHEN I try to get comments texts of 'found' and 'image' fields
+        found_comment = self.find('tbody > tr:nth-child(2) > td:nth-child(2) > p').text
+        image_comment = self.find('tbody > tr:nth-child(3) > td:nth-child(2) > p').text
+        # THEN texts should exist
+        self.assertEqual(found_comment, self.score.foundComment)
+        self.assertEqual(image_comment, self.score.imageComment)
+
+
 class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
     ''' On score page if "found" criterion value is not "1", then other criteria inputs should be disabled '''
 
@@ -182,6 +221,9 @@ class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
         self.find('a[href="#change_score"]').click()
 
     def assert_topical_criterion_enabled(self, is_enabled):
+        # "Topical" criterion comment textarea
+        self.assertEqual(self.find('#id_topicalComment').is_enabled(), is_enabled)
+
         # "Topical" criterion value radio inputs
         for radio in self.findall('input[name="topical"]'):
             self.assertEqual(radio.is_enabled(), is_enabled)
