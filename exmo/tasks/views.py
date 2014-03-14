@@ -21,6 +21,7 @@ import csv
 import re
 import string
 
+import reversion
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError, PermissionDenied
@@ -33,8 +34,6 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.generic import View
 from django.views.generic.edit import DeleteView, UpdateView
-
-import reversion
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
@@ -60,21 +59,13 @@ def task_export(request, task_pk):
         'Name',
         'Found',
         'Complete',
-        'CompleteComment',
         'Topical',
-        'TopicalComment',
         'Accessible',
-        'AccessibleComment',
         'Hypertext',
-        'HypertextComment',
         'Document',
-        'DocumentComment',
         'Image',
-        'ImageComment',
         'Comment'
     ])
-    category = None
-    subcategory = None
     for p in parameters:
         out = (
             p.code,
@@ -82,67 +73,16 @@ def task_export(request, task_pk):
         )
         try:
             s = scores.get(parameter=p)
-        except:
-            out += (
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                '',
-                ''
-            )
+        except Score.DoesNotExist:
+            out += ('',)*8
         else:
             out += (s.found,)
-            if p.complete:
-                out += (
-                    s.complete,
-                    s.completeComment
-                )
-            else:
-                out += ('', '')
-            if p.topical:
-                out += (
-                    s.topical,
-                    s.topicalComment
-                )
-            else:
-                out += ('', '')
-            if p.accessible:
-                out += (
-                    s.accessible,
-                    s.accessibleComment
-                )
-            else:
-                out += ('', '')
-            if p.hypertext:
-                out += (
-                    s.hypertext,
-                    s.hypertextComment
-                )
-            else:
-                out += ('', '')
-            if p.document:
-                out += (
-                    s.document,
-                    s.documentComment
-                )
-            else:
-                out += ('', '')
-            if p.image:
-                out += (
-                    s.image,
-                    s.imageComment
-                )
-            else:
-                out += ('','')
+            out += (s.complete,) if p.complete else ('',)
+            out += (s.topical,) if p.topical else ('',)
+            out += (s.accessible,) if p.accessible else ('',)
+            out += (s.hypertext,) if p.hypertext else ('',)
+            out += (s.document,) if p.document else ('',)
+            out += (s.image,) if p.image else ('',)
             out += (s.comment,)
         writer.writerow(out)
     return response
@@ -180,9 +120,8 @@ def task_import(request, task_pk):
                     score = Score()
                 score.task = task
                 score.parameter = parameter
-                for i, key in enumerate(['found', 'complete', 'completeComment', 'topical', 'topicalComment',
-                                         'accessible', 'accessibleComment', 'hypertext', 'hypertextComment',
-                                         'document', 'documentComment', 'image', 'imageComment', 'comment']):
+                for i, key in enumerate(['found', 'complete', 'topical', 'accessible',
+                                         'hypertext', 'document', 'image', 'comment']):
                     value = row[i+2]
                     setattr(score, key, value if value else None)
                 score.full_clean()

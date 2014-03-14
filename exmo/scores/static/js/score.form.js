@@ -38,8 +38,6 @@ $(document).ready(function() {
         $foundOne = $("#id_score-found_2"),
         $radiosDashes = $("input:not(#id_score-found_0):regex(id, id_score-.+_0)"),
         $radiosExceptFound = $("input[type='radio']:not(#id_score-found_0):not(#id_score-found_1):not(#id_score-found_2)"),
-        $inputCommentFound = $("#id_score-foundComment"),
-        $inputCommentsExceptFound = $("textarea:not(#id_score-foundComment):regex(id, id_score-.+Comment)"),
         $inputComments = $("textarea:regex(id, id_score-.+Comment)"),
         $radios = $("input[type='radio']"),
         comments = [],
@@ -60,8 +58,6 @@ $(document).ready(function() {
         $foundOne = $("#id_found_2");
         $radiosDashes = $("input:not(#id_found_0):regex(id, id_.+_0)");
         $radiosExceptFound = $("input[type='radio']:not(#id_found_0):not(#id_found_1):not(#id_found_2)");
-        $inputCommentFound = $("#id_foundComment");
-        $inputCommentsExceptFound = $("textarea:not(#id_foundComment):regex(id, id_.+Comment)");
     }
 
     $non_edit_table.show();
@@ -85,21 +81,10 @@ $(document).ready(function() {
         if (foundDashChecked || foundZeroChecked) {
             $radiosDashes.prop("checked", true);
             $radiosExceptFound.attr('disabled', true);
-            $inputCommentsExceptFound.text('');
-            $inputCommentsExceptFound.val('');
-            $inputCommentsExceptFound.attr('disabled', true);
         } else {
             $radiosExceptFound.attr('disabled', false);
-            $inputCommentsExceptFound.attr('disabled', false);
         }
 
-        if (foundDashChecked) {
-            $inputCommentFound.text('');
-            $inputCommentFound.val('');
-            $inputCommentFound.attr('disabled', true);
-        } else {
-            $inputCommentFound.attr('disabled', false);
-        }
     }
 
     var $radiosFound = $foundDash.add($foundZero).add($foundOne);

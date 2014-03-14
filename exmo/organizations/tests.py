@@ -81,7 +81,7 @@ class DuplicateOrgCreationTestCase(TestCase):
         # AND response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
         # AND error message should say that such organization exists
-        errors = {'__all__': [u'Organization with this Name and Monitoring already exists.']}
+        errors = {'__all__': [u'Organization with this Name [en] and Monitoring already exists.']}
         self.assertEqual(response.context['form'].errors, errors)
 
 
