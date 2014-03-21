@@ -17,19 +17,22 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import hashlib
+import random
+
 from django.conf import settings
 from django.contrib.auth import login
-from django.contrib.auth.models import Group
-from django.contrib.sites.models import RequestSite
-from django.contrib.sites.models import Site
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.utils import translation
 from registration import signals
 from registration.backends import get_backend as get_registration_backend
 from registration.backends.default import DefaultBackend
+from registration.models import RegistrationProfile
 
 from exmo2010.custom_registration.forms import RegistrationFormFull, RegistrationFormShort
-from exmo2010.custom_registration.models import CustomRegistrationProfile
+from exmo2010.mail import mail_register_activation
 from exmo2010.models import UserProfile, Organization
 
 
@@ -103,14 +106,21 @@ class CustomBackend(DefaultBackend):
         class of this backend as the sender.
 
         """
-        username, email, password = (kwargs['email'], kwargs['email'],
-                                     kwargs['password'])
-        if Site._meta.installed:
-            site = Site.objects.get_current()
-        else:
-            site = RequestSite(request)
-        new_user = CustomRegistrationProfile.objects.create_inactive_user(username,
-            email, password, site)
+        with transaction.commit_on_success():
+            new_user = User.objects.create_user(kwargs['email'], kwargs['email'], kwargs['password'])
+            new_user.is_active = False
+            new_user.save()
+
+            salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+            name = new_user.username
+            if isinstance(name, unicode):
+                name = name.encode('utf-8')
+            activation_key = hashlib.sha1(salt + name).hexdigest()
+
+            RegistrationProfile.objects.create(user=new_user, activation_key=activation_key)
+
+        mail_register_activation(new_user, request, activation_key)
+
         # Сохраняем дополнительные поля модели User.
         user_changed = False
         first_name = kwargs.get("first_name", "").capitalize()
@@ -160,9 +170,7 @@ class CustomBackend(DefaultBackend):
 
         user_profile.save()
 
-        signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
+        signals.user_registered.send(sender=self.__class__, user=new_user, request=request)
         return new_user
 
     def activate(self, request, activation_key):
@@ -176,7 +184,7 @@ class CustomBackend(DefaultBackend):
         the class of this backend as the sender.
 
         """
-        activated = CustomRegistrationProfile.objects.activate_user(activation_key)
+        activated = RegistrationProfile.objects.activate_user(activation_key)
         if activated:
             activated.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, activated)
@@ -196,19 +204,3 @@ class CustomBackend(DefaultBackend):
                 form_class = RegistrationFormShort
 
         return form_class
-
-    def post_registration_redirect(self, request, user):
-        """
-        Return the name of the URL to redirect to after successful
-        user registration.
-
-        """
-        return 'exmo2010:registration_complete', (), {}
-
-    def post_activation_redirect(self, request, user):
-        """
-        Return the name of the URL to redirect to after successful
-        account activation.
-
-        """
-        return 'exmo2010:index', (), {}

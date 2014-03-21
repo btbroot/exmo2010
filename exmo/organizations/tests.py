@@ -185,11 +185,11 @@ class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
             },
             follow=True
         )
-        # THEN response status_code is 200 (OK)
+        # THEN response status_code should be 200 (OK)
         self.assertEqual(resp.status_code, 200)
         # AND expert A should be redirected to the same url with get parameter and hash
         self.assertRedirects(resp, self.url + '?alert=success#all')
-        # AND we should have 10 emails in our outbox
+        # AND 10 emails should be sent
         self.assertEqual(len(mail.outbox), 10)
         # AND emails should have expected headers
         email = mail.outbox[0].message()
@@ -212,90 +212,69 @@ class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
             self.assertEqual(org.inv_status, 'SNT')
 
 
-class OrganizationRegisteredStatusTestCase(TestCase):
-    # Scenario: Organization SHOULD change invitation status to 'registered'
-    # when first representative is registered. Different organizations of
-    # single representative SHOULD NOT affect each other.
+class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCase):
+    # Organization SHOULD change invitation status to 'registered' when first representative is registered.
+    # Different organizations of single representative SHOULD NOT affect status of each other.
 
     def setUp(self):
         site = Site.objects.get_current()
         content_type = ContentType.objects.get_for_model(Score)
 
-        # GIVEN published monitoring
-        monitoring1 = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-        # AND interaction monitoring
-        monitoring2 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization with 'activated' invitation status connected to published monitoring
-        organization1 = mommy.make(Organization, name='org1', monitoring=monitoring1, inv_status='ACT')
-        # AND organization with 'read' invitation status connected to interaction monitoring
-        self.organization2 = mommy.make(Organization, name='org2', monitoring=monitoring2, inv_status='RD')
-        # AND corresponding task, parameter, and score connected to organization1
-        task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
-        parameter1 = mommy.make(Parameter, monitoring=monitoring1, weight=1)
-        score1 = mommy.make(Score, task=task1, parameter=parameter1)
-        # AND representative connected to organization1
-        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        profile = self.user.get_profile()
-        profile.organization = [organization1]
-        # AND representatives comment connected to score1
-        mommy.make(CommentExmo, content_type=content_type, object_pk=score1.pk, user=self.user, site=site)
+        # GIVEN organization with 'read' invitation status in interaction monitoring
+        self.org_read = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION, inv_status='RD')
+        # AND organization with 'activated' invitation status in published monitoring
+        org_activated = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED, inv_status='ACT')
+        # AND score of org_activated
+        param = mommy.make(Parameter, monitoring=org_activated.monitoring, weight=1)
+        score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=org_activated, parameter=param)
+        # AND orguser, representative of org_activated
+        orguser = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        orguser.profile.organization = [org_activated]
+        # AND orguser comment for score of org_activated
+        mommy.make(CommentExmo, content_type=content_type, object_pk=score.pk, user=orguser, site=site)
+        # AND I am logged in as orguser
+        self.client.login(username='user', password='password')
 
     def test_registered_status(self):
-        # WHEN I am logged in as organizations representative
-        self.client.login(username='user', password='password')
-        # AND I submit form with invitation code of organization2
-        url = reverse('exmo2010:settings')
-        data = {
-            'invitation_code': self.organization2.inv_code,
-        }
-        self.client.post(url, data)
-        #THEN organization2 status should be 'registered'
-        status = Organization.objects.get(pk=self.organization2.pk).inv_status
-        self.assertEqual(status, 'RGS')
+        # WHEN I submit form with invitation code of org_read
+        self.client.post(reverse('exmo2010:settings'), {'invitation_code': self.org_read.inv_code})
+        #THEN org_read status should change to 'registered'
+        new_status = Organization.objects.get(pk=self.org_read.pk).inv_status
+        self.assertEqual(new_status, 'RGS')
 
 
-class OrganizationActiveStatusTestCase(TestCase):
-    # Scenario: Organization SHOULD change invitation status to 'activated'
+class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
+    # Organization SHOULD change invitation status to 'activated'
     # when representative posts comment to relevant task's score.
 
     def setUp(self):
-        self.site = Site.objects.get_current()
-        self.content_type = ContentType.objects.get_for_model(Score)
-
-        # GIVEN interaction monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization with 'registered' invitation status connected to interaction monitoring
-        self.organization = mommy.make(Organization, name='org2', monitoring=monitoring, inv_status='RGS')
-        # AND corresponding task, parameter, and score for organization
-        task = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring, weight=1)
-        self.score = mommy.make(Score, task=task, parameter=parameter)
-        # AND representative connected to organization
-        self.org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        self.org.groups.add(Group.objects.get(name=self.org.profile.organization_group))
-        profile = self.org.get_profile()
-        profile.organization = [self.organization]
+        # GIVEN organization in interaction monitoring
+        self.org = mommy.make(Organization, name='org2', monitoring__status=MONITORING_INTERACTION, inv_status='RGS')
+        # AND corresponding parameter, and score for organization
+        param = mommy.make(Parameter, monitoring=self.org.monitoring, weight=1)
+        self.score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=self.org, parameter=param)
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization = [self.org]
+        # AND I am logged in as organization representative
+        self.client.login(username='orguser', password='password')
 
     def test_activated_status(self):
-        # WHEN I am logged in as organizations representative
-        self.client.login(username='org', password='password')
-        # AND I post comment
-        url = reverse('login-required-post-comment')
+        # WHEN I post first comment
         key_salt = "django.contrib.forms.CommentSecurityForm"
         timestamp = str(int(time.time()))
-        object_pk = str(self.score.pk)
-        content_type = '.'.join([self.content_type.app_label, self.content_type.model])
-        value = "-".join([content_type, object_pk, timestamp])
-        security_hash = salted_hmac(key_salt, value).hexdigest()
+        content_type = ContentType.objects.get_for_model(Score)
+        content_type = '.'.join([content_type.app_label, content_type.model])
+        value = "-".join([content_type, str(self.score.pk), timestamp])
         data = {
             'status': '0',
             'comment': 'Comment',
             'timestamp': timestamp,
-            'object_pk': object_pk,
-            'security_hash': security_hash,
+            'object_pk': self.score.pk,
+            'security_hash': salted_hmac(key_salt, value).hexdigest(),
             'content_type': content_type,
         }
-        self.client.post(url, data)
-        # THEN organization should become 'activated'
-        status = Organization.objects.get(pk=self.organization.pk).inv_status
-        self.assertEqual(status, 'ACT')
+        self.client.post(reverse('login-required-post-comment'), data)
+        # THEN organization invitation status should change to 'activated' ('ACT')
+        self.assertEqual(Organization.objects.get(pk=self.org.pk).inv_status, 'ACT')

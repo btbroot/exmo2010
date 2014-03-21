@@ -18,7 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from collections import OrderedDict
-from urllib import urlencode
 
 from django import http
 from django.contrib import messages
@@ -38,9 +37,9 @@ from django.views.generic import TemplateView, DetailView, FormView
 from django.views.i18n import set_language
 from livesettings import config_value
 
-from core.tasks import send_email
+from .mail import mail_certificate_order, mail_feedback
 from exmo2010.forms import FeedbackForm, CertificateOrderForm
-from exmo2010.models import *
+from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage
 
 
 def feedback(request):
@@ -54,25 +53,7 @@ def feedback(request):
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            support_email = config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
-            email = form.cleaned_data['email']
-            comment = form.cleaned_data['comment']
-            if request.user.is_active:
-                user = request.user
-            else:
-                user = None
-            _send_feedback_mail(support_email,
-                                [email, ],
-                                comment,
-                                "exmo2010/emails/feedback_recipient.txt",
-                                "exmo2010/emails/feedback_recipient.html",
-                                user=user)
-            _send_feedback_mail([email, ],
-                                [email, ],
-                                comment,
-                                "exmo2010/emails/feedback_creator.txt",
-                                "exmo2010/emails/feedback_creator.html",
-                                user=user)
+            mail_feedback(request, form.cleaned_data['email'], form.cleaned_data['comment'])
             success = True
 
     context = {
@@ -82,24 +63,6 @@ def feedback(request):
     }
     return TemplateResponse(request, 'exmo2010/feedback.html', context)
 
-
-def _send_feedback_mail(email_to, email_from, comment, t_txt, t_html, user=None):
-    subject = _("Feedback")
-    t_txt = loader.get_template(t_txt)
-    t_html = loader.get_template(t_html)
-    c = Context({'comment': comment,
-                 'email': email_from[0],
-                 'user': user, })
-    content_html = t_html.render(c)
-    content_txt = t_txt.render(c)
-    letter = EmailMultiAlternatives(subject,
-                                    content_txt,
-                                    config_value('EmailServer', 'DEFAULT_FROM_EMAIL'),
-                                    email_to,
-                                    [],
-                                    {},)
-    letter.attach_alternative(content_html, "text/html")
-    letter.send()
 
 
 class StaticPageView(DetailView):
@@ -207,8 +170,12 @@ class CertificateOrderView(FormView):
         email_data = self.prerender_email_text(form.cleaned_data)
 
         if 'confirm' in self.request.POST:
-            return self.done(email_data)
-        return self.render_to_response(self.get_context_data(form=form, form_hidden='hidden', **email_data))
+            mail_certificate_order(self.request, email_data)
+            msg = _("You ordered an openness certificate. Certificate will be prepared and sent within 5 working days.")
+            messages.success(self.request, msg)
+            return HttpResponseRedirect(reverse('exmo2010:index'))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, form_hidden='hidden', **email_data))
 
     def get_initial(self):
         return {
@@ -239,7 +206,7 @@ class CertificateOrderView(FormView):
         else:
             on_address = _('On email address %s.') % form_data['email']
 
-        context_data = {
+        email_data = {
             'organization': task.organization,
             'description': description,
             'on_address': on_address,
@@ -248,35 +215,9 @@ class CertificateOrderView(FormView):
 
         if form_data['addressee'] == "user":
             prepare_for = _('Prepare a certificate in the name of %s.') % form_data['name']
-            context_data.update({'prepare_for': prepare_for})
+            email_data.update({'prepare_for': prepare_for})
 
-        return context_data
-
-    def done(self, email_data):
-        org = email_data['organization']
-        subject = ' '.join([_('Ordering openness certificate for'), org.name])
-        monitoring_url = self.request.build_absolute_uri(
-            reverse('exmo2010:tasks_by_monitoring', args=[org.monitoring.pk]))
-
-        organization_url = '%s?%s' % (monitoring_url, urlencode({'filter0': org.name.encode('utf8')}))
-
-        context = dict(email_data, **{
-            'email': self.request.user.email,
-            'monitoring_name': org.monitoring.name,
-            'monitoring_url': monitoring_url,
-            'organization_name': org.name,
-            'organization_url': organization_url,
-            'subject': subject,
-            'user_name': self.request.user.profile.legal_name,
-        })
-
-        rcpt = config_value('EmailServer', 'CERTIFICATE_ORDER_NOTIFICATION_EMAIL')
-
-        send_email.delay(rcpt, subject, 'certificate_order_email', context=context)
-        messages.success(self.request, _("You ordered an openness certificate. Certificate "
-                                    "will be prepared and sent within 5 working days."))
-
-        return HttpResponseRedirect(reverse('exmo2010:index'))
+        return email_data
 
 
 def change_language(request):

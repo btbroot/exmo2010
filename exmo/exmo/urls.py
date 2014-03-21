@@ -19,11 +19,11 @@
 #
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import *
+from django.conf.urls import url, patterns, include
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+from django.views.generic import RedirectView
 
-from core.views import TemplateView
 admin.autodiscover()
 
 
@@ -31,8 +31,8 @@ handler500 = 'exmo2010.views.server_error'
 
 
 urlpatterns = patterns('',
-    url(r'^license.txt$', TemplateView.as_view(template_name='license.txt', content_type='text/plain'), name='license'),
-    url(r'^release$', TemplateView.as_view(template_name='release', content_type='text/plain'), name='release'),
+    url(r'^license.txt$', RedirectView.as_view(url=settings.STATIC_URL + 'license.txt')),
+    url(r'^release$', RedirectView.as_view(url=settings.STATIC_URL + 'release')),
 )
 
 urlpatterns += i18n_patterns('',

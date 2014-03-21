@@ -23,12 +23,14 @@ from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD
 from django.contrib.auth.views import login as auth_login
-from django.contrib.auth.views import password_reset as auth_password_reset
 from django.contrib.auth.views import password_reset_done as auth_password_reset_done
 from django.contrib.sites.models import RequestSite, Site
 from django.core.urlresolvers import reverse
-from django.forms.fields import Field
+from django.forms import ValidationError, Form
+from django.forms.fields import Field, EmailField
+from django.forms.util import ErrorDict, ErrorList
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.middleware.csrf import REASON_NO_CSRF_COOKIE, REASON_NO_REFERER
 from django.shortcuts import redirect
@@ -39,23 +41,44 @@ from django.utils.translation import get_language_from_request, ugettext as _
 from django.views.csrf import CSRF_FAILURE_TEMPLATE
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
+from registration.models import RegistrationProfile
 
-from auth.forms import CustomPasswordResetForm
 from exmo2010.custom_registration.backends import get_backend
 from exmo2010.custom_registration.forms import (ExmoAuthenticationForm, RegistrationFormFull,
                                                 ResendEmailForm, SetPasswordForm)
-from exmo2010.custom_registration.models import CustomRegistrationProfile
+from exmo2010.mail import mail_register_activation, mail_password_reset
 
 
 @csrf_protect
-def password_reset_redirect(request, **kwargs):
+def password_reset(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
-    kwargs['extra_context'] = {
-        'required_error': Field.default_error_messages['required']
-    }
-    kwargs['password_reset_form'] = CustomPasswordResetForm
-    return auth_password_reset(request, **kwargs)
+
+    PasswordResetForm = type('PasswordResetForm', (Form,), {})
+    PasswordResetForm.base_fields = {'email': EmailField(label=_("E-mail"), max_length=75)}
+
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            users = User.objects.filter(email__iexact=email, is_active=True)
+            try:
+                if not len(users):
+                    msg = _("That e-mail address doesn't have an associated user account. Are you sure you've registered?")
+                    raise ValidationError(msg)
+                if any((user.password == UNUSABLE_PASSWORD) for user in users):
+                    msg = _("The user account associated with this e-mail address cannot reset the password.")
+                    raise ValidationError(msg)
+            except ValidationError as e:
+                form._errors = ErrorDict(email=ErrorList(e.messages))
+            else:
+                # Success! Send email and redirect.
+                mail_password_reset(request, users)
+                return HttpResponseRedirect(reverse('exmo2010:auth_password_reset_done'))
+    else:
+        form = PasswordResetForm()
+    context = dict(form=form, required_error=Field.default_error_messages['required'])
+    return TemplateResponse(request, 'registration/password_reset_form.html', context)
 
 
 def password_reset_done(request, **kwargs):
@@ -86,7 +109,7 @@ def password_reset_confirm(request, uidb36=None, token=None,
             form = SetPasswordForm(user, request.POST)
             if form.is_valid():
                 form.save()
-                user.backend='django.contrib.auth.backends.ModelBackend'
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
                 return HttpResponseRedirect(post_reset_redirect)
         else:
@@ -103,7 +126,7 @@ def password_reset_confirm(request, uidb36=None, token=None,
     return TemplateResponse(request, template_name, context, current_app=current_app)
 
 
-def register_test_cookie(request, backend=None, success_url=None, form_class=None,
+def register_user(request, backend=None, success_url=None, form_class=None,
                          disallowed_url='registration_disallowed',
                          template_name='registration/registration_form.html',
                          extra_context=None):
@@ -127,10 +150,9 @@ def register_test_cookie(request, backend=None, success_url=None, form_class=Non
 
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
-            new_user = backend.register(request, **form.cleaned_data)
+            backend.register(request, **form.cleaned_data)
             if success_url is None:
-                to, args, kwargs = backend.post_registration_redirect(request, new_user)
-                return redirect(to, *args, **kwargs)
+                return redirect('exmo2010:registration_complete')
             else:
                 return redirect(success_url)
         else:
@@ -187,7 +209,7 @@ def login_test_cookie(request, template_name='registration/login.html',
             # в модели RegistrationProfile, не подтвердили
             # по почте свою регистрацию.
             if not user.is_active:
-                if CustomRegistrationProfile.objects.filter(user=user).exists():
+                if RegistrationProfile.objects.filter(user=user).exists():
                     context.update({'resend_email': True})
             else:
                 # Okay, security check complete. Log the user in.
@@ -217,8 +239,7 @@ def login_test_cookie(request, template_name='registration/login.html',
         'form': form,
         redirect_field_name: redirect_to,
         'site': current_site,
-        'site_name': current_site.name,
-        })
+        'site_name': current_site.name})
     context.update(extra_context or {})
 
     context.update({'required_error': Field.default_error_messages['required']})
@@ -235,18 +256,11 @@ def resend_email(request):
     if request.method == "POST":
         form = ResendEmailForm(request.POST)
         if form.is_valid():
-            user = form.get_user
-            registration_profile = CustomRegistrationProfile.objects.get(
-                user=user)
-            if Site._meta.installed:
-                site = Site.objects.get_current()
-            else:
-                site = RequestSite(request)
-            registration_profile.send_activation_email(site)
-            return HttpResponseRedirect(
-                reverse('exmo2010:registration_complete'))
-    context = {'form': form}
-    return TemplateResponse(request, 'registration/resend_email_form.html', context)
+            activation_key = RegistrationProfile.objects.get(user=form.user).activation_key
+            mail_register_activation(form.user, request, activation_key)
+            return HttpResponseRedirect(reverse('exmo2010:registration_complete'))
+
+    return TemplateResponse(request, 'registration/resend_email_form.html', {'form': form})
 
 
 def csrf_failure(request, reason=""):
@@ -286,8 +300,7 @@ def activate_redirect(request, backend=None,
         if account:
             # успех
             if success_url is None:
-                to, args, kwargs = backend.post_activation_redirect(request, account)
-                return redirect(to, *args, **kwargs)
+                return redirect('exmo2010:index')
             else:
                 return redirect(success_url)
 

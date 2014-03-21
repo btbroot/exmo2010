@@ -19,24 +19,20 @@
 #
 import json
 
-from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.forms import HiddenInput, Media
+from django.forms import Media
 from django.forms.models import modelform_factory
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import get_object_or_404
-from django.utils.translation import get_language, ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import UpdateView, DeleteView
-from livesettings import config_value
 
-from core.tasks import send_email
 from core.views import LoginRequiredMixin
 from exmo2010.forms import CORE_MEDIA
-from exmo2010.models import Organization, Parameter, Task, UserProfile
+from exmo2010.mail import mail_param_edited
+from exmo2010.models import Parameter, Task
 from modeltranslation_utils import CurLocaleModelForm
 
 
@@ -96,34 +92,7 @@ class ParamEditView(ParameterMixin, UpdateView):
     def form_valid(self, form):
         param = form.save()
         if "submit_and_send" in self.request.POST:
-            fields = 'code name_{lang} description_{lang} weight'.format(lang=get_language()).split()
-            criteria = 'accessible hypertext npa topical document image complete'.split()
-
-            old_excluded_org_pk = form.initial.get('exclude', form.fields['exclude'].initial)
-
-            context = dict(
-                monitoring=param.monitoring,
-                old_features=[(f, form.initial.get(f, form.fields[f].initial)) for f in fields],
-                new_features=[(f, getattr(param, f, None)) for f in fields],
-                old_criteria=[c for c in criteria if form.initial.get(c, form.fields[c].initial)],
-                new_criteria=[c for c in criteria if getattr(param, c, None)],
-                old_excluded_org=Organization.objects.filter(pk__in=old_excluded_org_pk),
-                new_excluded_org=param.exclude.all())
-
-            subject = _('{subject_prefix}Parameter has been changed: {param}').format(
-                subject_prefix=config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'), param=param.name)
-
-            orgs = Organization.objects.filter(monitoring=param.monitoring).exclude(pk__in=param.exclude.all())
-
-            rcpts = User.objects.filter(
-                Q(groups__name=UserProfile.expertA_group) |
-                Q(task__organization__in=orgs),
-                is_active=True,
-            ).exclude(email__exact='')
-
-            for rcpt in rcpts.distinct().values_list('email', flat=True):
-                send_email.delay(rcpt, subject, 'parameter_email', context=context)
-
+            mail_param_edited(param, form)
         return HttpResponseRedirect(self.get_success_url())
 
 

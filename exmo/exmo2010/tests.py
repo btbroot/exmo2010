@@ -20,6 +20,7 @@ from textwrap import dedent
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.test import TestCase
@@ -47,6 +48,15 @@ class TestPhonesFieldValidation(TestCase):
         # Spaces should only be stripped on edges
         self.assertEqual(field.to_python('\t,\r1-2345\n   1 23 45,\t \n12345,\n\r, '), '1-2345, 1 23 45, 1-23-45')
         self.assertEqual(field.to_python("+7(868)876-45-56, +7(868)876-45-56"), "+7(868)876-45-56, +7(868)876-45-56")
+
+
+class FeedbackEmailTestCase(TestCase):
+    """ When feedback form is submitted, two emails should be sent - to staff and back to submitter """
+
+    def test_feedback_email(self):
+        response = self.client.post(reverse('exmo2010:feedback'), {'email': 'tst@ya.ru', 'comment': '123'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 2)
 
 
 class NegativeParamMonitoringRatingTestCase(TestCase):

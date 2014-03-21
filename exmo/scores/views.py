@@ -22,7 +22,6 @@ import json
 
 import reversion
 from django.contrib.auth.decorators import login_required
-from django.contrib.comments import signals
 from django.contrib.comments.views.comments import post_comment
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
@@ -47,8 +46,8 @@ from core.response import JSONResponse
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
-from custom_comments.signals import comment_notification
-from exmo2010.models import *
+from exmo2010.models import Score, Task, Parameter, Claim, Clarification, QQuestion, QAnswer, UserProfile
+from exmo2010.models.monitoring import MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED
 from questionnaire.forms import QuestionnaireDynForm
 from scores.forms import ScoreForm, ScoreFormWithComment
 
@@ -122,7 +121,6 @@ class ScoreAddView(ScoreMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ScoreAddView, self).get_context_data(**kwargs)
-        request = self.request
         task = self.task
         parameter = self.parameter
         title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
@@ -269,9 +267,6 @@ class ScoreEditView(UpdateView):
             'clarification_list': all_score_clarifications,
         })
         return context
-
-
-signals.comment_was_posted.connect(comment_notification, sender=CommentExmo)
 
 
 class ScoreDetailView(ScoreMixin, DetailView):

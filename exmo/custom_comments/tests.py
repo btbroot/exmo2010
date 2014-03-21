@@ -19,9 +19,10 @@
 from datetime import datetime, timedelta
 import time
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.crypto import salted_hmac
@@ -29,8 +30,8 @@ from model_mommy import mommy
 
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
-from exmo2010.models import (Monitoring, Organization, Parameter, Score, Task,
-                             MONITORING_PUBLISHED, MONITORING_INTERACTION)
+from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION
+from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
 
 
 class CommentReportTestCase(TestCase):
@@ -116,7 +117,7 @@ class CommentGetQueryAccessTestCase(TestCase):
 
 
 class PostCommentAccessTestCase(TestCase):
-    # Scenario: SHOULD forbid unauthorized user to post score comments
+    # SHOULD forbid unauthorized user to post score comments
 
     def setUp(self):
         self.site = Site.objects.get_current()
@@ -155,6 +156,49 @@ class PostCommentAccessTestCase(TestCase):
         response = self.client.post(url, data, follow=True)
         # THEN response status_code should be 403 (forbidden)
         self.assertEqual(response.status_code, 403)
-        # AND new comments shouldn't be existed
-        count_comments = CommentExmo.objects.all().count()
-        self.assertEqual(count_comments, 0)
+        # AND new comments should not get created in db
+        self.assertEqual(CommentExmo.objects.all().count(), 0)
+
+
+class CommentMailNotificationTestCase(TestCase):
+    # When comment is posted, email should be sent to relevant users who have NOTIFICATION_ONEBYONE setting.
+
+    def setUp(self):
+        # GIVEN organization in interaction monitoring
+        self.org = mommy.make(Organization, name='org2', monitoring__status=MONITORING_INTERACTION, inv_status='RGS')
+        # AND corresponding parameter, and score for organization
+        param = mommy.make(Parameter, monitoring=self.org.monitoring, weight=1)
+        self.score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=self.org, parameter=param)
+
+        # AND organization representative with NOTIFICATION_ONEBYONE email setting
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=UserProfile.organization_group))
+        profile = orguser.profile
+        profile.organization = [self.org]
+        profile.notification_type = UserProfile.NOTIFICATION_ONEBYONE
+        profile.save()
+
+        # AND expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND I am logged in as expertA
+        self.client.login(username='expertA', password='password')
+
+    def test_mail_on_comment(self):
+        # WHEN I post comment to the score
+        key_salt = "django.contrib.forms.CommentSecurityForm"
+        timestamp = str(int(time.time()))
+        content_type = ContentType.objects.get_for_model(Score)
+        content_type = '.'.join([content_type.app_label, content_type.model])
+        value = "-".join([content_type, str(self.score.pk), timestamp])
+        data = {
+            'status': '0',
+            'comment': 'Comment',
+            'timestamp': timestamp,
+            'object_pk': self.score.pk,
+            'security_hash': salted_hmac(key_salt, value).hexdigest(),
+            'content_type': content_type,
+        }
+        self.client.post(reverse('login-required-post-comment'), data)
+        # THEN one email should be sent (to the representative of relevant organization)
+        self.assertEqual(len(mail.outbox), 1)

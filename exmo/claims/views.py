@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,18 +21,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.dispatch import Signal
-from django.http import Http404, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
-from django.utils import simplejson
-from livesettings import config_value
 
 from claims.forms import ClaimAddForm, ClaimReportForm
-from core.tasks import send_email
-from exmo2010.models import Claim, Monitoring, Score, UserProfile
+from core.response import JSONResponse
+from exmo2010.mail import mail_claim_deleted, mail_claim_new
+from exmo2010.models import Claim, Monitoring, Score
 
 
 @login_required
@@ -63,12 +60,7 @@ def claim_create(request, score_pk):
                     raise PermissionDenied
                 claim = score.add_claim(user, form.cleaned_data['comment'])
 
-            claim_was_posted_or_deleted.send(
-                sender=Claim.__class__,
-                claim=claim,
-                request=request,
-                creation=True,
-            )
+            mail_claim_new(request, claim)
             return HttpResponseRedirect(redirect)
         else:
             return TemplateResponse(request, 'claim_form.html', {
@@ -95,16 +87,8 @@ def claim_delete(request):
             if not request.user.has_perm('exmo2010.delete_claim_score', claim.score):
                 raise PermissionDenied
             claim.delete()
-            result = simplejson.dumps({'success': True})
-
-            claim_was_posted_or_deleted.send(
-                sender=Claim.__class__,
-                claim=claim,
-                request=request,
-                creation=False,
-            )
-
-            return HttpResponse(result, mimetype='application/json')
+            mail_claim_deleted(request, claim)
+            return JSONResponse(success=True)
     raise Http404
 
 
@@ -190,40 +174,3 @@ def claim_list(request):
         })
 
 
-def claim_notification(sender, **kwargs):
-    claim = kwargs['claim']
-    request = kwargs['request']
-    creation = kwargs['creation']
-    score = claim.score
-
-    theme = _('New claim') if creation else _('Delete claim')
-
-    subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(theme)s' % {
-        'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-        'monitoring': score.task.organization.monitoring,
-        'org': score.task.organization.name.split(':')[0],
-        'code': score.parameter.code,
-        'theme': theme,
-    }
-
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
-                         request.get_host(),
-                         reverse('exmo2010:score_view',
-                                 args=[score.pk]))
-
-    c = {'score': score,
-         'claim': claim,
-         'url': url,
-         'creation': creation,
-         'current_user': request.user.userprofile.legal_name,
-         }
-
-    recipients = User.objects.exclude(email__exact='').exclude(email__isnull=True).distinct().filter(
-        Q(groups__name=UserProfile.expertA_group, is_active=True) | Q(pk=score.task.user.pk))
-
-    for r in recipients.values_list('email', flat=True):
-        send_email.delay(r, subject, 'score_claim', context=c)
-
-
-claim_was_posted_or_deleted = Signal(providing_args=["claim", "request", "creation"])
-claim_was_posted_or_deleted.connect(claim_notification)

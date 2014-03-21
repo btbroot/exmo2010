@@ -31,6 +31,7 @@ from django.utils.decorators import available_attrs
 from django.utils.translation import ugettext as _
 
 from exmo2010.models import Score
+from exmo2010.mail import mail_comment
 
 
 def comment_list(request):
@@ -81,6 +82,7 @@ def comment_change_status(sender, **kwargs):
 
 
 comment_was_posted.connect(comment_change_status)
+comment_was_posted.connect(mail_comment)
 
 
 def comments_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):

@@ -23,8 +23,8 @@ import reversion
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 
-from core.views import TemplateView
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView
 from organizations.views import OrgEditView, OrgDeleteView

@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+{% extends "mail/email_base.txt" %}
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -17,26 +18,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import datetime
-from django.db import models
-from django.utils.translation import ugettext as _
-from django.contrib.comments.models import Comment
+{% endcomment %}
+{% load i18n get_object_by_pk %}
 
-
-class CommentExmo(Comment):
-    """
-    Кастомная модель комментария, добавлено поле "status".
-
-    """
-    OPEN = 0
-    ANSWERED = 1
-    NOT_ANSWERED = 2
-
-    STATUSES = (
-        (OPEN, _('Comment is open')),
-        (ANSWERED, _('Comment is closed and answered')),
-        (NOT_ANSWERED, _('Comment is closed and not answered')),
-    )
-
-    status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
-    answered_date = models.DateTimeField(default=datetime.min)
+{% block content %}
+{% trans 'Hello' %} {{ user.userprofile.legal_name }}!
+{% trans 'Digest from' %} {{ from }} {% trans 'till' %} {{ till }}
+{% for comment in comments %}
+    ----------
+    {% get_object_by_pk exmo2010.Score comment.object_pk as score %}
+    {{ score.task.organization }}: {{ score.parameter }}
+    {% trans 'Date' %}: {{ comment.submit_date }}
+    {% trans 'User' %}: {% if comment.user.is_expert and not user.is_expert %} {{ masked_expert_name }} {% else %} {{ comment.user.legal_name }} {% endif %}
+    {% trans 'Comment' %}:
+    {{ comment.comment|striptags }}
+    {% trans 'Link' %}: http://{{ site }}{{ score.get_absolute_url }}
+{% endfor %}
+{% endblock %}

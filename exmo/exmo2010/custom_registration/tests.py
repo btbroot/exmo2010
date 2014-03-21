@@ -18,6 +18,8 @@
 import os
 
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from model_mommy import mommy
@@ -90,3 +92,47 @@ class ActivationTestCase(TestCase):
         response = self.client.get(url, follow=True)
         # THEN anonymous should be redirected to the login page
         self.assertRedirects(response, unicode(settings.LOGIN_URL))
+
+
+class RegistrationEmailTestCase(TestCase):
+    # SHOULD send email with activation url when registration form is submitted.
+    # AND should resend email when resend activation email form submitted.
+
+    fields = 'status first_name patronymic last_name email password subscribe'.split()
+
+    def test_registration(self):
+        # WHEN i visit registration page (to enable test_cookie)
+        self.client.get(reverse('exmo2010:registration_register'))
+        # AND i submit registration form
+        data = ('1', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
+        response = self.client.post(reverse('exmo2010:registration_register'), dict(zip(self.fields, data)))
+        # THEN i should be redirected to the registration_complete page
+        self.assertRedirects(response, reverse('exmo2010:registration_complete'))
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_resend(self):
+        # WHEN i sbmit registration form
+        self.test_registration()
+        # AND i submit resend email form
+        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': 'test@mail.com'})
+        # THEN i should be redirected to the registration_complete page
+        self.assertRedirects(response, reverse('exmo2010:registration_complete'))
+        # AND one more email message should be sent (total 2)
+        self.assertEqual(len(mail.outbox), 2)
+
+
+class PasswordResetEmailTestCase(TestCase):
+    # SHOULD send email with password reset url when reset password form is submitted.
+
+    def setUp(self):
+        # GIVEN existing user
+        User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+
+    def test_password_reset(self):
+        # WHEN i submit reset password form
+        response = self.client.post(reverse('exmo2010:auth_password_reset'), {'email': 'org@svobodainfo.org'})
+        # THEN i should be redirected to the auth_password_reset_done page
+        self.assertRedirects(response, reverse('exmo2010:auth_password_reset_done'))
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)

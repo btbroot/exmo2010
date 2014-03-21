@@ -20,6 +20,7 @@
 import string
 import time
 
+from annoying.decorators import autostrip
 from django import forms
 from django.core.validators import BaseValidator
 from django.contrib.auth import authenticate
@@ -28,9 +29,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
-from annoying.decorators import autostrip
+from registration.models import RegistrationProfile
 
-from exmo2010.custom_registration.models import CustomRegistrationProfile
 from exmo2010.models import Organization
 
 
@@ -186,10 +186,8 @@ class ExmoAuthenticationForm(AuthenticationForm):
             if self.user_cache is None:
                 raise forms.ValidationError(_("Please enter a correct username and password. Note that both fields are case-sensitive."))
             elif not self.user_cache.is_active:
-                # Прошедшие активацию пользователи отсутствуют
-                # в модели RegistrationProfile
-                if not CustomRegistrationProfile.objects.filter(
-                        user=self.user_cache).exists():
+                # Прошедшие активацию пользователи отсутствуют в модели RegistrationProfile
+                if not RegistrationProfile.objects.filter(user=self.user_cache).exists():
                     raise forms.ValidationError(_("This account is inactive."))
         self.check_for_test_cookie()
         return self.cleaned_data
@@ -210,20 +208,12 @@ class ResendEmailForm(forms.Form):
             try:
                 user = User.objects.get(email=data)
             except ObjectDoesNotExist:
-                raise forms.ValidationError(
-                    _("There's no user with that e-mail.")
-                )
+                raise forms.ValidationError(_("There's no user with that e-mail."))
             else:
                 self.user = user
                 if user.is_active:
-                    raise forms.ValidationError(
-                        _("Account is activated already.")
-                    )
-                elif not CustomRegistrationProfile.objects.filter(
-                        user=user).exists():
+                    raise forms.ValidationError(_("Account is activated already."))
+                elif not RegistrationProfile.objects.filter(user=user).exists():
                     raise forms.ValidationError(_("This account is inactive."))
                 return self.cleaned_data
         return data
-
-    def get_user(self):
-        return self.user

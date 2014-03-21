@@ -29,7 +29,7 @@
                 <tr id="c{{ comment.id }}">
                     <td
                     {% with comment.submit_date|workdays_still_left:object.parameter.monitoring.time_to_answer as days_remaining %}
-                        {% if is_expert and comment.user_is_organization and not comment.user_is_superuser and comment.status == 0 %}
+                        {% if is_expert and comment.user.is_organization and not comment.user.is_superuser and comment.status == 0 %}
                             {% include "answer_class.html" with attribute="class" %}
                         {% endif %}
                         {% if close_comment %}
@@ -38,14 +38,14 @@
                     {% endwith %}
                     >
                         <span class="messages-author">
-                        {% if comment.user_is_expert %}
+                        {% if comment.user.is_expert %}
                             {% if is_expert %}
-                                {{ comment.user_legal_name }}
+                                {{ comment.user.legal_name }}
                             {% else %}
                                 {{ expert }}
                             {% endif %}
                         {% else %}
-                            {{ comment.user_legal_name }}
+                            {{ comment.user.legal_name }}
                         {% endif %}
                         </span>
 
@@ -57,14 +57,14 @@
                             {{ comment.comment|safe|trim_links:url_length }}
                         </div>
 
-                        {% if not is_expert and is_organization and comment.user_is_organization and not comment.user_is_expert and comment.status == 0 %}
+                        {% if not is_expert and is_organization and comment.user.is_organization and not comment.user.is_expert and comment.status == 0 %}
                         <div class="notification-peremptory">
                             {% trans 'Deadline for answer to your comment is:' %}
                             {{ comment.submit_date|date_until:object.parameter.monitoring.time_to_answer|date:"SHORT_DATE_FORMAT" }}
                         </div>
                         {% endif %}
 
-                        {% if close_comment and not comment.user_is_expert and comment.status != 1 %}
+                        {% if close_comment and not comment.user.is_expert and comment.status != 1 %}
                         <div class="toggle-comment-container">
                             {% url 'exmo2010:toggle_comment' as toggle_url %}
                             <a class="toggle-comment"

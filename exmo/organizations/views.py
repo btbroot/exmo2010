@@ -36,9 +36,9 @@ from core.helpers import table
 from core.views import LoginRequiredMixin
 from custom_comments.models import CommentExmo
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
+from exmo2010.mail import mail_organization
 from modeltranslation_utils import CurLocaleModelForm
 from organizations.signals import change_organization_status
-from organizations.tasks import send_org_email
 
 
 @login_required
@@ -68,7 +68,7 @@ def organization_list(request, monitoring_pk):
 
     if request.method == "POST" and "submit_invite" in request.POST:
         inv_form = InviteOrgsForm(request.POST, **kwargs)
-        comment = inv_form.data['comment']
+        message = inv_form.data['comment']
         subject = inv_form.data['subject']
         inv_status = inv_form.data['inv_status']
         if inv_form.is_valid():
@@ -78,16 +78,7 @@ def organization_list(request, monitoring_pk):
                 all_orgs = all_orgs.filter(inv_status=inv_status)
 
             for org in all_orgs:
-                message = comment.replace('%code%', org.inv_code)
-                context = {
-                    'subject': subject,
-                    'message': message
-                }
-                if org.email:
-                    emails = filter(None, org.email.split(', '))
-                else:
-                    continue
-                send_org_email.delay(emails, subject, 'invitation_email', org.pk, context)
+                mail_organization(org, subject, message)
 
             redirect = reverse('exmo2010:organization_list', args=[monitoring_pk]) + "?alert=success#all"
             return HttpResponseRedirect(redirect)

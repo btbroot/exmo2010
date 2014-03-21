@@ -259,6 +259,8 @@ AUTHENTICATION_BACKENDS = (
 MAX_TAG_LENGTH = 255
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 
+CELERY_IMPORTS = ('exmo2010.celery_tasks',)
+
 DEVEL = False
 
 if os.path.isfile('%s/local_settings.py' % PROJECT_NAME):

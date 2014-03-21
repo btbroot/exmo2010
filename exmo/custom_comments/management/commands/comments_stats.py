@@ -23,10 +23,12 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.encoding import smart_str
+from django.utils import translation
 from livesettings import config_value
 
-from core.tasks import send_email
 from custom_comments.utils import comment_report
+from exmo2010.celery_tasks import send_email
+from exmo2010.mail import ExmoEmail
 from exmo2010.models import Monitoring
 
 
@@ -57,8 +59,8 @@ class Command(BaseCommand):
                 self.stderr.write(message)
                 continue
 
-            report = comment_report(monitoring)
-            report.update({'site': 'http://' + Site.objects.get_current().domain})
+            context = comment_report(monitoring)
+            context.update({'site': 'http://' + Site.objects.get_current().domain})
 
             subject = u"Comment report from {monitoring.interact_date} to {today} for {monitoring.name}"
             subject = subject.format(today=date.today(), monitoring=monitoring)
@@ -66,4 +68,6 @@ class Command(BaseCommand):
             rcpt = [x[1] for x in settings.ADMINS]
             rcpt.append(config_value('EmailServer', 'NOTIFY_LIST_REPORT'))
 
-            send_email.delay(rcpt, subject, 'comments_stats', context=report)
+            # NOTE: User Story #1900 - Always send comment reports in Russian language.
+            with translation.override('ru'):
+                send_email.delay(ExmoEmail(template_basename='mail/comments_stats', context=context, to=rcpt, subject=subject))

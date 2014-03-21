@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+{% extends "mail/email_base.html" %}
+{% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
@@ -17,26 +18,36 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import datetime
-from django.db import models
-from django.utils.translation import ugettext as _
-from django.contrib.comments.models import Comment
+{% endcomment %}
+{% load i18n %}
 
+{% block title %}
+    {{ title }}
+{% endblock %}
 
-class CommentExmo(Comment):
-    """
-    Кастомная модель комментария, добавлено поле "status".
-
-    """
-    OPEN = 0
-    ANSWERED = 1
-    NOT_ANSWERED = 2
-
-    STATUSES = (
-        (OPEN, _('Comment is open')),
-        (ANSWERED, _('Comment is closed and answered')),
-        (NOT_ANSWERED, _('Comment is closed and not answered')),
-    )
-
-    status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
-    answered_date = models.DateTimeField(default=datetime.min)
+{% block content %}
+    <h2>
+        {{ title }}
+    </h2>
+    <div>
+        {% for comment in comments %}
+            <p>
+                <span class="bold">
+                {% if comment.user.is_expert and mask_expert_name %}
+                    {{ masked_expert_name }},
+                {% else %}
+                    {{ comment.user.legal_name }},
+                {% endif %}
+                </span>
+                {{ comment.submit_date|date:"SHORT_DATETIME_FORMAT" }}
+            </p>
+            <p>
+                {{ comment.comment|safe }}
+            </p>
+            <hr />
+        {% endfor %}
+        <p>
+            <span class="bold">{% trans 'Link' %}:</span>&nbsp;<a href="{{ url }}#comments">{{ url }}#comments</a>
+        </p>
+    </div>
+{% endblock content %}

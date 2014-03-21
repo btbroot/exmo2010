@@ -17,13 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.template import loader
 from django.template.response import TemplateResponse
-from django.utils import translation
-from django.utils.functional import wraps
 
 from core.sort_headers import SortHeaders
 from perm_utils import annotate_exmo_perms
@@ -133,32 +130,3 @@ def table(request, headers, **kwargs):
         kwargs['extra_context'].update(extra_context)
     return object_list(request, **kwargs)
 
-
-def use_locale(func):
-    """
-    Decorator for tasks with respect to site's current language.
-    e.g.:
-        @task
-        @use_locale
-        def my_task(**kwargs):
-            pass
-
-    """
-    def wrapper(*args, **kwargs):
-        try:
-            lang = settings.LANGUAGE_CODE
-        except AttributeError:
-            lang = None
-        language = kwargs.pop('language', lang)
-        prev_language = translation.get_language()
-        if language:
-            translation.activate(language)
-        try:
-            return func(*args, **kwargs)
-        finally:
-            translation.activate(prev_language)
-
-    wrapper.__doc__ = func.__doc__
-    wrapper.__name__ = func.__name__
-    wrapper.__module__ = func.__module__
-    return wraps(func)(wrapper)

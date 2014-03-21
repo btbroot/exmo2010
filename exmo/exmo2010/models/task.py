@@ -20,18 +20,15 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.dispatch import Signal
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from core.sql import sql_complete
-from tasks.signals import task_assign_user_notify
 from .base import BaseModel
 from .monitoring import MONITORING_STATUS, MONITORING_PREPARE
 from .organization import Organization
 from .parameter import Parameter
 from .questionnaire import QQuestion, QAnswer
 from .score import Score
-from .userprofile import UserProfile
 
 
 class OpenTaskManager(models.Manager):
@@ -136,12 +133,9 @@ class Task(BaseModel):
 
         super(Task, self).save(*args, **kwargs)
         if new_user_assigned:
-            task_user_assignged_sig.send(sender=self)
-            TaskHistory.objects.create(
-                task=self,
-                user=self.user,
-                status=self.organization.monitoring.status
-            )
+            from .. import mail
+            mail.mail_task_assigned(self)
+            TaskHistory.objects.create(task=self, user=self.user, status=self.organization.monitoring.status)
 
     _get_open = lambda self: self.status == self.TASK_OPEN
     _get_ready = lambda self: self.status == self.TASK_READY
@@ -173,7 +167,7 @@ class Task(BaseModel):
         complete = 0
         parameters_num = Parameter.objects.filter(monitoring=self.organization.monitoring).exclude(exclude=self.organization).count()
         questions_num = QQuestion.objects.filter(questionnaire__monitoring=self.organization.monitoring).count()
-        answers_num = QAnswer.objects.filter(question__questionnaire__monitoring= self.organization.monitoring, task=self).count()
+        answers_num = QAnswer.objects.filter(question__questionnaire__monitoring=self.organization.monitoring, task=self).count()
         if parameters_num:
             scores_num = Score.objects.filter(task=self, revision=Score.REVISION_DEFAULT)\
                 .exclude(parameter__exclude=self.organization).count()
@@ -288,7 +282,3 @@ class TaskHistory(BaseModel):
         ordering = (
             'timestamp',
         )
-
-
-task_user_assignged_sig = Signal()
-task_user_assignged_sig.connect(task_assign_user_notify)

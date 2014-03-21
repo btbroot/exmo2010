@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
 from exmo2010.custom_registration.views import (activate_redirect, login_test_cookie, password_reset_confirm,
-                                                password_reset_done, password_reset_redirect, register_test_cookie,
+                                                password_reset_done, password_reset, register_user,
                                                 resend_email)
 
 
@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     # that way it can return a sensible "invalid key" message instead of a
     # confusing 404.
     url(r'^activate/(?P<activation_key>\w+)/$', activate_redirect, name='registration_activate'),
-    url(r'^register/$', register_test_cookie, name='registration_register'),
+    url(r'^register/$', register_user, name='registration_register'),
     url(r'^register/complete/$', TemplateView.as_view(
         template_name='registration/registration_complete.html',
         get_context_data=lambda: {'title': _('Registration (step 2 of 2)')}
@@ -50,9 +50,7 @@ urlpatterns = patterns('',
     url(r'^resend_activation_email/$', resend_email, name='auth_resend_email'),
     url(r'^logout/$', auth_views.logout, {'next_page': reverse_lazy('exmo2010:index')},
         name='auth_logout'),
-    url(r'^password/reset/$', password_reset_redirect,
-        {'post_reset_redirect': reverse_lazy('exmo2010:auth_password_reset_done')},
-        name='auth_password_reset'),
+    url(r'^password/reset/$', password_reset, name='auth_password_reset'),
     url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
         password_reset_confirm,
         name='auth_password_reset_confirm'),

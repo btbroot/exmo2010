@@ -347,6 +347,8 @@ post_save.connect(create_user_profile, sender=User)
 User.userprofile = property(lambda u: u.get_profile())
 User.profile = property(lambda u: u.get_profile())
 
+User.legal_name = property(lambda u: u.profile.legal_name)
+
 User.is_expert = property(lambda u: u.is_active and u.profile.is_expert)
 User.is_expertB = property(lambda u: u.is_active and u.profile.is_expertB)
 User.is_expertA = property(lambda u: u.is_active and u.profile.is_expertA)

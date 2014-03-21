@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,21 +17,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.dispatch import Signal
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
-from livesettings import config_value
 
 from clarifications.forms import ClarificationReportForm, ClarificationAddForm
-from core.tasks import send_email
-from exmo2010.models import Clarification, Monitoring, Score, UserProfile
+from exmo2010.mail import mail_clarification
+from exmo2010.models import Clarification, Monitoring, Score
 
 
 @login_required
@@ -61,12 +57,7 @@ def clarification_create(request, score_pk):
                     raise PermissionDenied
                 clarification = score.add_clarification(user, form.cleaned_data['comment'])
 
-            clarification_was_posted.send(
-                sender=Clarification.__class__,
-                clarification=clarification,
-                request=request,
-            )
-
+            mail_clarification(request, clarification)
             return HttpResponseRedirect(redirect)
         else:
             return TemplateResponse(request, 'clarification_form.html', {
@@ -170,35 +161,3 @@ def clarification_list(request):
             'title': title,
             'clarifications': clarifications
         })
-
-
-def clarification_notification(sender, **kwargs):
-    clarification = kwargs['clarification']
-    request = kwargs['request']
-    score = clarification.score
-
-    subject = '%(prefix)s%(monitoring)s - %(org)s: %(code)s - %(msg)s' % {
-        'prefix': config_value('EmailServer', 'EMAIL_SUBJECT_PREFIX'),
-        'monitoring': score.task.organization.monitoring,
-        'org': score.task.organization.name.split(':')[0],
-        'code': score.parameter.code,
-        'msg': _('New clarification')
-    }
-
-    url = '%s://%s%s' % (request.is_secure() and 'https' or 'http',
-                         request.get_host(),
-                         reverse('exmo2010:score_view', args=[score.pk]))
-
-    c = {'score': score,
-         'clarification': clarification,
-         'url': url}
-
-    recipients = User.objects.exclude(email__exact='').exclude(email__isnull=True).distinct().filter(
-        Q(groups__name=UserProfile.expertA_group, is_active=True) | Q(pk=score.task.user.pk))
-
-    for r in recipients.values_list('email', flat=True):
-        send_email.delay(r, subject, 'score_clarification', context=c)
-
-
-clarification_was_posted = Signal(providing_args=["clarification", "request"])
-clarification_was_posted.connect(clarification_notification)

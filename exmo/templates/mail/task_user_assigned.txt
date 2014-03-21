@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
+{% extends "mail/email_base.txt" %}
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013 Al Nikolov
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,18 +16,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.test import TestCase
-from nose_parameterized import parameterized
+{% endcomment %}
 
-from core.utils import urlize
+{% load i18n %}
 
+{% block content %}
+{{ subject }}
 
-class UrlizeTestCase(TestCase):
-    # should convert plain urls to 'a' tags and add target='_blank'
+{% trans 'You have an assigned task' %} {{ task }}
+{% trans 'Link' %}: {{ url }}
 
-    @parameterized.expand([
-        ('<a><span>X</span>Y</a>Z', '<a target="_blank"><span>X</span>Y</a>Z'),
-        ('http://ya.ru', '<a href="http://ya.ru" target="_blank">http://ya.ru</a>')
-    ])
-    def test_urlize(self, data, expected_result):
-        self.assertEqual(urlize(data), expected_result)
+{% endblock content %}
