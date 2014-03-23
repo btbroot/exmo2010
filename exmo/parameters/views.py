@@ -22,7 +22,7 @@ import json
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
-from django.forms import Media
+from django.forms import HiddenInput, Media, IntegerField
 from django.forms.models import modelform_factory
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -87,6 +87,34 @@ class ParamEditView(ParameterMixin, UpdateView):
 
         # Limit organizations choices to this monitoring.
         form_class.base_fields['exclude'].queryset = self.object.monitoring.organization_set.all()
+
+        # Explicitly add "monitoring" field to the form.
+        # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+        #
+        # 1) We want "monitoring" value to be constant, as we set it explicitly on parameter instance in `get_object`
+        #    method. We have to prevent changing model instance's "monitoring" attribute during form validation.
+        #    - This is a security requirement as we only check permissions on monitoring that we got from url arguments.
+        #      Actually now there is no threat as any expertA is able to edit any parameter. But it will be if\when
+        #      we will implement more granular permissions model.
+        # 2) Also we want to properly validate unique_together constraints involving "monitoring" field on the model.
+        #    - Failing to do that will raise IntegrityError on instance saving.
+        #
+        # The problem is that django will exclude all unique_together checks involving "monitoring" field if this field
+        # is absent in the form (we fail to meet goal 2). But if we just add the "monitoring" field to the form - it
+        # will be possible to change instance's initial "monitoring" submitting the forged form data (we fail to meet
+        # goal 1).
+        #
+        # To meet both goals we have to:
+        # 1) Set editable=False attribute on model field.
+        # 2) Explicitly add "monitoring" field with some nonfalse initial value to the form.
+        #
+        # Setting editable=False on model field, will prevent instance.monitoring from getting changed during form
+        # validation.
+        # Adding explicit monitoring field will force modelform to validate unique_together constraints involving
+        # monitoring on Parameter instance.
+        #
+        form_class.base_fields['monitoring'] = IntegerField(widget=HiddenInput, initial=1)
+
         return form_class
 
     def form_valid(self, form):

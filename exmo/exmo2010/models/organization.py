@@ -22,6 +22,7 @@ import random
 import re
 
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
@@ -116,12 +117,17 @@ class Organization(BaseModel):
     """
     class Meta(BaseModel.Meta):
         ordering = ('name',)
-        unique_together = (('name', 'monitoring'),)
+        unique_together = tuple(('name_%s' % lang[0], 'monitoring') for lang in settings.LANGUAGES)
 
     name = models.CharField(max_length=255, verbose_name=_('name'))
     url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('Website'))
     email = EmailsField(null=True, blank=True, verbose_name=_('email'))
     phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
+
+    # Set editable=False attribute on "monitoring".
+    # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+    # See note on OrgEditView.get_form_class() method
+    # Used in OrgEditView and organization_list view (which includes Organization creation form)
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
 
     inv_code = models.CharField(
@@ -133,14 +139,6 @@ class Organization(BaseModel):
         verbose_name=_('Invitation status'), editable=False)
 
     objects = OrganizationMngr()
-
-    def clean(self):
-        result = super(Organization, self).clean()
-        try:
-            self.validate_unique()
-        except ValidationError, e:
-            raise ValidationError(e.update_error_dict({}))
-        return result
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.inv_code:

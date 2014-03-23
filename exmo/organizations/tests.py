@@ -37,6 +37,54 @@ from custom_comments.models import CommentExmo
 from exmo2010.models import *
 
 
+class OrgCreateTestCase(TestCase):
+    # test adding organization using form
+
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND i am logged in as expertA:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_add_org(self):
+        formdata = {'org-name_en': 'ooo', 'org-monitoring': 99, 'submit_add': True}
+        # WHEN I submit organization add form
+        response = self.client.post(reverse('exmo2010:organization_list', args=[self.monitoring.pk]), formdata)
+        # THEN new organization shoud get created in database
+        orgs = Organization.objects.values_list('name', 'monitoring_id')
+        self.assertEqual(list(orgs), [('ooo', self.monitoring.pk)])
+        # AND response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+
+class DuplicateOrgCreationTestCase(TestCase):
+    # SHOULD return validation error if organization with already existing name is added
+
+    def setUp(self):
+        # GIVEN monitoring with organization
+        self.monitoring = mommy.make(Monitoring)
+        self.org = mommy.make(Organization, name='org', monitoring=self.monitoring)
+
+        # AND i am logged in as expertA:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_error_on_duplicate(self):
+        formdata = {'org-name_en': self.org.name, 'org-monitoring': 99, 'submit_add': True}
+        # WHEN I submit organization add form with existing name
+        response = self.client.post(reverse('exmo2010:organization_list', args=[self.monitoring.pk]), formdata)
+        # THEN no new orgs shoud get created in database
+        self.assertEqual(list(Organization.objects.all()), [self.org])
+        # AND response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND error message should say that such organization exists
+        errors = {'__all__': [u'Organization with this Name and Monitoring already exists.']}
+        self.assertEqual(response.context['form'].errors, errors)
+
+
 class OrganizationEditAccessTestCase(TestCase):
     # SHOULD allow only expertA to edit organization
 

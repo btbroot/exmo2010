@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from ckeditor.fields import RichTextField
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -30,14 +30,15 @@ class Parameter(BaseModel):
 
     class Meta(BaseModel.Meta):
         ordering = ('code', 'name')
-        unique_together = (
-            ('code', 'monitoring'),
-            ('name', 'monitoring'),
-        )
+        unique_together = tuple(('name_%s' % lang[0], 'monitoring') for lang in settings.LANGUAGES) + (('code', 'monitoring'),)
 
     code = models.PositiveIntegerField(verbose_name=_('code'))
     name = models.CharField(max_length=1000, verbose_name=_('name'))
     description = RichTextField(blank=True, verbose_name=_('description'))
+
+    # Set editable=False attribute on "monitoring".
+    # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+    # See note on ParamEditView.get_form_class() method
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
     exclude = models.ManyToManyField("Organization", null=True, blank=True, verbose_name=_('excluded organizations'))
     weight = models.IntegerField(verbose_name=_('weight'))
@@ -62,12 +63,3 @@ class Parameter(BaseModel):
 
     def __unicode__(self):
         return self.name
-
-    def clean(self):
-        result = super(Parameter, self).clean()
-        try:
-            self.validate_unique()
-        except ValidationError, e:
-            raise ValidationError(e.update_error_dict({}))
-
-        return result

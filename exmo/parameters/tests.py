@@ -93,6 +93,69 @@ class ParameterEditAccessTestCase(TestCase):
         self.assertEqual(new_param_fields, initial_fields)
 
 
+class DuplicateParamCreationTestCase(TestCase):
+    # SHOULD return validation error if parameter with already existing code or name is added
+
+    def setUp(self):
+        # GIVEN monitoring with parameter and task
+        self.monitoring = mommy.make(Monitoring)
+        self.param1 = mommy.make(Parameter, code=123, name='asd', monitoring=self.monitoring)
+        self.task = mommy.make(Task, organization__monitoring=self.monitoring)
+
+        # AND i am logged in as expertA:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_duplicate_code(self):
+        formdata = dict(code=self.param1.code, name_en='123', monitoring=99, weight=1)
+        # WHEN I submit parameter add form with existing parameter code
+        response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
+        # THEN no new parameters shoud get created in database
+        self.assertEqual(list(Parameter.objects.all()), [self.param1])
+        # AND response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND error message should say that such code exists
+        errors = {'__all__': [u'Parameter with this Code and Monitoring already exists.']}
+        self.assertEqual(response.context['form'].errors, errors)
+
+    def test_duplicate_name(self):
+        formdata = dict(code='456', name_en=self.param1.name, monitoring=99, weight=1)
+        # WHEN I submit parameter add form with existing parameter code
+        response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
+        # THEN no new parameters shoud get created in database
+        self.assertEqual(list(Parameter.objects.all()), [self.param1])
+        # AND response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND error message should say that such code exists
+        errors = {'__all__': [u'Parameter with this Name and Monitoring already exists.']}
+        self.assertEqual(response.context['form'].errors, errors)
+
+
+class ParamCreateTestCase(TestCase):
+    # test adding parameter using form
+
+    def setUp(self):
+        # GIVEN monitoring with task
+        self.monitoring = mommy.make(Monitoring)
+        self.task = mommy.make(Task, organization__monitoring=self.monitoring)
+
+        # AND i am logged in as expertA:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_add_param(self):
+        formdata = dict(code='456', name_en='ppp', monitoring=99, weight=1)
+        # WHEN I submit parameter add form
+        response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
+        # THEN new parameter shoud get created in database
+        params = Parameter.objects.values_list(*'code name weight monitoring_id'.split())
+        self.assertEqual(list(params), [(456, 'ppp', 1, self.monitoring.pk)])
+        # AND response should redirect to score_list_by_task
+        self.assertRedirects(response, reverse('exmo2010:score_list_by_task', args=[self.task.pk]))
+
+
 class ParamEditEmailNotifyTestCase(TestCase):
     # SHOULD send notification email to related experts if expertA clicked "save and notify" on parameter edit page
 
@@ -122,7 +185,7 @@ class ParamEditEmailNotifyTestCase(TestCase):
         url = reverse('exmo2010:parameter_update', args=[self.task.pk, self.parameter.pk])
 
         # WHEN i submit parameter form with "save and notify" button
-        formdata = dict(model_to_dict(self.parameter), submit_and_send=True)
+        formdata = dict(model_to_dict(self.parameter), monitoring=self.parameter.monitoring_id, submit_and_send=True)
         response = self.client.post(url, follow=True, data=formdata)
 
         # THEN response status_code should be 200 (OK)

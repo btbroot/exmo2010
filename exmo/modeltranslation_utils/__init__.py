@@ -58,3 +58,8 @@ class CurLocaleModelForm(forms.ModelForm):
                         # Original modelfield has blank=False attribute, we should set "required" flag on
                         # localized formfield for current language.
                         self.fields[f.name].required = True
+
+    def _get_validation_exclusions(self):
+        # Always include trans_fields in validation checks
+        exclude = super(CurLocaleModelForm, self)._get_validation_exclusions()
+        return list(set(exclude) - set(self.trans_fields))

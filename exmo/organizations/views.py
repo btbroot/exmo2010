@@ -24,7 +24,7 @@ from django.contrib.comments import signals
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
-from django.forms import TextInput
+from django.forms import TextInput, HiddenInput, IntegerField
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import formats
@@ -133,6 +133,33 @@ def organization_list(request, monitoring_pk):
         queryset = queryset.filter(inv_status=invite_filter)
 
     OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
+
+    # Explicitly add "monitoring" field to the form.
+    # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+    #
+    # 1) We want "monitoring" value to be constant, as we provide explicit organization instance. We have to prevent
+    #    changing model instance's "monitoring" attribute during form validation.
+    #    - This is a security requirement as we only check permissions on monitoring that we got from url arguments.
+    #      Actually now there is no threat as any expertA is able to edit any organization. But it will be if\when
+    #      we will implement more granular permissions model.
+    # 2) Also we want to properly validate unique_together constraints involving "monitoring" field on the model.
+    #    - Failing to do that will raise IntegrityError on instance saving.
+    #
+    # The problem is that django will exclude all unique_together checks involving "monitoring" field if this field
+    # is absent in the form (we fail to meet goal 2). But if we just add the "monitoring" field to the form - it
+    # will be possible to change instance's initial "monitoring" submitting the forged form data (we fail to meet
+    # goal 1).
+    #
+    # To meet both goals we have to:
+    # 1) Set editable=False attribute on model field.
+    # 2) Explicitly add "monitoring" field with some nonfalse initial value to the form.
+    #
+    # Setting editable=False on model field, will prevent instance.monitoring from getting changed during form
+    # validation.
+    # Adding explicit monitoring field will force modelform to validate unique_together constraints involving
+    # monitoring on Organization instance.
+    #
+    OrgForm.base_fields['monitoring'] = IntegerField(widget=HiddenInput, initial=1)
     kwargs = {'instance': Organization(monitoring=monitoring), 'prefix': 'org'}
 
     if request.method == "POST" and "submit_add" in request.POST:
@@ -213,7 +240,36 @@ class OrgEditView(OrgMixin, UpdateView):
     template_name = "edit_organization.html"
 
     def get_form_class(self):
-        return modelform_factory(Organization, form=CurLocaleModelForm)
+        form_class = modelform_factory(Organization, form=CurLocaleModelForm)
+
+        # Explicitly add "monitoring" field to the form.
+        # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+        #
+        # 1) We want "monitoring" value to be constant, as we provide explicit organization instance in `get_object`
+        #    method. We have to prevent changing model instance's "monitoring" attribute during form validation.
+        #    - This is a security requirement as we only check permissions on monitoring that we got from url arguments.
+        #      Actually now there is no threat as any expertA is able to edit any organization. But it will be if\when
+        #      we will implement more granular permissions model.
+        # 2) Also we want to properly validate unique_together constraints involving "monitoring" field on the model.
+        #    - Failing to do that will raise IntegrityError on instance saving.
+        #
+        # The problem is that django will exclude all unique_together checks involving "monitoring" field if this field
+        # is absent in the form (we fail to meet goal 2). But if we just add the "monitoring" field to the form - it
+        # will be possible to change instance's initial "monitoring" submitting the forged form data (we fail to meet
+        # goal 1).
+        #
+        # To meet both goals we have to:
+        # 1) Set editable=False attribute on model field.
+        # 2) Explicitly add "monitoring" field with some nonfalse initial value to the form .
+        #
+        # Setting editable=False on model field, will prevent instance.monitoring from getting changed during form
+        # validation.
+        # Adding explicit monitoring field will force modelform to validate unique_together constraints involving
+        # monitoring on Organization instance.
+        #
+        form_class.base_fields['monitoring'] = IntegerField(widget=HiddenInput, initial=1)
+
+        return form_class
 
 
 class OrgDeleteView(OrgMixin, DeleteView):

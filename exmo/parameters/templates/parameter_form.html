@@ -55,6 +55,7 @@
     <p>{{ form.non_field_errors }}</p>
 
     <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
+        {{form.monitoring}}
         <table id="param_form">
             {% include "_form_field.html" with field=form.code %}
             {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
