@@ -30,6 +30,8 @@ from model_mommy import mommy
 
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
+
+from exmo2010.celery_tasks import send_digest
 from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION
 from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
 
@@ -202,3 +204,16 @@ class CommentMailNotificationTestCase(TestCase):
         self.client.post(reverse('login-required-post-comment'), data)
         # THEN one email should be sent (to the representative of relevant organization)
         self.assertEqual(len(mail.outbox), 1)
+
+
+class CommentsDigestTestCase(TestCase):
+    # send_digest periodic task should work
+
+    def setUp(self):
+        # GIVEN user with NOTIFICATION_DIGEST setting enabled
+        user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        user.profile.notification_type = UserProfile.NOTIFICATION_DIGEST
+        user.profile.save()
+
+    def test(self):
+        send_digest()

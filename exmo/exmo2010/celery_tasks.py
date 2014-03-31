@@ -111,7 +111,7 @@ def send_digest(now=datetime.now()):
         'masked_expert_name': config_value('GlobalParameters', 'EXPERT'),
         'site': Site.objects.get_current(),
     }
-    for user in users.exclude(email__exact='').prefetch_related('profile'):
+    for user in users.exclude(email__exact='').select_related('userprofile'):
         profile = user.userprofile
         last_date = profile.digest_date_journal
         if not last_date:
