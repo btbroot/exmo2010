@@ -210,10 +210,19 @@ class CommentsDigestTestCase(TestCase):
     # send_digest periodic task should work
 
     def setUp(self):
-        # GIVEN user with NOTIFICATION_DIGEST setting enabled
-        user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        user.profile.notification_type = UserProfile.NOTIFICATION_DIGEST
-        user.profile.save()
+        # GIVEN expertA with NOTIFICATION_DIGEST setting enabled
+        expertA = User.objects.create_user('expertA', 'user@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        expertA.profile.notification_type = UserProfile.NOTIFICATION_DIGEST
+        expertA.profile.save()
+
+        # AND score with comment
+        score = mommy.make(Score)
+        mommy.make(CommentExmo, object_pk=score.pk, content_type=ContentType.objects.get_for_model(Score))
 
     def test(self):
+        # WHEN send_digest task is executed
         send_digest()
+
+        # THEN 1 email should be sent
+        self.assertEqual(len(mail.outbox), 1)

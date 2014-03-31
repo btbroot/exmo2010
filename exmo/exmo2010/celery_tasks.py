@@ -150,7 +150,7 @@ def send_digest(now=datetime.now()):
         })
 
         with translation.override(profile.language or settings.LANGUAGE_CODE):
-            message = ExmoEmail(template_basename='mail/digest', context=context, to=user.email, subject=subject)
+            message = ExmoEmail(template_basename='mail/digest', context=context, to=[user.email], subject=subject)
 
         send_email.delay(message)
         profile.digest_date_journal = now
