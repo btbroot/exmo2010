@@ -386,6 +386,13 @@ def monitoring_by_criteria_mass_export(request, monitoring_pk):
                     row['Image'].append('')
         for criteria in row.keys():
             writer[criteria].writerow(row[criteria])
+
+    for criteria in row_template.keys():
+        writer[criteria].writerow([
+            _('#This data attributed to Freedom of Information Foundation is licensed '
+              'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+        ])
+
     response = HttpResponse(mimetype = 'application/zip')
     response['Content-Disposition'] = 'attachment; filename=monitoring-%s.zip' % monitoring_pk
     buffer = StringIO()
@@ -656,6 +663,10 @@ def monitoring_parameter_export(request, monitoring_pk):
             p.weight
         )
         writer.writerow(out)
+    writer.writerow([
+        _('#This data attributed to Freedom of Information Foundation is licensed '
+          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+    ])
     return response
 
 
@@ -687,6 +698,10 @@ def monitoring_organization_export(request, monitoring_pk):
             o.phone,
         )
         writer.writerow(out)
+    writer.writerow([
+        _('#This data attributed to Freedom of Information Foundation is licensed '
+          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+    ])
     return response
 
 
@@ -714,7 +729,7 @@ def monitoring_organization_import(request, monitoring_pk):
     row_num = 0
     try:
         for row_num, row in enumerate(reader, start=1):
-            if row_num == 1 and row[0] and row[0].startswith('#'):
+            if row[0] and row[0].startswith('#'):
                 for key in ['name', 'url', 'email', 'phone']:
                     for item in row:
                         if item and key in item.lower():
@@ -1071,6 +1086,12 @@ class MonitoringExport(object):
             'monitoring': {
                 'name': self.monitoring.name,
                 'tasks': self.tasks.values(),
+            },
+            'license': {
+                'name': 'Creative Commons «Attribution-NonCommercial-ShareAlike» 4.0',
+                'url': 'http://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru',
+                'rightsholder': 'http://svobodainfo.org',
+                'source': 'http://system.infometer.org',
             }
         }
         json_dump_args = {}
@@ -1129,6 +1150,11 @@ class MonitoringExport(object):
                         for c in self.CSV_CRITERIONS
                     ])
                 writer.writerow(row)
+        #csv FOOTER
+        writer.writerow([
+            _('#This data attributed to Freedom of Information Foundation is licensed '
+              'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+        ])
         return response
 
 

@@ -85,6 +85,10 @@ def task_export(request, task_pk):
             out += (s.image,) if p.image else ('',)
             out += (s.comment,)
         writer.writerow(out)
+    writer.writerow([
+        _('#This data attributed to Freedom of Information Foundation is licensed '
+          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+    ])
     return response
 
 

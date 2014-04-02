@@ -786,11 +786,13 @@ class TestMonitoringExport(TestCase):
         row_count = 0
         for row in csv:
             row_count += 1
-            self.assertEqual(len(row), 18)
             if row_count == 1:
                 self.assertEqual(row[0], '#Monitoring')
                 continue
             else:
+                if row[0].startswith('#'):
+                    continue
+                self.assertEqual(len(row), 18)
                 revision = row[17]
                 self.assertIn(revision, Score.REVISION_EXPORT.values())
                 for k, v in Score.REVISION_EXPORT.iteritems():
@@ -886,8 +888,8 @@ class TestMonitoringExportApproved(TestCase):
         # AND отдается csv
         self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
         csv = [line for line in UnicodeReader(StringIO(response.content))]
-        #only header
-        self.assertEqual(len(csv), 1)
+        #only header and license
+        self.assertEqual(len(csv), 2)
 
 
 class UploadParametersCSVTest(TestCase):
@@ -973,7 +975,7 @@ class TranslatedMonitoringScoresDataExportTestCase(TestCase):
         csv = UnicodeReader(StringIO(response.content))
         field = 'name_%s' % lang
         for count, row in enumerate(csv, 1):
-            if count != 1:
+            if count != 1 and not row[0].startswith('#'):
                 # THEN monitoring, organization and parameter names should be in user preferable language
                 self.assertEqual(row[0], getattr(self.monitoring, field))
                 self.assertEqual(row[1], getattr(self.organization, field))

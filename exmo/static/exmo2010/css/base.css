@@ -720,48 +720,54 @@ div.system-message p.system-message-title {
     z-index: 0;
 }
 
-#push
-{
+/* FOOTER */
+
+#footer, #push {
+    height: 100px;
     clear: both;
 }
 
-#push, #footer
-{
-    height: 100px;
-}
-
-#footer
-{
+#footer {
     background-color: #eee;
-    padding: 0;
-    border: 0;
-}
-
-#footer div
-{
     border-top: #d6d6d6 1px solid;
-    padding-top: 15px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0;
+}
+
+#footer .table {
+    display: table;
     position: relative;
+    width: 100%;
 }
 
-#footer div p
-{
-    float: left;
+#footer .top-row, #footer .bottom-row {
+    display: table-row;
 }
 
-#footer div p.copyrights {
-    float: right;
-    width: 410px;
-    font-size: 8px;
-    line-height: 12px;
+#footer .top-row div {
+    padding-top: 15px;
 }
 
-#footer div p.copyrights > span
-{
+#footer .top-row span {
     font-size: 12px;
     line-height: 18px;
+}
+
+#footer .left-cell {
+    float: left;
+    width: 370px;
+    padding-left: 20px;
+}
+
+#footer .right-cell {
+    float: right;
+    width: 410px;
+    padding-right: 20px;
+}
+
+#footer .copyrights-fonts {
+    font-size: 8px;
+    line-height: 12px;
+    margin: 0;
 }
 
 

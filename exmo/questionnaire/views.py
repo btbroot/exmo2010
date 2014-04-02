@@ -137,6 +137,11 @@ def answers_export(request, monitoring_pk):
 
         writer.writerow(out)
 
+    writer.writerow([
+        _('#This data attributed to Freedom of Information Foundation is licensed '
+          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
+    ])
+
     return response
 
 
