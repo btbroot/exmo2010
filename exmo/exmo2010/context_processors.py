@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from livesettings import config_value
 
 from . import models
 
@@ -25,3 +26,11 @@ def models(request):
     Exmo2010 models classes
     """
     return {'models': models}
+
+
+def live_settings(request):
+    """
+    Variables from livesettings.
+
+    """
+    return {'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY')}

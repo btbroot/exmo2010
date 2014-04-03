@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: infometer\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-03 11:48+0400\n"
+"POT-Creation-Date: 2014-04-04 09:21+0400\n"
 "PO-Revision-Date: 2014-03-06 16:18+0000\n"
 "Last-Translator: MRİ <xaled_yes@hotmail.com>\n"
 "Language-Team: Azerbaijani (http://www.transifex.com/projects/p/infometer/"
@@ -530,7 +530,8 @@ msgstr "Sertifikat sifrişi üçün email ünvanı"
 msgid "Links"
 msgstr "Linklər"
 
-#: exmo/config.py:102 templates/mail/certificate_order_email.txt:26
+#: exmo/config.py:102 exmo/config.py:110
+#: templates/mail/certificate_order_email.txt:26
 #: templates/mail/certificate_order_email.txt:30 templates/mail/digest.html:44
 #: templates/mail/digest.txt:35 templates/mail/score_claim.html:44
 #: templates/mail/score_claim.txt:40
@@ -546,20 +547,24 @@ msgstr "Link"
 msgid "Link to portal"
 msgstr "Portala bağlantı"
 
-#: exmo/config.py:109
+#: exmo/config.py:113
+msgid "Link to methodology"
+msgstr ""
+
+#: exmo/config.py:117
 msgid "Global Parameters"
 msgstr "Qlobal parametrlər"
 
-#: exmo/config.py:115 monitorings/views.py:443
+#: exmo/config.py:123 monitorings/views.py:443
 #: tasks/templates/task_history.html:59
 msgid "Expert"
 msgstr "Ekspert"
 
-#: exmo/config.py:117
+#: exmo/config.py:125
 msgid "Freedom Information Foundation Expert"
 msgstr "İnformasiya Azadlığı Fondunun eksperti"
 
-#: exmo/config.py:118
+#: exmo/config.py:126
 msgid "Default organization`s expert"
 msgstr "Təşkilatın eksperti"
 

@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-03 11:48+0400\n"
+"POT-Creation-Date: 2014-04-04 09:21+0400\n"
 "PO-Revision-Date: 2014-02-24 12:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -531,7 +531,8 @@ msgstr "Адресат уведомлений о заказах сертифик
 msgid "Links"
 msgstr "Ссылки"
 
-#: exmo/config.py:102 templates/mail/certificate_order_email.txt:26
+#: exmo/config.py:102 exmo/config.py:110
+#: templates/mail/certificate_order_email.txt:26
 #: templates/mail/certificate_order_email.txt:30 templates/mail/digest.html:44
 #: templates/mail/digest.txt:35 templates/mail/score_claim.html:44
 #: templates/mail/score_claim.txt:40
@@ -547,20 +548,24 @@ msgstr "Ссылка"
 msgid "Link to portal"
 msgstr "Ссылка на портал"
 
-#: exmo/config.py:109
+#: exmo/config.py:113
+msgid "Link to methodology"
+msgstr "Ссылка на методику"
+
+#: exmo/config.py:117
 msgid "Global Parameters"
 msgstr "Глобальные параметры"
 
-#: exmo/config.py:115 monitorings/views.py:443
+#: exmo/config.py:123 monitorings/views.py:443
 #: tasks/templates/task_history.html:59
 msgid "Expert"
 msgstr "Эксперт"
 
-#: exmo/config.py:117
+#: exmo/config.py:125
 msgid "Freedom Information Foundation Expert"
 msgstr "Эксперт Фонда Свободы Информации"
 
-#: exmo/config.py:118
+#: exmo/config.py:126
 msgid "Default organization`s expert"
 msgstr "Эксперт организации по умолчанию"
 
