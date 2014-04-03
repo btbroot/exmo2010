@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2010, 2011, 2013 Institute for Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -43,11 +43,21 @@
         {% endifequal %}
     </dd>
 
-    {# Description #}
-    {% if parameter.description %}
-    <dt>{% trans "Parameter description" %}:</dt>
-    <dd class="parm-description">
-        {{ parameter.description|safe }}
-    </dd>
+    {# Grounds #}
+    {% if parameter.grounds %}
+        <dt>{% trans "Grounds" %}:</dt>
+        <dd>{{ parameter.grounds|safe }}</dd>
+    {% endif %}
+
+    {# Order #}
+    {% if parameter.rating_procedure %}
+        <dt>{% trans "Rating procedure" %}:</dt>
+        <dd>{{ parameter.rating_procedure|safe }}</dd>
+    {% endif %}
+
+    {# Notes #}
+    {% if parameter.notes and request.user.is_expert %}
+        <dt>{% trans "Notes" %}:</dt>
+        <dd>{{ parameter.notes|safe }}</dd>
     {% endif %}
 </dl>

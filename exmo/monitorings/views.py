@@ -618,18 +618,20 @@ def monitoring_parameter_export(request, monitoring_pk):
     """
     Экспорт параметров в CSV
     """
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
         return HttpResponseForbidden(_('Forbidden'))
-    parameters = Parameter.objects.filter(monitoring = monitoring)
-    response = HttpResponse(mimetype = 'application/vnd.ms-excel')
+    parameters = Parameter.objects.filter(monitoring=monitoring)
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % monitoring_pk
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
         '#Code',
         'Name',
-        'Description',
+        'Grounds',
+        'Rating procedure',
+        'Notes',
         'Complete',
         'Topical',
         'Accessible',
@@ -642,7 +644,9 @@ def monitoring_parameter_export(request, monitoring_pk):
         out = (
             p.code,
             p.name,
-            p.description,
+            p.grounds,
+            p.rating_procedure,
+            p.notes,
             int(p.complete),
             int(p.topical),
             int(p.accessible),
@@ -817,14 +821,16 @@ def monitoring_parameter_import(request, monitoring_pk):
                 parameter.code = code
                 parameter.name = name
                 # Присваиваем пустую строку, а не None.
-                parameter.description = row[2] or ''
-                parameter.complete = bool(int(row[3]))
-                parameter.topical = bool(int(row[4]))
-                parameter.accessible = bool(int(row[5]))
-                parameter.hypertext = bool(int(row[6]))
-                parameter.document = bool(int(row[7]))
-                parameter.image = bool(int(row[8]))
-                parameter.weight = row[9]
+                parameter.grounds = row[2] or ''
+                parameter.rating_procedure = row[3] or ''
+                parameter.notes = row[4] or ''
+                parameter.complete = bool(int(row[5]))
+                parameter.topical = bool(int(row[6]))
+                parameter.accessible = bool(int(row[7]))
+                parameter.hypertext = bool(int(row[8]))
+                parameter.document = bool(int(row[9]))
+                parameter.image = bool(int(row[10]))
+                parameter.weight = row[11]
                 parameter.full_clean()
                 parameter.save()
             except ValidationError, e:

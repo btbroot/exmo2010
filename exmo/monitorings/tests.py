@@ -905,11 +905,11 @@ class UploadParametersCSVTest(TestCase):
 
     def test_empty_name_param_upload(self):
         csv_data = unicode(
-            # code,name,description,complete,topical,accessible,hypertext,document,image,weight
-            '1,name1,,1,1,1,1,0,0,3\n'
-            '2,name2,,1,1,1,1,0,0,3\n'
+            # code,name,grounds,rating_procedure,notes,complete,topical,accessible,hypertext,document,image,weight
+            '1,name1,grounds1,,,1,1,1,1,0,0,3\n'
+            '2,name2,,rating_procedure2,notes2,1,1,1,1,0,0,3\n'
             '3,\n'   # incomplete row
-            '4,name4,,1,1,1,1,0,0,3')
+            '4,name4,grounds4,rating_procedure4,notes4,1,1,1,1,0,0,3')
         f = ContentFile(csv_data.encode('utf-16'), name='temp.csv')
 
         # WHEN I upload csv file with incomplete third row, missing name and all columns after

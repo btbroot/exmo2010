@@ -149,7 +149,8 @@ def mail_certificate_order(request, email_data):
 
 
 def mail_param_edited(param, form):
-    fields = 'code name_{lang} description_{lang} weight'.format(lang=get_language()).split()
+    fields = 'code name_{lang} grounds_{lang} rating_procedure_{lang} notes_{lang} weight'\
+        .format(lang=get_language()).split()
     criteria = 'accessible hypertext npa topical document image complete'.split()
 
     old_excluded_org_pk = form.initial.get('exclude', form.fields['exclude'].initial)

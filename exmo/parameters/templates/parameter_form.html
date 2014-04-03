@@ -59,7 +59,9 @@
         <table id="param_form">
             {% include "_form_field.html" with field=form.code %}
             {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
-            {% include "_form_field.html" with field=form.trans_fields.description %}
+            {% include "_form_field.html" with field=form.trans_fields.grounds %}
+            {% include "_form_field.html" with field=form.trans_fields.rating_procedure %}
+            {% include "_form_field.html" with field=form.trans_fields.notes %}
             {% include "_form_field.html" with field=form.exclude %}
             {% include "_form_field.html" with field=form.weight %}
             {% include "_form_field.html" with field=form.complete %}

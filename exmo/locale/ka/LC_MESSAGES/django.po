@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: infometer\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-12 11:39+0400\n"
+"POT-Creation-Date: 2014-04-03 11:48+0400\n"
 "PO-Revision-Date: 2014-03-06 14:57+0000\n"
 "Last-Translator: Teonat <t.turashvili@idfi.ge>\n"
 "Language-Team: Georgian (http://www.transifex.com/projects/p/infometer/"
@@ -115,7 +115,8 @@ msgstr "პერსონალური ინფორმაცია წა�
 #: accounts/templates/user_settings.html:54 exmo2010/forms.py:59
 #: exmo2010/custom_registration/forms.py:59
 #: exmo2010/custom_registration/forms.py:178
-#: exmo2010/custom_registration/forms.py:202
+#: exmo2010/custom_registration/forms.py:200
+#: exmo2010/custom_registration/views.py:58
 #: templates/registration/login.html:101
 #: templates/registration/password_reset_form.html:67
 msgid "E-mail"
@@ -126,8 +127,8 @@ msgstr "ელ-ფოსტა"
 #: monitorings/templates/monitoring_comment_report.html:60
 #: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
-#: organizations/templates/_organization_form.html:41
-#: parameters/templates/parameter_form.html:73 scores/templates/form.html:247
+#: organizations/templates/_organization_form.html:42
+#: parameters/templates/parameter_form.html:76 scores/templates/form.html:247
 #: scores/templates/form_with_comment.html:237
 #: scores/templates/score_list.html:283
 msgid "Save"
@@ -135,7 +136,7 @@ msgstr "შენახვა"
 
 #: accounts/templates/user_settings.html:83
 #: exmo2010/custom_registration/forms.py:119
-#: exmo2010/models/organization.py:128
+#: exmo2010/models/organization.py:134
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr "მოწვევის კოდი"
@@ -165,13 +166,8 @@ msgstr "პაროლის შეცვლა"
 msgid "E-mail notifications"
 msgstr "ელ-ფოსტის შეტყობინებები"
 
-#: auth/forms.py:62
-#, python-format
-msgid "Password reset on %s"
-msgstr "პაროლის შეცვლა %s"
-
 #: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:213
-#: exmo2010/urls.py:270 monitorings/views.py:947
+#: exmo2010/urls.py:270 monitorings/views.py:953
 msgid "Ratings"
 msgstr "რეიტინგები"
 
@@ -190,13 +186,13 @@ msgstr "რეიტინგი"
 #: monitorings/templates/rating.html:155 monitorings/templates/rating.html:168
 #: organizations/templates/_org_list.html:36
 #: scores/templates/parameter_header.html:25
-#: templates/certificate_order_email.html:31
-#: templates/certificate_order_email.txt:28
 #: templates/certificate_order_form.html:99
 #: templates/certificate_order_form.html:112
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/emails/feedback_recipient.html:27
-#: templates/exmo2010/emails/feedback_recipient.txt:26
+#: templates/mail/certificate_order_email.html:31
+#: templates/mail/certificate_order_email.txt:28
+#: templates/mail/feedback_recipient.html:28
+#: templates/mail/feedback_recipient.txt:28
 msgid "Organization"
 msgstr "საჯარო დაწესებულება"
 
@@ -212,11 +208,11 @@ msgstr "მონიტორინგის ციკლები"
 #: exmo2010/models/questionnaire.py:36
 #: monitorings/templates/monitoring_form.html:72
 #: monitorings/templates/ratings.html:38 monitorings/templates/ratings.html:47
-#: parameters/templates/parameter_email.html:27
-#: parameters/templates/parameter_email.txt:25
-#: templates/certificate_order_email.html:26
-#: templates/certificate_order_email.txt:24
 #: templates/exmo2010/opendata.html:60
+#: templates/mail/certificate_order_email.html:26
+#: templates/mail/certificate_order_email.txt:24
+#: templates/mail/parameter_email.html:27
+#: templates/mail/parameter_email.txt:27
 msgid "Monitoring cycle"
 msgstr "მონიტორინგის ციკლი"
 
@@ -232,40 +228,36 @@ msgstr "ყველა ხელმძღვანელი"
 msgid "all experts"
 msgstr "ყველა ექსპერტი"
 
-#: claims/views.py:48 clarifications/views.py:47
+#: claims/views.py:45 clarifications/views.py:43
 #, python-format
 msgid "Add new claim for %s"
 msgstr "მოთხოვნის დამატება %s"
 
-#: claims/views.py:118 claims/views.py:180 clarifications/views.py:90
-#: clarifications/views.py:157 custom_comments/views.py:43
-#: custom_comments/views.py:109 monitorings/views.py:79
+#: claims/views.py:102 claims/views.py:164 clarifications/views.py:81
+#: clarifications/views.py:148 custom_comments/views.py:44
+#: custom_comments/views.py:111 monitorings/views.py:79
 #: monitorings/views.py:319 monitorings/views.py:412 monitorings/views.py:469
-#: monitorings/views.py:561 monitorings/views.py:623 monitorings/views.py:666
-#: monitorings/views.py:1143 monitorings/views.py:1145
-#: organizations/views.py:58 organizations/views.py:124 scores/views.py:103
-#: scores/views.py:117 scores/views.py:158 scores/views.py:285
-#: scores/views.py:341 scores/views.py:375 scores/views.py:429
+#: monitorings/views.py:561 monitorings/views.py:623 monitorings/views.py:670
+#: monitorings/views.py:1149 monitorings/views.py:1151
+#: organizations/views.py:58 organizations/views.py:115 scores/views.py:102
+#: scores/views.py:116 scores/views.py:156 scores/views.py:280
+#: scores/views.py:336 scores/views.py:370 scores/views.py:424
 #: tasks/views.py:50 tasks/views.py:271 tasks/views.py:279 tasks/views.py:329
 msgid "Forbidden"
 msgstr "აკრძალული"
 
-#: claims/views.py:167
+#: claims/views.py:151
 #, python-format
 msgid "Claims report for \"%s\""
 msgstr "მოთხოვნების ანგარიში \"%s\""
 
-#: claims/views.py:188 dashboard/dashboard.py:119 dashboard/menu.py:76
+#: claims/views.py:172 dashboard/dashboard.py:119 dashboard/menu.py:76
 #: exmo2010/urls.py:211 scores/templates/tabs.html:43
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:82
 msgid "Claims"
 msgstr "მოთხოვნები"
 
-#: claims/views.py:199
-msgid "New claim"
-msgstr "ახალი მოთხოვნა"
-
-#: claims/views.py:199 claims/templates/claim.html:48
+#: claims/templates/claim.html:48 exmo2010/mail.py:85
 msgid "Delete claim"
 msgstr "მოთხოვნის წაშლა"
 
@@ -331,72 +323,20 @@ msgstr "მოთხოვნის ადრესატი"
 msgid "Claim creator"
 msgstr "მოთხოვნის ავტორი"
 
-#: claims/templates/score_claim.html:28 claims/templates/score_claim.txt:25
-#: clarifications/templates/score_clarification.html:27
-#: clarifications/templates/score_clarification.txt:25
-#: custom_comments/templates/digest.html:33
-#: custom_comments/templates/digest.txt:29
-msgid "Date"
-msgstr "დრო"
-
-#: claims/templates/score_claim.html:35 claims/templates/score_claim.txt:26
-#: clarifications/templates/score_clarification.html:34
-#: clarifications/templates/score_clarification.txt:26
-msgid "From whom"
-msgstr "ვისგან"
-
-#: claims/templates/score_claim.html:36 claims/templates/score_claim.txt:27
-#: clarifications/templates/score_clarification.html:35
-#: clarifications/templates/score_clarification.txt:27
-msgid "To whom"
-msgstr "ვის მიმართ"
-
-#: claims/templates/score_claim.html:37 claims/templates/score_claim.txt:29
-msgid "Claim"
-msgstr "მოთხოვნა"
-
-#: claims/templates/score_claim.html:40 claims/templates/score_claim.txt:33
-#: clarifications/templates/score_clarification.html:39
-#: clarifications/templates/score_clarification.txt:33
-#: exmo2010/models/questionnaire.py:58
-msgid "Answer"
-msgstr "პასუხი"
-
-#: claims/templates/score_claim.html:44 claims/templates/score_claim.txt:38
-#: clarifications/templates/score_clarification.html:42
-#: clarifications/templates/score_clarification.txt:37
-#: custom_comments/templates/digest.html:37
-#: custom_comments/templates/digest.txt:33
-#: custom_comments/templates/score_comment.html:46
-#: custom_comments/templates/score_comment.txt:29 exmo/config.py:102
-#: tasks/templates/task_user_assigned.html:29
-#: templates/certificate_order_email.txt:26
-#: templates/certificate_order_email.txt:30
-msgid "Link"
-msgstr "ბმული"
-
-#: claims/templates/score_claim.html:46 claims/templates/score_claim.txt:40
-msgid "Claim was deleted by head of the cycle"
-msgstr "მოთხოვნა წაშლილია მონიტორინგის ციკლის ხელმძღვანელის მიერ"
-
 #: clarifications/forms.py:28
 msgid "Your clarification"
 msgstr "თქვენი განმარტება"
 
-#: clarifications/views.py:94
+#: clarifications/views.py:85
 #, python-format
 msgid "Clarifications report for \"%s\""
 msgstr "განმარტებების ანგარიში \"%s\""
 
-#: clarifications/views.py:167 dashboard/dashboard.py:115 dashboard/menu.py:75
+#: clarifications/views.py:158 dashboard/dashboard.py:115 dashboard/menu.py:75
 #: exmo2010/urls.py:212 scores/templates/tabs.html:35
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:78
 msgid "Clarifications"
 msgstr "განმარტებები"
-
-#: clarifications/views.py:185
-msgid "New clarification"
-msgstr "ახალი განმარტება"
 
 #: clarifications/templates/clarification.html:61
 msgid "Answer clarification"
@@ -429,14 +369,9 @@ msgstr "განმარტების ადრესატი"
 msgid "Clarification creator"
 msgstr "განმარტების ავტორი"
 
-#: clarifications/templates/score_clarification.html:36
-#: clarifications/templates/score_clarification.txt:29
-msgid "Clarification"
-msgstr "განმარტება"
-
 #: custom_comments/forms.py:31 custom_comments/models.py:41
-#: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:83
-#: exmo2010/models/task.py:283 monitorings/views.py:124 tasks/views.py:288
+#: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:80
+#: exmo2010/models/task.py:277 monitorings/views.py:124 tasks/views.py:288
 #: tasks/views.py:301 tasks/views.py:307
 msgid "status"
 msgstr "სტატუსი"
@@ -453,12 +388,7 @@ msgstr "კომენტარი დახურული და პასუ
 msgid "Comment is closed and not answered"
 msgstr "კომენტარი დახურული და პასუხგაუცემელია"
 
-#: custom_comments/tasks.py:48
-#, python-format
-msgid "%(prefix)s Email digest"
-msgstr "%(prefix)s დაიჯესტი"
-
-#: custom_comments/views.py:53 dashboard/dashboard.py:111 dashboard/menu.py:74
+#: custom_comments/views.py:54 dashboard/dashboard.py:111 dashboard/menu.py:74
 #: exmo2010/urls.py:210 scores/templates/detail.html:161
 #: scores/templates/tabs.html:27
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:70
@@ -498,33 +428,6 @@ msgstr "კომენტარის ბმული"
 #: custom_comments/templates/comment_list_table.html:36
 msgid "go to comment"
 msgstr "კომენტარზე გადასვლა"
-
-#: custom_comments/templates/digest.html:27
-#: custom_comments/templates/digest.txt:23
-msgid "Hello"
-msgstr "გამარჯობა"
-
-#: custom_comments/templates/digest.html:28
-#: custom_comments/templates/digest.txt:24
-msgid "Digest from"
-msgstr "დაიჯესტი საიდან"
-
-#: custom_comments/templates/digest.html:28
-#: custom_comments/templates/digest.txt:24
-msgid "till"
-msgstr "სადამდე"
-
-#: custom_comments/templates/digest.html:34
-#: custom_comments/templates/digest.txt:30
-#: templates/certificate_order_email.html:36
-#: templates/certificate_order_email.txt:32
-msgid "User"
-msgstr "მომხმარებელი"
-
-#: custom_comments/templates/digest.html:35
-#: custom_comments/templates/digest.txt:31
-msgid "Comment"
-msgstr "კომენტარი"
 
 #: dashboard/dashboard.py:79
 msgid "Quick links"
@@ -589,8 +492,8 @@ msgstr "ელ-ფოსტის სერვერის პარამეტ
 
 #: exmo/config.py:44 exmo/config.py:62 exmo/config.py:71 exmo/config.py:80
 #: exmo/config.py:89 exmo2010/forms.py:75
-#: templates/exmo2010/emails/feedback_recipient.html:30
-#: templates/exmo2010/emails/feedback_recipient.txt:29
+#: templates/mail/feedback_recipient.html:34
+#: templates/mail/feedback_recipient.txt:31
 msgid "Email"
 msgstr "ელ-ფოსტა"
 
@@ -626,6 +529,18 @@ msgstr "სერთიფიკატის შეკვეთის შეს�
 msgid "Links"
 msgstr "ბმულები"
 
+#: exmo/config.py:102 templates/mail/certificate_order_email.txt:26
+#: templates/mail/certificate_order_email.txt:30 templates/mail/digest.html:44
+#: templates/mail/digest.txt:35 templates/mail/score_claim.html:44
+#: templates/mail/score_claim.txt:40
+#: templates/mail/score_clarification.html:42
+#: templates/mail/score_clarification.txt:39
+#: templates/mail/score_comment.html:50 templates/mail/score_comment.txt:31
+#: templates/mail/task_user_assigned.html:29
+#: templates/mail/task_user_assigned.txt:27
+msgid "Link"
+msgstr "ბმული"
+
 #: exmo/config.py:105
 msgid "Link to portal"
 msgstr "პორტალის ბმული"
@@ -646,6 +561,11 @@ msgstr "ინფორმაციის თავისუფლების �
 #: exmo/config.py:118
 msgid "Default organization`s expert"
 msgstr "განსაზღვრული ორგანიზაციის ექსპერტი"
+
+#: exmo2010/celery_tasks.py:107
+#, python-format
+msgid "%(prefix)s Email digest"
+msgstr "%(prefix)s დაიჯესტი"
 
 #: exmo2010/forms.py:60
 msgid "Your problem"
@@ -672,8 +592,8 @@ msgid "Certificate for"
 msgstr "სერთიფიკატი ვის სახელზე"
 
 #: exmo2010/forms.py:73 scores/templates/task_report.html:41
-#: templates/exmo2010/emails/feedback_recipient.html:25
-#: templates/exmo2010/emails/feedback_recipient.txt:24
+#: templates/mail/feedback_recipient.html:26
+#: templates/mail/feedback_recipient.txt:26
 msgid "Name"
 msgstr "სახელი"
 
@@ -693,14 +613,45 @@ msgstr "ინდექსი"
 msgid "Address"
 msgstr "მისამართი"
 
+#: exmo2010/mail.py:81
+msgid "New claim"
+msgstr "ახალი მოთხოვნა"
+
+#: exmo2010/mail.py:96
+msgid "New clarification"
+msgstr "ახალი განმარტება"
+
+#: exmo2010/mail.py:132
+msgid "Ordering openness certificate for"
+msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
+
+#: exmo2010/mail.py:167
+#, python-brace-format
+msgid "{subject_prefix}Parameter has been changed: {param}"
+msgstr "{subject_prefix} პარამეტრი შეიცვალა: {param}"
+
+#: exmo2010/mail.py:244 templates/mail/task_user_assigned.html:28
+#: templates/mail/task_user_assigned.txt:26
+msgid "You have an assigned task"
+msgstr "თქვენ მოგენიჭათ ამოცანა"
+
+#: exmo2010/mail.py:258 exmo2010/mail.py:265 exmo2010/urls.py:192
+#: exmo2010/views.py:60 templates/exmo2010/footer.html:29
+msgid "Feedback"
+msgstr "უკუკავშირი"
+
+#: exmo2010/mail.py:276
+#, python-format
+msgid "Password reset on %s"
+msgstr "პაროლის შეცვლა %s"
+
+#: exmo2010/mail.py:287
+msgid "Registration on "
+msgstr "რეგისტრაცია"
+
 #: exmo2010/urls.py:190 templates/exmo2010/footer.html:26
 msgid "About"
 msgstr "შესახებ"
-
-#: exmo2010/urls.py:192 exmo2010/views.py:79 exmo2010/views.py:87
-#: templates/exmo2010/footer.html:29
-msgid "Feedback"
-msgstr "უკუკავშირი"
 
 #: exmo2010/urls.py:193 templates/exmo2010/footer.html:28
 #: templates/exmo2010/opendata.html:30
@@ -727,7 +678,7 @@ msgstr "პაროლის აღდგენა (ეტაპი 2-დან
 msgid "Password reset (step 3 from 3)"
 msgstr "პაროლის აღდგენა (ეტაპი 3-დან 3-მდე)"
 
-#: exmo2010/urls.py:203 exmo2010/custom_registration/views.py:147
+#: exmo2010/urls.py:203 exmo2010/custom_registration/views.py:169
 msgid "Registration (step 1 of 2)"
 msgstr "რეგისტრაცია (ეტაპი 1-დან 2-მდე)"
 
@@ -803,7 +754,7 @@ msgstr "ამოცანის იმპორტი"
 #: exmo2010/urls.py:273
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
-#: parameters/forms.py:47 scores/views.py:380
+#: parameters/forms.py:47 scores/views.py:375
 #: templates/exmo2010/score_legend.html:91
 #: templates/exmo2010/score_legend.html:123
 msgid "Parameter"
@@ -827,19 +778,27 @@ msgstr "პარამეტრის წაშლა"
 msgid "Openness certificate"
 msgstr "ღიაობის სერთიფიკატი"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:174
+msgid ""
+"You ordered an openness certificate. Certificate will be prepared and sent "
+"within 5 working days."
+msgstr ""
+"თქვენ შეუკვეთეთ ღიაობის სერთიფიკატი. სერთიფიკატი მომზადდება და გაიგზავნება 5 "
+"სამუშაო დღის განმავლობაში."
+
+#: exmo2010/views.py:193
 msgid "by all"
 msgstr "ყველა"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:193
 msgid "by normative"
 msgstr "ნორმატიულის მიხედვით"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:193
 msgid "by recommendatory"
 msgstr "სარეკომენდაციოს მიხედვით"
 
-#: exmo2010/views.py:230
+#: exmo2010/views.py:197
 #, no-python-format
 msgid ""
 "For {task.organization.name} organization, which took {task.place} place "
@@ -850,31 +809,20 @@ msgstr ""
 "place} ადგილი {task.task_openness:.3f}% o ღიაობისთვის რეიტინგში "
 "{rating_type} პარამეტრებით, რომლებით გამოქვეყნდა {date}."
 
-#: exmo2010/views.py:238
+#: exmo2010/views.py:205
+#, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr "მისამართზე {zip_code}, {address}, {addressee}."
 
-#: exmo2010/views.py:240
+#: exmo2010/views.py:207
 #, python-format
 msgid "On email address %s."
 msgstr "ელ-ფოსტის მისამართზე %s."
 
-#: exmo2010/views.py:250
+#: exmo2010/views.py:217
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "სერთიფიკატის მომზადება ვის სახელზე %s."
-
-#: exmo2010/views.py:257
-msgid "Ordering openness certificate for"
-msgstr "ღიაობის სერთიფიკატის შეკვეთა ვისთვის"
-
-#: exmo2010/views.py:276
-msgid ""
-"You ordered an openness certificate. Certificate will be prepared and sent "
-"within 5 working days."
-msgstr ""
-"თქვენ შეუკვეთეთ ღიაობის სერთიფიკატი. სერთიფიკატი მომზადდება და გაიგზავნება 5 "
-"სამუშაო დღის განმავლობაში."
 
 #: exmo2010/custom_registration/forms.py:40
 msgid "representative"
@@ -897,6 +845,7 @@ msgid "Subscribe to news"
 msgstr "გამოიწერეთ ახალი ამბები"
 
 #: exmo2010/custom_registration/forms.py:70
+#, python-brace-format
 msgid "{fieldname} is required field."
 msgstr "{fieldname} აუცილებლად შესავსები ველი"
 
@@ -944,22 +893,30 @@ msgid ""
 "sensitive."
 msgstr "გთხოვთ შეიყვანეთ მომხმარებლის სწორი სახელი და პაროლი. "
 
-#: exmo2010/custom_registration/forms.py:193
-#: exmo2010/custom_registration/forms.py:224
+#: exmo2010/custom_registration/forms.py:191
+#: exmo2010/custom_registration/forms.py:217
 msgid "This account is inactive."
 msgstr "ეს ანგარიში არ არის გააქტიურებული"
 
-#: exmo2010/custom_registration/forms.py:214
+#: exmo2010/custom_registration/forms.py:211
 msgid "There's no user with that e-mail."
 msgstr "ამ ელ-ფოსტით მომხმარებელი არ არსებობს."
 
-#: exmo2010/custom_registration/forms.py:220
+#: exmo2010/custom_registration/forms.py:215
 msgid "Account is activated already."
 msgstr "ანგარიში უკვე გააქტიურებულია."
 
-#: exmo2010/custom_registration/models.py:40
-msgid "Registration on "
-msgstr "რეგისტრაცია"
+#: exmo2010/custom_registration/views.py:67
+msgid ""
+"That e-mail address doesn't have an associated user account. Are you sure "
+"you've registered?"
+msgstr ""
+
+#: exmo2010/custom_registration/views.py:70
+msgid ""
+"The user account associated with this e-mail address cannot reset the "
+"password."
+msgstr ""
 
 #: exmo2010/models/claim.py:33 exmo2010/models/clarification.py:34
 msgid "score"
@@ -992,6 +949,7 @@ msgid "addressee"
 msgstr "ადრესატი"
 
 #: exmo2010/models/claim.py:57
+#, python-brace-format
 msgid "claim for {obj.score} from {obj.creator}"
 msgstr "მოთხოვნა რისთვის {obj.score} ვისგან {obj.creator}"
 
@@ -1004,6 +962,7 @@ msgid "clarification close"
 msgstr "განმარტება დახურულია"
 
 #: exmo2010/models/clarification.py:59
+#, python-brace-format
 msgid "clarification for {obj.score} from {obj.creator}"
 msgstr "განმარტება რისთვის {obj.score} ვისგან {obj.creator}"
 
@@ -1058,7 +1017,7 @@ msgid "Monitoring publish date"
 msgstr "მონიტორინგის შედეგების გამოქვეყნების თარიღი"
 
 #: exmo2010/models/monitoring.py:88 exmo2010/models/openness_expression.py:37
-#: exmo2010/models/organization.py:121 exmo2010/models/parameter.py:39
+#: exmo2010/models/organization.py:122 exmo2010/models/parameter.py:36
 msgid "name"
 msgstr "დასახელება"
 
@@ -1091,123 +1050,131 @@ msgstr "საიდან"
 msgid "Unknown OpennessExpression code"
 msgstr "უცნობი OpennessExpression კოდი"
 
-#: exmo2010/models/organization.py:35
+#: exmo2010/models/organization.py:36
 msgid "Not sent"
 msgstr "არგაგზავნილი"
 
-#: exmo2010/models/organization.py:36
+#: exmo2010/models/organization.py:37
 msgid "Sent"
 msgstr "გაგზავნილი"
 
-#: exmo2010/models/organization.py:37
+#: exmo2010/models/organization.py:38
 msgid "Read"
 msgstr "წაკითხული"
 
-#: exmo2010/models/organization.py:38
+#: exmo2010/models/organization.py:39
 msgid "Registered"
 msgstr "დარეგისტრირებული"
 
-#: exmo2010/models/organization.py:39
+#: exmo2010/models/organization.py:40
 msgid "Activated"
 msgstr "გააქტიურებული"
 
-#: exmo2010/models/organization.py:42
+#: exmo2010/models/organization.py:43
 #: organizations/templates/_mail_history.html:27
 #: organizations/templates/_org_list.html:42
 msgid "All invitations"
 msgstr "ყველა მოწვევა"
 
-#: exmo2010/models/organization.py:73
+#: exmo2010/models/organization.py:74
 msgid "Illegal symbols in email field."
 msgstr "ელ-ფოსტის ველში არასწორი სიმბოლოები."
 
-#: exmo2010/models/organization.py:102
+#: exmo2010/models/organization.py:103
 msgid "Illegal symbols in phone field."
 msgstr "ტელეფონის ველში არასწორი სიმბოლოები."
 
-#: exmo2010/models/organization.py:122 monitorings/templates/rating.html:171
+#: exmo2010/models/organization.py:123 monitorings/templates/rating.html:171
 #: templates/certificate_order_form.html:113
 msgid "Website"
 msgstr "ვებ-გვერდი"
 
-#: exmo2010/models/organization.py:123 organizations/views.py:111
-#: organizations/views.py:128
+#: exmo2010/models/organization.py:124 organizations/views.py:102
+#: organizations/views.py:119
 msgid "email"
 msgstr "ელ-ფოსტა"
 
-#: exmo2010/models/organization.py:124 organizations/views.py:112
-#: organizations/views.py:129
+#: exmo2010/models/organization.py:125 organizations/views.py:103
+#: organizations/views.py:120
 msgid "phone"
 msgstr "ტელეფონი"
 
-#: exmo2010/models/organization.py:125 exmo2010/models/organization.py:160
-#: exmo2010/models/parameter.py:41 monitorings/views.py:123
+#: exmo2010/models/organization.py:131 exmo2010/models/organization.py:158
+#: exmo2010/models/parameter.py:44 monitorings/views.py:123
 msgid "monitoring"
 msgstr "მონიტორინგის ციკლი"
 
-#: exmo2010/models/organization.py:133 exmo2010/models/organization.py:165
+#: exmo2010/models/organization.py:139 exmo2010/models/organization.py:163
 msgid "Invitation status"
 msgstr "მოწვევის სტატუსი"
 
-#: exmo2010/models/organization.py:159
+#: exmo2010/models/organization.py:157
 msgid "date and time"
 msgstr "თარიღი და დრო"
 
-#: exmo2010/models/organization.py:161
+#: exmo2010/models/organization.py:159
 msgid "subject"
 msgstr "საკითხი"
 
-#: exmo2010/models/organization.py:162
+#: exmo2010/models/organization.py:160
 msgid "Letter content"
 msgstr "წერილის შინაარსი"
 
-#: exmo2010/models/parameter.py:38
+#: exmo2010/models/parameter.py:35
 msgid "code"
 msgstr "კოდი"
 
-#: exmo2010/models/parameter.py:40 exmo2010/models/static_page.py:31
-msgid "description"
-msgstr "აღწერა"
+#: exmo2010/models/parameter.py:37
+msgid "grounds"
+msgstr ""
 
-#: exmo2010/models/parameter.py:42
+#: exmo2010/models/parameter.py:38
+msgid "rating procedure"
+msgstr ""
+
+#: exmo2010/models/parameter.py:39
+msgid "notes"
+msgstr ""
+
+#: exmo2010/models/parameter.py:45
 msgid "excluded organizations"
 msgstr "არშესული საჯარო დაწესებულებები"
 
-#: exmo2010/models/parameter.py:43
+#: exmo2010/models/parameter.py:46
 msgid "weight"
 msgstr "მნიშვნელობა"
 
-#: exmo2010/models/parameter.py:45 exmo2010/models/score.py:57
+#: exmo2010/models/parameter.py:48 exmo2010/models/score.py:57
 #: scores/forms.py:69
 msgid "complete"
 msgstr "სრული"
 
-#: exmo2010/models/parameter.py:46 exmo2010/models/score.py:58
+#: exmo2010/models/parameter.py:49 exmo2010/models/score.py:58
 #: scores/forms.py:70
 msgid "topical"
 msgstr "აქტუალური"
 
-#: exmo2010/models/parameter.py:47 exmo2010/models/score.py:59
+#: exmo2010/models/parameter.py:50 exmo2010/models/score.py:59
 #: scores/forms.py:71
 msgid "accessible"
 msgstr "ნავიგაციური ხელმისაწვდომობა"
 
-#: exmo2010/models/parameter.py:48 exmo2010/models/score.py:60
+#: exmo2010/models/parameter.py:51 exmo2010/models/score.py:60
 #: scores/forms.py:72
 msgid "hypertext"
 msgstr "HTML ხელმისაწვდომობა"
 
-#: exmo2010/models/parameter.py:49 exmo2010/models/score.py:61
+#: exmo2010/models/parameter.py:52 exmo2010/models/score.py:61
 #: scores/forms.py:73
 msgid "document"
 msgstr "დოკუმენტის ხელმისაწვდომობა"
 
-#: exmo2010/models/parameter.py:50 exmo2010/models/score.py:62
+#: exmo2010/models/parameter.py:53 exmo2010/models/score.py:62
 #: scores/forms.py:74
 msgid "image"
 msgstr "გრაფიკული ხელმისაწვდომობა"
 
-#: exmo2010/models/parameter.py:51
+#: exmo2010/models/parameter.py:54
 msgid "normative parameter"
 msgstr "ნორმატიული პარამეტრი"
 
@@ -1251,6 +1218,13 @@ msgstr "კითხვა"
 msgid "Question comment"
 msgstr "კომენტარი კითხვაზე"
 
+#: exmo2010/models/questionnaire.py:58 templates/mail/score_claim.html:40
+#: templates/mail/score_claim.txt:35
+#: templates/mail/score_clarification.html:39
+#: templates/mail/score_clarification.txt:35
+msgid "Answer"
+msgstr "პასუხი"
+
 #: exmo2010/models/questionnaire.py:71
 msgid "Text answer"
 msgstr "ტექსტობრივი პასუხი"
@@ -1271,7 +1245,7 @@ msgstr "უკანასკნელი გადახედვა"
 msgid "pre-interact revision"
 msgstr "ინტერაქციამდელი გადახედვა"
 
-#: exmo2010/models/score.py:50 exmo2010/models/task.py:278
+#: exmo2010/models/score.py:50 exmo2010/models/task.py:272
 msgid "task"
 msgstr "ამოცანა"
 
@@ -1329,37 +1303,41 @@ msgstr ""
 msgid "identifier"
 msgstr "იდენტიფიკატორი"
 
+#: exmo2010/models/static_page.py:31
+msgid "description"
+msgstr "აღწერა"
+
 #: exmo2010/models/static_page.py:32
 msgid "content"
 msgstr "შინაარსი"
 
-#: exmo2010/models/task.py:72 parameters/forms.py:63
+#: exmo2010/models/task.py:69 parameters/forms.py:63
 msgid "opened"
 msgstr "ღია"
 
-#: exmo2010/models/task.py:73 parameters/forms.py:65
+#: exmo2010/models/task.py:70 parameters/forms.py:65
 msgid "closed"
 msgstr "დახურული"
 
-#: exmo2010/models/task.py:74 parameters/forms.py:67
+#: exmo2010/models/task.py:71 parameters/forms.py:67
 msgid "approved"
 msgstr "დამოწმებული"
 
-#: exmo2010/models/task.py:80 exmo2010/models/task.py:279
+#: exmo2010/models/task.py:77 exmo2010/models/task.py:273
 msgid "user"
 msgstr "მომხმარებელი"
 
-#: exmo2010/models/task.py:82 organizations/views.py:110
-#: organizations/views.py:127 tasks/views.py:286 tasks/views.py:300
+#: exmo2010/models/task.py:79 organizations/views.py:101
+#: organizations/views.py:118 tasks/views.py:286 tasks/views.py:300
 #: tasks/views.py:306
 msgid "organization"
 msgstr "საჯარო დაწესებულება"
 
-#: exmo2010/models/task.py:246
+#: exmo2010/models/task.py:240
 msgid "Ready task must be 100 percent complete."
 msgstr "მომზადებული ამოცანა ასი პროცენტით უნდა შესრულდეს."
 
-#: exmo2010/models/task.py:251
+#: exmo2010/models/task.py:245
 #, python-format
 msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
@@ -1368,7 +1346,7 @@ msgstr ""
 "მონიტორინგისთვის %(monitoring)s და საჯარო დაწესებულებისთვის %(organization)s "
 "უკვე არსებობს დამოწმებული ამოცანა."
 
-#: exmo2010/models/task.py:285
+#: exmo2010/models/task.py:279
 msgid "time"
 msgstr "დრო"
 
@@ -1527,40 +1505,40 @@ msgstr "ყველა ამოცანა"
 msgid "Parameter found report of %(monitoring)s"
 msgstr "პარამეტრის 'არსებობა' ანგარიში %(monitoring)s"
 
-#: monitorings/views.py:754 monitorings/views.py:839 tasks/views.py:144
+#: monitorings/views.py:758 monitorings/views.py:845 tasks/views.py:144
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "მწკრივი %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:756 monitorings/views.py:841 tasks/views.py:146
+#: monitorings/views.py:760 monitorings/views.py:847 tasks/views.py:146
 msgid "File, you are loading is not valid CSV."
 msgstr "დოკუმენტი, რომელსაც ტვირთავთ არასწორია ან არ არის CSV დოკუმენტი."
 
-#: monitorings/views.py:758 monitorings/views.py:843 tasks/views.py:148
+#: monitorings/views.py:762 monitorings/views.py:849 tasks/views.py:148
 #, python-format
 msgid "Import error: %s."
 msgstr "იმპორტის შეცდომა: %s."
 
-#: monitorings/views.py:759
+#: monitorings/views.py:763
 #, python-format
 msgid "Import organizations from CSV for monitoring %s"
 msgstr "CSV-დან საჯარო დაწესებულებების იმპორტი მონიტორინგისთვის %s"
 
-#: monitorings/views.py:770 monitorings/views.py:855
+#: monitorings/views.py:774 monitorings/views.py:861
 msgid "Back to the monitoring"
 msgstr "მონიტორინგის ციკლზე დაბრუნება "
 
-#: monitorings/views.py:844
+#: monitorings/views.py:850
 #, python-format
 msgid "Import parameters from CSV for monitoring %s"
 msgstr "CSV-დან პარამეტრების იმპორტი მონიტორინგისთვის %s"
 
-#: monitorings/views.py:880
+#: monitorings/views.py:886
 #, python-format
 msgid "Comment report for %s"
 msgstr "კომენტარების ანგარიში %s"
 
-#: monitorings/views.py:895
+#: monitorings/views.py:901
 #: templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "მონიტორინგის ციკლის სტატისტიკა"
@@ -1951,15 +1929,15 @@ msgstr "შერჩევის გაუქმება "
 msgid "Organizations for monitoring %s"
 msgstr "საჯარო დაწესებულებები მონიტორინგის ციკლისთვის %s"
 
-#: organizations/views.py:113 organizations/views.py:130
+#: organizations/views.py:104 organizations/views.py:121
 msgid "invitation code"
 msgstr "მოწვევის კოდი"
 
-#: organizations/views.py:114
+#: organizations/views.py:105
 msgid "tasks"
 msgstr "ამოცანები"
 
-#: organizations/views.py:115 organizations/views.py:131
+#: organizations/views.py:106 organizations/views.py:122
 msgid "invitation"
 msgstr "მოწვევა"
 
@@ -1992,22 +1970,22 @@ msgstr ""
 msgid "Invite"
 msgstr "მოწვევა"
 
-#: organizations/templates/_organization_form.html:41
+#: organizations/templates/_organization_form.html:42
 msgid "Add"
 msgstr "დამატება"
 
-#: organizations/templates/_organization_form.html:47
+#: organizations/templates/_organization_form.html:48
 msgid "Enter a list of emails separating them by commas, spaces or newlines."
 msgstr ""
 "მძმეების, სივრცის ან გამოყოფი ხაზის გამოტოვებით შეიყვანეთ ელ-ფოსტების სია."
 
-#: organizations/templates/_organization_form.html:50
+#: organizations/templates/_organization_form.html:51
 msgid ""
 "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by "
 "commas or newlines."
 msgstr ""
-"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები +x(xxx)"
-"xxx-xx-xx ფორმატში."
+"მძიმეების ან გამყოფი ხაზის გამოტოვებით შეიყვანეთ ტელეფონის ნომრები "
+"+x(xxx)xxx-xx-xx ფორმატში."
 
 #: organizations/templates/edit_organization.html:25
 #: organizations/templates/edit_organization.html:29
@@ -2044,7 +2022,7 @@ msgstr "მიმოწერის ისტორია"
 msgid "add"
 msgstr "დამატება"
 
-#: parameters/forms.py:49 scores/views.py:381 scores/templates/detail.html:74
+#: parameters/forms.py:49 scores/views.py:376 scores/templates/detail.html:74
 #: scores/templates/task_report.html:44
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:58
@@ -2052,7 +2030,7 @@ msgstr "დამატება"
 msgid "Found"
 msgstr "არსებობა"
 
-#: parameters/forms.py:51 scores/views.py:382 scores/templates/detail.html:83
+#: parameters/forms.py:51 scores/views.py:377 scores/templates/detail.html:83
 #: scores/templates/task_report.html:45
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2063,7 +2041,7 @@ msgstr "არსებობა"
 msgid "Complete"
 msgstr "სრული"
 
-#: parameters/forms.py:53 scores/views.py:383 scores/templates/detail.html:93
+#: parameters/forms.py:53 scores/views.py:378 scores/templates/detail.html:93
 #: scores/templates/task_report.html:46
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2074,7 +2052,7 @@ msgstr "სრული"
 msgid "Topical"
 msgstr "აქტუალური"
 
-#: parameters/forms.py:55 scores/views.py:384 scores/templates/detail.html:103
+#: parameters/forms.py:55 scores/views.py:379 scores/templates/detail.html:103
 #: scores/templates/task_report.html:47
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2093,7 +2071,7 @@ msgstr "ნავიგაციური ხელმისაწვდომ�
 msgid "Hypertext"
 msgstr "HTML ხელმისაწვდომობა"
 
-#: parameters/forms.py:59 scores/views.py:386 scores/templates/detail.html:123
+#: parameters/forms.py:59 scores/views.py:381 scores/templates/detail.html:123
 #: scores/templates/task_report.html:49
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
@@ -2102,7 +2080,7 @@ msgstr "HTML ხელმისაწვდომობა"
 msgid "Document"
 msgstr "დოკუმენტის ხელმისაწვდომობა"
 
-#: parameters/forms.py:61 scores/views.py:387 scores/templates/detail.html:133
+#: parameters/forms.py:61 scores/views.py:382 scores/templates/detail.html:133
 #: scores/templates/task_report.html:50
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
@@ -2110,39 +2088,6 @@ msgstr "დოკუმენტის ხელმისაწვდომო�
 #: templates/exmo2010/score_legend.html:85
 msgid "Image"
 msgstr "გრაფიკული ხელმისაწვდომობა"
-
-#: parameters/views.py:113
-msgid "{subject_prefix}Parameter has been changed: {param}"
-msgstr "{subject_prefix} პარამეტრი შეიცვალა: {param}"
-
-#: parameters/templates/parameter_email.html:29
-#: parameters/templates/parameter_email.txt:27
-msgid "Old features"
-msgstr "ძველი მახასიათებლები"
-
-#: parameters/templates/parameter_email.html:34
-#: parameters/templates/parameter_email.html:51
-#: parameters/templates/parameter_email.txt:32
-#: parameters/templates/parameter_email.txt:49
-msgid "Relevance criteria"
-msgstr "შესაბამისი კრიტერიუმები"
-
-#: parameters/templates/parameter_email.html:40
-#: parameters/templates/parameter_email.html:57
-#: parameters/templates/parameter_email.txt:38
-#: parameters/templates/parameter_email.txt:55
-msgid "Excluded organizations"
-msgstr "არშესული საჯარო დაწესებულებები"
-
-#: parameters/templates/parameter_email.html:46
-#: parameters/templates/parameter_email.txt:44
-msgid "Current features"
-msgstr "ამჟამინდელი მახასიათებლები"
-
-#: parameters/templates/parameter_email.html:63
-#: parameters/templates/parameter_email.txt:61
-msgid "We recommend to check the scores of current parameter."
-msgstr "სასურველია ამჟამინდელი პარამეტრის ქულების შემოწმება."
 
 #: parameters/templates/parameter_form.html:38
 #: parameters/templates/parameter_form.html:47
@@ -2156,11 +2101,11 @@ msgstr "რედაქტირება პარამეტრის %(param
 msgid "Add new parameter"
 msgstr "ახალი პარამეტრის დამატება"
 
-#: parameters/templates/parameter_form.html:75
+#: parameters/templates/parameter_form.html:78
 msgid "Save and send notifications"
 msgstr "შეტყობინებების შენახვა და გაგზავნა"
 
-#: parameters/templates/parameter_form.html:77 scores/templates/form.html:252
+#: parameters/templates/parameter_form.html:80 scores/templates/form.html:252
 #: templates/exmo2010/task_form.html:40
 msgid "Reset"
 msgstr "გადატვირთვა"
@@ -2201,16 +2146,16 @@ msgstr "კრიტერიუმი '%s' შეფასებული ა�
 msgid "Found must be set"
 msgstr "კრიტერიუმი 'არსებობა' შეფასებული არ არის"
 
-#: scores/views.py:224
+#: scores/views.py:222
 #, python-format
 msgid "Changed %s."
 msgstr "შეცვლილი %s."
 
-#: scores/views.py:224
+#: scores/views.py:222
 msgid "and"
 msgstr "და"
 
-#: scores/views.py:234
+#: scores/views.py:232
 msgid ""
 "New version of the existing score couldn`t be saved since the existing score "
 "is incomplete. Contact your Supervisor."
@@ -2218,15 +2163,15 @@ msgstr ""
 "არსებული ქულის ახალი ვერსია არ შენახულა, რადგან არსებული ქულა არასრულია. "
 "დაუკავშირდით თქვენს ზედამხედველს."
 
-#: scores/views.py:379 scores/templates/task_report.html:40
+#: scores/views.py:374 scores/templates/task_report.html:40
 msgid "Code"
 msgstr "კოდი"
 
-#: scores/views.py:385 scores/templates/task_report.html:48
+#: scores/views.py:380 scores/templates/task_report.html:48
 msgid "HTML"
 msgstr "Html ხელმისაწვდომობა"
 
-#: scores/views.py:388 scores/templates/task_report.html:43
+#: scores/views.py:383 scores/templates/task_report.html:43
 msgid "Weight"
 msgstr "მნიშვნელობა"
 
@@ -2268,8 +2213,16 @@ msgid "low importance"
 msgstr "დაბალი მნიშვნელობის"
 
 #: scores/templates/parameter_header.html:48
-msgid "Parameter description"
-msgstr "პარამეტრის აღწერა"
+msgid "Grounds"
+msgstr ""
+
+#: scores/templates/parameter_header.html:54
+msgid "Rating procedure"
+msgstr ""
+
+#: scores/templates/parameter_header.html:60
+msgid "Notes"
+msgstr ""
 
 #: scores/templates/score_list.html:75
 msgid "Openness by all parameters"
@@ -2327,10 +2280,6 @@ msgstr "ამოცანა "
 #: templates/exmo2010/rating_common.html:24
 msgid "Openness"
 msgstr "ღიაობა"
-
-#: tasks/signals.py:38 tasks/templates/task_user_assigned.html:28
-msgid "You have an assigned task"
-msgstr "თქვენ მოგენიჭათ ამოცანა"
 
 #: tasks/views.py:106
 #, python-format
@@ -2458,18 +2407,6 @@ msgstr ""
 "სერვერზე მოხდა შეცდომა. ამის შესახებ ელ-ფოსტაზე შეტყობინება მიუვიდა "
 "ადმინისტრატორს. შეცდომა გასწორდება უმოკლეს დროში. გმადლობთ მოთმინებისთვის."
 
-#: templates/certificate_order_email.html:39
-#: templates/certificate_order_email.txt:35
-#: templates/certificate_order_form.html:51
-msgid "Deliver"
-msgstr "მიწოდება"
-
-#: templates/certificate_order_email.html:42
-#: templates/certificate_order_email.txt:38
-#: templates/certificate_order_form.html:54
-msgid "Content of the certificate"
-msgstr "სერთიფიკატის შინაარსი"
-
 #: templates/certificate_order_form.html:44
 msgid "Organization list is empty, please change the organization filter"
 msgstr ""
@@ -2479,6 +2416,18 @@ msgstr ""
 msgid "Openness certificate will be prepared and sent within 5 working days."
 msgstr ""
 "ღიაობის სერთიფიკატი მომზადდება და გაიგზავნება 5 სამუშაო დღის განმავლობაში."
+
+#: templates/certificate_order_form.html:51
+#: templates/mail/certificate_order_email.html:39
+#: templates/mail/certificate_order_email.txt:35
+msgid "Deliver"
+msgstr "მიწოდება"
+
+#: templates/certificate_order_form.html:54
+#: templates/mail/certificate_order_email.html:42
+#: templates/mail/certificate_order_email.txt:38
+msgid "Content of the certificate"
+msgstr "სერთიფიკატის შინაარსი"
 
 #: templates/certificate_order_form.html:59
 msgid "Confirm order"
@@ -2578,24 +2527,8 @@ msgstr "მწკრივი წარმატებული/დამუშ�
 msgid "Errors encountered"
 msgstr "შეცდომები"
 
-#: templates/exmo2010/email_base.html:127 templates/exmo2010/email_base.txt:25
-msgid ""
-"This email was automatically generated by Infometer system, please do not "
-"reply."
-msgstr ""
-"ეს წერილი ინფომეტრის სისტემამ ავტომატურად შექმნა, მასზე პასუხის გაცემა "
-"საჭირო არა არის."
-
-#: templates/exmo2010/email_base.html:128 templates/exmo2010/email_base.txt:26
-msgid ""
-"If you have any questions for Infometer, please contact technical support:"
-msgstr ""
-"ინფომეტრის სისტემასთან დაკავშრებული კითხვების შემთხვევაში, მიმართეთ ტექნიკურ "
-"მხარდაჭერას:"
-
-#: templates/exmo2010/feedback.html:33
-#: templates/exmo2010/emails/feedback_creator.html:24
-#: templates/exmo2010/emails/feedback_creator.txt:23
+#: templates/exmo2010/feedback.html:33 templates/mail/feedback_creator.html:24
+#: templates/mail/feedback_creator.txt:25
 msgid ""
 "You've sent the letter to Infometer maintenance staff. You'll recieve an "
 "answer in 3 buisness days."
@@ -3099,16 +3032,6 @@ msgstr "რედაქტირება ამოცანის %(task)s"
 msgid "Add new task for %(view.monitoring)s"
 msgstr "ახალი ამოცანების დამატება %(view.monitoring)s"
 
-#: templates/exmo2010/emails/feedback_creator.html:26
-#: templates/exmo2010/emails/feedback_creator.txt:25
-msgid "Your trouble"
-msgstr "თქვენი პრობლემა"
-
-#: templates/exmo2010/emails/feedback_recipient.html:32
-#: templates/exmo2010/emails/feedback_recipient.txt:31
-msgid "Trouble"
-msgstr "პრობლემა"
-
 #: templates/exmo2010/helpers/inv_code_bubble.html:27
 #, python-format
 msgid ""
@@ -3174,6 +3097,141 @@ msgstr "ექსპორტისთვის საჭიროა ამო�
 msgid "Scores"
 msgstr "ქულები"
 
+#: templates/mail/activation_email.html:30
+#: templates/mail/activation_email.txt:27
+msgid "In order to activate your account you should follow the link ONCE"
+msgstr "თქვენი ანგარიშის გასააქტიურებლად უნდა გადახვიდეთ ბმულზე ერთხელ"
+
+#: templates/mail/activation_email.html:35
+#: templates/mail/activation_email.txt:30
+msgid "Later you'll be able to log in here"
+msgstr "მოგვიანებით, ვებ-გვერდზე შესასვლელად შეგიძლაით გამოიყენოთ ბმული:"
+
+#: templates/mail/activation_email.html:39
+#: templates/mail/activation_email.txt:32
+msgid "Thank you"
+msgstr "გმადლობთ"
+
+#: templates/mail/certificate_order_email.html:36
+#: templates/mail/certificate_order_email.txt:32 templates/mail/digest.html:35
+#: templates/mail/digest.txt:32
+msgid "User"
+msgstr "მომხმარებელი"
+
+#: templates/mail/digest.html:27 templates/mail/digest.txt:25
+msgid "Hello"
+msgstr "გამარჯობა"
+
+#: templates/mail/digest.html:28 templates/mail/digest.txt:26
+msgid "Digest from"
+msgstr "დაიჯესტი საიდან"
+
+#: templates/mail/digest.html:28 templates/mail/digest.txt:26
+msgid "till"
+msgstr "სადამდე"
+
+#: templates/mail/digest.html:33 templates/mail/digest.txt:31
+#: templates/mail/score_claim.html:28 templates/mail/score_claim.txt:27
+#: templates/mail/score_clarification.html:27
+#: templates/mail/score_clarification.txt:27
+msgid "Date"
+msgstr "დრო"
+
+#: templates/mail/digest.html:42 templates/mail/digest.txt:33
+msgid "Comment"
+msgstr "კომენტარი"
+
+#: templates/mail/email_base.html:127 templates/mail/email_base.txt:25
+msgid ""
+"This email was automatically generated by Infometer system, please do not "
+"reply."
+msgstr ""
+"ეს წერილი ინფომეტრის სისტემამ ავტომატურად შექმნა, მასზე პასუხის გაცემა "
+"საჭირო არა არის."
+
+#: templates/mail/email_base.html:128 templates/mail/email_base.txt:26
+msgid ""
+"If you have any questions for Infometer, please contact technical support:"
+msgstr ""
+"ინფომეტრის სისტემასთან დაკავშრებული კითხვების შემთხვევაში, მიმართეთ ტექნიკურ "
+"მხარდაჭერას:"
+
+#: templates/mail/feedback_creator.html:26
+#: templates/mail/feedback_creator.txt:27
+msgid "Your trouble"
+msgstr "თქვენი პრობლემა"
+
+#: templates/mail/feedback_recipient.html:35
+#: templates/mail/feedback_recipient.txt:33
+msgid "Trouble"
+msgstr "პრობლემა"
+
+#: templates/mail/parameter_email.html:29
+#: templates/mail/parameter_email.txt:29
+msgid "Old features"
+msgstr "ძველი მახასიათებლები"
+
+#: templates/mail/parameter_email.html:34
+#: templates/mail/parameter_email.html:51
+#: templates/mail/parameter_email.txt:34 templates/mail/parameter_email.txt:51
+msgid "Relevance criteria"
+msgstr "შესაბამისი კრიტერიუმები"
+
+#: templates/mail/parameter_email.html:40
+#: templates/mail/parameter_email.html:57
+#: templates/mail/parameter_email.txt:40 templates/mail/parameter_email.txt:57
+msgid "Excluded organizations"
+msgstr "არშესული საჯარო დაწესებულებები"
+
+#: templates/mail/parameter_email.html:46
+#: templates/mail/parameter_email.txt:46
+msgid "Current features"
+msgstr "ამჟამინდელი მახასიათებლები"
+
+#: templates/mail/parameter_email.html:63
+#: templates/mail/parameter_email.txt:63
+msgid "We recommend to check the scores of current parameter."
+msgstr "სასურველია ამჟამინდელი პარამეტრის ქულების შემოწმება."
+
+#: templates/mail/password_reset_email.html:30
+#: templates/mail/password_reset_email.txt:30
+msgid "In order to reset your password, please follow the link:"
+msgstr "პაროლის შესაცვლელად, გთხოვთ, გადადით ბმულზე:"
+
+#: templates/mail/password_reset_email.html:32
+#: templates/mail/password_reset_email.txt:32
+msgid ""
+"Then you'll get to a new password page, in which you'll be able to log in "
+"Infometer."
+msgstr ""
+"შემდეგ თქვენ გადახვალთ ახალი პაროლის გვერდზე, საიდანაც შეგეძლებათ ინფომეტრის "
+"სისტემაში შესვლა."
+
+#: templates/mail/score_claim.html:35 templates/mail/score_claim.txt:28
+#: templates/mail/score_clarification.html:34
+#: templates/mail/score_clarification.txt:28
+msgid "From whom"
+msgstr "ვისგან"
+
+#: templates/mail/score_claim.html:36 templates/mail/score_claim.txt:29
+#: templates/mail/score_clarification.html:35
+#: templates/mail/score_clarification.txt:29
+msgid "To whom"
+msgstr "ვის მიმართ"
+
+#: templates/mail/score_claim.html:37 templates/mail/score_claim.txt:31
+msgid "Claim"
+msgstr "მოთხოვნა"
+
+#: templates/mail/score_claim.html:46 templates/mail/score_claim.txt:42
+msgid "Claim was deleted by head of the cycle"
+msgstr "მოთხოვნა წაშლილია მონიტორინგის ციკლის ხელმძღვანელის მიერ"
+
+#: templates/mail/score_clarification.html:36
+#: templates/mail/score_clarification.txt:31
+msgid "Clarification"
+msgstr "განმარტება"
+
 #: templates/registration/activate.html:31
 msgid "Account activation error"
 msgstr "შეცდომა ანგარიშის აქტივაციისას "
@@ -3218,21 +3276,6 @@ msgstr ""
 "            <p>ახლა თქვენ შეგიძლიათ <a href=\"%(login_url)s\">შეხვიდეთ</a>, "
 "რეგისტრაციის დროს მითითებული ელ-ფოსტისა და პაროლის მეშვეობით.</p>\n"
 "        "
-
-#: templates/registration/activation_email.html:30
-#: templates/registration/activation_email.txt:26
-msgid "In order to activate your account you should follow the link ONCE"
-msgstr "თქვენი ანგარიშის გასააქტიურებლად უნდა გადახვიდეთ ბმულზე ერთხელ"
-
-#: templates/registration/activation_email.html:35
-#: templates/registration/activation_email.txt:29
-msgid "Later you'll be able to log in here"
-msgstr "მოგვიანებით, ვებ-გვერდზე შესასვლელად შეგიძლაით გამოიყენოთ ბმული:"
-
-#: templates/registration/activation_email.html:39
-#: templates/registration/activation_email.txt:31
-msgid "Thank you"
-msgstr "გმადლობთ"
 
 #: templates/registration/login.html:32
 #: templates/registration/registration_form.html:37
@@ -3356,18 +3399,6 @@ msgstr ""
 "წერილი გაიგზავნა თქვენს ელ-ფოსტაზე. პაროლის აღსადგენად, გთხოვთ, გადადით "
 "წერილში მოცემულ ბმულზე. ამის შემდეგ თქვენ შეხვალთ ახალი პაროლის შესაქმნელ "
 "გვერდზე. ახალი პაროლის მეშვეობით შეგეძლებათ ინფომეტრის სისტემაში შესვლა."
-
-#: templates/registration/password_reset_email.html:30
-msgid "In order to reset your password, please follow the link:"
-msgstr "პაროლის შესაცვლელად, გთხოვთ, გადადით ბმულზე:"
-
-#: templates/registration/password_reset_email.html:36
-msgid ""
-"Then you'll get to a new password page, in which you'll be able to log in "
-"Infometer."
-msgstr ""
-"შემდეგ თქვენ გადახვალთ ახალი პაროლის გვერდზე, საიდანაც შეგეძლებათ ინფომეტრის "
-"სისტემაში შესვლა."
 
 #: templates/registration/password_reset_form.html:34
 msgid ""

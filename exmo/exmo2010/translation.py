@@ -35,7 +35,7 @@ class MonitoringTranslationOptions(TranslationOptions):
 
 @register(models.Parameter)
 class ParameterTranslationOptions(TranslationOptions):
-    fields = ('name', 'description')
+    fields = ('name', 'grounds', 'rating_procedure', 'notes')
 
 
 @register(models.Organization)

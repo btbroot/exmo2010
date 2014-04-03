@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: infometer\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-12 11:39+0400\n"
+"POT-Creation-Date: 2014-04-03 11:48+0400\n"
 "PO-Revision-Date: 2014-03-06 16:18+0000\n"
 "Last-Translator: MRİ <xaled_yes@hotmail.com>\n"
 "Language-Team: Azerbaijani (http://www.transifex.com/projects/p/infometer/"
@@ -116,7 +116,8 @@ msgstr "Şəxsi bilgilər başarı ilə dəyişdirildi"
 #: accounts/templates/user_settings.html:54 exmo2010/forms.py:59
 #: exmo2010/custom_registration/forms.py:59
 #: exmo2010/custom_registration/forms.py:178
-#: exmo2010/custom_registration/forms.py:202
+#: exmo2010/custom_registration/forms.py:200
+#: exmo2010/custom_registration/views.py:58
 #: templates/registration/login.html:101
 #: templates/registration/password_reset_form.html:67
 msgid "E-mail"
@@ -127,8 +128,8 @@ msgstr "E-mail"
 #: monitorings/templates/monitoring_comment_report.html:60
 #: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
-#: organizations/templates/_organization_form.html:41
-#: parameters/templates/parameter_form.html:73 scores/templates/form.html:247
+#: organizations/templates/_organization_form.html:42
+#: parameters/templates/parameter_form.html:76 scores/templates/form.html:247
 #: scores/templates/form_with_comment.html:237
 #: scores/templates/score_list.html:283
 msgid "Save"
@@ -136,7 +137,7 @@ msgstr "Yadda saxla"
 
 #: accounts/templates/user_settings.html:83
 #: exmo2010/custom_registration/forms.py:119
-#: exmo2010/models/organization.py:128
+#: exmo2010/models/organization.py:134
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr "Dəvət kodu"
@@ -166,13 +167,8 @@ msgstr "Şifrəni dəyişmək üçün müraciət"
 msgid "E-mail notifications"
 msgstr "E-mail bildirişi"
 
-#: auth/forms.py:62
-#, python-format
-msgid "Password reset on %s"
-msgstr "Şifrənin əvəzlənməsi %s"
-
 #: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:213
-#: exmo2010/urls.py:270 monitorings/views.py:947
+#: exmo2010/urls.py:270 monitorings/views.py:953
 msgid "Ratings"
 msgstr "Reytinq"
 
@@ -191,13 +187,13 @@ msgstr "Reytinq"
 #: monitorings/templates/rating.html:155 monitorings/templates/rating.html:168
 #: organizations/templates/_org_list.html:36
 #: scores/templates/parameter_header.html:25
-#: templates/certificate_order_email.html:31
-#: templates/certificate_order_email.txt:28
 #: templates/certificate_order_form.html:99
 #: templates/certificate_order_form.html:112
 #: templates/exmo2010/rating_common.html:24
-#: templates/exmo2010/emails/feedback_recipient.html:27
-#: templates/exmo2010/emails/feedback_recipient.txt:26
+#: templates/mail/certificate_order_email.html:31
+#: templates/mail/certificate_order_email.txt:28
+#: templates/mail/feedback_recipient.html:28
+#: templates/mail/feedback_recipient.txt:28
 msgid "Organization"
 msgstr "Təşkilat"
 
@@ -213,11 +209,11 @@ msgstr "Monitorinq dövrü"
 #: exmo2010/models/questionnaire.py:36
 #: monitorings/templates/monitoring_form.html:72
 #: monitorings/templates/ratings.html:38 monitorings/templates/ratings.html:47
-#: parameters/templates/parameter_email.html:27
-#: parameters/templates/parameter_email.txt:25
-#: templates/certificate_order_email.html:26
-#: templates/certificate_order_email.txt:24
 #: templates/exmo2010/opendata.html:60
+#: templates/mail/certificate_order_email.html:26
+#: templates/mail/certificate_order_email.txt:24
+#: templates/mail/parameter_email.html:27
+#: templates/mail/parameter_email.txt:27
 msgid "Monitoring cycle"
 msgstr " Monitorinq dövrü"
 
@@ -233,40 +229,36 @@ msgstr "bütün idarəedicilər "
 msgid "all experts"
 msgstr "bütün analitiklər "
 
-#: claims/views.py:48 clarifications/views.py:47
+#: claims/views.py:45 clarifications/views.py:43
 #, python-format
 msgid "Add new claim for %s"
 msgstr "İradınızı əlavə edin %s"
 
-#: claims/views.py:118 claims/views.py:180 clarifications/views.py:90
-#: clarifications/views.py:157 custom_comments/views.py:43
-#: custom_comments/views.py:109 monitorings/views.py:79
+#: claims/views.py:102 claims/views.py:164 clarifications/views.py:81
+#: clarifications/views.py:148 custom_comments/views.py:44
+#: custom_comments/views.py:111 monitorings/views.py:79
 #: monitorings/views.py:319 monitorings/views.py:412 monitorings/views.py:469
-#: monitorings/views.py:561 monitorings/views.py:623 monitorings/views.py:666
-#: monitorings/views.py:1143 monitorings/views.py:1145
-#: organizations/views.py:58 organizations/views.py:124 scores/views.py:103
-#: scores/views.py:117 scores/views.py:158 scores/views.py:285
-#: scores/views.py:341 scores/views.py:375 scores/views.py:429
+#: monitorings/views.py:561 monitorings/views.py:623 monitorings/views.py:670
+#: monitorings/views.py:1149 monitorings/views.py:1151
+#: organizations/views.py:58 organizations/views.py:115 scores/views.py:102
+#: scores/views.py:116 scores/views.py:156 scores/views.py:280
+#: scores/views.py:336 scores/views.py:370 scores/views.py:424
 #: tasks/views.py:50 tasks/views.py:271 tasks/views.py:279 tasks/views.py:329
 msgid "Forbidden"
 msgstr "Yasaqdır"
 
-#: claims/views.py:167
+#: claims/views.py:151
 #, python-format
 msgid "Claims report for \"%s\""
 msgstr "İradlarla bağlı hesabat \"%s\""
 
-#: claims/views.py:188 dashboard/dashboard.py:119 dashboard/menu.py:76
+#: claims/views.py:172 dashboard/dashboard.py:119 dashboard/menu.py:76
 #: exmo2010/urls.py:211 scores/templates/tabs.html:43
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:82
 msgid "Claims"
 msgstr "İradlar"
 
-#: claims/views.py:199
-msgid "New claim"
-msgstr "Yeni irad "
-
-#: claims/views.py:199 claims/templates/claim.html:48
+#: claims/templates/claim.html:48 exmo2010/mail.py:85
 msgid "Delete claim"
 msgstr "İradın silinməsi"
 
@@ -332,72 +324,20 @@ msgstr "İradın ünvanı"
 msgid "Claim creator"
 msgstr "Kim ünvanladı"
 
-#: claims/templates/score_claim.html:28 claims/templates/score_claim.txt:25
-#: clarifications/templates/score_clarification.html:27
-#: clarifications/templates/score_clarification.txt:25
-#: custom_comments/templates/digest.html:33
-#: custom_comments/templates/digest.txt:29
-msgid "Date"
-msgstr "Tarix"
-
-#: claims/templates/score_claim.html:35 claims/templates/score_claim.txt:26
-#: clarifications/templates/score_clarification.html:34
-#: clarifications/templates/score_clarification.txt:26
-msgid "From whom"
-msgstr "Kimdən"
-
-#: claims/templates/score_claim.html:36 claims/templates/score_claim.txt:27
-#: clarifications/templates/score_clarification.html:35
-#: clarifications/templates/score_clarification.txt:27
-msgid "To whom"
-msgstr "Kimə"
-
-#: claims/templates/score_claim.html:37 claims/templates/score_claim.txt:29
-msgid "Claim"
-msgstr "İrad"
-
-#: claims/templates/score_claim.html:40 claims/templates/score_claim.txt:33
-#: clarifications/templates/score_clarification.html:39
-#: clarifications/templates/score_clarification.txt:33
-#: exmo2010/models/questionnaire.py:58
-msgid "Answer"
-msgstr "Cavab"
-
-#: claims/templates/score_claim.html:44 claims/templates/score_claim.txt:38
-#: clarifications/templates/score_clarification.html:42
-#: clarifications/templates/score_clarification.txt:37
-#: custom_comments/templates/digest.html:37
-#: custom_comments/templates/digest.txt:33
-#: custom_comments/templates/score_comment.html:46
-#: custom_comments/templates/score_comment.txt:29 exmo/config.py:102
-#: tasks/templates/task_user_assigned.html:29
-#: templates/certificate_order_email.txt:26
-#: templates/certificate_order_email.txt:30
-msgid "Link"
-msgstr "Link"
-
-#: claims/templates/score_claim.html:46 claims/templates/score_claim.txt:40
-msgid "Claim was deleted by head of the cycle"
-msgstr "İrad monitorinq rəhbəri tərəfindən silinib"
-
 #: clarifications/forms.py:28
 msgid "Your clarification"
 msgstr "Sizin dəqiqləşdirmə"
 
-#: clarifications/views.py:94
+#: clarifications/views.py:85
 #, python-format
 msgid "Clarifications report for \"%s\""
 msgstr "Dəqiqləşdirmə hesabatı üçün \"%s\""
 
-#: clarifications/views.py:167 dashboard/dashboard.py:115 dashboard/menu.py:75
+#: clarifications/views.py:158 dashboard/dashboard.py:115 dashboard/menu.py:75
 #: exmo2010/urls.py:212 scores/templates/tabs.html:35
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:78
 msgid "Clarifications"
 msgstr "Dəqiqləşdirmə"
-
-#: clarifications/views.py:185
-msgid "New clarification"
-msgstr "Yeni dəqiqləşdirmə"
 
 #: clarifications/templates/clarification.html:61
 msgid "Answer clarification"
@@ -430,14 +370,9 @@ msgstr "Dəqiqləşdirmə apardı "
 msgid "Clarification creator"
 msgstr "Kim dəqiqləşdirdi "
 
-#: clarifications/templates/score_clarification.html:36
-#: clarifications/templates/score_clarification.txt:29
-msgid "Clarification"
-msgstr "Dəqiqləşdirmə"
-
 #: custom_comments/forms.py:31 custom_comments/models.py:41
-#: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:83
-#: exmo2010/models/task.py:283 monitorings/views.py:124 tasks/views.py:288
+#: exmo2010/models/monitoring.py:89 exmo2010/models/task.py:80
+#: exmo2010/models/task.py:277 monitorings/views.py:124 tasks/views.py:288
 #: tasks/views.py:301 tasks/views.py:307
 msgid "status"
 msgstr "status"
@@ -454,12 +389,7 @@ msgstr "Şərh qapalıdır, cavablandırılır "
 msgid "Comment is closed and not answered"
 msgstr "Şərh qapalıdır, cavablandırılmayıb"
 
-#: custom_comments/tasks.py:48
-#, python-format
-msgid "%(prefix)s Email digest"
-msgstr "%(prefix)s Daycest"
-
-#: custom_comments/views.py:53 dashboard/dashboard.py:111 dashboard/menu.py:74
+#: custom_comments/views.py:54 dashboard/dashboard.py:111 dashboard/menu.py:74
 #: exmo2010/urls.py:210 scores/templates/detail.html:161
 #: scores/templates/tabs.html:27
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:70
@@ -499,33 +429,6 @@ msgstr "Şərhin linki"
 #: custom_comments/templates/comment_list_table.html:36
 msgid "go to comment"
 msgstr "Şərhə get"
-
-#: custom_comments/templates/digest.html:27
-#: custom_comments/templates/digest.txt:23
-msgid "Hello"
-msgstr "Salam"
-
-#: custom_comments/templates/digest.html:28
-#: custom_comments/templates/digest.txt:24
-msgid "Digest from"
-msgstr "Daycest"
-
-#: custom_comments/templates/digest.html:28
-#: custom_comments/templates/digest.txt:24
-msgid "till"
-msgstr "qədər"
-
-#: custom_comments/templates/digest.html:34
-#: custom_comments/templates/digest.txt:30
-#: templates/certificate_order_email.html:36
-#: templates/certificate_order_email.txt:32
-msgid "User"
-msgstr "İstifadəçi"
-
-#: custom_comments/templates/digest.html:35
-#: custom_comments/templates/digest.txt:31
-msgid "Comment"
-msgstr "Şərh"
 
 #: dashboard/dashboard.py:79
 msgid "Quick links"
@@ -590,8 +493,8 @@ msgstr "Email bağlantısı ayarlamaları"
 
 #: exmo/config.py:44 exmo/config.py:62 exmo/config.py:71 exmo/config.py:80
 #: exmo/config.py:89 exmo2010/forms.py:75
-#: templates/exmo2010/emails/feedback_recipient.html:30
-#: templates/exmo2010/emails/feedback_recipient.txt:29
+#: templates/mail/feedback_recipient.html:34
+#: templates/mail/feedback_recipient.txt:31
 msgid "Email"
 msgstr "Email"
 
@@ -627,6 +530,18 @@ msgstr "Sertifikat sifrişi üçün email ünvanı"
 msgid "Links"
 msgstr "Linklər"
 
+#: exmo/config.py:102 templates/mail/certificate_order_email.txt:26
+#: templates/mail/certificate_order_email.txt:30 templates/mail/digest.html:44
+#: templates/mail/digest.txt:35 templates/mail/score_claim.html:44
+#: templates/mail/score_claim.txt:40
+#: templates/mail/score_clarification.html:42
+#: templates/mail/score_clarification.txt:39
+#: templates/mail/score_comment.html:50 templates/mail/score_comment.txt:31
+#: templates/mail/task_user_assigned.html:29
+#: templates/mail/task_user_assigned.txt:27
+msgid "Link"
+msgstr "Link"
+
 #: exmo/config.py:105
 msgid "Link to portal"
 msgstr "Portala bağlantı"
@@ -647,6 +562,11 @@ msgstr "İnformasiya Azadlığı Fondunun eksperti"
 #: exmo/config.py:118
 msgid "Default organization`s expert"
 msgstr "Təşkilatın eksperti"
+
+#: exmo2010/celery_tasks.py:107
+#, python-format
+msgid "%(prefix)s Email digest"
+msgstr "%(prefix)s Daycest"
 
 #: exmo2010/forms.py:60
 msgid "Your problem"
@@ -673,8 +593,8 @@ msgid "Certificate for"
 msgstr "üçün Sertifikat"
 
 #: exmo2010/forms.py:73 scores/templates/task_report.html:41
-#: templates/exmo2010/emails/feedback_recipient.html:25
-#: templates/exmo2010/emails/feedback_recipient.txt:24
+#: templates/mail/feedback_recipient.html:26
+#: templates/mail/feedback_recipient.txt:26
 msgid "Name"
 msgstr "Ad"
 
@@ -694,14 +614,45 @@ msgstr "İndeks"
 msgid "Address"
 msgstr "Ünvan"
 
+#: exmo2010/mail.py:81
+msgid "New claim"
+msgstr "Yeni irad "
+
+#: exmo2010/mail.py:96
+msgid "New clarification"
+msgstr "Yeni dəqiqləşdirmə"
+
+#: exmo2010/mail.py:132
+msgid "Ordering openness certificate for"
+msgstr "Şəffaflıq sertifikatı sifarişi"
+
+#: exmo2010/mail.py:167
+#, python-brace-format
+msgid "{subject_prefix}Parameter has been changed: {param}"
+msgstr "{subject_prefix}Parametr dəyişdirildi: {param}"
+
+#: exmo2010/mail.py:244 templates/mail/task_user_assigned.html:28
+#: templates/mail/task_user_assigned.txt:26
+msgid "You have an assigned task"
+msgstr "Tapşırığınız var"
+
+#: exmo2010/mail.py:258 exmo2010/mail.py:265 exmo2010/urls.py:192
+#: exmo2010/views.py:60 templates/exmo2010/footer.html:29
+msgid "Feedback"
+msgstr "Geriyə əlaqə"
+
+#: exmo2010/mail.py:276
+#, python-format
+msgid "Password reset on %s"
+msgstr "Şifrənin əvəzlənməsi %s"
+
+#: exmo2010/mail.py:287
+msgid "Registration on "
+msgstr "Qeydiyyatdan keçin "
+
 #: exmo2010/urls.py:190 templates/exmo2010/footer.html:26
 msgid "About"
 msgstr "Layihə haqda"
-
-#: exmo2010/urls.py:192 exmo2010/views.py:79 exmo2010/views.py:87
-#: templates/exmo2010/footer.html:29
-msgid "Feedback"
-msgstr "Geriyə əlaqə"
 
 #: exmo2010/urls.py:193 templates/exmo2010/footer.html:28
 #: templates/exmo2010/opendata.html:30
@@ -728,7 +679,7 @@ msgstr " Şifrənin bərpası (шаг 2 из 3)"
 msgid "Password reset (step 3 from 3)"
 msgstr "Şifrənin bərpası (шаг 3 из 3)"
 
-#: exmo2010/urls.py:203 exmo2010/custom_registration/views.py:147
+#: exmo2010/urls.py:203 exmo2010/custom_registration/views.py:169
 msgid "Registration (step 1 of 2)"
 msgstr "Qeydiyyat (шаг 1 из 2)"
 
@@ -804,7 +755,7 @@ msgstr "Tapşırığın import"
 #: exmo2010/urls.py:273
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
-#: parameters/forms.py:47 scores/views.py:380
+#: parameters/forms.py:47 scores/views.py:375
 #: templates/exmo2010/score_legend.html:91
 #: templates/exmo2010/score_legend.html:123
 msgid "Parameter"
@@ -828,19 +779,27 @@ msgstr "Parametrin silinməsi"
 msgid "Openness certificate"
 msgstr "Şəffaflıq sertifikatı"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:174
+msgid ""
+"You ordered an openness certificate. Certificate will be prepared and sent "
+"within 5 working days."
+msgstr ""
+"Siz şəffaflıq sertifikatı sifariş etdiniz. Sertifikat hazırlanacaq və "
+"göndəriləcək5 iş günü ərzində"
+
+#: exmo2010/views.py:193
 msgid "by all"
 msgstr "hamısı"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:193
 msgid "by normative"
 msgstr "normativ üzrə"
 
-#: exmo2010/views.py:226
+#: exmo2010/views.py:193
 msgid "by recommendatory"
 msgstr "tövsiyyəsi ilə"
 
-#: exmo2010/views.py:230
+#: exmo2010/views.py:197
 #, no-python-format
 msgid ""
 "For {task.organization.name} organization, which took {task.place} place "
@@ -851,31 +810,20 @@ msgstr ""
 "şəffaflıq {task.task_openness:.3f}% reytinqi üzrə {rating_type} parametrlər, "
 "yayınlandı {date}."
 
-#: exmo2010/views.py:238
+#: exmo2010/views.py:205
+#, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr "Ünvan {zip_code}, {address}, {addressee}."
 
-#: exmo2010/views.py:240
+#: exmo2010/views.py:207
 #, python-format
 msgid "On email address %s."
 msgstr "email ünvanına %s."
 
-#: exmo2010/views.py:250
+#: exmo2010/views.py:217
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "Sertifikat hazırlayın %s."
-
-#: exmo2010/views.py:257
-msgid "Ordering openness certificate for"
-msgstr "Şəffaflıq sertifikatı sifarişi"
-
-#: exmo2010/views.py:276
-msgid ""
-"You ordered an openness certificate. Certificate will be prepared and sent "
-"within 5 working days."
-msgstr ""
-"Siz şəffaflıq sertifikatı sifariş etdiniz. Sertifikat hazırlanacaq və "
-"göndəriləcək5 iş günü ərzində"
 
 #: exmo2010/custom_registration/forms.py:40
 msgid "representative"
@@ -898,6 +846,7 @@ msgid "Subscribe to news"
 msgstr "Xəbərlər üçün qeydiyyat"
 
 #: exmo2010/custom_registration/forms.py:70
+#, python-brace-format
 msgid "{fieldname} is required field."
 msgstr "{fieldname} tələb olunur."
 
@@ -948,22 +897,30 @@ msgstr ""
 "Doğru istifadəçi adı və şifrə daxil edin. Diqqətli olun sahələr kiçik "
 "hərflərə həssasdır."
 
-#: exmo2010/custom_registration/forms.py:193
-#: exmo2010/custom_registration/forms.py:224
+#: exmo2010/custom_registration/forms.py:191
+#: exmo2010/custom_registration/forms.py:217
 msgid "This account is inactive."
 msgstr "İstifadəçi aktiv deyil"
 
-#: exmo2010/custom_registration/forms.py:214
+#: exmo2010/custom_registration/forms.py:211
 msgid "There's no user with that e-mail."
 msgstr "Bu email üzrə istifadəçi yoxdur."
 
-#: exmo2010/custom_registration/forms.py:220
+#: exmo2010/custom_registration/forms.py:215
 msgid "Account is activated already."
 msgstr "Hesab daha öncə aktiv edilmişdir."
 
-#: exmo2010/custom_registration/models.py:40
-msgid "Registration on "
-msgstr "Qeydiyyatdan keçin "
+#: exmo2010/custom_registration/views.py:67
+msgid ""
+"That e-mail address doesn't have an associated user account. Are you sure "
+"you've registered?"
+msgstr ""
+
+#: exmo2010/custom_registration/views.py:70
+msgid ""
+"The user account associated with this e-mail address cannot reset the "
+"password."
+msgstr ""
 
 #: exmo2010/models/claim.py:33 exmo2010/models/clarification.py:34
 msgid "score"
@@ -996,6 +953,7 @@ msgid "addressee"
 msgstr "ünvanlayan"
 
 #: exmo2010/models/claim.py:57
+#, python-brace-format
 msgid "claim for {obj.score} from {obj.creator}"
 msgstr "{obj.creator}dən {obj.score} -ə sual"
 
@@ -1008,6 +966,7 @@ msgid "clarification close"
 msgstr "dəqiqləşdirmə qapalıdır"
 
 #: exmo2010/models/clarification.py:59
+#, python-brace-format
 msgid "clarification for {obj.score} from {obj.creator}"
 msgstr "{obj.creator}dən {obj.score} -ə dəqiqləşdirmə"
 
@@ -1063,7 +1022,7 @@ msgid "Monitoring publish date"
 msgstr "Nəticələrin yayınlanma tarixi"
 
 #: exmo2010/models/monitoring.py:88 exmo2010/models/openness_expression.py:37
-#: exmo2010/models/organization.py:121 exmo2010/models/parameter.py:39
+#: exmo2010/models/organization.py:122 exmo2010/models/parameter.py:36
 msgid "name"
 msgstr "adı"
 
@@ -1096,123 +1055,131 @@ msgstr "hardan"
 msgid "Unknown OpennessExpression code"
 msgstr "Bəlli olmayan OpennessExpression kodu"
 
-#: exmo2010/models/organization.py:35
+#: exmo2010/models/organization.py:36
 msgid "Not sent"
 msgstr "göndərilmədi"
 
-#: exmo2010/models/organization.py:36
+#: exmo2010/models/organization.py:37
 msgid "Sent"
 msgstr "göndərildi"
 
-#: exmo2010/models/organization.py:37
+#: exmo2010/models/organization.py:38
 msgid "Read"
 msgstr "oxundu"
 
-#: exmo2010/models/organization.py:38
+#: exmo2010/models/organization.py:39
 msgid "Registered"
 msgstr "qeydiyyatdan keçdi"
 
-#: exmo2010/models/organization.py:39
+#: exmo2010/models/organization.py:40
 msgid "Activated"
 msgstr "aktivdir"
 
-#: exmo2010/models/organization.py:42
+#: exmo2010/models/organization.py:43
 #: organizations/templates/_mail_history.html:27
 #: organizations/templates/_org_list.html:42
 msgid "All invitations"
 msgstr "bütün dəvətlər"
 
-#: exmo2010/models/organization.py:73
+#: exmo2010/models/organization.py:74
 msgid "Illegal symbols in email field."
 msgstr "Email sahəsindəki çatımlı olmayan simvollar."
 
-#: exmo2010/models/organization.py:102
+#: exmo2010/models/organization.py:103
 msgid "Illegal symbols in phone field."
 msgstr "Telefon bölümündə çatımlı olmayan simvollar."
 
-#: exmo2010/models/organization.py:122 monitorings/templates/rating.html:171
+#: exmo2010/models/organization.py:123 monitorings/templates/rating.html:171
 #: templates/certificate_order_form.html:113
 msgid "Website"
 msgstr "Sayt"
 
-#: exmo2010/models/organization.py:123 organizations/views.py:111
-#: organizations/views.py:128
+#: exmo2010/models/organization.py:124 organizations/views.py:102
+#: organizations/views.py:119
 msgid "email"
 msgstr "email"
 
-#: exmo2010/models/organization.py:124 organizations/views.py:112
-#: organizations/views.py:129
+#: exmo2010/models/organization.py:125 organizations/views.py:103
+#: organizations/views.py:120
 msgid "phone"
 msgstr "telefon"
 
-#: exmo2010/models/organization.py:125 exmo2010/models/organization.py:160
-#: exmo2010/models/parameter.py:41 monitorings/views.py:123
+#: exmo2010/models/organization.py:131 exmo2010/models/organization.py:158
+#: exmo2010/models/parameter.py:44 monitorings/views.py:123
 msgid "monitoring"
 msgstr "monitorinq"
 
-#: exmo2010/models/organization.py:133 exmo2010/models/organization.py:165
+#: exmo2010/models/organization.py:139 exmo2010/models/organization.py:163
 msgid "Invitation status"
 msgstr "Dəvət mətni"
 
-#: exmo2010/models/organization.py:159
+#: exmo2010/models/organization.py:157
 msgid "date and time"
 msgstr "tarix və zaman"
 
-#: exmo2010/models/organization.py:161
+#: exmo2010/models/organization.py:159
 msgid "subject"
 msgstr "mövzu"
 
-#: exmo2010/models/organization.py:162
+#: exmo2010/models/organization.py:160
 msgid "Letter content"
 msgstr "Məktub mətni"
 
-#: exmo2010/models/parameter.py:38
+#: exmo2010/models/parameter.py:35
 msgid "code"
 msgstr "kod"
 
-#: exmo2010/models/parameter.py:40 exmo2010/models/static_page.py:31
-msgid "description"
-msgstr "təsvir"
+#: exmo2010/models/parameter.py:37
+msgid "grounds"
+msgstr ""
 
-#: exmo2010/models/parameter.py:42
+#: exmo2010/models/parameter.py:38
+msgid "rating procedure"
+msgstr ""
+
+#: exmo2010/models/parameter.py:39
+msgid "notes"
+msgstr ""
+
+#: exmo2010/models/parameter.py:45
 msgid "excluded organizations"
 msgstr "istisna edilən qurumlar"
 
-#: exmo2010/models/parameter.py:43
+#: exmo2010/models/parameter.py:46
 msgid "weight"
 msgstr "çəki"
 
-#: exmo2010/models/parameter.py:45 exmo2010/models/score.py:57
+#: exmo2010/models/parameter.py:48 exmo2010/models/score.py:57
 #: scores/forms.py:69
 msgid "complete"
 msgstr "tamlıq"
 
-#: exmo2010/models/parameter.py:46 exmo2010/models/score.py:58
+#: exmo2010/models/parameter.py:49 exmo2010/models/score.py:58
 #: scores/forms.py:70
 msgid "topical"
 msgstr "aktuallıq"
 
-#: exmo2010/models/parameter.py:47 exmo2010/models/score.py:59
+#: exmo2010/models/parameter.py:50 exmo2010/models/score.py:59
 #: scores/forms.py:71
 msgid "accessible"
 msgstr "çatım rahatlığı"
 
-#: exmo2010/models/parameter.py:48 exmo2010/models/score.py:60
+#: exmo2010/models/parameter.py:51 exmo2010/models/score.py:60
 #: scores/forms.py:72
 msgid "hypertext"
 msgstr "hipertekst"
 
-#: exmo2010/models/parameter.py:49 exmo2010/models/score.py:61
+#: exmo2010/models/parameter.py:52 exmo2010/models/score.py:61
 #: scores/forms.py:73
 msgid "document"
 msgstr "sənəd"
 
-#: exmo2010/models/parameter.py:50 exmo2010/models/score.py:62
+#: exmo2010/models/parameter.py:53 exmo2010/models/score.py:62
 #: scores/forms.py:74
 msgid "image"
 msgstr "şəkil"
 
-#: exmo2010/models/parameter.py:51
+#: exmo2010/models/parameter.py:54
 msgid "normative parameter"
 msgstr "normativ parametr"
 
@@ -1256,6 +1223,13 @@ msgstr "Sual"
 msgid "Question comment"
 msgstr "Sualın izahı"
 
+#: exmo2010/models/questionnaire.py:58 templates/mail/score_claim.html:40
+#: templates/mail/score_claim.txt:35
+#: templates/mail/score_clarification.html:39
+#: templates/mail/score_clarification.txt:35
+msgid "Answer"
+msgstr "Cavab"
+
 #: exmo2010/models/questionnaire.py:71
 msgid "Text answer"
 msgstr "Cavab mətni"
@@ -1276,7 +1250,7 @@ msgstr "son yoxlama"
 msgid "pre-interact revision"
 msgstr "qarşılıqlı yoxlama"
 
-#: exmo2010/models/score.py:50 exmo2010/models/task.py:278
+#: exmo2010/models/score.py:50 exmo2010/models/task.py:272
 msgid "task"
 msgstr "tapşırıq"
 
@@ -1333,37 +1307,41 @@ msgstr ""
 msgid "identifier"
 msgstr "identifikator"
 
+#: exmo2010/models/static_page.py:31
+msgid "description"
+msgstr "təsvir"
+
 #: exmo2010/models/static_page.py:32
 msgid "content"
 msgstr "məzmun"
 
-#: exmo2010/models/task.py:72 parameters/forms.py:63
+#: exmo2010/models/task.py:69 parameters/forms.py:63
 msgid "opened"
 msgstr "açıqdır"
 
-#: exmo2010/models/task.py:73 parameters/forms.py:65
+#: exmo2010/models/task.py:70 parameters/forms.py:65
 msgid "closed"
 msgstr "qapalıdır"
 
-#: exmo2010/models/task.py:74 parameters/forms.py:67
+#: exmo2010/models/task.py:71 parameters/forms.py:67
 msgid "approved"
 msgstr "təsdiqləndi"
 
-#: exmo2010/models/task.py:80 exmo2010/models/task.py:279
+#: exmo2010/models/task.py:77 exmo2010/models/task.py:273
 msgid "user"
 msgstr "istifadəçi"
 
-#: exmo2010/models/task.py:82 organizations/views.py:110
-#: organizations/views.py:127 tasks/views.py:286 tasks/views.py:300
+#: exmo2010/models/task.py:79 organizations/views.py:101
+#: organizations/views.py:118 tasks/views.py:286 tasks/views.py:300
 #: tasks/views.py:306
 msgid "organization"
 msgstr "qurum"
 
-#: exmo2010/models/task.py:246
+#: exmo2010/models/task.py:240
 msgid "Ready task must be 100 percent complete."
 msgstr "Tam tapşırıq üçün 100 faiz əməl olunmalıdır."
 
-#: exmo2010/models/task.py:251
+#: exmo2010/models/task.py:245
 #, python-format
 msgid ""
 "Approved task for monitoring %(monitoring)s and organization "
@@ -1372,7 +1350,7 @@ msgstr ""
 "Monitorinq üçün %(monitoring)s təşkilatının %(organization)s artıq "
 "təsdiqlənmiş tapşırığıı vardır."
 
-#: exmo2010/models/task.py:285
+#: exmo2010/models/task.py:279
 msgid "time"
 msgstr "vaxt"
 
@@ -1530,40 +1508,40 @@ msgstr "Bütünü"
 msgid "Parameter found report of %(monitoring)s"
 msgstr "Hesabat parametrlərin mövcudluğu üzrə %(monitoring)s"
 
-#: monitorings/views.py:754 monitorings/views.py:839 tasks/views.py:144
+#: monitorings/views.py:758 monitorings/views.py:845 tasks/views.py:144
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "row %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:756 monitorings/views.py:841 tasks/views.py:146
+#: monitorings/views.py:760 monitorings/views.py:847 tasks/views.py:146
 msgid "File, you are loading is not valid CSV."
 msgstr "Sizin yüklədiyiniz fayl CSV və ya etibarlı deyil."
 
-#: monitorings/views.py:758 monitorings/views.py:843 tasks/views.py:148
+#: monitorings/views.py:762 monitorings/views.py:849 tasks/views.py:148
 #, python-format
 msgid "Import error: %s."
 msgstr "Yanlış import: %s."
 
-#: monitorings/views.py:759
+#: monitorings/views.py:763
 #, python-format
 msgid "Import organizations from CSV for monitoring %s"
 msgstr "CSV-dən monitorinq üçün %s qurumların importu"
 
-#: monitorings/views.py:770 monitorings/views.py:855
+#: monitorings/views.py:774 monitorings/views.py:861
 msgid "Back to the monitoring"
 msgstr "Monitorinqə dön "
 
-#: monitorings/views.py:844
+#: monitorings/views.py:850
 #, python-format
 msgid "Import parameters from CSV for monitoring %s"
 msgstr "CSV-dən monitorinq üçün %s parametrlərin importu"
 
-#: monitorings/views.py:880
+#: monitorings/views.py:886
 #, python-format
 msgid "Comment report for %s"
 msgstr "Şərhlər üçün hesabat %s"
 
-#: monitorings/views.py:895
+#: monitorings/views.py:901
 #: templates/user_dashboard/modules/quicklinks.html:29
 msgid "Monitoring statistics"
 msgstr "Statistika"
@@ -1952,15 +1930,15 @@ msgstr "Seçimi sıfırlamaq "
 msgid "Organizations for monitoring %s"
 msgstr "Monitorinq üçün qurum %s"
 
-#: organizations/views.py:113 organizations/views.py:130
+#: organizations/views.py:104 organizations/views.py:121
 msgid "invitation code"
 msgstr "Dəvət kodu"
 
-#: organizations/views.py:114
+#: organizations/views.py:105
 msgid "tasks"
 msgstr "tapşırıq"
 
-#: organizations/views.py:115 organizations/views.py:131
+#: organizations/views.py:106 organizations/views.py:122
 msgid "invitation"
 msgstr "Dəvət"
 
@@ -1991,16 +1969,16 @@ msgstr "Avtomatik kod üçün bu açar sözdən istifadə edin məktub dəvəti.
 msgid "Invite"
 msgstr "Dəvət etmək"
 
-#: organizations/templates/_organization_form.html:41
+#: organizations/templates/_organization_form.html:42
 msgid "Add"
 msgstr "Əlavə etmək"
 
-#: organizations/templates/_organization_form.html:47
+#: organizations/templates/_organization_form.html:48
 msgid "Enter a list of emails separating them by commas, spaces or newlines."
 msgstr ""
 "Vergül, tire və ya boşluqla ayrılmış ünvanlar siyahısını əlavə edin sətir."
 
-#: organizations/templates/_organization_form.html:50
+#: organizations/templates/_organization_form.html:51
 msgid ""
 "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by "
 "commas or newlines."
@@ -2044,7 +2022,7 @@ msgstr "mail tarixçəsi"
 msgid "add"
 msgstr "əlavə et"
 
-#: parameters/forms.py:49 scores/views.py:381 scores/templates/detail.html:74
+#: parameters/forms.py:49 scores/views.py:376 scores/templates/detail.html:74
 #: scores/templates/task_report.html:44
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:58
@@ -2052,7 +2030,7 @@ msgstr "əlavə et"
 msgid "Found"
 msgstr "Mövcudluq"
 
-#: parameters/forms.py:51 scores/views.py:382 scores/templates/detail.html:83
+#: parameters/forms.py:51 scores/views.py:377 scores/templates/detail.html:83
 #: scores/templates/task_report.html:45
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2063,7 +2041,7 @@ msgstr "Mövcudluq"
 msgid "Complete"
 msgstr "Tamlıq"
 
-#: parameters/forms.py:53 scores/views.py:383 scores/templates/detail.html:93
+#: parameters/forms.py:53 scores/views.py:378 scores/templates/detail.html:93
 #: scores/templates/task_report.html:46
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2074,7 +2052,7 @@ msgstr "Tamlıq"
 msgid "Topical"
 msgstr "Aktuallıq"
 
-#: parameters/forms.py:55 scores/views.py:384 scores/templates/detail.html:103
+#: parameters/forms.py:55 scores/views.py:379 scores/templates/detail.html:103
 #: scores/templates/task_report.html:47
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
@@ -2093,7 +2071,7 @@ msgstr "Çatım rahatlığı"
 msgid "Hypertext"
 msgstr "Hypertext"
 
-#: parameters/forms.py:59 scores/views.py:386 scores/templates/detail.html:123
+#: parameters/forms.py:59 scores/views.py:381 scores/templates/detail.html:123
 #: scores/templates/task_report.html:49
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
@@ -2102,7 +2080,7 @@ msgstr "Hypertext"
 msgid "Document"
 msgstr "Sənədlərə çatım"
 
-#: parameters/forms.py:61 scores/views.py:387 scores/templates/detail.html:133
+#: parameters/forms.py:61 scores/views.py:382 scores/templates/detail.html:133
 #: scores/templates/task_report.html:50
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
@@ -2110,39 +2088,6 @@ msgstr "Sənədlərə çatım"
 #: templates/exmo2010/score_legend.html:85
 msgid "Image"
 msgstr "Şəkillər"
-
-#: parameters/views.py:113
-msgid "{subject_prefix}Parameter has been changed: {param}"
-msgstr "{subject_prefix}Parametr dəyişdirildi: {param}"
-
-#: parameters/templates/parameter_email.html:29
-#: parameters/templates/parameter_email.txt:27
-msgid "Old features"
-msgstr "Köhnə xüsusiyyətlər"
-
-#: parameters/templates/parameter_email.html:34
-#: parameters/templates/parameter_email.html:51
-#: parameters/templates/parameter_email.txt:32
-#: parameters/templates/parameter_email.txt:49
-msgid "Relevance criteria"
-msgstr "Uyğun meyarlar"
-
-#: parameters/templates/parameter_email.html:40
-#: parameters/templates/parameter_email.html:57
-#: parameters/templates/parameter_email.txt:38
-#: parameters/templates/parameter_email.txt:55
-msgid "Excluded organizations"
-msgstr "İstisna qurumlar"
-
-#: parameters/templates/parameter_email.html:46
-#: parameters/templates/parameter_email.txt:44
-msgid "Current features"
-msgstr "Hazırkı xüsusiyyətlər"
-
-#: parameters/templates/parameter_email.html:63
-#: parameters/templates/parameter_email.txt:61
-msgid "We recommend to check the scores of current parameter."
-msgstr "Parametr üzrə nəticənin yoxlanması tövsiyyə olunur."
 
 #: parameters/templates/parameter_form.html:38
 #: parameters/templates/parameter_form.html:47
@@ -2156,11 +2101,11 @@ msgstr "Parametrin redaktəsi %(param)s"
 msgid "Add new parameter"
 msgstr "Yeni parametr əlavə et"
 
-#: parameters/templates/parameter_form.html:75
+#: parameters/templates/parameter_form.html:78
 msgid "Save and send notifications"
 msgstr "Yadda saxla və ekspertə xəbərnamə göndər"
 
-#: parameters/templates/parameter_form.html:77 scores/templates/form.html:252
+#: parameters/templates/parameter_form.html:80 scores/templates/form.html:252
 #: templates/exmo2010/task_form.html:40
 msgid "Reset"
 msgstr "Sıfırlamaq"
@@ -2199,30 +2144,30 @@ msgstr "'%s' qiymətləndirilmədi"
 msgid "Found must be set"
 msgstr "'Mövcudluq' qiymətləndirilmədi "
 
-#: scores/views.py:224
+#: scores/views.py:222
 #, python-format
 msgid "Changed %s."
 msgstr "Dəyişdirildi%s."
 
-#: scores/views.py:224
+#: scores/views.py:222
 msgid "and"
 msgstr "və"
 
-#: scores/views.py:234
+#: scores/views.py:232
 msgid ""
 "New version of the existing score couldn`t be saved since the existing score "
 "is incomplete. Contact your Supervisor."
 msgstr "İnzibatçı ilə əlaqə saxlamaq"
 
-#: scores/views.py:379 scores/templates/task_report.html:40
+#: scores/views.py:374 scores/templates/task_report.html:40
 msgid "Code"
 msgstr "Kod"
 
-#: scores/views.py:385 scores/templates/task_report.html:48
+#: scores/views.py:380 scores/templates/task_report.html:48
 msgid "HTML"
 msgstr "HTML"
 
-#: scores/views.py:388 scores/templates/task_report.html:43
+#: scores/views.py:383 scores/templates/task_report.html:43
 msgid "Weight"
 msgstr "Çəki"
 
@@ -2264,8 +2209,16 @@ msgid "low importance"
 msgstr "aşağı"
 
 #: scores/templates/parameter_header.html:48
-msgid "Parameter description"
-msgstr "Parametr təsviri"
+msgid "Grounds"
+msgstr ""
+
+#: scores/templates/parameter_header.html:54
+msgid "Rating procedure"
+msgstr ""
+
+#: scores/templates/parameter_header.html:60
+msgid "Notes"
+msgstr ""
 
 #: scores/templates/score_list.html:75
 msgid "Openness by all parameters"
@@ -2323,10 +2276,6 @@ msgstr "Tapşırıq "
 #: templates/exmo2010/rating_common.html:24
 msgid "Openness"
 msgstr "Şəffaflıq"
-
-#: tasks/signals.py:38 tasks/templates/task_user_assigned.html:28
-msgid "You have an assigned task"
-msgstr "Tapşırığınız var"
 
 #: tasks/views.py:106
 #, python-format
@@ -2454,18 +2403,6 @@ msgstr ""
 "Serverdə yanlışlıq baş verdi. Bu haqda adminstratora bilgi verin. Yanlışlıq "
 "yaxın müddətdə aradan qaldırılacaq. Təşəkkür edirik anlayışınız üçün."
 
-#: templates/certificate_order_email.html:39
-#: templates/certificate_order_email.txt:35
-#: templates/certificate_order_form.html:51
-msgid "Deliver"
-msgstr "Çatdırmaq"
-
-#: templates/certificate_order_email.html:42
-#: templates/certificate_order_email.txt:38
-#: templates/certificate_order_form.html:54
-msgid "Content of the certificate"
-msgstr "Sertifikatın məzmunu"
-
 #: templates/certificate_order_form.html:44
 msgid "Organization list is empty, please change the organization filter"
 msgstr "Qurum siyahısı boşdur, qurumun filtirini dəyişmək xahiş olunur."
@@ -2473,6 +2410,18 @@ msgstr "Qurum siyahısı boşdur, qurumun filtirini dəyişmək xahiş olunur."
 #: templates/certificate_order_form.html:49
 msgid "Openness certificate will be prepared and sent within 5 working days."
 msgstr "Şəffaflıq sertifikatı 5 iş günü ərzinə hazırlanacaq və göndəriləcək."
+
+#: templates/certificate_order_form.html:51
+#: templates/mail/certificate_order_email.html:39
+#: templates/mail/certificate_order_email.txt:35
+msgid "Deliver"
+msgstr "Çatdırmaq"
+
+#: templates/certificate_order_form.html:54
+#: templates/mail/certificate_order_email.html:42
+#: templates/mail/certificate_order_email.txt:38
+msgid "Content of the certificate"
+msgstr "Sertifikatın məzmunu"
 
 #: templates/certificate_order_form.html:59
 msgid "Confirm order"
@@ -2571,22 +2520,8 @@ msgstr "Sətir uğurla yeniləndi"
 msgid "Errors encountered"
 msgstr "Yanlışlıq"
 
-#: templates/exmo2010/email_base.html:127 templates/exmo2010/email_base.txt:25
-msgid ""
-"This email was automatically generated by Infometer system, please do not "
-"reply."
-msgstr "Bu məktub İnfometr sisteminindir, ona cavab vermək lazım deyil."
-
-#: templates/exmo2010/email_base.html:128 templates/exmo2010/email_base.txt:26
-msgid ""
-"If you have any questions for Infometer, please contact technical support:"
-msgstr ""
-"İnfometr sistemi ilə işləməklə bağlı sualları texniki dəstək bölümünə "
-"bildirin:"
-
-#: templates/exmo2010/feedback.html:33
-#: templates/exmo2010/emails/feedback_creator.html:24
-#: templates/exmo2010/emails/feedback_creator.txt:23
+#: templates/exmo2010/feedback.html:33 templates/mail/feedback_creator.html:24
+#: templates/mail/feedback_creator.txt:25
 msgid ""
 "You've sent the letter to Infometer maintenance staff. You'll recieve an "
 "answer in 3 buisness days."
@@ -3091,16 +3026,6 @@ msgstr "Redaktə %(task)s"
 msgid "Add new task for %(view.monitoring)s"
 msgstr "%(view.monitoring)s üçün tapşırıq əlavə etmək"
 
-#: templates/exmo2010/emails/feedback_creator.html:26
-#: templates/exmo2010/emails/feedback_creator.txt:25
-msgid "Your trouble"
-msgstr "Sizin problem"
-
-#: templates/exmo2010/emails/feedback_recipient.html:32
-#: templates/exmo2010/emails/feedback_recipient.txt:31
-msgid "Trouble"
-msgstr "Problem"
-
 #: templates/exmo2010/helpers/inv_code_bubble.html:27
 #, python-format
 msgid ""
@@ -3164,6 +3089,140 @@ msgstr "Eksport üçün tapşırığın təsdiqlənməsi lazım"
 msgid "Scores"
 msgstr "Nəticələr"
 
+#: templates/mail/activation_email.html:30
+#: templates/mail/activation_email.txt:27
+msgid "In order to activate your account you should follow the link ONCE"
+msgstr ""
+"Akkauntunuzun aktivləşdirməsi zamanı linkə BİR DƏFƏ daxil olmanız zəruridir"
+
+#: templates/mail/activation_email.html:35
+#: templates/mail/activation_email.txt:30
+msgid "Later you'll be able to log in here"
+msgstr "Siz sonradan burdan daxil ola bilərsiniz:"
+
+#: templates/mail/activation_email.html:39
+#: templates/mail/activation_email.txt:32
+msgid "Thank you"
+msgstr "Sağ olun"
+
+#: templates/mail/certificate_order_email.html:36
+#: templates/mail/certificate_order_email.txt:32 templates/mail/digest.html:35
+#: templates/mail/digest.txt:32
+msgid "User"
+msgstr "İstifadəçi"
+
+#: templates/mail/digest.html:27 templates/mail/digest.txt:25
+msgid "Hello"
+msgstr "Salam"
+
+#: templates/mail/digest.html:28 templates/mail/digest.txt:26
+msgid "Digest from"
+msgstr "Daycest"
+
+#: templates/mail/digest.html:28 templates/mail/digest.txt:26
+msgid "till"
+msgstr "qədər"
+
+#: templates/mail/digest.html:33 templates/mail/digest.txt:31
+#: templates/mail/score_claim.html:28 templates/mail/score_claim.txt:27
+#: templates/mail/score_clarification.html:27
+#: templates/mail/score_clarification.txt:27
+msgid "Date"
+msgstr "Tarix"
+
+#: templates/mail/digest.html:42 templates/mail/digest.txt:33
+msgid "Comment"
+msgstr "Şərh"
+
+#: templates/mail/email_base.html:127 templates/mail/email_base.txt:25
+msgid ""
+"This email was automatically generated by Infometer system, please do not "
+"reply."
+msgstr "Bu məktub İnfometr sisteminindir, ona cavab vermək lazım deyil."
+
+#: templates/mail/email_base.html:128 templates/mail/email_base.txt:26
+msgid ""
+"If you have any questions for Infometer, please contact technical support:"
+msgstr ""
+"İnfometr sistemi ilə işləməklə bağlı sualları texniki dəstək bölümünə "
+"bildirin:"
+
+#: templates/mail/feedback_creator.html:26
+#: templates/mail/feedback_creator.txt:27
+msgid "Your trouble"
+msgstr "Sizin problem"
+
+#: templates/mail/feedback_recipient.html:35
+#: templates/mail/feedback_recipient.txt:33
+msgid "Trouble"
+msgstr "Problem"
+
+#: templates/mail/parameter_email.html:29
+#: templates/mail/parameter_email.txt:29
+msgid "Old features"
+msgstr "Köhnə xüsusiyyətlər"
+
+#: templates/mail/parameter_email.html:34
+#: templates/mail/parameter_email.html:51
+#: templates/mail/parameter_email.txt:34 templates/mail/parameter_email.txt:51
+msgid "Relevance criteria"
+msgstr "Uyğun meyarlar"
+
+#: templates/mail/parameter_email.html:40
+#: templates/mail/parameter_email.html:57
+#: templates/mail/parameter_email.txt:40 templates/mail/parameter_email.txt:57
+msgid "Excluded organizations"
+msgstr "İstisna qurumlar"
+
+#: templates/mail/parameter_email.html:46
+#: templates/mail/parameter_email.txt:46
+msgid "Current features"
+msgstr "Hazırkı xüsusiyyətlər"
+
+#: templates/mail/parameter_email.html:63
+#: templates/mail/parameter_email.txt:63
+msgid "We recommend to check the scores of current parameter."
+msgstr "Parametr üzrə nəticənin yoxlanması tövsiyyə olunur."
+
+#: templates/mail/password_reset_email.html:30
+#: templates/mail/password_reset_email.txt:30
+msgid "In order to reset your password, please follow the link:"
+msgstr "Şifrənin bərpası üçün linkə daxil olun:"
+
+#: templates/mail/password_reset_email.html:32
+#: templates/mail/password_reset_email.txt:32
+msgid ""
+"Then you'll get to a new password page, in which you'll be able to log in "
+"Infometer."
+msgstr ""
+"Bunun ardınca siz İnfometr sisteminə daxil olmağa imkan verən yeni şifrəni "
+"daxil edə biləcəyiniz səhifəyə yönləndiriləcəksiniz."
+
+#: templates/mail/score_claim.html:35 templates/mail/score_claim.txt:28
+#: templates/mail/score_clarification.html:34
+#: templates/mail/score_clarification.txt:28
+msgid "From whom"
+msgstr "Kimdən"
+
+#: templates/mail/score_claim.html:36 templates/mail/score_claim.txt:29
+#: templates/mail/score_clarification.html:35
+#: templates/mail/score_clarification.txt:29
+msgid "To whom"
+msgstr "Kimə"
+
+#: templates/mail/score_claim.html:37 templates/mail/score_claim.txt:31
+msgid "Claim"
+msgstr "İrad"
+
+#: templates/mail/score_claim.html:46 templates/mail/score_claim.txt:42
+msgid "Claim was deleted by head of the cycle"
+msgstr "İrad monitorinq rəhbəri tərəfindən silinib"
+
+#: templates/mail/score_clarification.html:36
+#: templates/mail/score_clarification.txt:31
+msgid "Clarification"
+msgstr "Dəqiqləşdirmə"
+
 #: templates/registration/activate.html:31
 msgid "Account activation error"
 msgstr "Yanlışlıq"
@@ -3209,22 +3268,6 @@ msgstr ""
 "\">istifadə edə</a>, bilərsiniz. Hansı ki, qeydiyyat zamanı ifadə etmisiniz."
 "</p>\n"
 "        "
-
-#: templates/registration/activation_email.html:30
-#: templates/registration/activation_email.txt:26
-msgid "In order to activate your account you should follow the link ONCE"
-msgstr ""
-"Akkauntunuzun aktivləşdirməsi zamanı linkə BİR DƏFƏ daxil olmanız zəruridir"
-
-#: templates/registration/activation_email.html:35
-#: templates/registration/activation_email.txt:29
-msgid "Later you'll be able to log in here"
-msgstr "Siz sonradan burdan daxil ola bilərsiniz:"
-
-#: templates/registration/activation_email.html:39
-#: templates/registration/activation_email.txt:31
-msgid "Thank you"
-msgstr "Sağ olun"
 
 #: templates/registration/login.html:32
 #: templates/registration/registration_form.html:37
@@ -3349,18 +3392,6 @@ msgstr ""
 "linkə daxil olun. Siz o zaman yeni şifrə tərtibi nəzərdə tutulan səhifəyə "
 "daxil olacqsınız. Siz yeni şifrə ilə İnfometr sisteminə daxil olub istifadə "
 "edə biləcəksiniz."
-
-#: templates/registration/password_reset_email.html:30
-msgid "In order to reset your password, please follow the link:"
-msgstr "Şifrənin bərpası üçün linkə daxil olun:"
-
-#: templates/registration/password_reset_email.html:36
-msgid ""
-"Then you'll get to a new password page, in which you'll be able to log in "
-"Infometer."
-msgstr ""
-"Bunun ardınca siz İnfometr sisteminə daxil olmağa imkan verən yeni şifrəni "
-"daxil edə biləcəyiniz səhifəyə yönləndiriləcəksiniz."
 
 #: templates/registration/password_reset_form.html:34
 msgid ""

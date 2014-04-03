@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -187,34 +187,22 @@ label
     font-size: 13px;
 }
 
+
 /* Score header */
 
-.score-header
-{
-    display: block;
+.score-header {
     margin-bottom: 5px;
 }
 
-.score-header dt
-{
-    clear: both;
-    display: block;
+.score-header dt {
     margin-top: 0;
-    padding-right: 5px;
 }
 
-.score-header dd
-{
-    margin-bottom: 7px;
-}
-
-.score-header dd.parm-description
-{
-    clear: both;
-    display: block;
-    margin-top: 1px;
+.score-header dd {
     line-height: 21px;
+    margin: 1px 0 7px;
 }
+
 
 /* JS-tabs (pseudo-links) */
 
