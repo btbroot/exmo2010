@@ -1266,13 +1266,7 @@ class CopyMonitoringTestCase(TestCase):
         self.assertEqual(set(self.monitoring.parameter_set.values_list('name', 'code')),
                          set(copied_monitoring.parameter_set.values_list('name', 'code')))
         # AND scores fields should be equal
+        fields = 'found complete topical accessible hypertext document image links recommendations revision'.split()
         self.assertEqual(
-            set(self.parameter.score_set.values_list(
-                'found', 'complete', 'topical', 'accessible', 'hypertext',
-                'document', 'image', 'links', 'comment', 'revision')
-                ),
-            set(copied_parameter.score_set.values_list(
-                'found', 'complete', 'topical', 'accessible', 'hypertext',
-                'document', 'image', 'links', 'comment', 'revision')
-                )
-        )
+            set(self.parameter.score_set.values_list(*fields)),
+            set(copied_parameter.score_set.values_list(*fields)))

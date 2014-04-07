@@ -20,57 +20,36 @@
 {% endcomment %}
 {% load i18n check_object_permission trim_links future %}
 
-{% if view_claim %}
+{% if score.perms.view_claim %}
     {% if claim_list %}
     <table class="table-messages-parameter">
         <tbody>
         {% for c in claim_list %}
             <tr>
-                <td{% if not c.close_user and not add_claim %} class="not-answered"{% endif %}>
-                    <span class="messages-author">
-                        {{ c.creator.profile.legal_name }}
-                    </span>
+                <td{% if not c.close_user and not score.perms.add_claim %} class="not-answered"{% endif %}>
+                    <span class="messages-author"> {{ c.creator.profile.legal_name }} </span>
 
-                    <span class="messages-date">
-                        {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }}
-                    </span>
+                    <span class="messages-date"> {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }} </span>
 
-                    <div class="messages-content">
-                        {{ c.comment|safe|trim_links:url_length }}
-                    </div>
+                    <div class="messages-content"> {{ c.comment|safe|trim_links:url_length }} </div>
 
-                    {% if delete_claim %}
+                    {% if score.perms.delete_claim %}
                     <div class="claim-delete-container">
-                        {% url 'exmo2010:claim_delete' as claim_delete_url %}
-                        <a class="delete-claim pseudo"
-                           href="{{ claim_delete_url }}"
-                           rel="{{ c.pk }}">
-                            {% trans "Delete claim" %}
-                        </a>
+                        <a class="delete-claim pseudo" href="{% url 'exmo2010:claim_delete' %}" rel="{{ c.pk }}"> {% trans "Delete claim" %} </a>
                     </div>
                     {% endif %}
 
                     {% if c.answer %}
                     <div class="messages-answer">
-                            <span class="messages-author">
-                                {{ c.close_user.profile.legal_name }}
-                            </span>
-                            <span class="messages-date">
-                                {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }}
-                            </span>
-                        <div class="messages-content">
-                            {{ c.answer|safe|trim_links:url_length }}
-                        </div>
+                        <span class="messages-author"> {{ c.close_user.profile.legal_name }} </span>
+                        <span class="messages-date"> {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }} </span>
+                        <div class="messages-content"> {{ c.answer|safe|trim_links:url_length }} </div>
                     </div>
                     {% endif %}
 
-                    {% if not request.user.is_superuser and c.creator != request.user and not c.answer and answer_claim %}
+                    {% if not request.user.is_superuser and c.creator != request.user and not c.answer and score.perms.answer_claim %}
                     <div class="messages-reply">
-                        <a class="answer-claim pseudo"
-                           href="#"
-                           rel="{{ c.pk }}">
-                            {% trans "Answer claim" %}
-                        </a>
+                        <a class="answer-claim pseudo" href="#" rel="{{ c.pk }}"> {% trans "Answer claim" %} </a>
                     </div>
                     {% endif %}
                 </td>
@@ -79,23 +58,25 @@
         </tbody>
     </table>
     {% else %}
-    {% trans 'There are no claims' %}
+        {% trans 'There are no claims' %}
     {% endif %}
 {% endif %}
 
-{% if add_claim and claim_form or answer_claim and claim_form %}
-    <div id="add-claim"{% if answer_claim and not add_claim %} style="display: none;"{% endif %}>
-        <form action="{% url 'exmo2010:claim_create' object.id %}" method="post">{% csrf_token %}
-            {% for field in claim_form %}
-                <div class="fieldWrapper">
-                    {{ field.errors }}
-                    {% if field.field == claim_form.comment.field and add_claim and field.field != claim_form.claim_id.field %}
-                        <h3 class="claim-label heading-yourmessage-parameter">{{ field.label }}</h3>
-                    {% endif %}
-                    {{ field }}
-                </div>
-            {% endfor %}
-            <input type="submit" class="submit-post" value="{% if not add_claim %}{% trans 'Reply' %}{% else %}{% trans 'Put forward' %}{% endif %}">
+{% if score.perms.add_claim or score.perms.answer_claim %}
+    <div id="add-claim"{% if score.perms.answer_claim and not score.perms.add_claim %} style="display: none;"{% endif %}>
+        <form action="{% url 'exmo2010:claim_create' score.pk %}" method="post">{% csrf_token %}
+            {% for field in claim_form.hidden_fields %} {{field}} {% endfor %}
+            <div class="fieldWrapper">
+                {% if score.perms.add_claim %}
+                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim" %}</h3>
+                    {{ claim_form.comment }}
+                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Put forward' %}">
+                {% else %}
+                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim answer" %}</h3>
+                    {{ claim_form.comment }}
+                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Reply' %}">
+                {% endif %}
+            </div>
         </form>
     </div>
 {% endif %}

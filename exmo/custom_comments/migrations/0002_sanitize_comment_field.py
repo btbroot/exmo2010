@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
-from core.utils import urlize, sanitize_field
+from core.utils import urlize, clean_message
 
 
 class Migration(DataMigration):
@@ -30,9 +30,7 @@ class Migration(DataMigration):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         for comment in orm.CommentExmo.objects.all():
-            data = sanitize_field(comment.comment)
-            data = urlize(data)
-            comment.comment = data
+            comment.comment = urlize(clean_message(comment.comment))
             comment.save()
 
     def backwards(self, orm):

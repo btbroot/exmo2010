@@ -28,7 +28,9 @@
                 {% trans "Task " %} {{ task.id }}
             </title>
             <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}" />
-            <link rel="stylesheet" type="text/css" href="{% static 'css/task_report.css' %}" />
+            <style>
+                .copyrights-fonts { margin: 0; }
+            </style>
         </head>
 
         <body>
@@ -54,8 +56,8 @@
                 <tbody>
                     {% for parameter in parameters %}
                         {% with score_dict|hash:parameter.pk as score %}
-                            <tr>
-                                <td>{{ parameter.code }}</td>
+                            <tr style="width: 100%;">
+                                <td style="width: 4%;">{{ parameter.code }}</td>
                                 <td>{{ parameter.name }}</td>
                                 {% if score %}
                                     <td>{{ score.openness }}</td>

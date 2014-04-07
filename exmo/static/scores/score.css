@@ -268,7 +268,7 @@ h1 {
     margin-bottom: 7px;
 }
 
-#id_score-comment, #id_recomendation {
+#id_recommendations, #id_links {
     width: 100%;
     resize: none;
     margin-top: -3px;
@@ -292,4 +292,158 @@ h1 {
 
 .blank {
     background: none !important;
+}
+
+.editable .value ul {
+    list-style: none;
+    margin: 0;
+    padding: 7px 0;
+    top: 7px;
+    display: inline;
+    white-space:nowrap;
+}
+
+.editable .value ul li {
+    list-style: none;
+    display: inline;
+    padding-left: 20px;
+    padding-top: 4px;
+}
+
+
+.heading-comments-parameter {
+    margin-top: 34px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.table-messages-parameter {
+    display: inline-table; /* Firefox fix */
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.table-messages-parameter td {
+    padding: 8px;
+    line-height: 17px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
+}
+
+.table-messages-parameter .messages-author {
+    font-size: 13px;
+    width: 140px;
+    font-weight: bold;
+}
+
+.messages-date {
+    float: right;
+    font-size: 11px;
+    color: #666;
+}
+
+.messages-content {
+    margin: 0;
+    padding: 6px 0 0 0;
+}
+
+.messages-content p {
+    padding: 0;
+    margin: 0;
+}
+
+.answer-missed {
+    background-color: #ffdddd;
+}
+
+.answer-today {
+    background-color: #ffffdd;
+}
+
+.answer-later {
+    background-color: #ddffdd;
+}
+
+.notification-peremptory {
+    padding: 5px;
+    font-size:14px;
+    font-weight: bold;
+    background-color: #ffdddd;
+}
+
+.toggle-comment-container {
+    margin-top: 7px;
+}
+
+.toggle-comment {
+    font-size:12px;
+    font-weight: bold;
+    border-bottom: 1px dashed;
+}
+
+.claim-delete-container {
+    margin-top: 7px;
+}
+
+.messages-pseudo {
+    font-size:12px;
+    font-weight: bold;
+    border-bottom: 1px dashed;
+}
+
+a.messages-pseudo-off {
+    font-size:12px;
+    font-weight: bold;
+    border-bottom: none;
+    color: #000;
+    cursor: text;
+}
+
+a.messages-pseudo-off:hover {
+    color: #000;
+}
+
+.messages-answer {
+    margin-top: 10px;
+    border-top: 1px #bbb solid;
+    padding-left: 50px;
+    padding-top: 10px;
+}
+
+.not-answered {
+    background-color: #ffdddd;
+}
+
+.messages-reply {
+    margin-top: 5px;
+}
+
+.reply-form-tweak {
+    padding-top: 5px;
+}
+
+/* Form for comment */
+
+#comment_field {
+    margin-top: 20px;
+}
+
+.comment-form > p, #comment_field > p {
+    float: left;
+}
+
+.comment-form > form, #comment_field > div.field, #comment_field > input {
+    margin-left: 122px;
+}
+
+.submit-post {
+    margin-top: 7px;
+    width: 160px;
+    font-size: 13px; /* Firefox fix */
 }

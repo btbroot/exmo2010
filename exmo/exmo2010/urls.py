@@ -23,13 +23,12 @@ import reversion
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 
 from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView
 from organizations.views import OrgEditView, OrgDeleteView
 from parameters.views import ParamEditView, ParamDeleteView
-from scores.views import ScoreAddView, ScoreEditView, ScoreDetailView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 
 
@@ -72,11 +71,16 @@ def named_urls(module, *urlpatterns):
 
 
 scores_patterns = named_urls('scores.views',
+    # NOTE: Following two urls are deprecated. Redirects are left for dangling external links to the site.
+    (r'^(?P<score_pk>\d+)/edit/$', RedirectView.as_view(url='/score/%(score_pk)s/')),
+    (r'^(?P<score_pk>\d+)/detail/$', RedirectView.as_view(url='/score/%(score_pk)s/')),
+
+    (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', 'score_view', 'score_add'),
     (r'^(?P<score_pk>\d+)/$', 'score_view'),
-    (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', ScoreAddView, 'score_add'),
-    (r'^(?P<score_pk>\d+)/edit/$', reversion.create_revision()(ScoreEditView.as_view()), 'score_edit'),
-    (r'^(?P<score_pk>\d+)/detail/$', ScoreDetailView, 'score_detail'),
     (r'^rating_update/$', 'rating_update'),
+    (r'^post_score_links/(?P<score_pk>\d+)/$', 'post_score_links'),
+    (r'^post_recommendations/(?P<score_pk>\d+)/$', 'post_recommendations'),
+    (r'^post_score_comment/(?P<score_pk>\d+)/$', 'post_score_comment'),
 )
 
 scores_patterns += named_urls('',
@@ -252,9 +256,8 @@ def crumbs_tree(is_expert=False):
                     'task_import':  _('Import task'),
                     'task_history': _('Organization'),
                     # Score
-                    'score_add':    _('Parameter'),
-                    'score_view':   _('Parameter'),
-                    'score_edit':   _('Parameter'),
+                    'score_add':     _('Parameter'),
+                    'score_view':    _('Parameter'),
                     # Parameter
                     'parameter_add':    _('Add parameter'),
                     'parameter_update': _('Edit parameter'),

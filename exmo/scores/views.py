@@ -17,347 +17,238 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import datetime
+from datetime import datetime
 import json
 
-import reversion
+from ckeditor.fields import RichTextFormField
+from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.decorators import login_required
-from django.contrib.comments.views.comments import post_comment
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Max
-from django.dispatch import Signal
-from django.forms.util import ErrorList
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.forms import RadioSelect
+from django.forms.models import modelform_factory
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.utils import simplejson
-from django.utils.decorators import method_decorator
-from django.utils.text import get_text_list
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
-from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.detail import DetailView
 from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table_prepare_queryset
 from core.response import JSONResponse
+from core.utils import clean_message, urlize
 from claims.forms import ClaimAddForm
 from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
-from exmo2010.models import Score, Task, Parameter, Claim, Clarification, QQuestion, QAnswer, UserProfile
-from exmo2010.models.monitoring import MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED
+from exmo2010.mail import mail_comment
+from exmo2010.models import Score, Task, Parameter, QQuestion, QAnswer, UserProfile
+from exmo2010.models.monitoring import Monitoring
+from perm_utils import annotate_exmo_perms
 from questionnaire.forms import QuestionnaireDynForm
-from scores.forms import ScoreForm, ScoreFormWithComment
 
 
-URL_LENGTH = 70  # Length to truncate URLs to
+# The cache_control decorator will force the browser to make request to server, when user clicks 'back'
+# button after add new Score. BUT, not working in Opera browser:
+# (http://my.opera.com/yngve/blog/2007/02/27/introducing-cache-contexts-or-why-the).
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def score_view(request, **kwargs):
+    if request.method not in ['POST', 'GET']:
+        return HttpResponseNotAllowed(['POST', 'GET'])
 
-
-class ScoreMixin(object):
-    model = Score
-    form_class = ScoreForm
-    context_object_name = "object"
-
-    def get_redirect(self, request):
-        redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-                                           args=[self.object.task.pk]),
-                                           request.GET.urlencode(),
-                                           self.object.parameter.code)
-        return redirect.replace("%", "%%")
-
-
-class ScoreAddView(ScoreMixin, CreateView):
-    template_name = "form.html"
-
-    # The cache_control decorator will force the browser to make request to server, when user clicks 'back'
-    # button after add new Score. BUT, not working in Opera browser:
-    # (http://my.opera.com/yngve/blog/2007/02/27/introducing-cache-contexts-or-why-the).
-    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
-    def dispatch(self, *args, **kwargs):
-        return super(ScoreAddView, self).dispatch(*args, **kwargs)
-
-    def get_redirect(self, request):
-        redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-                                           args=(self.task.pk,)),
-                                           request.GET.urlencode(),
-                                           self.parameter.code)
-        redirect = redirect.replace("%", "%%")
-
-        return redirect
-
-    def get(self, request, *args, **kwargs):
-        self.task = get_object_or_404(Task, pk=kwargs['task_pk'])
-        self.parameter = get_object_or_404(Parameter, pk=kwargs['parameter_pk'])
-
-        try:
-            score = Score.objects.get(parameter=self.parameter, task=self.task)
-        except Score.DoesNotExist:
-            pass
-        else:
-            return HttpResponseRedirect(reverse('exmo2010:score_view', args=(score.pk,)))
-
-        if not request.user.has_perm('exmo2010.fill_task', self.task):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        self.initial = {
-            'task': self.task,
-            'parameter': self.parameter
-        }
-        result = super(ScoreAddView, self).get(request, *args, **kwargs)
-
-        return result
-
-    def post(self, request, *args, **kwargs):
-        self.task = get_object_or_404(Task, pk=kwargs['task_pk'])
-        self.parameter = get_object_or_404(Parameter, pk=kwargs['parameter_pk'])
-        if not request.user.has_perm('exmo2010.fill_task', self.task):
-            return HttpResponseForbidden(_('Forbidden'))
-        self.success_url = self.get_redirect(request)
-        result = super(ScoreAddView, self).post(request, *args, **kwargs)
-
-        return result
-
-    def get_context_data(self, **kwargs):
-        context = super(ScoreAddView, self).get_context_data(**kwargs)
-        task = self.task
-        parameter = self.parameter
-        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
-
-        expert = _(config_value('GlobalParameters', 'EXPERT'))
-
-        context.update({
-            'expert': expert,
-            'parameter': parameter,
-            'task': task,
-            'title': title,
-        })
-
-        return context
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ScoreAddView, self).dispatch(*args, **kwargs)
-
-
-class ScoreEditView(UpdateView):
-    form_class = ScoreForm
-    template_name = "form.html"
-    model = Score
-    is_interaction_or_finalizing = False
-    pk_url_kwarg = 'score_pk'
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        score = get_object_or_404(Score, pk=kwargs['score_pk'])
-
-        if not request.user.has_perm('exmo2010.edit_score', score):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        if score.parameter.monitoring.status in [MONITORING_INTERACTION, MONITORING_FINALIZING]:
-            self.form_class = ScoreFormWithComment
-            self.template_name = "form_with_comment.html"
-            self.is_interaction_or_finalizing = True
-        result = super(ScoreEditView, self).dispatch(request, *args, **kwargs)
-
-        return result
-
-    def get_initial(self):
-        if self.is_interaction_or_finalizing:
-            self.object = self.get_object()
-            initial = self.object.__dict__.copy()
-            if 'comment' in initial:
-                recomendation = initial.pop('comment')
-                initial['recomendation'] = recomendation
-
-            result = {
-                'instance': self.object,
-                'initial': initial
-            }
-        else:
-            result = super(ScoreEditView, self).get_initial()
-
-        return result
-
-    def get_form_kwargs(self):
-        if self.is_interaction_or_finalizing:
-            result = self.get_initial()
-            if self.request.method in ('POST', 'PUT'):
-                result.update({
-                    'data': self.request.POST,
-                })
-        else:
-            result = super(ScoreEditView, self).get_form_kwargs()
-
-        return result
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.success_url = self.get_redirect(request)
-
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-
-        self.valid = True
-        try:
-            signal_to_create_revision.send(
-                sender=Score.__class__,
-                instance=self.object,
-            )
-        except ValidationError:
-            self.valid = False
-
-        if form.is_valid() and self.valid:
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form):
-        if self.is_interaction_or_finalizing:
-            button = self.request.POST['tabs']
-            if button in ['submit_comment', 'submit_score_and_comment']:
-                post_comment(self.request)
-
-            message = _('Changed %s.') % get_text_list(form.changed_data, _('and'))
-            reversion.revision.comment = message
-
-        result = super(ScoreEditView, self).form_valid(form)
-
-        return result
-
-    def form_invalid(self, form):
-        if not self.valid:
-            error = form._errors.setdefault('__all__', ErrorList())
-            error.append(_('New version of the existing score couldn`t be saved since '
-                           'the existing score is incomplete. Contact your Supervisor.'))
-        return super(ScoreEditView, self).form_invalid(form)
-
-    def get_redirect(self, request):
-        if self.is_interaction_or_finalizing:
-            result = reverse('exmo2010:score_view', args=[self.object.pk])
-        else:
-            redirect = "%s?%s#parameter_%s" % (reverse('exmo2010:score_list_by_task',
-                                               args=[self.object.task.pk]),
-                                               request.GET.urlencode(),
-                                               self.object.parameter.code)
-            result = redirect.replace("%", "%%")
-
-        return result
-
-    def get_context_data(self, **kwargs):
-        context = super(ScoreEditView, self).get_context_data(**kwargs)
-        parameter = self.object.parameter
-        title = u'{p.code} \u2014 {p.name}'.format(p=parameter)
-
-        all_score_claims = Claim.objects.filter(score=self.object)
-        if not self.request.user.profile.is_expertA:
-            all_score_claims = all_score_claims.filter(addressee=self.object.task.user)
-        all_score_clarifications = Clarification.objects.filter(score=self.object)
-
-        context.update({
-            'is_interaction_or_finalizing': self.is_interaction_or_finalizing,
-            'parameter': parameter,
-            'task': self.object.task,
-            'title': title,
-            'url_length': URL_LENGTH,
-            'claim_form': ClaimAddForm(prefix="claim"),
-            'claim_list': all_score_claims,
-            'clarification_form': ClarificationAddForm(prefix="clarification"),
-            'clarification_list': all_score_clarifications,
-        })
-        return context
-
-
-class ScoreDetailView(ScoreMixin, DetailView):
-    template_name = "detail.html"
-    pk_url_kwarg = 'score_pk'
-
-    def dispatch(self, request, *args, **kwargs):
-        score = get_object_or_404(Score, pk=kwargs['score_pk'])
-
-        if not request.user.has_perm('exmo2010.view_score', score):
-            return HttpResponseForbidden(_('Forbidden'))
-
-        result = super(ScoreDetailView, self).dispatch(request, *args, **kwargs)
-
-        return result
-
-    def get_context_data(self, **kwargs):
-        context = super(ScoreMixin, self).get_context_data(**kwargs)
-        self.success_url = self.get_redirect(self.request)
-
-        user = self.request.user
-        if user.is_active and user.profile.is_expertA:
-            all_score_claims = Claim.objects.filter(score=self.object)
-        else:
-            all_score_claims = Claim.objects.filter(score=self.object, addressee=self.object.task.user)
-        all_score_clarifications = Clarification.objects.filter(score=self.object)
-
-        parameter = self.object.parameter
-        title = u'%(code)s \u2014 %(name)s' % {'code': parameter.code, 'name': parameter.name}
-        time_to_answer = self.object.task.organization.monitoring.time_to_answer
-        delta = datetime.timedelta(days=time_to_answer)
-        today = datetime.date.today()
-        peremptory_day = today + delta
-        expert = _(config_value('GlobalParameters', 'EXPERT'))
-
-        context.update({
-            'claim_form': ClaimAddForm(prefix="claim"),
-            'claim_list': all_score_claims,
-            'clarification_form': ClarificationAddForm(prefix="clarification"),
-            'clarification_list': all_score_clarifications,
-            'expert': expert,
-            'invcodeform': SettingsInvCodeForm(),
-            'parameter': parameter,
-            'peremptory_day': peremptory_day,
-            'task': self.object.task,
-            'title': title,
-            'url_length': URL_LENGTH,
-            'view': True,
-        })
-        return context
-
-
-def score_view(request, score_pk):
-    score = get_object_or_404(Score, pk=score_pk)
-
-    if request.user.has_perm('exmo2010.edit_score', score):
-        call_view = ScoreEditView.as_view()
-        revision = reversion.create_revision()
-        callback = revision(call_view)
-        result = callback(request, score_pk=score_pk)
-
-    elif request.user.has_perm('exmo2010.view_score', score):
-        call_view = ScoreDetailView.as_view()
-        result = call_view(request, score_pk=score_pk)
-
+    if 'score_pk' in kwargs:
+        # Score edit or view
+        score = Score.objects.get(pk=kwargs['score_pk'])
+        task = score.task
+        param = score.parameter
+        if request.method == 'POST' and not request.user.has_perm('exmo2010.edit_score', score):
+            raise PermissionDenied
+        if request.method == 'GET' and not request.user.has_perm('exmo2010.view_score', score):
+            raise PermissionDenied
     else:
-        result = HttpResponseForbidden(_('Forbidden'))
+        # Score creation by task and param
+        task = get_object_or_404(Task, pk=kwargs['task_pk'])
+        param = get_object_or_404(Parameter, pk=kwargs['parameter_pk'])
+        if not request.user.has_perm('exmo2010.fill_task', task):
+            raise PermissionDenied
 
-    return result
+        # Check if score already exist.
+        try:
+            score = Score.objects.get(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
+        except Score.DoesNotExist:
+            # OK, score deos not exist and can be created.
+            score = Score(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
+        else:
+            # User requested score creation by task and param, but score already exist.
+            if request.user.has_perm('exmo2010.view_score', score):
+                # Redirect user to GET score page, even if current request method is POST.
+                # This way duplicate POST to create score will be ignored.
+                return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+            else:
+                raise PermissionDenied
+
+    org = task.organization
+
+    # Relevant criteria names
+    criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+
+    ScoreForm = modelform_factory(
+        Score,
+        fields=criteria + ['recommendations', 'links'],
+        widgets=dict((crit, RadioSelect) for crit in criteria))
+
+    ScoreForm.base_fields['comment'] = RichTextFormField(config_name='advanced', required=False)
+
+    # Replace '-----' with '-' in empty radio choices.
+    for f in criteria:
+        ScoreForm.base_fields[f].widget.choices[0] = ('', '-')
+
+    form = ScoreForm(request.POST if request.method == 'POST' else None, instance=score)
+
+    if request.method == 'POST' and form.is_valid():
+        if score.pk and not request.user.has_perm('exmo2010.edit_score', score):
+            raise PermissionDenied
+
+        with transaction.commit_on_success():
+            if org.monitoring.status in Monitoring.after_interaction_status:
+                if not Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT).exists():
+                    # Initial revision does not exist and should be created. It will have new pk.
+                    initial_score = Score.objects.get(pk=kwargs['score_pk'])
+                    initial_score.pk = None
+                    initial_score.revision = Score.REVISION_INTERACT
+                    initial_score.save()
+
+                if 'comment' in request.POST:
+                    _add_comment(request, score)
+            form.save()
+        if org.monitoring.is_interact or org.monitoring.is_finishing:
+            return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+        else:
+            url = reverse('exmo2010:score_list_by_task', args=[task.pk])
+            return HttpResponseRedirect('%s#parameter_%s' % (url, param.code))
+
+    all_max = True  # Flag if all criteria set to max
+    for crit in criteria:
+        if getattr(score, crit) != score._meta.get_field(crit).choices[-1][-1]:
+            all_max = False
+
+    criteria = [form[crit] for crit in criteria]
+    for boundfield in criteria:
+        # Add attribute with initial value to each criterion boundfield
+        boundfield.initial = form.initial.get(boundfield.name, boundfield.field.initial)
+
+    if request.user.is_expertA:
+        claim_list = score.claim_set.all()
+    elif request.user.is_expertB:
+        claim_list = score.claim_set.filter(addressee=request.user)
+    else:
+        claim_list = []
+
+    CommentForm = modelform_factory(CommentExmo, widgets={'comment': CKEditorWidget(config_name='simplified')})
+    context = {
+        'form': form,
+        'score': annotate_exmo_perms(score, request.user),
+        'param': annotate_exmo_perms(param, request.user),
+        'org': org,
+        'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
+        'criteria': criteria,
+        'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
+        'url_length': 70,
+        'claim_form': ClaimAddForm(prefix="claim"),
+        'claim_list': claim_list,
+        'all_max_initial': all_max,
+        'clarification_form': ClarificationAddForm(prefix="clarification"),
+        'comment_form': CommentForm(request.POST if request.method == 'POST' else None),
+        'invcodeform': SettingsInvCodeForm(),
+    }
+
+    return TemplateResponse(request, 'scores/score.html', context)
 
 
-def _save_comment(comment):
-    comment.save()
-    result = simplejson.dumps(
-        {'success': True, 'status': comment.status})
-    return HttpResponse(result, mimetype='application/json')
+def post_score_comment(request, score_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    score = get_object_or_404(Score, pk=score_pk)
+    if not request.user.has_perm('exmo2010.add_comment', score):
+        raise PermissionDenied
+
+    _add_comment(request, score)
+    return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+
+
+def _add_comment(request, score):
+    comment = CommentExmo.objects.create(
+        object_pk=score.pk,
+        content_type=ContentType.objects.get_for_model(Score),
+        user=request.user,
+        comment=clean_message(request.POST['comment']),
+        site_id=1)
+
+    if request.user.is_expert:
+        # Expert comment. Close existing org represenatives comments for this score.
+        org_comments = CommentExmo.objects.filter(
+            object_pk=score.pk,
+            status=CommentExmo.OPEN,
+            user__userprofile__organization__isnull=False)
+
+        org_comments.update(status=CommentExmo.ANSWERED, answered_date=datetime.now())
+    else:
+        # Org represenative comment, update org status to "Active"
+        org = score.task.organization
+        if org.inv_status == 'RGS' and org in request.user.profile.organization.all():
+            org.inv_status = 'ACT'
+            org.save()
+
+    mail_comment(request, comment)
+
+
+def post_recommendations(request, score_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    score = get_object_or_404(Score, pk=score_pk)
+    if not request.user.has_perm('exmo2010.edit_score', score):
+        raise PermissionDenied
+
+    score.recommendations = request.POST['recommendations']
+    try:
+        score.full_clean()
+    except ValidationError:
+        return HttpResponseBadRequest()
+    score.save()
+    return JSONResponse({'data': urlize(score.recommendations.replace('\n', '<br />'))})
+
+
+def post_score_links(request, score_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    score = get_object_or_404(Score, pk=score_pk)
+    if not request.user.has_perm('exmo2010.edit_score', score):
+        raise PermissionDenied
+
+    score.links = request.POST['links']
+    score.save()
+    return JSONResponse({'data': urlize(score.links.replace('\n', '<br />'))})
 
 
 @login_required
 def toggle_comment(request):
     if request.is_ajax() and request.method == 'POST':
-        comment_id = request.POST['pk']
-        comment = get_object_or_404(CommentExmo, pk=comment_id)
+        comment = get_object_or_404(CommentExmo, pk=request.POST['pk'])
 
         if comment.status == CommentExmo.OPEN:
             comment.status = CommentExmo.NOT_ANSWERED
-            return _save_comment(comment)
-        elif comment.status in (CommentExmo.NOT_ANSWERED,
-                                CommentExmo.ANSWERED):
+            comment.save()
+            return JSONResponse(success=True, status=comment.status)
+        elif comment.status in (CommentExmo.NOT_ANSWERED, CommentExmo.ANSWERED):
             comment.status = CommentExmo.OPEN
-            return _save_comment(comment)
+            comment.save()
+            return JSONResponse(success=True, status=comment.status)
 
     raise Http404
 
@@ -414,7 +305,7 @@ def score_list_by_task(request, task_pk, print_report_type=None):
             'title': title,
             'report': print_report_type,
         })
-        return TemplateResponse(request, 'task_report.html', extra_context)
+        return TemplateResponse(request, 'scores/task_report.html', extra_context)
     else:
         questionnaire = monitoring.get_questionnaire()
         if questionnaire and questionnaire.qquestion_set.exists():
@@ -422,11 +313,7 @@ def score_list_by_task(request, task_pk, print_report_type=None):
             if request.method == "POST":
                 if not request.user.has_perm('exmo2010.fill_task', task):
                     return HttpResponseForbidden(_('Forbidden'))
-                form = QuestionnaireDynForm(
-                    request.POST,
-                    questions=questions,
-                    task=task,
-                )
+                form = QuestionnaireDynForm(request.POST, questions=questions, task=task)
                 if form.is_valid():
                     cd = form.cleaned_data
                     for answ in cd.items():
@@ -476,18 +363,8 @@ def score_list_by_task(request, task_pk, print_report_type=None):
 
         _new_comment_url(request, score_dict, scores_default, parameters_other)
 
-        # Не показываем ссылку экспертам B или предатвителям, если статус
-        # мониторинга отличается от "Опубликован".
-        user = request.user
-        if (not user.is_active or
-            (user.profile.is_expertB and not user.profile.is_expertA) or
-            user.profile.is_organization) and \
-           (monitoring.status != MONITORING_PUBLISHED) and not user.is_superuser:
-            show_link = False
-        else:
-            show_link = True
         extra_context.update({
-            'view_openness_perm': user.has_perm('exmo2010.view_openness', task),
+            'view_openness_perm': request.user.has_perm('exmo2010.view_openness', task),
             'score_interact_dict': score_interact_dict,
             'parameters_npa': parameters_npa,
             'parameters_other': parameters_other,
@@ -497,10 +374,10 @@ def score_list_by_task(request, task_pk, print_report_type=None):
             'title': title,
             'form': form,
             'invcodeform': SettingsInvCodeForm(),
-            'show_link': show_link,
+            'show_link': request.user.is_expertA or monitoring.is_published,
         })
 
-        return TemplateResponse(request, 'score_list.html', extra_context)
+        return TemplateResponse(request, 'scores/score_list.html', extra_context)
 
 
 def _new_comment_url(request, score_dict, scores_default, parameters):
@@ -535,22 +412,8 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
 
                 last_comment_id = last_comments.get(score.pk, None)
 
-                if last_comment_id:
-                    if request.user.profile.is_expertB and score.task.user_id == request.user.id or \
-                            request.user.profile.is_expertA:
-                        param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
-
-
-def create_revision(sender, instance, **kwargs):
-    """
-    Сохранение ревизии оценки на стадии взаимодействия.
-
-    """
-    if instance.revision != Score.REVISION_INTERACT:
-        instance.create_revision(Score.REVISION_INTERACT)
-
-signal_to_create_revision = Signal(providing_args=["instance"])
-signal_to_create_revision.connect(create_revision)
+                if last_comment_id and (request.user.executes(score.task) or request.user.is_expertA):
+                    param.url = reverse('exmo2010:score', args=[score.task.pk, param.pk]) + "#c" + str(last_comment_id)
 
 
 @login_required

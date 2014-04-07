@@ -68,14 +68,12 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         self.assertEqual(init_openness, None)
 
         # WHEN I click to modal window
-        modal = self.find(self.modal_window)
-        modal.click()
-        # AND enable initial openness checkbox
-        checkbox_init_openness = self.find('#id_rt_initial_openness')
-        checkbox_init_openness.click()
+        self.find(self.modal_window).click()
+        # THEN checkboxes should become visible
+        self.assertVisible('#id_rt_initial_openness')
+        # WHEN i click initial openness checkbox
+        self.find('#id_rt_initial_openness').click()
         # AND submit my changes
-        submit = self.find('#buttons span input')
-        submit.click()
+        self.find('#buttons span input').click()
         # THEN initial openness column should be displayed
-        init_openness = self.find(self.init_openness)
-        self.assertEqual(init_openness.is_displayed(), True)
+        self.assertEqual(self.find(self.init_openness).is_displayed(), True)

@@ -45,15 +45,13 @@ def claim_create(request, score_pk):
         if form.is_valid():
             if form.cleaned_data['claim_id'] is not None:
                 # Если заполнено поле claim_id, значит это ответ на претензию
-                if not user.has_perm('exmo2010.answer_claim_score', score):
+                if not user.has_perm('exmo2010.answer_claim', score):
                     raise PermissionDenied
-                claim_id = form.cleaned_data['claim_id']
-                claim = get_object_or_404(Claim, pk=claim_id)
-                answer = form.cleaned_data['comment']
-                claim.add_answer(user, answer)
+                claim = get_object_or_404(Claim, pk=form.cleaned_data['claim_id'])
+                claim.add_answer(user, form.cleaned_data['comment'])
             else:
                 # Если поле claim_id пустое, значит это выставление претензии
-                if not user.has_perm('exmo2010.add_claim_score', score):
+                if not user.has_perm('exmo2010.add_claim', score):
                     raise PermissionDenied
                 claim = score.add_claim(user, form.cleaned_data['comment'])
 
@@ -72,7 +70,7 @@ def claim_delete(request):
         claim_id = request.POST.get('pk')
         if claim_id is not None:
             claim = get_object_or_404(Claim, pk=claim_id)
-            if not request.user.has_perm('exmo2010.delete_claim_score', claim.score):
+            if not request.user.has_perm('exmo2010.delete_claim', claim.score):
                 raise PermissionDenied
             claim.delete()
             mail_claim_deleted(request, claim)

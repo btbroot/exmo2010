@@ -257,7 +257,7 @@ def resend_email(request):
         form = ResendEmailForm(request.POST)
         if form.is_valid():
             activation_key = RegistrationProfile.objects.get(user=form.user).activation_key
-            mail_register_activation(form.user, request, activation_key)
+            mail_register_activation(request, form.user, activation_key)
             return HttpResponseRedirect(reverse('exmo2010:registration_complete'))
 
     return TemplateResponse(request, 'registration/resend_email_form.html', {'form': form})

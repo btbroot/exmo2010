@@ -119,7 +119,7 @@ class CustomBackend(DefaultBackend):
 
             RegistrationProfile.objects.create(user=new_user, activation_key=activation_key)
 
-        mail_register_activation(new_user, request, activation_key)
+        mail_register_activation(request, new_user, activation_key)
 
         # Сохраняем дополнительные поля модели User.
         user_changed = False

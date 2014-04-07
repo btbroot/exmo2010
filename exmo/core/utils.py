@@ -118,28 +118,17 @@ class UnicodeWriter(object):
 
 
 def clean_message(comment):
-    cleaner = Cleaner()
-    # prevent XSS-attacks
-    comment = cleaner.clean_html(comment)
+    if len(comment) == 0:
+        return mark_safe(comment)
+
+    # prevent XSS-attacks, remove not allowed tags
+    allowed_tags = 'a blockquote br div em li ol p span strong u ul'.split()
+    comment = Cleaner(remove_unknown_tags=False, allow_tags=allowed_tags).clean_html(comment)
     # remove redundant lines
     comment = re.sub(r'(<br>(?=(<br>){2,}))', '', comment)
     comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,4}(?=(</span>)$)', '', comment)
     comment = re.sub(r'(<br>){1,2}(?=(</p>)$)', '', comment)
-    return comment
-
-
-def sanitize_field(data):
-    """
-    Remove any not allowed tags.
-
-    """
-    allowed_tags = ['a', 'blockquote', 'br', 'div', 'em',
-                    'li', 'ol', 'p', 'span', 'strong', 'u', 'ul']
-    cleaner = Cleaner(remove_unknown_tags=False, allow_tags=allowed_tags)
-    data = cleaner.clean_html(data)
-    data = mark_safe(data)
-
-    return data
+    return mark_safe(comment)
 
 
 def urlize(textdata):

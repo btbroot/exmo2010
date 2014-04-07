@@ -53,14 +53,12 @@ class Parameter(BaseModel):
     npa = models.BooleanField(default=False, verbose_name=_('normative parameter'))
 
     #необязательные критерии в оценке
-    OPTIONAL_CRITERIONS = [
-        'complete',
-        'topical',
-        'accessible',
-        'hypertext',
-        'document',
-        'image'
-    ]
+    OPTIONAL_CRITERIONS = 'complete topical accessible hypertext document image'.split()
+
+    IMPORTANCE = {1: _("low importance"), 2: _("middle importance"), 3: _("high importance")}
+
+    def importance(self):
+        return self.IMPORTANCE.get(self.weight)
 
     def __unicode__(self):
         return self.name

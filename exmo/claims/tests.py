@@ -25,7 +25,7 @@ from nose_parameterized import parameterized
 
 from exmo2010.models import (
     Monitoring, Organization, Score, Claim,
-    Task, MONITORING_INTERACTION)
+    Task, MONITORING_RATE)
 
 
 class ClaimActionsAccessTestCase(TestCase):
@@ -33,8 +33,8 @@ class ClaimActionsAccessTestCase(TestCase):
     # SHOULD allow only expertB to answer claim
 
     def setUp(self):
-        # GIVEN organization in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        # GIVEN organization in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
 
         # AND user without any permissions
         User.objects.create_user('user', 'user@svobodainfo.org', 'password')
@@ -144,8 +144,8 @@ class ClaimEmailNotifyTestCase(TestCase):
     # SHOULD send email notification when claim is created or deleted
 
     def setUp(self):
-        # GIVEN MONITORING_INTERACTION monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # GIVEN MONITORING_RATE monitoring
+        monitoring = mommy.make(Monitoring, status=MONITORING_RATE)
 
         # AND organization
         organization = mommy.make(Organization, monitoring=monitoring)

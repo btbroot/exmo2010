@@ -17,57 +17,46 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import json
-import time
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils.crypto import salted_hmac
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from custom_comments.models import CommentExmo
 from exmo2010.models import *
-from scores.forms import ScoreFormWithComment
 
 
 class ScoreAddAccessTestCase(TestCase):
-    # only expertB assigned to score's task SHOULD be allowed to create score
+    # Only expertA and expertB assigned to task should be allowed to create score for it.
 
     def setUp(self):
-        # GIVEN monitoring with organization and parameter
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        organization = mommy.make(Organization, monitoring=monitoring)
-        self.parameter = mommy.make(Parameter, monitoring=monitoring)
+        # GIVEN organization, parameter and task in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        param = mommy.make(Parameter, monitoring=org.monitoring)
+        task = mommy.make(Task, organization=org)
 
         # AND user without any permissions
         User.objects.create_user('user', 'user@svobodainfo.org', 'password')
         # AND superuser
         User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        # AND expert B, not assigned to the task
+        other_expertB = User.objects.create_user('other_expertB', 'other_expertB@svobodainfo.org', 'password')
+        other_expertB.profile.is_expertB = True
         # AND expert A
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
+        expertA.profile.is_expertA = True
         # AND organization representative
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.profile.organization = [organization]
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.organization = [org]
 
-        # AND score with task assigned to expertB
-        self.task = mommy.make(Task, organization=organization, user=expertB)
-
-        self.url = reverse('exmo2010:score_add', args=[self.task.pk, self.parameter.pk])
-
-    def test_redirect_anonymous_on_score_creation(self):
-        # WHEN anonymous user gets score creation page
-        response = self.client.get(self.url, follow=True)
-        # THEN he is redirected to login page
-        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
+        self.url = reverse('exmo2010:score_add', args=[task.pk, param.pk])
 
     @parameterized.expand([
+        (None, 403),
         ('user', 403),
-        ('org', 403),
-        ('expertB', 200),
+        ('orguser', 403),
+        ('other_expertB', 403),
         ('expertA', 200),
         ('admin', 200),
     ])
@@ -80,102 +69,140 @@ class ScoreAddAccessTestCase(TestCase):
         # THEN response status_code equals expected
         self.assertEqual(response.status_code, expected_response_code)
 
-    @parameterized.expand([
-        ('user',),
-        ('org',),
-    ])
+    @parameterized.expand(zip([None, 'user', 'org', 'other_expertB']))
     def test_forbid_unauthorized_score_creation(self, username):
         self.client.login(username=username, password='password')
 
         # WHEN unauthorized user forges and POSTs score creation form
-        self.client.post(self.url, {
-            'score-found': 0,
-            'score-task': self.task.pk,
-            'score-parameter': self.parameter.pk,
-            'score-revision': Score.REVISION_DEFAULT
-        })
+        response = self.client.post(self.url, {'found': 0})
 
-        # THEN score does not get created
+        # THEN response status_code should be 403 (Forbidden)
+        self.assertEqual(response.status_code, 403)
+
+        # AND score does not get created
         self.assertEqual(0, Score.objects.count())
 
 
-class ScoreViewsTestCase(TestCase):
+class ScoreAddTestCase(TestCase):
+    # ExpertA and expertB assigned to task should be able to create score for it.
+
     def setUp(self):
-        # create expert B:
-        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        self.expertB.profile.is_expertB = True
+        # GIVEN expertA and expertB
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
 
-        # create user:
-        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND organization and parameter in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND task assigned to expertB
+        self.task = mommy.make(Task, organization=org, user=expertB)
 
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        self.url = reverse('exmo2010:score_add', args=[self.task.pk, self.param.pk])
 
-        self.task = mommy.make(
-            Task,
-            organization=self.organization,
-            user=self.expertB,
-            status=Task.TASK_APPROVED,
-        )
-        self.parameter = mommy.make(
-            Parameter,
-            monitoring=self.monitoring,
-        )
-        self.score = mommy.make(
-            Score,
-            task=self.task,
-            parameter=self.parameter,
-        )
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_create_score(self, username):
+        self.client.login(username=username, password='password')
 
-    def test_score(self):
-        url = reverse('exmo2010:score_edit', args=[self.score.pk])
+        # WHEN user POSTs score creation form
+        response = self.client.post(self.url, {'found': 0, 'recommendations': '123'})
 
-        # redirect for anonymous:
-        resp = self.client.get(url, follow=True)
-        self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + url)
+        # THEN response redirects to task scores list
+        url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        self.assertRedirects(response, '%s#parameter_%s' % (url, self.param.code))
 
-        # expert B login:
-        self.client.login(username=self.expertB.username, password=self.expertB.password)
-        resp = self.client.get(url, follow=True)
-        self.assertEqual(resp.status_code, 200)
+        # AND score get created
+        self.assertEqual(1, Score.objects.count())
 
-        # send form:
-        key_salt = "django.contrib.forms.CommentSecurityForm"
-        timestamp = str(int(time.time()))
-        object_pk = str(self.score.pk)
-        content_type = str(self.score.__class__)
 
-        value = "-".join((content_type, object_pk, timestamp))
-        expected_hash = salted_hmac(key_salt, value).hexdigest()
+class ScoreEditInitialTestCase(TestCase):
+    # ExpertA and expertB assigned to task should be able to edit score in MONITORING_RATE monitoring.
 
-        score = 1
-        text = u'\u043e\u043e\u043e'
+    def setUp(self):
+        # GIVEN expertA and expertB
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
 
-        form_data = {
-            'found': score,
-            'complete': score,
-            'topical': score,
-            'accessible': score,
-            'hypertext': score,
-            'document': score,
-            'image': score,
-            'recomendation': text,
-            'comment': text,
-            'name': self.expertB.username,
-            'email': self.expertB.email,
-            'status': score,
-            'timestamp': timestamp,
-            'object_pk': object_pk,
-            'content_type': content_type,
-            'security_hash': expected_hash,
-        }
+        # AND organization and parameter in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND task assigned to expertB
+        self.task = mommy.make(Task, organization=org, user=expertB)
+        self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1)
 
-        form = ScoreFormWithComment(self.score, data=form_data)
-        self.assertEqual(form.is_valid(), True)
+        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_edit_score(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN user POSTs score edit form
+        response = self.client.post(self.url, {'found': 0, 'recommendations': '123'})
+
+        # THEN response redirects to task scores list
+        url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        self.assertRedirects(response, '%s#parameter_%s' % (url, self.param.code))
+
+        # AND score get updated in DB
+        self.assertEqual(0, Score.objects.get(pk=self.score.pk).found)
+
+
+class ScoreEditInteractionValidTestCase(TestCase):
+    # ExpertA and expertB assigned to task should be able to edit score in MONITORING_INTERACTION monitoring.
+    # Old score revision should be saved with new pk.
+    # And comment should be added
+
+    def setUp(self):
+        # GIVEN expertA and expertB
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+
+        # AND organization and parameter in MONITORING_INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND task assigned to expertB
+        self.task = mommy.make(Task, organization=org, user=expertB)
+        self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1)
+
+        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_edit_score(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN user POSTs score edit form
+        response = self.client.post(self.url, {'found': 0, 'comment': '<p>lol</p>', 'recommendations': '123'})
+
+        # THEN response redirects to score page
+        self.assertRedirects(response, self.url)
+
+        # AND old score revision get saved in DB
+        old_revisions = Score.objects.filter(revision=Score.REVISION_INTERACT).values_list('task', 'parameter', 'found')
+        self.assertEqual([(self.task.pk, self.param.pk, 1)], list(old_revisions))
+
+        # AND score get updated in DB
+        self.assertEqual(0, Score.objects.get(pk=self.score.pk).found)
+
+        # AND comment get created
+        self.assertEqual([u'<p>lol</p>'], list(CommentExmo.objects.values_list('comment', flat=True)))
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):
-    # Ajax request SHOULD return correct rating places for valid rating types
+    # Ajax request should return correct rating places for valid rating types
 
     def setUp(self):
         # GIVEN interaction monitoring
@@ -216,7 +243,7 @@ class AjaxGetRatingPlacesTestCase(TestCase):
 
 
 class AjaxOpennessAccessTestCase(TestCase):
-    # Scenario: SHOULD allow to get rating place via ajax only if task is approved
+    # Should allow to get rating place via ajax only if task is approved
     # AND forbid access for expertB and regular user if monitoring is not published
 
     def setUp(self):
@@ -311,3 +338,102 @@ class AjaxOpennessAccessTestCase(TestCase):
             response = self.client.get(self.url, {'task_id': task_id}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
             # THEN response should have expected status_code
             self.assertEqual(response.status_code, 403)
+
+
+class AddExistingScoreRedirectTestCase(TestCase):
+    # Score creation page should redirect to existing score page if score exists.
+
+    def setUp(self):
+        # GIVEN organization and parameter in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND open task assigned to expert B
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_OPEN)
+        # AND score
+        self.score = mommy.make(Score, task=task, parameter=param)
+        # AND I am logged in as expert B
+        self.client.login(username='expertB', password='password')
+        self.score_add_url = reverse('exmo2010:score_add', args=(task.pk, param.pk))
+
+    def test_get(self):
+        # WHEN I get score creation page
+        response = self.client.get(self.score_add_url)
+        # THEN response should redirect to
+        self.assertRedirects(response, reverse('exmo2010:score_view', args=(self.score.pk,)))
+
+    def test_post(self):
+        # WHEN I post to score creation page
+        response = self.client.post(self.score_add_url)
+        # THEN response should redirect to
+        self.assertRedirects(response, reverse('exmo2010:score_view', args=(self.score.pk,)))
+
+
+class AjaxPostScoreLinksTestCase(TestCase):
+    # Posting score links should update score links field in database.
+
+    def setUp(self):
+        # GIVEN I am logged in as expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        self.client.login(username='expertB', password='password')
+
+        # AND organization and parameter in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        param = mommy.make(Parameter, monitoring=org.monitoring)
+
+        # AND open task assigned to expert B
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_OPEN)
+        # AND score
+        self.score = mommy.make(Score, task=task, parameter=param, links='')
+
+    def test_post(self):
+        url = reverse('exmo2010:post_score_links', args=(self.score.pk,))
+
+        # WHEN I post score links with non-empty string
+        response = self.client.post(url, {'links': '<p>123</p>'})
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND score links should be updated in DB
+        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '<p>123</p>')
+
+        # WHEN I post score links with empty string
+        response = self.client.post(url, {'links': ''})
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND score links should be updated in DB
+        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '')
+
+
+class ForbidAjaxPostNonMaxScoreEmptyRecommandationsTestCase(TestCase):
+    # Posting empty score recommendations for non-max score should be forbidden.
+
+    def setUp(self):
+        # GIVEN I am logged in as expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        self.client.login(username='expertB', password='password')
+
+        # AND organization and parameter in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        param = mommy.make(Parameter, monitoring=org.monitoring)
+
+        # AND open task assigned to expert B
+        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_OPEN)
+        # AND score with found=0 and some recommendations
+        self.score = mommy.make(Score, task=task, parameter=param, found=0, recommendations='123')
+        self.score_add_url = reverse('exmo2010:score_add', args=(task.pk, param.pk))
+
+    def test_post(self):
+        url = reverse('exmo2010:post_recommendations', args=(self.score.pk,))
+
+        # WHEN I post score recommendations with empty string
+        response = self.client.post(url, {'recommendations': ''})
+        # THEN response status_code should be 400 (Bad request)
+        self.assertEqual(response.status_code, 400)
+        # AND score recommendations should not be updated in DB
+        self.assertEqual(Score.objects.get(pk=self.score.pk).recommendations, '123')

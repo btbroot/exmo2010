@@ -20,75 +20,57 @@
 {% endcomment %}
 {% load i18n trim_links future %}
 
-{% if view_clarification %}
-    {% if clarification_list %}
-    <table class="table-messages-parameter">
-        <tbody>
-        {% for c in clarification_list %}
-            <tr>
-                <td{% if not c.close_user and not add_clarification %} class="not-answered"{% endif %}>
-                    <span class="messages-author">
-                        {{ c.creator.profile.legal_name }}
-                    </span>
+{% if score.perms.view_clarification %}
+    {% if score.clarification_set.all %}
+        <table class="table-messages-parameter">
+            <tbody>
+            {% for c in score.clarification_set.all %}
+                <tr>
+                    <td{% if not c.close_user and not score.perms.add_clarification %} class="not-answered"{% endif %}>
+                        <span class="messages-author"> {{ c.creator.profile.legal_name }} </span>
 
-                    <span class="messages-date">
-                        {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }}
-                    </span>
+                        <span class="messages-date"> {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }} </span>
 
-                    <div class="messages-content">
-                        {{ c.comment|safe|trim_links:url_length }}
-                    </div>
+                        <div class="messages-content"> {{ c.comment|safe|trim_links:url_length }} </div>
 
-                    {% if c.answer %}
-                    <div class="messages-answer">
-                        <span class="messages-author">
-                            {{ c.close_user.profile.legal_name }}
-                        </span>
-                        <span class="messages-date">
-                            {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }}
-                        </span>
-                        <div class="messages-content">
-                            {{ c.answer|safe|trim_links:url_length }}
-                        </div>
-                    </div>
-                    {% endif %}
+                        {% if c.answer %}
+                            <div class="messages-answer">
+                                <span class="messages-author"> {{ c.close_user.profile.legal_name }} </span>
+                                <span class="messages-date"> {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }} </span>
+                                <div class="messages-content"> {{ c.answer|safe|trim_links:url_length }} </div>
+                            </div>
+                        {% endif %}
 
-                    {% if not request.user.is_superuser and c.creator != request.user and not c.answer and answer_clarification %}
-                        <div class="messages-reply">
-                            <a class="answer-clarification pseudo"
-                               href="#"
-                               rel="{{ c.pk }}">
-                                {% trans "Answer clarification" %}
-                            </a>
-                        </div>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                        {% if not request.user.is_superuser and c.creator != request.user and not c.answer and score.perms.answer_clarification %}
+                            <div class="messages-reply">
+                                <a class="answer-clarification pseudo" href="#" rel="{{ c.pk }}"> {% trans "Answer clarification" %} </a>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% else %}
-    {% trans 'There are no clarifications' %}
+        {% trans 'There are no clarifications' %}
     {% endif %}
 {% endif %}
 
-{% if add_clarification and clarification_form or answer_clarification and clarification_form %}
-    <div id="add-clarification"{% if answer_clarification and not add_clarification %} style="display: none;"{% endif %}>
-        <form action="{% url 'exmo2010:clarification_create' object.id %}" method="post">{% csrf_token %}
-            {% for field in clarification_form %}
-                <div class="fieldWrapper">
-                    {{ field.errors }}
-                    {% if field.field == clarification_form.comment.field and add_clarification %}
-                    {% if field.field != clarification_form.clarification_id.field %}
-                    <h3 class="heading-yourmessage-parameter">
-                        {{ field.label }}
-                    </h3>
-                    {% endif %}
-                    {% endif %}
-                    {{ field }}
-                </div>
-            {% endfor %}
-            <input type="submit" class="submit-post" value="{% if add_clarification %}{% trans 'Clarify' %}{% else %}{% trans 'Reply' %}{% endif %}">
+{% if score.perms.add_clarification or score.perms.answer_clarification %}
+    <div id="add-clarification"{% if score.perms.answer_clarification and not score.perms.add_clarification %} style="display: none;"{% endif %}>
+        <form action="{% url 'exmo2010:clarification_create' score.pk %}" method="post">{% csrf_token %}
+            {% for field in clarification_form.hidden_fields %} {{field}} {% endfor %}
+            <div class="fieldWrapper">
+                {% if score.perms.add_clarification %}
+                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your clarification" %}</h3>
+                    {{ clarification_form.comment }}
+                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Clarify' %}">
+                {% else %}
+                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your clarification answer" %}</h3>
+                    {{ clarification_form.comment }}
+                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Reply' %}">
+                {% endif %}
+            </div>
         </form>
     </div>
 {% endif %}

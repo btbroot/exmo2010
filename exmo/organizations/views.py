@@ -20,7 +20,6 @@
 from datetime import datetime, time
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.comments import signals
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
@@ -34,11 +33,9 @@ from django.views.generic import DeleteView, UpdateView
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
 from core.views import LoginRequiredMixin
-from custom_comments.models import CommentExmo
 from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
 from exmo2010.mail import mail_organization
 from modeltranslation_utils import CurLocaleModelForm
-from organizations.signals import change_organization_status
 
 
 @login_required
@@ -269,5 +266,3 @@ class OrgEditView(OrgMixin, UpdateView):
 
 class OrgDeleteView(OrgMixin, DeleteView):
     template_name = "organization_confirm_delete.html"
-
-signals.comment_was_posted.connect(change_organization_status, sender=CommentExmo)

@@ -33,7 +33,8 @@ from .score import Score
 
 
 def check_role(user, groups):
-    if user.is_superuser:
+    if user.is_superuser and 'expert' in ''.join(groups):
+        # Superuser have expert rights
         return True
     return bool(set(groups) & set(user.groups.values_list('name', flat=True)))
 
@@ -355,6 +356,7 @@ User.is_expertA = property(lambda u: u.is_active and u.profile.is_expertA)
 User.is_customer = property(lambda u: u.is_active and u.profile.is_customer)
 User.is_organization = property(lambda u: u.is_active and u.profile.is_organization)
 User.represents = lambda u, org: u.is_active and u.profile.organization.filter(pk=org.pk).exists()
+User.executes = lambda u, task: u.is_expertB and task.user_id == u.pk
 
 AnonymousUser.is_expert = False
 AnonymousUser.is_expertB = False
@@ -362,6 +364,7 @@ AnonymousUser.is_expertA = False
 AnonymousUser.is_customer = False
 AnonymousUser.is_organization = False
 AnonymousUser.represents = lambda u, org: False
+AnonymousUser.executes = lambda u, task: False
 
 
 def org_changed(sender, instance, action, **kwargs):

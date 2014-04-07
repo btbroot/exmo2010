@@ -31,33 +31,9 @@ from .parameter import Parameter
 from .questionnaire import Questionnaire, QAnswer
 
 
-"""
-Кол-во организаций
-Кол-во оцененных организций (одобренных)
-Кол-во зарегистрированных представителей для организаций
-Кол-во активных представителей
-Кол-во экспертов занятых в оценке
-Кол-во комментариев оставленных представителями
-Кол-во комментариев оставленных экспертами
-Ср. знач. Кид
-Ср. знач. первичного Кид
-"""
-MONITORING_STAT_DICT = {
-    'organization': 0,
-    'organization_rated': 0,
-    'organization_users': 0,
-    'organization_users_active': 0,
-    'expert': 0,
-    'comment_organization': 0,
-    'comment_expert': 0,
-    'avg_openness': 0,
-    'avg_openness_initial': 0,
-}
-
-
+PRE, RATE, INT, RES, PUB, FIN = 0, 1, 3, 4, 5, 7
 MONITORING_PREPARE = 0
 MONITORING_RATE = 1
-MONITORING_REVISION = 2
 MONITORING_INTERACTION = 3
 MONITORING_RESULT = 4
 MONITORING_PUBLISHED = 5
@@ -195,7 +171,7 @@ class Monitoring(BaseModel):
         from .score import Score
         from .userprofile import UserProfile
 
-        stat = MONITORING_STAT_DICT
+        stat = {}
         scores = Score.objects.filter(task__organization__monitoring=self)
 
         stat['organization'] = self.organization_set.count()

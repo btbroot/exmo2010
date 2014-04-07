@@ -76,7 +76,7 @@ class TaskAssignSideEffectsTestCase(TestCase):
     def test_add_single_task(self):
         # WHEN I create new task
         url = reverse('exmo2010:task_add', args=[self.monitoring_id])
-        res = self.client.post(url, {
+        response = self.client.post(url, {
             'organization': self.organization1.pk,
             'user': self.expertB1.pk,
             'status': Task.TASK_OPEN
@@ -179,62 +179,62 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
     def test_forbid_unowned_tasks_actions(self):
         # WHEN I try to close Task that is not assigned to me
         url = reverse('exmo2010:ajax_task_open', args=[self.task_b2.pk])
-        res = self.client.post(url)
+        response = self.client.post(url)
         # THEN response status_code should be 403 (forbidden)
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(response.status_code, 403)
 
     def test_allow_close_complete_task_action(self):
         # WHEN I try to close opened Task that is assigned to me and have complete score
         url = reverse('exmo2010:ajax_task_close', args=[self.complete_task_b1.pk])
-        res = self.client.post(url)
+        response = self.client.post(url)
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # AND new status_display "ready" should be in the ajax response
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         ready_status_display = dict(Task.TASK_STATUS).get(Task.TASK_READY)
-        self.assertEqual(res['status_display'], ready_status_display)
+        self.assertEqual(response['status_display'], ready_status_display)
         # AND new permitted actions should be in the ajax response ('open_task', 'view_task')
-        self.assertEqual(set(['open_task', 'view_task']), set(res['perms'].split()))
+        self.assertEqual(set(['open_task', 'view_task']), set(response['perms'].split()))
 
     def test_forbid_close_incomplete_task_action(self):
         # WHEN I try to close opened Task that is assigned to me but does not have complete score
         url = reverse('exmo2010:ajax_task_close', args=[self.incomplete_task_b1.pk])
-        res = self.client.post(url)
+        response = self.client.post(url)
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # AND ajax response status_display should be same old status "open" plus error message
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
-        self.assertTrue(res_pattern.match(res['status_display']))
+        self.assertTrue(res_pattern.match(response['status_display']))
         # AND ajax response permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(response['perms'].split()))
 
     def test_allow_open_closed_task_action(self):
         # WHEN I try to open closed Task that is assigned to me
         url = reverse('exmo2010:ajax_task_open', args=[self.closed_task_b1.pk])
-        res = self.client.post(url)
+        response = self.client.post(url)
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # AND new status_display "open" should be in the ajax response
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
-        self.assertEqual(res['status_display'], open_status_display)
+        self.assertEqual(response['status_display'], open_status_display)
         # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(res['perms'].split()))
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(response['perms'].split()))
 
     def test_forbid_open_approved_task_action(self):
         # WHEN I try to open approved Task that is assigned to me
         url = reverse('exmo2010:ajax_task_open', args=[self.approved_task_b1.pk])
-        res = self.client.post(url)
+        response = self.client.post(url)
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # AND ajax response status_display should be same old status "approved"
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
-        self.assertEqual(res['status_display'], approved_status_display)
+        self.assertEqual(response['status_display'], approved_status_display)
         # AND ajax response permitted actions should be same as before ('view_task')
-        self.assertEqual('view_task', res['perms'])
+        self.assertEqual('view_task', response['perms'])
 
 
 class ExpertATaskAjaxActionsTestCase(TestCase):
@@ -268,46 +268,55 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
 
     def test_allow_open_approved_task_action(self):
         # WHEN I try to reopen approved Task
-        url = reverse('exmo2010:ajax_task_open', args=[self.approved_task.pk])
-        res = self.client.post(url)
+        response = self.client.post(reverse('exmo2010:ajax_task_open', args=[self.approved_task.pk]))
+
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
         # AND new status_display "open" should be in the ajax response
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
-        self.assertEqual(res['status_display'], unicode(open_status_display))
+        self.assertEqual(response['status_display'], unicode(open_status_display))
+
         # AND new permitted actions should be in the ajax response
         # ('close_task', 'fill_task', 'view_task', 'view_openness')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
+        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness']
+        self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
     def test_allow_approve_complete_task_action(self):
         # WHEN I try to approve closed complete Task
-        url = reverse('exmo2010:ajax_task_approve', args=[self.closed_complete_task.pk])
-        res = self.client.post(url)
+        response = self.client.post(reverse('exmo2010:ajax_task_approve', args=[self.closed_complete_task.pk]))
+
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
         # AND new status_display "approved" should be in the ajax response
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
-        self.assertEqual(res['status_display'], unicode(approved_status_display))
+        self.assertEqual(response['status_display'], unicode(approved_status_display))
+
         # AND new permitted actions should be in the ajax response
         # ('open_task', 'fill_task', 'view_task', 'view_openness')
-        self.assertEqual(set(['open_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
+        expected_perms = ['open_task', 'fill_task', 'view_task', 'view_openness']
+        self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
     def test_forbid_approve_open_task_action(self):
         # WHEN I try to approve opened Task
-        url = reverse('exmo2010:ajax_task_approve', args=[self.open_task.pk])
-        res = self.client.post(url)
+        response = self.client.post(reverse('exmo2010:ajax_task_approve', args=[self.open_task.pk]))
+
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
         # AND ajax response status_display should be same old status "open" plus error message
-        res = json.loads(res.content)
+        response = json.loads(response.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
-        self.assertTrue(res_pattern.match(res['status_display']))
+        self.assertTrue(res_pattern.match(response['status_display']))
+
         # AND ajax response  permitted actions should be same as before
         # ('close_task', 'fill_task', 'view_task', 'view_openness')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(res['perms'].split()))
+        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness']
+        self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
 
 class TaskDeletionTestCase(TestCase):

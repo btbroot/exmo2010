@@ -310,19 +310,6 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
 
     def test_activated_status(self):
         # WHEN I post first comment
-        key_salt = "django.contrib.forms.CommentSecurityForm"
-        timestamp = str(int(time.time()))
-        content_type = ContentType.objects.get_for_model(Score)
-        content_type = '.'.join([content_type.app_label, content_type.model])
-        value = "-".join([content_type, str(self.score.pk), timestamp])
-        data = {
-            'status': '0',
-            'comment': 'Comment',
-            'timestamp': timestamp,
-            'object_pk': self.score.pk,
-            'security_hash': salted_hmac(key_salt, value).hexdigest(),
-            'content_type': content_type,
-        }
-        self.client.post(reverse('login-required-post-comment'), data)
+        self.client.post(reverse('exmo2010:post_score_comment', args=[self.score.pk]), {'comment': '123'})
         # THEN organization invitation status should change to 'activated' ('ACT')
         self.assertEqual(Organization.objects.get(pk=self.org.pk).inv_status, 'ACT')

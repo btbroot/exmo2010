@@ -1,6 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011, 2013 Al Nikolov
-// Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+// Copyright 2010, 2011 Institute for Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -17,18 +17,27 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    var url = $("a#ajax_url").attr("href");
-    // insert loader image
-    $('<span/>', {'class': 'rating-ajax'}).insertBefore( '.get-rating' );
-    // get rating places
-    $.getJSON(url, {task_id: $('#task_id').data('task_id')})
-        .done(function(data) {
-            $.each(data, function(key, val) {
-                if (val) {
-                    $('.get-rating').show();
-                    $('#' + key).text(val + ' ' + gettext('place'));
-                }
+    editor = CKEDITOR.instances['id_comment'];
+    if (editor != undefined) {
+        // Update original form inputs when text typed in CKEDITOR
+        // Enable submit button if CKEDITOR input not empty.
+        function ckChangeHandler(e) {
+            var editor_body = $(e.sender.document.$).find('body');
+
+            if(editor_body && editor_body.text().trim() != '') {
+                $('#submit_comment').prop('disabled', false);
+            } else {
+                $('#submit_comment').prop('disabled', true);
+            }
+            e.sender.updateElement()
+        }
+
+        if ($.browser.msie) {
+            editor.on('contentDom', function(e) {
+                editor.document.on('keyup', function(event) { ckChangeHandler(e); });
             });
-            $('.rating-ajax').remove();
-        });
+        } else {
+            editor.on('change', ckChangeHandler);
+        }
+    }
 });

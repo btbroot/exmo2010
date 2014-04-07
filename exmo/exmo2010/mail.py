@@ -183,9 +183,7 @@ def mail_param_edited(param, form):
                 send_email.delay(ExmoEmail(template_basename='mail/parameter_email', context=context, to=[email], subject=subject))
 
 
-def mail_comment(sender, **kwargs):
-    comment = kwargs['comment']
-    request = kwargs['request']
+def mail_comment(request, comment):
     score = comment.content_object
     monitoring = score.task.organization.monitoring
     if not monitoring.status in [MONITORING_INTERACTION, MONITORING_FINALIZING]:
@@ -278,7 +276,7 @@ def mail_password_reset(request, users):
             to=[user.email]))
 
 
-def mail_register_activation(user, request, activation_key):
+def mail_register_activation(request, user, activation_key):
     if Site._meta.installed:
         site = Site.objects.get_current()
     else:

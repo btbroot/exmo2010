@@ -17,22 +17,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import datetime, timedelta
-import time
 
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils.crypto import salted_hmac
 from model_mommy import mommy
+from nose_parameterized import parameterized
 
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
 
 from exmo2010.celery_tasks import send_digest
-from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION
+from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_STATUS
 from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
 
 
@@ -107,59 +105,40 @@ class CommentReportTestCase(TestCase):
         self.assertEqual(report['num_answered_late'], 1)
 
 
-class CommentGetQueryAccessTestCase(TestCase):
-    # Scenario: should disallow to send get-query
-
-    def test_anonymous_send_get_query(self):
-        # WHEN anonymous user send GET-query
-        url = reverse('comments-post-comment')
-        response = self.client.get(url, follow=True)
-        # THEN response status_code should be 405 (Method Not Allowed)
-        self.assertEqual(response.status_code, 405)
-
-
-class PostCommentAccessTestCase(TestCase):
-    # SHOULD forbid unauthorized user to post score comments
+class PostCommentUnprivilegedAccessTestCase(TestCase):
+    # SHOULD forbid anonymous or unprivileged user to post score comments
 
     def setUp(self):
-        self.site = Site.objects.get_current()
-        self.content_type = ContentType.objects.get_for_model(Score)
-
-        # GIVEN interaction monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization connected to interaction monitoring
-        self.organization = mommy.make(Organization, monitoring=monitoring)
-        # AND corresponding task, parameter, and score for organization
-        task = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED)
-        parameter = mommy.make(Parameter, monitoring=monitoring)
-        self.score = mommy.make(Score, task=task, parameter=parameter, found=1)
+        self.score_urls = {}
+        # GIVEN scores in monitoring for every possible monitoring status
+        for status, label in MONITORING_STATUS:
+            param = mommy.make(Parameter, monitoring__status=status)
+            task = mommy.make(Task, organization__monitoring=param.monitoring, status=Task.TASK_APPROVED)
+            score = mommy.make(Score, task=task, parameter=param, found=1)
+            self.score_urls[status] = reverse('exmo2010:post_score_comment', args=[score.pk])
         # AND user without any permissions
         self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
 
-    def test_post_comment_access(self):
-        # WHEN I am logged in as user without permissions
-        self.client.login(username='user', password='password')
-        # AND I post comment
-        url = reverse('login-required-post-comment')
-        key_salt = "django.contrib.forms.CommentSecurityForm"
-        timestamp = str(int(time.time()))
-        object_pk = str(self.score.pk)
-        content_type = '.'.join([self.content_type.app_label, self.content_type.model])
-        value = "-".join([content_type, object_pk, timestamp])
-        security_hash = salted_hmac(key_salt, value).hexdigest()
-        data = {
-            'status': '0',
-            'comment': 'Comment',
-            'timestamp': timestamp,
-            'object_pk': object_pk,
-            'security_hash': security_hash,
-            'content_type': content_type,
-        }
-        response = self.client.post(url, data, follow=True)
+    @parameterized.expand(MONITORING_STATUS)
+    def test_forbid_post_comment_anonymous(self, status, *args):
+        # WHEN I anonymous user post comment
+        response = self.client.post(self.score_urls[status], {'comment': '123'})
         # THEN response status_code should be 403 (forbidden)
         self.assertEqual(response.status_code, 403)
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
+
+    @parameterized.expand(MONITORING_STATUS)
+    def test_forbid_post_comment_unprivileged(self, status, *args):
+        # WHEN I am logged in as user without permissions
+        self.client.login(username='user', password='password')
+        # AND I post comment
+        response = self.client.post(self.score_urls[status], {'comment': '123'})
+        # THEN response status_code should be 403 (forbidden)
+        self.assertEqual(response.status_code, 403)
+        # AND new comments should not get created in db
+        self.assertEqual(CommentExmo.objects.all().count(), 0)
+
 
 
 class CommentMailNotificationTestCase(TestCase):
@@ -188,20 +167,7 @@ class CommentMailNotificationTestCase(TestCase):
 
     def test_mail_on_comment(self):
         # WHEN I post comment to the score
-        key_salt = "django.contrib.forms.CommentSecurityForm"
-        timestamp = str(int(time.time()))
-        content_type = ContentType.objects.get_for_model(Score)
-        content_type = '.'.join([content_type.app_label, content_type.model])
-        value = "-".join([content_type, str(self.score.pk), timestamp])
-        data = {
-            'status': '0',
-            'comment': 'Comment',
-            'timestamp': timestamp,
-            'object_pk': self.score.pk,
-            'security_hash': salted_hmac(key_salt, value).hexdigest(),
-            'content_type': content_type,
-        }
-        self.client.post(reverse('login-required-post-comment'), data)
+        self.client.post(reverse('exmo2010:post_score_comment', args=[self.score.pk]), {'comment': '123'})
         # THEN one email should be sent (to the representative of relevant organization)
         self.assertEqual(len(mail.outbox), 1)
 

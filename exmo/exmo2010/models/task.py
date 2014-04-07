@@ -30,22 +30,6 @@ from .questionnaire import QQuestion, QAnswer
 from .score import Score
 
 
-class OpenTaskManager(models.Manager):
-    """
-    Менеджер для получения открытых задач
-    """
-    def get_query_set(self):
-        return super(OpenTaskManager, self).get_query_set().filter(status=Task.TASK_OPEN)
-
-
-class ReadyTaskManager(models.Manager):
-    """
-    Менеджер для получения закрытых задач
-    """
-    def get_query_set(self):
-        return super(ReadyTaskManager, self).get_query_set().filter(status=Task.TASK_READY)
-
-
 class ApprovedTaskManager(models.Manager):
     """
     Менеджер для получения одобренных задач
@@ -110,12 +94,7 @@ class Task(BaseModel):
         else:
             return 0
 
-# want to hide TASK_OPEN, TASK_READY, TASK_APPROVED -- set initial quesryset with filter by special manager
-# sa http://docs.djangoproject.com/en/1.2/topics/db/managers/#modifying-initial-manager-querysets
-
     objects = models.Manager()  # The default manager.
-    open_tasks = OpenTaskManager()
-    ready_tasks = ReadyTaskManager()
     approved_tasks = ApprovedTaskManager()
 
     def __unicode__(self):

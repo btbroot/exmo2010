@@ -32,22 +32,17 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
     submit_button = 'div.content input[type="submit"]'
 
     def setUp(self):
-        # GIVEN expert A account
+        # GIVEN organization with email
+        org = mommy.make(Organization, email='email@mail.ru')
+        # AND I am logged in as expert A
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         expertA.profile.is_expertA = True
-        # AND monitoring
-        self.monitoring = mommy.make(Monitoring)
-        # AND organization with email connected to monitoring
-        self.organization = mommy.make(Organization, monitoring=self.monitoring, email='email@mail.ru')
-        # AND 'send mail' page url
-        self.url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+        self.login('expertA', 'password')
+        # AND i am on organization list page
+        self.get(reverse('exmo2010:organization_list', args=[org.monitoring.pk]))
 
     def test_warning_message_at_send_mail_page(self):
-        # WHEN I login as expert A
-        self.login('expertA', 'password')
-        # AND I get the page
-        self.get(self.url)
-        # AND click on 'send mail' tab
+        # WHEN i click on 'send mail' tab
         self.find('a[href="#send_mail"]').click()
         # AND submit form
         self.find(self.submit_button).click()
@@ -55,15 +50,11 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         self.assertVisible('div.warning')
 
     def test_success_message_at_send_mail_page(self):
-        # WHEN I login as expert A
-        self.login('expertA', 'password')
-        # AND I get the page
-        self.get(self.url)
-        # AND click on 'send mail' tab
+        # WHEN i click on 'send mail' tab
         self.find('a[href="#send_mail"]').click()
         # AND post form data
         self.find('#id_subject').send_keys('Subject')
-        with self.frame('#cke_contents_id_comment iframe'):
+        with self.frame('iframe'):
             self.find('body').send_keys('Content')
         # AND submit form
         self.find(self.submit_button).click()
@@ -71,10 +62,8 @@ class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
         self.assertVisible('p.success')
         # AND mail outbox should have 1 email
         self.assertEqual(len(mail.outbox), 1)
-        # AND current url should contain expected path
-        current_url = urlparse(self.webdrv.current_url)
-        self.assertEqual(current_url.path, self.url)
         # AND current url should contain expected query parameter
+        current_url = urlparse(self.webdrv.current_url)
         self.assertEqual(current_url.query, 'alert=success')
         # AND current url should contain expected hash
         self.assertEqual(current_url.fragment, 'all')

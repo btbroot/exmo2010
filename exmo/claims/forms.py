@@ -22,7 +22,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from core.utils import urlize, sanitize_field
+from core.utils import urlize, clean_message
 
 
 class ClaimAddForm(forms.Form):
@@ -30,10 +30,7 @@ class ClaimAddForm(forms.Form):
     claim_id = forms.IntegerField(required=False, widget=forms.widgets.HiddenInput())
 
     def clean_comment(self):
-        data = self.cleaned_data['comment']
-        data = sanitize_field(data)
-        data = urlize(data)
-        return data
+        return urlize(clean_message(self.cleaned_data['comment']))
 
 
 class ClaimReportForm(forms.Form):

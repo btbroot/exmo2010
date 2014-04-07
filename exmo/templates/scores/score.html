@@ -1,0 +1,298 @@
+{% extends "exmo2010/base_site.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n urlize_target_blank widget_tweaks criteria_css_class static comments days_until date_until trim_links future %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'scores/score.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+
+    {% if request.user.is_expert %}
+        <script type="text/javascript" src="{% static 'scores/score_expert.js' %}"></script>
+
+        {% if interaction %}
+            <script type="text/javascript" src="{% static 'scores/score_expert_interaction.js' %}"></script>
+        {% endif %}
+    {% elif request.user.is_organization %}
+        <script type="text/javascript" src="{% static 'scores/score_orguser.js' %}"></script>
+    {% endif %}
+
+    <script type="text/javascript" src="{% static 'jquery.autosize.js' %}"></script>
+{% endblock %}
+
+{% block title %} {{param}} {% endblock %}
+
+{% block bubble %} {% include "exmo2010/helpers/inv_code_bubble.html" %} {% endblock %}
+
+{% block content %}
+
+<dl class="score-header">
+    <dt>{% trans 'Organization' %}:</dt>
+    <dd>{{org.name}}</dd>
+
+    <dt>{% trans "Organization's website" %}:</dt>
+    <dd><a target="_blank" href="{{org.url}}">{{org.url}}</a></dd>
+
+    <dt>{% trans "Social importance of the parameter" %}:</dt>
+    <dd>{{param.importance}}</dd>
+
+    {% if param.grounds %}
+        <dt>{% trans "Grounds" %}:</dt>
+        <dd>{{param.grounds|safe}}</dd>
+    {% endif %}
+
+    {% if param.rating_procedure %}
+        <dt>{% trans "Rating procedure" %}:</dt>
+        <dd>{{param.rating_procedure|safe}}</dd>
+    {% endif %}
+
+    {% if param.notes and request.user.is_expert %}
+        <dt>{% trans "Notes" %}:</dt>
+        <dd>{{param.notes|safe}}</dd>
+    {% endif %}
+</dl>
+
+{% if score.perms.edit_score %}
+    {% if interaction and score.pk %}
+        <div class="edit-tabs inline_text ">
+            <span> <a href="#reply" class="pseudo"> {% trans 'Reply' %} </a> </span>
+            <span> <a href="#change_score" class="pseudo"> {% trans 'Change score' %} </a> </span>
+        </div>
+    {% endif %}
+
+    <form method="post" action="#" id="score_form" class="score tab_edit"
+            {% if interaction and score.pk %} style="display: none" {% endif %}>{% csrf_token %}
+        {% for field in form.hidden_fields %} {{field}} {% endfor %}
+
+        <div class="errors">
+            {{ form.errors }}
+        </div>
+
+        <table class="score-table editable {{ all_max_initial|yesno:'all_max_initial,' }}">
+            <thead>
+                <tr>
+                    <th class="criteria"> {% trans 'Evaluation criterion' %} </th>
+                    <th> {% trans 'Value' %} </th>
+                    <th class="explanation"></th>
+                </tr>
+            </thead>
+
+            <tbody class="value" >
+                {% for field in criteria %}
+                    <tr data-max="{{field.field.choices|last|last}}" data-initial="{{field.initial|default_if_none:''}}">
+                        <td><label>{{field.label}}</label></td> <td>{{field}}</td> <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div>
+            <span class="bold"> {% trans 'Recommendations' %} </span>  <br/>
+            {{form.recommendations}}
+        </div>
+        <div>
+            <span class="bold"> {% trans 'Links' %} </span> <br/>
+            {{form.links}}
+        </div>
+
+        {% if param.perms.exclude_parameter %}
+            <span class="non_relevant_button">
+            <input type="button"
+                   value="{% trans 'Set non-relevant' %}"
+                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' score.task.pk param.pk %}?{{ request.GET.urlencode }}'" />
+            </span>
+        {% endif %}
+
+        {% if interaction and score.pk %}
+            <input type="hidden" name='comment' />
+        {% else %}
+            <input type="submit" value="{% trans 'Save' %}" />
+        {% endif %}
+    </form>
+{% endif %}
+
+{% if score.pk %}
+    {% if interaction or not score.perms.edit_score %}
+        <div class="tab_reply">
+            <table id="score_table">
+                <thead>
+                    <tr>
+                        <th class="criteria"> {% trans 'Evaluation criterion' %} </th> <th> {% trans 'Value' %} </th> <th class="explanation"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in criteria %}
+                        <tr>
+                            <td>{{field.label}}</td> <td>{{field.value|default_if_none:"—"}}</td> <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div>
+                <div class="read_edit">
+                    <span class="bold"> {% trans 'Recommendations' %} </span>
+                    {% if score.perms.edit_score %}
+                        <a href=# id="edit_recommendations">{% trans 'Edit' %}</a>
+                        <div id="recommendations_form" class="edit" style="display: none">
+                            <form action="{% url 'exmo2010:post_recommendations' score.pk %}">{% csrf_token %}
+                                {{form.recommendations}} <br/>
+                                <input type="submit" disabled=true value="{% trans 'Save' %}" />
+                                <a href=# class="cancel">{% trans 'Cancel' %}</a>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <div class="read" data-empty_text="{% trans 'No recommendations' %}">
+                        {% if score.recommendations %}
+                            {{ score.recommendations|urlize_target_blank:url_length|linebreaksbr }}
+                        {% else %}
+                            {% trans 'No recommendations' %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="read_edit">
+                    <span class="bold"> {% trans 'Links' %} </span>
+                    {% if score.perms.edit_score %}
+                        <a href=# id="edit_links">{% trans 'Edit' %}</a>
+                        <div class="edit" style="display: none">
+                            <form action="{% url 'exmo2010:post_score_links' score.pk %}">{% csrf_token %}
+                                {{form.links}} <br/>
+                                <input type="submit" value="{% trans 'Save' %}" />
+                                <a href=# class="cancel">{% trans 'Cancel' %}</a>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <div class="read" data-empty_text="{% trans 'No links' %}">
+                        {% if score.links %}
+                            {{ score.links|urlize_target_blank:url_length|linebreaksbr }}
+                        {% else %}
+                            {% trans 'No links' %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if score.perms.view_comment %}
+        <h3 class="heading-comments-parameter">{% trans "Comments" %}</h3>
+
+        {% get_comment_list for score as comment_list %}
+        {% if comment_list %}
+            <table class="table-messages-parameter">
+                <tbody>
+                {% for comment in comment_list %}
+                    <tr id="c{{ comment.id }}">
+                        <td
+                        {% with comment.submit_date|workdays_still_left:param.monitoring.time_to_answer as ndays %}
+                            {% if request.user.is_expert and comment.user.is_organization and not comment.user.is_superuser and comment.status == comment.OPEN %}
+                                class="answer-{% if ndays < 0 %}missed{% elif ndays > 0 %}later{% else %}today{% endif %}"
+                            {% endif %}
+                        {% endwith %}
+                        >
+                            <span class="messages-author">
+                                {% if comment.user.is_expert and not request.user.is_expert %}
+                                    {{ masked_expert_name }}
+                                {% else %}
+                                    {{ comment.user.legal_name }}
+                                {% endif %}
+                            </span>
+
+                            <span class="messages-date"> {{ comment.submit_date|date:"SHORT_DATETIME_FORMAT" }} </span>
+
+                            <div class="messages-content"> {{ comment.comment|safe|trim_links:url_length }} </div>
+
+                            {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
+                                <div class="notification-peremptory">
+                                    {% trans 'Deadline for answer to your comment is:' %}
+                                    {{ comment.submit_date|date_until:param.monitoring.time_to_answer|date:"SHORT_DATE_FORMAT" }}
+                                </div>
+                            {% endif %}
+
+                            {% if request.user.is_expertA and not comment.user.is_expert and comment.status != comment.ANSWERED %}
+                                <div class="toggle-comment-container">
+                                    <a class="toggle-comment" href="{% url 'exmo2010:toggle_comment' %}" rel="{{comment.pk}}">
+                                        {% if comment.status == comment.OPEN %}
+                                            {% trans 'Close without answer' %}
+                                        {% else %}
+                                            {% trans 'Open comment' %}
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{% trans 'There are no comments' %}</p>
+        {% endif %}
+    {% endif %}
+
+    {% if score.perms.add_comment %}
+        {% if interaction and request.user.is_expert %}
+            <div class="edit-tabs inline_text ">
+                <span> <a href="#reply" class="pseudo"> {% trans 'Reply' %} </a> </span>
+                <span> <a href="#change_score" class="pseudo"> {% trans 'Change score' %} </a> </span>
+            </div>
+        {% endif %}
+
+        <div id="comment_form" class="comment-form" {% if request.user.is_expert %} style="display: none" {% endif %}">
+            <p>{% trans 'Your comment' %}</p>
+            {% get_comment_form for score as form %}
+            <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
+                {{ comment_form.comment }}
+                <input type="submit"  class="tab_reply" id="submit_comment" value="{% trans 'Post comment' %}" disabled=true />
+                {% if score.perms.edit_score %}
+                    <input type="submit" class="tab_edit" id="submit_score_and_comment" value="{% trans 'Post comment and change score' %}" disabled=true />
+                {% endif %}
+            </form>
+        </div>
+    {% endif %}
+
+
+    {% if score.perms.view_claim %}
+        <div class="ccc-tabs">
+            <span> <a href="#clarifications" class="pseudo"> {% trans 'Clarifications' %} </a> </span>
+            <span> <a href="#claims" class="pseudo">  {% trans 'Claims' %} </a> </span>
+        </div>
+
+        <div class="tab-content-clarifications hidden">
+            <div id="clarifications"> {% include "clarification.html" %} </div>
+        </div>
+
+        <div class="tab-content-claims hidden">
+            <div id="claims"> {% include "claim.html" %} </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block footer %}
+    {% include "exmo2010/footer.html" with license_except_comments=True %}
+{% endblock %}

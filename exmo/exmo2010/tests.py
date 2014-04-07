@@ -34,7 +34,7 @@ from core.utils import get_named_patterns
 from exmo2010.forms import CertificateOrderForm
 from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
-    Group, Monitoring, Organization, Parameter, Questionnaire, Score, PhonesField,
+    Group, Monitoring, Organization, Parameter, Questionnaire, Score, PhonesField, Claim, Clarification,
     Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
 )
 
@@ -205,6 +205,9 @@ class CanonicalViewKwargsTestCase(TestCase):
         'get_pc',
         'user_reset_dashboard',
         'toggle_comment',
+        'post_recommendations',
+        'post_score_comment',
+        'post_score_links',
     ])
 
     ajax_urls = set([
@@ -232,7 +235,10 @@ class CanonicalViewKwargsTestCase(TestCase):
         # AND parameter, score, questionnaire
         parameter = mommy.make(Parameter, monitoring=monitoring)
         score = mommy.make(Score, task=task, parameter=parameter)
-        questionnaire = mommy.make(Questionnaire, monitoring=monitoring)
+        mommy.make(Questionnaire, monitoring=monitoring)
+        # AND claim, clarification
+        mommy.make(Claim, score=score)
+        mommy.make(Clarification, score=score)
 
         # AND i am logged-in as superuser
         admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')

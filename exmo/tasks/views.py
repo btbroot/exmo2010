@@ -65,7 +65,7 @@ def task_export(request, task_pk):
         'Hypertext',
         'Document',
         'Image',
-        'Comment'
+        'Recommendations'
     ])
     for p in parameters:
         out = (
@@ -84,7 +84,7 @@ def task_export(request, task_pk):
             out += (s.hypertext,) if p.hypertext else ('',)
             out += (s.document,) if p.document else ('',)
             out += (s.image,) if p.image else ('',)
-            out += (s.comment,)
+            out += (s.recommendations,)
         writer.writerow(out)
     writer.writerow([
         _('#This data attributed to Freedom of Information Foundation is licensed '
@@ -126,7 +126,7 @@ def task_import(request, task_pk):
                 score.task = task
                 score.parameter = parameter
                 for i, key in enumerate(['found', 'complete', 'topical', 'accessible',
-                                         'hypertext', 'document', 'image', 'comment']):
+                                         'hypertext', 'document', 'image', 'recommendations']):
                     value = row[i+2]
                     setattr(score, key, value if value else None)
                 score.full_clean()

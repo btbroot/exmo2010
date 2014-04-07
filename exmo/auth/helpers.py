@@ -21,39 +21,35 @@
 """
  Помощники для бекенда. По помощнику на каждый класс модели.
 """
-
+import re
 from types import NoneType
-from exmo2010.models import (Task, Monitoring, Score, Parameter,
-                             MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED)
+from exmo2010.models import Task, Score, Parameter
+from exmo2010.models.monitoring import Monitoring, RATE, RES, INT, PUB, FIN
 
 
 def monitoring_permission(user, priv, monitoring):
-    if priv in ('exmo2010.admin_monitoring',
-                'exmo2010.edit_monitoring'):
+    if priv in ('admin_monitoring', 'edit_monitoring'):
         if user.is_expertA:
             return True
 
-    if priv == 'exmo2010.delete_monitoring':
-        if user.is_expertA and not monitoring.is_published:
+    if priv == 'delete_monitoring':
+        if user.is_expertA and not monitoring.status == PUB:
             return True
 
-    if priv == 'exmo2010.view_monitoring':
+    if priv == 'view_monitoring':
         if user.is_superuser or user.is_expertA:
             return True
 
-        if monitoring.hidden or not monitoring.is_published:
+        if monitoring.hidden or not monitoring.status == PUB:
             if user.is_expertB and monitoring.is_active and \
                     Task.objects.filter(organization__monitoring=monitoring, user=user).exists():
                 return True
             elif user.is_organization and Task.approved_tasks.filter(
                     organization__monitoring=monitoring,
-                    organization__monitoring__status__in=(
-                        MONITORING_INTERACTION,
-                        MONITORING_FINALIZING,
-                        MONITORING_PUBLISHED),
+                    organization__monitoring__status__in=(INT, FIN, PUB),
                     organization__in=user.profile.organization.all()).exists():
                 return True
-        elif monitoring.is_published:
+        elif monitoring.status == PUB:
             return True
 
     return False
@@ -67,129 +63,89 @@ def task_permission(user, priv, task):
         return True
 
     monitoring = task.organization.monitoring
+    phase = monitoring.status
 
-    if priv == 'exmo2010.view_task':
-        if task.approved and monitoring.is_published and not monitoring.hidden:
+    if priv == 'view_task':
+        if user.executes(task):
             return True
-        elif task.user == user:  # expertB
-            return True
-        elif task.approved and user.represents(task.organization):
-            return True
-    elif priv == 'exmo2010.close_task' and task.open:
-        if task.user == user and monitoring.is_rate:
-            return True
-    elif priv == 'exmo2010.open_task' and task.ready:
-        if task.user == user and monitoring.is_rate:
-            return True
-    elif priv == 'exmo2010.fill_task':  # create_score
-        if task.user == user:
-            if monitoring.is_interact or monitoring.is_finishing or (monitoring.is_rate and task.open):
+        elif user.represents(task.organization):
+            if task.approved and phase in (INT, FIN, PUB):
                 return True
-    elif priv == 'exmo2010.view_openness':
+        elif task.approved and phase == PUB and not monitoring.hidden:
+            # Anonymous or unprivileged user
+            return True
+    elif priv == 'close_task' and task.open:
+        if user.executes(task) and phase == RATE:
+            return True
+    elif priv == 'open_task' and task.ready:
+        if user.executes(task) and phase == RATE:
+            return True
+    elif priv == 'fill_task':  # create_score
+        if user.executes(task):
+            if phase in (INT, FIN) or (phase == RATE and task.open):
+                return True
+    elif priv == 'view_openness':
         # TICKET 1470: expert B is forbidden to see openness due to performance penalty
-        if user.represents(task.organization) or monitoring.is_published:
+        if user.represents(task.organization) or phase == PUB:
             return True
 
-    elif priv == 'exmo2010.add_comment_score':
-        if monitoring.is_interact or monitoring.is_finishing:
-            if user.is_expertA or task.user == user:
-                return True
-
-        if monitoring.is_interact and user.represents(task.organization):
-            return True
     return False
 
 
 def score_permission(user, priv, score):
     task = score.task
     monitoring = task.organization.monitoring
+    phase = monitoring.status
 
-    if user.is_authenticated():
-        profile = user.profile
+    if priv == 'view_score':
+        return user.has_perm('view_task', task)
 
-    if priv == 'exmo2010.view_score':
-        if score.task.organization not in score.parameter.exclude.all():
-            return user.has_perm('exmo2010.view_task', score.task)
-
-    if priv == 'exmo2010.edit_score':
-        if score.task.organization not in score.parameter.exclude.all():
-            return user.has_perm('exmo2010.fill_task', score.task)
-
-    if priv == 'exmo2010.delete_score':
-        return user.has_perm('exmo2010.fill_task', score.task)
-
-    if priv == 'exmo2010.add_comment_score':
-        if user.is_active:
-            if (profile.is_expertB and not profile.is_expertA) and (monitoring.is_interact or monitoring.is_finishing):
-                return True
-            if profile.is_expertA and (monitoring.is_interact or monitoring.is_finishing or monitoring.is_published):
-                return True
-            if profile.is_organization and monitoring.is_interact:
+    if priv == 'edit_score':
+        if user.is_expertA:
+            return True
+        elif user.executes(task):
+            if phase in (INT, FIN) or (phase == RATE and task.open):
                 return True
 
-    if priv == 'exmo2010.view_comment_score':
-        if user.is_active and (monitoring.is_interact or monitoring.is_finishing or monitoring.is_published):
-            if profile.is_expertA:
-                return True
-            if profile.is_expertB and task.user_id == user.id:
-                return True
-            if profile.is_organization and user.represents(task.organization):
+    if priv == 'delete_score':
+        if user.executes(task):
+            if phase in (INT, FIN) or (phase == RATE and task.open):
                 return True
 
-    if priv == 'exmo2010.close_comment_score':
-        if user.is_active:
-            if profile.is_expertA and (monitoring.is_interact or monitoring.is_finishing or monitoring.is_published):
+    if priv == 'add_comment':
+        if user.is_expertA and phase in (INT, FIN, PUB):
+            return True
+        elif user.is_expertB and task.user_id == user.pk and phase in (INT, FIN):
+            return True
+        elif user.represents(task.organization) and phase == INT:
+            return True
+
+    if priv == 'view_comment':
+        if phase in (INT, FIN, PUB):
+            if user.is_expertA or user.executes(task) or user.represents(task.organization):
                 return True
 
-    if priv == 'exmo2010.view_claim_score':
-        if user.is_active and not monitoring.is_prepare:
-            if profile.is_expertA:
-                return True
-            if profile.is_expertB and task.user_id == user.id:
-                return True
+    if priv in ['answer_claim', 'answer_clarification']:
+        if user.executes(task) and phase in (INT, RATE, FIN):
+            return True
 
-    if priv == 'exmo2010.add_claim_score':
-        if user.is_active:
-            if profile.is_expertA and not (monitoring.is_prepare or monitoring.is_published):
-                return True
+    if priv in ['view_claim', 'view_clarification']:
+        if user.is_expertA or user.executes(task):
+            return True
 
-    if priv == 'exmo2010.answer_claim_score':
-        if user.is_active:
-            if (profile.is_expertB and not profile.is_expertA) and not (monitoring.is_prepare or monitoring.is_published):
-                return True
+    if priv in ['add_claim', 'add_clarification']:
+        if user.is_expertA and phase in (RATE, RES):
+            return True
 
-    if priv == 'exmo2010.delete_claim_score':
-        if user.is_active:
-            if profile.is_expertA:
-                return True
-
-    if priv == 'exmo2010.view_claim':
-        if user.is_active:
-            if profile.is_expert and not monitoring.is_prepare:
-                return True
-
-    if priv == 'exmo2010.view_clarification_score':
-        if user.is_active and not monitoring.is_prepare:
-            if profile.is_expertA:
-                return True
-            if profile.is_expertB and task.user_id == user.id:
-                return True
-
-    if priv == 'exmo2010.add_clarification_score':
-        if user.is_active:
-            if profile.is_expertA and not (monitoring.is_prepare or monitoring.is_published):
-                return True
-
-    if priv == 'exmo2010.answer_clarification_score':
-        if user.is_active:
-            if (profile.is_expertB and not profile.is_expertA) and not (monitoring.is_prepare or monitoring.is_published):
-                return True
+    if priv == 'delete_claim':
+        if user.is_expertA:
+            return True
 
     return False
 
 
 def parameter_permission(user, priv, parameter):
-    if priv == 'exmo2010.exclude_parameter':
+    if priv == 'exclude_parameter':
         if user.is_expertA:
             return True
     return False
@@ -200,13 +156,14 @@ def check_permission(user, priv, context_obj=None):
     Check user permission for context object or global permissions that has no
     context object.
     """
+    priv = re.sub(r'^exmo2010\.', '', priv)  # Remove 'exmo2010.' prefix
     if context_obj is not None:
         # Call object permission handler
         handler = perm_handlers[context_obj.__class__]
         return handler(user, priv, context_obj)
     else:
         # Global permissions
-        if priv == 'exmo2010.create_monitoring':
+        if priv == 'create_monitoring':
             return user.is_expertA
 
 
@@ -239,11 +196,11 @@ _existing_permissions = {
     ],
     Score: [
         # clarifications
-        'answer_clarification_score', 'add_clarification_score', 'view_clarification_score',
+        'view_clarification', 'answer_clarification', 'add_clarification',
         # claims
-        'view_claim', 'delete_claim_score', 'answer_claim_score', 'add_claim_score', 'view_claim_score',
+        'view_claim', 'answer_claim', 'add_claim', 'delete_claim',
         # comments
-        'close_comment_score', 'view_comment_score', 'add_comment_score',
+        'view_comment', 'add_comment',
         # score
         'delete_score', 'edit_score', 'view_score'
     ],
@@ -253,7 +210,7 @@ _existing_permissions = {
 
 def existing_permissions(obj):
     for perm in _existing_permissions[obj.__class__]:
-        yield 'exmo2010.' + perm
+        yield perm
 
 
 def get_all_permissions(user, obj):

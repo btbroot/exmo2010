@@ -27,12 +27,21 @@ from .base import BaseModel
 from .claim import Claim
 from .clarification import Clarification
 from .monitoring import Monitoring
+from .parameter import Parameter
 
 
 class Score(BaseModel):
     """
     Модель оценки
     """
+
+    class Meta(BaseModel.Meta):
+        unique_together = (('task', 'parameter', 'revision'),)
+        ordering = (
+            'task__user__username',
+            'task__organization__name',
+            'parameter__code'
+        )
 
     REVISION_DEFAULT = 0
     REVISION_INTERACT = 1
@@ -53,16 +62,16 @@ class Score(BaseModel):
     _01 = ((0, 0), (1, 1))
     _123 = ((1, 1), (2, 2), (3, 3))
 
-    found = models.IntegerField(choices=_01, verbose_name=_('found'))
-    complete = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('complete'))
-    topical = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('topical'))
-    accessible = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('accessible'))
-    hypertext = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('hypertext'))
-    document = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('document'))
-    image = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('image'))
+    found = models.IntegerField(choices=_01, verbose_name=_('Found'))
+    complete = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('Complete'))
+    topical = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('Topical'))
+    accessible = models.IntegerField(null=True, blank=True, choices=_123, verbose_name=_('Accessible'))
+    hypertext = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('Hypertext'))
+    document = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('Document'))
+    image = models.IntegerField(null=True, blank=True, choices=_01, verbose_name=_('Image'))
 
     links = models.TextField(null=True, blank=True, verbose_name=_('Links'))
-    comment = models.TextField(null=True, blank=True, verbose_name=_('Recomendations'))
+    recommendations = models.TextField(null=True, blank=True, verbose_name=_('Recommendations'))
     created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     edited = models.DateTimeField(null=True, blank=True, auto_now=True)
     revision = models.PositiveIntegerField(default=REVISION_DEFAULT, choices=REVISION_CHOICE)
@@ -76,27 +85,29 @@ class Score(BaseModel):
         )
 
     def clean(self):
-        """
-        Оценка не может быть заполнена частично
-        В оценке не может быть оценено то,
-        что не предусмотрено к оценке в параметре
-        У оценки не может быть found=0 при не пустых прочих критериях
-        """
+        # Relevant criteria
+        criteria = filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+
+        # If found == 1, all relevant criteria should be non-null
         if self.found:
-            if self.parameter.complete and self.complete in ('', None):
-                raise ValidationError(ugettext('Complete must be set'))
-            if self.parameter.topical and self.topical in ('', None):
-                raise ValidationError(ugettext('Topical must be set'))
-            if self.parameter.accessible and self.accessible in ('', None):
-                raise ValidationError(ugettext('Accessible must be set'))
-            if self.parameter.hypertext and self.hypertext in ('', None):
-                raise ValidationError(ugettext('Hypertext must be set'))
-            if self.parameter.document and self.document in ('', None):
-                raise ValidationError(ugettext('Document must be set'))
-            if self.parameter.image and self.image in ('', None):
-                raise ValidationError(ugettext('Image must be set'))
-        elif any((self.complete, self.topical, self.accessible, self.hypertext, self.document, self.image)):
-            raise ValidationError(ugettext('Not found, but some excessive data persists'))
+            for crit in criteria:
+                if getattr(self, crit) in ('', None):
+                    name = self._meta.get_field(crit).verbose_name
+                    raise ValidationError(ugettext('%(criterion)s must be set') % {'criterion': name})
+
+        # If score changed, recommendations should change too
+        if self.pk:
+            db_score = Score.objects.get(pk=self.pk)
+            if self.recommendations == db_score.recommendations:
+                for crit in criteria:
+                    if getattr(self, crit) != getattr(db_score, crit):
+                        raise ValidationError(ugettext('Recommendations should change when score is changed'))
+
+        # If score is not maximum, recommendations should not be empty.
+        if not self.recommendations:
+            for crit in criteria:
+                if getattr(self, crit) != self._meta.get_field(crit).choices[-1][-1]:
+                    raise ValidationError(ugettext('Score is not maximum, recommendations should exist'))
 
     def unique_error_message(self, model_class, unique_check):
         # A unique field
@@ -112,32 +123,42 @@ class Score(BaseModel):
     def save(self, *args, **kwargs):
         if self.pk is not None:
             self.accomplished = True
+
+        # If found == 0, reset all criteria to NULL. This is required in this scenario:
+        # 1) ExpertB creates score with some criterion set to non-zero.
+        # 2) ExpertA marks criterion as non-relevant.
+        # 3) ExpertB reconsiders score and chages it to all-zero (found=0)
+        # 4) ExpertA marks criterion back as relevant.
+        # -- At this point criterion should be rated as zero regardless of its initial value at
+        #    point 1, because found is zero.
+        if not self.found:
+            for crit in self.parameter.OPTIONAL_CRITERIONS:
+                setattr(self, crit, None)
+
         super(Score, self).save(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):
         return ('exmo2010:score_view', [str(self.id)])
 
-    def _get_claim(self):
-        return Claim.objects.filter(score=self, close_date__isnull=True, addressee=self.task.user).exists()
-
-    def _get_openness(self):
-        return openness_helper(self)
+    @property
+    def openness(self):
+        _openness = self.task.organization.monitoring.openness_expression.get_sql_openness()
+        sql = """
+            SELECT %(openness)s FROM exmo2010_score
+            join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
+            where exmo2010_score.id=%(pk)d
+        """ % {'pk': self.pk, 'openness': _openness}
+        s = Score.objects.filter(pk=self.pk).extra(select={'sql_openness': sql})
+        return float(s[0].score_openness)
 
     def add_clarification(self, creator, comment):
-        """
-        Добавляет уточнение
-        """
-        comment = clean_message(comment)
-        clarification = Clarification(score=self,
-                                      creator=creator,
-                                      comment=comment)
+        clarification = Clarification(score=self, creator=creator, comment=clean_message(comment))
         clarification.save()
         return clarification
 
     def add_claim(self, creator, comment):
-        comment = clean_message(comment)
-        claim = Claim(score=self, creator=creator, comment=comment)
+        claim = Claim(score=self, creator=creator, comment=clean_message(comment))
         claim.addressee = claim.score.task.user
         claim.full_clean()
         claim.save()
@@ -159,53 +180,3 @@ class Score(BaseModel):
                 color = 'red'
 
         return color
-
-    def create_revision(self, revision):
-        """
-        Создание ревизии оценки
-        """
-        if self.task.organization.monitoring.status in Monitoring.after_interaction_status \
-           and revision == Score.REVISION_INTERACT:
-            revision_score = Score.objects.filter(
-                task=self.task,
-                parameter=self.parameter,
-                revision=revision,
-            )
-            if not revision_score and self.pk:
-                revision_score = Score.objects.get(pk=self.pk)
-                revision_score.pk = None
-                revision_score.revision = revision
-                revision_score.full_clean()
-                revision_score.save()
-
-    active_claim = property(_get_claim)
-    openness = property(_get_openness)
-
-    class Meta(BaseModel.Meta):
-        unique_together = (('task', 'parameter', 'revision'),)
-        ordering = (
-            'task__user__username',
-            'task__organization__name',
-            'parameter__code'
-        )
-
-
-def openness_helper(score):
-    """
-    Помощник для вычисления Кид через SQL
-    """
-    sql = """
-        SELECT
-        %(score_openness)s
-        FROM
-        exmo2010_score
-        join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
-        where exmo2010_score.id=%(pk)d
-    """ % {
-        'pk': score.pk,
-        'score_openness': score.task.organization.monitoring.openness_expression.get_sql_openness(),
-    }
-    s = Score.objects.filter(pk=score.pk).extra(select={
-        'sql_openness': sql,
-    })
-    return float(s[0].score_openness)
