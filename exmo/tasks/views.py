@@ -198,11 +198,6 @@ class TaskMixin(LoginRequiredMixin):
         url = reverse('exmo2010:tasks_by_monitoring', args=[self.monitoring.pk])
         return '%s?%s' % (url, self.request.GET.urlencode())
 
-    def get_context_data(self, **kwargs):
-        # TODO: Remove this after upgrade to Django 1.5
-        context = super(TaskMixin, self).get_context_data(**kwargs)
-        return dict(context, view=self)
-
 
 class TaskEditView(TaskMixin, UpdateView):
     ''' View for task editing and creation '''

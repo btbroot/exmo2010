@@ -221,11 +221,6 @@ class OrgMixin(LoginRequiredMixin):
         url = reverse('exmo2010:organization_list', args=[self.object.monitoring.pk])
         return '%s?%s' % (url, self.request.GET.urlencode())
 
-    def get_context_data(self, **kwargs):
-        # TODO: Remove this after upgrade to Django 1.5
-        context = super(OrgMixin, self).get_context_data(**kwargs)
-        return dict(context, view=self)
-
     def get_object(self):
         org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
         if not self.request.user.has_perm('exmo2010.admin_monitoring', org.monitoring):

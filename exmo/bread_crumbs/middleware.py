@@ -19,7 +19,7 @@
 from collections import namedtuple
 from copy import copy
 
-from django.core.urlresolvers import resolve, reverse, reverse_lazy, RegexURLPattern
+from django.core.urlresolvers import reverse, reverse_lazy, RegexURLPattern
 
 from core.utils import get_named_patterns
 
@@ -102,10 +102,7 @@ class BreadcrumbsMiddleware(object):
             return response
 
         crumbs_dict = self.get_crumbs_dict(request)
-
-        # TODO: Upgrade to django 1.5, use HttpRequest.resolver_match instead of resolving here
-        urlmatch = resolve(request.path_info)
-
+        urlmatch = request.resolver_match
         crumb_path = list(walk_crumb_path(urlmatch.url_name, crumbs_dict))
         if not crumb_path:
             # this page was not found in the crumbs_dict, no breadcrumbs

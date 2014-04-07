@@ -22,8 +22,9 @@ import re
 import sys
 from datetime import datetime, timedelta
 
-from celery.task import periodic_task, task
-from celery.task.schedules import crontab
+from celery import shared_task
+from celery.schedules import crontab
+from celery.task import periodic_task
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
@@ -41,12 +42,12 @@ mail_task_opts = dict(
     rate_limit=settings.EMAIL_RATE_LIMIT)
 
 
-@task(**mail_task_opts)
+@shared_task(**mail_task_opts)
 def send_email(message):
     message.send()
 
 
-@task(**mail_task_opts)
+@shared_task(**mail_task_opts)
 def send_org_email(message, org_pk):
     message.send()
     Organization.objects.filter(pk=org_pk, inv_status='NTS').update(inv_status='SNT')

@@ -54,11 +54,6 @@ class ParameterMixin(LoginRequiredMixin):
         base_url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
         return '%s?%s' % (base_url, self.request.GET.urlencode())
 
-    def get_context_data(self, **kwargs):
-        # TODO: Remove this after upgrade to Django 1.5
-        context = super(ParameterMixin, self).get_context_data(**kwargs)
-        return dict(context, view=self)
-
 
 class ParamEditView(ParameterMixin, UpdateView):
     template_name = "parameter_form.html"

@@ -23,10 +23,9 @@ from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.template import Context, RequestContext, loader
+from django.template import RequestContext, loader
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import dateformat, translation
@@ -183,11 +182,6 @@ class CertificateOrderView(FormView):
             'email': self.request.user.email,
             'rating_type': self.request.REQUEST.get('rating_type', 'all'),
         }
-
-    def get_context_data(self, **kwargs):
-        # TODO: Remove this after upgrade to Django 1.5
-        context = super(CertificateOrderView, self).get_context_data(**kwargs)
-        return dict(context, view=self)
 
     def prerender_email_text(self, form_data):
         rating_type_text = {'all': _('by all'), 'npa': _('by normative'), 'other': _('by recommendatory')}

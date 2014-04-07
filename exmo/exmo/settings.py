@@ -20,7 +20,6 @@
 import os
 import sys
 
-import djcelery
 from django.core.urlresolvers import reverse_lazy
 
 
@@ -35,10 +34,11 @@ MANAGERS = ADMINS
 PROJECT_NAME = 'exmo'
 
 # Celery
-djcelery.setup_loader()
+CELERY_IMPORTS = ('exmo2010.celery_tasks',)
 BROKER_URL = 'mongodb://user:password@hostname:port/database_name'
 CELERY_RESULT_BACKEND = 'database'
 CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_ALWAYS_EAGER = False
 CELERY_TASK_RESULT_EXPIRES = 18000
 CELERY_SEND_TASK_ERROR_EMAILS = True
@@ -80,6 +80,9 @@ if TEST:
         }
     }
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# A secret key for this particular Django installation. Used in secret-key hashing algorithms.
+SECRET_KEY = ''
 
 # Localization
 TIME_ZONE = 'Europe/Moscow'
@@ -124,6 +127,8 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': CACHE_PATH,
+        'KEY_PREFIX': '',
+        'TIMEOUT': 300,
     }
 }
 
@@ -259,8 +264,6 @@ AUTHENTICATION_BACKENDS = (
 # Tags
 MAX_TAG_LENGTH = 255
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
-
-CELERY_IMPORTS = ('exmo2010.celery_tasks',)
 
 DEVEL = False
 
