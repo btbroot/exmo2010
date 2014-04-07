@@ -403,48 +403,6 @@ THE SOFTWARE.
 
 --
 
-exmo/exmo2010/static/exmo2010/ckeditor/
-
-Copyright (C) 2003 - 2013 CKSource - Frederico Knabben
-http://ckeditor.com/about/license
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---
-
-exmo/exmo2010/static/exmo2010/ckeditor/ckeditor/config.js
-
-Copyright (C) 2003 - 2013 CKSource - Frederico Knabben
-Copyright 2013 Al Nikolov
-Copyright 2013 Foundation "Institute for Information Freedom Development"
-http://ckeditor.com/about/license
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---
-
 exmo/exmo2010/static/exmo2010/js/bootstrap-tab.js
 
 Copyright 2012 Twitter, Inc.
@@ -491,30 +449,6 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
-
---
-
-exmo/exmo2010/static/exmo2010/js/ck-change-plugin.js
-
-Copyright (C) 2011 Alfonso Martinez de Lizarrondo
-
-Licensed under the terms of any of the following licenses at your
-choice:
-- GNU General Public License Version 2 or later (the "GPL")
-  http://www.gnu.org/licenses/gpl.html
-- GNU Lesser General Public License Version 2.1 or later (the "LGPL")
-  http://www.gnu.org/licenses/lgpl.html
-- Mozilla Public License Version 1.1 or later (the "MPL")
-  http://www.mozilla.org/MPL/MPL-1.1.html
-
---
-
-exmo/exmo2010/static/exmo2010/ckeditor/ckeditor/plugins/uicolor/yui/yui.js
-
-Copyright (c) 2009, Yahoo! Inc. All rights reserved.
-Copyright (c) 2001 Robert Penner. All rights reserved
-
-Code licensed under the BSD License
 
 --
 

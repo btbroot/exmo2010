@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission wysiwyg trim_links future %}
+{% load i18n check_object_permission trim_links future %}
 
 {% if view_claim %}
     {% if claim_list %}
@@ -85,21 +85,17 @@
 
 {% if add_claim and claim_form or answer_claim and claim_form %}
     <div id="add-claim"{% if answer_claim and not add_claim %} style="display: none;"{% endif %}>
-        <form action="{% url 'exmo2010:claim_create' object.id %}" method="post">
-            {% csrf_token %}
+        <form action="{% url 'exmo2010:claim_create' object.id %}" method="post">{% csrf_token %}
             {% for field in claim_form %}
                 <div class="fieldWrapper">
                     {{ field.errors }}
-                    {% if field.field == claim_form.comment.field and add_claim %}
-                    {% if field.field != claim_form.claim_id.field %}
-                    <h3 class="claim-label heading-yourmessage-parameter">{{ field.label }}</h3>
-                    {% endif %}
+                    {% if field.field == claim_form.comment.field and add_claim and field.field != claim_form.claim_id.field %}
+                        <h3 class="claim-label heading-yourmessage-parameter">{{ field.label }}</h3>
                     {% endif %}
                     {{ field }}
                 </div>
             {% endfor %}
             <input type="submit" class="submit-post" value="{% if not add_claim %}{% trans 'Reply' %}{% else %}{% trans 'Put forward' %}{% endif %}">
-            {% wysiwyg_editor "id_claim-comment" %}
         </form>
     </div>
 {% endif %}

@@ -34,9 +34,9 @@ class Parameter(BaseModel):
 
     code = models.PositiveIntegerField(verbose_name=_('code'))
     name = models.CharField(max_length=1000, verbose_name=_('name'))
-    grounds = RichTextField(blank=True, verbose_name=_('grounds'))
-    rating_procedure = RichTextField(blank=True, verbose_name=_('rating procedure'))
-    notes = RichTextField(blank=True, verbose_name=_('notes'))
+    grounds = RichTextField(blank=True, config_name='advanced', verbose_name=_('grounds'))
+    rating_procedure = RichTextField(blank=True, config_name='advanced', verbose_name=_('rating procedure'))
+    notes = RichTextField(blank=True, config_name='advanced', verbose_name=_('notes'))
 
     # Set editable=False attribute on "monitoring".
     # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091

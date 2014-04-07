@@ -17,8 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.contrib.comments.forms import CommentForm
+from django.contrib.comments.forms import CommentForm, COMMENT_MAX_LENGTH
 from django.forms.widgets import HiddenInput
 from django.utils.translation import ugettext_lazy as _
 
@@ -27,10 +28,8 @@ from custom_comments.models import CommentExmo
 
 
 class CustomCommentForm(CommentForm):
-    status = forms.ChoiceField(choices=CommentExmo.STATUSES,
-                               label=_('status'),
-                               widget=HiddenInput(),
-                               initial=0)
+    status = forms.ChoiceField(choices=CommentExmo.STATUSES, label=_('status'), widget=HiddenInput(), initial=0)
+    comment = forms.CharField(label=_('Comment'), widget=CKEditorWidget(config_name='simplified'), max_length=COMMENT_MAX_LENGTH)
 
     def check_for_duplicate_comment(self, new):
         """

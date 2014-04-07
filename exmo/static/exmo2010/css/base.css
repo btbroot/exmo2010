@@ -1020,11 +1020,30 @@ ul.nav-tabs li.active a
     border: 0;
 }
 
+/* Feedback */
+
+.feedback {
+    margin-bottom: 4px;
+}
+
+.feedback > .field {
+    margin-left: 130px;
+}
+
+.feedback > .label {
+    float: left;
+    width: 120px;
+    line-height: 24px;
+    text-align: right;
+}
+
+.feedback input[type="text"] {
+    width: 250px;
+}
 
 /* Misc */
 
-.required
-{
+.required {
     color: red;
 }
 

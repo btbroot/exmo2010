@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n comments days_until date_until wysiwyg trim_links future %}
+{% load i18n comments days_until date_until trim_links future %}
 
 {% if view_comment %}
     {% get_comment_list for object as comment_list %}
@@ -115,7 +115,6 @@
                     {{ form.email }}
                 {% endif %}
                 {{ form.comment }}
-                {% wysiwyg_editor "id_comment" %}
                 <input type="hidden" name="next" value="{% url 'exmo2010:score_view' object.pk %}" />
                 <input type="submit" name="post" id="submit-comment" class="submit-post" value="{% trans 'Post comment' %}" />
             </form>

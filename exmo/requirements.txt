@@ -31,11 +31,10 @@ distribute==0.6.38
 django-annoying==0.7.9
 django-celery==3.1.10
 django-celery-with-mongodb==3.0
-django-ckeditor==3.6.2.1
+django-ckeditor-updated==4.2.8
 django-modeltranslation==0.7.3
 django-registration==0.8
 django-reversion==1.7.1
-django-wysiwyg==0.5.1
 kombu==3.0.14
 lxml==3.3.3
 mercurial

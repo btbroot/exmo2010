@@ -17,9 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.forms.widgets import Textarea
 from django.utils import formats
 from django.utils.safestring import mark_safe
@@ -57,7 +57,7 @@ class EmailReadonlyWidget(forms.Widget):
 
 class FeedbackForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), required=True)
-    comment = forms.CharField(widget=forms.Textarea, label=_('Your problem'), required=True)
+    comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your problem'), required=True)
 
 
 class CertificateOrderForm(forms.Form):

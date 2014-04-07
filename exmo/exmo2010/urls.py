@@ -246,8 +246,6 @@ def crumbs_tree(is_expert=False):
                 'organization_delete':    _('Delete organization'),
 
                 'score_list_by_task': (_('Organization'), {
-                    'clarification_create': _('Create clarification'),
-                    'claim_create':         _('Create claim'),
                     # Task
                     'task_update':  _('Edit task'),
                     'task_delete':  _('Delete task'),

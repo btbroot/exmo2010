@@ -18,11 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-.clearfix {
-    float: left;
-}
 
-.clearfix div {
+.clearfix div.title, .clearfix div.content {
     float: left;
     padding: 0 0 3px 0;
 }
@@ -39,6 +36,10 @@
     width: 600px;
 }
 
+.clearfix div.content p {
+    margin: 0;
+}
+
 .clearfix div.content select {
     width: 200px;
 }
@@ -51,11 +52,6 @@
     float: none;
     margin-left: 700px;
     padding-left: 10px;
-}
-
-.clearfix div.content textarea {
-    width: 100%;
-    height: 300px;
 }
 
 .table-implicit td:first-child {

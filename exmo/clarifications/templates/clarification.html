@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n wysiwyg trim_links future %}
+{% load i18n trim_links future %}
 
 {% if view_clarification %}
     {% if clarification_list %}
@@ -89,7 +89,6 @@
                 </div>
             {% endfor %}
             <input type="submit" class="submit-post" value="{% if add_clarification %}{% trans 'Clarify' %}{% else %}{% trans 'Reply' %}{% endif %}">
-            {% wysiwyg_editor "id_clarification-comment" %}
         </form>
     </div>
 {% endif %}

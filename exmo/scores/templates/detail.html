@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission wysiwyg urlize_target_blank criteria_css_class static %}
+{% load i18n check_object_permission urlize_target_blank criteria_css_class static %}
 
 {% block extrastyle %}
     {{ block.super }}
@@ -32,8 +32,6 @@
 
 {% block extrahead %}
     {{ block.super }}
-    {% wysiwyg_setup %}
-    <script type="text/javascript" src="{% static 'exmo2010/js/ck-change-plugin.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/score.comments.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/ccc-tabs.js' %}"></script>
 {% endblock %}

@@ -17,7 +17,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -40,9 +39,7 @@ def claim_create(request, score_pk):
     """
     user = request.user
     score = get_object_or_404(Score, pk=score_pk)
-    redirect = reverse('exmo2010:score_view', args=[score.pk, ])
-    redirect += '#claims'  # Named Anchor для открытия нужной вкладки
-    title = _('Add new claim for %s') % score
+    redirect = reverse('exmo2010:score_view', args=[score.pk, ]) + '#claims'
     if request.method == 'POST':
         form = ClaimAddForm(request.POST, prefix="claim")
         if form.is_valid():
@@ -62,16 +59,7 @@ def claim_create(request, score_pk):
 
             mail_claim_new(request, claim)
             return HttpResponseRedirect(redirect)
-        else:
-            return TemplateResponse(request, 'claim_form.html', {
-                'monitoring': score.task.organization.monitoring,
-                'task': score.task,
-                'score': score,
-                'title': title,
-                'form': form,
-            })
-    else:
-        raise Http404
+    raise Http404
 
 
 @login_required

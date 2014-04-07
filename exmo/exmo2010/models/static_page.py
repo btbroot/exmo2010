@@ -29,7 +29,7 @@ class StaticPage(BaseModel):
     """
     id = models.CharField(max_length=255, primary_key=True, verbose_name=_('identifier'))
     description = models.TextField(default='', blank=True, verbose_name=_('description'))
-    content = RichTextField(default='', blank=True, verbose_name=_('content'))
+    content = RichTextField(default='', blank=True, config_name='advanced', verbose_name=_('content'))
 
     def __unicode__(self):
         return u'%s (%s)' % (self.id, self.description)

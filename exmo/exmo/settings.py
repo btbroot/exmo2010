@@ -132,9 +132,43 @@ CACHES = {
     }
 }
 
-# WYSIWYG-editor
-DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+# CKEditor config
 CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'All',
+    },
+    'simplified': {
+        'toolbar': [['Bold', 'Italic', 'Underline', '-', 'NumberedList', 'BulletedList', '-', 'Link', 'Unlink']],
+        'height': 200,
+        'width': '100%',
+        # hide bottom toolbar:
+        'removePlugins': 'elementspath',
+        'resize_enabled': False,
+    },
+    'advanced': {
+        'toolbar': [
+            {'name': 'document', 'items': ['Source', '-', 'Preview', 'Templates']},
+            {'name': 'clipboard', 'items': ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']},
+            {'name': 'paragraph', 'items': ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote',
+                                            'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight',
+                                            'JustifyBlock']},
+            {'name': 'insert', 'items': ['Image', 'Table', 'HorizontalRule', 'SpecialChar', '-', 'Maximize']},
+            '/',
+            {'name': 'basicstyles', 'items': ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-',
+                                              'RemoveFormat']},
+            {'name': 'links', 'items': ['Link', 'Unlink', 'Anchor']},
+            {'name': 'editing', 'items': ['Find', 'Replace']},
+            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+        ],
+        # disable collapse button:
+        'toolbarCanCollapse': False,
+        # hide bottom toolbar:
+        'removePlugins': 'elementspath',
+        'resize_enabled': False,
+    },
+}
 
 # Middleware
 MIDDLEWARE_CLASSES = ()
@@ -210,7 +244,6 @@ INSTALLED_APPS = (
     'djcelery',
     'django403',
     'registration',
-    'django_wysiwyg',
     'ckeditor',
     'modeltranslation',
     'widget_tweaks',

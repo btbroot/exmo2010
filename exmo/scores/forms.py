@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.comments.forms import COMMENT_MAX_LENGTH
 from django.core.exceptions import ValidationError
@@ -73,7 +74,8 @@ class ScoreFormWithComment(CustomCommentForm):
     document = forms.ChoiceField(label=_('document'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
     image = forms.ChoiceField(label=_('image'), widget=forms.RadioSelect(), choices=BASE_CHOICE, required=False)
     recomendation = forms.CharField(label=_('recommendations'), widget=forms.Textarea(), required=False)
-    comment = forms.CharField(label=_('comment'), widget=forms.Textarea, max_length=COMMENT_MAX_LENGTH, required=False)
+    comment = forms.CharField(label=_('comment'), widget=CKEditorWidget(config_name='simplified'),
+                              max_length=COMMENT_MAX_LENGTH, required=False)
 
     # overwrite method from CustomCommentForm
     def get_comment_create_data(self):

@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -25,7 +26,7 @@ from core.utils import urlize, sanitize_field
 
 
 class ClaimAddForm(forms.Form):
-    comment = forms.CharField(widget=forms.Textarea, label=_('Your claim'))
+    comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your claim'))
     claim_id = forms.IntegerField(required=False, widget=forms.widgets.HiddenInput())
 
     def clean_comment(self):

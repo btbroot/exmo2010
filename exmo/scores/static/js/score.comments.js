@@ -1,6 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2010, 2011, 2013 Al Nikolov
-// Copyright 2010, 2011, 2012 Institute for Information Freedom Development
+// Copyright 2010, 2011 Institute for Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,6 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-
-//  disable all wysiwyg submit buttons
-    CKEDITOR.config.extraPlugins = 'onchange';
 
 //  enable submit button if wysiwyg-area not empty
     function ckChangeHandler(e) {
@@ -144,15 +141,12 @@ $(document).ready(function() {
 
         pkClaim = $this.attr('rel');
 
-        django_wysiwyg.disable('id_claim-comment_editor');
-
         $container.append($form);
 
         var $input = $('#id_claim-claim_id');
 
         $input.val(pkClaim);
 
-        django_wysiwyg.enable('id_claim-comment_editor', 'id_claim-comment', null);
         addContentListener(CKEDITOR.instances['id_claim-comment']);
     });
 
@@ -182,15 +176,12 @@ $(document).ready(function() {
 
         pkClarification = $this.attr('rel');
 
-        django_wysiwyg.disable('id_clarification-comment_editor');
-
         $container.append($form);
 
         var $input = $('#id_clarification-clarification_id');
 
         $input.val(pkClarification);
 
-        django_wysiwyg.enable('id_clarification-comment_editor', 'id_clarification-comment', null);
         addContentListener(CKEDITOR.instances['id_clarification-comment']);
     })
 });

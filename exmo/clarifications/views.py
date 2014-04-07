@@ -38,9 +38,7 @@ def clarification_create(request, score_pk):
     """
     user = request.user
     score = get_object_or_404(Score, pk=score_pk)
-    redirect = reverse('exmo2010:score_view', args=[score.pk])
-    redirect += '#clarifications'  # Named Anchor для открытия нужной вкладки
-    title = _('Add new claim for %s') % score
+    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#clarifications'
     if request.method == 'POST':
         form = ClarificationAddForm(request.POST, prefix="clarification")
         if form.is_valid():
@@ -59,16 +57,7 @@ def clarification_create(request, score_pk):
 
             mail_clarification(request, clarification)
             return HttpResponseRedirect(redirect)
-        else:
-            return TemplateResponse(request, 'clarification_form.html', {
-                'monitoring': score.task.organization.monitoring,
-                'task': score.task,
-                'score': score,
-                'title': title,
-                'form': form,
-            })
-    else:
-        raise Http404
+    raise Http404
 
 
 @login_required

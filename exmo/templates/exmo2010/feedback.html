@@ -19,46 +19,35 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n wysiwyg future %}
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/feedback.css"/>
-{% endblock %}
+{% load i18n static future %}
 
 {% block content %}
+    {% if success %}
+        <p class="success">
+            {% trans "You've sent the letter to Infometer maintenance staff. You'll recieve an answer in 3 buisness days." %}
+        </p>
+    {% endif %}
 
-{% if success %}
-    <p class="success">
-        {% trans "You've sent the letter to Infometer maintenance staff. You'll recieve an answer in 3 buisness days." %}
+    <p>
+        {% url 'exmo2010:help' as url %}
+        {% blocktrans %}If you've got troubles using system, please, check <a href="{{ url }}">Help page</a> out. If you didn't find an answer for your question, ask our specialists.{% endblocktrans %}
     </p>
-{% endif %}
-
-<p>
-{% url 'exmo2010:help' as url %}
-{% blocktrans %}
-If you've got troubles using system, please, check <a href="{{ url }}">Help page</a> out. If you didn't find an answer for your question, ask our specialists.
-{% endblocktrans %}
-</p>
-<p>
-{% trans "Please, describe your problem with as much detail as possible." %}
-</p>
-
-    {% wysiwyg_setup %}
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/ck-change-plugin.js"></script>
+    <p>
+        {% trans "Please, describe your problem with as much detail as possible." %}
+    </p>
 
     <form action="" method="post">
         {% csrf_token %}
 
         {% for hidden in form.hidden_fields %}
-        {{ hidden }}
+            {{ hidden }}
         {% endfor %}
 
         {% for field in form %}
             {% if field.errors %}
                 {{ field.errors }}
             {% endif %}
-                <div class="clearfix{% if field.field == form.fields.email and request.user.is_active %} hidden{% endif %}">
+                <div class="feedback{% if field.field == form.fields.email and request.user.is_active %} hidden{% endif %}">
                     <div class="label">
                         <label>{{ field.label }}</label>
                     </div>
@@ -68,15 +57,11 @@ If you've got troubles using system, please, check <a href="{{ url }}">Help page
                 </div>
         {% endfor %}
 
-        {% wysiwyg_editor "id_comment" %}
-
-                <div class="clearfix">
-                    <div class="label">
-                    </div>
-                    <div class="field">
-                        <input type="submit" value="{% trans 'Send' %}"/>
-                    </div>
-                </div>
+        <div class="feedback">
+            <div></div>
+            <div class="field">
+                <input type="submit" value="{% trans 'Send' %}"/>
+            </div>
+        </div>
     </form>
-
 {% endblock %}

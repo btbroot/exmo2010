@@ -20,89 +20,90 @@
 {% endcomment %}
 {% load i18n static future %}
 
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-        <head>
-            <title>
-                {% block title %}
-                    {% if title %}{{ title }} |{% endif %}
-                    {% trans 'AIS Infometer' %}
-                {% endblock title %}
-            </title>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+    <head>
+        <title>
+            {% block title %}
+                {% if title %}{{ title }} |{% endif %}
+                {% trans 'AIS Infometer' %}
+            {% endblock title %}
+        </title>
 
-            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
 
-            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base.css' %}" />
-            {% if LANGUAGE_BIDI %}
-                <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static 'admin/css/rtl.css' %}{% endblock %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base.css' %}" />
+        {% if LANGUAGE_BIDI %}
+            <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static 'admin/css/rtl.css' %}{% endblock %}" />
+        {% endif %}
+        {% block extrastyle %}{% endblock %}
+
+        <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+        {{ media|default:"" }}
+        <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
+        <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
+        <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+        <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
+        {% block extrahead %}{% endblock %}
+
+        {% include "analytics.html" %}
+    </head>
+
+    <body class="{% block bodyclass %}{% endblock %}">
+
+        <!-- Container -->
+        <div id="container">
+            <!-- Header -->
+            {% block header %}
+                <div id="header">
+                    <div id="user-tools">
+                        {% block userwelcome %}{% endblock %}
+                        {% block userlinks %}{% endblock %}
+                    </div>
+                    {% block nav-global %}{% endblock %}
+                </div>
+            {% endblock header %}
+
+            <!-- END Header -->
+            {% block breadcrumbs %}{% endblock %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                    </div>
+                {% endfor %}
             {% endif %}
-            {% block extrastyle %}{% endblock %}
 
-            <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
-            {{ media|default:"" }}
-            <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
-            <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
-            <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
-            <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
-            {% block extrahead %}{% endblock %}
+            {% block nav_sidebar_title %}{% endblock %}
 
-            {% include "analytics.html" %}
-        </head>
+            {% block nav_sidebar %}{% endblock nav_sidebar %}
 
-        <body class="{% block bodyclass %}{% endblock %}">
+            <div id="content-container">
+                {% block bubble %}{% endblock %}
 
-            <!-- Container -->
-            <div id="container">
-                <!-- Header -->
-                {% block header %}
-                    <div id="header">
-                        <div id="user-tools">
-                            {% block userwelcome %}{% endblock %}
-                            {% block userlinks %}{% endblock %}
-                        </div>
-                        {% block nav-global %}{% endblock %}
-                    </div>
-                {% endblock header %}
-
-                <!-- END Header -->
-                {% block breadcrumbs %}{% endblock %}
-
-                {% if messages %}
-                    {% for message in messages %}
-                        <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% block nav_sidebar_title %}{% endblock %}
-
-                {% block nav_sidebar %}{% endblock nav_sidebar %}
-
-                <div id="content-container">
-                    {% block bubble %}{% endblock %}
-
-                    <!-- Content -->
-                    <div id="content" class="{% block content_class %}{% endblock %}">
-                        {% block pretitle %}{% endblock %}
-                        {% block h1 %}<h1>{% block content_title %}{{ title|default:'' }}{% endblock %}</h1>{% endblock %}
-                        {% block content %}
-                            {% block object-tools %}{% endblock %}
-                            {{ content }}
-                        {% endblock content %}
-                        {% block sidebar %}{% endblock %}
-                        <br class="clear" />
-                    </div>
-                    <!-- END Content -->
-
+                <!-- Content -->
+                <div id="content" class="{% block content_class %}{% endblock %}">
+                    {% block pretitle %}{% endblock %}
+                    {% block h1 %}<h1>{% block content_title %}{{ title|default:'' }}{% endblock %}</h1>{% endblock %}
+                    {% block content %}
+                        {% block object-tools %}{% endblock %}
+                        {{ content }}
+                    {% endblock content %}
+                    {% block sidebar %}{% endblock %}
+                    <br class="clear" />
                 </div>
-                <div id="push">
-                </div>
+                <!-- END Content -->
+
             </div>
-            <!-- END Container -->
-            {% block footer %}
-                {% include "exmo2010/footer.html" %}
-            {% endblock %}
-        </body>
-    </html>
+            <div id="push">
+            </div>
+        </div>
+        <!-- END Container -->
+        {% block footer %}
+            {% include "exmo2010/footer.html" %}
+        {% endblock %}
+    </body>
+</html>
