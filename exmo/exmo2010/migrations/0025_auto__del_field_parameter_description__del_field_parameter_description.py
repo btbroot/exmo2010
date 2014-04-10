@@ -25,170 +25,175 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding field 'Parameter.grounds'
-        db.add_column('exmo2010_parameter', 'grounds',
+        db.add_column(u'exmo2010_parameter', 'grounds',
                       self.gf('ckeditor.fields.RichTextField')(default='', blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.grounds_ru'
-        db.add_column('exmo2010_parameter', 'grounds_ru',
+        db.add_column(u'exmo2010_parameter', 'grounds_ru',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.grounds_en'
-        db.add_column('exmo2010_parameter', 'grounds_en',
+        db.add_column(u'exmo2010_parameter', 'grounds_en',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.grounds_ka'
-        db.add_column('exmo2010_parameter', 'grounds_ka',
+        db.add_column(u'exmo2010_parameter', 'grounds_ka',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.grounds_az'
-        db.add_column('exmo2010_parameter', 'grounds_az',
+        db.add_column(u'exmo2010_parameter', 'grounds_az',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.notes'
-        db.add_column('exmo2010_parameter', 'notes',
+        db.add_column(u'exmo2010_parameter', 'notes',
                       self.gf('ckeditor.fields.RichTextField')(default='', blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.notes_ru'
-        db.add_column('exmo2010_parameter', 'notes_ru',
+        db.add_column(u'exmo2010_parameter', 'notes_ru',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.notes_en'
-        db.add_column('exmo2010_parameter', 'notes_en',
+        db.add_column(u'exmo2010_parameter', 'notes_en',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.notes_ka'
-        db.add_column('exmo2010_parameter', 'notes_ka',
+        db.add_column(u'exmo2010_parameter', 'notes_ka',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Adding field 'Parameter.notes_az'
-        db.add_column('exmo2010_parameter', 'notes_az',
+        db.add_column(u'exmo2010_parameter', 'notes_az',
                       self.gf('ckeditor.fields.RichTextField')(null=True, blank=True),
                       keep_default=False)
 
         # Rename 'Parameter.description' field to 'Parameter.rating_procedure'
-        db.rename_column('exmo2010_parameter', 'description', 'rating_procedure')
+        db.rename_column(u'exmo2010_parameter', 'description', 'rating_procedure')
 
         # Rename 'Parameter.description_ru' field to 'Parameter.rating_procedure_ru'
-        db.rename_column('exmo2010_parameter', 'description_ru', 'rating_procedure_ru')
+        db.rename_column(u'exmo2010_parameter', 'description_ru', 'rating_procedure_ru')
 
         # Rename 'Parameter.description_en' field to 'Parameter.rating_procedure_en'
-        db.rename_column('exmo2010_parameter', 'description_en', 'rating_procedure_en')
+        db.rename_column(u'exmo2010_parameter', 'description_en', 'rating_procedure_en')
 
         # Rename 'Parameter.description_ka' field to 'Parameter.rating_procedure_ka'
-        db.rename_column('exmo2010_parameter', 'description_ka', 'rating_procedure_ka')
+        db.rename_column(u'exmo2010_parameter', 'description_ka', 'rating_procedure_ka')
 
         # Rename 'Parameter.description_az' field to 'Parameter.rating_procedure_az'
-        db.rename_column('exmo2010_parameter', 'description_az', 'rating_procedure_az')
+        db.rename_column(u'exmo2010_parameter', 'description_az', 'rating_procedure_az')
+
+        # Changing field 'InviteOrgs.comment'
+        db.alter_column(u'exmo2010_inviteorgs', 'comment', self.gf('ckeditor.fields.RichTextField')())
 
 
     def backwards(self, orm):
         # Deleting field 'Parameter.grounds'
-        db.delete_column('exmo2010_parameter', 'grounds')
+        db.delete_column(u'exmo2010_parameter', 'grounds')
 
         # Deleting field 'Parameter.grounds_ru'
-        db.delete_column('exmo2010_parameter', 'grounds_ru')
+        db.delete_column(u'exmo2010_parameter', 'grounds_ru')
 
         # Deleting field 'Parameter.grounds_en'
-        db.delete_column('exmo2010_parameter', 'grounds_en')
+        db.delete_column(u'exmo2010_parameter', 'grounds_en')
 
         # Deleting field 'Parameter.grounds_ka'
-        db.delete_column('exmo2010_parameter', 'grounds_ka')
+        db.delete_column(u'exmo2010_parameter', 'grounds_ka')
 
         # Deleting field 'Parameter.grounds_az'
-        db.delete_column('exmo2010_parameter', 'grounds_az')
+        db.delete_column(u'exmo2010_parameter', 'grounds_az')
 
         # Deleting field 'Parameter.notes'
-        db.delete_column('exmo2010_parameter', 'notes')
+        db.delete_column(u'exmo2010_parameter', 'notes')
 
         # Deleting field 'Parameter.notes_ru'
-        db.delete_column('exmo2010_parameter', 'notes_ru')
+        db.delete_column(u'exmo2010_parameter', 'notes_ru')
 
         # Deleting field 'Parameter.notes_en'
-        db.delete_column('exmo2010_parameter', 'notes_en')
+        db.delete_column(u'exmo2010_parameter', 'notes_en')
 
         # Deleting field 'Parameter.notes_ka'
-        db.delete_column('exmo2010_parameter', 'notes_ka')
+        db.delete_column(u'exmo2010_parameter', 'notes_ka')
 
         # Deleting field 'Parameter.notes_az'
-        db.delete_column('exmo2010_parameter', 'notes_az')
+        db.delete_column(u'exmo2010_parameter', 'notes_az')
 
         # Rename 'Parameter.rating_procedure' field to 'Parameter.description'
-        db.rename_column('exmo2010_parameter', 'rating_procedure', 'description')
+        db.rename_column(u'exmo2010_parameter', 'rating_procedure', 'description')
 
         # Rename 'Parameter.rating_procedure_ru' field to 'Parameter.description_ru'
-        db.rename_column('exmo2010_parameter', 'rating_procedure_ru', 'description_ru')
+        db.rename_column(u'exmo2010_parameter', 'rating_procedure_ru', 'description_ru')
 
         # Rename 'Parameter.rating_procedure_en' field to 'Parameter.description_en'
-        db.rename_column('exmo2010_parameter', 'rating_procedure_en', 'description_en')
+        db.rename_column(u'exmo2010_parameter', 'rating_procedure_en', 'description_en')
 
         # Rename 'Parameter.rating_procedure_ka' field to 'Parameter.description_ka'
-        db.rename_column('exmo2010_parameter', 'rating_procedure_ka', 'description_ka')
+        db.rename_column(u'exmo2010_parameter', 'rating_procedure_ka', 'description_ka')
 
         # Rename 'Parameter.rating_procedure_az' field to 'Parameter.description_az'
-        db.rename_column('exmo2010_parameter', 'rating_procedure_az', 'description_az')
+        db.rename_column(u'exmo2010_parameter', 'rating_procedure_az', 'description_az')
 
+        # Changing field 'InviteOrgs.comment'
+        db.alter_column(u'exmo2010_inviteorgs', 'comment', self.gf('django.db.models.fields.TextField')())
 
     models = {
-        'auth.group': {
+        u'auth.group': {
             'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+        u'auth.permission': {
+            'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        'auth.user': {
+        u'auth.user': {
             'Meta': {'object_name': 'User'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
-        'contenttypes.contenttype': {
+        u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'exmo2010.answervariant': {
             'Meta': {'object_name': 'AnswerVariant'},
             'answer': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'qquestion': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.QQuestion']"})
         },
         'exmo2010.claim': {
             'Meta': {'object_name': 'Claim'},
-            'addressee': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'addressee'", 'to': "orm['auth.User']"}),
+            'addressee': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'related_name': "'addressee'", 'to': u"orm['auth.User']"}),
             'answer': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'close_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'close_user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'close_user'", 'null': 'True', 'to': "orm['auth.User']"}),
+            'close_user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'close_user'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'comment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'creator'", 'to': "orm['auth.User']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'creator'", 'to': u"orm['auth.User']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'open_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'score': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Score']"})
         },
@@ -196,17 +201,17 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Clarification'},
             'answer': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'close_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'close_user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'clarification_close_user'", 'null': 'True', 'to': "orm['auth.User']"}),
+            'close_user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'clarification_close_user'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'comment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'clarification_creator'", 'to': "orm['auth.User']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'clarification_creator'", 'to': u"orm['auth.User']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'open_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'score': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Score']"})
         },
         'exmo2010.inviteorgs': {
             'Meta': {'object_name': 'InviteOrgs'},
-            'comment': ('django.db.models.fields.TextField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'comment': ('ckeditor.fields.RichTextField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inv_status': ('django.db.models.fields.CharField', [], {'default': "'ALL'", 'max_length': '3'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'subject': ('django.db.models.fields.TextField', [], {}),
@@ -216,7 +221,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('name',)", 'object_name': 'Monitoring'},
             'finishing_date': ('django.db.models.fields.DateField', [], {}),
             'hidden': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'interact_date': ('django.db.models.fields.DateField', [], {}),
             'map_link': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -239,7 +244,7 @@ class Migration(SchemaMigration):
         'exmo2010.organization': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('name_ru', 'monitoring'), ('name_en', 'monitoring'), ('name_ka', 'monitoring'), ('name_az', 'monitoring'))", 'object_name': 'Organization'},
             'email': ('exmo2010.models.organization.EmailsField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inv_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '6', 'blank': 'True'}),
             'inv_status': ('django.db.models.fields.CharField', [], {'default': "'NTS'", 'max_length': '3'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
@@ -264,7 +269,7 @@ class Migration(SchemaMigration):
             'grounds_ka': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
             'grounds_ru': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
             'hypertext': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
@@ -278,17 +283,17 @@ class Migration(SchemaMigration):
             'notes_ka': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
             'notes_ru': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
             'npa': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'order': ('ckeditor.fields.RichTextField', [], {'blank': 'True'}),
-            'order_az': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
-            'order_en': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
-            'order_ka': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
-            'order_ru': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
+            'rating_procedure': ('ckeditor.fields.RichTextField', [], {'blank': 'True'}),
+            'rating_procedure_az': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
+            'rating_procedure_en': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
+            'rating_procedure_ka': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
+            'rating_procedure_ru': ('ckeditor.fields.RichTextField', [], {'null': 'True', 'blank': 'True'}),
             'topical': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'weight': ('django.db.models.fields.IntegerField', [], {})
         },
         'exmo2010.qanswer': {
             'Meta': {'unique_together': "(('task', 'question'),)", 'object_name': 'QAnswer'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'numeral_answer': ('django.db.models.fields.PositiveIntegerField', [], {'null': 'True', 'blank': 'True'}),
             'question': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.QQuestion']"}),
             'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Task']"}),
@@ -298,7 +303,7 @@ class Migration(SchemaMigration):
         'exmo2010.qquestion': {
             'Meta': {'object_name': 'QQuestion'},
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '600', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'qtype': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
             'question': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
             'questionnaire': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Questionnaire']"})
@@ -306,7 +311,7 @@ class Migration(SchemaMigration):
         'exmo2010.questionnaire': {
             'Meta': {'object_name': 'Questionnaire'},
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '600', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']", 'unique': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'})
         },
@@ -320,7 +325,7 @@ class Migration(SchemaMigration):
             'edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'null': 'True', 'blank': 'True'}),
             'found': ('django.db.models.fields.IntegerField', [], {}),
             'hypertext': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'links': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'parameter': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Parameter']"}),
@@ -344,23 +349,23 @@ class Migration(SchemaMigration):
         },
         'exmo2010.task': {
             'Meta': {'ordering': "('organization__name', 'user__username')", 'unique_together': "(('user', 'organization'),)", 'object_name': 'Task'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Organization']"}),
             'status': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         'exmo2010.taskhistory': {
             'Meta': {'ordering': "('timestamp',)", 'object_name': 'TaskHistory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'status': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'task': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Task']"}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         'exmo2010.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
             'digest_date_journal': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '2', 'null': 'True', 'blank': 'True'}),
             'notification_interval': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '1'}),
             'notification_self': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -376,7 +381,7 @@ class Migration(SchemaMigration):
             'rt_representatives': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'sex': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0', 'db_index': 'True'}),
             'subscribe': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'unique': 'True'})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'unique': 'True'})
         }
     }
 
