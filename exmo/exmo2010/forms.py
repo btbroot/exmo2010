@@ -25,6 +25,8 @@ from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from core.utils import sanitize_field
+
 DATETIME_INPUT_FORMATS = list(formats.get_format('DATETIME_INPUT_FORMATS')) + ['%d.%m.%Y %H:%M:%S']
 
 # основные JS ресурсы для форм с виджетами из админки
@@ -58,6 +60,11 @@ class EmailReadonlyWidget(forms.Widget):
 class FeedbackForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), required=True)
     comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your problem'), required=True)
+
+    def clean_comment(self):
+        data = self.cleaned_data['comment']
+        data = sanitize_field(data)
+        return data
 
 
 class CertificateOrderForm(forms.Form):
