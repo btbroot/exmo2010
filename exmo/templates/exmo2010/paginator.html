@@ -18,35 +18,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-<!-- http://www.tummy.com/Community/Articles/django-pagination/ -->
-{% load append_to_get i18n %}
+{% load i18n %}
 
-{% if paginator.num_pages != 1 %}
-<div class="pager">
-   {% if page_obj.has_previous %}
-      <span class="page">
-      <a href="{% append_to_get page=page_obj.previous_page_number %}">&lt; {% trans 'Prev' %}</a>
-      </span>&nbsp;
-   {% endif %}
+{% if object_list.has_other_pages %}
+    <div>
+        {% if object_list.has_previous %}
+            <a href="?page={{ object_list.previous_page_number }}">&lt; {% trans 'Prev' %}</a>
+        {% endif %}
 
-   {% if not hide_first %}
-      <span class="page"><a href="{% append_to_get page=1 %}">1</a></span>
-      <span class="ellipsis">...</span>
-   {% endif %}
-   {% for linkpage in page_numbers %}
-      {% ifequal linkpage page %}
-         <span class="current">{{ page_obj.number }}</span>
-      {% else %}
-         <span class="page"><a href="{% append_to_get page=linkpage %}"
-               >{{ linkpage }}</a></span>
-      {% endifequal %}
-   {% endfor %}
-   {% if not hide_last %}
-      <span class="ellipsis">...</span>
-      <span class="page"><a href="{% append_to_get page="last" %}">{{ paginator.num_pages }}</a></span>
-   {% endif %}
-   {% if page_obj.has_next %}
-      &nbsp;<span class="page"><a href="{% append_to_get page=page_obj.next_page_number %}">{% trans 'Next' %} &gt;</a></span>
-   {% endif %}
-</div>
+        <a href="?page=1">1</a> ...
+        {% if object_list.number != 1 and object_list.number != object_list.paginator.num_pages %}
+            {{ object_list.number }} ...
+        {% endif %}
+        <a href="?page={{ object_list.paginator.num_pages }}">{{ object_list.paginator.num_pages }}</a>
+
+        {% if object_list.has_next %}
+            <a href="?page={{ object_list.next_page_number }}">{% trans 'Next' %} &gt;</a>
+        {% endif %}
+    </div>
 {% endif %}

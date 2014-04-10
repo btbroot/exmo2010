@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.core.paginator import Paginator, InvalidPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404
 from django.template import loader
 from django.template.response import TemplateResponse
@@ -79,35 +79,24 @@ def object_list(request, queryset, paginate_by=None, page=None,
     """
     if extra_context is None: extra_context = {}
     queryset = queryset._clone()
+
     if paginate_by:
-        paginator = Paginator(queryset, paginate_by, allow_empty_first_page=allow_empty)
-        if not page:
-            page = request.GET.get('page', 1)
+        paginator = Paginator(queryset, paginate_by)
+
+        page = request.GET.get('page')
         try:
-            page_number = int(page)
-        except ValueError:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                # Page is not 'last', nor can it be converted to an int.
-                raise Http404
-        try:
-            page_obj = paginator.page(page_number)
-        except InvalidPage:
-            raise Http404
-        context = {
-            '%s_list' % template_object_name: annotate_exmo_perms(page_obj.object_list, request.user),
-            'paginator': paginator,
-            'page_obj': page_obj,
-        }
-    else:
-        context = {
-            '%s_list' % template_object_name: annotate_exmo_perms(queryset, request.user),
-            'paginator': None,
-            'page_obj': None,
-        }
-        if not allow_empty and len(queryset) == 0:
-            raise Http404
+            queryset = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            queryset = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            queryset = paginator.page(paginator.num_pages)
+
+    context = {'%s_list' % template_object_name: annotate_exmo_perms(queryset, request.user)}
+    if not allow_empty and len(queryset) == 0:
+        raise Http404
+
     for key, value in extra_context.items():
         if callable(value):
             context[key] = value()
