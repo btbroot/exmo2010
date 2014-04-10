@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 #
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@ NAME := exmo2010
 PREFIX := $(NAME)/
 RELEASE := $(shell git describe --tags $(OBJECT))
 RELEASE_ALL := $(shell git describe --long --all $(OBJECT))
-RELEASE_FILE := exmo/templates/release
+RELEASE_FILE := exmo/static/release.txt
 TARBALL := $(NAME)-$(RELEASE)
 TARBALL_FILE := $(TARBALL).tar
 

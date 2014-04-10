@@ -32,7 +32,7 @@ handler500 = 'exmo2010.views.server_error'
 
 urlpatterns = patterns('',
     url(r'^license.txt$', RedirectView.as_view(url=settings.STATIC_URL + 'license.txt')),
-    url(r'^release$', RedirectView.as_view(url=settings.STATIC_URL + 'release')),
+    url(r'^release.txt$', RedirectView.as_view(url=settings.STATIC_URL + 'release.txt')),
 )
 
 urlpatterns += i18n_patterns('',
