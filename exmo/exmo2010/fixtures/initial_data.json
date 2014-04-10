@@ -57,6 +57,11 @@
                     "change_parameter",
                     "exmo2010",
                     "parameter"
+                ],
+                [
+                    "change_staticpage",
+                    "exmo2010",
+                    "staticpage"
                 ]
             ]
         }
