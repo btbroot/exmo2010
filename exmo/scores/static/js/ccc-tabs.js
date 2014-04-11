@@ -31,7 +31,7 @@ $(document).ready(function() {
     }
 
     // tabs clicking (comment, clarification, claim)
-    $('.ccc-tabs').live('click', function(e) {
+    $('.ccc-tabs > span > a').live('click', function(e) {
         var $link, editor;
 
         switch (e.target.hash) {

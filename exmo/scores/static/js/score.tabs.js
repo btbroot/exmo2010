@@ -193,7 +193,7 @@ $(document).ready(function() {
     }
 
     // overwrite tabs clicking (comment, clarification, claim) from ccc-tabs.js
-    $('.ccc-tabs').live('click', function(e) {
+    $('.ccc-tabs > span > a').live('click', function(e) {
         var editor;
         deleteAllAutoScoreCommentBricks();
 
