@@ -45,6 +45,7 @@ class ScoreForm(forms.ModelForm):
 
     class Meta:
         model = Score
+        exclude = ('accomplished',)
         widgets = {
             'found': forms.RadioSelect(),
             'complete': forms.RadioSelect(),

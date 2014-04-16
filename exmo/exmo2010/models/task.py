@@ -22,7 +22,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from core.sql import sql_complete
 from .base import BaseModel
 from .monitoring import MONITORING_STATUS, MONITORING_PREPARE
 from .organization import Organization
@@ -160,23 +159,19 @@ class Task(BaseModel):
             self.save()
 
     @property
-    def complete(self):
-        """
-        Расчёт выполненности
-        """
-        complete = 0
-        parameters_num = Parameter.objects.filter(monitoring=self.organization.monitoring).exclude(exclude=self.organization).count()
-        questions_num = QQuestion.objects.filter(questionnaire__monitoring=self.organization.monitoring).count()
-        answers_num = QAnswer.objects.filter(question__questionnaire__monitoring=self.organization.monitoring, task=self).count()
+    def completeness(self):
+        monitoring = self.organization.monitoring
+        parameters_num = Parameter.objects.filter(monitoring=monitoring).exclude(exclude=self.organization).count()
         if parameters_num:
-            scores_num = Score.objects.filter(task=self, revision=Score.REVISION_DEFAULT)\
-                .exclude(parameter__exclude=self.organization).count()
-            complete = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
-        return complete
+            questions_num = QQuestion.objects.filter(questionnaire__monitoring=monitoring).count()
+            answers_num = QAnswer.objects.filter(question__questionnaire__monitoring=monitoring, task=self).count()
+            scores_num = Score.objects.filter(task=self, revision=Score.REVISION_DEFAULT, accomplished=True)\
+                                      .exclude(parameter__exclude=self.organization).count()
+            completeness = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
+        else:
+            completeness = 0
 
-    @staticmethod
-    def complete_sql_extra():
-        return sql_complete
+        return completeness
 
     def get_rating_place(self, parameters=None):
         """
@@ -236,7 +231,7 @@ class Task(BaseModel):
          задача для этой организации в мониторинге
         """
         if status in [self.TASK_READY, self.TASK_APPROVED]:
-            if self.complete != 100:
+            if self.completeness != 100:
                 raise ValidationError(ugettext('Ready task must be 100 percent complete.'))
         if status == self.TASK_APPROVED:
             approved = Task.approved_tasks.filter(organization=self.organization)

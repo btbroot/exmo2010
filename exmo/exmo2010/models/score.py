@@ -66,6 +66,7 @@ class Score(BaseModel):
     created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     edited = models.DateTimeField(null=True, blank=True, auto_now=True)
     revision = models.PositiveIntegerField(default=REVISION_DEFAULT, choices=REVISION_CHOICE)
+    accomplished = models.BooleanField(default=True)
 
     def __unicode__(self):
         return '%s: %s [%d]' % (
@@ -107,6 +108,11 @@ class Score(BaseModel):
                               u"to task page and skip to page of parameter evaluation by link from score table.")
 
         return result
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            self.accomplished = True
+        super(Score, self).save(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):

@@ -26,7 +26,6 @@ from .base import BaseModel
 
 
 class Parameter(BaseModel):
-    """Параметр."""
 
     class Meta(BaseModel.Meta):
         ordering = ('code', 'name')
@@ -65,3 +64,40 @@ class Parameter(BaseModel):
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        from .score import Score
+
+        if self.pk is None:
+            super(Parameter, self).save(*args, **kwargs)
+        else:
+            before = Parameter.objects.filter(pk=self.pk).values_list(*Parameter.OPTIONAL_CRITERIONS)[0]
+            after = tuple(getattr(self, i) for i in Parameter.OPTIONAL_CRITERIONS)
+            super(Parameter, self).save(*args, **kwargs)
+
+            if (False, True) in zip(before, after):
+                # Unset accomplished flag on all scores
+                self.score_set.filter(found=1, revision=Score.REVISION_DEFAULT, accomplished=True)\
+                              .update(accomplished=False)
+
+            # Restore accomplished flag on scores that already have non-null relevant criteria
+            # This happens in two cases of criterion relevance changing.
+            # First case:
+            # 1) Given criterion initial relevance is False
+            # 2) Score added
+            # 3) Relevance changed to True - Score "accomplished" flag unset.
+            # 4) Relevance changed back to False
+            # -- Score should become accomplished again, because all currently relevant criteria was initially rated.
+            #
+            # Second case:
+            # 1) Given criterion initial relevance is True
+            # 2) Score added
+            # 3) Relevance changed to False
+            # 4) Relevance changed back to True - Score "accomplished" flag unset.
+            # -- Score should become accomplished again, because this criterion was initially rated.
+            scores = self.score_set.filter(found=1, revision=Score.REVISION_DEFAULT)
+            for criterion in Parameter.OPTIONAL_CRITERIONS:
+                if getattr(self, criterion) is True:
+                    # Criterion is relevant
+                    scores = scores.filter(**{criterion + '__isnull': False})
+            scores.update(accomplished=True)

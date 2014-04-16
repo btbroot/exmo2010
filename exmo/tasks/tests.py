@@ -489,3 +489,71 @@ class TaskListAccessTestCase(TestCase):
         # THEN response context contains list of only 1 task, and it is assigned to me
         pks = [task.pk for task in response.context['object_list']]
         self.assertEqual(pks, [self.task1.pk])
+
+
+class TaskCompletenessTestCase(TestCase):
+    # SHOULD calculate completeness
+
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND parameter with only 'accessible' attribute
+        self.parameter = mommy.make(
+            Parameter, monitoring=self.monitoring, accessible=True,
+            complete=False, topical=False, hypertext=False, document=False, image=False)
+        # AND task which have complete score
+        self.task = mommy.make(Task, organization__monitoring=self.monitoring)
+        mommy.make(Score, task=self.task, parameter=self.parameter, found=1, accessible=1)
+        # AND parameter edit page url
+        self.url = reverse('exmo2010:parameter_update', args=[self.task.pk, self.parameter.pk])
+        # AND expert A account
+        expertA = User.objects.create_user('expertA', 'usr1@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND I am logged-in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_add_new_criterion_and_delete_it(self):
+        # WHEN I check task completeness
+        # THEN task completeness should be 100%
+        self.assertEqual(self.task.completeness, 100)
+
+        # WHEN I add 'complete' criterion to parameter
+        data = self.parameter.__dict__
+        data['monitoring'] = self.monitoring.pk
+        data['complete'] = True
+        response = self.client.post(self.url, data, follow=True)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND task completeness should be 0%
+        self.assertEqual(self.task.completeness, 0)
+
+        # WHEN I delete 'complete' criterion without score changing
+        data['complete'] = False
+        response = self.client.post(self.url, data, follow=True)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND task completeness should be 100%, because all currently relevant criteria was initially rated
+        self.assertEqual(self.task.completeness, 100)
+
+    def test_delete_criterion_and_add_it(self):
+        # WHEN I check task completeness
+        # THEN task completeness should be 100%
+        self.assertEqual(self.task.completeness, 100)
+
+        # WHEN I delete 'accessible' criterion
+        data = self.parameter.__dict__
+        data['monitoring'] = self.monitoring.pk
+        data['accessible'] = False
+        response = self.client.post(self.url, data, follow=True)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND task completeness should be 100%
+        self.assertEqual(self.task.completeness, 100)
+
+        # WHEN I add 'accessible' criterion to parameter
+        data['accessible'] = True
+        response = self.client.post(self.url, data, follow=True)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND task completeness should be 100%, because 'accessible' criterion was initially rated
+        self.assertEqual(self.task.completeness, 100)
