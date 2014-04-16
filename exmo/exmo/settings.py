@@ -133,7 +133,7 @@ CACHES = {
 }
 
 # CKEditor config
-CKEDITOR_UPLOAD_PATH = MEDIA_ROOT
+CKEDITOR_UPLOAD_PATH = 'ckeditor_uploads/'
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'All',
