@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,9 +35,6 @@ class Migration(SchemaMigration):
             ('timestamp', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('exmo2010', ['TaskHistory'])
-
-        # Deleting field 'Monitoring.revision_date'
-        db.delete_column('exmo2010_monitoring', 'revision_date')
 
 
     def backwards(self, orm):
@@ -125,10 +122,8 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'default': "'-'", 'max_length': '255'}),
             'no_interact': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'openness_expression': ('django.db.models.fields.related.ForeignKey', [], {'default': '8', 'to': "orm['exmo2010.OpennessExpression']"}),
-            'prepare_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'publish_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'rate_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'result_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'time_to_answer': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '3'})
         },
@@ -146,10 +141,8 @@ class Migration(SchemaMigration):
         },
         'exmo2010.organization': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('name', 'monitoring'),)", 'object_name': 'Organization'},
-            'comments': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inv_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '6', 'blank': 'True'}),
-            'keywords': ('core.fields.TagField', [], {'null': 'True'}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
@@ -165,7 +158,6 @@ class Migration(SchemaMigration):
             'hypertext': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'keywords': ('core.fields.TagField', [], {}),
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '1000'}),
             'npa': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

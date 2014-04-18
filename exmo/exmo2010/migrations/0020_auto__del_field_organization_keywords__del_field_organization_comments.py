@@ -24,19 +24,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'Organization.keywords'
-        db.delete_column('exmo2010_organization', 'keywords')
-
-        # Deleting field 'Organization.comments'
-        db.delete_column('exmo2010_organization', 'comments')
-
-        # Deleting field 'Monitoring.prepare_date'
-        db.delete_column('exmo2010_monitoring', 'prepare_date')
-
-        # Deleting field 'Monitoring.result_date'
-        db.delete_column('exmo2010_monitoring', 'result_date')
-
-
         # Changing field 'Monitoring.rate_date'
         db.alter_column('exmo2010_monitoring', 'rate_date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2014, 2, 18, 0, 0)))
 
@@ -48,32 +35,9 @@ class Migration(SchemaMigration):
 
         # Changing field 'Monitoring.finishing_date'
         db.alter_column('exmo2010_monitoring', 'finishing_date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2014, 2, 18, 0, 0)))
-        # Deleting field 'Parameter.keywords'
-        db.delete_column('exmo2010_parameter', 'keywords')
 
 
     def backwards(self, orm):
-        # Adding field 'Organization.keywords'
-        db.add_column('exmo2010_organization', 'keywords',
-                      self.gf('core.fields.TagField')(null=True),
-                      keep_default=False)
-
-        # Adding field 'Organization.comments'
-        db.add_column('exmo2010_organization', 'comments',
-                      self.gf('django.db.models.fields.TextField')(null=True, blank=True),
-                      keep_default=False)
-
-        # Adding field 'Monitoring.prepare_date'
-        db.add_column('exmo2010_monitoring', 'prepare_date',
-                      self.gf('django.db.models.fields.DateField')(null=True, blank=True),
-                      keep_default=False)
-
-        # Adding field 'Monitoring.result_date'
-        db.add_column('exmo2010_monitoring', 'result_date',
-                      self.gf('django.db.models.fields.DateField')(null=True, blank=True),
-                      keep_default=False)
-
-
         # Changing field 'Monitoring.rate_date'
         db.alter_column('exmo2010_monitoring', 'rate_date', self.gf('django.db.models.fields.DateField')(null=True))
 
@@ -85,10 +49,6 @@ class Migration(SchemaMigration):
 
         # Changing field 'Monitoring.finishing_date'
         db.alter_column('exmo2010_monitoring', 'finishing_date', self.gf('django.db.models.fields.DateField')(null=True))
-        # Adding field 'Parameter.keywords'
-        db.add_column('exmo2010_parameter', 'keywords',
-                      self.gf('core.fields.TagField')(default=''),
-                      keep_default=False)
 
 
     models = {
