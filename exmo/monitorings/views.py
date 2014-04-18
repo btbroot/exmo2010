@@ -141,6 +141,12 @@ class MonitoringEditView(MonitoringMixin, UpdateView):
     """
     template_name = "monitoring_form.html"
 
+    def get_initial(self):
+        initial = super(MonitoringEditView, self).get_initial()
+        if self.object:
+            initial.update({'add_questionnaire': self.object.has_questionnaire})
+        return initial
+
     def get_object(self):
         if 'monitoring_pk' in self.kwargs:
             # Existing monitoring edit page
@@ -170,11 +176,12 @@ class MonitoringEditView(MonitoringMixin, UpdateView):
     def form_valid(self, form):
         with transaction.commit_on_success():
             monitoring = form.save()
-            if form.cleaned_data.get("add_questionnaire"):
-                if 'monitoring_pk' in self.kwargs and monitoring.get_questionnaire():
-                    Questionnaire.objects.filter(monitoring=monitoring).delete()
-                else:
-                    Questionnaire.objects.create(monitoring=monitoring)
+            add_questionnaire = form.cleaned_data.get("add_questionnaire")
+            has_questionnaire = monitoring.has_questionnaire()
+            if not add_questionnaire and has_questionnaire:
+                Questionnaire.objects.filter(monitoring=monitoring).delete()
+            elif add_questionnaire and not has_questionnaire:
+                Questionnaire.objects.create(monitoring=monitoring)
         return HttpResponseRedirect(self.get_success_url())
 
 

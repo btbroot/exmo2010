@@ -52,6 +52,7 @@ $(document).ready(function () {
 
 
     if ($("#id_add_questionnaire").is(':checked')) {
+        $("#addqa").show();
         $('#id_add_questionnaire').change(function () {
             if (!$("#id_add_questionnaire").is(':checked')) {
                 if (confirm(gettext("You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"))) {
