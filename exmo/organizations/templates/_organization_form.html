@@ -38,6 +38,7 @@
         {% include "_form_field.html" with field=form.phone %}
         {% include "_form_field.html" with field=form.email %}
         <tr>
+            <td></td>
             <td>
                 <input type="submit" name="submit_add" value="{% if tab == "add" or tab == "all" %}{% trans "Add" %}{% else %}{% trans "Save" %}{% endif %}"/>
             </td>
