@@ -25,7 +25,7 @@ from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, RedirectView
 
-from exmo2010.views import AboutView, CertificateOrderView, HelpView, OpenDataView
+from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView
 from organizations.views import OrgEditView, OrgDeleteView
 from parameters.views import ParamEditView, ParamDeleteView
@@ -180,6 +180,7 @@ urlpatterns = named_urls('',
 
     (r'^opendata/$', OpenDataView, 'opendata'),
     (r'^feedback/$', 'exmo2010.views.feedback'),
+    (r'^ajax_set_profile_setting/$', AjaxSetProfileSettingView, 'ajax_set_profile_setting'),
     # AJAX-вьюха для получения списка критериев, отключенных у параметра
     (r'^get_pc/$', 'parameters.views.get_pc'),
     # AJAX-вьюха для получения кода div'а для одного вопроса (c полями).

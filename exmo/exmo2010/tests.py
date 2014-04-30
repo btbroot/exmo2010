@@ -216,6 +216,7 @@ class CanonicalViewKwargsTestCase(TestCase):
         'ajax_task_approve',
         'ajax_task_open',
         'ajax_task_close',
+        'ajax_set_profile_setting',
     ])
 
     urls_excluded = [

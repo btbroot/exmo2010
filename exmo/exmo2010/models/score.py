@@ -26,7 +26,6 @@ from core.utils import clean_message
 from .base import BaseModel
 from .claim import Claim
 from .clarification import Clarification
-from .monitoring import Monitoring
 from .parameter import Parameter
 
 
@@ -143,14 +142,44 @@ class Score(BaseModel):
 
     @property
     def openness(self):
-        _openness = self.task.organization.monitoring.openness_expression.get_sql_openness()
-        sql = """
-            SELECT %(openness)s FROM exmo2010_score
-            join exmo2010_parameter on exmo2010_score.parameter_id=exmo2010_parameter.id
-            where exmo2010_score.id=%(pk)d
-        """ % {'pk': self.pk, 'openness': _openness}
-        s = Score.objects.filter(pk=self.pk).extra(select={'sql_openness': sql})
-        return float(s[0].score_openness)
+        complete = 1
+        topical = 1
+        accessible = 1
+        hypertext = 1
+        document = 1
+        image = 1
+        param = self.parameter
+
+        if param.complete:
+            if self.complete == 1:
+                complete = 0.2
+            elif self.complete == 2:
+                complete = 0.5
+
+        if param.topical:
+            if self.topical == 1:
+                topical = 0.7
+            elif self.topical == 2:
+                topical = 0.85
+
+        if param.accessible:
+            if self.accessible == 1:
+                accessible = 0.9
+            elif self.accessible == 2:
+                accessible = 0.95
+
+        if param.hypertext and self.hypertext == 0:
+            hypertext = 0.2
+
+        if param.document and self.document == 0:
+            document = 0.85
+
+        if param.image and self.image == 0:
+            image = 0.95
+
+        result = self.found * complete * topical * accessible * hypertext * document * image * 100.0
+
+        return result
 
     def add_clarification(self, creator, comment):
         clarification = Clarification(score=self, creator=creator, comment=clean_message(comment))

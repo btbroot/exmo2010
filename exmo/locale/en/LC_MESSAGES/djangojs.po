@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-07 11:21+0400\n"
+"POT-Creation-Date: 2014-05-05 18:01+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -28,30 +28,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: monitorings/static/js/monitoring_form.js:57
-msgid ""
-"You've chosen to delete monitoring's questionnaire. This will lead to "
-"removing all its questions and collected answers. Are you sure?"
-msgstr ""
-
-#: scores/static/js/score.comments.js:80
-msgid "Close without answer"
-msgstr ""
-
-#: scores/static/js/score.comments.js:84
-msgid "Open comment"
-msgstr ""
-
-#: scores/static/js/score.tabs.js:112
-msgid "Score changed to maximum"
-msgstr ""
-
-#: scores/static/js/score.tabs.js:115
-msgid "Score changed"
-msgstr ""
-
-#: scores/static/js/scores.js:29
-msgid "place"
+#: monitorings/static/js/monitoring_form.js:58
+msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
 msgstr ""
 
 #: static/exmo2010/js/rating.js:95
@@ -60,4 +38,36 @@ msgstr ""
 
 #: static/exmo2010/js/rating.js:99
 msgid "show"
+msgstr ""
+
+#: static/scores/score_all_users.js:22
+msgid "hide explanations"
+msgstr ""
+
+#: static/scores/score_all_users.js:24
+msgid "show explanations"
+msgstr ""
+
+#: static/scores/score_all_users.js:34
+msgid "hide initial scores"
+msgstr ""
+
+#: static/scores/score_all_users.js:36
+msgid "show initial scores"
+msgstr ""
+
+#: static/scores/score_expert.js:174
+msgid "Close without answer"
+msgstr ""
+
+#: static/scores/score_expert.js:179
+msgid "Open comment"
+msgstr ""
+
+#: static/scores/score_expert_interaction.js:123
+msgid "Score changed to maximum"
+msgstr ""
+
+#: static/scores/score_expert_interaction.js:126
+msgid "Score changed"
 msgstr ""

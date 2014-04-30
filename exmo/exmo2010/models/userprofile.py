@@ -117,6 +117,7 @@ class UserProfile(BaseModel):
     # language locale settings
     language = models.CharField(verbose_name=_('Language'), choices=LANGUAGE_CHOICES,
                                 max_length=2, blank=True, null=True)
+    show_score_rev1 = models.BooleanField(verbose_name=_("Show initial scores"), default=False)
 
     @property
     def bubble_info(self):

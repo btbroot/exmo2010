@@ -42,6 +42,7 @@
         <script type="text/javascript" src="{% static 'scores/score_orguser.js' %}"></script>
     {% endif %}
 
+    <script type="text/javascript" src="{% static 'scores/score_all_users.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery.autosize.js' %}"></script>
 {% endblock %}
 
@@ -62,7 +63,7 @@
     <p>
         {% url 'exmo2010:monitoring_rating' param.monitoring.pk as rating_url %}
         {% url 'exmo2010:score_list_by_task' score.task.pk as task_url %}
-        &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}Evaluated for the <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> site of <a href="{{ task_url }}">{{ org_name }}</a> organization in <a href="{{ rating_url }}">{{ monitoring }}</a> rating.{% endblocktrans %}<br />
+        &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}The parameter is evaluated for the website <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> of the <a href="{{ task_url }}">{{ org_name }}</a> within the rating <a href="{{ rating_url }}">{{ monitoring }}</a>.{% endblocktrans %}<br />
         &mdash; {% trans 'Social significance coefficient equals' %} {{ param.weight }}.<br />
         {% if param.monitoring.has_npa %}
             &mdash; {% trans 'Parameter type' %}: {{ param.npa_display }}.
@@ -85,6 +86,41 @@
     {% endif %}
 </div>
 
+<h2 class="inline_text">{% trans 'Scores' %}</h2>
+
+{% if not request.user.is_expert %}
+    <div class="edit-tabs inline_text">
+        <span><a href="#show_explanations" class="pseudo">{% trans 'show explanations' %}</a></span>
+        <span><a href="#show_score_rev1" class="pseudo" data-url="{% url 'exmo2010:ajax_set_profile_setting' %}" data-active="{{ request.user.is_active }}">{% if show_rev1 %}{% trans 'hide initial scores' %}{% else %}{% trans 'show initial scores' %}{% endif %}</a></span>
+    </div>
+{% endif %}
+
+{% if not request.user.is_expert %}
+    <div id="explanations_block" class="hidden">
+        <p>{% blocktrans %}<strong>Availability</strong> describes the fact of publishing the information or service corresponding to the particular parameter at the official website (0; 1).{% endblocktrans %}</p>
+        {% if param.complete %}
+            <p>{% blocktrans %}<strong>Comprehensiveness</strong> describes the sufficiency of the information published at the official websites for forming an integral idea by the particular parameter (1; 2; 3).{% endblocktrans %}</p>
+        {% endif %}
+        {% if param.topical %}
+            <p>{% blocktrans %}<strong>Relevance</strong> describes the updating rate of the information available at the official website as well as its relevance at the moment of the expert analyzes (1; 2; 3).{% endblocktrans %}</p>
+        {% endif %}
+        {% if param.accessible %}
+            <p>{% blocktrans %}<strong>Navigability</strong> describes convenience for finding information relevant to the given parameter at the official website. It takes in consideration whether the information is placed in a correct section, and how many consecutive hyperlinks, starting from the home page, are to be followed (1; 2; 3).{% endblocktrans %}</p>
+        {% endif %}
+        {% if param.hypertext %}
+            <p>{% blocktrans %}<strong>HTML accessibility</strong> describes the fact of placing the parameter information at the official website in HTML format, facilitating the search (0; 1).{% endblocktrans %}</p>
+        {% endif %}
+        {% if param.document %}
+            <p>{% blocktrans %}<strong>File accessibility</strong> describes the fact of placing the document required by the given parameter at the official website in a format that allows the user to store it at his/her hardware devices, to search for and to copy extracts of the text in the document so that the users can further use the information (0; 1).{% endblocktrans %}</p>
+        {% endif %}
+        {% if param.image %}
+            <p>{% blocktrans %}<strong>Graphic accessibility</strong> describes the fact of placing the document required by the given parameter at the official website in the graphic format the actual image of the document so that the users can read its original version (0; 1).{% endblocktrans %}</p>
+        {% endif %}
+        <p>{% blocktrans %}<strong>Parameter`s score</strong> is the openness of the parameter calculated as a product of criteria fines.{% endblocktrans %}</p>
+        <p>{% blocktrans %}<strong>Score difference</strong> is the difference between current parameter`s score and the parameter`s score after the initial evaluation.{% endblocktrans %}</p>
+    </div>
+{% endif %}
+
 {% if score.perms.edit_score %}
     {% if interaction and score.pk %}
         <div class="edit-tabs inline_text ">
@@ -104,16 +140,18 @@
         <table class="score-table editable {{ all_max_initial|yesno:'all_max_initial,' }}">
             <thead>
                 <tr>
-                    <th class="criteria"> {% trans 'Evaluation criterion' %} </th>
-                    <th> {% trans 'Value' %} </th>
-                    <th class="explanation"></th>
+                    <th>{% trans 'Evaluation criterion' %}</th>
+                    <th>{% trans 'Value' %}</th>
+                    <th></th>
                 </tr>
             </thead>
 
             <tbody class="value" >
                 {% for field in criteria %}
-                    <tr data-max="{{field.field.choices|last|last}}" data-initial="{{field.initial|default_if_none:''}}">
-                        <td><label>{{field.label}}</label></td> <td>{{field}}</td> <td></td>
+                    <tr data-max="{{ field.field.choices|last|last }}" data-initial="{{ field.initial|default_if_none:'' }}">
+                        <td><label>{{ field.label }}</label></td>
+                        <td>{{ field }}</td>
+                        <td></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -139,20 +177,31 @@
 {% if score.pk %}
     {% if interaction or not score.perms.edit_score %}
         <div class="tab_reply">
-            <table id="score_table">
+            <table>
                 <thead>
                     <tr>
-                        <th class="criteria"> {% trans 'Evaluation criterion' %} </th> <th> {% trans 'Value' %} </th> <th class="explanation"></th>
+                        {% for field in score_table %}
+                            <th>{{ field.label }}</th>
+                        {% endfor %}
+                        <th>{% trans 'Parameter`s score' %}</th>
+                        <th class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">{% trans 'Score changes' %}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for field in criteria %}
-                        <tr>
-                            <td>{{ field.label }}</td>
-                            <td>{{ field.value|default_if_none:"—" }}</td>
-                            <td></td>
-                        </tr>
-                    {% endfor %}
+                    <tr>
+                        {% for field in score_table %}
+                            <td>{{ field.score|default_if_none:'-' }} {% if field.score_rev1 and field.score != field.score_rev1 %}<span class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">({{ field.score_rev1 }})</span>{% endif %}</td>
+                        {% endfor %}
+                        <td>{{ score.openness|floatformat }}%</td>
+                        <td class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">
+                            {{ score_delta }}%
+                            {% if score_delta > 0 %}
+                                <img src="{% static 'exmo2010/img/rate_up.png' %}">
+                            {% elif score_delta < 0 %}
+                                <img src="{% static 'exmo2010/img/rate_down.png' %}">
+                            {% endif %}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 

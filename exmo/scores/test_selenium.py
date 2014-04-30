@@ -556,3 +556,49 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
 
         # THEN 'submit' button should be enabled
         self.assertEnabled('#recommendations_form input[type="submit"]')
+
+
+class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
+    # On score page non-experts SHOULD be able to toggle initial scores visibility
+
+    def setUp(self):
+        # GIVEN PUBLISHED monitoring with organization
+        monitoring_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        org = mommy.make(Organization, monitoring=monitoring_published)
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.is_organization = True
+        orguser.profile.organization = [org]
+        # AND approved task assigned to expert B
+        task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+        # AND parameter
+        parameter = mommy.make(Parameter, monitoring=monitoring_published, weight=1)
+        # AND scores with two revisions
+        self.score1 = mommy.make(Score, task=task, parameter=parameter, revision=0, found=1)
+        self.score2 = mommy.make(Score, task=task, parameter=parameter, revision=1, found=0)
+
+    @parameterized.expand([
+        ('orguser',),
+        ('user',),
+        ('anonymous',)
+    ])
+    def test_non_experts(self, user):
+        # WHEN I login as non expert user
+        if user != 'anonymous':
+            self.login(user, 'password')
+        # AND I get score page
+        self.get(reverse('exmo2010:score_view', args=(self.score1.pk,)))
+        # THEN initial scores should be hidden
+        self.assertHidden('.score_rev1')
+
+        # WHEN I click 'show_score_rev1'
+        self.find('a[href="#show_score_rev1"]').click()
+        # THEN initial scores should be visible
+        self.assertVisible('.score_rev1')
+
+        # WHEN I click 'show_score_rev1'
+        self.find('a[href="#show_score_rev1"]').click()
+        # THEN initial scores should be hidden
+        self.assertHidden('.score_rev1')

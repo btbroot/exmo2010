@@ -24,7 +24,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
@@ -32,11 +32,12 @@ from django.utils import dateformat, translation
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
-from django.views.generic import TemplateView, DetailView, FormView
+from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
 
 from .mail import mail_certificate_order, mail_feedback
+from core.response import JSONResponse
 from exmo2010.forms import FeedbackForm, CertificateOrderForm
 from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
 
@@ -219,6 +220,21 @@ class CertificateOrderView(FormView):
             email_data.update({'prepare_for': prepare_for})
 
         return email_data
+
+
+class AjaxSetProfileSettingView(View):
+    def post(self, request):
+        if request.is_ajax() and request.user.is_active:
+            user = request.user
+            for setting, value in request.POST.items():
+                if hasattr(user.profile, setting):
+                    value = int(value) if value.isdigit() else value
+                    setattr(user.profile, setting, value)
+            user.profile.save()
+
+            return JSONResponse()
+
+        raise Http404
 
 
 def change_language(request):

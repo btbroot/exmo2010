@@ -437,3 +437,28 @@ class ForbidAjaxPostNonMaxScoreEmptyRecommandationsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         # AND score recommendations should not be updated in DB
         self.assertEqual(Score.objects.get(pk=self.score.pk).recommendations, '123')
+
+
+class AjaxSetPofileSettingTestCase(TestCase):
+    # Posting ajax request SHOULD update fields in user profile.
+
+    def setUp(self):
+        # GIVEN organization in MONITORING_INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        # AND organization representative with 'show_score_rev1' equals True
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.show_score_rev1 = True
+        orguser.profile.organization = [org]
+        orguser.profile.save()
+        # AND ajax url
+        self.url = reverse('exmo2010:ajax_set_profile_setting')
+        # AND I am logged in as organization representative
+        self.client.login(username='orguser', password='password')
+
+    def test_post(self):
+        # WHEN I post ajax-request with 'show_score_rev1' equals False
+        response = self.client.post(self.url, {'show_score_rev1': 0}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND 'show_score_rev1' should be updated in to False
+        self.assertEqual(User.objects.get(pk=1).profile.show_score_rev1, False)

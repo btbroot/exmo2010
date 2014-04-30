@@ -130,6 +130,21 @@ def score_view(request, **kwargs):
             url = reverse('exmo2010:score_list_by_task', args=[task.pk])
             return HttpResponseRedirect('%s#parameter_%s' % (url, param.code))
 
+    score_rev1 = Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT)
+    score_table = [{
+        'label': score._meta.get_field_by_name(criterion)[0].verbose_name,
+        'score': getattr(score, criterion),
+        'score_rev1': getattr(score_rev1[0], criterion) or '-' if score_rev1 else '',
+    } for criterion in criteria]
+
+    score_delta = score.openness - score_rev1[0].openness if score_rev1 else 0
+    if request.user.is_expert:
+        show_rev1 = True
+    elif request.user.is_anonymous():
+        show_rev1 = False
+    else:
+        show_rev1 = request.user.profile.show_score_rev1
+
     all_max = True  # Flag if all criteria set to max
     for crit in criteria:
         if getattr(score, crit) != score._meta.get_field(crit).choices[-1][-1]:
@@ -153,6 +168,9 @@ def score_view(request, **kwargs):
         'score': annotate_exmo_perms(score, request.user),
         'param': annotate_exmo_perms(param, request.user),
         'org': org,
+        'score_table': score_table,
+        'score_delta': score_delta,
+        'show_rev1': show_rev1,
         'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
         'criteria': criteria,
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
