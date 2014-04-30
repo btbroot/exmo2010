@@ -190,17 +190,12 @@ label
 
 /* Score header */
 
-.score-header {
-    margin-bottom: 5px;
+.score-header input {
+    background: none, #ffd8dd;
 }
 
-.score-header dt {
-    margin-top: 0;
-}
-
-.score-header dd {
-    line-height: 21px;
-    margin: 1px 0 7px;
+.score-header h2 {
+    margin: 20px 0 3px 0;
 }
 
 
@@ -236,38 +231,6 @@ label
     padding-left: 15px;
 }
 
-.non_relevant_button {
-    display: inline;
-    float: right;
-}
-
-.non_relevant_button input {
-    background: none, #ffd8dd;
-}
-
-.reset-button {
-    border: 1px solid #fff;
-    border-bottom: 1px dotted;
-    padding: 0;
-}
-
-.reset-button input {
-    cursor: pointer;
-    color: #005C9C;
-    background-color: transparent;
-    border: none;
-    margin: 0;
-    padding: 0;
-}
-
-.reset-button input:hover {
-    color: #005580;
-}
-
-h1 {
-    margin-bottom: 7px;
-}
-
 #id_recommendations, #id_links {
     width: 100%;
     resize: none;
@@ -288,10 +251,6 @@ h1 {
 
 .edit_table, .part_edit_table {
     display: none;
-}
-
-.blank {
-    background: none !important;
 }
 
 .editable .value ul {

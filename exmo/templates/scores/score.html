@@ -21,6 +21,8 @@
 {% endcomment %}
 {% load i18n urlize_target_blank widget_tweaks criteria_css_class static comments days_until date_until trim_links future %}
 
+{% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'scores/score.css' %}" />
@@ -43,37 +45,45 @@
     <script type="text/javascript" src="{% static 'jquery.autosize.js' %}"></script>
 {% endblock %}
 
-{% block title %} {{param}} {% endblock %}
+{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
 
-{% block bubble %} {% include "exmo2010/helpers/inv_code_bubble.html" %} {% endblock %}
+{% block h1 %}<h1>{{ param.code }} &mdash; {{ param.name }}</h1>{% endblock %}
 
 {% block content %}
 
-<dl class="score-header">
-    <dt>{% trans 'Organization' %}:</dt>
-    <dd>{{org.name}}</dd>
+<div class="score-header">
+    {% if param.perms.exclude_parameter %}
+        <input type="button"
+               value="{% trans 'Set non-relevant' %}"
+               onclick="window.location.href='{% url 'exmo2010:parameter_exclude' score.task.pk param.pk %}?{{ request.GET.urlencode }}'" />
+    {% endif %}
 
-    <dt>{% trans "Organization's website" %}:</dt>
-    <dd><a target="_blank" href="{{org.url}}">{{org.url}}</a></dd>
-
-    <dt>{% trans "Social importance of the parameter" %}:</dt>
-    <dd>{{param.importance}}</dd>
+    <h2>{% trans 'Parameter characteristics' %}:</h2>
+    <p>
+        {% url 'exmo2010:monitoring_rating' param.monitoring.pk as rating_url %}
+        {% url 'exmo2010:score_list_by_task' score.task.pk as task_url %}
+        &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}Evaluated for the <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> site of <a href="{{ task_url }}">{{ org_name }}</a> organization in <a href="{{ rating_url }}">{{ monitoring }}</a> rating.{% endblocktrans %}<br />
+        &mdash; {% trans 'Social significance coefficient equals' %} {{ param.weight }}.<br />
+        {% if param.monitoring.has_npa %}
+            &mdash; {% trans 'Parameter type' %}: {{ param.npa_display }}.
+        {% endif %}
+    </p>
 
     {% if param.grounds %}
-        <dt>{% trans "Grounds" %}:</dt>
-        <dd>{{param.grounds|safe}}</dd>
+        <h2>{% trans "Grounds" %}:</h2>
+        {{ param.grounds|safe }}
     {% endif %}
 
     {% if param.rating_procedure %}
-        <dt>{% trans "Rating procedure" %}:</dt>
-        <dd>{{param.rating_procedure|safe}}</dd>
+        <h2>{% trans "Rating procedure" %}:</h2>
+        {{ param.rating_procedure|safe }}
     {% endif %}
 
     {% if param.notes and request.user.is_expert %}
-        <dt>{% trans "Notes" %}:</dt>
-        <dd>{{param.notes|safe}}</dd>
+        <h2>{% trans "Notes" %}:</h2>
+        {{ param.notes|safe }}
     {% endif %}
-</dl>
+</div>
 
 {% if score.perms.edit_score %}
     {% if interaction and score.pk %}
@@ -111,20 +121,12 @@
 
         <div>
             <span class="bold"> {% trans 'Recommendations' %} </span>  <br/>
-            {{form.recommendations}}
+            {{ form.recommendations }}
         </div>
         <div>
             <span class="bold"> {% trans 'Links' %} </span> <br/>
-            {{form.links}}
+            {{ form.links }}
         </div>
-
-        {% if param.perms.exclude_parameter %}
-            <span class="non_relevant_button">
-            <input type="button"
-                   value="{% trans 'Set non-relevant' %}"
-                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' score.task.pk param.pk %}?{{ request.GET.urlencode }}'" />
-            </span>
-        {% endif %}
 
         {% if interaction and score.pk %}
             <input type="hidden" name='comment' />
@@ -146,7 +148,9 @@
                 <tbody>
                     {% for field in criteria %}
                         <tr>
-                            <td>{{field.label}}</td> <td>{{field.value|default_if_none:"—"}}</td> <td></td>
+                            <td>{{ field.label }}</td>
+                            <td>{{ field.value|default_if_none:"—" }}</td>
+                            <td></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -159,7 +163,7 @@
                         <a href=# id="edit_recommendations">{% trans 'Edit' %}</a>
                         <div id="recommendations_form" class="edit" style="display: none">
                             <form action="{% url 'exmo2010:post_recommendations' score.pk %}">{% csrf_token %}
-                                {{form.recommendations}} <br/>
+                                {{ form.recommendations }} <br/>
                                 <input type="submit" disabled=true value="{% trans 'Save' %}" />
                                 <a href=# class="cancel">{% trans 'Cancel' %}</a>
                             </form>
@@ -179,7 +183,7 @@
                         <a href=# id="edit_links">{% trans 'Edit' %}</a>
                         <div class="edit" style="display: none">
                             <form action="{% url 'exmo2010:post_score_links' score.pk %}">{% csrf_token %}
-                                {{form.links}} <br/>
+                                {{ form.links }} <br/>
                                 <input type="submit" value="{% trans 'Save' %}" />
                                 <a href=# class="cancel">{% trans 'Cancel' %}</a>
                             </form>
@@ -261,7 +265,7 @@
             </div>
         {% endif %}
 
-        <div id="comment_form" class="comment-form" {% if request.user.is_expert %} style="display: none" {% endif %}">
+        <div id="comment_form" class="comment-form" {% if request.user.is_expert %}style="display: none"{% endif %}>
             <p>{% trans 'Your comment' %}</p>
             {% get_comment_form for score as form %}
             <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}

@@ -55,10 +55,10 @@ class Parameter(BaseModel):
     #необязательные критерии в оценке
     OPTIONAL_CRITERIONS = 'complete topical accessible hypertext document image'.split()
 
-    IMPORTANCE = {1: _("low importance"), 2: _("middle importance"), 3: _("high importance")}
+    NPA_TYPE = {0: _("recommendatory"), 1: _("normative")}
 
-    def importance(self):
-        return self.IMPORTANCE.get(self.weight)
+    def npa_display(self):
+        return self.NPA_TYPE.get(self.npa)
 
     def __unicode__(self):
         return self.name
