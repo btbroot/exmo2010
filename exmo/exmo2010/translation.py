@@ -46,3 +46,8 @@ class OrganizationTranslationOptions(TranslationOptions):
 @register(models.StaticPage)
 class StaticPageTranslationOptions(TranslationOptions):
     fields = ('description', 'content')
+
+
+@register(models.LicenseTextFragments)
+class LicenseTextFragmentsTranslationOptions(TranslationOptions):
+    fields = ('page_footer', 'csv_footer')

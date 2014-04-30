@@ -30,4 +30,5 @@ from .questionnaire import *
 from .score import *
 from .static_page import *
 from .task import *
+from .text_fragments import *
 from .userprofile import *

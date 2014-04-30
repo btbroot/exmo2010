@@ -24,10 +24,30 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        db.rename_column(u'exmo2010_score', 'comment', 'recommendations')
+        # Adding model 'LicenseTextFragments'
+        db.create_table(u'exmo2010_licensetextfragments', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=255, primary_key=True)),
+            ('page_footer', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
+            ('page_footer_ru', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('page_footer_en', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('page_footer_ka', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('page_footer_az', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('csv_footer', self.gf('django.db.models.fields.TextField')(default='', blank=True)),
+            ('csv_footer_ru', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('csv_footer_en', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('csv_footer_ka', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('csv_footer_az', self.gf('django.db.models.fields.TextField')(default='', null=True, blank=True)),
+            ('json_name', self.gf('django.db.models.fields.CharField')(default='', max_length=255, blank=True)),
+            ('json_url', self.gf('django.db.models.fields.URLField')(default='', max_length=255, blank=True)),
+            ('json_rightsholder', self.gf('django.db.models.fields.URLField')(default='', max_length=255, blank=True)),
+            ('json_source', self.gf('django.db.models.fields.URLField')(default='', max_length=255, blank=True)),
+        ))
+        db.send_create_signal('exmo2010', ['LicenseTextFragments'])
+
 
     def backwards(self, orm):
-        db.rename_column(u'exmo2010_score', 'recommendations', 'comment')
+        # Deleting model 'LicenseTextFragments'
+        db.delete_table(u'exmo2010_licensetextfragments')
 
 
     models = {
@@ -104,6 +124,24 @@ class Migration(SchemaMigration):
             'monitoring': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['exmo2010.Monitoring']"}),
             'subject': ('django.db.models.fields.TextField', [], {}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
+        },
+        'exmo2010.licensetextfragments': {
+            'Meta': {'object_name': 'LicenseTextFragments'},
+            'csv_footer': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
+            'csv_footer_az': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'csv_footer_en': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'csv_footer_ka': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'csv_footer_ru': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'}),
+            'json_name': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
+            'json_rightsholder': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
+            'json_source': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
+            'json_url': ('django.db.models.fields.URLField', [], {'default': "''", 'max_length': '255', 'blank': 'True'}),
+            'page_footer': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
+            'page_footer_az': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'page_footer_en': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'page_footer_ka': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'}),
+            'page_footer_ru': ('django.db.models.fields.TextField', [], {'default': "''", 'null': 'True', 'blank': 'True'})
         },
         'exmo2010.monitoring': {
             'Meta': {'ordering': "('name',)", 'object_name': 'Monitoring'},

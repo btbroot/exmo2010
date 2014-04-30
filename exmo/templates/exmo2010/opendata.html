@@ -19,11 +19,11 @@
 #
 {% endcomment %}
 
-{% load i18n %}
+{% load i18n static %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/opendata.css"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/opendata.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -319,39 +319,50 @@
                 {'default', 'initial'}
             </td>
         </tr>
-        <tr>
-            <td>"license": {</td>
-            <td>{% trans "Data use terms" %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "name":
-            </td>
-            <td>{% trans "License name" %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "url":
-            </td>
-            <td>{% trans "License URL" %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "rightsholder":
-            </td>
-            <td>{% trans "Rightsholder URL" %}</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "source":
-            </td>
-            <td>{% trans "Data source URL" %}</td>
-            <td></td>
-        </tr>
+
+        {% if json_license %}
+            <tr>
+                <td>"license": {</td>
+                <td>{% trans "Data use terms" %}</td>
+                <td></td>
+            </tr>
+            {% if json_license.name %}
+                <tr>
+                    <td class="tab1">
+                        "name":
+                    </td>
+                    <td>{% trans "License name" %}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
+            {% if json_license.url %}
+                <tr>
+                    <td class="tab1">
+                        "url":
+                    </td>
+                    <td>{% trans "License URL" %}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
+            {% if json_license.rightsholder %}
+                <tr>
+                    <td class="tab1">
+                        "rightsholder":
+                    </td>
+                    <td>{% trans "Rightsholder URL" %}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
+            {% if json_license.source %}
+                <tr>
+                    <td class="tab1">
+                        "source":
+                    </td>
+                    <td>{% trans "Data source URL" %}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
+        {% endif %}
     </tbody>
 </table>
 

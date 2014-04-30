@@ -179,7 +179,7 @@ if not DEBUG:
     )
 
 MIDDLEWARE_CLASSES += (
-    'exmo2010.middleware.StaticPagesInitMiddleware',
+    'exmo2010.middleware.StaticDataInitMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'exmo2010.middleware.CustomLocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -216,8 +216,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'core.context_processors.user_groups',
-    'exmo2010.context_processors.models',
+    'exmo2010.context_processors.exmo_models',
     'exmo2010.context_processors.live_settings',
+    'exmo2010.context_processors.text_fragments',
 )
 
 # Applications

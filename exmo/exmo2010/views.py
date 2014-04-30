@@ -38,7 +38,7 @@ from livesettings import config_value
 
 from .mail import mail_certificate_order, mail_feedback
 from exmo2010.forms import FeedbackForm, CertificateOrderForm
-from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage
+from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
 
 
 def feedback(request):
@@ -99,6 +99,13 @@ class AboutView(StaticPageView):
 
 class OpenDataView(TemplateView):
     template_name = 'exmo2010/opendata.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OpenDataView, self).get_context_data(**kwargs)
+        license = LicenseTextFragments.objects.filter(pk='license')
+        json_license = license[0].json_license if license else {}
+        context['json_license'] = json_license
+        return context
 
 
 class CertificateOrderView(FormView):

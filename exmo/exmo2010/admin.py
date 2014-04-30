@@ -60,3 +60,8 @@ class ParameterAdmin(TabbedTranslationAdmin, VersionAdmin):
 @register(models.StaticPage)
 class StaticPageAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
     list_display = search_fields = ('id', 'description')
+
+
+@register(models.LicenseTextFragments)
+class LicenseTextFragmentsAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
+    list_display = ('id', 'page_footer', 'csv_footer', 'json_name', 'json_url', 'json_rightsholder', 'json_source')

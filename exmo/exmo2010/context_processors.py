@@ -21,7 +21,7 @@ from livesettings import config_value
 from . import models
 
 
-def models(request):
+def exmo_models(request):
     """
     Exmo2010 models classes
     """
@@ -34,3 +34,13 @@ def live_settings(request):
 
     """
     return {'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY')}
+
+
+def text_fragments(request):
+    """
+    Variables from TextFragments.
+
+    """
+    license = models.LicenseTextFragments.objects.filter(pk='license')
+    license = license[0].page_footer if license else ''
+    return {'license': license}

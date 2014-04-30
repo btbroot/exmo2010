@@ -395,10 +395,9 @@ def monitoring_by_criteria_mass_export(request, monitoring_pk):
             writer[criteria].writerow(row[criteria])
 
     for criteria in row_template.keys():
-        writer[criteria].writerow([
-            _('#This data attributed to Freedom of Information Foundation is licensed '
-              'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-        ])
+        license = LicenseTextFragments.objects.filter(pk='license')
+        if license:
+            writer[criteria].writerow([u'#%s' % license[0].csv_footer])
 
     response = HttpResponse(mimetype = 'application/zip')
     response['Content-Disposition'] = 'attachment; filename=monitoring-%s.zip' % monitoring_pk
@@ -670,10 +669,10 @@ def monitoring_parameter_export(request, monitoring_pk):
             p.weight
         )
         writer.writerow(out)
-    writer.writerow([
-        _('#This data attributed to Freedom of Information Foundation is licensed '
-          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-    ])
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
+
     return response
 
 
@@ -705,10 +704,10 @@ def monitoring_organization_export(request, monitoring_pk):
             o.phone,
         )
         writer.writerow(out)
-    writer.writerow([
-        _('#This data attributed to Freedom of Information Foundation is licensed '
-          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-    ])
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
+
     return response
 
 
@@ -1094,13 +1093,11 @@ class MonitoringExport(object):
                 'name': self.monitoring.name,
                 'tasks': self.tasks.values(),
             },
-            'license': {
-                'name': 'Creative Commons «Attribution-NonCommercial-ShareAlike» 4.0',
-                'url': 'http://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru',
-                'rightsholder': 'http://svobodainfo.org',
-                'source': 'http://system.infometer.org',
-            }
         }
+        license = LicenseTextFragments.objects.filter(pk='license')
+        json_license = license[0].json_license if license else {}
+        if json_license:
+            ret.update({'license': json_license})
         json_dump_args = {}
         if settings.DEBUG:
             json_dump_args = {'indent': 2}
@@ -1158,10 +1155,10 @@ class MonitoringExport(object):
                     ])
                 writer.writerow(row)
         #csv FOOTER
-        writer.writerow([
-            _('#This data attributed to Freedom of Information Foundation is licensed '
-              'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-        ])
+        license = LicenseTextFragments.objects.filter(pk='license')
+        if license:
+            writer.writerow([u'#%s' % license[0].csv_footer])
+
         return response
 
 

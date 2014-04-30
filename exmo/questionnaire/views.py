@@ -28,7 +28,7 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from exmo2010.models import Monitoring, Task
+from exmo2010.models import Monitoring, Task, LicenseTextFragments
 from exmo2010.models import Questionnaire, QQuestion, QUESTION_TYPE_CHOICES, AnswerVariant
 from core.utils import UnicodeWriter
 
@@ -137,10 +137,9 @@ def answers_export(request, monitoring_pk):
 
         writer.writerow(out)
 
-    writer.writerow([
-        _('#This data attributed to Freedom of Information Foundation is licensed '
-          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-    ])
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
 
     return response
 

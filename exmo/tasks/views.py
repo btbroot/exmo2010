@@ -41,7 +41,8 @@ from core.helpers import table
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeReader, UnicodeWriter
-from exmo2010.models import Monitoring, Organization, Parameter, Score, Task, TaskHistory, UserProfile
+from exmo2010.models import (Monitoring, Organization, Parameter, Score, Task,
+                             TaskHistory, LicenseTextFragments, UserProfile)
 from perm_utils import annotate_exmo_perms
 
 
@@ -86,10 +87,10 @@ def task_export(request, task_pk):
             out += (s.image,) if p.image else ('',)
             out += (s.recommendations,)
         writer.writerow(out)
-    writer.writerow([
-        _('#This data attributed to Freedom of Information Foundation is licensed '
-          'under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License.')
-    ])
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
+
     return response
 
 

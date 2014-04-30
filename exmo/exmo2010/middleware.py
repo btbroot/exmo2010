@@ -49,7 +49,7 @@ class CustomLocaleMiddleware(LocaleMiddleware):
         request.LANGUAGE_CODE = translation.get_language()
 
 
-class StaticPagesInitMiddleware(object):
+class StaticDataInitMiddleware(object):
     """
     TODO: Remove this after upgrade to Django 1.7, use new Apps framework for initialization.
 
@@ -79,5 +79,7 @@ class StaticPagesInitMiddleware(object):
                 with translation.override('en'):
                     page.content_en = render_to_string(template, context)
                 page.save()
+
+        models.LicenseTextFragments.objects.get_or_create(id='license')
 
         raise MiddlewareNotUsed  # remove this middleware from stack

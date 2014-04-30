@@ -39,11 +39,7 @@
         </div>
         <div class="bottom-row copyrights-fonts">
             <div class="left-cell">
-                {% if license_except_comments %}
-                    {% blocktrans with term_url="http://purl.org/dc/terms/" dataset_url="http://purl.org/dc/dcmitype/Dataset" rdf_url="http://creativecommons.org/ns#" url="http://svobodainfo.org" cc_url="http://creativecommons.org/licenses/by-nc-sa/4.0/" %}This <span xmlns:dct="{{ term_url }}" href="{{ dataset_url }}" rel="dct:type">data</span> attributed to <a xmlns:cc="{{ rdf_url }}" href="{{ url }}" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Freedom of Information Foundation</a> except comments is licensed under a <a rel="license" href="{{ cc_url }}" target="_blank">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License</a>.{% endblocktrans %}
-                {% else %}
-                    {% blocktrans with term_url="http://purl.org/dc/terms/" dataset_url="http://purl.org/dc/dcmitype/Dataset" rdf_url="http://creativecommons.org/ns#" url="http://svobodainfo.org" cc_url="http://creativecommons.org/licenses/by-nc-sa/4.0/" %}This <span xmlns:dct="{{ term_url }}" href="{{ dataset_url }}" rel="dct:type">data</span> attributed to <a xmlns:cc="{{ rdf_url }}" href="{{ url }}" property="cc:attributionName" rel="cc:attributionURL" target="_blank">Freedom of Information Foundation</a> is licensed under a <a rel="license" href="{{ cc_url }}" target="_blank">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License</a>.{% endblocktrans %}
-                {% endif %}
+                {{ license|safe }}
             </div>
             <div class="right-cell">
                 {% blocktrans with url="http://www.svobodainfo.org/exmo" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.{% endblocktrans %}
