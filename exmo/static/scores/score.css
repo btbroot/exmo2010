@@ -406,3 +406,31 @@ a.messages-pseudo-off:hover {
     width: 160px;
     font-size: 13px; /* Firefox fix */
 }
+
+.score-table input[type=radio] {
+    cursor: pointer;
+    display: none;
+    margin: 10px;
+}
+
+.score-table li label {
+    cursor: pointer;
+    display: inline-block;
+    margin: -2px;
+    padding: 4px 12px;
+    background-color: #e7e7e7;
+    border-color: #ddd;
+}
+
+.score-table li label.found_0_frozen_red {
+    background-color: red;
+    cursor: default;
+}
+
+.score-table li label.selected_max {
+    background-color: green;
+}
+
+.score-table li label.selected {
+    background-color: red;
+}

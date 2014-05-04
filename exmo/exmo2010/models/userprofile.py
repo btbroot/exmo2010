@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.contrib import auth
 from django.contrib.auth.models import Group, User, AnonymousUser
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
@@ -358,6 +359,11 @@ User.is_organization = property(lambda u: u.is_active and u.profile.is_organizat
 User.represents = lambda u, org: u.is_active and u.profile.organization.filter(pk=org.pk).exists()
 User.executes = lambda u, task: u.is_expertB and task.user_id == u.pk
 
+# TODO: get rid of monkey-patching User.has_perm, instead use Django 1.5 User model customization.
+# Monkey-patch has_perm to force checking exmo2010 perms for superuser.
+User.has_perm = lambda u, perm, obj=None: _user_has_perm(u, perm, obj)
+
+
 AnonymousUser.is_expert = False
 AnonymousUser.is_expertB = False
 AnonymousUser.is_expertA = False
@@ -365,6 +371,23 @@ AnonymousUser.is_customer = False
 AnonymousUser.is_organization = False
 AnonymousUser.represents = lambda u, org: False
 AnonymousUser.executes = lambda u, task: False
+
+
+# TODO: get rid of monkey-patching User.has_perm, instead use Django 1.5 User model customization.
+def _user_has_perm(user, perm, obj):
+    # Mimic old behavior for non-exmo2010 perms. Always True for superuser.
+    if user.is_superuser and not perm.startswith('exmo2010.'):
+        return True
+
+    for backend in auth.get_backends():
+        if hasattr(backend, "has_perm"):
+            if obj is not None:
+                if backend.has_perm(user, perm, obj):
+                    return True
+            else:
+                if backend.has_perm(user, perm):
+                    return True
+    return False
 
 
 def org_changed(sender, instance, action, **kwargs):

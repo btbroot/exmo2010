@@ -61,7 +61,7 @@ def score_view(request, **kwargs):
 
     if 'score_pk' in kwargs:
         # Score edit or view
-        score = Score.objects.get(pk=kwargs['score_pk'])
+        score = get_object_or_404(Score, pk=kwargs['score_pk'])
         task = score.task
         param = score.parameter
         if request.method == 'POST' and not request.user.has_perm('exmo2010.edit_score', score):
@@ -413,7 +413,7 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
                 last_comment_id = last_comments.get(score.pk, None)
 
                 if last_comment_id and (request.user.executes(score.task) or request.user.is_expertA):
-                    param.url = reverse('exmo2010:score', args=[score.task.pk, param.pk]) + "#c" + str(last_comment_id)
+                    param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
 
 
 @login_required

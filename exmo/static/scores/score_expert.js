@@ -20,6 +20,48 @@ $(document).ready(function() {
     $('textarea[name="recommendations"]').autosize()
     $('textarea[name="links"]').autosize()
 
+    // Prevent '-' radiobutton from being selected on clik.
+    $(".score-table li label").on('click', function() {
+        if ($(this).find('input').val() == '') {
+            return false;
+        }
+    });
+
+    // Colorize selcted criterion radiobuttons on change.
+    $("input:radio").on('change', function() {
+        max = $(this).closest('tr').data('max');
+
+        // Remove selected classes from all radioburrons of this criterion.
+        $(this).closest('ul').find('label').removeClass('selected').removeClass('selected_max');
+        if ($(this).val() == max) {
+            $(this).closest('label').addClass('selected_max');
+        }
+        else {
+            $(this).closest('label').addClass('selected');
+        }
+    });
+
+    // Clicking 'found' criterion should hide and colorize other criterions
+    $("input[name='found']").on('change', function() {
+        if ($(this).val() == '1') {
+            $(".score-table li label").removeClass('found_0_frozen_red').show()
+        }
+        else {
+            $(".score-table li label").each(function() {
+                if ($(this).find('input').attr('name') != 'found') {
+                    $(this).addClass('found_0_frozen_red')
+
+                    if ($(this).find('input').val() != '') {
+                        $(this).hide();
+                    }
+                }
+            });
+        }
+    })
+
+    // Trigger change event to initially colorize radiobuttons
+    $("input:radio:checked").trigger('change');
+
 
     // Update original form inputs when text typed in CKEDITOR
     // Enable submit button if CKEDITOR input not empty.

@@ -35,7 +35,7 @@
     {% if request.user.is_expert %}
         <script type="text/javascript" src="{% static 'scores/score_expert.js' %}"></script>
 
-        {% if interaction %}
+        {% if interaction and score.pk %}
             <script type="text/javascript" src="{% static 'scores/score_expert_interaction.js' %}"></script>
         {% endif %}
     {% elif request.user.is_organization %}

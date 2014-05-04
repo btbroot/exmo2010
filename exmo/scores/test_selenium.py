@@ -76,8 +76,8 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
     def test_all_maximum_scores(self):
         # WHEN i set all values to (maximum)
-        self.find('#id_found_2').click()
-        self.find('#id_accessible_3').click()
+        self.find('label[for="id_found_2"]').click()
+        self.find('label[for="id_accessible_3"]').click()
 
         with self.frame('iframe'):
             # THEN 3 comment lines should be added automatically
@@ -95,10 +95,10 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
     def test_two_scores(self):
         # WHEN i set 'found' value to 1 (maximum)
-        self.find('#id_found_2').click()
+        self.find('label[for="id_found_2"]').click()
 
         # AND i set 'accessible' value to 2 (NOT maximum)
-        self.find('#id_accessible_2').click()
+        self.find('label[for="id_accessible_2"]').click()
 
         with self.frame('iframe'):
             # THEN 3 comment lines should be added automatically
@@ -118,14 +118,14 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
     def test_autoremove_autoscore_comments(self):
         # WHEN i set 'found' value to 1
-        self.find('#id_found_2').click()
+        self.find('label[for="id_found_2"]').click()
 
         with self.frame('iframe'):
             # THEN 2 comment lines should be added automatically
             self.assertEqual(len(self.findall('input.autoscore')), 2)
 
         # WHEN i set 'found' value back to 0
-        self.find('#id_found_1').click()
+        self.find('label[for="id_found_1').click()
 
         with self.frame('iframe'):
             # THEN all comment lines should be removed automatically
@@ -134,7 +134,7 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
     def test_disable_submit(self):
         # WHEN nothing is typed in comment area explicitly
         # AND i set 'found' value to 1
-        self.find('#id_found_2').click()
+        self.find('label[for="id_found_2"]').click()
 
         # THEN submit button should stay disabled
         self.assertDisabled('#submit_score_and_comment')
@@ -155,35 +155,19 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
 
 class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
-    ''' On score page if "found" criterion value is not "1", then other criteria inputs should be disabled '''
+    ''' On score page if "found" criterion value is not "1", then other criteria inputs should be hidden '''
 
     def setUp(self):
-        # GIVEN expertA account
-        expertA = User.objects.create_user('expertA', 'expertB@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        # AND expertB account
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-
-        # AND organization with task in INTERACTION monitoring
+        # GIVEN organization with task in INTERACTION monitoring
         org = mommy.make(Organization, name='org', monitoring__status=MONITORING_INTERACTION)
-        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_OPEN)
+        task = mommy.make(Task, organization=org, status=Task.TASK_OPEN)
 
-        # AND parameter with one ctriteria (for ex. "topical")
-        parameter = mommy.make(
-            Parameter,
-            monitoring=org.monitoring,
-            topical=True,
-            image=False,
-            complete=False,
-            accessible=False,
-            hypertext=False,
-            document=False,
-        )
         # AND score with "found" ctriterion set to 0
-        score = mommy.make(Score, task=task, parameter=parameter, found=0)
+        score = mommy.make(Score, task=task, parameter__monitoring=org.monitoring, found=0)
 
         # AND i am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertB@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
         self.login('expertA', 'password')
         # AND i am on score page
         self.get(reverse('exmo2010:score_view', args=(score.pk,)))
@@ -191,25 +175,16 @@ class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
         self.assertVisible('a[href="#change_score"]')
         self.find('a[href="#change_score"]').click()
 
-    def assert_topical_criterion_enabled(self, is_enabled):
-        # "Topical" criterion value radio inputs
-        for radio in self.findall('input[name="topical"]'):
-            self.assertEqual(radio.is_enabled(), is_enabled)
-
-        # BUG 1856: Claim and clarification textareas should always be enabled
-        self.assertEnabled('#id_clarification-comment')
-        self.assertEnabled('#id_claim-comment')
-
     def test_criteria_inputs_disable(self):
         # WHEN i just opened page ("found" value equals 0)
-        # THEN "topical" creiterion inputs should be disabled
-        self.assert_topical_criterion_enabled(False)
+        # THEN "topical" creiterion inputs should be hidden
+        self.assertHidden('label[for="id_topical_2"]')
 
         # WHEN i set "found" criterion to "1"
-        self.find('#id_found_2').click()
+        self.find('label[for="id_found_2"]').click()
 
-        # THEN "topical" creiterion inputs should get enabled
-        self.assert_topical_criterion_enabled(True)
+        # THEN "topical" creiterion inputs should become visible
+        self.assertVisible('label[for="id_topical_2"]')
 
 
 class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):

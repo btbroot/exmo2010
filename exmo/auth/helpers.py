@@ -101,7 +101,7 @@ def score_permission(user, priv, score):
         return user.has_perm('view_task', task)
 
     if priv == 'edit_score':
-        if user.is_expertA:
+        if user.is_expertA and phase in (RATE, INT, RES, FIN):
             return True
         elif user.executes(task):
             if phase in (INT, FIN) or (phase == RATE and task.open):
