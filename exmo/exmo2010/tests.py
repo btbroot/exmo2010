@@ -200,8 +200,10 @@ class CanonicalViewKwargsTestCase(TestCase):
 
     post_urls = set([
         'claim_create',
+        'claim_answer',
         'claim_delete',
         'clarification_create',
+        'clarification_answer',
         'get_pc',
         'user_reset_dashboard',
         'toggle_comment',
@@ -238,8 +240,8 @@ class CanonicalViewKwargsTestCase(TestCase):
         score = mommy.make(Score, task=task, parameter=parameter)
         mommy.make(Questionnaire, monitoring=monitoring)
         # AND claim, clarification
-        mommy.make(Claim, score=score)
-        mommy.make(Clarification, score=score)
+        claim = mommy.make(Claim, score=score)
+        clarification = mommy.make(Clarification, score=score)
 
         # AND i am logged-in as superuser
         admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
@@ -253,6 +255,8 @@ class CanonicalViewKwargsTestCase(TestCase):
             'parameter_pk': parameter.pk,
             'task_pk': task.pk,
             'org_pk': organization.pk,
+            'clarification_pk': clarification.pk,
+            'claim_pk': claim.pk,
             'activation_key': '123',  # for registration_activate
             'uidb36': '123',          # for auth_password_reset_confirm
             'token': '123',           # for auth_password_reset_confirm

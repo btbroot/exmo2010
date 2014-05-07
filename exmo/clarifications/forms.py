@@ -17,20 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-
-from core.utils import urlize, clean_message
-
-
-class ClarificationAddForm(forms.Form):
-    comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your clarification'))
-    clarification_id = forms.IntegerField(required=False, widget=forms.widgets.HiddenInput())
-
-    def clean_comment(self):
-        return urlize(clean_message(self.cleaned_data['comment']))
 
 
 class ClarificationReportForm(forms.Form):

@@ -86,6 +86,8 @@ scores_patterns = named_urls('scores.views',
 scores_patterns += named_urls('',
     (r'^(?P<score_pk>\d+)/claim/create/$', 'claims.views.claim_create'),
     (r'^(?P<score_pk>\d+)/clarification/create/$', 'clarifications.views.clarification_create'),
+    (r'^answer_claim/(?P<claim_pk>\d+)/$', 'claims.views.claim_answer'),
+    (r'^answer_clarification/(?P<clarification_pk>\d+)/$', 'clarifications.views.clarification_answer'),
 )
 
 monitoring_patterns = named_urls('monitorings.views',

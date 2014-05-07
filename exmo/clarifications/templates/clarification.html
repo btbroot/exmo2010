@@ -26,7 +26,7 @@
             <tbody>
             {% for c in score.clarification_set.all %}
                 <tr>
-                    <td{% if not c.close_user and not score.perms.add_clarification %} class="not-answered"{% endif %}>
+                    <td {% if not c.close_user and not score.perms.add_clarification %} class="not-answered"{% endif %}>
                         <span class="messages-author"> {{ c.creator.profile.legal_name }} </span>
 
                         <span class="messages-date"> {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }} </span>
@@ -43,7 +43,19 @@
 
                         {% if not request.user.is_superuser and c.creator != request.user and not c.answer and score.perms.answer_clarification %}
                             <div class="messages-reply">
-                                <a class="answer-clarification pseudo" href="#" rel="{{ c.pk }}"> {% trans "Answer clarification" %} </a>
+                                <a class="answer_form_toggle pseudo" href="#" data-prefix="{{ c.answer_form.prefix }}">
+                                    {% trans "Answer clarification" %}
+                                </a>
+                            </div>
+
+                            <div class="answer_form reply-form-tweak" style="display: none;">
+                                <form action="{% url 'exmo2010:clarification_answer' c.pk %}" method="post">{% csrf_token %}
+                                    <div class="fieldWrapper">
+                                        <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your clarification answer" %}</h3>
+                                        {{ c.answer_form.answer }}
+                                        <input type="submit" disabled="disabled" class="submit-post" value="{% trans 'Reply' %}">
+                                    </div>
+                                </form>
                             </div>
                         {% endif %}
                     </td>
@@ -56,20 +68,13 @@
     {% endif %}
 {% endif %}
 
-{% if score.perms.add_clarification or score.perms.answer_clarification %}
-    <div id="add-clarification"{% if score.perms.answer_clarification and not score.perms.add_clarification %} style="display: none;"{% endif %}>
+{% if score.perms.add_clarification %}
+    <div id="add-clarification">
         <form action="{% url 'exmo2010:clarification_create' score.pk %}" method="post">{% csrf_token %}
-            {% for field in clarification_form.hidden_fields %} {{field}} {% endfor %}
             <div class="fieldWrapper">
-                {% if score.perms.add_clarification %}
-                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your clarification" %}</h3>
-                    {{ clarification_form.comment }}
-                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Clarify' %}">
-                {% else %}
-                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your clarification answer" %}</h3>
-                    {{ clarification_form.comment }}
-                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Reply' %}">
-                {% endif %}
+                <h3 class="clarification-label heading-yourmessage-parameter">{% trans "Your clarification" %}</h3>
+                {{ models.Clarification.form.comment }}
+                <input type="submit" disabled="disabled" class="submit-post" value="{% trans 'Clarify' %}">
             </div>
         </form>
     </div>

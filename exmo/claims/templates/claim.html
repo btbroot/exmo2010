@@ -26,7 +26,7 @@
         <tbody>
         {% for c in claim_list %}
             <tr>
-                <td{% if not c.close_user and not score.perms.add_claim %} class="not-answered"{% endif %}>
+                <td {% if not c.close_user and not score.perms.add_claim %} class="not-answered"{% endif %}>
                     <span class="messages-author"> {{ c.creator.profile.legal_name }} </span>
 
                     <span class="messages-date"> {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }} </span>
@@ -48,9 +48,21 @@
                     {% endif %}
 
                     {% if not request.user.is_superuser and c.creator != request.user and not c.answer and score.perms.answer_claim %}
-                    <div class="messages-reply">
-                        <a class="answer-claim pseudo" href="#" rel="{{ c.pk }}"> {% trans "Answer claim" %} </a>
-                    </div>
+                        <div class="messages-reply">
+                            <a class="answer_form_toggle pseudo" href="#" data-prefix="{{ c.answer_form.prefix }}">
+                                {% trans "Answer claim" %}
+                            </a>
+                        </div>
+
+                        <div class="answer_form reply-form-tweak" style="display: none;">
+                            <form action="{% url 'exmo2010:claim_answer' c.pk %}" method="post">{% csrf_token %}
+                                <div class="fieldWrapper">
+                                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim answer" %}</h3>
+                                    {{ c.answer_form.answer }}
+                                    <input type="submit" disabled="disabled" class="submit-post" value="{% trans 'Reply' %}">
+                                </div>
+                            </form>
+                        </div>
                     {% endif %}
                 </td>
             </tr>
@@ -62,20 +74,13 @@
     {% endif %}
 {% endif %}
 
-{% if score.perms.add_claim or score.perms.answer_claim %}
-    <div id="add-claim"{% if score.perms.answer_claim and not score.perms.add_claim %} style="display: none;"{% endif %}>
+{% if score.perms.add_claim %}
+    <div id="add-claim">
         <form action="{% url 'exmo2010:claim_create' score.pk %}" method="post">{% csrf_token %}
-            {% for field in claim_form.hidden_fields %} {{field}} {% endfor %}
             <div class="fieldWrapper">
-                {% if score.perms.add_claim %}
-                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim" %}</h3>
-                    {{ claim_form.comment }}
-                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Put forward' %}">
-                {% else %}
-                    <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim answer" %}</h3>
-                    {{ claim_form.comment }}
-                    <input type="submit" disabled=true class="submit-post" value="{% trans 'Reply' %}">
-                {% endif %}
+                <h3 class="claim-label heading-yourmessage-parameter">{% trans "Your claim" %}</h3>
+                {{ models.Claim.form.comment }}
+                <input type="submit" disabled="disabled" class="submit-post" value="{% trans 'Put forward' %}">
             </div>
         </form>
     </div>

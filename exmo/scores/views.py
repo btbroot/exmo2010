@@ -41,8 +41,6 @@ from accounts.forms import SettingsInvCodeForm
 from core.helpers import table_prepare_queryset
 from core.response import JSONResponse
 from core.utils import clean_message, urlize
-from claims.forms import ClaimAddForm
-from clarifications.forms import ClarificationAddForm
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
 from exmo2010.models import Score, Task, Parameter, QQuestion, QAnswer, UserProfile
@@ -177,10 +175,8 @@ def score_view(request, **kwargs):
         'criteria': criteria,
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
         'url_length': 70,
-        'claim_form': ClaimAddForm(prefix="claim"),
         'claim_list': claim_list,
         'all_max_initial': all_max,
-        'clarification_form': ClarificationAddForm(prefix="clarification"),
         'comment_form': CommentForm(request.POST if request.method == 'POST' else None),
         'invcodeform': SettingsInvCodeForm(),
     }

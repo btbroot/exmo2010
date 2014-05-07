@@ -102,8 +102,9 @@ class ClaimActionsAccessTestCase(TestCase):
         self.client.login(username='expertB', password='password')
 
         # WHEN expertB submits claim form with answer to existing claim
-        url = reverse('exmo2010:claim_create', args=[self.score.pk])
-        response = self.client.post(url, {'claim-comment': 'lol', 'claim-claim_id': self.claim.pk}, follow=True)
+        url = reverse('exmo2010:claim_answer', args=[self.claim.pk])
+        post_field = '%s-answer' % self.claim.answer_form().prefix
+        response = self.client.post(url, {post_field: 'lol'}, follow=True)
 
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)

@@ -833,10 +833,7 @@ class TestMonitoringExport(TestCase):
 class TestMonitoringExportApproved(TestCase):
     # Scenario: Экспорт данных мониторинга
     def setUp(self):
-        self.monitoring = mommy.make(
-            Monitoring,
-            pk=999,
-            status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         # AND в каждом мониторинге есть организация
         organization = mommy.make(Organization, monitoring=self.monitoring)
         # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)

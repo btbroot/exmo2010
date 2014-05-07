@@ -431,6 +431,60 @@ class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
         self.assertEqual(list(comments.values_list('status')), [(CommentExmo.OPEN,)])
 
 
+class AddClaimTestCase(BaseSeleniumTestCase):
+    # On score page expertA should be able to add claim.
+
+    statuses = (MONITORING_RATE, MONITORING_RESULT)
+
+    def setUp(self):
+        self.scores = {}
+
+        # GIVEN I am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.login('expertA', 'password')
+
+        # AND orguser comments for scores in monitorings for all relevant monitoring statuses
+        for status in self.statuses:
+            org = mommy.make(Organization, monitoring__status=status)
+            task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+            score = mommy.make(Score, task=task, parameter__monitoring=org.monitoring)
+            self.scores[status] = score
+
+    @parameterized.expand(zip(statuses))
+    def test_add_claim(self, status):
+        # WHEN I get score page
+        self.get(reverse('exmo2010:score_view', args=(self.scores[status].pk,)))
+
+        # THEN 'claims' tab handler should be visible
+        self.assertVisible('a[href="#claims"]')
+
+        # WHEN i click 'claims' tab handler
+        self.find('a[href="#claims"]').click()
+
+        # THEN claim form ckeditor iframe should become visible
+        self.assertVisible('#add-claim iframe')
+
+        # AND answer submit button should be disabled
+        self.assertDisabled('#add-claim input[type="submit"]')
+
+        with self.frame('#add-claim iframe'):
+            # WHEN I type something in answer form
+            self.find('body').send_keys('lol')
+
+        # THEN submit button should become enabled
+        self.assertEnabled('#add-claim input[type="submit"]')
+
+        # WHEN I click submit
+        self.find('#add-claim input[type="submit"]').click()
+
+        # THEN page should reload, and claim should be displayed
+        self.assertVisible('div.messages-content')
+
+        # AND claim should be added in DB
+        self.assertEqual(list(self.scores[status].claim_set.values_list('comment')), [('<p>lol</p>\n',)])
+
+
 class AnswerClaimTestCase(BaseSeleniumTestCase):
     # On score page expertB should be able to add claim answer.
 
@@ -467,30 +521,31 @@ class AnswerClaimTestCase(BaseSeleniumTestCase):
         # WHEN i click 'claims' tab handler
         self.find('a[href="#claims"]').click()
 
-        # THEN 'answer-claim' link should become visible
-        self.assertVisible('a.answer-claim')
+        # THEN 'answer_form_toggle' link should become visible
+        self.assertVisible('a.answer_form_toggle')
 
-        # WHEN i click 'answer-claim' link
-        self.find('a.answer-claim').click()
+        # WHEN i click 'answer_form_toggle' link
+        self.find('a.answer_form_toggle').click()
 
-        # THEN comment with class "answer-later" should be disabled
-        self.assertDisabled('#add-claim input[type="submit"]')
+        # THEN answer submit button should be disabled
+        self.assertDisabled('.answer_form input[type="submit"]')
 
-        with self.frame('iframe'):
+        self.assertVisible('.answer_form iframe')
+        with self.frame('.answer_form iframe'):
             # WHEN I type something in answer form
             self.find('body').send_keys('lol')
 
         # THEN submit button should become enabled
-        self.assertEnabled('#add-claim input[type="submit"]')
+        self.assertEnabled('.answer_form input[type="submit"]')
 
         # WHEN I click submit
-        self.find('#add-claim input[type="submit"]').click()
+        self.find('.answer_form input[type="submit"]').click()
 
-        # THEN page should reload, submit button should become hidden
-        self.assertHidden('#add-claim input[type="submit"]')
+        # THEN page should reload, answer should be displayed under claim
+        self.assertVisible('div.messages-answer')
 
         # AND claim answer should be added in DB
-        self.assertEqual(list(self.scores[status].claim_set.values_list('answer')), [('lol',)])
+        self.assertEqual(list(self.scores[status].claim_set.values_list('answer')), [('<p>lol</p>\n',)])
 
 
 class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):

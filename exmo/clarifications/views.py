@@ -20,44 +20,51 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from clarifications.forms import ClarificationReportForm, ClarificationAddForm
+from clarifications.forms import ClarificationReportForm
+from core.utils import urlize, clean_message
 from exmo2010.mail import mail_clarification
 from exmo2010.models import Clarification, Monitoring, Score
 
 
 @login_required
 def clarification_create(request, score_pk):
-    """
-    Добавление уточнения на странице параметра.
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
 
-    """
-    user = request.user
     score = get_object_or_404(Score, pk=score_pk)
-    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#clarifications'
-    if request.method == 'POST':
-        form = ClarificationAddForm(request.POST, prefix="clarification")
-        if form.is_valid():
-            if form.cleaned_data['clarification_id'] is not None:
-                # Если заполнено поле clarification_id, значит это ответ на уточнение
-                if not user.has_perm('exmo2010.answer_clarification', score):
-                    raise PermissionDenied
-                clarification = get_object_or_404(Clarification, pk=form.cleaned_data['clarification_id'])
-                answer = form.cleaned_data['comment']
-                clarification.add_answer(user, answer)
-            else:
-                # Если поле claim_id пустое, значит это выставление уточнения
-                if not user.has_perm('exmo2010.add_clarification', score):
-                    raise PermissionDenied
-                clarification = score.add_clarification(user, form.cleaned_data['comment'])
+    if not request.user.has_perm('exmo2010.add_clarification', score):
+        raise PermissionDenied
 
-            mail_clarification(request, clarification)
-            return HttpResponseRedirect(redirect)
-    raise Http404
+    form = Clarification.form(request.POST)
+    if form.is_valid():
+        clarification = score.add_clarification(request.user, urlize(clean_message(form.cleaned_data['comment'])))
+        mail_clarification(request, clarification)
+
+    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#clarifications'
+    return HttpResponseRedirect(redirect)
+
+
+@login_required
+def clarification_answer(request, clarification_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    clarification = get_object_or_404(Clarification, pk=clarification_pk)
+    if not request.user.has_perm('exmo2010.answer_clarification', clarification.score):
+        raise PermissionDenied
+
+    form = clarification.answer_form(request.POST)
+    if form.is_valid():
+        clarification.add_answer(request.user, urlize(clean_message(form.cleaned_data['answer'])))
+        mail_clarification(request, clarification)
+
+    redirect = reverse('exmo2010:score_view', args=[clarification.score.pk]) + '#clarifications'
+    return HttpResponseRedirect(redirect)
 
 
 @login_required

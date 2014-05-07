@@ -133,64 +133,14 @@ $(document).ready(function() {
         return false;
     });
 
+    //  Claim/Clarification answer
+    $('a.answer_form_toggle').click(function() {
+        $(this).closest('table').find('.answer_form').hide()
+        $(this).closest('td').find('.answer_form').show()
 
-    //  Claim answer
-    var pkClaim = undefined;
-
-    $('a.answer-claim').click(function( e ) {
-        e.preventDefault();
-
-        var $form = $('#add-claim').remove();
-
-        $form.addClass('reply-form-tweak');
-
-        if (pkClaim != undefined && pkClaim == $(this).attr('rel')) {
-            if($form.css('display') == 'block') {
-                $form.hide();
-            } else {
-                $form.show();
-            }
-        } else {
-            $form.show();
-        }
-
-        pkClaim = $(this).attr('rel');
-
-        $(this).closest('td').append($form);
-
-        $('#id_claim-claim_id').val(pkClaim);
-
-        addContentListener(CKEDITOR.instances['id_claim-comment']);
-    });
-
-
-    //  Clarification answer
-    var pkClarification = undefined;
-
-    $('a.answer-clarification').click(function( e ) {
-        e.preventDefault();
-
-        var $form = $('#add-clarification').remove();
-
-        $form.addClass('reply-form-tweak');
-
-        if (pkClarification != undefined && pkClarification == $(this).attr('rel')) {
-            if($form.css('display') == 'block') {
-                $form.hide();
-            } else {
-                $form.show();
-            }
-        } else {
-            $form.show();
-        }
-
-        pkClarification = $(this).attr('rel');
-
-        $(this).closest('td').append($form);
-
-        $('#id_clarification-clarification_id').val(pkClarification);
-
-        addContentListener(CKEDITOR.instances['id_clarification-comment']);
+        var editor = CKEDITOR.instances['id_' + $(this).data('prefix') + '-answer'];
+        addContentListener(editor, ckChangeHandler_simple);
+        return false;
     });
 
     // Open/close comment

@@ -19,8 +19,10 @@
 #
 import datetime
 
+from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.db import models
+from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import clean_message
@@ -30,14 +32,16 @@ from .base import BaseModel
 class Claim(BaseModel):
     """Модель претензий/замечаний"""
 
+    class Meta(BaseModel.Meta):
+        permissions = (("view_claim", "Can view claim"),)
+
     score = models.ForeignKey("exmo2010.Score", verbose_name=_('score'))
-    comment = models.TextField(blank=True, verbose_name=_('comment'))
+    comment = RichTextField(blank=True, verbose_name=_('comment'), config_name='simplified')
     open_date = models.DateTimeField(auto_now_add=True, verbose_name=_('claim open'))
     # Дата закрытия. По её наличию определяется закрыта претензия или нет.
     close_date = models.DateTimeField(null=True, blank=True, verbose_name=_('claim close'))
 
-    # Ответ.
-    answer = models.TextField(blank=True, verbose_name=_('comment'))
+    answer = RichTextField(blank=True, verbose_name=_('answer'), config_name='simplified')
 
     # Кто закрыл претензию.
     close_user = models.ForeignKey(User, null=True, blank=True,
@@ -53,6 +57,15 @@ class Claim(BaseModel):
         self.save()
         return self
 
+    def answer_form(self, data=None):
+        AnswerForm = modelform_factory(Claim, fields=['answer'])
+        return AnswerForm(data=data, prefix='answer_claim_%s' % self.pk)
+
+    @staticmethod
+    def form(data=None):
+        Form = modelform_factory(Claim, fields=['comment'])
+        return Form(data=data, prefix='claim')
+
     def __unicode__(self):
         return _('claim for {obj.score} from {obj.creator}').format(obj=self)
 
@@ -66,5 +79,3 @@ class Claim(BaseModel):
             self.addressee = self.score.task.user
         super(Claim, self).save(*args, **kwargs)
 
-    class Meta(BaseModel.Meta):
-        permissions = (("view_claim", "Can view claim"),)

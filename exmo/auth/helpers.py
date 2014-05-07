@@ -126,7 +126,7 @@ def score_permission(user, priv, score):
                 return True
 
     if priv in ['answer_claim', 'answer_clarification']:
-        if user.executes(task) and phase in (INT, RATE, FIN):
+        if user.executes(task) and phase in (RATE, INT, FIN):
             return True
 
     if priv in ['view_claim', 'view_clarification']:

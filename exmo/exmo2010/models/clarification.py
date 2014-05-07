@@ -19,7 +19,9 @@
 #
 import datetime
 
+from ckeditor.fields import RichTextField
 from django.db import models
+from django.forms.models import modelform_factory
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import clean_message
@@ -31,16 +33,18 @@ class Clarification(BaseModel):
     Модель уточнений, по наличию даты закрытия определяется
     закрыто уточнение или нет.
     """
+
+    class Meta(BaseModel.Meta):
+        permissions = (("view_clarification", "Can view clarification"),)
+
     score = models.ForeignKey("Score", verbose_name=_('score'))
 
-    comment = models.TextField(blank=True, verbose_name=_('comment'))
+    comment = RichTextField(blank=True, verbose_name=_('comment'), config_name='simplified')
     open_date = models.DateTimeField(auto_now_add=True, verbose_name=_('clarification open'))
     close_date = models.DateTimeField(null=True, blank=True, verbose_name=_('clarification close'))
-    creator = models.ForeignKey("auth.User",
-                                verbose_name=_('creator'),
-                                related_name='clarification_creator')
+    creator = models.ForeignKey("auth.User", verbose_name=_('creator'))
 
-    answer = models.TextField(blank=True, verbose_name=_('comment'))
+    answer = RichTextField(blank=True, verbose_name=_('comment'), config_name='simplified')
 
     close_user = models.ForeignKey("auth.User",
                                    null=True,
@@ -55,11 +59,17 @@ class Clarification(BaseModel):
         self.save()
         return self
 
+    def answer_form(self, data=None):
+        AnswerForm = modelform_factory(Clarification, fields=['answer'])
+        return AnswerForm(data=data, prefix='answer_clarification_%s' % self.pk)
+
+    @staticmethod
+    def form(data=None):
+        Form = modelform_factory(Clarification, fields=['comment'])
+        return Form(data=data, prefix='clarification')
+
     def __unicode__(self):
         return _('clarification for {obj.score} from {obj.creator}').format(obj=self)
-
-    class Meta(BaseModel.Meta):
-        permissions = (("view_clarification", "Can view clarification"),)
 
     @property
     def addressee(self):

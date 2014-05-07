@@ -20,44 +20,52 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from claims.forms import ClaimAddForm, ClaimReportForm
+from claims.forms import ClaimReportForm
 from core.response import JSONResponse
+from core.utils import urlize, clean_message
 from exmo2010.mail import mail_claim_deleted, mail_claim_new
 from exmo2010.models import Claim, Monitoring, Score
 
 
 @login_required
 def claim_create(request, score_pk):
-    """
-    Добавление претензии на странице параметра.
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
 
-    """
-    user = request.user
     score = get_object_or_404(Score, pk=score_pk)
-    redirect = reverse('exmo2010:score_view', args=[score.pk, ]) + '#claims'
-    if request.method == 'POST':
-        form = ClaimAddForm(request.POST, prefix="claim")
-        if form.is_valid():
-            if form.cleaned_data['claim_id'] is not None:
-                # Если заполнено поле claim_id, значит это ответ на претензию
-                if not user.has_perm('exmo2010.answer_claim', score):
-                    raise PermissionDenied
-                claim = get_object_or_404(Claim, pk=form.cleaned_data['claim_id'])
-                claim.add_answer(user, form.cleaned_data['comment'])
-            else:
-                # Если поле claim_id пустое, значит это выставление претензии
-                if not user.has_perm('exmo2010.add_claim', score):
-                    raise PermissionDenied
-                claim = score.add_claim(user, form.cleaned_data['comment'])
+    if not request.user.has_perm('exmo2010.add_claim', score):
+        raise PermissionDenied
 
-            mail_claim_new(request, claim)
-            return HttpResponseRedirect(redirect)
-    raise Http404
+    form = Claim.form(request.POST)
+    if form.is_valid():
+        claim = score.add_claim(request.user, urlize(clean_message(form.cleaned_data['comment'])))
+        mail_claim_new(request, claim)
+
+    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#claims'
+    return HttpResponseRedirect(redirect)
+
+
+@login_required
+def claim_answer(request, claim_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    claim = get_object_or_404(Claim, pk=claim_pk)
+    if not request.user.has_perm('exmo2010.answer_claim', claim.score):
+        raise PermissionDenied
+
+    form = claim.answer_form(request.POST)
+    if form.is_valid():
+        claim.add_answer(request.user, urlize(clean_message(form.cleaned_data['answer'])))
+        mail_claim_new(request, claim)
+
+    redirect = reverse('exmo2010:score_view', args=[claim.score.pk]) + '#claims'
+    return HttpResponseRedirect(redirect)
 
 
 @login_required
