@@ -407,12 +407,12 @@ class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
         self.get(reverse('exmo2010:score_view', args=(self.scores[status].pk,)))
 
         # THEN toggle-comment buton should be visible
-        self.assertVisible('a.toggle-comment')
+        self.assertVisible('.toggle-comment-container a')
         # AND comment with class "answer-later" should be visible
         self.assertVisible('table.table-messages-parameter td.answer-later')
 
         # WHEN i click 'toggle-comment'
-        self.find('a.toggle-comment').click()
+        self.find('.toggle-comment-container a').click()
 
         # THEN comment with class "toggled" should become visible
         td = 'table.table-messages-parameter td.toggled'
@@ -423,7 +423,7 @@ class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
         self.assertEqual(list(comments.values_list('status')), [(CommentExmo.NOT_ANSWERED,)])
 
         # WHEN i click 'claims' tab
-        self.find('a.toggle-comment').click()
+        self.find('.toggle-comment-container a').click()
 
         # THEN comment with class "answer-later" should become visible
         self.assertVisible('table.table-messages-parameter td.answer-later')

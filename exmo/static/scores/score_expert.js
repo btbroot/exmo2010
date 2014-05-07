@@ -17,11 +17,11 @@
 //
 $(document).ready(function() {
 
-    $('textarea[name="recommendations"]').autosize()
-    $('textarea[name="links"]').autosize()
+    $('textarea[name="recommendations"]').autosize();
+    $('textarea[name="links"]').autosize();
 
     // Prevent '-' radiobutton from being selected on clik.
-    $(".score-table li label").on('click', function() {
+    $(".editable-score-table li label").on('click', function() {
         if ($(this).find('input').val() == '') {
             return false;
         }
@@ -29,27 +29,27 @@ $(document).ready(function() {
 
     // Colorize selcted criterion radiobuttons on change.
     $("input:radio").on('change', function() {
-        max = $(this).closest('tr').data('max');
+        max = $(this).closest('.table-row').data('max');
 
-        // Remove selected classes from all radioburrons of this criterion.
-        $(this).closest('ul').find('label').removeClass('selected').removeClass('selected_max');
+        // Remove selected classes from all radiobuttons of this criterion.
+        $(this).closest('ul').find('li').removeClass('selected').removeClass('selected_max');
         if ($(this).val() == max) {
-            $(this).closest('label').addClass('selected_max');
+            $(this).closest('li').addClass('selected_max');
         }
         else {
-            $(this).closest('label').addClass('selected');
+            $(this).closest('li').addClass('selected');
         }
     });
 
     // Clicking 'found' criterion should hide and colorize other criterions
     $("input[name='found']").on('change', function() {
         if ($(this).val() == '1') {
-            $(".score-table li label").removeClass('found_0_frozen_red').show()
+            $(".editable-score-table li").removeClass('found_0_frozen_red').show()
         }
         else {
-            $(".score-table li label").each(function() {
+            $(".editable-score-table li").each(function() {
                 if ($(this).find('input').attr('name') != 'found') {
-                    $(this).addClass('found_0_frozen_red')
+                    $(this).addClass('found_0_frozen_red');
 
                     if ($(this).find('input').val() != '') {
                         $(this).hide();
@@ -57,7 +57,7 @@ $(document).ready(function() {
                 }
             });
         }
-    })
+    });
 
     // Trigger change event to initially colorize radiobuttons
     $("input:radio:checked").trigger('change');
@@ -194,7 +194,7 @@ $(document).ready(function() {
     });
 
     // Open/close comment
-    $('a.toggle-comment').click(function( e ) {
+    $('.toggle-comment-container a').click(function( e ) {
         e.preventDefault();
 
         var $this = $(this)

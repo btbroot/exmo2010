@@ -19,34 +19,34 @@ $(document).ready(function() {
 
     // Switching recommendations and links edit/read modes.
     $('#edit_recommendations, #edit_links').click(function(){
-        $(this).closest('div.read_edit').find('.read').hide()
-        $(this).closest('div.read_edit').find('.edit').show()
-        $(this).hide()
+        $(this).closest('div.read_edit').find('.read').hide();
+        $(this).closest('div.read_edit').find('.edit').show();
+        $(this).hide();
         return false;
-    })
+    });
     $('a.cancel').click(function(){
-        $(this).closest('div.read_edit').find('.edit').hide()
-        $(this).closest('div.read_edit').find('.read').show()
-        $(this).closest('div.read_edit').find('a').show()
+        $(this).closest('div.read_edit').find('.edit').hide();
+        $(this).closest('div.read_edit').find('.read').show();
+        $(this).closest('div.read_edit').find('a').show();
         return false;
-    })
+    });
 
     $('#recommendations_form textarea').keyup(function(){
-        if (($('.score-table.all_max_initial').length == 0) && ($(this).val().trim() == '')) {
+        if (($('.editable-score-table.all_max_initial').length == 0) && ($(this).val().trim() == '')) {
             $('#recommendations_form input[type="submit"]').attr('disabled', true);
         }
         else {
             $('#recommendations_form input[type="submit"]').attr('disabled', false);
         }
-    })
+    });
 
     $('#recommendations_form textarea').trigger('keyup');
 
     // Update recommendations and links after its ajax form submission.
     $('div.read_edit input[type="submit"]').click(function(){
-        form = $(this).closest('form')
+        form = $(this).closest('form');
         $.post(form.attr('action'), form.serialize()).done(function(response){
-            read_div = form.closest('div.read_edit').find('.read')
+            read_div = form.closest('div.read_edit').find('.read');
             if (response.data.length == 0) {
                 read_div.html(read_div.data('empty_text'));
             }
@@ -57,11 +57,11 @@ $(document).ready(function() {
             // Update same input in score form.
             var val = form.find('textarea').val();
             var name = form.find('textarea').attr('name');
-            $('#score_form').find('textarea[name='+name+']').val(val);
-        })
-        form.find('a.cancel').click()
+            $('form.tab_edit').find('textarea[name='+name+']').val(val);
+        });
+        form.find('a.cancel').click();
         return false;
-    })
+    });
 
     function addContentListener(editor, func) {
         if (!editor)
@@ -85,7 +85,7 @@ $(document).ready(function() {
         if(editor_body && editor_body.text().trim() != '') {
             $("#submit_comment").prop('disabled', false);
 
-            if ($('form tr.changed').length > 0) {
+            if ($('form div.changed').length > 0) {
                 $("#submit_score_and_comment").prop('disabled', false);
             } else {
                 $("#submit_score_and_comment").prop('disabled', true);
@@ -95,11 +95,11 @@ $(document).ready(function() {
             $("#submit_score_and_comment").prop('disabled', true);
         }
         e.sender.updateElement()
-    })
+    });
 
     cke_comment.on('instanceReady', function(e){
         $("input:radio:checked").trigger('change');
-    })
+    });
 
 
     function rebuild_bricks() {
@@ -108,7 +108,7 @@ $(document).ready(function() {
 
         all_max = true;  // flag if all radioinputs set to max
         $('input:radio:checked').each(function () {
-            if ($(this).val() != $(this).closest('tr').data('max')) {
+            if ($(this).val() != $(this).closest('div.table-row').data('max')) {
                 all_max = false;
             }
         });
@@ -117,7 +117,7 @@ $(document).ready(function() {
 
         deleteAllAutoScoreCommentBricks();
 
-        if ($('form tr.changed').length > 0) {
+        if ($('form div.table-row.changed').length > 0) {
             // create introduction text
             if (all_max == true) {
                 text = gettext("Score changed to maximum");
@@ -130,16 +130,16 @@ $(document).ready(function() {
             $('<br id="autoscore-break" />').insertAfter(editor_body.find('.autoscore:last'));
         }
 
-        $('form tr.changed').each(function() {
+        $('form div.table-row.changed').each(function() {
             // create brick for each changed input
             input = $(this).find('input:checked');
-            initial = input.closest('tr').data('initial');
+            initial = input.closest('div.table-row').data('initial');
             newVal = input.val();
 
             if (initial == '') {initial = 0}
             if (newVal == '') {newVal = '-'}
 
-            label = input.closest('tr').find('label').html().trim();
+            label = input.closest('div.table-row').find('div.label').html().trim();
             text = label + ': ' + initial + ' → ' + newVal;
 
             id = input.attr('name') + '_brick';
@@ -152,14 +152,14 @@ $(document).ready(function() {
     }
 
     $("input:radio").on('change', function() {
-        initial = $(this).closest('tr').data('initial');
+        initial = $(this).closest('div.table-row').data('initial');
         if ($(this).val() == initial) {
-            $(this).closest('tr').removeClass('changed');
+            $(this).closest('div.table-row').removeClass('changed');
         }
         else {
             // changes form '-' to '0' aren't interesting
             if (!((initial == '') && ($(this).val() == '0'))) {
-                $(this).closest('tr').addClass('changed');
+                $(this).closest('div.table-row').addClass('changed');
             }
         }
 
@@ -170,8 +170,8 @@ $(document).ready(function() {
 
     // create Brick - uneditable block of text inside CKEDITOR
     function makeBrick(id, text, options) {
-        defoptions = { class: '', css: { border: 'none', width: '300px', color: 'black', margin: '0px'} }
-        options = $.extend(true, defoptions, options)
+        defoptions = { class: '', css: { border: 'none', width: '300px', color: 'black', margin: '0px'} };
+        options = $.extend(true, defoptions, options);
         return $(
             '<input>',
             {
@@ -192,17 +192,17 @@ $(document).ready(function() {
     }
 
     // tabs clicking (reply, edit score)
-    $('.edit-tabs a').click(function(e) {
+    $('.reply-edit a').click(function(e) {
         $("#comment_form").show();
         switch (e.target.hash) {
             case '#reply':
                 $('.tab_edit').hide();
-                $('.tab_reply').show();
+                $('.tab-reply-block').show();
                 deleteAllAutoScoreCommentBricks();
                 break;
             case '#change_score':
                 $('.tab_edit').show();
-                $('.tab_reply').hide();
+                $('.tab-reply-block').hide();
                 rebuild_bricks();
                 break;
         }
@@ -223,18 +223,18 @@ $(document).ready(function() {
         editor_body = $(cke_comment.document.$).find('body');
         editor_body.find('input.autoscore').each(function(){
             repl = '<span>'+$(this).val()+'</span>';
-            $(repl).insertAfter($(this))
+            $(repl).insertAfter($(this));
             $(this).remove();
-        })
+        });
 
         cke_comment.updateElement();
-        $('#score_form input[name="comment"]').val($('#id_comment').val())
-        $('#score_form').submit()
+        $('form.tab_edit input[name="comment"]').val($('#id_comment').val())
+        $('form.tab_edit').submit();
         return false;
-    })
+    });
 
     // If form was posted and contain errors - open edit tab.
-    if ($('#score_form div.errors li').length) {
+    if ($('form.tab_edit div.errors li').length) {
         $('a[href="#change_score"]').click();
     }
 

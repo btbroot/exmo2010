@@ -4,7 +4,7 @@
  * ========================================================
  * Copyright 2012 Twitter, Inc.
  * Copyright 2013 Al Nikolov
- * Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+ * Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,15 +138,6 @@
  /* TAB DATA-API
   * ============ */
 
-  function editTabsActive(hash) {
-    if (hash=='#comments') {
-      $('.edit-tabs span').removeClass('active');
-      $('.edit-tabs').show();
-    } else if ($.inArray(hash, ['#clarifications', '#claims']) !== -1) {
-      $('.edit-tabs').hide();
-    }
-  }
-
   $(document).on('click.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
     e.preventDefault();
     $(this).tab('show');
@@ -155,7 +146,6 @@
   $(document).ready(function() {
     var $hash = window.location.hash;
     $hash && $('ul.nav-tabs a[href="' + $hash + '"]').tab('show');
-    editTabsActive($hash);
   });
 
 }(window.jQuery);

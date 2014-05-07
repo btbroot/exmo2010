@@ -16,7 +16,7 @@
 //
 $(document).ready(function() {
     $('a[href="#show_explanations"]').click(function(e){
-        $("#explanations_block").slideToggle(function(){
+        $(".explanations-block").slideToggle(function(){
             var link = $(e.target);
             if ($(this).is(":visible")) {
                 link.text(gettext('hide explanations'));
@@ -28,16 +28,18 @@ $(document).ready(function() {
     });
 
     $('a[href="#show_score_rev1"]').click(function(e){
+        var score_rev1 = $(".score_rev1");
+        var link = $(e.target);
         var show = 1;
-        $(".score_rev1").toggle(0, function(){
-            var link = $(e.target);
-            if ($(this).is(":visible")) {
-                link.text(gettext('hide initial scores'));
-            } else {
-                link.text(gettext('show initial scores'));
-                show = 0;
-            }
-        });
+
+        if (score_rev1.is(":visible")) {
+            score_rev1.addClass('hidden');
+            link.text(gettext('show initial scores'));
+            show = 0;
+        } else {
+            score_rev1.removeClass('hidden');
+            link.text(gettext('hide initial scores'));
+        }
         if ($(this).data("active") == 'True') {
             $.post($(this).data("url"), {show_score_rev1: show});
         }

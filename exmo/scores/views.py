@@ -104,7 +104,7 @@ def score_view(request, **kwargs):
 
     # Replace '-----' with '-' in empty radio choices.
     for f in criteria:
-        ScoreForm.base_fields[f].widget.choices[0] = ('', '-')
+        ScoreForm.base_fields[f].widget.choices[0] = ('', '–')
 
     form = ScoreForm(request.POST if request.method == 'POST' else None, instance=score)
 
@@ -135,6 +135,8 @@ def score_view(request, **kwargs):
         'label': score._meta.get_field_by_name(criterion)[0].verbose_name,
         'score': getattr(score, criterion),
         'score_rev1': getattr(score_rev1[0], criterion) or '-' if score_rev1 else '',
+        'criterion': criterion,
+        'max_score': getattr(score, criterion) == score._meta.get_field(criterion).choices[-1][-1]
     } for criterion in criteria]
 
     score_delta = score.openness - score_rev1[0].openness if score_rev1 else 0
