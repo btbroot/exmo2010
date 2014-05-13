@@ -30,16 +30,14 @@ class Parameter(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ('code', 'name')
         unique_together = tuple(('name_%s' % lang[0], 'monitoring') for lang in settings.LANGUAGES) + (('code', 'monitoring'),)
+        verbose_name = _('Parameter')
+        verbose_name_plural = _('Parameters')
 
     code = models.PositiveIntegerField(verbose_name=_('code'))
     name = models.CharField(max_length=1000, verbose_name=_('name'))
     grounds = RichTextField(blank=True, config_name='advanced', verbose_name=_('grounds'))
     rating_procedure = RichTextField(blank=True, config_name='advanced', verbose_name=_('rating procedure'))
     notes = RichTextField(blank=True, config_name='advanced', verbose_name=_('notes'))
-
-    # Set editable=False attribute on "monitoring".
-    # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
-    # See note on ParamEditView.get_form_class() method
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
     exclude = models.ManyToManyField("Organization", null=True, blank=True, verbose_name=_('excluded organizations'))
     weight = models.IntegerField(verbose_name=_('weight'))
@@ -57,11 +55,11 @@ class Parameter(BaseModel):
 
     NPA_TYPE = {0: _("recommendatory"), 1: _("normative")}
 
-    def npa_display(self):
-        return self.NPA_TYPE.get(self.npa)
-
     def __unicode__(self):
         return self.name
+
+    def npa_display(self):
+        return self.NPA_TYPE.get(self.npa)
 
     def save(self, *args, **kwargs):
         from .score import Score
@@ -99,3 +97,29 @@ class Parameter(BaseModel):
                     # Criterion is relevant
                     scores = scores.filter(**{criterion + '__isnull': False})
             scores.update(accomplished=True)
+
+    def validate_unique(self, exclude=None):
+        """
+        Prevent "monitoring" field from being excluded in validation checks.
+        This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+
+        This workaround will force modelform to validate unique_together constraints involving
+        "monitoring" field on the model, even if "monitoring" field is absent in the form.
+        - Failing to do that will raise IntegrityError on instance saving.
+
+        """
+        if 'monitoring' in exclude:
+            exclude.remove('monitoring')
+        super(Parameter, self).validate_unique(exclude)
+
+    def clean(self):
+        """
+        Replace empty strings with None for all modeltranslation fields to store NULL in database.
+        This will allow multiple orgs with empty modeltranslation fields to pass unique checks during form validation.
+
+        """
+        from exmo2010.translation import ParameterTranslationOptions
+        for field in ParameterTranslationOptions.fields:
+            for lang in settings.LANGUAGES:
+                if not getattr(self, '{}_{}'.format(field, lang[0])):
+                    setattr(self, '{}_{}'.format(field, lang[0]), None)

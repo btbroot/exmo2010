@@ -25,7 +25,7 @@ from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import pgettext_lazy, ugettext, ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
 
 from .base import BaseModel
@@ -119,16 +119,13 @@ class Organization(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ('name',)
         unique_together = tuple(('name_%s' % lang[0], 'monitoring') for lang in settings.LANGUAGES)
+        verbose_name = pgettext_lazy('change organization in admin', 'Organization')
+        verbose_name_plural = _('Organizations')
 
     name = models.CharField(max_length=255, verbose_name=_('name'))
     url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('Website'))
     email = EmailsField(null=True, blank=True, verbose_name=_('email'))
     phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
-
-    # Set editable=False attribute on "monitoring".
-    # This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
-    # See note on OrgEditView.get_form_class() method
-    # Used in OrgEditView and organization_list view (which includes Organization creation form)
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
 
     inv_code = models.CharField(
@@ -141,13 +138,39 @@ class Organization(BaseModel):
 
     objects = OrganizationMngr()
 
+    def __unicode__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.pk and not self.inv_code:
             self.inv_code = generate_inv_code(6)
         super(Organization, self).save(*args, **kwargs)
 
-    def __unicode__(self):
-        return self.name
+    def validate_unique(self, exclude=None):
+        """
+        Prevent "monitoring" field from being excluded in validation checks.
+        This is workaround for Django bug 13091 https://code.djangoproject.com/ticket/13091
+
+        This workaround will force modelform to validate unique_together constraints involving
+        "monitoring" field on the model, even if "monitoring" field is absent in the form.
+        - Failing to do that will raise IntegrityError on instance saving.
+
+        """
+        if 'monitoring' in exclude:
+            exclude.remove('monitoring')
+        super(Organization, self).validate_unique(exclude)
+
+    def clean(self):
+        """
+        Replace empty strings with None for all modeltranslation fields to store NULL in database.
+        This will allow multiple orgs with empty modeltranslation fields to pass unique checks during form validation.
+
+        """
+        from exmo2010.translation import OrganizationTranslationOptions
+        for field in OrganizationTranslationOptions.fields:
+            for lang in settings.LANGUAGES:
+                if not getattr(self, '{}_{}'.format(field, lang[0])):
+                    setattr(self, '{}_{}'.format(field, lang[0]), None)
 
 
 class InviteOrgs(BaseModel):
