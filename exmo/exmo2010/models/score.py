@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -71,8 +72,9 @@ class Score(BaseModel):
 
     links = models.TextField(null=True, blank=True, verbose_name=_('Links'))
     recommendations = models.TextField(null=True, blank=True, verbose_name=_('Recommendations'))
-    created = models.DateTimeField(null=True, blank=True, auto_now_add=True)
-    edited = models.DateTimeField(null=True, blank=True, auto_now=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
+    editor = models.ForeignKey(User, null=True, blank=True, verbose_name=_('Editor'))
     revision = models.PositiveIntegerField(default=REVISION_DEFAULT, choices=REVISION_CHOICE)
     accomplished = models.BooleanField(default=True)
 

@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-16 13:21+0400\n"
+"POT-Creation-Date: 2014-05-16 17:00+0400\n"
 "PO-Revision-Date: 2014-05-15 18:38+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -124,8 +124,8 @@ msgstr "Электронная почта"
 #: monitorings/templates/monitoring_form.html:57
 #: monitorings/templates/set_npa_params.html:54
 #: organizations/templates/_organization_form.html:42
-#: parameters/templates/parameter_form.html:75 templates/scores/score.html:196
-#: templates/scores/score.html.py:222 templates/scores/score.html:279
+#: parameters/templates/parameter_form.html:75 templates/scores/score.html:210
+#: templates/scores/score.html.py:236 templates/scores/score.html:293
 #: templates/scores/task_scores.html:201
 msgid "Save"
 msgstr "Сохранить"
@@ -225,7 +225,7 @@ msgstr "все аналитики"
 #: monitorings/views.py:482 monitorings/views.py:574 monitorings/views.py:636
 #: monitorings/views.py:687 monitorings/views.py:1179
 #: monitorings/views.py:1181 organizations/views.py:55
-#: organizations/views.py:112 scores/views.py:327 tasks/views.py:52
+#: organizations/views.py:112 scores/views.py:330 tasks/views.py:52
 #: tasks/views.py:272 tasks/views.py:313
 msgid "Forbidden"
 msgstr "Запрещено"
@@ -238,7 +238,7 @@ msgstr "Отчет по претензиям для \"%s\""
 #: claims/views.py:166 dashboard/dashboard.py:119 dashboard/menu.py:76
 #: exmo2010/urls.py:219
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:82
-#: templates/scores/score.html:368
+#: templates/scores/score.html:382
 msgid "Claims"
 msgstr "Претензии"
 
@@ -256,7 +256,7 @@ msgstr "Ваш ответ на претензию"
 
 #: claims/templates/claim.html:62
 #: clarifications/templates/clarification.html:56
-#: templates/scores/score.html:103 templates/scores/score.html.py:348
+#: templates/scores/score.html:117 templates/scores/score.html.py:362
 msgid "Reply"
 msgstr "Ответить"
 
@@ -324,7 +324,7 @@ msgstr "Отчет по уточнениям для \"%s\""
 #: clarifications/views.py:154 dashboard/dashboard.py:115 dashboard/menu.py:75
 #: exmo2010/urls.py:220
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:78
-#: templates/scores/score.html:367
+#: templates/scores/score.html:381
 msgid "Clarifications"
 msgstr "Уточнения"
 
@@ -388,7 +388,7 @@ msgstr "статус"
 #: custom_comments/views.py:42 dashboard/dashboard.py:111 dashboard/menu.py:74
 #: exmo2010/urls.py:218
 #: templates/exmo2010/nav_sidebar/monitoring_utility.html:70
-#: templates/scores/score.html:288
+#: templates/scores/score.html:302
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -496,7 +496,7 @@ msgstr "Адрес техподдержки по умолчанию"
 msgid "Certificate order notification email"
 msgstr "Адресат уведомлений о заказах сертификатов"
 
-#: exmo/config.py:96 exmo2010/models/score.py:72
+#: exmo/config.py:96 exmo2010/models/score.py:73
 msgid "Links"
 msgstr "Ссылки"
 
@@ -721,7 +721,7 @@ msgstr "Импортировать задачу"
 #: exmo2010/models/parameter.py:33
 #: monitorings/templates/monitoring_parameter_filter.html:179
 #: monitorings/templates/monitoring_parameter_found_report.html:63
-#: parameters/forms.py:47 scores/views.py:295
+#: parameters/forms.py:47 scores/views.py:298
 #: templates/exmo2010/score_legend.html:91
 #: templates/exmo2010/score_legend.html:123
 msgid "Parameter"
@@ -1198,23 +1198,23 @@ msgstr "Ответ числом"
 msgid "Variant choice"
 msgstr "Ответ-выбор варианта"
 
-#: exmo2010/models/score.py:54
+#: exmo2010/models/score.py:55
 msgid "latest revision"
 msgstr "последняя ревизия"
 
-#: exmo2010/models/score.py:55
+#: exmo2010/models/score.py:56
 msgid "pre-interact revision"
 msgstr "ревизия до взаимодействия"
 
-#: exmo2010/models/score.py:58 exmo2010/models/task.py:249
+#: exmo2010/models/score.py:59 exmo2010/models/task.py:249
 msgid "task"
 msgstr "задача"
 
-#: exmo2010/models/score.py:59
+#: exmo2010/models/score.py:60
 msgid "parameter"
 msgstr "Параметр"
 
-#: exmo2010/models/score.py:64 parameters/forms.py:49 scores/views.py:296
+#: exmo2010/models/score.py:65 parameters/forms.py:49 scores/views.py:299
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:58
 #: templates/exmo2010/score_legend.html:79
@@ -1222,7 +1222,7 @@ msgstr "Параметр"
 msgid "Found"
 msgstr "Наличие"
 
-#: exmo2010/models/score.py:65 parameters/forms.py:51 scores/views.py:297
+#: exmo2010/models/score.py:66 parameters/forms.py:51 scores/views.py:300
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1233,7 +1233,7 @@ msgstr "Наличие"
 msgid "Complete"
 msgstr "Полнота"
 
-#: exmo2010/models/score.py:66 parameters/forms.py:53 scores/views.py:298
+#: exmo2010/models/score.py:67 parameters/forms.py:53 scores/views.py:301
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1244,7 +1244,7 @@ msgstr "Полнота"
 msgid "Topical"
 msgstr "Актуальность"
 
-#: exmo2010/models/score.py:67 parameters/forms.py:55 scores/views.py:299
+#: exmo2010/models/score.py:68 parameters/forms.py:55 scores/views.py:302
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1255,7 +1255,7 @@ msgstr "Актуальность"
 msgid "Accessible"
 msgstr "Навигационная доступность"
 
-#: exmo2010/models/score.py:68 parameters/forms.py:57
+#: exmo2010/models/score.py:69 parameters/forms.py:57
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
 #: templates/exmo2010/score_legend.html:67
@@ -1263,7 +1263,7 @@ msgstr "Навигационная доступность"
 msgid "Hypertext"
 msgstr "HTML доступность"
 
-#: exmo2010/models/score.py:69 parameters/forms.py:59 scores/views.py:301
+#: exmo2010/models/score.py:70 parameters/forms.py:59 scores/views.py:304
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
 #: templates/exmo2010/score_legend.html:67
@@ -1272,7 +1272,7 @@ msgstr "HTML доступность"
 msgid "Document"
 msgstr "Файловая доступность"
 
-#: exmo2010/models/score.py:70 parameters/forms.py:61 scores/views.py:302
+#: exmo2010/models/score.py:71 parameters/forms.py:61 scores/views.py:305
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
 #: templates/exmo2010/score_legend.html:67
@@ -1281,26 +1281,30 @@ msgstr "Файловая доступность"
 msgid "Image"
 msgstr "Графическая доступность"
 
-#: exmo2010/models/score.py:73 templates/scores/score.html:214
-#: templates/scores/score.html.py:271
+#: exmo2010/models/score.py:74 templates/scores/score.html:228
+#: templates/scores/score.html.py:285
 #: templates/scores/task_scores_print.html:84
 msgid "Recommendations"
 msgstr "Рекомендации"
 
-#: exmo2010/models/score.py:103
+#: exmo2010/models/score.py:77
+msgid "Editor"
+msgstr "Редактор"
+
+#: exmo2010/models/score.py:105
 #, python-format
 msgid "%(criterion)s must be set"
 msgstr "Критерий '%(criterion)s' не оценен"
 
-#: exmo2010/models/score.py:111
+#: exmo2010/models/score.py:113 scores/tests.py:255
 msgid "Recommendations should change when score is changed"
 msgstr "Рекомендации должны измениться, если оценка изменена"
 
-#: exmo2010/models/score.py:117
+#: exmo2010/models/score.py:119
 msgid "Score is not maximum, recommendations should exist"
 msgstr "Оценка не максимальная, рекомендации должны быть заданы."
 
-#: exmo2010/models/score.py:125
+#: exmo2010/models/score.py:127
 msgid "A technical error of scores evaluation. To edit the score start from the go back to task page and skip to page of parameter evaluation by link from score table."
 msgstr "Техническая ошибка оценки параметра. Для изменения оценки параметра вернитесь на страницу задачи и перейдите к странице оценки параметра по ссылке из таблицы оценок."
 
@@ -1906,8 +1910,8 @@ msgstr "Настройка таблицы"
 msgid "Change"
 msgstr "Изменить"
 
-#: monitorings/templates/rating.html:350 templates/scores/score.html:198
-#: templates/scores/score.html.py:224
+#: monitorings/templates/rating.html:350 templates/scores/score.html:212
+#: templates/scores/score.html.py:238
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -2066,15 +2070,15 @@ msgstr "Добавить вопрос"
 msgid "Save questionnaire"
 msgstr "Сохранить анкету"
 
-#: scores/views.py:294
+#: scores/views.py:297
 msgid "Code"
 msgstr "Код"
 
-#: scores/views.py:300 templates/scores/task_scores_print.html:54
+#: scores/views.py:303 templates/scores/task_scores_print.html:54
 msgid "HTML"
 msgstr "Html доступность"
 
-#: scores/views.py:303 templates/scores/task_scores_print.html:58
+#: scores/views.py:306 templates/scores/task_scores_print.html:58
 msgid "Weight"
 msgstr "КСЗ"
 
@@ -2796,7 +2800,7 @@ msgid "You must have approved task for export"
 msgstr "Для экспорта необходима одобренная задача"
 
 #: templates/exmo2010/nav_sidebar/organization_utility.html:26
-#: templates/scores/score.html:91
+#: templates/scores/score.html:105
 msgid "Scores"
 msgstr "Оценки"
 
@@ -3163,106 +3167,114 @@ msgstr "Порядок оценки"
 msgid "Notes"
 msgstr "Примечание"
 
-#: templates/scores/score.html:95
+#: templates/scores/score.html:92
+msgid "Initial score`s author"
+msgstr "Автор первичной оценки"
+
+#: templates/scores/score.html:98
+msgid "Current score`s author"
+msgstr "Автор текущей оценки"
+
+#: templates/scores/score.html:109
 msgid "show explanations"
 msgstr "показать пояснения"
 
-#: templates/scores/score.html:96
+#: templates/scores/score.html:110
 msgid "hide initial scores"
 msgstr "скрыть первичные оценки"
 
-#: templates/scores/score.html:96
+#: templates/scores/score.html:110
 msgid "show initial scores"
 msgstr "показать первичные оценки"
 
-#: templates/scores/score.html:104 templates/scores/score.html.py:349
+#: templates/scores/score.html:118 templates/scores/score.html.py:363
 msgid "Change score"
 msgstr "Изменить оценку"
 
-#: templates/scores/score.html:112
+#: templates/scores/score.html:126
 msgid "<strong>Availability ('Found')</strong> describes the fact of publishing the information or service corresponding to the particular parameter at the official website (0; 1)."
 msgstr "<strong>Наличие</strong> — факт размещения на официальном сайте информации или сервиса, соответствующих параметру (0; 1)."
 
-#: templates/scores/score.html:114
+#: templates/scores/score.html:128
 msgid "<strong>Comprehensiveness ('Complete')</strong> describes the sufficiency of the information published at the official websites for forming an integral idea by the particular parameter (1; 2; 3)."
 msgstr "<strong>Полнота</strong> — достаточность объема размещенной на официальном сайте информации для формирования целостного представления по соответствующему параметру (1; 2; 3)."
 
-#: templates/scores/score.html:117
+#: templates/scores/score.html:131
 msgid "<strong>Relevance ('Topical')</strong> describes the updating rate of the information available at the official website as well as its relevance at the moment of the expert analyzes (1; 2; 3)."
 msgstr "<strong>Актуальность</strong> — частота обновления информации на официальном сайте и сохранение ценности информации на момент ее анализа экспертами (1; 2; 3)."
 
-#: templates/scores/score.html:120
+#: templates/scores/score.html:134
 msgid "<strong>Navigability ('Accessible')</strong> describes convenience for finding information relevant to the given parameter at the official website. It takes in consideration whether the information is placed in a correct section, and how many consecutive hyperlinks, starting from the home page, are to be followed (1; 2; 3)."
 msgstr "<strong>Навигационная доступность</strong> — удобство поиска размещенной на официальном сайте соответствующей параметру информации, с учетом логичности раздела и количества переходов с главной страницы сайта (1; 2; 3)."
 
-#: templates/scores/score.html:123
+#: templates/scores/score.html:137
 msgid "<strong>HTML accessibility ('Hypertext')</strong> describes the fact of placing the parameter information at the official website in HTML format, facilitating the search (0; 1)."
 msgstr "<strong>HTML доступность</strong> — факт размещения на официальном сайте соответствующей параметру информации на языке гипертекстовой разметки HTML, который обеспечивает для пользователей удобство ее поиска средствами веб-обозревателя (0; 1)."
 
-#: templates/scores/score.html:126
+#: templates/scores/score.html:140
 msgid "<strong>File accessibility ('Document')</strong> describes the fact of placing the document required by the given parameter at the official website in a format that allows the user to store it at his/her hardware devices, to search for and to copy extracts of the text in the document so that the users can further use the information (0; 1)."
 msgstr "<strong>Файловая доступность</strong> — факт размещения на официальном сайте соответствующего параметру документа в формате, обеспечивающем возможность его сохранения на технические средства пользователя и допускающем возможность поиска и копирования фрагмента текста в документе, которая обеспечивает для пользователей дальнейшее использование информации (0; 1)."
 
-#: templates/scores/score.html:129
+#: templates/scores/score.html:143
 msgid "<strong>Graphic accessibility ('Image')</strong> describes the fact of placing the document required by the given parameter at the official website in the graphic format the actual image of the document so that the users can read its original version (0; 1)."
 msgstr "<strong>Графическая доступность</strong> — факт размещения на официальном сайте соответствующего параметру документа в графическом формате точного образа документа, который обеспечивает для пользователей возможность ознакомиться с оригиналом документа (0; 1)."
 
-#: templates/scores/score.html:131
+#: templates/scores/score.html:145
 msgid "<strong>Parameter`s score</strong> is the openness of the parameter calculated as a product of criteria fines."
 msgstr "<strong>Оценка параметра</strong> — оценка открытости параметра, вычисляемая перемножением штрафов критериев, подробности см. в методике."
 
-#: templates/scores/score.html:132
+#: templates/scores/score.html:146
 msgid "<strong>Score changes</strong> is the difference between current parameter`s score and the parameter`s score after the initial evaluation."
 msgstr "<strong>Изменение оценки</strong> — разница между текущей оценкой параметра и оценкой параметра после первоначальной оценки."
 
-#: templates/scores/score.html:148
+#: templates/scores/score.html:162
 msgid "Parameter`s score"
 msgstr "Оценка параметра"
 
-#: templates/scores/score.html:151
+#: templates/scores/score.html:165
 msgid "Score changes"
 msgstr "Изменение оценки"
 
-#: templates/scores/score.html:188 templates/scores/score.html.py:266
+#: templates/scores/score.html:202 templates/scores/score.html.py:280
 #: templates/scores/task_scores_print.html:77
 msgid "Found information links"
 msgstr "Ссылки на найденную информацию"
 
-#: templates/scores/score.html:191 templates/scores/score.html.py:217
+#: templates/scores/score.html:205 templates/scores/score.html.py:231
 msgid "edit"
 msgstr "редактировать"
 
-#: templates/scores/score.html:203 templates/scores/score.html.py:207
+#: templates/scores/score.html:217 templates/scores/score.html.py:221
 #: templates/scores/task_scores_print.html:81
 msgid "No links"
 msgstr "Нет ссылок"
 
-#: templates/scores/score.html:229 templates/scores/score.html.py:233
+#: templates/scores/score.html:243 templates/scores/score.html.py:247
 #: templates/scores/task_scores_print.html:88
 msgid "No recommendations"
 msgstr "Нет рекомендаций"
 
-#: templates/scores/score.html:319
+#: templates/scores/score.html:333
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
-#: templates/scores/score.html:321
+#: templates/scores/score.html:335
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
-#: templates/scores/score.html:331
+#: templates/scores/score.html:345
 msgid "Deadline for answer to your comment is"
 msgstr "Крайний срок ответа на ваш комментарий"
 
-#: templates/scores/score.html:340
+#: templates/scores/score.html:354
 msgid "There are no comments"
 msgstr "Комментариев нет"
 
-#: templates/scores/score.html:357
+#: templates/scores/score.html:371
 msgid "Post comment"
 msgstr "Оставить комментарий"
 
-#: templates/scores/score.html:359
+#: templates/scores/score.html:373
 msgid "Post comment and change score"
 msgstr "Оставить комментарий и изменить оценку"
 

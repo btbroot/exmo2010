@@ -77,7 +77,7 @@ def score_view(request, **kwargs):
         try:
             score = Score.objects.get(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
         except Score.DoesNotExist:
-            # OK, score deos not exist and can be created.
+            # OK, score does not exist and can be created.
             score = Score(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
         else:
             # User requested score creation by task and param, but score already exist.
@@ -95,7 +95,7 @@ def score_view(request, **kwargs):
 
     ScoreForm = modelform_factory(
         Score,
-        fields=criteria + ['recommendations', 'links'],
+        fields=criteria + ['recommendations', 'links', 'editor'],
         widgets=dict((crit, RadioSelect) for crit in criteria))
 
     ScoreForm.base_fields['comment'] = RichTextFormField(config_name='advanced', required=False)
@@ -121,7 +121,9 @@ def score_view(request, **kwargs):
 
                 if 'comment' in request.POST:
                     _add_comment(request, score)
-            form.save()
+            score = form.save(commit=False)
+            score.editor = request.user
+            score.save()
         if org.monitoring.is_interact or org.monitoring.is_finishing:
             return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
         else:
@@ -166,6 +168,7 @@ def score_view(request, **kwargs):
     context = {
         'form': form,
         'score': annotate_exmo_perms(score, request.user),
+        'score_rev1': annotate_exmo_perms(score_rev1[0] if score_rev1 else None, request.user),
         'param': annotate_exmo_perms(param, request.user),
         'org': org,
         'score_table': score_table,

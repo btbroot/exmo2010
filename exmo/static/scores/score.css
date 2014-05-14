@@ -34,11 +34,22 @@ h1 {
     margin: 20px 0 3px 0;
 }
 
+.score-header-block p {
+    margin: 0;
+}
+
+.score-editor {
+    width: 50%;
+    float: left;
+}
+
 
 /* == PSEUDO-LINKS BLOCK == */
 
 .pseudo-links-block {
-    padding-top: 10px;
+    width: 100%;
+    overflow: hidden;
+    padding-top: 20px;
     margin-bottom: 5px;
 }
 

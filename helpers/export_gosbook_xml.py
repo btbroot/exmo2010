@@ -83,11 +83,11 @@ def generate_xml_for_monitoring(tasks):
             question = etree.Element("question", id=str(score.parameter.pk))
             etree.SubElement(question, "text").text = etree.CDATA(score.parameter.name)
             etree.SubElement(question, "code").text = str(score.parameter.code)
-            if score.edited:
-                edited = str(int(time.mktime(score.edited.timetuple())))
+            if score.last_modified:
+                last_modified = str(int(time.mktime(score.last_modified.timetuple())))
             else:
-                edited = timestamp
-            etree.SubElement(question, "edited").text = edited
+                last_modified = timestamp
+            etree.SubElement(question, "edited").text = last_modified
 
             etree.SubElement(question, "value").text = str(score.parameter.weight)
             etree.SubElement(question, "description").text = etree.CDATA(score.parameter.description)

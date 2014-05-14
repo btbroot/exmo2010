@@ -17,12 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-"""
- Помощники для бекенда. По помощнику на каждый класс модели.
-"""
 import re
 from types import NoneType
+
 from exmo2010.models import Task, Score, Parameter
 from exmo2010.models.monitoring import Monitoring, RATE, RES, INT, PUB, FIN
 

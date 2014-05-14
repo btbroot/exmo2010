@@ -85,6 +85,20 @@
             <h2>{% trans "Notes" %}:</h2>
             {{ param.notes|safe }}
         {% endif %}
+
+        {% if request.user.is_expertA and param.monitoring.status != 0 and score.pk %}
+            {% if score_rev1 %}
+                <div class="score-editor">
+                    <h2>{% trans 'Initial score`s author' %}</h2>
+                    <p>{% if score_rev1.editor %}{{ score_rev1.editor.legal_name }}, {% endif %}{{ score_rev1.last_modified|date:"DATE_FORMAT" }}</p>
+                </div>
+            {% endif %}
+
+            <div class="score-editor">
+                <h2>{% trans 'Current score`s author' %}</h2>
+                <p>{% if score.editor %}{{ score.editor.legal_name }}, {% endif %}{{ score.last_modified|date:"DATE_FORMAT" }}</p>
+            </div>
+        {% endif %}
     </div>
 
     <div class="pseudo-links-block">
