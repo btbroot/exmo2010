@@ -101,7 +101,7 @@ def task_import(request, task_pk):
     if not request.user.has_perm('exmo2010.fill_task', task):
         raise PermissionDenied
     if 'taskfile' not in request.FILES:
-        return HttpResponseRedirect(reverse('exmo2010:score_list_by_task', args=[task_pk]))
+        return HttpResponseRedirect(reverse('exmo2010:task_scores', args=[task_pk]))
     reader = UnicodeReader(request.FILES['taskfile'])
     errors = []
     rowOKCount = 0
@@ -159,7 +159,7 @@ def task_import(request, task_pk):
         'errors': errors,
         'row_count': '{}/{}'.format(rowOKCount, row_num),
         'result_title': '{}/{}'.format(task, request.FILES['taskfile']),
-        'back_url': reverse('exmo2010:score_list_by_task', args=[task.pk]),
+        'back_url': reverse('exmo2010:task_scores', args=[task.pk]),
         'back_title': _('Back to the task'),
     })
 

@@ -26,7 +26,7 @@
         {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }}
     </td>
     <td>
-        <a href="{% url 'exmo2010:score_list_by_task' c.score.task.id %}">
+        <a href="{% url 'exmo2010:task_scores' c.score.task.id %}">
             {{ c.score.task.organization }}
         </a>
     </td>

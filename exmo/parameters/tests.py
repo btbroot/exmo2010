@@ -152,8 +152,8 @@ class ParamCreateTestCase(TestCase):
         # THEN new parameter shoud get created in database
         params = Parameter.objects.values_list(*'code name weight monitoring_id'.split())
         self.assertEqual(list(params), [(456, 'ppp', 1, self.monitoring.pk)])
-        # AND response should redirect to score_list_by_task
-        self.assertRedirects(response, reverse('exmo2010:score_list_by_task', args=[self.task.pk]))
+        # AND response should redirect to task_scores
+        self.assertRedirects(response, reverse('exmo2010:task_scores', args=[self.task.pk]))
 
 
 class ParamEditEmailNotifyTestCase(TestCase):

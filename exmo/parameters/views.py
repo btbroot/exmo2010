@@ -43,7 +43,7 @@ def parameter_exclude(request, parameter_pk, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     if task.organization not in param.exclude.all():
         param.exclude.add(task.organization)
-    base_url = reverse('exmo2010:score_list_by_task', args=[task.pk])
+    base_url = reverse('exmo2010:task_scores', args=[task.pk])
     return HttpResponseRedirect('%s?%s' % (base_url, request.GET.urlencode()))
 
 
@@ -51,7 +51,7 @@ class ParameterMixin(LoginRequiredMixin):
     context_object_name = 'param'
 
     def get_success_url(self):
-        base_url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        base_url = reverse('exmo2010:task_scores', args=[self.task.pk])
         return '%s?%s' % (base_url, self.request.GET.urlencode())
 
 

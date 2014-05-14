@@ -155,7 +155,7 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
 
         if user == 'org':
             self.assertEqual(self.get_url_path(NAVIGATION[3]),
-                             reverse_lazy('exmo2010:score_list_by_task', args=[self.task.id]))
+                             reverse_lazy('exmo2010:task_scores', args=[self.task.id]))
 
     def get_url_path(self, selector):
         """

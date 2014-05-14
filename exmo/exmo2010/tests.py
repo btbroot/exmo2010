@@ -261,7 +261,7 @@ class CanonicalViewKwargsTestCase(TestCase):
             'uidb36': '123',          # for auth_password_reset_confirm
             'token': '123',           # for auth_password_reset_confirm
             'report_type': 'inprogress',   # for monitoring_report_*
-            'print_report_type': 'print',  # for score_list_by_task
+            'print_report_type': 'print',  # for task_scores
         }
 
         self.patterns_by_name = dict((p.name, p) for p in self.exmo_urlpatterns)

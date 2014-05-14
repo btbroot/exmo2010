@@ -29,7 +29,7 @@
     {% if org.task_set.all %}
         {% trans 'When you delete organization you also delete this tasks:'%}<br>
         {% for task in org.task_set.all %}
-            <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">{{ task }}</a><br>
+            <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task }}</a><br>
         {% endfor %}
     {% endif %}
 

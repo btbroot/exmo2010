@@ -240,7 +240,7 @@ def mail_task_assigned(task):
     if not task.user.email:
         return
     subject = _('You have an assigned task')
-    url = reverse('exmo2010:score_list_by_task', args=[task.pk])
+    url = reverse('exmo2010:task_scores', args=[task.pk])
     context = dict(task=task, subject=subject, url='http://%s%s' % (Site.objects.get_current(), url))
 
     with translation.override(task.user.profile.language or settings.LANGUAGE_CODE):

@@ -112,7 +112,7 @@ class ScoreAddTestCase(TestCase):
         response = self.client.post(self.url, {'found': 0, 'recommendations': '123'})
 
         # THEN response redirects to task scores list
-        url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        url = reverse('exmo2010:task_scores', args=[self.task.pk])
         self.assertRedirects(response, '%s#parameter_%s' % (url, self.param.code))
 
         # AND score get created
@@ -149,7 +149,7 @@ class ScoreEditInitialTestCase(TestCase):
         response = self.client.post(self.url, {'found': 0, 'recommendations': '123'})
 
         # THEN response redirects to task scores list
-        url = reverse('exmo2010:score_list_by_task', args=[self.task.pk])
+        url = reverse('exmo2010:task_scores', args=[self.task.pk])
         self.assertRedirects(response, '%s#parameter_%s' % (url, self.param.code))
 
         # AND score get updated in DB

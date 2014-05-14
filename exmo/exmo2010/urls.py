@@ -157,7 +157,8 @@ urlpatterns = named_urls('',
     (r'^monitoring/', include(monitoring_patterns)),
 
     (r'^score/', include(scores_patterns)),
-    (r'^scores/(?P<task_pk>\d+)/(?P<print_report_type>print|printfull)?$', 'scores.views.score_list_by_task'),
+    (r'^scores/(?P<task_pk>\d+)/$', 'scores.views.task_scores'),
+    (r'^scores/(?P<task_pk>\d+)/print/$', 'scores.views.task_scores_print'),
 
     (r'^tasks/', include(tasks_patterns)),
     (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),
@@ -252,7 +253,7 @@ def crumbs_tree(is_expert=False):
                 'organization_update':    _('Edit organization'),
                 'organization_delete':    _('Delete organization'),
 
-                'score_list_by_task': (_('Organization'), {
+                'task_scores': (_('Organization'), {
                     # Task
                     'task_update':  _('Edit task'),
                     'task_delete':  _('Delete task'),
@@ -273,7 +274,7 @@ def crumbs_tree(is_expert=False):
     nonexpert_tree = {
         'ratings': (_('Ratings'), {
             'monitoring_rating': (_('Rating'), {
-                'score_list_by_task': (_('Organization'), {
+                'task_scores': (_('Organization'), {
                     'score_view': _('Parameter'),
                 })
             }),

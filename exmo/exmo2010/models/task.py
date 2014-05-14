@@ -62,6 +62,9 @@ class Task(BaseModel):
     organization = models.ForeignKey(Organization, verbose_name=_('organization'))
     status = models.PositiveIntegerField(choices=TASK_STATUS, default=TASK_OPEN, verbose_name=_('status'))
 
+    def relevant_scores(self):
+        return self.score_set.filter(revision=Score.REVISION_DEFAULT).exclude(parameter__exclude=self.organization)
+
     @property
     def openness_initial(self):
         return self.get_openness(initial=True)

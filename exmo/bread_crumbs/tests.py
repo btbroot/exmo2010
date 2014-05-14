@@ -35,12 +35,12 @@ class ExmoBreadcrumbsTestCase(TestCase):
     ratings = index + [('ratings', _('Ratings'))]
     rating = ratings + [('monitoring_rating', _('Rating'))]
 
-    nonexpert_task_scores = rating + [('score_list_by_task', _('Organization'))]
+    nonexpert_task_scores = rating + [('task_scores', _('Organization'))]
 
     expert_task_scores = index + [
         ('monitorings_list', _('Monitoring cycles')),
         ('tasks_by_monitoring', _('Monitoring cycle')),
-        ('score_list_by_task', _('Organization'))
+        ('task_scores', _('Organization'))
     ]
 
     def setUp(self):
@@ -77,8 +77,8 @@ class ExmoBreadcrumbsTestCase(TestCase):
         ('index', index),
         ('ratings', ratings),
         ('monitoring_rating', rating),
-        ('score_list_by_task', nonexpert_task_scores),
-        ('score_list_by_task', expert_task_scores, True),
+        ('task_scores', nonexpert_task_scores),
+        ('task_scores', expert_task_scores, True),
     ])
     def test_crumbs(self, urlname, expected_crumbs, is_expert=False):
         if is_expert:

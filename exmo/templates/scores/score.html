@@ -63,7 +63,7 @@
         <h2>{% trans 'Parameter characteristics' %}:</h2>
         <p>
             {% url 'exmo2010:monitoring_rating' param.monitoring.pk as rating_url %}
-            {% url 'exmo2010:score_list_by_task' score.task.pk as task_url %}
+            {% url 'exmo2010:task_scores' score.task.pk as task_url %}
             &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}The parameter is evaluated for the website <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> of the <a href="{{ task_url }}">{{ org_name }}</a> within the rating <a href="{{ rating_url }}">{{ monitoring }}</a>.{% endblocktrans %}<br />
             &mdash; {% trans 'Social significance coefficient equals' %} {{ param.weight }}.<br />
             {% if param.monitoring.has_npa %}
@@ -185,7 +185,7 @@
 
                 <div class="links-recommendations-area">
                     <div class="links read_edit">
-                        <h2>{% trans 'Links to the found information' %}</h2>
+                        <h2>{% trans 'Found information links' %}</h2>
                         {% if score.perms.edit_score %}
                             <div class="pseudo-tabs">
                                 <span><a href="#" class="pseudo" id="edit_links">{% trans 'edit' %}</a></span>
@@ -263,7 +263,7 @@
 
                 <div class="links-recommendations-area">
                     <div class="links">
-                        <h2>{% trans 'Links to the found information' %}</h2>
+                        <h2>{% trans 'Found information links' %}</h2>
                         {{ form.links }}
                     </div>
 

@@ -20,20 +20,20 @@
 {% endcomment %}
 {% load criteria_css_class %}
       <td width=55px class="{{score|criteria_css_class:'found'}}">
-      {{score.found}}
-      {% if score_interact and score_interact.found != score.found %}
-        <span class="score_interact">({{score_interact.found}})</span>
-      {% endif %}
+        {{score.found}}
+        {% if score_interact and score_interact.found != score.found %}
+            <span class="score_interact">({{score_interact.found}})</span>
+        {% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'complete'}}">
-      {% if score.parameter.complete %}
-        {{score.complete|default:"-"}}
-        {% if score_interact and score_interact.complete != score.complete %}
-            <span class="score_interact">({{score_interact.complete|default:"-"}})</span>
+        {% if score.parameter.complete %}
+            {{score.complete|default:"-"}}
+            {% if score_interact and score_interact.complete != score.complete %}
+                <span class="score_interact">({{score_interact.complete|default:"-"}})</span>
+            {% endif %}
+        {% else %}
+            &nbsp;
         {% endif %}
-      {% else %}
-        &nbsp;
-      {% endif %}
       </td>
       <td width=55px class="{{score|criteria_css_class:'topical'}}">
       {% if score.parameter.topical %}

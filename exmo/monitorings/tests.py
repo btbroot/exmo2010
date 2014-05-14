@@ -681,7 +681,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.client.login(username=username, password='password')
 
         # WHEN i request task page
-        response = self.client.get(reverse('exmo2010:score_list_by_task', args=[self.task.pk]))
+        response = self.client.get(reverse('exmo2010:task_scores', args=[self.task.pk]))
 
         # THEN response status_code is 403 (forbidden)
         self.assertEqual(response.status_code, 403)

@@ -1,4 +1,3 @@
-{% extends "exmo2010/base_site.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -21,19 +20,16 @@
 {% endcomment %}
 {% load i18n future %}
 
-{% block title %}
-    {% blocktrans %}Delete monitoring {{monitoring}}{% endblocktrans %}
-{% endblock %}
-
-{% block content %}
-    {% if tasks %}
-        {% trans 'When you delete monitoring you also delete this tasks:'%}<br>
-            {% for task in tasks %}
-                <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task }}</a><br>
-            {% endfor %}
+<div id="footer_print">
+    {% if license %}
+        <div class="first"> {{ license|safe }} </div>
     {% endif %}
-    <form method="post" action="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{request.GET.urlencode}}">{% csrf_token %}
-        <p>{% trans 'Delete this monitoring?' %}</p>
-        <p><input type="submit" value="{% trans 'Send' %}"/></p>
-    </form>
-{% endblock %}
+    <div class="copyrights-fonts">
+        {% blocktrans with url="http://www.svobodainfo.org/" %}© 2012–2014 Foundation "<a href="{{ url }}" target="_blank">Institute for Information Freedom Development</a>"{% endblocktrans %} <br/>
+        {% trans '© 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %} <br/>
+        {% trans '© 2010, 2011, 2013 Al Nikolov' %}
+    </div>
+    <div class="copyrights-fonts">
+        {% blocktrans with url="http://www.svobodainfo.org/exmo" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.{% endblocktrans %}
+    </div>
+</div>

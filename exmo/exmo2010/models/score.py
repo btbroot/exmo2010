@@ -83,6 +83,14 @@ class Score(BaseModel):
             self.parameter.code
         )
 
+
+    def criteria(self):
+        for crit in Parameter.OPTIONAL_CRITERIONS:
+            if getattr(self.parameter, crit):
+                yield getattr(self, crit)
+            else:
+                yield None
+
     def clean(self):
         # Relevant criteria
         criteria = filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIONS)

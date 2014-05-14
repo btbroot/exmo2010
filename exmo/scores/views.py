@@ -125,7 +125,7 @@ def score_view(request, **kwargs):
         if org.monitoring.is_interact or org.monitoring.is_finishing:
             return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
         else:
-            url = reverse('exmo2010:score_list_by_task', args=[task.pk])
+            url = reverse('exmo2010:task_scores', args=[task.pk])
             return HttpResponseRedirect('%s#parameter_%s' % (url, param.code))
 
     score_rev1 = Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT)
@@ -269,12 +269,25 @@ def toggle_comment(request):
     raise Http404
 
 
-def score_list_by_task(request, task_pk, print_report_type=None):
+def task_scores_print(request, task_pk):
+    task = get_object_or_404(Task, pk=task_pk)
+
+    if not request.user.has_perm('exmo2010.view_task', task):
+        raise PermissionDenied
+
+    task_scores_url = reverse('exmo2010:task_scores', args=(task.pk, ))
+    return TemplateResponse(request, 'scores/task_scores_print.html', {
+        'task': task,
+        'task_scores_url': request.build_absolute_uri(task_scores_url)})
+
+
+def task_scores(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     title = task.organization.name
 
     if not request.user.has_perm('exmo2010.view_task', task):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
     monitoring = task.organization.monitoring
     parameters = Parameter.objects.filter(monitoring=monitoring).exclude(exclude=task.organization)
     headers = (
@@ -303,97 +316,79 @@ def score_list_by_task(request, task_pk, print_report_type=None):
         task=task,
     )
 
-    score_dict = {}
-    score_interact_dict = {}
+    score_dict = {s.parameter.pk: s for s in scores_default}
+    score_interact_dict = {s.parameter.pk: s for s in scores_interact}
 
-    for score in scores_default:
-        score_dict[score.parameter.pk] = score
-
-    for score in scores_interact:
-        score_interact_dict[score.parameter.pk] = score
-
-    if print_report_type:
-        # Requested print report
-        extra_context.update({
-            'score_dict': score_dict,
-            'parameters': parameters,
-            'task': task,
-            'title': title,
-            'report': print_report_type,
-        })
-        return TemplateResponse(request, 'scores/task_report.html', extra_context)
-    else:
-        questionnaire = monitoring.get_questionnaire()
-        if questionnaire and questionnaire.qquestion_set.exists():
-            questions = questionnaire.qquestion_set.order_by("pk")
-            if request.method == "POST":
-                if not request.user.has_perm('exmo2010.fill_task', task):
-                    return HttpResponseForbidden(_('Forbidden'))
-                form = QuestionnaireDynForm(request.POST, questions=questions, task=task)
-                if form.is_valid():
-                    cd = form.cleaned_data
-                    for answ in cd.items():
-                        if answ[0].startswith("q_"):
+    questionnaire = monitoring.get_questionnaire()
+    if questionnaire and questionnaire.qquestion_set.exists():
+        questions = questionnaire.qquestion_set.order_by("pk")
+        if request.method == "POST":
+            if not request.user.has_perm('exmo2010.fill_task', task):
+                return HttpResponseForbidden(_('Forbidden'))
+            form = QuestionnaireDynForm(request.POST, questions=questions, task=task)
+            if form.is_valid():
+                cd = form.cleaned_data
+                for answ in cd.items():
+                    if answ[0].startswith("q_"):
+                        try:
+                            q_id = int(answ[0][2:])
+                            question_obj = QQuestion.objects.get(pk=q_id)
+                        except (ValueError, ObjectDoesNotExist):
+                            continue
+                        if answ[1]:  # Непустое значение ответа.
+                            answer = QAnswer.objects.get_or_create(task=task, question=question_obj)[0]
+                            if question_obj.qtype == 0:
+                                answer.text_answer = answ[1]
+                                answer.save()
+                            elif question_obj.qtype == 1:
+                                answer.numeral_answer = answ[1]
+                                answer.save()
+                            elif question_obj.qtype == 2:
+                                answer.variance_answer = answ[1]
+                                answer.save()
+                        else:  # Пустой ответ.
                             try:
-                                q_id = int(answ[0][2:])
-                                question_obj = QQuestion.objects.get(pk=q_id)
-                            except (ValueError, ObjectDoesNotExist):
+                                answer = QAnswer.objects.get(task=task, question=question_obj)
+                            except ObjectDoesNotExist:
                                 continue
-                            if answ[1]:  # Непустое значение ответа.
-                                answer = QAnswer.objects.get_or_create(task=task, question=question_obj)[0]
-                                if question_obj.qtype == 0:
-                                    answer.text_answer = answ[1]
-                                    answer.save()
-                                elif question_obj.qtype == 1:
-                                    answer.numeral_answer = answ[1]
-                                    answer.save()
-                                elif question_obj.qtype == 2:
-                                    answer.variance_answer = answ[1]
-                                    answer.save()
-                            else:  # Пустой ответ.
-                                try:
-                                    answer = QAnswer.objects.get(task=task, question=question_obj)
-                                except ObjectDoesNotExist:
-                                    continue
-                                else:
-                                    answer.delete()
-                    return HttpResponseRedirect(reverse(
-                        'exmo2010:score_list_by_task', args=[task.pk]))
-            else:
-                existing_answers = task.get_questionnaire_answers()
-                initial_data = {}
-                for a in existing_answers:
-                    initial_data["q_%s" % a.question.pk] = a.answer(True)
-                form = QuestionnaireDynForm(questions=questions, initial=initial_data)
+                            else:
+                                answer.delete()
+                return HttpResponseRedirect(reverse('exmo2010:task_scores', args=[task.pk]))
         else:
-            form = None
-        has_npa = task.organization.monitoring.has_npa
-        if has_npa:
-            parameters_npa = parameters.filter(npa=True)
-            parameters_other = parameters.filter(npa=False)
-        else:
-            parameters_npa = []
-            parameters_other = parameters
+            existing_answers = task.get_questionnaire_answers()
+            initial_data = {}
+            for a in existing_answers:
+                initial_data["q_%s" % a.question.pk] = a.answer(True)
+            form = QuestionnaireDynForm(questions=questions, initial=initial_data)
+    else:
+        form = None
+    has_npa = task.organization.monitoring.has_npa
+    if has_npa:
+        parameters_npa = parameters.filter(npa=True)
+        parameters_other = parameters.filter(npa=False)
+    else:
+        parameters_npa = []
+        parameters_other = parameters
 
-        _new_comment_url(request, score_dict, scores_default, parameters_npa)
+    _new_comment_url(request, score_dict, scores_default, parameters_npa)
 
-        _new_comment_url(request, score_dict, scores_default, parameters_other)
+    _new_comment_url(request, score_dict, scores_default, parameters_other)
 
-        extra_context.update({
-            'view_openness_perm': request.user.has_perm('exmo2010.view_openness', task),
-            'score_interact_dict': score_interact_dict,
-            'parameters_npa': parameters_npa,
-            'parameters_other': parameters_other,
-            'monitoring': monitoring,
-            'task': task,
-            'has_npa': has_npa,
-            'title': title,
-            'form': form,
-            'invcodeform': SettingsInvCodeForm(),
-            'show_link': request.user.is_expertA or monitoring.is_published,
-        })
+    extra_context.update({
+        'view_openness_perm': request.user.has_perm('exmo2010.view_openness', task),
+        'score_interact_dict': score_interact_dict,
+        'parameters_npa': parameters_npa,
+        'parameters_other': parameters_other,
+        'monitoring': monitoring,
+        'task': task,
+        'has_npa': has_npa,
+        'title': title,
+        'form': form,
+        'invcodeform': SettingsInvCodeForm(),
+        'show_link': request.user.is_expertA or monitoring.is_published,
+    })
 
-        return TemplateResponse(request, 'scores/score_list.html', extra_context)
+    return TemplateResponse(request, 'scores/task_scores.html', extra_context)
 
 
 def _new_comment_url(request, score_dict, scores_default, parameters):

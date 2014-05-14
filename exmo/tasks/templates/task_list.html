@@ -96,7 +96,7 @@
         {% for task in object_list %}
             <tr id="task{{ task.pk }}">
                 <td>
-                    <a href="{% url 'exmo2010:score_list_by_task' task.pk %}" title="{{ task.organization.name}}">{{ task.organization.name|truncatewords:10 }}</a>
+                    <a href="{% url 'exmo2010:task_scores' task.pk %}" title="{{ task.organization.name}}">{{ task.organization.name|truncatewords:10 }}</a>
                     {% if monitoring.perms.admin_monitoring %}
                         &nbsp;<a href="{% url 'exmo2010:task_update' task.pk %}?{{request.GET.urlencode}}">
                             <img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
@@ -120,7 +120,7 @@
                 </td>
 
                 <td>
-                    <a href="{% url 'exmo2010:score_list_by_task' task.pk %}">
+                    <a href="{% url 'exmo2010:task_scores' task.pk %}">
                         {{ task.completeness|floatformat:1 }}
                     </a>
                 </td>
