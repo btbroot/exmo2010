@@ -193,7 +193,7 @@ $(document).ready(function() {
 
     // tabs clicking (reply, edit score)
     $('.reply-edit a').click(function(e) {
-        $("#comment_form").show();
+        $(".comment-form").show();
         switch (e.target.hash) {
             case '#reply':
                 $('.tab_edit').hide();
