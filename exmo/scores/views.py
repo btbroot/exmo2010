@@ -111,7 +111,7 @@ def score_view(request, **kwargs):
             raise PermissionDenied
 
         with transaction.commit_on_success():
-            if org.monitoring.status in Monitoring.after_interaction_status:
+            if org.monitoring.status in Monitoring.after_interaction_status and 'score_pk' in kwargs:
                 if not Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT).exists():
                     # Initial revision does not exist and should be created. It will have new pk.
                     initial_score = Score.objects.get(pk=kwargs['score_pk'])

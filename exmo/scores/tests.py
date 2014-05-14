@@ -96,20 +96,23 @@ class ScoreAddTestCase(TestCase):
         # AND organization and parameter in MONITORING_RATE monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
         self.param = mommy.make(Parameter, monitoring=org.monitoring)
-        # AND task assigned to expertB
+        # AND organization and parameter in MONITORING_INTERACTION monitoring
+        org_interact = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        self.param_interact = mommy.make(Parameter, monitoring=org_interact.monitoring)
+        # AND 2 tasks assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
-
-        self.url = reverse('exmo2010:score_add', args=[self.task.pk, self.param.pk])
+        self.task_interact = mommy.make(Task, organization=org_interact, user=expertB)
 
     @parameterized.expand([
         ('expertA',),
         ('expertB',),
     ])
-    def test_create_score(self, username):
+    def test_create_score_rate(self, username):
         self.client.login(username=username, password='password')
 
         # WHEN user POSTs score creation form
-        response = self.client.post(self.url, {'found': 0, 'recommendations': '123'})
+        url = reverse('exmo2010:score_add', args=[self.task.pk, self.param.pk])
+        response = self.client.post(url, {'found': 0, 'recommendations': '123'})
 
         # THEN response redirects to task scores list
         url = reverse('exmo2010:task_scores', args=[self.task.pk])
@@ -117,6 +120,26 @@ class ScoreAddTestCase(TestCase):
 
         # AND score get created
         self.assertEqual(1, Score.objects.count())
+
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_create_score_interaction(self, username):
+        self.client.login(username=username, password='password')
+
+        # WHEN user POSTs score creation form
+        url = reverse('exmo2010:score_add', args=[self.task_interact.pk, self.param_interact.pk])
+        response = self.client.post(url, {'found': 0, 'recommendations': '123'})
+
+        # THEN score get created
+        self.assertEqual(1, Score.objects.count())
+
+        # AND response redirects to score page
+        score = Score.objects.get(task=self.task_interact.pk,
+                                  parameter=self.param_interact.pk,
+                                  revision=Score.REVISION_DEFAULT)
+        self.assertRedirects(response, reverse('exmo2010:score_view', args=[score.pk]))
 
 
 class ScoreEditInitialTestCase(TestCase):
