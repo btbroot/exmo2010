@@ -247,7 +247,7 @@
                     {{ field }}
                 {% endfor %}
                 <div class="errors">
-                    {{ form.errors }}
+                    {{ form.non_field_errors }}
                 </div>
 
                 <div class="table editable-score-table {{ all_max_initial|yesno:'all_max_initial,' }}">

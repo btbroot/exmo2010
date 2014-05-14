@@ -106,7 +106,7 @@ class Score(BaseModel):
         if self.pk:
             db_score = Score.objects.get(pk=self.pk)
             if self.recommendations == db_score.recommendations:
-                for crit in criteria:
+                for crit in ['found'] + criteria:
                     if getattr(self, crit) != getattr(db_score, crit):
                         raise ValidationError(ugettext('Recommendations should change when score is changed'))
 

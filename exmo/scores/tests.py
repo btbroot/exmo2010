@@ -20,6 +20,7 @@ import json
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils.translation import ugettext_lazy as _
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -222,6 +223,36 @@ class ScoreEditInteractionValidTestCase(TestCase):
 
         # AND comment get created
         self.assertEqual([u'<p>lol</p>'], list(CommentExmo.objects.values_list('comment', flat=True)))
+
+
+class ScoreEditInvalidTestCase(TestCase):
+
+    def setUp(self):
+        # GIVEN expertA and expertB
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+
+        # AND organization and parameter in MONITORING_INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND task assigned to expertB
+        self.task = mommy.make(Task, organization=org, user=expertB)
+        self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1, recommendations='123')
+
+        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_recommendations_should_change(self, username):
+        self.client.login(username=username, password='password')
+        # WHEN user POSTs score edit form with the same recommendation and 'found' equals 0
+        response = self.client.post(self.url, {'found': 0, 'comment': '<p>lol</p>', 'recommendations': '123'})
+        # THEN response should contain recommendations error message
+        self.assertContains(response, _('Recommendations should change when score is changed'), 1)
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):
