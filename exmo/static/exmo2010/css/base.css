@@ -760,12 +760,14 @@ div.system-message p.system-message-title {
 
 #content.fixed-width-page {
     margin: 0 auto;
-    max-width: 920px;
+    max-width: 950px;
     min-width: 770px;
-    padding: 5px;
+    padding: 20px;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
+    border-left: 1px solid #d7d7d7;
+    border-right: 1px solid #d7d7d7;
 }
 
 #content.fixed-width-page .table {
