@@ -109,27 +109,27 @@
 
     {% if not request.user.is_expert %}
         <div class="explanations-block hidden">
-            <p>{% blocktrans %}<strong>Availability</strong> describes the fact of publishing the information or service corresponding to the particular parameter at the official website (0; 1).{% endblocktrans %}</p>
+            <p>{% blocktrans %}<strong>Availability ('Found')</strong> describes the fact of publishing the information or service corresponding to the particular parameter at the official website (0; 1).{% endblocktrans %}</p>
             {% if param.complete %}
-                <p>{% blocktrans %}<strong>Comprehensiveness</strong> describes the sufficiency of the information published at the official websites for forming an integral idea by the particular parameter (1; 2; 3).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>Comprehensiveness ('Complete')</strong> describes the sufficiency of the information published at the official websites for forming an integral idea by the particular parameter (1; 2; 3).{% endblocktrans %}</p>
             {% endif %}
             {% if param.topical %}
-                <p>{% blocktrans %}<strong>Relevance</strong> describes the updating rate of the information available at the official website as well as its relevance at the moment of the expert analyzes (1; 2; 3).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>Relevance ('Topical')</strong> describes the updating rate of the information available at the official website as well as its relevance at the moment of the expert analyzes (1; 2; 3).{% endblocktrans %}</p>
             {% endif %}
             {% if param.accessible %}
-                <p>{% blocktrans %}<strong>Navigability</strong> describes convenience for finding information relevant to the given parameter at the official website. It takes in consideration whether the information is placed in a correct section, and how many consecutive hyperlinks, starting from the home page, are to be followed (1; 2; 3).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>Navigability ('Accessible')</strong> describes convenience for finding information relevant to the given parameter at the official website. It takes in consideration whether the information is placed in a correct section, and how many consecutive hyperlinks, starting from the home page, are to be followed (1; 2; 3).{% endblocktrans %}</p>
             {% endif %}
             {% if param.hypertext %}
-                <p>{% blocktrans %}<strong>HTML accessibility</strong> describes the fact of placing the parameter information at the official website in HTML format, facilitating the search (0; 1).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>HTML accessibility ('Hypertext')</strong> describes the fact of placing the parameter information at the official website in HTML format, facilitating the search (0; 1).{% endblocktrans %}</p>
             {% endif %}
             {% if param.document %}
-                <p>{% blocktrans %}<strong>File accessibility</strong> describes the fact of placing the document required by the given parameter at the official website in a format that allows the user to store it at his/her hardware devices, to search for and to copy extracts of the text in the document so that the users can further use the information (0; 1).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>File accessibility ('Document')</strong> describes the fact of placing the document required by the given parameter at the official website in a format that allows the user to store it at his/her hardware devices, to search for and to copy extracts of the text in the document so that the users can further use the information (0; 1).{% endblocktrans %}</p>
             {% endif %}
             {% if param.image %}
-                <p>{% blocktrans %}<strong>Graphic accessibility</strong> describes the fact of placing the document required by the given parameter at the official website in the graphic format the actual image of the document so that the users can read its original version (0; 1).{% endblocktrans %}</p>
+                <p>{% blocktrans %}<strong>Graphic accessibility ('Image')</strong> describes the fact of placing the document required by the given parameter at the official website in the graphic format the actual image of the document so that the users can read its original version (0; 1).{% endblocktrans %}</p>
             {% endif %}
             <p>{% blocktrans %}<strong>Parameter`s score</strong> is the openness of the parameter calculated as a product of criteria fines.{% endblocktrans %}</p>
-            <p>{% blocktrans %}<strong>Score difference</strong> is the difference between current parameter`s score and the parameter`s score after the initial evaluation.{% endblocktrans %}</p>
+            <p>{% blocktrans %}<strong>Score changes</strong> is the difference between current parameter`s score and the parameter`s score after the initial evaluation.{% endblocktrans %}</p>
         </div>
     {% endif %}
 
