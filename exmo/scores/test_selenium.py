@@ -120,38 +120,19 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         # WHEN i set 'found' value to 1
         self.find('label[for="id_found_2"]').click()
 
+        # AND i set 'accessible' value to 2
+        self.find('label[for="id_accessible_2"]').click()
+
         with self.frame('iframe'):
-            # THEN 2 comment lines should be added automatically
-            self.assertEqual(len(self.findall('input.autoscore')), 2)
+            # THEN 3 comment lines should be added automatically
+            self.assertEqual(len(self.findall('input.autoscore')), 3)
 
         # WHEN i set 'found' value back to 0
-        self.find('label[for="id_found_1').click()
+        self.find('label[for="id_found_1"]').click()
 
         with self.frame('iframe'):
             # THEN all comment lines should be removed automatically
             self.assertEqual(len(self.findall('input.autoscore')), 0)
-
-    def test_disable_submit(self):
-        # WHEN nothing is typed in comment area explicitly
-        # AND i set 'found' value to 1
-        self.find('label[for="id_found_2"]').click()
-
-        # THEN submit button should stay disabled
-        self.assertDisabled('#submit_score_and_comment')
-
-        with self.frame('iframe'):
-            # WHEN i type something in the comment area
-            self.find('body').send_keys('hi')
-
-        # THEN submit button should be enabled
-        self.assertEnabled('#submit_score_and_comment')
-
-        with self.frame('iframe'):
-            # WHEN i erase text in the comment area
-            self.find('body').send_keys('\b\b')
-
-        # THEN submit button should turn disabled
-        self.assertDisabled('#submit_score_and_comment')
 
 
 class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
@@ -253,8 +234,18 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         orguser.profile.organization = [org]
         # AND approved task assigned to expert B
         task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
-        # AND parameter
-        parameter = mommy.make(Parameter, monitoring=monitoring)
+        # AND parameter with only 'accessible' attribute
+        parameter = mommy.make(
+            Parameter,
+            monitoring=monitoring,
+            complete = False,
+            accessible = True,
+            topical = False,
+            hypertext = False,
+            document = False,
+            image = False,
+            npa = False
+        )
         # AND score with zero initial values for parameter attributes
         self.score = mommy.make(Score, task=task, parameter=parameter)
 
@@ -271,22 +262,25 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         with self.frame('iframe'):
             # WHEN I type new line character in the comment area
             self.find('body').send_keys('\n')
+
         # THEN submit button still should be disabled
         self.assertDisabled('#submit_comment')
 
         with self.frame('iframe'):
             # WHEN I type something in the comment area
             self.find('body').send_keys('hi')
+
         # THEN submit button should turn enabled
         self.assertEnabled('#submit_comment')
 
         with self.frame('iframe'):
             # WHEN I erase all literal text symbols
             self.find('body').send_keys('\b\b')
+
         # THEN submit button should turn disabled
         self.assertDisabled('#submit_comment')
 
-    def test_expertb(self):
+    def test_expertb_reply(self):
         # WHEN I login as expertB
         self.login('expertB', 'password')
 
@@ -299,20 +293,60 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         with self.frame('iframe'):
             # WHEN I type new line character in the comment area
             self.find('body').send_keys('\n')
+
         # THEN submit button still should be disabled
         self.assertDisabled('#submit_comment')
 
         with self.frame('iframe'):
             # WHEN I type something in the comment area
             self.find('body').send_keys('hi')
+
         # THEN submit button should turn enabled
         self.assertEnabled('#submit_comment')
 
         with self.frame('iframe'):
             # WHEN I erase all literal text symbols
             self.find('body').send_keys('\b\b')
+
         # THEN submit button should turn disabled
         self.assertDisabled('#submit_comment')
+
+    def test_expertb_edit_score(self):
+        # WHEN I login as expertB
+        self.login('expertB', 'password')
+
+        # AND I get score page with 'change_score' hash
+        self.get('{}#change_score'.format(reverse('exmo2010:score_view', args=(self.score.pk,))))
+
+        # THEN form with 'found' radio input should become visible
+        self.assertVisible('label[for="id_found_2"]')
+
+        # WHEN i set 'found' value to 1
+        self.find('label[for="id_found_2"]').click()
+
+        # THEN submit button should be disabled
+        self.assertDisabled('#submit_score_and_comment')
+
+        with self.frame('.comment-form iframe'):
+            # WHEN I type new line character in the comment area
+            self.find('body').send_keys('\n')
+
+        # THEN submit button still should be disabled
+        self.assertDisabled('#submit_score_and_comment')
+
+        with self.frame('.comment-form iframe'):
+            # WHEN I type something in the comment area
+            self.find('body').send_keys('hi')
+
+        # THEN submit button should turn enabled
+        self.assertEnabled('#submit_score_and_comment')
+
+        with self.frame('iframe'):
+            # WHEN I erase all literal text symbols
+            self.find('body').send_keys('\b\b')
+
+        # THEN submit button should turn disabled
+        self.assertDisabled('#submit_score_and_comment')
 
 
 class ScoreClaimTabsClickTestCase(BaseSeleniumTestCase):

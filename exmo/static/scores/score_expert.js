@@ -44,11 +44,22 @@ $(document).ready(function() {
     // Clicking 'found' criterion should hide and colorize other criterions
     $("input[name='found']").on('change', function() {
         if ($(this).val() == '1') {
-            $(".editable-score-table li").removeClass('found_0_frozen_red').show()
+            $(".editable-score-table li").each(function() {
+                $(this).removeClass('found_0_frozen_red').show()
+                if ($(this).find('input').attr('name') != 'found') {
+                    $(this).find('input').prop('disabled', false);
+                    // Trigger change event to restore autoscore comments for previously
+                    // changed criterion.
+                    $(this).find('input:checked').trigger('change');
+                }
+            })
         }
         else {
             $(".editable-score-table li").each(function() {
                 if ($(this).find('input').attr('name') != 'found') {
+                    $(this).find('input').prop('disabled', true);
+                    // Remove 'changed' flag from criterion to prevent autoscore comment generation.
+                    $(this).closest('div.table-row').removeClass('changed');
                     $(this).addClass('found_0_frozen_red');
 
                     if ($(this).find('input').val() != '') {
