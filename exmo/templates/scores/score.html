@@ -186,7 +186,7 @@
                                 {% endif %}
                             </div>
                             <div class="table-cell score_rev1 {% if not show_rev1 %}hidden{% endif %}">
-                                {{ score_delta }}%
+                                {{ score_delta|floatformat }}%
                                 {% if score_delta > 0 %}
                                     <img src="{% static 'exmo2010/img/rate_up.png' %}">
                                 {% elif score_delta < 0 %}
