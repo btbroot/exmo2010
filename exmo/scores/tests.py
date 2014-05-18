@@ -427,6 +427,7 @@ class AddExistingScoreRedirectTestCase(TestCase):
 
 class AjaxPostScoreLinksTestCase(TestCase):
     # Posting score links should update score links field in database.
+    # Response should contain properly escaped and urlized new value
 
     def setUp(self):
         # GIVEN I am logged in as expert B
@@ -447,18 +448,27 @@ class AjaxPostScoreLinksTestCase(TestCase):
         url = reverse('exmo2010:post_score_links', args=(self.score.pk,))
 
         # WHEN I post score links with non-empty string
-        response = self.client.post(url, {'links': '<p>123</p>'})
+        response = self.client.post(url, {'links': '<p>123</p>\nhttp://123.ru\nhttp://123.ru'})
 
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
+
+        # AND response should contain properly escaped and urlized new value
+        escaped = '&lt;p&gt;123&lt;/p&gt;<br /><a target="_blank" href="http://123.ru">http://123.ru</a><br /><a target="_blank" href="http://123.ru">http://123.ru</a>'
+        self.assertEqual(json.loads(response.content)['data'], escaped)
+
         # AND score links should be updated in DB
-        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '<p>123</p>')
+        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '<p>123</p>\nhttp://123.ru\nhttp://123.ru')
 
         # WHEN I post score links with empty string
         response = self.client.post(url, {'links': ''})
 
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
+
+        # AND response should contain properly escaped and urlized new value
+        self.assertEqual(json.loads(response.content)['data'], '')
+
         # AND score links should be updated in DB
         self.assertEqual(Score.objects.get(pk=self.score.pk).links, '')
 

@@ -27,7 +27,7 @@ from django.utils.translation import ugettext as _
 
 from claims.forms import ClaimReportForm
 from core.response import JSONResponse
-from core.utils import urlize, clean_message
+from core.utils import clean_message
 from exmo2010.mail import mail_claim_deleted, mail_claim_new
 from exmo2010.models import Claim, Monitoring, Score
 
@@ -43,7 +43,7 @@ def claim_create(request, score_pk):
 
     form = Claim.form(request.POST)
     if form.is_valid():
-        claim = score.add_claim(request.user, urlize(clean_message(form.cleaned_data['comment'])))
+        claim = score.add_claim(request.user, clean_message(form.cleaned_data['comment']))
         mail_claim_new(request, claim)
 
     redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#claims'
@@ -61,7 +61,7 @@ def claim_answer(request, claim_pk):
 
     form = claim.answer_form(request.POST)
     if form.is_valid():
-        claim.add_answer(request.user, urlize(clean_message(form.cleaned_data['answer'])))
+        claim.add_answer(request.user, clean_message(form.cleaned_data['answer']))
         mail_claim_new(request, claim)
 
     redirect = reverse('exmo2010:score_view', args=[claim.score.pk]) + '#claims'

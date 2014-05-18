@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Django Software Foundation and individual contributors.
 # Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2013, 2014 Foundation "Institute for Information Freedom Development"
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@ register = template.Library()
 
 
 @register.filter(is_safe=True)
-def trim_links(data, trim_url_limit):
+def trim_links(data, trim_url_limit=70):
     """
     The URLs in link text longer than trim_url_limit will truncated to trim_url_limit-3 characters
     and appended with an elipsis.

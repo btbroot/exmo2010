@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n urlize_target_blank widget_tweaks criteria_css_class static comments days_until date_until trim_links future %}
+{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments days_until date_until trim_links future %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
@@ -216,7 +216,7 @@
                         {% endif %}
                         <div class="read" data-empty_text="{% trans 'No links' %}">
                             {% if score.links %}
-                                {{ score.links|urlize_target_blank:url_length|linebreaksbr }}
+                                {{ score.links|escape|urlizetrunc:70|target_blank|linebreaksbr }}
                             {% else %}
                                 {% trans 'No links' %}
                             {% endif %}
@@ -242,7 +242,7 @@
                             {% endif %}
                             <div class="read" data-empty_text="{% trans 'No recommendations' %}">
                                 {% if score.recommendations %}
-                                    {{ score.recommendations|urlize_target_blank:url_length|linebreaksbr }}
+                                    {{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}
                                 {% else %}
                                     {% trans 'No recommendations' %}
                                 {% endif %}
@@ -296,99 +296,99 @@
         </div>
     {% endif %}
 
-    {% if score.pk %}
-        {% if score.perms.view_comment %}
-            <div class="comments-block">
-                <h2>{% trans "Comments" %}</h2>
+    {% if score.pk and score.perms.view_comment %}
+        <div class="comments-block">
+            <h2>{% trans "Comments" %}</h2>
 
-                {% get_comment_list for score as comment_list %}
-                {% if comment_list %}
-                    <table class="table table-messages-parameter">
-                        <tbody>
-                        {% for comment in comment_list %}
-                            <tr id="c{{ comment.id }}">
-                                <td
-                                {% with comment.submit_date|workdays_still_left:param.monitoring.time_to_answer as ndays %}
-                                    {% if request.user.is_expert and comment.user.is_organization and not comment.user.is_superuser and comment.status == comment.OPEN %}
-                                        class="answer-{% if ndays < 0 %}missed{% elif ndays > 0 %}later{% else %}today{% endif %}"
+            {% get_comment_list for score as comment_list %}
+            {% if comment_list %}
+                <table class="table table-messages-parameter">
+                    <tbody>
+                    {% for comment in comment_list %}
+                        <tr id="c{{ comment.id }}">
+                            <td
+                            {% with comment.submit_date|workdays_still_left:param.monitoring.time_to_answer as ndays %}
+                                {% if request.user.is_expert and comment.user.is_organization and not comment.user.is_superuser and comment.status == comment.OPEN %}
+                                    class="answer-{% if ndays < 0 %}missed{% elif ndays > 0 %}later{% else %}today{% endif %}"
+                                {% endif %}
+                            {% endwith %}
+                            >
+                                <span class="messages-author">
+                                    {% if comment.user.is_expert and not request.user.is_expert %}
+                                        {{ masked_expert_name }}
+                                    {% else %}
+                                        {{ comment.user.legal_name }}
                                     {% endif %}
-                                {% endwith %}
-                                >
-                                    <span class="messages-author">
-                                        {% if comment.user.is_expert and not request.user.is_expert %}
-                                            {{ masked_expert_name }}
-                                        {% else %}
-                                            {{ comment.user.legal_name }}
-                                        {% endif %}
-                                    </span>
+                                </span>
 
-                                    <span class="messages-date">{{ comment.submit_date|date:"TIME_FORMAT" }}, {{ comment.submit_date|date:"DATE_FORMAT" }}</span>
+                                <span class="messages-date">
+                                    {{ comment.submit_date|date:"TIME_FORMAT" }}, {{ comment.submit_date|date:"DATE_FORMAT" }}
+                                </span>
 
-                                    <div class="messages-content">{{ comment.comment|safe|trim_links:url_length }}</div>
+                                <div class="messages-content">{{ comment.comment|safe|urlize_soup|trim_links|target_blank }}</div>
 
-                                    {% if request.user.is_expertA and not comment.user.is_expert and comment.status != comment.ANSWERED %}
-                                        <div class="toggle-comment-container">
-                                            <a href="{% url 'exmo2010:toggle_comment' %}" rel="{{comment.pk}}">
-                                                {% if comment.status == comment.OPEN %}
-                                                    {% trans 'Close without answer' %}
-                                                {% else %}
-                                                    {% trans 'Open comment' %}
-                                                {% endif %}
-                                            </a>
-                                        </div>
-                                    {% endif %}
+                                {% if request.user.is_expertA and not comment.user.is_expert and comment.status != comment.ANSWERED %}
+                                    <div class="toggle-comment-container">
+                                        <a href="{% url 'exmo2010:toggle_comment' %}" rel="{{comment.pk}}">
+                                            {% if comment.status == comment.OPEN %}
+                                                {% trans 'Close without answer' %}
+                                            {% else %}
+                                                {% trans 'Open comment' %}
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
+                            <tr class="orguser-notification">
+                                <td>
+                                    {% trans 'Deadline for answer to your comment is' %}
+                                    {{ comment.submit_date|date_until:param.monitoring.time_to_answer|date:"DATE_FORMAT" }}
                                 </td>
                             </tr>
-                            {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
-                                <tr class="orguser-notification">
-                                    <td>
-                                        {% trans 'Deadline for answer to your comment is' %}
-                                        {{ comment.submit_date|date_until:param.monitoring.time_to_answer|date:"DATE_FORMAT" }}
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p>{% trans 'There are no comments' %}</p>
-                {% endif %}
-            </div>
-        {% endif %}
-
-        {% if score.perms.add_comment %}
-            {% if interaction and request.user.is_expert %}
-                <div class="pseudo-tabs reply-edit">
-                    <span> <a href="#reply" class="pseudo"> {% trans 'Reply' %} </a> </span>
-                    <span> <a href="#change_score" class="pseudo"> {% trans 'Change score' %} </a> </span>
-                </div>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>{% trans 'There are no comments' %}</p>
             {% endif %}
+        </div>
+    {% endif %}
 
-            <div class="comment-form {% if request.user.is_expert %}hidden{% endif %}">
-                {% get_comment_form for score as form %}
-                <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
-                    {{ comment_form.comment }}
-                    <input type="submit"  class="tab-reply-block" id="submit_comment" value="{% trans 'Post comment' %}" disabled="disabled" />
-                    {% if score.perms.edit_score %}
-                        <input type="submit" class="tab_edit" id="submit_score_and_comment" value="{% trans 'Post comment and change score' %}" disabled="disabled" />
-                    {% endif %}
-                </form>
+    {% if score.pk and score.perms.add_comment %}
+        {% if interaction and request.user.is_expert %}
+            <div class="pseudo-tabs reply-edit">
+                <span> <a href="#reply" class="pseudo"> {% trans 'Reply' %} </a> </span>
+                <span> <a href="#change_score" class="pseudo"> {% trans 'Change score' %} </a> </span>
             </div>
         {% endif %}
 
-        {% if score.perms.view_claim %}
-            <div class="ccc-tabs">
-                <span> <a href="#clarifications" class="pseudo"> {% trans 'Clarifications' %} </a> </span>
-                <span> <a href="#claims" class="pseudo">  {% trans 'Claims' %} </a> </span>
-            </div>
+        <div class="comment-form {% if request.user.is_expert %}hidden{% endif %}">
+            {% get_comment_form for score as form %}
+            <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
+                {{ comment_form.comment }}
+                <input type="submit"  class="tab-reply-block" id="submit_comment" value="{% trans 'Post comment' %}" disabled="disabled" />
+                {% if score.perms.edit_score %}
+                    <input type="submit" class="tab_edit" id="submit_score_and_comment" value="{% trans 'Post comment and change score' %}" disabled="disabled" />
+                {% endif %}
+            </form>
+        </div>
+    {% endif %}
 
-            <div class="tab-content-clarifications hidden">
-                <div id="clarifications"> {% include "clarification.html" %} </div>
-            </div>
+    {% if score.pk and score.perms.view_claim %}
+        <div class="ccc-tabs">
+            <span> <a href="#clarifications" class="pseudo"> {% trans 'Clarifications' %} </a> </span>
+            <span> <a href="#claims" class="pseudo">  {% trans 'Claims' %} </a> </span>
+        </div>
 
-            <div class="tab-content-claims hidden">
-                <div id="claims"> {% include "claim.html" %} </div>
-            </div>
-        {% endif %}
+        <div class="tab-content-clarifications hidden">
+            <div id="clarifications"> {% include "clarification.html" %} </div>
+        </div>
+
+        <div class="tab-content-claims hidden">
+            <div id="claims"> {% include "claim.html" %} </div>
+        </div>
     {% endif %}
 {% endblock %}

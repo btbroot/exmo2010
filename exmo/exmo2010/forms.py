@@ -41,22 +41,6 @@ CORE_JS = (
 CORE_MEDIA = forms.Media(js=CORE_JS)
 
 
-class HorizRadioRenderer(forms.RadioSelect.renderer):
-    """ this overrides widget method to put radio buttons horizontally
-        instead of vertically.
-    """
-    def render(self):
-        """Outputs radios"""
-        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
-
-
-class EmailReadonlyWidget(forms.Widget):
-    def render(self, name, value=" ", attrs=None):
-        html = '<p id="id_%(name)s" name="%(name)s">%(value)s</p>' % \
-               {'name': name, 'value': value}
-        return mark_safe(html)
-
-
 class FeedbackForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), required=True)
     comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your problem'), required=True)

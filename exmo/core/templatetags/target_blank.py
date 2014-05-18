@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Al Nikolov
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,28 +15,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from BeautifulSoup import BeautifulSoup
+import re
 from django import template
-from django.utils.html import urlize
-from django.utils.safestring import mark_safe
 
 
 register = template.Library()
 
 
-@register.filter(is_safe=True, needs_autoescape=True)
-def urlize_target_blank(value, limit=None, autoescape=None):
+@register.filter(is_safe=True)
+def target_blank(value):
     """
-    Urlize with adding 'target="_blank"' attribute to <a> tag.
-    Argument: Length to truncate URLs to.
-
+    Add 'target="_blank"' attribute to all anchor tags found in the given text.
+    Existing 'target' attributes will be overwritten.
     """
-    text = urlize(value, limit, autoescape)
-    links = BeautifulSoup(text)
-
-    for a in links.findAll('a'):
-        a['target'] = '_blank'
-
-    result = mark_safe(links)
-
-    return result
+    # Clean existing target attributes.
+    value = re.sub('(?<=a)([^>]*)(?:target=[\'\"][^\'\"]*[\'\"])([^>]*)>', r'\1\2>', value)
+    # Add target="_blank".
+    return re.sub('<a([^>]*)>', '<a target="_blank"\\1>', value)

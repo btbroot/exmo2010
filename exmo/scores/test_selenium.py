@@ -516,7 +516,7 @@ class AddClaimTestCase(BaseSeleniumTestCase):
         self.assertVisible('div.messages-content')
 
         # AND claim should be added in DB
-        self.assertEqual(list(self.scores[status].claim_set.values_list('comment')), [('<p>lol</p>\n',)])
+        self.assertEqual(list(self.scores[status].claim_set.values_list('comment')), [('<p>lol</p>\r\n',)])
 
 
 class AnswerClaimTestCase(BaseSeleniumTestCase):
@@ -579,7 +579,7 @@ class AnswerClaimTestCase(BaseSeleniumTestCase):
         self.assertVisible('div.messages-answer')
 
         # AND claim answer should be added in DB
-        self.assertEqual(list(self.scores[status].claim_set.values_list('answer')), [('<p>lol</p>\n',)])
+        self.assertEqual(list(self.scores[status].claim_set.values_list('answer')), [('<p>lol</p>\r\n',)])
 
 
 class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):

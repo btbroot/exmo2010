@@ -22,13 +22,10 @@ import cStringIO
 import csv
 import re
 
-from BeautifulSoup import BeautifulSoup
 from django.conf import settings
 from django.core.urlresolvers import get_resolver, RegexURLResolver
 from django.utils.safestring import mark_safe
 from lxml.html.clean import Cleaner
-
-from core.templatetags.urlize_target_blank import urlize_target_blank
 
 
 def workday_count(start, end):
@@ -129,23 +126,6 @@ def clean_message(comment):
     comment = re.sub(r'(?<=^(<span>))(<br>){1,2}|(<br>){1,4}(?=(</span>)$)', '', comment)
     comment = re.sub(r'(<br>){1,2}(?=(</p>)$)', '', comment)
     return mark_safe(comment)
-
-
-def urlize(textdata):
-    """
-    Convert all http links into anchor tags and add target=_blank
-
-    """
-    soup = BeautifulSoup(textdata)
-
-    for link in soup.findAll('a'):
-        link['target'] = '_blank'
-
-    for text_node in soup.findAll(text=True):
-        urlized = BeautifulSoup(urlize_target_blank(text_node))
-        text_node.replaceWith(urlized)
-
-    return unicode(soup)
 
 
 def get_named_patterns():

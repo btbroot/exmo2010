@@ -26,7 +26,7 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
 from clarifications.forms import ClarificationReportForm
-from core.utils import urlize, clean_message
+from core.utils import clean_message
 from exmo2010.mail import mail_clarification
 from exmo2010.models import Clarification, Monitoring, Score
 
@@ -42,7 +42,7 @@ def clarification_create(request, score_pk):
 
     form = Clarification.form(request.POST)
     if form.is_valid():
-        clarification = score.add_clarification(request.user, urlize(clean_message(form.cleaned_data['comment'])))
+        clarification = score.add_clarification(request.user, clean_message(form.cleaned_data['comment']))
         mail_clarification(request, clarification)
 
     redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#clarifications'
@@ -60,7 +60,7 @@ def clarification_answer(request, clarification_pk):
 
     form = clarification.answer_form(request.POST)
     if form.is_valid():
-        clarification.add_answer(request.user, urlize(clean_message(form.cleaned_data['answer'])))
+        clarification.add_answer(request.user, clean_message(form.cleaned_data['answer']))
         mail_clarification(request, clarification)
 
     redirect = reverse('exmo2010:score_view', args=[clarification.score.pk]) + '#clarifications'

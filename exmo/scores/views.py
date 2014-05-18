@@ -33,6 +33,7 @@ from django.forms.models import modelform_factory
 from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.utils.html import escape, urlize
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from livesettings import config_value
@@ -40,7 +41,8 @@ from livesettings import config_value
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table_prepare_queryset
 from core.response import JSONResponse
-from core.utils import clean_message, urlize
+from core.templatetags.target_blank import target_blank
+from core.utils import clean_message
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
 from exmo2010.models import Score, Task, Parameter, QQuestion, QAnswer, UserProfile
@@ -177,7 +179,6 @@ def score_view(request, **kwargs):
         'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
         'criteria': criteria,
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
-        'url_length': 70,
         'claim_list': claim_list,
         'all_max_initial': all_max,
         'comment_form': CommentForm(request.POST if request.method == 'POST' else None),
@@ -225,6 +226,9 @@ def _add_comment(request, score):
     mail_comment(request, comment)
 
 
+ajax_soup = lambda txt: target_blank(urlize(escape(txt), 70)).replace('\n', '<br />')
+
+
 def post_recommendations(request, score_pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
@@ -239,7 +243,7 @@ def post_recommendations(request, score_pk):
     except ValidationError:
         return HttpResponseBadRequest()
     score.save()
-    return JSONResponse({'data': urlize(score.recommendations.replace('\n', '<br />'))})
+    return JSONResponse({'data': ajax_soup(score.recommendations)})
 
 
 def post_score_links(request, score_pk):
@@ -252,7 +256,7 @@ def post_score_links(request, score_pk):
 
     score.links = request.POST['links']
     score.save()
-    return JSONResponse({'data': urlize(score.links.replace('\n', '<br />'))})
+    return JSONResponse({'data': ajax_soup(score.links)})
 
 
 @login_required

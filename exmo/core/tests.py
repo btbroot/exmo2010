@@ -19,15 +19,27 @@
 from django.test import TestCase
 from nose_parameterized import parameterized
 
-from core.utils import urlize
+from core.templatetags.target_blank import target_blank
+from core.templatetags.urlize_soup import urlize_soup
 
 
-class UrlizeTestCase(TestCase):
-    # should convert plain urls to 'a' tags and add target='_blank'
+class UrlizeSoupTestCase(TestCase):
+    # Should convert plain urls to anchor tags, leaving existing anchors untouched
+
+    @parameterized.expand([
+        ('<a><span>X</span>Y</a>Z', '<a><span>X</span>Y</a>Z'),
+        ('http://ya.ru', '<a href="http://ya.ru">http://ya.ru</a>')
+    ])
+    def test_urlize_soup(self, data, expected_result):
+        self.assertEqual(urlize_soup(data), expected_result)
+
+
+class TargetBalnkTestCase(TestCase):
+    # Should add target="_blank" to anchor tags
 
     @parameterized.expand([
         ('<a><span>X</span>Y</a>Z', '<a target="_blank"><span>X</span>Y</a>Z'),
-        ('http://ya.ru', '<a href="http://ya.ru" target="_blank">http://ya.ru</a>')
+        ('<a target="_blank">http://ya.ru</a>', '<a target="_blank" >http://ya.ru</a>')
     ])
-    def test_urlize(self, data, expected_result):
-        self.assertEqual(urlize(data), expected_result)
+    def test_target_blank(self, data, expected_result):
+        self.assertEqual(target_blank(data), expected_result)
