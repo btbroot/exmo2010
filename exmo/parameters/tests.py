@@ -97,10 +97,9 @@ class DuplicateParamCreationTestCase(TestCase):
     # SHOULD return validation error if parameter with already existing code or name is added
 
     def setUp(self):
-        # GIVEN monitoring with parameter and task
-        self.monitoring = mommy.make(Monitoring)
-        self.param1 = mommy.make(Parameter, code=123, name='asd', monitoring=self.monitoring)
-        self.task = mommy.make(Task, organization__monitoring=self.monitoring)
+        # GIVEN  parameter and task in monitoring
+        self.param1 = mommy.make(Parameter, code=123, name='asd')
+        self.task = mommy.make(Task, organization__monitoring=self.param1.monitoring)
 
         # AND i am logged in as expertA:
         self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
@@ -108,7 +107,7 @@ class DuplicateParamCreationTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
     def test_duplicate_code(self):
-        formdata = dict(code=self.param1.code, name_en='123', monitoring=99, weight=1)
+        formdata = dict(code=self.param1.code, name_en='123', weight=1)
         # WHEN I submit parameter add form with existing parameter code
         response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
         # THEN no new parameters shoud get created in database
@@ -120,7 +119,7 @@ class DuplicateParamCreationTestCase(TestCase):
         self.assertEqual(response.context['form'].errors, errors)
 
     def test_duplicate_name(self):
-        formdata = dict(code='456', name_en=self.param1.name, monitoring=99, weight=1)
+        formdata = dict(code='456', name_en=self.param1.name, weight=1)
         # WHEN I submit parameter add form with existing parameter code
         response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
         # THEN no new parameters shoud get created in database
@@ -146,7 +145,7 @@ class ParamCreateTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
     def test_add_param(self):
-        formdata = dict(code='456', name_en='ppp', monitoring=99, weight=1)
+        formdata = dict(code='456', name_en='ppp', weight=1)
         # WHEN I submit parameter add form
         response = self.client.post(reverse('exmo2010:parameter_add', args=[self.task.pk]), formdata)
         # THEN new parameter shoud get created in database
@@ -160,22 +159,15 @@ class ParamEditEmailNotifyTestCase(TestCase):
     # SHOULD send notification email to related experts if expertA clicked "save and notify" on parameter edit page
 
     def setUp(self):
-        # GIVEN expertA and expertB:
+        # GIVEN i am logged in as expertA:
         self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
         self.expertA.profile.is_expertA = True
-        self.expertB = User.objects.create_user('expertB', 'B@ya.ru', 'password')
-        self.expertB.profile.is_expertB = True
-
-        # AND i am logged in as expertA:
         self.client.login(username='expertA', password='password')
 
-        # AND Monitoring with Organization and Parameter
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        organization = mommy.make(Organization, monitoring=monitoring)
-        self.parameter = mommy.make(Parameter, monitoring=monitoring)
-
-        # AND Task assigned to expertB
-        self.task = mommy.make(Task, organization=organization, user=self.expertB)
+        # AND organization, parameter and task in monitoring
+        org = mommy.make(Organization)
+        self.parameter = mommy.make(Parameter, monitoring=org.monitoring)
+        self.task = mommy.make(Task, organization=org, user__email='B@ya.ru')
 
         # NOTE: pop message about task assignment to expertB
         # TODO: get rid of this automatic email on Task creation, move to the view
@@ -185,7 +177,7 @@ class ParamEditEmailNotifyTestCase(TestCase):
         url = reverse('exmo2010:parameter_update', args=[self.task.pk, self.parameter.pk])
 
         # WHEN i submit parameter form with "save and notify" button
-        formdata = dict(model_to_dict(self.parameter), monitoring=self.parameter.monitoring_id, submit_and_send=True)
+        formdata = dict(model_to_dict(self.parameter), submit_and_send=True)
         response = self.client.post(url, follow=True, data=formdata)
 
         # THEN response status_code should be 200 (OK)
@@ -196,3 +188,43 @@ class ParamEditEmailNotifyTestCase(TestCase):
 
         # AND both expertA and expertB should get the email
         self.assertEqual(set(tuple(m.to) for m in mail.outbox), set([('A@ya.ru',), ('B@ya.ru',)]))
+
+
+class ParamEditValidTestCase(TestCase):
+    # Should modify parameter in database on valid parameter edit form submission.
+
+    def setUp(self):
+        # GIVEN i am logged in as expertA:
+        self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND organization, parameter and task in monitoring
+        org = mommy.make(Organization)
+        self.parameter = mommy.make(Parameter, monitoring=org.monitoring, name_en='param', notes_en='123')
+        self.task = mommy.make(Task, organization=org, user__email='B@ya.ru')
+        self.url = reverse('exmo2010:parameter_update', args=[self.task.pk, self.parameter.pk])
+
+    def test_edit_name(self):
+        # WHEN i submit parameter form with new name_en
+        formdata = dict(model_to_dict(self.parameter), name_en='changed')
+        response = self.client.post(self.url, follow=True, data=formdata)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND name_en should change in database
+        self.assertEqual(list(Parameter.objects.values('name_en')), [{'name_en': 'changed'}])
+
+    def test_clear_notes_en(self):
+        ''' BUG 2031: Should clear notes_en field in database when empty notes_en submitted with edit form. '''
+
+        # WHEN i submit parameter form with "notes_en" set to empty string
+        formdata = dict(model_to_dict(self.parameter), notes_en='')
+        response = self.client.post(self.url, follow=True, data=formdata)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND notes_en should change to NULL (None) in database
+        self.assertEqual(list(Parameter.objects.values('notes_en')), [{'notes_en': None}])
