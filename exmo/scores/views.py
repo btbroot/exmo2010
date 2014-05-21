@@ -136,7 +136,7 @@ def score_view(request, **kwargs):
     score_table = [{
         'label': score._meta.get_field_by_name(criterion)[0].verbose_name,
         'score': getattr(score, criterion),
-        'score_rev1': getattr(score_rev1[0], criterion) or '-' if score_rev1 else '',
+        'score_rev1': getattr(score_rev1[0], criterion) or '–' if score_rev1 else '',
         'criterion': criterion,
         'max_score': getattr(score, criterion) == score._meta.get_field(criterion).choices[-1][-1]
     } for criterion in criteria]
