@@ -386,7 +386,7 @@ def task_scores(request, task_pk):
         'score_interact_dict': score_interact_dict,
         'parameters_npa': parameters_npa,
         'parameters_other': parameters_other,
-        'monitoring': monitoring,
+        'perm_admin_monitoring': request.user.has_perm('exmo2010.admin_monitoring', monitoring),
         'task': task,
         'has_npa': has_npa,
         'title': title,

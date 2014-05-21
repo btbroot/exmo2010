@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -25,20 +25,18 @@
     {% blocktrans %}Edit organization {{org}}{% endblocktrans %}
 {% endblock %}
 
-{% block h1 %}
-    <h1> {% blocktrans %}Edit organization {{org}}{% endblocktrans %} </h1>
-{% endblock %}
-
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     {{ media }}
     {{ form.media }}
     <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
 {% endblock %}
 
-{% block content %} {% include "_organization_form.html" %} {% endblock %}
+{% block h1 %}<h1>{% blocktrans %}Edit organization {{org}}{% endblocktrans %}</h1>{% endblock %}
+
+{% block content %}
+    {% include "_organization_form.html" %}
+{% endblock %}

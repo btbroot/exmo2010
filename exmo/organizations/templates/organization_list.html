@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,16 +19,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n monitoring_stats check_object_permission static %}
+{% load i18n static monitoring_stats check_object_permission %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'jquery-ui/jquery-ui-1.10.4.custom.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
     <script type="text/javascript">jQuery('input[placeholder], textarea[placeholder]').placeholder();</script>
     <script type="text/javascript" src="{% static 'exmo2010/js/bootstrap-tab.js' %}"></script>
@@ -43,21 +41,9 @@
     </script>
 {% endblock %}
 
-{% block nav_sidebar %}
-    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-{% endblock %}
-
-{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-
-{% block content_title %}
-    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-{% endblock %}
-
-{% block content_class %}sidebar-ident{% endblock %}
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
-
     {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
 
     <div id="top-menu">

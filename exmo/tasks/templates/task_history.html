@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends request.user.is_expertA|yesno:"base_sidebar.html,base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,37 +19,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission static %}
+{% load i18n static check_object_permission %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
 {% endblock %}
 
-{% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
-
-{% block nav_sidebar %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
-        {% include "exmo2010/nav_sidebar/organization_utility.html" %}
-    {% endif %}
-{% endblock %}
-
-{% block nav_sidebar_title %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
+{% block sidebar_h1 %}
+    {% if is_expertA %}
         <h1>{{ task.organization.name }}</h1>
     {% endif %}
 {% endblock %}
 
-{% block content_class %}
-    {% if request.user.is_active and request.user.userprofile.is_expertA or request.user.is_superuser %}
-        sidebar-ident
-    {% endif %}
+{% block bubble %}
+    {% include "exmo2010/helpers/inv_code_bubble.html" %}
 {% endblock %}
 
-{% block content_title %}{% endblock %}
-
 {% block content %}
-
     <h2>{% trans 'History' %}</h2>
 
     <table class="base-table">
@@ -69,5 +55,4 @@
             {% endfor %}
         </tbody>
     </table>
-
 {% endblock %}

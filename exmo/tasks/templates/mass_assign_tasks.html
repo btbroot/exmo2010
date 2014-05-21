@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,13 +21,10 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block nav_sidebar %}
-    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-{% endblock %}
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
-{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-{% block content_title %}{% trans "Task assignment" %}{% endblock %}
-{% block content_class %}sidebar-ident{% endblock %}
+{% block h1 %}<h1>{% trans "Task assignment" %}</h1>{% endblock %}
+
 {% block content %}
     {% if log %}
         <div id="failure">{% trans "Process log:" %}:
@@ -48,5 +45,4 @@
         </select>
         <input type="submit" value="{% trans 'Send' %}" />
     </form>
-
 {% endblock %}

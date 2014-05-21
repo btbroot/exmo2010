@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,59 +19,63 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static %}
 
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/reports_analyst.css"/>
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/reports_analyst.js"></script>
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/reports_analyst.js' %}"></script>
 {% endblock %}
 
 {% block pretitle %}
     {% include "menu_interaction.html" with active_item="2" %}
 {% endblock %}
 
+{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
+
 {% block content %}
-<table class="base-table">
-    <tbody>
+    <table class="base-table">
+        <tbody>
+            <tr>
+                <th>{% trans 'Time and date' %}</th>
+                <th>{% trans 'Organization' %}</th>
+                <th>{% trans 'Link to clarification' %}</th>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if clarifications %}
+        <table class="base-table">
+            <tbody>
+            <tr>
+                <td colspan="3" class="report-title open">
+                    <span>{% trans 'Without answer' %}</span> ({{ clarifications|length }})
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table class="base-table open">
+            <tbody>
+                {% include "clarification_list_table.html" %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <table class="base-table">
+        <tbody>
         <tr>
-            <th>{% trans 'Time and date' %}</th>
-            <th>{% trans 'Organization' %}</th>
-            <th>{% trans 'Link to clarification' %}</th>
+            <td colspan="3" class="report-title closed" rel="{% url 'exmo2010:clarification_list' %}">
+                <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
+            </td>
         </tr>
-    </tbody>
-</table>
-{% if clarifications %}
-<table class="base-table">
-    <tbody>
-    <tr>
-        <td colspan="3" class="report-title open">
-            <span>{% trans 'Without answer' %}</span> ({{ clarifications|length }})
-        </td>
-    </tr>
-    </tbody>
-</table>
-<table class="base-table open">
-    <tbody>
-        {% include "clarification_list_table.html" %}
-    </tbody>
-</table>
-{% endif %}
-<table class="base-table">
-    <tbody>
-    <tr>
-        <td colspan="3" class="report-title closed" rel="{% url 'exmo2010:clarification_list' %}">
-            <span>{% trans 'Processed' %}</span>&nbsp;<img src="{{STATIC_URL}}exmo2010/img/ajax-loader.gif" />
-        </td>
-    </tr>
-    </tbody>
-</table>
-<table class="base-table closed">
-    <tbody>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+
+    <table class="base-table closed">
+        <tbody>
+        </tbody>
+    </table>
 {% endblock %}

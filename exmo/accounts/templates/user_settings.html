@@ -1,9 +1,9 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,20 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/settings.css"/>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/form_errors.css"/>
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/settings.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/form_errors.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/user_settings.js"></script>
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/user_settings.js' %}"></script>
 {% endblock %}
+
+{% block h1 %}<h1>{% trans 'Preferences' %}</h1>{% endblock %}
 
 {% block content %}
-    <h1>{% trans 'Preferences' %}</h1>
     <p>{% trans 'Here you can change your account, password and notification settings.' %}</p>
 
     <h2>{% trans 'Personal information' %}</h2>

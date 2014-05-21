@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,10 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission static future %}
+{% load i18n static check_object_permission %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
     <style>
         label[for='id_time_to_answer'] {
@@ -36,22 +35,15 @@
     </style>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     <script type="text/javascript">
         function toggle(el) {$('#' + el).toggle();}
     </script>
 {% endblock %}
 
-{% block nav_sidebar %}
-    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-{% endblock %}
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
-{% block nav_sidebar_title %}
-    <h1>{{ monitoring.name }}</h1>
-{% endblock %}
-
-{% block content_class %}sidebar-ident{% endblock %}
+{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
 
 {% block content %}
     <form method="post" action="">{% csrf_token %}

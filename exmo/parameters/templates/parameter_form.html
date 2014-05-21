@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,19 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future widget_tweaks %}
-
-{% block extrahead %}
-    {{ block.super }}
-    {{ form.media }}
-{% endblock %}
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css" />
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}exmo2010/css/parameter.css" />
-{% endblock %}
-
+{% load i18n static widget_tweaks %}
 
 {% block title %}
     {% if param.pk %}
@@ -39,6 +27,15 @@
     {% else %}
         {% blocktrans %}Add new parameter{% endblocktrans %}
     {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/parameter.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
+    {{ form.media }}
 {% endblock %}
 
 {% block h1 %}

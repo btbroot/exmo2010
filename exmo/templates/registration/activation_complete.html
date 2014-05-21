@@ -1,4 +1,4 @@
-{% extends "exmo2010/base.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,31 +19,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/login.css"/>
-{% endblock %}
-
-{% block bodyclass %}login{% endblock %}
-
-{% block content_title %}{% endblock %}
-
-{% block breadcrumbs %}{% endblock %}
-
-{% block userwelcome %}{% endblock %}
-
-{% block userlinks %}{% endblock %}
+{% load i18n static %}
 
 {% block title %}{% trans 'Registration confirmed' %} | {% trans 'AIS Infometer' %}{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/login.css' %}"/>
+{% endblock %}
+
+{% block h1 %}<h1>{% trans 'Registration confirmed' %}</h1>{% endblock %}
+
 {% block content %}
-    <h1>{% trans 'Registration confirmed' %}</h1>
     <div id="content-main">
         {% url 'auth_login' as login_url %}
-        {% blocktrans %}
-            <p>Now you can <a href="{{ login_url }}">log in</a> with credentials provided during registration.</p>
-        {% endblocktrans %}
+        <p>
+            {% blocktrans %}Now you can <a href="{{ login_url }}">log in</a> with credentials provided during registration.{% endblocktrans %}
+        </p>
     </div>
 {% endblock %}

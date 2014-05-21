@@ -1,9 +1,9 @@
-{% extends "exmo2010/base.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,13 +24,10 @@
 {% block title %}{% trans 'Error: cookies disabled in your browser!' %}{% endblock %}
 
 {% block header %}
-    {% include 'errors_header.html' %}
+    {% include '_errors_header.html' %}
 {% endblock %}
 
 {% block content %}
-
     <h2>{% trans 'Error: cookies disabled in your browser!' %}</h2>
-
     <p>{% trans "Our site requires enabled cookies and JavaScript. Please enable them in your browser settings." %}</p>
-
 {% endblock %}

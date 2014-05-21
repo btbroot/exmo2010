@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
@@ -18,659 +18,653 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-
 {% load i18n static %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/opendata.css' %}"/>
 {% endblock %}
 
+{% block h1 %}<h1>{% trans "Open data" %}</h1>{% endblock %}
+
 {% block content %}
-<h1>{% trans "Open data" %}</h1>
-<p>
-{% blocktrans %}There's ability to download dataset for an every monitoring cycle in Infometer system using two formats, JSON and CSV. JSON file is for machine data processing. CSV file is for research it can be opened by spreadsheet application.
-{% endblocktrans %}
-</p>
-<p>
-{% blocktrans %}Data available to download from finished monitoring cycles pages. For understanding data to download, we suggest familiarize with
-{% endblocktrans %}
-    <a href="{{ link_to_methodology }}" target="_blank">{% trans "metodology of official sites of government authorities" %}</a>.
-
-</p>
-<h2>{% trans "Structure of JSON dataset to download" %}</h2>
-<table class="base-table dataset-json">
-    <tbody>
-        <tr>
-            <td>
-               <b>{% trans "Designation" %}</b>
-            </td>
-            <td>
-                <b>{% trans "Description" %}</b>
-            </td>
-            <td class="possible">
-                <b>{% trans "Possible values" %}</b>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                "monitoring": {
-            </td>
-            <td>
-                {% trans "Monitoring cycle" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "name":
-            </td>
-            <td>
-                {% trans "Name of monitoring cycle" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab1">
-                "tasks": [{
-            </td>
-            <td>
-                {% trans "Organizations array within monitoring cycle" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "id":
-            </td>
-            <td>
-                {% trans "Organization's ID in database" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "name":
-            </td>
-            <td>
-                {% trans "Organization's name" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "url":
-            </td>
-            <td>
-                {% trans "Organization's site URL" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "position":
-            </td>
-            <td>
-                {% trans "Organization's place in rating" %}
-            </td>
-            <td>
-                {% trans "Natural number" %}
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "openness_initial":
-            </td>
-            <td>
-                {% trans "Score of organization's site openness before interaction of organization's representatives with experts" %}
-            </td>
-            <td>
-                {% trans "From" %} 0.000 {% trans "to" %} 100.000
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "openness":
-            </td>
-            <td>
-                {% trans "Final score of site's openness" %}
-            </td>
-            <td>
-                {% trans "From" %} 0.000 {% trans "to" %} 100.000
-            </td>
-        </tr>
-        <tr>
-            <td class="tab2">
-                "scores": [{
-            </td>
-            <td>
-                {% trans "Parameter's scores array of organization's site within monitoring cycle" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-
-
-        <tr>
-            <td class="tab3">
-                "name":
-            </td>
-            <td>
-                {% trans "Parameters's name" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "pk":
-            </td>
-            <td>
-                {% trans "Scores's ID in database" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "id":
-            </td>
-            <td>
-                {% trans "Parameters's ID in database" %}
-            </td>
-            <td>
-
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "social":
-            </td>
-            <td>
-                {% trans "Value of social importance factor" %}
-            </td>
-            <td>
-                {1, 2, 3}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "found":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Found"' %}
-            </td>
-            <td>
-                {0, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "сomplete":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Complete"' %}
-            </td>
-            <td>
-                {0.2, 0.5, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "topical":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Topical"' %}
-            </td>
-            <td>
-                {0.7, 0.85, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "accessible":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Accessible"' %}
-            </td>
-            <td>
-                {0.9, 0.95, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "hypertext":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Hypertext"' %}
-            </td>
-            <td>
-                {0.2, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "document":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Document"' %}
-            </td>
-            <td>
-                {0.85, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "image":
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Image"' %}
-            </td>
-            <td>
-                {0.95, 1}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "type":
-            </td>
-            <td>
-                {% trans "Parameter's type" %}
-            </td>
-            <td>
-                {'other', 'npa'}
-            </td>
-        </tr>
-
-        <tr>
-            <td class="tab3">
-                "revision":
-            </td>
-            <td>
-                {% trans "Parameter's score version" %}
-            </td>
-            <td>
-                {'default', 'initial'}
-            </td>
-        </tr>
-
-        {% if json_license %}
+    <p>
+        {% blocktrans %}There's ability to download dataset for an every monitoring cycle in Infometer system using two formats, JSON and CSV. JSON file is for machine data processing. CSV file is for research it can be opened by spreadsheet application.{% endblocktrans %}
+    </p>
+    <p>
+        {% blocktrans %}Data available to download from finished monitoring cycles pages. For understanding data to download, we suggest familiarize with{% endblocktrans %}
+        <a href="{{ link_to_methodology }}" target="_blank">{% trans "metodology of official sites of government authorities" %}</a>.
+    </p>
+    <h2>{% trans "Structure of JSON dataset to download" %}</h2>
+    <table class="base-table dataset-json">
+        <tbody>
             <tr>
-                <td>"license": {</td>
-                <td>{% trans "Data use terms" %}</td>
-                <td></td>
+                <td>
+                   <b>{% trans "Designation" %}</b>
+                </td>
+                <td>
+                    <b>{% trans "Description" %}</b>
+                </td>
+                <td class="possible">
+                    <b>{% trans "Possible values" %}</b>
+                </td>
             </tr>
-            {% if json_license.name %}
+            <tr>
+                <td>
+                    "monitoring": {
+                </td>
+                <td>
+                    {% trans "Monitoring cycle" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab1">
+                    "name":
+                </td>
+                <td>
+                    {% trans "Name of monitoring cycle" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab1">
+                    "tasks": [{
+                </td>
+                <td>
+                    {% trans "Organizations array within monitoring cycle" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "id":
+                </td>
+                <td>
+                    {% trans "Organization's ID in database" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "name":
+                </td>
+                <td>
+                    {% trans "Organization's name" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "url":
+                </td>
+                <td>
+                    {% trans "Organization's site URL" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "position":
+                </td>
+                <td>
+                    {% trans "Organization's place in rating" %}
+                </td>
+                <td>
+                    {% trans "Natural number" %}
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "openness_initial":
+                </td>
+                <td>
+                    {% trans "Score of organization's site openness before interaction of organization's representatives with experts" %}
+                </td>
+                <td>
+                    {% trans "From" %} 0.000 {% trans "to" %} 100.000
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "openness":
+                </td>
+                <td>
+                    {% trans "Final score of site's openness" %}
+                </td>
+                <td>
+                    {% trans "From" %} 0.000 {% trans "to" %} 100.000
+                </td>
+            </tr>
+            <tr>
+                <td class="tab2">
+                    "scores": [{
+                </td>
+                <td>
+                    {% trans "Parameter's scores array of organization's site within monitoring cycle" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="tab3">
+                    "name":
+                </td>
+                <td>
+                    {% trans "Parameters's name" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "pk":
+                </td>
+                <td>
+                    {% trans "Scores's ID in database" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "id":
+                </td>
+                <td>
+                    {% trans "Parameters's ID in database" %}
+                </td>
+                <td>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "social":
+                </td>
+                <td>
+                    {% trans "Value of social importance factor" %}
+                </td>
+                <td>
+                    {1, 2, 3}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "found":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Found"' %}
+                </td>
+                <td>
+                    {0, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "сomplete":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Complete"' %}
+                </td>
+                <td>
+                    {0.2, 0.5, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "topical":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Topical"' %}
+                </td>
+                <td>
+                    {0.7, 0.85, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "accessible":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Accessible"' %}
+                </td>
+                <td>
+                    {0.9, 0.95, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "hypertext":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Hypertext"' %}
+                </td>
+                <td>
+                    {0.2, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "document":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Document"' %}
+                </td>
+                <td>
+                    {0.85, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "image":
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Image"' %}
+                </td>
+                <td>
+                    {0.95, 1}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "type":
+                </td>
+                <td>
+                    {% trans "Parameter's type" %}
+                </td>
+                <td>
+                    {'other', 'npa'}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tab3">
+                    "revision":
+                </td>
+                <td>
+                    {% trans "Parameter's score version" %}
+                </td>
+                <td>
+                    {'default', 'initial'}
+                </td>
+            </tr>
+
+            {% if json_license %}
                 <tr>
-                    <td class="tab1">
-                        "name":
-                    </td>
-                    <td>{% trans "License name" %}</td>
+                    <td>"license": {</td>
+                    <td>{% trans "Data use terms" %}</td>
                     <td></td>
                 </tr>
+                {% if json_license.name %}
+                    <tr>
+                        <td class="tab1">
+                            "name":
+                        </td>
+                        <td>{% trans "License name" %}</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                {% if json_license.url %}
+                    <tr>
+                        <td class="tab1">
+                            "url":
+                        </td>
+                        <td>{% trans "License URL" %}</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                {% if json_license.rightsholder %}
+                    <tr>
+                        <td class="tab1">
+                            "rightsholder":
+                        </td>
+                        <td>{% trans "Rightsholder URL" %}</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+                {% if json_license.source %}
+                    <tr>
+                        <td class="tab1">
+                            "source":
+                        </td>
+                        <td>{% trans "Data source URL" %}</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
             {% endif %}
-            {% if json_license.url %}
-                <tr>
-                    <td class="tab1">
-                        "url":
-                    </td>
-                    <td>{% trans "License URL" %}</td>
-                    <td></td>
-                </tr>
-            {% endif %}
-            {% if json_license.rightsholder %}
-                <tr>
-                    <td class="tab1">
-                        "rightsholder":
-                    </td>
-                    <td>{% trans "Rightsholder URL" %}</td>
-                    <td></td>
-                </tr>
-            {% endif %}
-            {% if json_license.source %}
-                <tr>
-                    <td class="tab1">
-                        "source":
-                    </td>
-                    <td>{% trans "Data source URL" %}</td>
-                    <td></td>
-                </tr>
-            {% endif %}
-        {% endif %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<h4>{% trans "Dataset description" %}</h4>
+    <h4>{% trans "Dataset description" %}</h4>
 
-<ul>
-    <li>
-{% blocktrans %}Quantity of parameters from different organizations may not be the same because some parameters are relevant only for several organizations.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Within estimate absent may be such criteria as Fullness, Actuality, Navigation accessibility, HTML accessibility, File accessibility, Graphical accessibility as they may be not relevant for parameter.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Parameter type can have two values: 1) "other" for formulated by experts parameters; 2) "npa" for formulated by normative legal acts parameters.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Version of parameter's estimate can have two values: 1) "initial" for parameter's estimate before interaction of organization's representatives with experts; 2) \"default\" for final parameter's estimate after interaction of organization's representatives with experts. Within dataset parameters with \"initial\" value may be absent if parameter's estimate was not changed during interaction.{% endblocktrans %}
-    </li>
-</ul>
+    <ul>
+        <li>
+    {% blocktrans %}Quantity of parameters from different organizations may not be the same because some parameters are relevant only for several organizations.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Within estimate absent may be such criteria as Fullness, Actuality, Navigation accessibility, HTML accessibility, File accessibility, Graphical accessibility as they may be not relevant for parameter.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Parameter type can have two values: 1) "other" for formulated by experts parameters; 2) "npa" for formulated by normative legal acts parameters.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Version of parameter's estimate can have two values: 1) "initial" for parameter's estimate before interaction of organization's representatives with experts; 2) \"default\" for final parameter's estimate after interaction of organization's representatives with experts. Within dataset parameters with \"initial\" value may be absent if parameter's estimate was not changed during interaction.{% endblocktrans %}
+        </li>
+    </ul>
 
-<h2>{% trans "Structure of CSV dataset to download" %}</h2>
-<table class="base-table dataset-csv">
-    <tbody>
-        <tr>
-            <td>
-                <b>№</b>
-            </td>
-            <td>
-               <b>{% trans "Designation" %}</b>
-            </td>
-            <td>
-                <b>{% trans "Description" %}</b>
-            </td>
-            <td class="possible">
-                <b>{% trans "Possible values" %}</b>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                1
-            </td>
-            <td>
-                Monitoring
-            </td>
-            <td>
-                {% trans "Name of monitoring cycle" %}
-            </td>
-            <td>
+    <h2>{% trans "Structure of CSV dataset to download" %}</h2>
+    <table class="base-table dataset-csv">
+        <tbody>
+            <tr>
+                <td>
+                    <b>№</b>
+                </td>
+                <td>
+                   <b>{% trans "Designation" %}</b>
+                </td>
+                <td>
+                    <b>{% trans "Description" %}</b>
+                </td>
+                <td class="possible">
+                    <b>{% trans "Possible values" %}</b>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    1
+                </td>
+                <td>
+                    Monitoring
+                </td>
+                <td>
+                    {% trans "Name of monitoring cycle" %}
+                </td>
+                <td>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                2
-            </td>
-            <td>
-                Organization
-            </td>
-            <td>
-                {% trans "Organization's name" %}
-            </td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    2
+                </td>
+                <td>
+                    Organization
+                </td>
+                <td>
+                    {% trans "Organization's name" %}
+                </td>
+                <td>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                3
-            </td>
-            <td>
-                Organization_id
-            </td>
-            <td>
-                {% trans "Organization's ID in database" %}
-            </td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    3
+                </td>
+                <td>
+                    Organization_id
+                </td>
+                <td>
+                    {% trans "Organization's ID in database" %}
+                </td>
+                <td>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                4
-            </td>
-            <td>
-                Position
-            </td>
-            <td>
-                {% trans "Organization's place in rating" %}
-            </td>
-            <td>
-                {% trans "Natural number" %}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                5
-            </td>
-            <td>
-                Initial Openness
-            </td>
-            <td>
-                {% trans "Score of organization's site openness before interaction of organization's representatives with experts" %}
-            </td>
-            <td>
-                {% trans "From" %} 0.000 {% trans "to" %} 100.000
-            </td>
-        </tr>
-        <tr>
-            <td>
-                6
-            </td>
-            <td>
-                Openness
-            </td>
-            <td>
-                {% trans "Final score of site's openness" %}
-            </td>
-            <td>
-                {% trans "From" %} 0.000 {% trans "to" %} 100.000
-            </td>
-        </tr>
-        <tr>
-            <td>
-                7
-            </td>
-            <td>
-                Parameter
-            </td>
-            <td>
-                {% trans "Parameters's name" %}
-            </td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    4
+                </td>
+                <td>
+                    Position
+                </td>
+                <td>
+                    {% trans "Organization's place in rating" %}
+                </td>
+                <td>
+                    {% trans "Natural number" %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    5
+                </td>
+                <td>
+                    Initial Openness
+                </td>
+                <td>
+                    {% trans "Score of organization's site openness before interaction of organization's representatives with experts" %}
+                </td>
+                <td>
+                    {% trans "From" %} 0.000 {% trans "to" %} 100.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    6
+                </td>
+                <td>
+                    Openness
+                </td>
+                <td>
+                    {% trans "Final score of site's openness" %}
+                </td>
+                <td>
+                    {% trans "From" %} 0.000 {% trans "to" %} 100.000
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    7
+                </td>
+                <td>
+                    Parameter
+                </td>
+                <td>
+                    {% trans "Parameters's name" %}
+                </td>
+                <td>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                8
-            </td>
-            <td>
-                Parameter_id
-            </td>
-            <td>
-                {% trans "Parameters's ID in database" %}
-            </td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    8
+                </td>
+                <td>
+                    Parameter_id
+                </td>
+                <td>
+                    {% trans "Parameters's ID in database" %}
+                </td>
+                <td>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                9
-            </td>
-            <td>
-                Found
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Found"' %}
-            </td>
-            <td>
-                (0; 1)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                10
-            </td>
-            <td>
-                Complete
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Complete"' %}
-            </td>
-            <td>
-                (0,2; 0.5; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                11
-            </td>
-            <td>
-                Topical
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Topical"' %}
-            </td>
-            <td>
-                (0,7; 0,85; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                12
-            </td>
-            <td>
-                Accessible
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Accessible"' %}
-            </td>
-            <td>
-                (0,9; 0,95; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                13
-            </td>
-            <td>
-                Hypertext
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Hypertext"' %}
-            </td>
-            <td>
-                (0,2; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                14
-            </td>
-            <td>
-                Document
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Document"' %}
-            </td>
-            <td>
-                (0,85; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                15
-            </td>
-            <td>
-                Image
-            </td>
-            <td>
-                {% trans "Factor's value" %} {% trans '"Image"' %}
-            </td>
-            <td>
-                (0,95; 1; not relevant)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                16
-            </td>
-            <td>
-                Social
-            </td>
-            <td>
-                {% trans "Value of social importance factor" %}
-            </td>
-            <td>
-                (1, 2, 3)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                17
-            </td>
-            <td>
-                Type
-            </td>
-            <td>
-                {% trans "Parameter's type" %}
-            </td>
-            <td>
-                ('other', 'npa')
-            </td>
-        </tr>
-        <tr>
-            <td>
-                18
-            </td>
-            <td>
-                Revision
-            </td>
-            <td>
-                {% trans "Parameter's score version" %}
-            </td>
-            <td>
-                ('default', 'initial')
-            </td>
-        </tr>
-    </tbody>
-</table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    9
+                </td>
+                <td>
+                    Found
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Found"' %}
+                </td>
+                <td>
+                    (0; 1)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    10
+                </td>
+                <td>
+                    Complete
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Complete"' %}
+                </td>
+                <td>
+                    (0,2; 0.5; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    11
+                </td>
+                <td>
+                    Topical
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Topical"' %}
+                </td>
+                <td>
+                    (0,7; 0,85; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    12
+                </td>
+                <td>
+                    Accessible
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Accessible"' %}
+                </td>
+                <td>
+                    (0,9; 0,95; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    13
+                </td>
+                <td>
+                    Hypertext
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Hypertext"' %}
+                </td>
+                <td>
+                    (0,2; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    14
+                </td>
+                <td>
+                    Document
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Document"' %}
+                </td>
+                <td>
+                    (0,85; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    15
+                </td>
+                <td>
+                    Image
+                </td>
+                <td>
+                    {% trans "Factor's value" %} {% trans '"Image"' %}
+                </td>
+                <td>
+                    (0,95; 1; not relevant)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    16
+                </td>
+                <td>
+                    Social
+                </td>
+                <td>
+                    {% trans "Value of social importance factor" %}
+                </td>
+                <td>
+                    (1, 2, 3)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    17
+                </td>
+                <td>
+                    Type
+                </td>
+                <td>
+                    {% trans "Parameter's type" %}
+                </td>
+                <td>
+                    ('other', 'npa')
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    18
+                </td>
+                <td>
+                    Revision
+                </td>
+                <td>
+                    {% trans "Parameter's score version" %}
+                </td>
+                <td>
+                    ('default', 'initial')
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-<h4>{% trans "Dataset description" %}</h4>
+    <h4>{% trans "Dataset description" %}</h4>
 
-<ul>
-    <li>
-{% blocktrans %}Quantity of parameters from different organizations may not be the same because some parameters are relevant only for several organizations.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Within estimate absent may be such criteria as Fullness, Actuality, Navigation accessibility, HTML accessibility, File accessibility, Graphical accessibility as they may be not relevant for parameter.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Parameter type can have two values: 1) "other" for formulated by experts parameters; 2) "npa" for formulated by normative legal acts parameters.{% endblocktrans %}
-    </li>
-    <li>
-{% blocktrans %}Version of parameter's estimate can have two values: 1) "initial" for parameter's estimate before interaction of organization's representatives with experts; 2) \"default\" for final parameter's estimate after interaction of organization's representatives with experts. Within dataset parameters with \"initial\" value may be absent if parameter's estimate was not changed during interaction.{% endblocktrans %}
-    </li>
-</ul>
-
-
-{% endblock content %}
+    <ul>
+        <li>
+    {% blocktrans %}Quantity of parameters from different organizations may not be the same because some parameters are relevant only for several organizations.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Within estimate absent may be such criteria as Fullness, Actuality, Navigation accessibility, HTML accessibility, File accessibility, Graphical accessibility as they may be not relevant for parameter.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Parameter type can have two values: 1) "other" for formulated by experts parameters; 2) "npa" for formulated by normative legal acts parameters.{% endblocktrans %}
+        </li>
+        <li>
+    {% blocktrans %}Version of parameter's estimate can have two values: 1) "initial" for parameter's estimate before interaction of organization's representatives with experts; 2) \"default\" for final parameter's estimate after interaction of organization's representatives with experts. Within dataset parameters with \"initial\" value may be absent if parameter's estimate was not changed during interaction.{% endblocktrans %}
+        </li>
+    </ul>
+{% endblock %}

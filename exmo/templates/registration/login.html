@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,15 +19,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static %}
 
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/auth.css"/>
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/auth.css' %}"/>
 {% endblock %}
 
+{% block h1 %}<h1>{% trans 'Log in the system' %}</h1>{% endblock %}
+
 {% block content %}
-    <h1>{% trans 'Log in the system' %}</h1>
     {% if request.user.is_authenticated %}
         <p>{% trans 'You are already logged in' %}.</p>
         {% url 'exmo2010:auth_logout' as auth_logout_url %}

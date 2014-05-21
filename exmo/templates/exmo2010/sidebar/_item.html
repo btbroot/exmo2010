@@ -1,4 +1,3 @@
-{% extends "base_error.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,13 +20,8 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block title %}{% trans 'Permission denied' %}{% endblock %}
-
-{% block h1 %}<h1>{% trans 'Permission denied' %}</h1>{% endblock %}
-
-{% block content %}
-    <div>
-        <p>{% trans "We're sorry, you haven't permission for viewing this page." %}</p>
-        <p>{% trans "Go back or use navigation menu at the top." %}</p>
-    </div>
-{% endblock %}
+<li{% ifequal request.path url %} class="selected"{% endifequal %}>
+    {% ifnotequal request.path url %}<a href="{{ url }}"{% if blank %} target="_blank"{% endif %}>{% endifnotequal %}
+    {% trans title %}
+    {% ifnotequal request.path url %}</a>{% endifnotequal %}
+</li>

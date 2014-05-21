@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,14 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n monitoring_stats check_object_permission future %}
+{% load i18n monitoring_stats check_object_permission %}
 
-{% block nav_sidebar %}
-    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-{% endblock %}
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
-{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-{% block content_class %}sidebar-ident{% endblock %}
+{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
+
 {% block content %}
     <div id=expert_list>
         <table>

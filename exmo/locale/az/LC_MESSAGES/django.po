@@ -2502,7 +2502,7 @@ msgstr " Infometer admin"
 msgid "Infometer administration"
 msgstr " Infometer administration"
 
-#: templates/exmo2010/base.html:29 templates/exmo2010/base_site.html:32
+#: templates/base.html:29 templates/exmo2010/base_site.html:32
 #: templates/registration/activation_complete.html:39
 #: templates/registration/password_change_done.html:39
 #: templates/registration/password_reset_complete.html:39

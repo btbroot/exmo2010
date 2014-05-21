@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,15 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/monitoring_parameter_filter.css' %}" />
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     <script>
         $(function () {
             if ({{ hide }}) {
@@ -87,18 +85,11 @@
     </script>
 {% endblock %}
 
-{% block nav_sidebar %}
-    {% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}
-        {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-    {% endif %}
-{% endblock %}
-{% block nav_sidebar_title %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}<h1>{{ monitoring.name }}</h1>{% endif %}{% endblock %}
-{% block content_class %}{% if request.user.is_active and request.user.userprofile.is_expert or request.user.is_superuser %}sidebar-ident{% endif %}{% endblock %}
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+{% block h1 %}<h1>{% trans 'Parameter-criteria filter' %}</h1>{% endblock %}
 
 {% block content %}
-
-    <h1>{% trans 'Parameter-criteria filter' %}</h1>
-
     <div id=parameter_filter_form>
         <form id="form" method="post" action="">
             {{ form.non_field_errors }}

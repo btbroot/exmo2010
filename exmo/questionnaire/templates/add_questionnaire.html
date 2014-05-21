@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,14 +19,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
-{% block extrahead %}{{ block.super }}
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/jquery/jquery.json-2.3.min.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}exmo2010/js/questionnaire.js"></script>
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.json-2.3.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/questionnaire.js' %}"></script>
     {{ media }}
 {% endblock %}
-{% block extrastyle %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}admin/css/forms.css"/>{% endblock %}
+
+{% block h1 %}<h1>{% trans 'Create questionnaire' %}</h1>{% endblock %}
 
 {% block content %}
     {# empty links used for ajax-request in questionnaire.js #}
@@ -34,7 +39,6 @@
     <a href="{% url 'exmo2010:get_qqt' %}" id="ajax_get_qqt"></a>
 
     <form id="rform" action="{% url 'exmo2010:monitoring_update' monitoring.pk %}"></form>
-    <h1>{% trans "Create questionnaire" %}</h1>
 
     <div id="ainfo">
         <label for="aname">{% trans 'Questionnaire name' %}</label><br/>
@@ -48,5 +52,4 @@
     <br />
     <br />
     <input type="button" value="{% trans 'Save questionnaire' %}" id="sendqq">
-
 {% endblock %}

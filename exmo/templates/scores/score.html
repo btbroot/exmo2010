@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -23,15 +23,12 @@
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'scores/score.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-
+{% block extra_script %}
     {% if request.user.is_expert %}
         <script type="text/javascript" src="{% static 'scores/score_expert.js' %}"></script>
 
@@ -47,8 +44,6 @@
 {% endblock %}
 
 {% block bubble %}{% include "exmo2010/helpers/inv_code_bubble.html" %}{% endblock %}
-
-{% block content_class %}fixed-width-page{% endblock %}
 
 {% block h1 %}<h1>{{ param.code }} &mdash; {{ param.name }}</h1>{% endblock %}
 

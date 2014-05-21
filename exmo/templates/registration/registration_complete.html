@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -20,6 +20,8 @@
 #
 {% endcomment %}
 {% load i18n %}
+
+{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
 
 {% block content %}
     <p class="alert-info">

@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static %}
 
 {% block title %}{% trans 'Monitoring cycles list' %}{% endblock %}
 
@@ -34,7 +34,7 @@
                 <td colspan=2>
                     {% if request.user.is_expertA %}
                         <a href="{% url 'exmo2010:monitoring_add' %}?{{ request.GET.urlencode }}">
-                            {% trans 'Add new monitoring' %}&nbsp;<img src="{{STATIC_URL}}admin/img/icon_addlink.gif">
+                            {% trans 'Add new monitoring' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
                         </a>&nbsp;
                     {% endif %}
                 </td>
@@ -45,11 +45,11 @@
                         <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring.name }}</a>
                         {% if monitoring.perms.edit_monitoring %}
                             &nbsp;<a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}?{{ request.GET.urlencode }}">
-                                <img src="{{STATIC_URL}}admin/img/icon_changelink.gif" ></a>&nbsp;
+                                <img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
                         {% endif %}
                         {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
                             &nbsp;<a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{ request.GET.urlencode }}">
-                                <img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" ></a>&nbsp;
+                                <img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>&nbsp;
                         {% endif %}
                     </td>
                     <td>

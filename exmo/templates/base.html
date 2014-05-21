@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static admin_tools_menu_tags theming_tags %}
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -33,11 +33,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
 
-        <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base_structure.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base_style.css' %}" />
         {% if LANGUAGE_BIDI %}
-            <link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static 'admin/css/rtl.css' %}{% endblock %}" />
+            <link rel="stylesheet" type="text/css" href="{% static 'admin/css/rtl.css' %}" />
         {% endif %}
-        {% block extrastyle %}{% endblock %}
+        {% admin_tools_render_menu_css %}
+        {% render_theming_css %}
+        {% block extra_css %}{% endblock %}
 
         <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
         {{ media|default:"" }}
@@ -46,64 +49,16 @@
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
         <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
-        {% block extrahead %}{% endblock %}
+        {% block extra_script %}{% endblock %}
 
         {% include "analytics.html" %}
     </head>
 
-    <body class="{% block bodyclass %}{% endblock %}">
+    <body>
+        {% block main %}{% endblock %}
 
-        <!-- Container -->
-        <div id="container">
-            <!-- Header -->
-            {% block header %}
-                <div id="header">
-                    <div id="user-tools">
-                        {% block userwelcome %}{% endblock %}
-                        {% block userlinks %}{% endblock %}
-                    </div>
-                    {% block nav-global %}{% endblock %}
-                </div>
-            {% endblock header %}
-
-            <!-- END Header -->
-            {% block breadcrumbs %}{% endblock %}
-
-            {% if messages %}
-                {% for message in messages %}
-                    <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            {% block nav_sidebar_title %}{% endblock %}
-
-            {% block nav_sidebar %}{% endblock nav_sidebar %}
-
-            <div id="content-container">
-                {% block bubble %}{% endblock %}
-
-                <!-- Content -->
-                <div id="content" class="{% block content_class %}{% endblock %}">
-                    {% block pretitle %}{% endblock %}
-                    {% block h1 %}<h1>{% block content_title %}{{ title|default:'' }}{% endblock %}</h1>{% endblock %}
-                    {% block content %}
-                        {% block object-tools %}{% endblock %}
-                        {{ content }}
-                    {% endblock content %}
-                    {% block sidebar %}{% endblock %}
-                    <br class="clear" />
-                </div>
-                <!-- END Content -->
-
-            </div>
-            <div id="push">
-            </div>
+        <div id="footer">
+            {% include "_footer.html" %}
         </div>
-        <!-- END Container -->
-        {% block footer %}
-            {% include "exmo2010/_footer.html" %}
-        {% endblock %}
     </body>
 </html>

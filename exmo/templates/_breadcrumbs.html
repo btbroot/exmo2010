@@ -1,8 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,16 +16,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission future %}
 
-<div id="nav-sidebar">
-    <ul>
-        {% url 'exmo2010:task_scores' task.pk as url %}
-        <!-- {% trans 'Scores' %} -->
-        {% include "exmo2010/nav_sidebar/item.html" with url=url title="Scores" %}
-
-        {% url 'exmo2010:task_history' task.pk as url %}
-        <!-- {% trans 'History' %} -->
-        {% include "exmo2010/nav_sidebar/item.html" with url=url title="History" %}
-    </ul>
+<div class="breadcrumbs">
+    {% for crumb in breadcrumbs %}
+        {% if not forloop.last %}
+            <a href="{{ crumb.url }}">{{ crumb.title }}</a>
+            <span class="breadcrumb-arrow"></span>
+        {% else %}
+            <span class="title">{{ crumb.title }}</span>
+        {% endif %}
+    {% endfor %}
 </div>

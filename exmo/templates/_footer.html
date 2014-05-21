@@ -1,0 +1,47 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+
+<div class="table">
+    <div class="top-row">
+        <div class="left-cell">
+            <a href="{% url 'exmo2010:about' %}">{% trans "About" %}</a> |
+            <a href="{{ link_to_methodology }}" target="_blank">{% trans "Methodology" %}</a> |
+            <a href="{% url 'exmo2010:opendata' %}">{% trans "Open data" %}</a> |
+            <a href="{% url 'exmo2010:feedback' %}">{% trans "Feedback" %}</a>
+        </div>
+        <div class="right-cell">
+            <span>{% blocktrans with url="http://www.svobodainfo.org/" %}© 2012–2014 Foundation "<a href="{{ url }}" target="_blank">Institute for Information Freedom Development</a>"{% endblocktrans %}</span>
+            <p class="copyrights-fonts">
+                {% trans '© 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %}<br />
+                {% trans '© 2010, 2011, 2013 Al Nikolov' %}
+            </p>
+        </div>
+    </div>
+    <div class="bottom-row copyrights-fonts">
+        <div class="left-cell">
+            {{ license|safe }}
+        </div>
+        <div class="right-cell">
+            {% blocktrans with url="http://www.svobodainfo.org/exmo" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.{% endblocktrans %}
+        </div>
+    </div>
+</div>

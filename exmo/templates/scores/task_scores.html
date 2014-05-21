@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends request.user.is_expertA|yesno:"base_sidebar.html,base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,17 +19,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n check_object_permission static future %}
+{% load i18n static check_object_permission %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/changelists.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'scores/score_list.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     {% if view_openness_perm and task.approved %}
         <script>
             $(document).ready(function() {
@@ -41,7 +39,7 @@
                         $.each(data, function(key, val) {
                             if (val) {
                                 $('.get-rating').show();
-                                $('#' + key).text(val + ' ' + gettext('place'));
+                                $('#' + key).text(val + ' ' + '{% trans 'place' %}');
                             }
                         });
                         $('.rating-ajax').remove();
@@ -51,158 +49,146 @@
     {% endif %}
 {% endblock %}
 
-{% block bubble %} {% include "exmo2010/helpers/inv_code_bubble.html" %} {% endblock %}
-
-
-{% block nav_sidebar %}
-    {% if is_expertA %}
-        {% include "exmo2010/nav_sidebar/organization_utility.html" %}
-    {% endif %}
-{% endblock %}
-
-{% block nav_sidebar_title %}
+{% block sidebar_h1 %}
     {% if is_expertA %}
         <h1>{{ task.organization.name }}</h1>
     {% endif %}
 {% endblock %}
 
-{% block content_class %}
-    {% if is_expertA %}
-        sidebar-ident
-    {% endif %}
+{% block bubble %}
+    {% include "exmo2010/helpers/inv_code_bubble.html" %}
 {% endblock %}
 
-{% block content_title %}
+{% block h1 %}
     {% if not is_expertA %}
-        {{ title }}
+        <h1>{{ title }}</h1>
     {% endif %}
 {% endblock %}
 
 {% block content %}
-{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk as monitoring_rating %}
-<div id=score_list>
-<h2>
-    <a href="{{task.organization.url}}">{{task.organization.name}}</a><br />
+    {% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk as monitoring_rating %}
+    <div id=score_list>
+    <h2>
+        <a href="{{task.organization.url}}">{{task.organization.name}}</a><br />
 
-    {% if view_openness_perm %}
+        {% if view_openness_perm %}
 
-        {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|floatformat:3 }}%
-        <span class="get-rating hidden">
-            {% if show_link %}
-                &nbsp;(<a target="_blank" href="{{monitoring_rating}}"> <span id="place_all"></span></a>)
-            {% else %}
-                &nbsp;(<span id="place_all"></span>)
+            {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|floatformat:3 }}%
+            <span class="get-rating hidden">
+                {% if show_link %}
+                    &nbsp;(<a target="_blank" href="{{monitoring_rating}}"><span id="place_all"></span></a>)
+                {% else %}
+                    &nbsp;(<span id="place_all"></span>)
+                {% endif %}
+            </span>
+
+            {% if has_npa %}
+                <br />
+
+                {% trans 'Openness by normative parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
+                <span class="get-rating hidden">
+                    {% if show_link %}
+                        &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=npa"><span id="place_npa"></span></a>)
+                    {% else %}
+                        &nbsp;(<span id="place_npa"></span>)
+                    {% endif %}
+                </span>
+                <br />
+
+                {% trans 'Openness by recommendatory parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
+                <span class="get-rating hidden">
+                    {% if show_link %}
+                        &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=other"><span id="place_other"></span></a>)
+                    {% else %}
+                        &nbsp;(<span id="place_other"></span>)
+                    {% endif %}
+                </span>
+                <br/>
             {% endif %}
-        </span>
-
-        {% if has_npa %}
-            <br />
-
-            {% trans 'Openness by normative parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
-            <span class="get-rating hidden">
-                {% if show_link %}
-                    &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=npa"> <span id="place_npa"></span></a>)
-                {% else %}
-                    &nbsp;(<span id="place_npa"></span>)
-                {% endif %}
-            </span>
-            <br />
-
-            {% trans 'Openness by recommendatory parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
-            <span class="get-rating hidden">
-                {% if show_link %}
-                    &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=other"> <span id="place_other"></span></a>)
-                {% else %}
-                    &nbsp;(<span id="place_other"></span>)
-                {% endif %}
-            </span>
-            <br/>
         {% endif %}
+    </h2>
+
+    <div id=utility>
+         <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans "Print" %}</a>
+    {% check_object_permission exmo2010.view_task task as export_perm %}
+    {% check_object_permission exmo2010.fill_task task as import_perm %}
+    {% if export_perm %}
+         <br />
+         <a href="{% url 'exmo2010:task_export' task.pk %}">{% trans "Export task to CSV" %}</a> /
     {% endif %}
-</h2>
-
-<div id=utility>
-     <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans "Print" %}</a>
-{% check_object_permission exmo2010.view_task task as export_perm %}
-{% check_object_permission exmo2010.fill_task task as import_perm %}
-{% if export_perm %}
-     <br />
-     <a href="{% url 'exmo2010:task_export' task.pk %}">{% trans "Export task to CSV" %}</a> /
-{% endif %}
-{% if import_perm %}
-   <form action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
-     <label>{% trans "Import task from CSV" %}: <input type="file" accept=".csv" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
-   </form>
-   {% if importLog %}<div>{{importLog}}</div>{% endif %}
-{% endif %}
-</div>
-
-{% check_object_permission exmo2010.fill_task task as perm_fill_task %}
-{% check_object_permission exmo2010.admin_monitoring monitoring as perm_admin_monitoring %}
-
-<table>
-    {% include 'exmo2010/table_header.html' with headers=headers %}
-
-    <tbody>
-        <tr>
-            <td colspan=10>
-                {% if perm_admin_monitoring %}
-                    <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">
-                        {% trans 'Add new parameter' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
-                    </a>&nbsp;
-                {%endif%}
-            </td>
-        </tr>
-    {% if has_npa %}
-        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Normative parameters' %}</td></tr>
-        {% include 'scores/_scores_table.html' with parameters=parameters_npa %}
-        <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Recommendatory parameters' %}</td></tr>
+    {% if import_perm %}
+       <form action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
+         <label>{% trans "Import task from CSV" %}: <input type="file" accept=".csv" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
+       </form>
+       {% if importLog %}<div>{{importLog}}</div>{% endif %}
     {% endif %}
-
-    {% include 'scores/_scores_table.html' with parameters=parameters_other %}
-    </tbody>
-</table>
-
-</div><br>
-{% if form %}
-    <div id='fc_container'>
-        <a name="q"></a>
-        <h1>{{ task.organization.monitoring.get_questionnaire.title }}</h1>
-        {% if task.organization.monitoring.get_questionnaire.comment %}
-            <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
-        {% endif %}
-        <form action="{% url 'exmo2010:task_scores' task.pk %}#q" method="post">
-            {% csrf_token %}
-            <div>
-                {% if form.non_field_errors %}
-                    <ul class="errorlist">
-                    {% for error in form.non_field_errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-                {% for field in form %}
-                    <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
-                        <div>
-                            {% if field.errors %}
-                                <ul class="errorlist">
-                                    {% for error in field.errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                            {% if field.help_text %}
-                                <span>{{ field.help_text }}</span><br>
-                            {% endif %}
-                            <div class="fc_field_header">{{ field }}</div>
-                        </div>
-                {% endfor %}
-            </div>
-            <input type="submit" value="{% trans 'Save' %}" {% if not perm_fill_task %}disabled{% endif %}>
-        </form>
     </div>
-    <br>
-{% endif %}
 
-{% include "exmo2010/score_legend.html" %}
+    {% check_object_permission exmo2010.fill_task task as perm_fill_task %}
+
+    <table>
+        {% include 'exmo2010/table_header.html' with headers=headers %}
+
+        <tbody>
+            <tr>
+                <td colspan=10>
+                    {% if perm_admin_monitoring %}
+                        <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">
+                            {% trans 'Add new parameter' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
+                        </a>&nbsp;
+                    {%endif%}
+                </td>
+            </tr>
+        {% if has_npa %}
+            <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Normative parameters' %}</td></tr>
+            {% include 'scores/_scores_table.html' with parameters=parameters_npa %}
+            <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Recommendatory parameters' %}</td></tr>
+        {% endif %}
+
+        {% include 'scores/_scores_table.html' with parameters=parameters_other %}
+        </tbody>
+    </table>
+
+    </div><br>
+    {% if form %}
+        <div id='fc_container'>
+            <a name="q"></a>
+            <h1>{{ task.organization.monitoring.get_questionnaire.title }}</h1>
+            {% if task.organization.monitoring.get_questionnaire.comment %}
+                <h2>{{ task.organization.monitoring.get_questionnaire.comment|linebreaksbr }}</h2>
+            {% endif %}
+            <form action="{% url 'exmo2010:task_scores' task.pk %}#q" method="post">
+                {% csrf_token %}
+                <div>
+                    {% if form.non_field_errors %}
+                        <ul class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% for field in form %}
+                        <span class="fc_item_header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
+                            <div>
+                                {% if field.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <span>{{ field.help_text }}</span><br>
+                                {% endif %}
+                                <div class="fc_field_header">{{ field }}</div>
+                            </div>
+                    {% endfor %}
+                </div>
+                <input type="submit" value="{% trans 'Save' %}" {% if not perm_fill_task %}disabled{% endif %}>
+            </form>
+        </div>
+        <br>
+    {% endif %}
+
+    {% include "exmo2010/score_legend.html" %}
 {% endblock %}

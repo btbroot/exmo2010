@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-05 18:01+0400\n"
+"POT-Creation-Date: 2014-05-23 10:09+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -48,19 +48,19 @@ msgstr ""
 msgid "show explanations"
 msgstr ""
 
-#: static/scores/score_all_users.js:34
-msgid "hide initial scores"
-msgstr ""
-
-#: static/scores/score_all_users.js:36
+#: static/scores/score_all_users.js:37
 msgid "show initial scores"
 msgstr ""
 
-#: static/scores/score_expert.js:174
+#: static/scores/score_all_users.js:41
+msgid "hide initial scores"
+msgstr ""
+
+#: static/scores/score_expert.js:177
 msgid "Close without answer"
 msgstr ""
 
-#: static/scores/score_expert.js:179
+#: static/scores/score_expert.js:182
 msgid "Open comment"
 msgstr ""
 

@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,15 +19,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static %}
 
-{% block extrastyle %}
-    {{ block.super }}
+{% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring_report.css' %}" />
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block extra_script %}
     <script type="text/javascript">
         $(document).ready(function () {
             $(".monitoring-status").each(function() {
@@ -37,6 +35,8 @@
         })
     </script>
 {% endblock %}
+
+{% block h1 %}<h1>{% trans 'Monitoring statistics' %}</h1>{% endblock %}
 
 {% block content %}
     <div id="report_menu">
@@ -193,5 +193,4 @@
             {% trans "There's no any finished monitoring." %}
         {% endif %}
     {% endif %}
-
 {% endblock %}

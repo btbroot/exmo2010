@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,20 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n static %}
 
-{% load i18n future %}
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/forms.css"/>
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
 {% endblock %}
 
+{% block h1 %}<h1>{% trans 'Account activation error' %}</h1>{% endblock %}
+
 {% block content %}
-    <h1>{% trans 'Account activation error' %}</h1>
     {% blocktrans %}
         <p>Please make sure you properly copied activation link from our email.</p>
         <p>Also note that the link is alive only for 3 days.</p>
     {% endblocktrans %}
     {% trans 'You also can' %} <a href="{% url 'exmo2010:registration_register' %}">{% trans 'try to register again' %}</a>
-
 {% endblock %}

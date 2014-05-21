@@ -1,4 +1,4 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -19,7 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static %}
+
+{% block h1 %}<h1>{% trans 'Feedback' %}</h1>{% endblock %}
 
 {% block content %}
     {% if success %}

@@ -1,4 +1,4 @@
-{% extends 'exmo2010/base_site.html' %}
+{% extends request.user.is_expert|yesno:"base_sidebar.html,base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -19,17 +19,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static %}
 
-{% block title %} {{monitoring.name}} {% endblock %}
+{% block title %}{{ monitoring.name }}{% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.placeholder.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.mousewheel.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.simplemodal-1.4.4.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery.tablesorter.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/rating.js"></script>
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.mousewheel.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/rating.js' %}"></script>
 
     <script>
         $(function(){
@@ -39,316 +42,295 @@
     </script>
 {% endblock %}
 
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}exmo2010/css/ratings.css"
-          xmlns="http://www.w3.org/1999/html"/>
-{% endblock %}
-
-{% block nav_sidebar %}
-    {% if is_expert or request.user.is_superuser %}
-        {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-    {% endif %}
-{% endblock %}
-
-{% block nav_sidebar_title %}
-    {% if request.user.is_active and is_expert or request.user.is_superuser %}
+{% block sidebar_h1 %}
+    {% if is_expert %}
         <h1>{{ monitoring.name }}</h1>
-    {% endif %}
-{% endblock %}
-
-{% block content_class %}
-    {% if request.user.is_active and is_expert or request.user.is_superuser %}
-        sidebar-ident
     {% endif %}
 {% endblock %}
 
 {% block h1 %}
-    {% if is_expert %}
-        <br/>
-    {% else %}
+    {% if not is_expert %}
         <h1>{{ monitoring.name }}</h1>
     {% endif %}
 {% endblock %}
 
-
 {% block content %}
-<div class="rating-menu clearfix">
-    <h2>{% trans "Rating" %}</h2>
+    <div class="rating-menu clearfix">
+        <h2>{% trans "Rating" %}</h2>
 
-    <ul class="switcher">
+        <ul class="switcher">
 
-        <li class="rtype_all">
-            <a href="?type=all" class="pseudo">
-                {% trans 'common' %}
-            </a>
-        </li>
-
-        {% if monitoring.has_npa %}
-            <li class="rtype_npa">
-                <a href="?type=npa" class="pseudo">
-                    {% trans 'normative' %}
+            <li class="rtype_all">
+                <a href="?type=all" class="pseudo">
+                    {% trans 'common' %}
                 </a>
             </li>
 
-            <li class="rtype_other">
-                <a href="?type=other" class="pseudo">
-                    {% trans 'recommendatory' %}
-                </a>
-            </li>
-        {% endif %}
+            {% if monitoring.has_npa %}
+                <li class="rtype_npa">
+                    <a href="?type=npa" class="pseudo">
+                        {% trans 'normative' %}
+                    </a>
+                </li>
 
-        <li class="rtype_user">
-            <a href="#" class="pseudo" id="user-defined">
-                {% trans 'user defined' %}
-            </a>
-        </li>
-    </ul>
-
-    {% if monitoring.is_published or user.profile.is_expert %}
-        <ul class="utils">
-            {% if monitoring.is_published and monitoring.map_link %}
-                <li>
-                    <a href="{{ monitoring.map_link }}" target="_blank">
-                        <i class="icon icon-map"></i>{% trans "Map" %}
+                <li class="rtype_other">
+                    <a href="?type=other" class="pseudo">
+                        {% trans 'recommendatory' %}
                     </a>
                 </li>
             {% endif %}
 
-            <li>
-                <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=json">
-                    <i class="icon icon-download-alt"></i>{% trans 'Export as JSON' %}
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=csv">
-                    <i class="icon icon-download-alt"></i>{% trans 'Export as CSV' %}
+            <li class="rtype_user">
+                <a href="#" class="pseudo" id="user-defined">
+                    {% trans 'user defined' %}
                 </a>
             </li>
         </ul>
-    {% endif %}
-</div>
 
-<div id="user-defined-parameters" class="parameter-selection {% if rating_type != 'user' %} hidden {% endif %}">
-    <p id="parameter-list-heading">
-        <strong>{% trans 'Parameter list' %}</strong>
-        (<a href="#" class="pseudo">
-            {% if rating_type == 'user' %}{% trans "show" %}{% else %}{% trans "hide" %}{% endif %}
-        </a>)
-    </p>
-
-    <form action="." method="GET" id="pselect_form" class="{% if rating_type == 'user' %} hidden {% endif %}">
-            <div class="param_scroll">
-                {% if report %}
-                    <input type="hidden" name="monitoring" value="{{ monitoring.pk }}">
+        {% if monitoring.is_published or user.profile.is_expert %}
+            <ul class="utils">
+                {% if monitoring.is_published and monitoring.map_link %}
+                    <li>
+                        <a href="{{ monitoring.map_link }}" target="_blank">
+                            <i class="icon icon-map"></i>{% trans "Map" %}
+                        </a>
+                    </li>
                 {% endif %}
-                <input type="hidden" name="type" value="user">
-                {{ params_form.params }}
+
+                <li>
+                    <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=json">
+                        <i class="icon icon-download-alt"></i>{% trans 'Export as JSON' %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=csv">
+                        <i class="icon icon-download-alt"></i>{% trans 'Export as CSV' %}
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+
+    <div id="user-defined-parameters" class="parameter-selection {% if rating_type != 'user' %} hidden {% endif %}">
+        <p id="parameter-list-heading">
+            <strong>{% trans 'Parameter list' %}</strong>
+            (<a href="#" class="pseudo">
+                {% if rating_type == 'user' %}{% trans "show" %}{% else %}{% trans "hide" %}{% endif %}
+            </a>)
+        </p>
+
+        <form action="." method="GET" id="pselect_form" class="{% if rating_type == 'user' %} hidden {% endif %}">
+                <div class="param_scroll">
+                    {% if report %}
+                        <input type="hidden" name="monitoring" value="{{ monitoring.pk }}">
+                    {% endif %}
+                    <input type="hidden" name="type" value="user">
+                    {{ params_form.params }}
+                </div>
+                <input type="submit" value="{% trans 'Get rating' %}">
+        </form>
+    </div>
+
+    {% if rating_stats %}
+        <form class="filter clearfix" action="" method="GET">
+            <div>
+                <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Organization' %}" />
             </div>
-            <input type="submit" value="{% trans 'Get rating' %}">
-    </form>
-</div>
+            <input type=submit value="{% trans 'Find' %}" />
+        </form>
+    {% endif %}
 
-{% if rating_stats %}
-    <form class="filter clearfix" action="" method="GET">
-        <div>
-            <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Organization' %}" />
-        </div>
-        <input type=submit value="{% trans 'Find' %}" />
-    </form>
-{% endif %}
-
-<table id="rating-data" class="base-table">
-    <thead>
-        <tr>
-            <th class="place">
-                <span>{% trans "Position" %}</span>&nbsp;<span class="arrow"></span>
-            </th>
-            <th>
-                <span>{% trans "Organization" %}</span>&nbsp;<span class="arrow"></span>
-            </th>
-            <th class="website">
-                <span>{% trans "Website" %}</span>&nbsp;<span class="arrow"></span>
-            </th>
-
-            {% if rating_columns_form.rt_representatives.value %}
-                <th class="representatives">
-                    <span>{% trans "Repr." %}</span>&nbsp;<span class="arrow"></span>
+    <table id="rating-data" class="base-table">
+        <thead>
+            <tr>
+                <th class="place">
+                    <span>{% trans "Position" %}</span>&nbsp;<span class="arrow"></span>
                 </th>
-            {% endif %}
-
-            {% if rating_columns_form.rt_comment_quantity.value %}
-                <th class="comments">
-                    <span>{% trans "Comm." %}</span>&nbsp;<span class="arrow"></span>
+                <th>
+                    <span>{% trans "Organization" %}</span>&nbsp;<span class="arrow"></span>
                 </th>
-            {% endif %}
-
-            {% if rating_columns_form.rt_initial_openness.value %}
-                <th class="init-openness">
-                    <span>{% trans "Init. openness" %}</span>&nbsp;<span class="arrow"></span>
+                <th class="website">
+                    <span>{% trans "Website" %}</span>&nbsp;<span class="arrow"></span>
                 </th>
-            {% endif %}
 
-            {% if rating_columns_form.rt_final_openness.value %}
-                <th class="openness">
-                    <span>{% trans "Final openness" %}</span>&nbsp;<span class="arrow"></span>
-                </th>
-            {% endif %}
+                {% if rating_columns_form.rt_representatives.value %}
+                    <th class="representatives">
+                        <span>{% trans "Repr." %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
 
-            {% if rating_columns_form.rt_difference.value %}
-                <th class="diff">
-                    <span>{% trans "Diff." %}</span>&nbsp;<span class="arrow"></span>
-                </th>
-            {% endif %}
+                {% if rating_columns_form.rt_comment_quantity.value %}
+                    <th class="comments">
+                        <span>{% trans "Comm." %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
 
-            {% if user.is_active %}
-                <th class="settings">
-                    <a href="#" id="modal-open"><img src="/static/dashboard/img/settings.png"/></a>
-                </th>
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-    {% for task in rating_list %}
-        <tr>
-            <td class="place">
-                <span>{{ task.place }}</span>
-            </td>
-            <td>
-                <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task.organization.name }}</a>
-            </td>
-            <td>
-                <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a>
-            </td>
+                {% if rating_columns_form.rt_initial_openness.value %}
+                    <th class="init-openness">
+                        <span>{% trans "Init. openness" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
 
-            {% if rating_columns_form.rt_representatives.value %}
-                <td>{{ task.repr_len }} / {{ task.active_repr_len }}</td>
-            {% endif %}
+                {% if rating_columns_form.rt_final_openness.value %}
+                    <th class="openness">
+                        <span>{% trans "Final openness" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
 
-            {% if rating_columns_form.rt_comment_quantity.value %}
-                <td class="comments">{{ task.comments }}</td>
-            {% endif %}
+                {% if rating_columns_form.rt_difference.value %}
+                    <th class="diff">
+                        <span>{% trans "Diff." %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                {% endif %}
 
-            {% if rating_columns_form.rt_initial_openness.value %}
-                <td class="init-openness">{{ task.task_openness_initial|floatformat:3 }}%</td>
-            {% endif %}
+                {% if user.is_active %}
+                    <th class="settings">
+                        <a href="#" id="modal-open"><img src="/static/dashboard/img/settings.png"/></a>
+                    </th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in rating_list %}
+            <tr>
+                <td class="place">
+                    <span>{{ task.place }}</span>
+                </td>
+                <td>
+                    <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task.organization.name }}</a>
+                </td>
+                <td>
+                    <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a>
+                </td>
 
-            {% if rating_columns_form.rt_final_openness.value %}
-                <td class="openness">{{ task.task_openness|floatformat:3 }}%</td>
-            {% endif %}
+                {% if rating_columns_form.rt_representatives.value %}
+                    <td>{{ task.repr_len }} / {{ task.active_repr_len }}</td>
+                {% endif %}
 
-            {% if rating_columns_form.rt_difference.value %}
-                <td class="diff">
-                {% spaceless %}
-                    <div>
-                        <span>{{ task.openness_delta|floatformat:3 }}%</span>&nbsp;
-                        {% ifnotequal task.openness_delta None %}
-                            {% if task.openness_delta > 0 %}
-                                <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
-                            {% elif task.openness_delta < 0 %}
-                                <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
+                {% if rating_columns_form.rt_comment_quantity.value %}
+                    <td class="comments">{{ task.comments }}</td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_initial_openness.value %}
+                    <td class="init-openness">{{ task.task_openness_initial|floatformat:3 }}%</td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_final_openness.value %}
+                    <td class="openness">{{ task.task_openness|floatformat:3 }}%</td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_difference.value %}
+                    <td class="diff">
+                    {% spaceless %}
+                        <div>
+                            <span>{{ task.openness_delta|floatformat:3 }}%</span>&nbsp;
+                            {% ifnotequal task.openness_delta None %}
+                                {% if task.openness_delta > 0 %}
+                                    <img class="rate-direction" src="{% static 'exmo2010/img/rate_up.png' %}">
+                                {% elif task.openness_delta < 0 %}
+                                    <img class="rate-direction" src="{% static 'exmo2010/img/rate_down.png' %}">
+                                {% endif %}
+                            {% endifnotequal %}
+                        </div>
+                    {% endspaceless %}
+                    </td>
+                {% endif %}
+
+                {% if user.is_active %}
+                    <td></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        {% if rating_stats %}
+            <tfoot><tr>
+                <td colspan=3>
+                    <strong>{% trans "Average value" %}</strong>
+                </td>
+
+                {% if rating_columns_form.rt_representatives.value %}
+                    {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
+                    <td class="representatives">
+                        <strong>{{ rating_stats.repr_len }} / {{ rating_stats.active_repr_len }}</strong>
+                    </td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_comment_quantity.value %}
+                    <td class="comments">
+                        <strong>{{ rating_stats.comments }}</strong>
+                    </td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_initial_openness.value %}
+                    <td class="init-openness">
+                        <strong>{{ rating_stats.openness_initial|floatformat:3 }}%</strong>
+                    </td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_final_openness.value %}
+                    <td class="openness">
+                        <strong>{{ rating_stats.openness|floatformat:3 }}%</strong>
+                    </td>
+                {% endif %}
+
+                {% if rating_columns_form.rt_difference.value %}
+                    <td class="diff">
+                    {% spaceless %}
+                        <div>
+                        <span>
+                            <strong>{{ rating_stats.openness_delta|floatformat:3 }}%</strong>
+                        </span>&nbsp;
+                        {% ifnotequal rating_stats.openness_delta None %}
+                            {% if rating_stats.openness_delta > 0%}
+                                <img class="rate-direction" src="{% static 'exmo2010/img/rate_up.png' %}">
+                            {% elif rating_stats.openness_delta < 0%}
+                                <img class="rate-direction" src="{% static 'exmo2010/img/rate_down.png' %}">
                             {% endif %}
                         {% endifnotequal %}
-                    </div>
-                {% endspaceless %}
-                </td>
-            {% endif %}
+                        </div>
+                    {% endspaceless %}
+                    </td>
+                {% endif %}
 
-            {% if user.is_active %}
+                {% if user.is_active %}
                 <td></td>
-            {% endif %}
-        </tr>
-    {% endfor %}
-    </tbody>
+                {% endif %}
+            </tr></tfoot>
+        {% endif %}
+    </table>
+
     {% if rating_stats %}
-        <tfoot><tr>
-            <td colspan=3>
-                <strong>{% trans "Average value" %}</strong>
-            </td>
-
-            {% if rating_columns_form.rt_representatives.value %}
-                {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
-                <td class="representatives">
-                    <strong>{{ rating_stats.repr_len }} / {{ rating_stats.active_repr_len }}</strong>
-                </td>
-            {% endif %}
-
-            {% if rating_columns_form.rt_comment_quantity.value %}
-                <td class="comments">
-                    <strong>{{ rating_stats.comments }}</strong>
-                </td>
-            {% endif %}
-
-            {% if rating_columns_form.rt_initial_openness.value %}
-                <td class="init-openness">
-                    <strong>{{ rating_stats.openness_initial|floatformat:3 }}%</strong>
-                </td>
-            {% endif %}
-
-            {% if rating_columns_form.rt_final_openness.value %}
-                <td class="openness">
-                    <strong>{{ rating_stats.openness|floatformat:3 }}%</strong>
-                </td>
-            {% endif %}
-
-            {% if rating_columns_form.rt_difference.value %}
-                <td class="diff">
-                {% spaceless %}
-                    <div>
-                    <span>
-                        <strong>{{ rating_stats.openness_delta|floatformat:3 }}%</strong>
-                    </span>&nbsp;
-                    {% ifnotequal rating_stats.openness_delta None %}
-                        {% if rating_stats.openness_delta > 0%}
-                            <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_up.png">
-                        {% elif rating_stats.openness_delta < 0%}
-                            <img class="rate-direction" src="{{ STATIC_URL }}exmo2010/img/rate_down.png">
-                        {% endif %}
-                    {% endifnotequal %}
-                    </div>
-                {% endspaceless %}
-                </td>
-            {% endif %}
-
-            {% if user.is_active %}
-            <td></td>
-            {% endif %}
-        </tr></tfoot>
-    {% endif %}
-</table>
-
-{% if rating_stats %}
-    <p class="total-organizations">
-        {% blocktrans count count=rating_stats.num_approved_tasks %}
-            Altogether, there is {{count}} organization in the monitoring cycle
-        {% plural %}
-            Altogether, there are {{count}} organizations in the monitoring cycle
-        {% endblocktrans %}
-        {% if rating_type == 'user' %}
-            {% blocktrans count count=rating_stats.num_rated_tasks %}
-                , {{count}} of them has at least 1 relevant setting from users sample
+        <p class="total-organizations">
+            {% blocktrans count count=rating_stats.num_approved_tasks %}
+                Altogether, there is {{count}} organization in the monitoring cycle
             {% plural %}
-                , {{count}} of them have at least 1 relevant setting from users sample
+                Altogether, there are {{count}} organizations in the monitoring cycle
             {% endblocktrans %}
-        {% endif %}.
-    </p>
-{% endif %}
+            {% if rating_type == 'user' %}
+                {% blocktrans count count=rating_stats.num_rated_tasks %}
+                    , {{count}} of them has at least 1 relevant setting from users sample
+                {% plural %}
+                    , {{count}} of them have at least 1 relevant setting from users sample
+                {% endblocktrans %}
+            {% endif %}.
+        </p>
+    {% endif %}
 
-<!-- Modal -->
-<div id="settings-modal" class="hidden">
-    <form action="." method="GET">
-        <div id="checkboxes">
-            <h2 class="modal-heading">{% trans "Table settings" %}</h2>
-            {% for field in rating_columns_form %}
-                {{ field }}&nbsp;{{ field.label_tag }}<br/>
-            {% endfor %}
-        </div>
-        <div id="buttons">
-            <span>
-                <input type="submit" value="{% trans "Change" %}">
-            </span>
-            <a href="#" id="cancel-link" class="pseudo">{% trans "Cancel" %}</a>
-        </div>
-    </form>
-</div>
+    <!-- Modal -->
+    <div id="settings-modal" class="hidden">
+        <form action="." method="GET">
+            <div id="checkboxes">
+                <h2 class="modal-heading">{% trans "Table settings" %}</h2>
+                {% for field in rating_columns_form %}
+                    {{ field }}&nbsp;{{ field.label_tag }}<br/>
+                {% endfor %}
+            </div>
+            <div id="buttons">
+                <span>
+                    <input type="submit" value="{% trans "Change" %}">
+                </span>
+                <a href="#" id="cancel-link" class="pseudo">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
 {% endblock %}

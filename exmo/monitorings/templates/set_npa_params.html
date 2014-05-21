@@ -1,9 +1,9 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,9 +21,7 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block extrahead %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}exmo2010/js/jquery/jquery.min.js"></script>
+{% block extra_script %}
     <script type="text/javascript">
         $(document).ready(function () {
             $("input[type='reset']").click(function( e ) {
@@ -35,15 +33,11 @@
     </script>
 {% endblock %}
 
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
-{% block nav_sidebar %}
-    {% include "exmo2010/nav_sidebar/monitoring_utility.html" %}
-{% endblock %}
+{% block h1 %}<h1>{% trans 'Choose normative parameters' %}</h1>{% endblock %}
 
-{% block nav_sidebar_title %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-{% block content_class %}sidebar-ident{% endblock %}
 {% block content %}
-    <h1>{% trans 'Choose normative parameters' %}</h1>
     <form action="" method="post">
         {% csrf_token %}
         {{ formset.management_form }}

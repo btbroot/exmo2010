@@ -1,8 +1,8 @@
-{% extends "exmo2010/base_site.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,10 +18,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static future %}
+{% load i18n static %}
 
-{% block extrahead %}
-    {{ block.super }}
+{% block title %}{% trans 'Openness certificate' %}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/certificate_order_form.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
     {{ wizard.form.media }}
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery.mousewheel.js' %}"></script>
@@ -29,17 +35,9 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/certificate_order_form.js' %}"></script>
 {% endblock %}
 
-{% block title %} {% trans 'Openness certificate' %}{% endblock %}
-{% block content_title %} {% trans 'Openness certificate' %}{% endblock %}
-
-{% block extrastyle %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/certificate_order_form.css' %}" />
-{% endblock %}
+{% block h1 %}<h1>{% trans 'Openness certificate' %}</h1>{% endblock %}
 
 {% block content %}
-
     {% if not view.tasks %}
         <p class="warning"> {% trans 'Organization list is empty, please change the organization filter' %} </p>
     {% endif %}
@@ -199,5 +197,4 @@
             </div>
         </form>
     </div>
-
 {% endblock %}
