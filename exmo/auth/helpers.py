@@ -20,33 +20,59 @@
 import re
 from types import NoneType
 
+from django.db.models import Q
+
 from exmo2010.models import Task, Score, Parameter
-from exmo2010.models.monitoring import Monitoring, RATE, RES, INT, PUB, FIN
+from exmo2010.models.monitoring import Monitoring, PRE, RATE, RES, INT, PUB, FIN
+
+
+def perm_filter(user, priv, queryset):
+    if priv == 'view_monitoring':
+        if user.is_superuser or user.is_expertA:
+            return queryset
+
+        published = Q(status=PUB, hidden=False)
+        if user.is_expertB:
+            own = Q(organization__task__user=user) & ~Q(status=PRE)
+            return queryset.filter(published | own).distinct()
+        elif user.is_organization:
+            orgs = user.profile.organization.filter(task__status=Task.TASK_APPROVED)
+            own = Q(status__in=(INT, FIN, PUB), organization__in=orgs)
+            return queryset.filter(published | own).distinct()
+        # TODO: when overseer role will be added - add its case here.
+        else:
+            return queryset.filter(published)
+
+    if priv == 'view_task':
+        if user.is_expertA:
+            return queryset
+        elif user.is_expertB:
+            return queryset.filter(user=user)
 
 
 def monitoring_permission(user, priv, monitoring):
+    phase = monitoring.status
+
     if priv in ('admin_monitoring', 'edit_monitoring'):
         if user.is_expertA:
             return True
 
     if priv == 'delete_monitoring':
-        if user.is_expertA and not monitoring.status == PUB:
+        if user.is_expertA and not phase == PUB:
             return True
 
     if priv == 'view_monitoring':
         if user.is_superuser or user.is_expertA:
             return True
-
-        if monitoring.hidden or not monitoring.status == PUB:
-            if user.is_expertB and monitoring.is_active and \
-                    Task.objects.filter(organization__monitoring=monitoring, user=user).exists():
-                return True
-            elif user.is_organization and Task.approved_tasks.filter(
-                    organization__monitoring=monitoring,
-                    organization__monitoring__status__in=(INT, FIN, PUB),
-                    organization__in=user.profile.organization.all()).exists():
-                return True
-        elif monitoring.status == PUB:
+        elif phase == PUB and not monitoring.hidden:
+            return True
+        elif user.is_expertB and phase != PRE and \
+                user.task_set.filter(organization__monitoring=monitoring).exists():
+            return True
+        elif user.is_organization and Task.approved_tasks.filter(
+                organization__monitoring=monitoring,
+                organization__monitoring__status__in=(INT, FIN, PUB),
+                organization__in=user.profile.organization.all()).exists():
             return True
 
     return False

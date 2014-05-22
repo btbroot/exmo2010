@@ -37,6 +37,7 @@ from django.views.generic import View
 from django.views.generic.edit import DeleteView, UpdateView
 
 from accounts.forms import SettingsInvCodeForm
+from auth.helpers import perm_filter
 from core.helpers import table
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
@@ -279,12 +280,10 @@ def tasks_by_monitoring(request, monitoring_pk):
     ]
 
     if user.is_expertA:
-        queryset = Task.objects.filter(organization__monitoring=monitoring).select_related()
         users = User.objects.filter(task__organization__monitoring=monitoring).distinct()
         user_choice = [(u.username, u.profile.legal_name) for u in users]
         headers.insert(1, (_('expert'), 'user__username', 'user__username', None, user_choice))
     else:
-        queryset = Task.objects.filter(organization__monitoring=monitoring, user=user).select_related()
         filter1 = request.GET.get('filter1')
         if filter1:
             try:
@@ -292,10 +291,11 @@ def tasks_by_monitoring(request, monitoring_pk):
             except ValueError:
                 request.GET = QueryDict('')
 
+    tasks = Task.objects.filter(organization__monitoring=monitoring)
     return table(
         request,
         headers,
-        queryset=queryset,
+        queryset=perm_filter(request.user, 'view_task', tasks).select_related(),
         paginate_by=50,
         extra_context={
             'monitoring': annotate_exmo_perms(monitoring, request.user),

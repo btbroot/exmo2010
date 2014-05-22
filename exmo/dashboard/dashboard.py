@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -37,7 +37,9 @@ from django.utils.translation import ugettext_lazy as _
 
 import modules as custom_modules
 from accounts.forms import SettingsInvCodeForm
-from monitorings.views import _get_monitoring_list
+from auth.helpers import perm_filter
+from exmo2010.models import Monitoring
+from perm_utils import annotate_exmo_perms
 
 
 class UserDashboard(Dashboard):
@@ -73,7 +75,6 @@ class CustomIndexDashboard(UserDashboard):
                     context.update({'task_id': task_id})
                 context.update({'invcodeform': SettingsInvCodeForm()})
 
-        site_name = get_admin_site_name(context)
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
             _('Quick links'),
@@ -88,12 +89,13 @@ class CustomIndexDashboard(UserDashboard):
         ))
 
         # append another link list module for "support".
+        monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
         self.children.append(custom_modules.ObjectList(
             _('Monitoring cycles'),
             children=[
                 {
                     'title': None,
-                    'object_list': _get_monitoring_list(request),
+                    'object_list': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user),
                 },
             ],
             template="user_dashboard/modules/monitoring_list.html",

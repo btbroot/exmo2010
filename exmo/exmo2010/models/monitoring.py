@@ -237,4 +237,3 @@ class Monitoring(BaseModel):
     is_interact = property(lambda self: self.status == MONITORING_INTERACTION)
     is_finishing = property(lambda self: self.status == MONITORING_FINALIZING)
     is_published = property(lambda self: self.status == MONITORING_PUBLISHED)
-    is_active = property(lambda self: self.status != MONITORING_PREPARE)

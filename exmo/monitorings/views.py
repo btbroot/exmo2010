@@ -48,6 +48,7 @@ from django.utils import simplejson
 from django.views.generic import UpdateView, DeleteView
 from reversion.revisions import default_revision_manager as revision
 
+from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import LoginRequiredMixin
@@ -95,18 +96,8 @@ def set_npa_params(request, monitoring_pk):
     else:
         formset = ParameterTypeFormSet(queryset=parameters)
 
-    context = {"formset": formset, "monitoring": monitoring,}
+    context = {"formset": formset, "monitoring": monitoring}
     return TemplateResponse(request, 'set_npa_params.html', context)
-
-
-def _get_monitoring_list(request):
-    monitorings_pk = []
-    for m in Monitoring.objects.all().select_related():
-        if request.user.has_perm('exmo2010.view_monitoring', m):
-            monitorings_pk.append(m.pk)
-    queryset = Monitoring.objects.filter(
-        pk__in=monitorings_pk).order_by('-publish_date')
-    return annotate_exmo_perms(queryset, request.user)
 
 
 def monitorings_list(request):
@@ -117,7 +108,8 @@ def monitorings_list(request):
     if not request.user.is_active or not request.user.userprofile.is_expert:
         raise PermissionDenied
 
-    queryset = _get_monitoring_list(request)
+    queryset = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
+    queryset = annotate_exmo_perms(queryset.order_by('-publish_date'), request.user)
 
     headers = (
         (_('monitoring'), 'name', 'name', None, None),
