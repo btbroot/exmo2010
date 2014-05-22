@@ -170,9 +170,9 @@
                         <div class="table-row">
                             {% for field in score_table %}
                                 <div class="table-cell {% if not field.max_score %}text-color-red{% endif %}">
-                                    {{ field.score|default_if_none:'-' }}
-                                    {% if field.score_rev1 and field.score != field.score_rev1 %}
-                                        <span class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">({{ field.score_rev1 }})</span>
+                                    {{ field.score|default_if_none:'–' }}
+                                    {% if field.score_rev1 != '' and field.score != field.score_rev1 %}
+                                        <span class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">({{ field.score_rev1|default_if_none:'–' }})</span>
                                     {% endif %}
                                     {% if not field.max_score %}<div class="underline"></div>{% endif %}
                                 </div>
