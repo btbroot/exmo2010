@@ -19,6 +19,7 @@
 #
 from collections import OrderedDict
 
+from ckeditor.views import upload
 from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -31,7 +32,7 @@ from django.template.response import TemplateResponse
 from django.utils import dateformat, translation
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import requires_csrf_token
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
 from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
@@ -235,6 +236,14 @@ class AjaxSetProfileSettingView(View):
             return JSONResponse()
 
         raise Http404
+
+
+@login_required
+@csrf_exempt
+def ckeditor_upload(request):
+    if not (request.user.is_expert or request.user.is_translator):
+        raise PermissionDenied
+    return upload(request)
 
 
 def change_language(request):

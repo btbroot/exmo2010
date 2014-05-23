@@ -320,15 +320,17 @@ class UserProfile(BaseModel):
 
     expertA_group = 'expertsA'
     expertB_group = 'expertsB'
-    organization_group = 'organizations'
     customer_group = 'customers'
+    translator_group = 'translators'
+    organization_group = 'organizations'
 
     expert_groups = [expertA_group, expertB_group]
 
     is_expert = property(lambda self: check_role(self.user, self.expert_groups))
-    is_expertB = group_property(expertB_group)
     is_expertA = group_property(expertA_group)
+    is_expertB = group_property(expertB_group)
     is_customer = group_property(customer_group)
+    is_translator = group_property(translator_group)
     is_organization = group_property(organization_group)
 
     is_internal = lambda self: self.user.is_superuser or self.user.is_staff or self.is_expert
@@ -356,6 +358,7 @@ User.is_expert = property(lambda u: u.is_active and u.profile.is_expert)
 User.is_expertB = property(lambda u: u.is_active and u.profile.is_expertB)
 User.is_expertA = property(lambda u: u.is_active and u.profile.is_expertA)
 User.is_customer = property(lambda u: u.is_active and u.profile.is_customer)
+User.is_translator = property(lambda u: u.is_active and u.profile.is_translator)
 User.is_organization = property(lambda u: u.is_active and u.profile.is_organization)
 User.represents = lambda u, org: u.is_active and u.profile.organization.filter(pk=org.pk).exists()
 User.executes = lambda u, task: u.is_expertB and task.user_id == u.pk

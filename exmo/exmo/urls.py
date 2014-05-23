@@ -40,6 +40,7 @@ urlpatterns += i18n_patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
     url(r'^admin_tools/', include('admin_tools.urls')),
+    url(r'^ckeditor/upload/', 'exmo2010.views.ckeditor_upload', name='ckeditor_upload'),
     url(r'^ckeditor/', include('ckeditor.urls')),
     url(r'^', include('exmo2010.urls', namespace='exmo2010', app_name='exmo2010')),
 )

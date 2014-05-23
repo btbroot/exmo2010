@@ -134,6 +134,7 @@ CACHES = {
 
 # CKEditor config
 CKEDITOR_UPLOAD_PATH = 'ckeditor_uploads/'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'All',
