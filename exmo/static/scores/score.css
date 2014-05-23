@@ -27,6 +27,8 @@ h1 {
 /* == SCORE HEADER BLOCK == */
 
 .score-header-block input {
+    margin-right: 20px;
+    vertical-align: baseline;
     background: none, #ffd8dd;
 }
 

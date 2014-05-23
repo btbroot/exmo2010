@@ -53,6 +53,7 @@
             <input type="button"
                    value="{% trans 'Set non-relevant' %}"
                    onclick="window.location.href='{% url 'exmo2010:parameter_exclude' score.task.pk param.pk %}?{{ request.GET.urlencode }}'" />
+            <a href="{% url 'exmo2010:parameter_update' score.task.pk param.pk %}">{% trans 'Edit parameter' %}</a>
         {% endif %}
 
         <h2>{% trans 'Parameter characteristics' %}:</h2>
