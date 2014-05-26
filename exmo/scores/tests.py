@@ -182,7 +182,7 @@ class ScoreEditInitialTestCase(TestCase):
 
 class ScoreEditInteractionValidTestCase(TestCase):
     # ExpertA and expertB assigned to task should be able to edit score in MONITORING_INTERACTION monitoring.
-    # Old score revision should be saved with new pk.
+    # Old score revision should be saved with new pk and 'last_modified' field in old score revision shouldn't change.
     # And comment should be added
 
     def setUp(self):
@@ -198,6 +198,7 @@ class ScoreEditInteractionValidTestCase(TestCase):
         # AND task assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
         self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1)
+        self.score_last_modified = self.score.last_modified
 
         self.url = reverse('exmo2010:score_view', args=[self.score.pk])
 
@@ -215,8 +216,11 @@ class ScoreEditInteractionValidTestCase(TestCase):
         self.assertRedirects(response, self.url)
 
         # AND old score revision get saved in DB
-        old_revisions = Score.objects.filter(revision=Score.REVISION_INTERACT).values_list('task', 'parameter', 'found')
-        self.assertEqual([(self.task.pk, self.param.pk, 1)], list(old_revisions))
+        old_revisions = Score.objects.filter(revision=Score.REVISION_INTERACT)
+        self.assertEqual([(self.task.pk, self.param.pk, 1)],
+                         list(old_revisions.values_list('task', 'parameter', 'found')))
+        # AND 'last_modified' field in old score revision shouldn't change
+        self.assertEqual(self.score_last_modified, old_revisions[0].last_modified)
 
         # AND score get updated in DB
         self.assertEqual(0, Score.objects.get(pk=self.score.pk).found)

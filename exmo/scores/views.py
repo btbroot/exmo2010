@@ -117,9 +117,11 @@ def score_view(request, **kwargs):
                 if not Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT).exists():
                     # Initial revision does not exist and should be created. It will have new pk.
                     initial_score = Score.objects.get(pk=kwargs['score_pk'])
+                    last_modified = initial_score.last_modified
                     initial_score.pk = None
                     initial_score.revision = Score.REVISION_INTERACT
                     initial_score.save()
+                    Score.objects.filter(pk=initial_score.pk).update(last_modified=last_modified)
 
                 if 'comment' in request.POST:
                     _add_comment(request, score)
