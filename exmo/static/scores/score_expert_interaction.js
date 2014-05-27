@@ -45,7 +45,8 @@ $(document).ready(function() {
     // Update recommendations and links after its ajax form submission.
     $('div.read_edit input[type="submit"]').click(function(){
         form = $(this).closest('form');
-        $.post(form.attr('action'), form.serialize()).done(function(response){
+        $.post(form.attr('action'), form.serialize())
+        .done(function(response){
             read_div = form.closest('div.read_edit').find('.read');
             if (response.data.length == 0) {
                 read_div.html(read_div.data('empty_text'));
@@ -58,8 +59,11 @@ $(document).ready(function() {
             var val = form.find('textarea').val();
             var name = form.find('textarea').attr('name');
             $('form.tab_edit').find('textarea[name='+name+']').val(val);
+            form.find('a.cancel').click();
+        })
+        .fail(function() {
+            alert(gettext('Score is invalid, recommendation can not be changed.'))
         });
-        form.find('a.cancel').click();
         return false;
     });
 
