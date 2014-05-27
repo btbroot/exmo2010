@@ -3307,7 +3307,7 @@ msgstr "Источник данных:"
 
 #: templates/scores/task_scores_print.html:61
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: templates/user_dashboard/dashboard.html:80
 msgid "Modules"
