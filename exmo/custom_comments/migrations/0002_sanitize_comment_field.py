@@ -21,7 +21,7 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
-from core.utils import urlize, clean_message
+from core.utils import clean_message
 
 
 class Migration(DataMigration):
@@ -30,7 +30,7 @@ class Migration(DataMigration):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
         for comment in orm.CommentExmo.objects.all():
-            comment.comment = urlize(clean_message(comment.comment))
+            comment.comment = clean_message(comment.comment)
             comment.save()
 
     def backwards(self, orm):
