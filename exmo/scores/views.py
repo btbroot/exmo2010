@@ -20,6 +20,7 @@
 from datetime import datetime
 import json
 
+from BeautifulSoup import BeautifulSoup
 from ckeditor.fields import RichTextFormField
 from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.decorators import login_required
@@ -203,11 +204,16 @@ def post_score_comment(request, score_pk):
 
 
 def _add_comment(request, score):
+    # Replace all autoscore bricks with normal text.
+    soup = BeautifulSoup(request.POST['comment'])
+    for input_node in soup.findAll('input'):
+        input_node.replaceWith(BeautifulSoup(input_node['value']))
+
     comment = CommentExmo.objects.create(
         object_pk=score.pk,
         content_type=ContentType.objects.get_for_model(Score),
         user=request.user,
-        comment=clean_message(request.POST['comment']),
+        comment=clean_message(unicode(soup)),
         site_id=1)
 
     if request.user.is_expert:

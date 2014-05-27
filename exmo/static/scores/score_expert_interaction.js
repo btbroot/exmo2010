@@ -110,43 +110,49 @@ $(document).ready(function() {
         if (!cke_comment.document)
             return;
 
-        all_max = true;  // flag if all radioinputs set to max
+        var all_max = true;  // flag if all radioinputs set to max
         $('input:radio:checked').each(function () {
             if ($(this).val() != $(this).closest('div.table-row').data('max')) {
                 all_max = false;
             }
         });
 
-        editor_body = $(cke_comment.document.$).find('body');
+        var editor_body = $(cke_comment.document.$).find('body');
 
         deleteAllAutoScoreCommentBricks();
 
         if ($('form div.table-row.changed').length > 0) {
-            // create introduction text
-            if (all_max == true) {
-                text = gettext("Score changed to maximum");
-                makeBrick('autoscore-intro', text, {class:'max'}).prependTo(editor_body);
-            } else {
-                text = gettext("Score changed");
-                makeBrick('autoscore-intro', text).prependTo(editor_body);
+            var p = $(editor_body).find('#autoscore_p');
+            if (p.length == 0) {
+                p = $('<p id="autoscore_p" />').prependTo(editor_body);
             }
-            // create guard break
-            $('<br id="autoscore-break" />').insertAfter(editor_body.find('.autoscore:last'));
+            // Create introduction text
+            if (all_max == true) {
+                var text = gettext("Score changed to maximum");
+                makeBrick('autoscore-intro', text, {class:'max'}).prependTo(p);
+            } else {
+                var text = gettext("Score changed");
+                makeBrick('autoscore-intro', text).prependTo(p);
+            }
+            // Create additional paragraph under autoscores block
+            if ($(editor_body).find('p:not(#autoscore_p)').length == 0) {
+                $('<p><br/></p>').insertAfter(p);
+            }
         }
 
         $('form div.table-row.changed').each(function() {
             // create brick for each changed input
-            input = $(this).find('input:checked');
-            initial = input.closest('div.table-row').data('initial');
-            newVal = input.val();
+            var input = $(this).find('input:checked');
+            var initial = input.closest('div.table-row').data('initial');
+            var newVal = input.val();
 
             if (initial == '') {initial = 0}
             if (newVal == '') {newVal = '-'}
 
-            label = input.closest('div.table-row').find('div.label').html().trim();
-            text = label + ': ' + initial + ' → ' + newVal;
+            var label = input.closest('div.table-row').find('div.label').html().trim();
+            var text = label + ': ' + initial + ' → ' + newVal;
 
-            id = input.attr('name') + '_brick';
+            var id = input.attr('name') + '_brick';
             if (editor_body.find('#'+id).length == 0) {
                 makeBrick(id, text).insertAfter(editor_body.find('.autoscore:last'));
             } else {
@@ -156,7 +162,7 @@ $(document).ready(function() {
     }
 
     $("input:radio").on('change', function() {
-        initial = $(this).closest('div.table-row').data('initial');
+        var initial = $(this).closest('div.table-row').data('initial');
         if ($(this).val() == initial) {
             $(this).closest('div.table-row').removeClass('changed');
         }
@@ -174,15 +180,15 @@ $(document).ready(function() {
 
     // create Brick - uneditable block of text inside CKEDITOR
     function makeBrick(id, text, options) {
-        defoptions = { class: '', css: { border: 'none', width: '300px', color: 'black', margin: '0px'} };
-        options = $.extend(true, defoptions, options);
+        var defoptions = { class: '', css: { border: 'none', width: '300px', color: 'black', margin: '0px'} };
+        var options = $.extend(true, defoptions, options);
         return $(
             '<input>',
             {
                 id: id,
                 class: 'autoscore ' + options.class,
                 css: options.css,
-                val: text,
+                value: text,
                 disabled: 'disabled'
             }).add('<br class="autoscore" />')
     }
@@ -191,7 +197,6 @@ $(document).ready(function() {
         // if CKEditor instance is not ready, skip this part
         if (cke_comment.document) {
             $(cke_comment.document.$).find('.autoscore').remove();
-            $(cke_comment.document.$).find('#autoscore-break').remove();
         }
     }
 
@@ -223,14 +228,6 @@ $(document).ready(function() {
 
     // Submit score form with comment.
     $("#submit_score_and_comment").click(function(){
-        // convert all bricks to normal text spans before sending comment
-        editor_body = $(cke_comment.document.$).find('body');
-        editor_body.find('input.autoscore').each(function(){
-            repl = '<span>'+$(this).val()+'</span>';
-            $(repl).insertAfter($(this));
-            $(this).remove();
-        });
-
         cke_comment.updateElement();
         $('form.tab_edit input[name="comment"]').val($('#id_comment').val())
         $('form.tab_edit').submit();
