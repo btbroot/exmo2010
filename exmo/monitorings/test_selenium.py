@@ -19,11 +19,14 @@
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import *
+from exmo2010.models import Task, Organization
+from exmo2010.models import Monitoring, MONITORING_PUBLISHED
 
 
+@attr('selenium')
 class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
     # Scenario: Check if initial openness column is display
     modal_window = '#modal-open'

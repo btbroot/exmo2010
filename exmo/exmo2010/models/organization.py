@@ -119,7 +119,7 @@ class Organization(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ('name',)
         unique_together = tuple(('name_%s' % lang[0], 'monitoring') for lang in settings.LANGUAGES)
-        verbose_name = pgettext_lazy('change organization in admin', 'Organization')
+        verbose_name = pgettext_lazy(u'change organization in admin', u'Organization')
         verbose_name_plural = _('Organizations')
 
     name = models.CharField(max_length=255, verbose_name=_('name'))

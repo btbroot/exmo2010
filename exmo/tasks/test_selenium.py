@@ -19,11 +19,13 @@
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
 from exmo2010.models import User, Monitoring, Organization, Task, Parameter, Score, MONITORING_RATE
 
 
+@attr('selenium')
 class TaskListAjaxActionTestCase(BaseSeleniumTestCase):
     ''' Should update task status and allowed actions when action link clicked '''
 

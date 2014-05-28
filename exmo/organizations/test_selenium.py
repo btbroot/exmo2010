@@ -22,14 +22,16 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import Monitoring, Organization
+from exmo2010.models import Organization
 
 
+@attr('selenium')
 class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
     # Scenario: Test organization page
-    submit_button = 'div.content input[type="submit"]'
+    submit_button = '#send_mail input[type="submit"]'
 
     def setUp(self):
         # GIVEN organization with email

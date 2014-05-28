@@ -22,11 +22,14 @@ from django.contrib.auth.models import Group, User
 from django.core import mail
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import *
+from exmo2010.models import Parameter, Organization, Score, Task
+from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED
 
 
+@attr('selenium')
 class CertificateOrderTestCase(BaseSeleniumTestCase):
     # Check certificate ordering page
     name_element_id = '#id_name'

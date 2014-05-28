@@ -24,6 +24,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 
 from core.test_utils import BaseSeleniumTestCase
@@ -33,6 +34,7 @@ from exmo2010.models.monitoring import (
     Monitoring, MONITORING_RATE, MONITORING_RESULT, MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED)
 
 
+@attr('selenium')
 class AutoScoreCommentTestCase(BaseSeleniumTestCase):
     ''' Tests automatic comments insertion when editing scores on score page '''
 
@@ -135,6 +137,7 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
             self.assertEqual(len(self.findall('input.autoscore')), 0)
 
 
+@attr('selenium')
 class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
     ''' On score page if "found" criterion value is not "1", then other criteria inputs should be hidden '''
 
@@ -168,6 +171,7 @@ class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
         self.assertVisible('label[for="id_topical_2"]')
 
 
+@attr('selenium')
 class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):
     # Scenario: on task page rating place SHOULD be visible and requested by ajax only if task is approved
 
@@ -218,6 +222,7 @@ class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):
         self.assertVisible('#place_all')
 
 
+@attr('selenium')
 class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
     # On score page comment submit button should be disabled if input text is empty
 
@@ -349,6 +354,7 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         self.assertDisabled('#submit_score_and_comment')
 
 
+@attr('selenium')
 class ScoreClaimTabsClickTestCase(BaseSeleniumTestCase):
     # On score page clicking on Claim\Clarification tabs should display tab content.
 
@@ -397,6 +403,7 @@ class ScoreClaimTabsClickTestCase(BaseSeleniumTestCase):
         self.assertVisible('.tab-content-clarifications')
 
 
+@attr('selenium')
 class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
     # On score page clicking "toggle comment" should change comment status.
 
@@ -465,6 +472,7 @@ class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
         self.assertEqual(list(comments.values_list('status')), [(CommentExmo.OPEN,)])
 
 
+@attr('selenium')
 class AddClaimTestCase(BaseSeleniumTestCase):
     # On score page expertA should be able to add claim.
 
@@ -519,6 +527,7 @@ class AddClaimTestCase(BaseSeleniumTestCase):
         self.assertEqual(list(self.scores[status].claim_set.values_list('comment')), [('<p>lol</p>\r\n',)])
 
 
+@attr('selenium')
 class AnswerClaimTestCase(BaseSeleniumTestCase):
     # On score page expertB should be able to add claim answer.
 
@@ -582,6 +591,7 @@ class AnswerClaimTestCase(BaseSeleniumTestCase):
         self.assertEqual(list(self.scores[status].claim_set.values_list('answer')), [('<p>lol</p>\r\n',)])
 
 
+@attr('selenium')
 class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
     # If score is not maximum, recommendations submit button should be disabled if contents empty.
 
@@ -647,6 +657,7 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
         self.assertEnabled('#recommendations_form input[type="submit"]')
 
 
+@attr('selenium')
 class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
     # On score page non-experts SHOULD be able to toggle initial scores visibility
 
