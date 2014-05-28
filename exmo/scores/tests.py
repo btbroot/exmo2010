@@ -180,7 +180,9 @@ class ScoreEditInitialTestCase(TestCase):
         self.assertEqual(0, Score.objects.get(pk=self.score.pk).found)
 
 
-class ScoreEditInteractionValidTestCase(TestCase):
+class ScoreEditInteractionTestCase(TestCase):
+    # TODO: Move this testcase to *general logic* tests directory.
+
     # ExpertA and expertB assigned to task should be able to edit score in MONITORING_INTERACTION monitoring.
     # Old score revision should be saved with new pk and 'last_modified' field in old score revision shouldn't change.
     # And comment should be added
@@ -229,7 +231,8 @@ class ScoreEditInteractionValidTestCase(TestCase):
         self.assertEqual([u'<p>lol</p>'], list(CommentExmo.objects.values_list('comment', flat=True)))
 
 
-class ScoreEditInvalidTestCase(TestCase):
+class ScoreEditValidationTestCase(TestCase):
+    # TODO: Move this testcase to *validation* tests directory.
 
     def setUp(self):
         # GIVEN expertA and expertB
@@ -238,25 +241,53 @@ class ScoreEditInvalidTestCase(TestCase):
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         expertB.profile.is_expertB = True
 
-        # AND organization and parameter in MONITORING_INTERACTION monitoring
+        # AND organization  in MONITORING_INTERACTION monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
-        self.param = mommy.make(Parameter, monitoring=org.monitoring)
+        # AND parameter with no optional criteria
+        kwargs = dict(complete=0, topical=0, accessible=0, hypertext=0, document=0, image=0)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring, **kwargs)
         # AND task assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
+        # AND maximum score with recommendations and found=1
         self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1, recommendations='123')
 
         self.url = reverse('exmo2010:score_view', args=[self.score.pk])
 
-    @parameterized.expand([
-        ('expertA',),
-        ('expertB',),
-    ])
+    @parameterized.expand([('expertA',), ('expertB',)])
     def test_recommendations_should_change(self, username):
+        """
+        Recommendations should change when score is changed. Except the case when only the newly
+        added criterion is changed from None to some value. (Covered in `test_change_newly_added_criterion`)
+        """
+
         self.client.login(username=username, password='password')
+
         # WHEN user POSTs score edit form with the same recommendation and 'found' equals 0
-        response = self.client.post(self.url, {'found': 0, 'comment': '<p>lol</p>', 'recommendations': '123'})
-        # THEN response should contain recommendations error message
+        response = self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': '123'})
+
+        # THEN score should stay unchanged in database
+        self.assertEqual(list(Score.objects.values_list('pk', 'found')), [(self.score.pk, 1)])
+        # AND response should contain recommendations error message
         self.assertContains(response, _('Recommendations should change when score is changed'), 1)
+
+    @parameterized.expand([('expertA',), ('expertB',)])
+    def test_change_newly_added_criterion(self, username):
+        """
+        When only the newly added criterion is changed from None to some value - recommendations can
+        stay unchanged.
+        """
+
+        self.client.login(username=username, password='password')
+
+        # WHEN new 'accessible' criterion added to parameter
+        Parameter.objects.filter(pk=self.param.pk).update(accessible=True)
+
+        # AND user POSTs score edit form with the same recommendation and 'accessible' set to 1
+        self.client.post(self.url, {'found': 1, 'accessible': 1, 'comment': 'lol', 'recommendations': '123'})
+
+        # THEN score should get updated in database. Accessible should change from None to 1
+        db_score = Score.objects.filter(pk=self.score.pk)
+        self.assertEqual(list(db_score.values_list('found', 'accessible')), [(1, 1)])
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):

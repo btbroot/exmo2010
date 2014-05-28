@@ -85,7 +85,6 @@ class Score(BaseModel):
             self.parameter.code
         )
 
-
     def criteria(self):
         for crit in Parameter.OPTIONAL_CRITERIONS:
             if getattr(self.parameter, crit):
@@ -95,7 +94,7 @@ class Score(BaseModel):
 
     def clean(self):
         # Relevant criteria
-        criteria = filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+        criteria = ['found'] + filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
 
         # If found == 1, all relevant criteria should be non-null
         if self.found:
@@ -108,8 +107,8 @@ class Score(BaseModel):
         if self.pk:
             db_score = Score.objects.get(pk=self.pk)
             if self.recommendations == db_score.recommendations:
-                for crit in ['found'] + criteria:
-                    if getattr(self, crit) != getattr(db_score, crit):
+                for crit in criteria:
+                    if getattr(self, crit) != getattr(db_score, crit) and getattr(db_score, crit) is not None:
                         raise ValidationError(ugettext('Recommendations should change when score is changed'))
 
         # If score is not maximum, recommendations should not be empty.
