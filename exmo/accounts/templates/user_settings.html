@@ -43,83 +43,83 @@
         </p>
     {% endif %}
 
-    {% include "exmo2010/helpers/form_errors.html" with form=pers_inf_form %}
+    <form action="" method="post">{% csrf_token %}
+        {% include "exmo2010/helpers/form_errors.html" with form=pers_inf_form %}
 
-    <form action="" method="post">
-        {% csrf_token %}
-        <table class="table-setings">
-            <tbody>
-                <tr>
-                    <td>
-                        {% trans 'E-mail' %}
-                    </td>
-                    <td>
-                        {{ email }}
-                    </td>
-                </tr>
-                {% for field in pers_inf_form %}
-                <tr>
-                    <td>
+        <div class="table personal-information-form">
+            <div class="table-row">
+                <div class="table-cell">
+                    {% trans 'E-mail' %}
+                </div>
+
+                <div class="table-cell">
+                    {{ email }}
+                </div>
+            </div>
+
+            {% for field in pers_inf_form %}
+                <div class="table-row">
+                    <div class="table-cell">
                         {{ field.label_tag }}
-                    </td>
-                    <td>
+                    </div>
+
+                    <div class="table-cell">
                         {{ field }}
-                    </td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td></td>
-                    <td>
-                        <input type="submit" value="{% trans 'Save' %}" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="table-row">
+                <div class="table-cell"></div>
+
+                <div class="table-cell">
+                    <input type="submit" value="{% trans 'Save' %}" />
+                </div>
+            </div>
+        </div>
     </form>
 
     <hr />
 
     {% if not is_internal %}
-    <h2>{% trans 'Invitation code' %}</h2>
+        <h2>{% trans 'Invitation code' %}</h2>
 
-    {% if inv_code_form_mess %}
-        <p class="success">
-            {{ inv_code_form_mess }}
-        </p>
-    {% endif %}
+        {% if inv_code_form_mess %}
+            <p class="success">
+                {{ inv_code_form_mess }}
+            </p>
+        {% endif %}
 
-    {% include "exmo2010/helpers/form_errors.html" with extra_error=inv_code_form_err %}
+        <form action="" method="post">{% csrf_token %}
+            {% include "exmo2010/helpers/form_errors.html" with extra_error=inv_code_form_err %}
 
-    <form action="" method="post">
-        {% csrf_token %}
-        <table class="table-setings">
-            <tbody>
-            {% for field in inv_code_form %}
-                <tr>
-                    <td>
-                        <label for="id_{{ field.name }}">{{ field.label }}</label>
-                    </td>
-                    <td>
-                        {{ field }}
-                    </td>
-                </tr>
-            {% endfor %}
-                <tr>
-                    <td></td>
-                    <td>
+            <div class="table invitation-code-form">
+                {% for field in inv_code_form %}
+                    <div class="table-row">
+                        <div class="table-cell">
+                            {{ field.label_tag }}
+                        </div>
+
+                        <div class="table-cell">
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="table-row">
+                    <div class="table-cell"></div>
+
+                    <div class="table-cell">
                         <input type="submit" value="{% trans 'Send' %}" />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
+                    </div>
+                </div>
+            </div>
+        </form>
 
-    <hr />
+        <hr />
     {% endif %}
 
     <h2>{% trans 'Change password' %}</h2>
-
-    {% include "exmo2010/helpers/form_errors.html" with form=ch_pass_form %}
 
     {% if ch_pass_form_mess %}
         <p class="success">
@@ -127,28 +127,30 @@
         </p>
     {% endif %}
 
-    <form action="" method="post">
-        {% csrf_token %}
-        <table class="table-setings">
-            <tbody>
+    <form action="" method="post">{% csrf_token %}
+        {% include "exmo2010/helpers/form_errors.html" with form=ch_pass_form %}
+
+        <div class="table change-password-form">
             {% for field in ch_pass_form %}
-                <tr>
-                    <td>
+                <div class="table-row">
+                    <div class="table-cell">
                         {{ field.label_tag }}
-                    </td>
-                    <td>
+                    </div>
+
+                    <div class="table-cell">
                         {{ field }}
-                    </td>
-                </tr>
+                    </div>
+                </div>
             {% endfor %}
-            <tr>
-                <td></td>
-                <td>
+
+            <div class="table-row">
+                <div class="table-cell"></div>
+
+                <div class="table-cell">
                     <input type="submit" value="{% trans 'Apply password change' %}" />
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
+            </div>
+        </div>
     </form>
 
     <hr />
@@ -161,36 +163,54 @@
         </p>
     {% endif %}
 
-    {% include "exmo2010/helpers/form_errors.html" with form=send_notif_form %}
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="main_block">
+    <form action="" method="post">{% csrf_token %}
+        <div class="table email-notification-form">
             {% if is_internal or is_organization %}
-                <div  class="float-left">
-                    {{ send_notif_form.notification_type.label }}
+                <div class="table-row">
+                    <div class="table-cell">
+                        {{ send_notif_form.notification_type.label }}
+                    </div>
+
+                    <div class="table-cell">
+                        {{ send_notif_form.notification_type }}
+                        {{ send_notif_form.notification_interval }}
+                    </div>
                 </div>
-                <div class="right_field">
-                    {{ send_notif_form.notification_type }}
-                    {{ send_notif_form.notification_interval }}
+
+                <div class="table-row">
+                    <div class="table-cell"></div>
+
+                    <div class="table-cell text-area">
+                        {{ send_notif_form.notification_self }}
+                        {{ send_notif_form.notification_self.label }}
+                    </div>
                 </div>
-                <div class="right_field">
-                    {{ send_notif_form.notification_self }}
-                    {{ send_notif_form.notification_self.label }}
-                </div>
-                <div class="right_field">
-                    {{ send_notif_form.notification_thread }}
-                    {{ send_notif_form.notification_thread.label }}
+
+                <div class="table-row">
+                    <div class="table-cell"></div>
+
+                    <div class="table-cell">
+                        {{ send_notif_form.notification_thread }}
+                        {{ send_notif_form.notification_thread.label }}
+                    </div>
                 </div>
             {% endif %}
 
-            <div class="right_field">
-                {{ send_notif_form.subscribe }}
-                {{ send_notif_form.subscribe.label }}
+            <div class="table-row">
+                <div class="table-cell"></div>
+
+                <div class="table-cell">
+                    {{ send_notif_form.subscribe }}
+                    {{ send_notif_form.subscribe.label }}
+                </div>
             </div>
 
-            <div class="right_field">
-                <input type="submit" name="notify_submit" value="{% trans 'Save' %}" />
+            <div class="table-row">
+                <div class="table-cell"></div>
+
+                <div class="table-cell">
+                    <input type="submit" name="notify_submit" value="{% trans 'Save' %}" />
+                </div>
             </div>
         </div>
     </form>

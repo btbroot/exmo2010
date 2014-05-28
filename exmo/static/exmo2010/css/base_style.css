@@ -861,74 +861,8 @@ ul#errors-header li.portal a:hover {
 }
 
 
-/* Tabs header */
-
-#top-menu h2, #top-menu ul
-{
-    float: left;
-}
-
-#top-menu h2
-{
-    margin-right: 12px;
-    margin-top: -3px;
-}
-
-/* Tabs */
-
-.tab-content
-{
-    width: 100%;
-    float: left;
-    padding-top: 2px;
-}
-
-.tab-pane
-{
-    display: none;
-}
-
-.tab-pane.active
-{
-    display: block;
-}
-
-ul.comment-tabs {
-    margin-top: 20px;
-    font-size: 18px;
-}
-
-ul.nav-tabs {
-    display: block;
-    float: left;
-    padding: 0;
-    margin-bottom: 6px;
-}
-
-ul.nav-tabs li
-{
-    list-style-type: none;
-    float: left;
-    padding-right: 10px;
-}
-
-ul.nav-tabs li span
-{
-    padding: 5px;
-}
-
-ul.nav-tabs li.active span
-{
-    background-color: #FFFFD6;
-}
-
-ul.nav-tabs li.active a
-{
-    color: #222;
-    border: 0;
-}
-
 /* Comments, Clarifications, Claims */
+
 .ccc-tabs {
     display: block;
     padding: 0;

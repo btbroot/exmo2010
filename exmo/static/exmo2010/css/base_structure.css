@@ -19,6 +19,9 @@
 
 * {
     margin: 0;
+}
+
+*:not(ul, ol) {
     padding: 0;
 }
 

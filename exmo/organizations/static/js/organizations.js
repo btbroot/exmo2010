@@ -19,7 +19,12 @@
 $(document).ready(function () {
     var hash = window.location.hash;
 
-    hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+    $('.org-tabs a').click(function(e) {
+        $('.tab-content').find(e.target.hash).show().siblings().hide();
+        $('a[href="' + e.target.hash + '"]').parent().addClass('active').siblings().removeClass('active');
+    });
+
+    hash && $('a[href="' + hash + '"]').click();
 
     $("td.pseudo").click(function( e ) {
         $(this).children('div.preview-container').toggle();
@@ -47,9 +52,5 @@ $(document).ready(function () {
 
     $("input[type='text']").focusout(function(){
         $('#help-text').hide();
-    });
-
-    return $('a[data-toggle="tab"]').on('shown', function(e) {
-      return location.hash = $(e.target).attr('href').substr(1);
     });
 });

@@ -18,31 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 */
-.table-setings td {
-    vertical-align: middle;
-    border-bottom-color: #fff;
-    padding: 4px 6px;
-    line-height: 18px;
-}
-
-.table-setings td:first-child {
-    text-align: right;
-    width: 215px;
-}
-
-.table-setings td input[type="text"], .table-setings td input[type="password"] {
-    width: 300px;
-    font-size: 13px;
-}
-
-.table-setings td > select {
-    width: 308px;
-    font-size: 13px;
-}
-
-.table-setings td span > select {
-    font-size: 13px;
-}
 
 h2 {
     font-weight: bold;
@@ -52,19 +27,21 @@ hr {
     margin-top: 12px;
 }
 
-.main_block {
-    float:left;
-    width: 550px;
-    line-height:26px;
-    margin-left: 40px;
-    margin-bottom: 15px;
-}
-
-.right_field {
-    float: right;
-    width: 360px;
+input[type="text"], input[type="password"] {
+    width: 300px;
+    font-size: 13px;
 }
 
 select {
     margin-right: 10px;
+}
+
+.table-cell {
+    border: none;
+    text-align: left;
+}
+
+.table-cell:first-child {
+    width: 215px;
+    text-align: right;
 }

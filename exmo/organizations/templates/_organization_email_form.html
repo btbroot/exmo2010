@@ -31,39 +31,47 @@
         </div>
     {% endifequal %}
 
-    <div class="clearfix send-mail-form">
-        <div class="title">{{ inv_form.subject.label }} <span class="required">*</span></div>
-        <div class="content">
-            {{ inv_form.subject }}
+    <div class="table org-email-form">
+        <div class="table-row">
+            <div class="table-cell">
+                {{ inv_form.subject.label }} <span class="required">*</span>
+            </div>
+
+            <div class="table-cell">
+                {{ inv_form.subject }}
+            </div>
         </div>
-        <div class="title">{{ inv_form.comment.label }} <span class="required">*</span></div>
-        <div class="content">
-            {{ inv_form.comment }}
-        </div>
-        <div class="notification">
-            <p class="alert-info">
+
+        <div class="table-row">
+            <div class="table-cell">
+                {{ inv_form.comment.label }} <span class="required">*</span>
+            </div>
+
+            <div class="table-cell text-area">
+                {{ inv_form.comment }}
+            </div>
+
+            <div class="alert-info">
                 %code% - {% trans 'use this keyword for invitation addition in email.' %}
-            </p>
+            </div>
         </div>
-    </div>
-    <div class="clearfix send-mail-form">
-        <div class="title">
-            {% trans 'Invitation' %}
-        </div>
-        <div class="content">
-            {{ inv_form.inv_status }}
-        </div>
-    </div>
 
-    <div class="clearfix send-mail-form">
-        <div class="title">
-        </div>
-        <div class="content">
-            <input type="submit" name="submit_invite" value="{% trans 'Invite' %}"/>
-        </div>
-    </div>
+        <div class="table-row">
+            <div class="table-cell">
+                {% trans 'Invitation' %}
+            </div>
 
-    <div style="display: none">
-        {{ inv_form.monitoring }}
+            <div class="table-cell">
+                {{ inv_form.inv_status }}
+            </div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell"></div>
+
+            <div class="table-cell">
+                <input type="submit" name="submit_invite" value="{% trans 'Invite' %}"/>
+            </div>
+        </div>
     </div>
 </form>

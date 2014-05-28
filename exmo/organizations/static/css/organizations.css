@@ -19,40 +19,64 @@
 #
 */
 
-.clearfix div.title, .clearfix div.content {
-    float: left;
-    padding: 0 0 3px 0;
+/* == ORGANIZATION CONTENT BLOCK == */
+
+.org-content-block h2 {
+    display: inline;
+    margin-right: 12px;
 }
 
-.clearfix div.title {
-    width: 94px;
-    padding: 3px 10px 0 0;
+.tab-content {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.tab-content div.active {
+    display: block;
+}
+
+/* == ORGANIZATION EMAIL FORM == */
+
+.org-email-form .table-cell {
+    text-align: left;
+    border: none;
+}
+
+.org-email-form .table-cell:first-child {
     text-align: right;
-    clear: both;
+    vertical-align: top;
+    line-height: 22px;
 }
 
-.clearfix div.content {
-    margin-bottom: 10px;
-    width: 600px;
+.org-email-form input[type="text"] {
+    width: 590px;
 }
 
-.clearfix div.content p {
+.org-email-form .text-area {
+    position: relative;
+    padding: 5px 6px;
+}
+
+.org-email-form p {
     margin: 0;
 }
 
-.clearfix div.content select {
+.org-email-form .alert-info {
+    position: absolute;
+    width: 270px;
+    margin: 5px;
+}
+
+.org-email-form select {
     width: 200px;
 }
 
-.clearfix div.content input[type="submit"] {
+.org-email-form input[type="submit"] {
     width: 100px;
 }
 
-.clearfix div.notification {
-    float: none;
-    margin-left: 700px;
-    padding-left: 10px;
-}
+
+/* == ORGANIZATION FORM == */
 
 .table-implicit td:first-child {
     text-align: right;
@@ -71,12 +95,17 @@
     text-align: left;
 }
 
-/* Mail history table */
+
+/* == MAIL HISTORY == */
 
 .mail_history td:first-child, .mail_history td:last-child,
 .mail_history th:first-child, .mail_history th:last-child {
     width: 1%;
     white-space: nowrap;
+}
+
+td.pseudo {
+    border-bottom: 1px solid #eeeeee;
 }
 
 /* Mail history search form */
@@ -88,20 +117,6 @@
 #mail_history_search_form > select {
     width: 190px;
     margin: 10px 4px;
-}
-
-.notification .alert-info
-{
-    margin-top: 41px;
-    width: 270px;
-}
-
-.clearfix.send-mail-form {
-    width: 100%;
-}
-
-.send-mail-form input[type="text"] {
-    width: 590px;
 }
 
 td.comment .preview-container {
