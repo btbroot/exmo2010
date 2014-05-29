@@ -22,6 +22,7 @@ from urlparse import urlparse
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse_lazy
 from model_mommy import mommy
+from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 
 from core.test_utils import BaseSeleniumTestCase
@@ -65,6 +66,7 @@ URLS = {
 }
 
 
+@attr('selenium')
 class HeaderMenuTestCase(BaseSeleniumTestCase):
     # Scenario: Checking items in header menu
 

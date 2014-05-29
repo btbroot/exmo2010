@@ -18,11 +18,13 @@
 #
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
+from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 
 from core.test_utils import BaseSeleniumTestCase
 
 
+@attr('selenium')
 class AutoDisabledCheckboxesTestCase(BaseSeleniumTestCase):
     # Scenario: Auto disabled notification checkboxes at user settings page.
 
