@@ -2441,11 +2441,11 @@ msgstr "Ошибки"
 #: templates/exmo2010/feedback.html:29 templates/mail/feedback_creator.html:24
 #: templates/mail/feedback_creator.txt:25
 msgid ""
-"You've sent the letter to Infometer maintenance staff. You'll recieve an "
-"answer in 3 buisness days."
+"You've sent the letter to Infometer maintenance staff. You'll receive an "
+"answer in 3 business days."
 msgstr ""
-"Вы отправили письмо специалистам обслуживающим Инфометр. Вам ответят в "
-"течение 3-х рабочих дней."
+"Вы отправили письмо специалистам, обслуживающим Инфометр. Вам ответят в "
+"течение 3 рабочих дней."
 
 #: templates/exmo2010/feedback.html:35
 #, python-format
