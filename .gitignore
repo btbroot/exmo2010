@@ -1,5 +1,6 @@
 *.pyc
 *.db
+django_key
 ghostdriver.log
 local_settings.py
 analytics.html

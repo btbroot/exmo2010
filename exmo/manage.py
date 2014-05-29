@@ -17,13 +17,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import logging
 import os
 import sys
+import uuid
 
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exmo.settings")
 
     from django.core.management import execute_from_command_line
+
+    secret_key_file = 'exmo/django_key'
+    if not os.path.exists(secret_key_file):
+        logging.info(u'*** Creating random secret key file %s' % secret_key_file)
+        with open(secret_key_file, 'w') as f:
+            f.write(str(uuid.uuid4()))
 
     execute_from_command_line(sys.argv)

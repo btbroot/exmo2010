@@ -31,7 +31,8 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-PROJECT_NAME = 'exmo'
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+path = lambda *a: os.path.join(BASE_DIR, *a)
 
 # Celery
 CELERY_IMPORTS = ('exmo2010.celery_tasks',)
@@ -73,6 +74,7 @@ if TEST:
     # execute celery tasks immediately
     CELERY_ALWAYS_EAGER = True
     # in-memory SQLite used for testing.
+    CELERY_RESULT_BACKEND = 'db+sqlite:///celery_results.db'
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -82,7 +84,9 @@ if TEST:
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # A secret key for this particular Django installation. Used in secret-key hashing algorithms.
-SECRET_KEY = ''
+# 'django_key' file with SECRET_KEY is generated in manage.py
+with open(path('exmo/django_key')) as f:
+    SECRET_KEY = f.read()
 
 # Localization
 TIME_ZONE = 'Europe/Moscow'
@@ -125,9 +129,8 @@ CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 CACHE_PREFIX = 'Cache'
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_PATH,
-        'KEY_PREFIX': '',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'KEY_PREFIX': str(SITE_ID),
         'TIMEOUT': 300,
     }
 }
@@ -302,7 +305,7 @@ TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
 
 DEVEL = False
 
-if os.path.isfile('%s/local_settings.py' % PROJECT_NAME):
+if os.path.isfile('exmo/local_settings.py'):
     from local_settings import *
 
 
@@ -311,9 +314,7 @@ def mkdir_ifnotexist(path):
     return path
 
 if DEVEL or TEST:
-    PROJECT_DIR = os.path.abspath(PROJECT_NAME)
-    path_to_project = lambda *a: os.path.join(PROJECT_DIR, *a)
-    CACHE_PATH = mkdir_ifnotexist(path_to_project('../../cache'))
-    MEDIA_ROOT = mkdir_ifnotexist(path_to_project('../../media'))
-    STATIC_ROOT = mkdir_ifnotexist(path_to_project('../../static'))
+    CACHE_PATH = mkdir_ifnotexist(path('../cache'))
+    MEDIA_ROOT = mkdir_ifnotexist(path('../media'))
+    STATIC_ROOT = mkdir_ifnotexist(path('../static'))
 

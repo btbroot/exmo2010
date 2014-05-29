@@ -47,6 +47,7 @@ hg+http://bitbucket.org/bkroeze/django-livesettings/#egg=django-livesettings
 django-widget-tweaks
 
 #for testing:
+SQLAlchemy
 django-nose==1.2
 nose-parameterized==0.3.3
 model_mommy==1.1
