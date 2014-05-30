@@ -82,26 +82,26 @@ $(document).ready(function() {
 
     var cke_comment = CKEDITOR.instances['id_comment'];
 
-    // Comment handler should also check if score inputs changed when in edit mode
-    addContentListener(cke_comment, function(e) {
-        var editor_body = $(e.sender.document.$).find('body');
+    cke_comment.on('instanceReady', function(e){
+        // Comment handler should also check if score inputs changed when in edit mode
+        addContentListener(cke_comment, function(e) {
+            var editor_body = $(e.sender.document.$).find('body');
 
-        if(editor_body && editor_body.text().trim() != '') {
-            $("#submit_comment").prop('disabled', false);
+            if(editor_body && editor_body.text().trim() != '') {
+                $("#submit_comment").prop('disabled', false);
 
-            if ($('form div.changed').length > 0) {
-                $("#submit_score_and_comment").prop('disabled', false);
+                if ($('form div.changed').length > 0) {
+                    $("#submit_score_and_comment").prop('disabled', false);
+                } else {
+                    $("#submit_score_and_comment").prop('disabled', true);
+                }
             } else {
+                $("#submit_comment").prop('disabled', true);
                 $("#submit_score_and_comment").prop('disabled', true);
             }
-        } else {
-            $("#submit_comment").prop('disabled', true);
-            $("#submit_score_and_comment").prop('disabled', true);
-        }
-        e.sender.updateElement()
-    });
+            e.sender.updateElement()
+        });
 
-    cke_comment.on('instanceReady', function(e){
         $("input:radio:checked").trigger('change');
     });
 
@@ -140,11 +140,13 @@ $(document).ready(function() {
             }
         }
 
-        $('form div.table-row.changed').each(function() {
-            // create brick for each changed input
+        $('form div.table-row').each(function() {
             var input = $(this).find('input:checked');
             var initial = input.closest('div.table-row').data('initial');
-            var newVal = input.val();
+
+            var newVal = input.is(':disabled') ? '' : input.val();
+
+            if (newVal == initial) { return; }
 
             if (initial == '') {initial = 0}
             if (newVal == '') {newVal = '-'}
@@ -158,6 +160,7 @@ $(document).ready(function() {
             } else {
                 editor_body.find('#'+id).val(text);
             }
+
         })
     }
 
