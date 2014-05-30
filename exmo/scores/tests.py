@@ -256,8 +256,8 @@ class ScoreEditValidationTestCase(TestCase):
     @parameterized.expand([('expertA',), ('expertB',)])
     def test_recommendations_should_change(self, username):
         """
-        Recommendations should change when score is changed. Except the case when only the newly
-        added criterion is changed from None to some value. (Covered in `test_change_newly_added_criterion`)
+        Recommendations should change when score is changed. Except the case when score is
+        reevaluated to maximum. (Covered in `test_all_max`)
         """
 
         self.client.login(username=username, password='password')
@@ -271,10 +271,9 @@ class ScoreEditValidationTestCase(TestCase):
         self.assertContains(response, _('Recommendations should change when score is changed'), 1)
 
     @parameterized.expand([('expertA',), ('expertB',)])
-    def test_change_newly_added_criterion(self, username):
+    def test_all_max(self, username):
         """
-        When only the newly added criterion is changed from None to some value - recommendations can
-        stay unchanged.
+        When all score criteria changed to maximum - recommendations may stay unchanged.
         """
 
         self.client.login(username=username, password='password')

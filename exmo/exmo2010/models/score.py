@@ -103,19 +103,23 @@ class Score(BaseModel):
                     name = self._meta.get_field(crit).verbose_name
                     raise ValidationError(ugettext('%(criterion)s must be set') % {'criterion': name})
 
-        # If score changed, recommendations should change too
-        if self.pk:
-            db_score = Score.objects.get(pk=self.pk)
-            if self.recommendations == db_score.recommendations:
-                for crit in criteria:
-                    if getattr(self, crit) != getattr(db_score, crit) and getattr(db_score, crit) is not None:
-                        raise ValidationError(ugettext('Recommendations should change when score is changed'))
+        all_max = all(getattr(self, c) == self._meta.get_field(c).choices[-1][-1] for c in criteria)
 
-        # If score is not maximum, recommendations should not be empty.
-        if not self.recommendations:
-            for crit in criteria:
-                if getattr(self, crit) != self._meta.get_field(crit).choices[-1][-1]:
-                    raise ValidationError(ugettext('Score is not maximum, recommendations should exist'))
+        if not all_max:
+            # If score is not maximum, recommendations should not be empty.
+            if not self.recommendations:
+                raise ValidationError(ugettext('Score is not maximum, recommendations should exist'))
+
+            # If score changed, recommendations should change too.
+            # BUG 2069: If score is maximum, we should omit this check, because there will be old scores
+            # in database, which have empty recommendations, but rated to non-maximum. Reevaluating those
+            # scores to maximum should be possible, even if recommendations does not change (empty).
+            if self.pk:
+                db_score = Score.objects.get(pk=self.pk)
+                if self.recommendations == db_score.recommendations:
+                    for crit in criteria:
+                        if getattr(self, crit) != getattr(db_score, crit):
+                            raise ValidationError(ugettext('Recommendations should change when score is changed'))
 
     def unique_error_message(self, model_class, unique_check):
         # A unique field
