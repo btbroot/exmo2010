@@ -19,21 +19,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
-{% block module_content %}
+{% load i18n %}
 
-<ul>
-            {% if task_id != None %}
+{% block module_content %}
+    <ul>
+        {% if task_id != None %}
             <li><a href="{% url 'exmo2010:task_scores' task_id %}">{% trans 'Scores of my organisation' %}</a></li>
-            {% endif %}
-            <li><a href="{% url 'exmo2010:monitoring_report' %}">{% trans 'Monitoring statistics' %}</a></li>
-            {% if user.is_authenticated %}
+        {% endif %}
+
+        <li><a href="{% url 'exmo2010:monitoring_report' %}">{% trans 'Monitoring statistics' %}</a></li>
+
+        {% if user.is_authenticated %}
             <li><a href="{% url 'exmo2010:settings' %}">{% trans 'Preferences' %}</a></li>
             <li><a href="{% url 'exmo2010:auth_logout' %}">{% trans 'Log out' %}</a></li>
-            {% else %}
+        {% else %}
             <li><a href="{% url 'exmo2010:registration_register' %}">{% trans 'Registration' %}</a></li>
             <li><a href="{% url 'exmo2010:auth_login' %}">{% trans 'Log in' %}</a></li>
-            {% endif %}
-
-</ul>
+        {% endif %}
+    </ul>
 {% endblock %}

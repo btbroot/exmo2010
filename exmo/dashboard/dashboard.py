@@ -31,7 +31,6 @@ And to activate the app index dashboard::
 """
 
 from admin_tools.dashboard import modules, Dashboard
-from admin_tools.utils import get_admin_site_name
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
@@ -68,12 +67,11 @@ class CustomIndexDashboard(UserDashboard):
         request = context['request']
         user = request.user
 
-        if user.is_authenticated():
-            if user.profile.is_organization:
-                task_id = user.profile.get_task_review_id()
-                if task_id is not None:
-                    context.update({'task_id': task_id})
-                context.update({'invcodeform': SettingsInvCodeForm()})
+        if user.is_authenticated() and user.is_organization:
+            task_id = user.profile.get_task_review_id()
+            if task_id is not None:
+                context.update({'task_id': task_id})
+            context.update({'invcodeform': SettingsInvCodeForm()})
 
         # append a link list module for "quick links"
         self.children.append(modules.LinkList(
@@ -93,15 +91,12 @@ class CustomIndexDashboard(UserDashboard):
         self.children.append(custom_modules.ObjectList(
             _('Monitoring cycles'),
             children=[
-                {
-                    'title': None,
-                    'object_list': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user),
-                },
+                {'object_list': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user)},
             ],
             template="user_dashboard/modules/monitoring_list.html",
         ))
 
-        if user.is_active and user.profile.is_expertB and not user.is_superuser:
+        if user.is_expertB and not user.is_superuser:
             comments = user.profile.get_filtered_not_answered_comments()
             clarifications = user.profile.get_filtered_opened_clarifications()
             claims = user.profile.get_filtered_opened_claims()
@@ -124,7 +119,7 @@ class CustomIndexDashboard(UserDashboard):
                 ),
             ))
 
-        if user.is_active and user.profile.is_organization and not user.is_superuser:
+        if user.is_organization and not user.is_superuser:
 
             self.children.append(modules.LinkList(
                 _('Certificate'),

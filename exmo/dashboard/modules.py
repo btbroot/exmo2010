@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,9 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from django.utils.translation import ugettext_lazy as _
-
 from admin_tools.dashboard.modules import DashboardModule
+from django.utils.translation import ugettext_lazy as _
 
 
 class ObjectList(DashboardModule):
@@ -65,7 +64,6 @@ class ObjectList(DashboardModule):
 
     """
     title = _('List')
-    template = 'user_dashboard/modules/object_list.html'
     layout = 'stacked'
 
     def init_with_context(self, context):
