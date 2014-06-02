@@ -26,6 +26,7 @@ from nose_parameterized import parameterized
 
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
+from exmo2010.models.monitoring import Monitoring, RATE, MONITORING_INTERACTION
 
 
 class ScoreAddAccessTestCase(TestCase):
@@ -231,38 +232,38 @@ class ScoreEditInteractionTestCase(TestCase):
         self.assertEqual([u'<p>lol</p>'], list(CommentExmo.objects.values_list('comment', flat=True)))
 
 
-class ScoreEditValidationTestCase(TestCase):
+class ScoreRecommendationsShouldChangeTestCase(TestCase):
     # TODO: Move this testcase to *validation* tests directory.
 
+    # Recommendations SHOULD change when score is changed.
+    # Exception cases, when recommendations MAY stay unchanged:
+    #  * When score is reevaluated to maximum.
+    #   - old scores in database, which have empty recommendations. (BUG 2069)
+    #   - new criterion is added and score was maximum.
+    #  * When monitoring phase is not INTERACTION or FINALIZING.
+
     def setUp(self):
-        # GIVEN expertA and expertB
+        # GIVEN i am logged in as expertA
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         expertA.profile.is_expertA = True
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
+        self.client.login(username='expertA', password='password')
 
         # AND organization  in MONITORING_INTERACTION monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
         # AND parameter with no optional criteria
         kwargs = dict(complete=0, topical=0, accessible=0, hypertext=0, document=0, image=0)
         self.param = mommy.make(Parameter, monitoring=org.monitoring, **kwargs)
-        # AND task assigned to expertB
-        self.task = mommy.make(Task, organization=org, user=expertB)
         # AND maximum score with recommendations and found=1
-        self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1, recommendations='123')
+        self.score = mommy.make(Score, task__organization=org, parameter=self.param, found=1, recommendations='123')
 
         self.url = reverse('exmo2010:score_view', args=[self.score.pk])
 
-    @parameterized.expand([('expertA',), ('expertB',)])
-    def test_recommendations_should_change(self, username):
+    def test_recommendations_should_change(self):
         """
-        Recommendations should change when score is changed. Except the case when score is
-        reevaluated to maximum. (Covered in `test_all_max`)
+        Recommendations SHOULD change when score is changed.
         """
 
-        self.client.login(username=username, password='password')
-
-        # WHEN user POSTs score edit form with the same recommendation and 'found' equals 0
+        # WHEN i POST score edit form with the same recommendation and 'found' changed to 0
         response = self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': '123'})
 
         # THEN score should stay unchanged in database
@@ -270,23 +271,35 @@ class ScoreEditValidationTestCase(TestCase):
         # AND response should contain recommendations error message
         self.assertContains(response, _('Recommendations should change when score is changed'), 1)
 
-    @parameterized.expand([('expertA',), ('expertB',)])
-    def test_all_max(self, username):
+    def test_all_max(self):
         """
-        When all score criteria changed to maximum - recommendations may stay unchanged.
+        Recommendations MAY stay unchanged when all score criteria changed to maximum.
         """
-
-        self.client.login(username=username, password='password')
 
         # WHEN new 'accessible' criterion added to parameter
         Parameter.objects.filter(pk=self.param.pk).update(accessible=True)
 
-        # AND user POSTs score edit form with the same recommendation and 'accessible' set to 1
-        self.client.post(self.url, {'found': 1, 'accessible': 1, 'comment': 'lol', 'recommendations': '123'})
+        # AND i POST score edit form with the same recommendation and 'accessible' set to max (3)
+        self.client.post(self.url, {'found': 1, 'accessible': 3, 'comment': 'lol', 'recommendations': '123'})
 
-        # THEN score should get updated in database. Accessible should change from None to 1
+        # THEN score should get updated in database. Accessible should change from None to 3
         db_score = Score.objects.filter(pk=self.score.pk)
-        self.assertEqual(list(db_score.values_list('found', 'accessible')), [(1, 1)])
+        self.assertEqual(list(db_score.values_list('found', 'accessible')), [(1, 3)])
+
+    def test_monitoring_phase_initial_rate(self):
+        """
+        Recommendations MAY stay unchanged when monitoring phase is not INTERACTION or FINALIZING.
+        """
+
+        # WHEN monitoring phase is changed to INITIAL RATE
+        Monitoring.objects.filter(pk=self.param.monitoring.pk).update(status=RATE)
+
+        # AND i POST score edit form with the same recommendation and 'found' changed to 0
+        self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': '123'})
+
+        # THEN score should get updated in database.
+        db_score = Score.objects.filter(pk=self.score.pk)
+        self.assertEqual(list(db_score.values('found')), [{'found': 0}])
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):

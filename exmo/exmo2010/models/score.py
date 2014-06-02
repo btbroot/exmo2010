@@ -27,6 +27,7 @@ from core.utils import clean_message
 from .base import BaseModel
 from .claim import Claim
 from .clarification import Clarification
+from .monitoring import INT, FIN
 from .parameter import Parameter
 
 
@@ -111,10 +112,11 @@ class Score(BaseModel):
                 raise ValidationError(ugettext('Score is not maximum, recommendations should exist'))
 
             # If score changed, recommendations should change too.
+            # Only in INTERACTION and FINALIZING monitoring phase.
             # BUG 2069: If score is maximum, we should omit this check, because there will be old scores
             # in database, which have empty recommendations, but rated to non-maximum. Reevaluating those
             # scores to maximum should be possible, even if recommendations does not change (empty).
-            if self.pk:
+            if self.pk and self.parameter.monitoring.status in (INT, FIN):
                 db_score = Score.objects.get(pk=self.pk)
                 if self.recommendations == db_score.recommendations:
                     for crit in criteria:
