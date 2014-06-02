@@ -29,7 +29,7 @@
                 <td {% if not c.close_user and not score.perms.add_claim %} class="not-answered"{% endif %}>
                     <span class="messages-author"> {{ c.creator.profile.legal_name }} </span>
 
-                    <span class="messages-date"> {{ c.open_date|date:"SHORT_DATETIME_FORMAT" }} </span>
+                    <span class="messages-date"> {{ c.open_date|date:"DATETIME_FORMAT" }} </span>
 
                     <div class="messages-content"> {{ c.comment|safe|urlize_soup|trim_links|target_blank }} </div>
 
@@ -42,7 +42,7 @@
                     {% if c.answer %}
                     <div class="messages-answer">
                         <span class="messages-author"> {{ c.close_user.profile.legal_name }} </span>
-                        <span class="messages-date"> {{ c.close_date|date:"SHORT_DATETIME_FORMAT" }} </span>
+                        <span class="messages-date"> {{ c.close_date|date:"DATETIME_FORMAT" }} </span>
                         <div class="messages-content"> {{ c.answer|safe|urlize_soup|trim_links|target_blank }} </div>
                     </div>
                     {% endif %}

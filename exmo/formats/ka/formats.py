@@ -18,8 +18,9 @@
 
 # The *_FORMAT strings use the Django date format syntax,
 # see http://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
-DATE_FORMAT = 'j F, Y'
-SHORT_DATETIME_FORMAT = 'j.M.Y H:i'
+DATE_FORMAT = 'j F, Y'                # '7 მაისი, 2014'
+DATETIME_FORMAT = 'j F, Y h:i a'      # '7 აპრილი, 2014 04:53 p.m.'
+SHORT_DATETIME_FORMAT = 'j.M.Y H:i'   # '4.აპრ.2014 15:01'
 
 
 # The *_INPUT_FORMATS strings use the Python strftime format syntax,

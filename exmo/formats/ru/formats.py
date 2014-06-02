@@ -16,6 +16,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# The *_FORMAT strings use the Django date format syntax,
+# see http://docs.djangoproject.com/en/dev/ref/templates/builtins/#date
+DATETIME_FORMAT = 'G:i, j E Y г.'      # '18:02, 7 апреля 2014 г.'
+
 # The *_INPUT_FORMATS strings use the Python strftime format syntax,
 # see http://docs.python.org/library/datetime.html#strftime-strptime-behavior
 DATE_INPUT_FORMATS = (

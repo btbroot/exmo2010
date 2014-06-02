@@ -320,7 +320,7 @@
                                 </span>
 
                                 <span class="messages-date">
-                                    {{ comment.submit_date|date:"TIME_FORMAT" }}, {{ comment.submit_date|date:"DATE_FORMAT" }}
+                                    {{ comment.submit_date|date:"DATETIME_FORMAT" }}
                                 </span>
 
                                 <div class="messages-content">{{ comment.comment|safe|urlize_soup|trim_links|target_blank }}</div>
