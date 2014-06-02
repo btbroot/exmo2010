@@ -15,10 +15,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from BeautifulSoup import BeautifulSoup
-from django.db.models import Q
-from django.utils.html import urlize
 from south.v2 import DataMigration
+from exmo2010.models import Parameter
 
 
 class Migration(DataMigration):
@@ -26,26 +24,22 @@ class Migration(DataMigration):
     def forwards(self, orm):
         """
         Get all urls from '...Comment' fields and save it
-        in 'links' field as links with target='_blank'.
+        in 'links' field as plaintext.
 
         """
-        for score in orm.Score.objects.exclude(Q(foundComment__isnull=True) | Q(foundComment__exact=''),
-                                               Q(completeComment__isnull=True) | Q(completeComment__exact=''),
-                                               Q(topicalComment__isnull=True) | Q(topicalComment__exact=''),
-                                               Q(accessibleComment__isnull=True) | Q(accessibleComment__exact=''),
-                                               Q(hypertextComment__isnull=True) | Q(hypertextComment__exact=''),
-                                               Q(documentComment__isnull=True) | Q(documentComment__exact=''),
-                                               Q(imageComment__isnull=True) | Q(imageComment__exact='')):
-            urls = []
-            for field in ['foundComment', 'completeComment', 'topicalComment', 'accessibleComment',
-                          'hypertextComment', 'documentComment', 'imageComment']:
-                textdata = getattr(score, field)
-                if textdata:
-                    for a in BeautifulSoup(urlize(textdata)).findAll('a'):
-                        a['target'] = '_blank'
-                        urls.append(unicode(a))
+        fields = [field + 'Comment' for field in Parameter.OPTIONAL_CRITERIONS]
 
-            score.foundComment = '\n'.join(urls)
+        scores = orm.Score.objects.filter(foundComment__isnull=False)
+        for f in fields:
+            scores |= orm.Score.objects.filter(**{'%s__isnull' % f: False})
+
+        for score in scores:
+            if score.foundComment is None:
+                score.foundComment = ''
+            for f in fields:
+                if getattr(score, f):
+                    score.foundComment += '\n%s' % getattr(score, f)
+
             score.save()
 
     def backwards(self, orm):
