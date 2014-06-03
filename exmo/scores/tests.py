@@ -17,16 +17,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import json
+from contextlib import contextmanager
 
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from mock import Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
 from exmo2010.models.monitoring import Monitoring, RATE, MONITORING_INTERACTION
+from scores.views import rating_update
 
 
 class ScoreAddAccessTestCase(TestCase):
@@ -347,7 +352,10 @@ class AjaxOpennessAccessTestCase(TestCase):
     # Should allow to get rating place via ajax only if task is approved
     # AND forbid access for expertB and regular user if monitoring is not published
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        super(AjaxOpennessAccessTestCase, cls).setUpClass()
+        cls.users = {}
         # GIVEN interaction monitoring
         monitoring1 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
         # AND published monitoring
@@ -355,90 +363,71 @@ class AjaxOpennessAccessTestCase(TestCase):
         # AND there are 3 organizations in interaction monitoring
         org1 = mommy.make(Organization, monitoring=monitoring1, name='org1')
         org2 = mommy.make(Organization, monitoring=monitoring1, name='org2')
-        org3 = mommy.make(Organization, monitoring=monitoring1, name='org3')
+        org3 = mommy.prepare(Organization, monitoring=monitoring1, name='org3')
         # AND there are 3 organizations in published monitoring
-        org4 = mommy.make(Organization, monitoring=monitoring2, name='org4')
-        org5 = mommy.make(Organization, monitoring=monitoring2, name='org5')
-        org6 = mommy.make(Organization, monitoring=monitoring2, name='org6')
+        org4 = mommy.prepare(Organization, monitoring=monitoring2, name='org4')
+        org5 = mommy.prepare(Organization, monitoring=monitoring2, name='org5')
+        org6 = mommy.prepare(Organization, monitoring=monitoring2, name='org6')
         # AND expert A
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
+        cls.users['expertA'] = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        cls.users['expertA'].profile.is_expertA = True
         # AND expert B without tasks (expertB_free)
-        expertB_free = User.objects.create_user('expertB_free', 'usr@svobodainfo.org', 'password')
-        expertB_free.profile.is_expertB = True
+        cls.users['expertB_free'] = User.objects.create_user('expertB_free', 'usr@svobodainfo.org', 'password')
+        cls.users['expertB_free'].profile.is_expertB = True
         # AND expert B with 3 tasks in each monitoring
         expertB_engaged = User.objects.create_user('expertB_engaged', 'usr@svobodainfo.org', 'password')
         expertB_engaged.profile.is_expertB = True
-        self.task_approved_interaction = mommy.make(
+        cls.users['expertB_engaged'] = expertB_engaged
+        cls.task_approved_interaction = mommy.prepare(
             Task, organization=org1, user=expertB_engaged, status=Task.TASK_APPROVED)
-        self.task_open_interaction = mommy.make(
+        cls.task_open_interaction = mommy.prepare(
             Task, organization=org2, user=expertB_engaged, status=Task.TASK_OPEN)
-        self.task_closed_interaction = mommy.make(
+        cls.task_closed_interaction = mommy.prepare(
             Task, organization=org3, user=expertB_engaged, status=Task.TASK_CLOSED)
-        self.task_approved_published = mommy.make(
+        cls.task_approved_published = mommy.prepare(
             Task, organization=org4, user=expertB_engaged, status=Task.TASK_APPROVED)
-        self.task_open_published = mommy.make(
+        cls.task_open_pub = mommy.prepare(
             Task, organization=org5, user=expertB_engaged, status=Task.TASK_OPEN)
-        self.task_closed_published = mommy.make(
+        cls.task_closed_pub = mommy.prepare(
             Task, organization=org6, user=expertB_engaged, status=Task.TASK_CLOSED)
         # AND org repersentative
-        org_user = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
-        org_user.profile.organization = [org1, org2]
+        cls.users['org_user'] = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
+        cls.users['org_user'].profile.organization = [org1, org2]
         # AND just registered user
-        User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
 
-        self.url = reverse('exmo2010:rating_update')
+    @method_decorator(contextmanager)
+    def mock_request(self, username, task):
+        """
+        Patch get_object_or_404 to return given task.
+        Yield Mock request as context variable.
+        """
+        patch('scores.views.get_object_or_404', Mock(side_effect=lambda *a, **k: task)).start()
+        yield Mock(user=self.users[username], method='GET', is_ajax=lambda: True, GET={'task_id': 1})
+        patch.stopall()
 
-    @parameterized.expand([
-        ('expertA', 200),
-        ('org_user', 200),
-        ('user', 403),
-        ('expertB_free', 403),
-        ('expertB_engaged', 403),
-    ])
-    def test_interaction_monitoring_and_approved_task_access(self, username, response_code):
-        # WHEN I logged in
-        self.client.login(username=username, password='password')
-        # AND I sent ajax-request
-        response = self.client.get(self.url, {'task_id': self.task_approved_interaction.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        # THEN response should have expected status_code
-        self.assertEqual(response.status_code, response_code)
+    @parameterized.expand(zip(['expertA', 'org_user']))
+    def test_interaction_approved_task_allow(self, username):
+        with self.mock_request(username, self.task_approved_interaction) as request:
+            self.assertEqual(rating_update(request).status_code, 200)
 
-    @parameterized.expand([
-        ('expertA',),
-        ('org_user',),
-        ('user',),
-        ('expertB_free',),
-        ('expertB_engaged',),
-    ])
+    @parameterized.expand(zip(['user', 'expertB_free', 'expertB_engaged']))
+    def test_interaction_approved_task_forbid(self, username):
+        with self.mock_request(username, self.task_approved_interaction) as request:
+            self.assertRaises(PermissionDenied, rating_update, request)
+
+    @parameterized.expand(zip('expertA org_user user expertB_free expertB_engaged'.split()))
     def test_published_approved_task_allow_all(self, username):
-        # WHEN I logged in
-        self.client.login(username=username, password='password')
-        # AND I sent ajax-request
-        response = self.client.get(self.url, {'task_id': self.task_approved_published.pk}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        # THEN response should have expected status_code
-        self.assertEqual(response.status_code, 200)
+        with self.mock_request(username, self.task_approved_published) as request:
+            self.assertEqual(rating_update(request).status_code, 200)
 
-    @parameterized.expand([
-        ('expertA',),
-        ('org_user',),
-        ('user',),
-        ('expertB_free',),
-        ('expertB_engaged',),
-    ])
+    @parameterized.expand(zip('expertA org_user user expertB_free expertB_engaged'.split()))
     def test_unapproved_task_forbid_all(self, username):
-        # WHEN I logged in
-        self.client.login(username=username, password='password')
-        # AND I sent ajax-request to not approved tasks
-        for task_id in [
-            self.task_open_published.pk,
-            self.task_open_interaction.pk,
-            self.task_closed_interaction.pk,
-            self.task_closed_published.pk
+        for task in [
+            self.task_open_pub, self.task_open_interaction, self.task_closed_interaction, self.task_closed_pub
         ]:
-            response = self.client.get(self.url, {'task_id': task_id}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-            # THEN response should have expected status_code
-            self.assertEqual(response.status_code, 403)
+            with self.mock_request(username, task) as request:
+                self.assertRaises(PermissionDenied, rating_update, request)
 
 
 class AddExistingScoreRedirectTestCase(TestCase):

@@ -18,7 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import datetime
-import json
 
 from BeautifulSoup import BeautifulSoup
 from ckeditor.fields import RichTextFormField
@@ -475,7 +474,7 @@ def rating_update(request):
     """
     if request.method == "GET" and request.is_ajax():
 
-        task_id = json.loads(request.GET['task_id'])
+        task_id = request.GET['task_id']
 
         if task_id:
             task = get_object_or_404(Task, pk=task_id)
