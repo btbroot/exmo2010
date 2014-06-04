@@ -82,13 +82,17 @@
     text-align: right;
 }
 
-.table-implicit td textarea {
+.table-implicit textarea {
     width: 250px;
     height: 85px;
 }
 
-.table-implicit td input[type="text"] {
+.table-implicit input[name="org-url"] {
     width: 250px;
+}
+
+.field {
+    width: 100%;
 }
 
 .errorlist {

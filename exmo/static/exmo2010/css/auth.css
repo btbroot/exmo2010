@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -129,15 +129,14 @@ td.subscribe
     bottom: 2px;
 }
 
-#help-text
-{
+#help-text {
     position: absolute;
-    width: 450px;
     left: 475px;
-    background-image: url(../img/registration-triangle.png);
-    background-position: 0px 15px;
-    background-repeat: no-repeat;
+    max-width: 450px;
+    min-width: 335px;
+    margin-right: 20px;
     padding-left: 9px;
+    background: url(../img/registration-triangle.png) 0 15px no-repeat;
 }
 
 .form-errors

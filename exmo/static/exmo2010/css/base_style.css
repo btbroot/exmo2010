@@ -946,6 +946,7 @@ ul#errors-header li.portal a:hover {
 }
 
 
-form table td input.name_input[type="text"] {
-    width: 600px;
+input.name_input[type="text"] {
+    width: 100%;
+    max-width: 600px;
 }

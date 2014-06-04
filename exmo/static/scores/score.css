@@ -83,6 +83,10 @@ h1 {
     background-color: #f5f5f5;
 }
 
+.non-editable-score-table .table-cell {
+    padding: 5px 0;
+}
+
 .non-editable-score-table .found {
     min-width: 60px;
     max-width: 70px;
@@ -241,7 +245,6 @@ span.score_rev1 {
 
 .links-recommendations-area textarea {
     width: 100%;
-    min-width: 760px;
     height: 15px;
     margin: 0 0 10px 0;
     box-sizing:border-box;
