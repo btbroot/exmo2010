@@ -144,12 +144,12 @@ $(document).ready(function() {
             var input = $(this).find('input:checked');
             var initial = input.closest('div.table-row').data('initial');
 
-            var newVal = input.is(':disabled') ? '' : input.val();
+            // if initial is '', display '-'
+            if (initial.length == 0) {initial = '-'}
+
+            var newVal = input.is(':disabled') ? '-' : input.val();
 
             if (newVal == initial) { return; }
-
-            if (initial == '') {initial = 0}
-            if (newVal == '') {newVal = '-'}
 
             var label = input.closest('div.table-row').find('div.label').html().trim();
             var text = label + ': ' + initial + ' → ' + newVal;
@@ -170,10 +170,7 @@ $(document).ready(function() {
             $(this).closest('div.table-row').removeClass('changed');
         }
         else {
-            // changes form '-' to '0' aren't interesting
-            if (!((initial == '') && ($(this).val() == '0'))) {
-                $(this).closest('div.table-row').addClass('changed');
-            }
+            $(this).closest('div.table-row').addClass('changed');
         }
 
         rebuild_bricks();
@@ -241,5 +238,7 @@ $(document).ready(function() {
     if ($('form.tab_edit div.errors li').length) {
         $('a[href="#change_score"]').click();
     }
+
+    window.score_expert_interaction_loaded = true;
 
 });

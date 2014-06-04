@@ -54,17 +54,8 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         )
 
         # AND parameter with only 'accessible' attribute
-        parameter = mommy.make(
-            Parameter,
-            monitoring=monitoring,
-            complete = False,
-            accessible = True,
-            topical = False,
-            hypertext = False,
-            document = False,
-            image = False,
-            npa = False
-        )
+        kwargs = dict(accessible=True, complete=False, topical=False, hypertext=False, document=False, image=False)
+        parameter = mommy.make(Parameter, monitoring=monitoring, npa=False, **kwargs)
 
         # AND score with zero initial values for parameter attributes
         score = mommy.make(Score, task=task, parameter=parameter, found=0, accessible=0)
@@ -91,9 +82,9 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
             # AND all other lines should say that values changed
             text = self.find('#found_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'0 → 1'))
+            self.assertTrue(text.endswith(u'- → 1'))
             text = self.find('#accessible_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'0 → 3'))
+            self.assertTrue(text.endswith(u'- → 3'))
 
     def test_two_scores(self):
         # WHEN i set 'found' value to 1 (maximum)
@@ -110,13 +101,13 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
             cls = self.find('#autoscore-intro').get_attribute('class')
             self.assertFalse('max' in cls)
 
-            # AND second line should say that 'found' changed from 0 to 1
+            # AND second line should say that 'found' changed from - to 1
             text = self.find('#found_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'0 → 1'))
+            self.assertTrue(text.endswith(u'- → 1'))
 
-            # AND third line should say that 'accessible' changed from 0 to 2
+            # AND third line should say that 'accessible' changed from - to 2
             text = self.find('#accessible_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'0 → 2'))
+            self.assertTrue(text.endswith(u'- → 2'))
 
     def test_autoremove_autoscore_comments(self):
         # WHEN i set 'found' value to 1
@@ -239,18 +230,11 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         orguser.profile.organization = [org]
         # AND approved task assigned to expert B
         task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
+
         # AND parameter with only 'accessible' attribute
-        parameter = mommy.make(
-            Parameter,
-            monitoring=monitoring,
-            complete = False,
-            accessible = True,
-            topical = False,
-            hypertext = False,
-            document = False,
-            image = False,
-            npa = False
-        )
+        kwargs = dict(accessible=True, complete=False, topical=False, hypertext=False, document=False, image=False)
+        parameter = mommy.make(Parameter, monitoring=monitoring, npa=False, **kwargs)
+
         # AND score with zero initial values for parameter attributes
         self.score = mommy.make(Score, task=task, parameter=parameter)
 
@@ -316,6 +300,7 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         # THEN submit button should turn disabled
         self.assertDisabled('#submit_comment')
 
+    # TODO: This test fails sometimes.
     def test_expertb_edit_score(self):
         # WHEN I login as expertB
         self.login('expertB', 'password')
@@ -326,6 +311,12 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         # THEN form with 'found' radio input should become visible
         self.assertVisible('label[for="id_found_2"]')
 
+        # TODO: This wait does not help...
+        from selenium.webdriver.support.wait import WebDriverWait
+        def condition(*args):
+            return self.webdrv.execute_script('return window.score_expert_interaction_loaded') is True
+        WebDriverWait(self.webdrv, 5).until(condition)
+
         # WHEN i set 'found' value to 1
         self.find('label[for="id_found_2"]').click()
 
@@ -333,6 +324,9 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         self.assertDisabled('#submit_score_and_comment')
 
         with self.frame('.comment-form iframe'):
+            # TODO: Here test fails - autocomment brick does not get created.
+            # AssertionError: Element is missing or not visible: #found_brick
+            self.assertVisible('#found_brick')
             # WHEN I type new line character in the comment area
             self.find('body').send_keys('\n')
 
