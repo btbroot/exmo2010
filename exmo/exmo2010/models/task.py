@@ -147,7 +147,8 @@ class Task(BaseModel):
         if parameters_num:
             questions_num = QQuestion.objects.filter(questionnaire__monitoring=monitoring).count()
             answers_num = QAnswer.objects.filter(question__questionnaire__monitoring=monitoring, task=self).count()
-            scores_num = Score.objects.filter(task=self, revision=Score.REVISION_DEFAULT, accomplished=True)\
+            scores_num = Score.objects.filter(task=self, parameter__monitoring=monitoring)\
+                                      .filter(revision=Score.REVISION_DEFAULT, accomplished=True)\
                                       .exclude(parameter__exclude=self.organization).count()
             completeness = (scores_num + answers_num) * 100.0 / (parameters_num + questions_num)
         else:
