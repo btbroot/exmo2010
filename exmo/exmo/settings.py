@@ -252,6 +252,7 @@ INSTALLED_APPS = (
     'ckeditor',
     'modeltranslation',
     'widget_tweaks',
+    'django_bleach',
     # Local apps:
     'accounts',
     'auth',
@@ -302,6 +303,23 @@ AUTHENTICATION_BACKENDS = (
 # Tags
 MAX_TAG_LENGTH = 255
 TAGGING_AUTOCOMPLETE_JS_BASE_URL = STATIC_URL + "exmo2010"
+
+# Bleach
+# Which HTML tags are allowed
+BLEACH_ALLOWED_TAGS = ['div', 'span', 'p', 'h2', 'h3', 'h4', 'h5', 'h6', 'b', 'i', 'u', 'em',
+                       'strong', 'a', 's', 'sub', 'sup', 'ol', 'ul', 'li', 'blockquote']
+
+# Which HTML attributes are allowed
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style']
+
+# Which CSS properties are allowed in 'style' attributes (assuming style is an allowed attribute)
+BLEACH_ALLOWED_STYLES = ['font-family', 'font-weight', 'text-decoration', 'font-variant']
+
+# Strip unknown tags if True, replace with HTML escaped characters if False
+BLEACH_STRIP_TAGS = True
+
+# Strip comments, or leave them in.
+BLEACH_STRIP_COMMENTS = False
 
 DEVEL = False
 

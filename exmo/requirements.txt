@@ -29,12 +29,14 @@ argparse==1.2.1
 celery==3.1.10
 distribute==0.6.38
 django-annoying==0.7.9
+django-bleach
 django-celery==3.1.10
 django-celery-with-mongodb==3.0
 django-ckeditor-updated==4.2.8
 django-modeltranslation==0.7.3
 django-registration==0.8
 django-reversion==1.7.1
+django-widget-tweaks
 kombu==3.0.14
 lxml==3.3.3
 mercurial
@@ -44,7 +46,6 @@ git+https://github.com/bsavelev/django403.git
 hg+https://bitbucket.org/bsavelev/django-admin-tools
 hg+https://bitbucket.org/bkroeze/django-keyedcache
 hg+http://bitbucket.org/bkroeze/django-livesettings/#egg=django-livesettings
-django-widget-tweaks
 
 #for testing:
 SQLAlchemy

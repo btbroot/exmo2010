@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments days_until date_until trim_links future %}
+{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments days_until date_until trim_links bleach_tags %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
@@ -69,17 +69,17 @@
 
         {% if param.grounds %}
             <h2>{% trans "Grounds" %}:</h2>
-            {{ param.grounds|safe }}
+            {{ param.grounds|bleach }}
         {% endif %}
 
         {% if param.rating_procedure %}
             <h2>{% trans "Rating procedure" %}:</h2>
-            {{ param.rating_procedure|safe }}
+            {{ param.rating_procedure|bleach }}
         {% endif %}
 
         {% if param.notes and request.user.is_expert %}
             <h2>{% trans "Notes" %}:</h2>
-            {{ param.notes|safe }}
+            {{ param.notes|bleach }}
         {% endif %}
 
         {% if request.user.is_expertA and param.monitoring.status != 0 and score.pk %}
