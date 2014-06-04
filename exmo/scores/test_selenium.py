@@ -57,8 +57,8 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
         kwargs = dict(accessible=True, complete=False, topical=False, hypertext=False, document=False, image=False)
         parameter = mommy.make(Parameter, monitoring=monitoring, npa=False, **kwargs)
 
-        # AND score with zero initial values for parameter attributes
-        score = mommy.make(Score, task=task, parameter=parameter, found=0, accessible=0)
+        # AND score with found = 0
+        score = mommy.make(Score, task=task, parameter=parameter, found=0)
 
         # AND i am logged in as expertB
         self.login('expertB', 'password')
@@ -82,7 +82,7 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
 
             # AND all other lines should say that values changed
             text = self.find('#found_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'- → 1'))
+            self.assertTrue(text.endswith(u'0 → 1'))
             text = self.find('#accessible_brick').get_attribute('value')
             self.assertTrue(text.endswith(u'- → 3'))
 
@@ -101,9 +101,9 @@ class AutoScoreCommentTestCase(BaseSeleniumTestCase):
             cls = self.find('#autoscore-intro').get_attribute('class')
             self.assertFalse('max' in cls)
 
-            # AND second line should say that 'found' changed from - to 1
+            # AND second line should say that 'found' changed from 0 to 1
             text = self.find('#found_brick').get_attribute('value')
-            self.assertTrue(text.endswith(u'- → 1'))
+            self.assertTrue(text.endswith(u'0 → 1'))
 
             # AND third line should say that 'accessible' changed from - to 2
             text = self.find('#accessible_brick').get_attribute('value')

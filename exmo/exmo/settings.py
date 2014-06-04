@@ -81,6 +81,11 @@ if TEST:
             'NAME': ':memory:',
         }
     }
+
+    PASSWORD_HASHERS = (
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    )
+
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # A secret key for this particular Django installation. Used in secret-key hashing algorithms.

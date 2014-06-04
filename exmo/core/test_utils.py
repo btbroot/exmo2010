@@ -19,8 +19,9 @@
 from contextlib import contextmanager
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.test import LiveServerTestCase
+from django.db import transaction
+from django.test import LiveServerTestCase, SimpleTestCase
+from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
 from selenium import webdriver
@@ -127,3 +128,25 @@ class BaseSeleniumTestCase(LiveServerTestCase):
         self.webdrv.switch_to_frame(self.find(iframe_selector))
         yield
         self.webdrv.switch_to_default_content()
+
+
+class OptimizedTestCase(SimpleTestCase):
+    """
+    Allow to modify database in setUpClass method. Start transaction and rollback it in tearDownClass.
+    As with django TestCase - transactions does note work within the test itself, they are monekeypatched
+    to do nothing.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super(OptimizedTestCase, cls).setUpClass()
+        transaction.enter_transaction_management(using='default')
+        transaction.managed(True, using='default')
+        disable_transaction_methods()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(OptimizedTestCase, cls).tearDownClass()
+        restore_transaction_methods()
+        transaction.rollback(using='default')
+        transaction.leave_transaction_management(using='default')

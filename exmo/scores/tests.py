@@ -28,6 +28,7 @@ from mock import Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
 from exmo2010.models.monitoring import Monitoring, RATE, MONITORING_INTERACTION
@@ -348,7 +349,7 @@ class AjaxGetRatingPlacesTestCase(TestCase):
         self.assertEqual(result['place_other'], 2)
 
 
-class AjaxOpennessAccessTestCase(TestCase):
+class AjaxOpennessAccessTestCase(OptimizedTestCase):
     # Should allow to get rating place via ajax only if task is approved
     # AND forbid access for expertB and regular user if monitoring is not published
 
