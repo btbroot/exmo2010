@@ -75,6 +75,11 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.TextField')(null=True, blank=True),
                       keep_default=False)
 
+        # Adding field 'Score.documentComment'
+        db.add_column('exmo2010_score', 'documentComment',
+                      self.gf('django.db.models.fields.TextField')(null=True, blank=True),
+                      keep_default=False)
+
         # Deleting field 'Score.links'
         db.delete_column('exmo2010_score', 'links')
 

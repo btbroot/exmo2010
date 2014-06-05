@@ -21,7 +21,14 @@ BeautifulSoup==3.2.1
 Django==1.5.8
 MySQL-python==1.2.5
 Pillow==2.3.0
-South==0.8.4
+
+# South 0.8 - 0.8.4 has bug with fixtures in tests http://south.aeracode.org/ticket/1395
+# And bug with sqlite3 migrations:
+# FATAL ERROR - The following SQL query failed: CREATE UNIQUE INDEX "sqlite_autoindex_exmo2010_score_1" ON "exmo2010_score"("task_id", "parameter_id", "revision");
+# DatabaseError: object name reserved for internal use: sqlite_autoindex_exmo2010_score_1
+# Error in migration: exmo2010:0031_auto__del_field_score_edited__add_field_score_last_modified__add_field
+South==0.7.6
+
 amqp==1.4.4
 amqplib==1.0.2
 anyjson==0.3.3
