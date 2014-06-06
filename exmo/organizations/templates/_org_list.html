@@ -19,7 +19,7 @@
 #
 {% endcomment %}
 
-{% load i18n static monitoring_stats first_element %}
+{% load i18n static monitoring_stats %}
 
 {% if alert %}
     {% ifequal alert 'success' %}
@@ -69,11 +69,11 @@
                 </td>
 
                 <td>
-                    {{ object.email|default_if_none:''|first_element }}
+                    {{ object.email|truncatewords:1 }}
                 </td>
 
                 <td>
-                    {{ object.phone|default_if_none:''|first_element }}
+                    {{ object.phone|truncatewords:1 }}
                 </td>
 
                 <td>

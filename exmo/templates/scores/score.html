@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments days_until date_until trim_links bleach_tags %}
+{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments date_utils trim_links bleach_tags %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
