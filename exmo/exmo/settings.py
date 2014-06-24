@@ -114,6 +114,8 @@ USE_ETAGS = True
 FORMAT_MODULE_PATH = 'formats'
 LOCALE_PATHS = ('locale',)
 
+FILE_UPLOAD_PERMISSIONS = 0644
+
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
