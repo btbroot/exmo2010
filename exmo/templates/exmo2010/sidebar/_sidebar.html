@@ -40,6 +40,12 @@
                 {% include "exmo2010/sidebar/_item.html" with url=url title="Organizations" %}
             {% endif %}
 
+            {% if request.user.profile.is_expertA %}
+                {% url 'exmo2010:representatives' monitoring.pk as url %}
+                <!-- {% trans "Representatives" %} -->
+                {% include "exmo2010/sidebar/_item.html" with url=url title="Representatives" %}
+            {% endif %}
+
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
             {% if perm %}
                 {% url 'exmo2010:task_mass_assign_tasks' monitoring.pk as url %}

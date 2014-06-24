@@ -1,0 +1,82 @@
+{% extends "base_sidebar.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/organization_representatives.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
+{% endblock %}
+
+{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+{% block content %}
+    <div class="representatives-content-block">
+        <h2>{% trans "Representatives" %}</h2>
+
+        <form class="filter" action="" method="GET">
+            <div class="table">
+                <div class="table-cell">
+                    {{ queryform.full_name_or_email }}
+                </div>
+                <div class="table-cell">
+                    {{ queryform.organizations }}
+                </div>
+                <div class="table-cell submit-cell">
+                    <input type="submit" value="{% trans 'Find' %}" />
+                </div>
+            </div>
+        </form>
+
+        <table>
+            {% for org in orgs %}
+                <tr>
+                    <td colspan="5" class="table-name">
+                        <h3><a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name }}">{{ org.name }}</a></h3>
+                    </td>
+                </tr>
+
+                {% if forloop.first %}
+                    <tr>
+                        <th>{% trans 'Full name' %}</th>
+                        <th>{% trans "E-mail" context "short spelling" %}</th>
+                        <th>{% trans 'Phone' %}</th>
+                        <th>{% trans 'Job title' %}</th>
+                        <th class="align-right">{% trans 'Comm.' %}</th>
+                    </tr>
+                {% endif %}
+
+                <tbody>
+                    {% for user in org.users %}
+                        <tr class="zebra">
+                            <td>{{ user.full_name }}</td>
+                            <td>{{ user.user.email }}</td>
+                            <td>{{ user.phone }}</td>
+                            <td>{{ user.position }}</td>
+                            <td class="align-right">{{ user.comments_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            {% endfor %}
+        </table>
+    </div>
+{%endblock%}

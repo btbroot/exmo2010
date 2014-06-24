@@ -35,6 +35,26 @@
     display: block;
 }
 
+
+/* == ORGANIZATION LIST == */
+
+.base-table {
+    margin-top: 20px;
+}
+/* Organization search form */
+
+.filter .table {
+    margin-top: 20px;
+}
+
+.select-cell {
+    width: 200px;
+}
+
+.submit-cell {
+    width: 90px;
+}
+
 /* == ORGANIZATION EMAIL FORM == */
 
 .org-email-form .table-cell {

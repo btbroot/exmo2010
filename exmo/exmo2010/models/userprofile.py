@@ -21,6 +21,7 @@ from django.contrib import auth
 from django.contrib.auth.models import Group, User, AnonymousUser
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
+from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from .base import BaseModel
@@ -98,7 +99,7 @@ class UserProfile(BaseModel):
     phone = models.CharField(verbose_name=_("Phone number"), max_length=30, blank=True)
 
     # Rating table settings
-    rt_representatives = models.BooleanField(verbose_name=_("Representatives"), default=True)
+    rt_representatives = models.BooleanField(verbose_name=pgettext_lazy(u'number of representatives', u'Representatives'), default=True)
     rt_comment_quantity = models.BooleanField(verbose_name=_("Comment quantity"), default=True)
     rt_initial_openness = models.BooleanField(verbose_name=_("Initial Openness"), default=False)
     rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
@@ -305,18 +306,24 @@ class UserProfile(BaseModel):
                 task = tasks[0]
                 return task.id
 
+    def _get_full_name(self, first_name_first=False):
+        name_list = filter(None, [self.user.last_name.strip(), self.user.first_name.strip()])
+        if name_list:
+            if first_name_first:
+                name_list.reverse()
+            result = ' '.join(unicode(s) for s in name_list)
+        else:
+            result = self.user.username if self.user.username else self.user.email
+
+        return result
+
     @property
     def legal_name(self):
-        if self.user.first_name and self.user.last_name:
-            return u"{0} {1}".format(self.user.first_name, self.user.last_name)
-        elif self.user.first_name:
-            return u"{0}".format(self.user.first_name)
-        elif self.user.last_name:
-            return u"{0}".format(self.user.last_name)
-        elif self.user.username:
-            return u"{0}".format(self.user.username)
-        else:
-            return u"{0}".format(self.user.email)
+        return self._get_full_name(first_name_first=True)
+
+    @property
+    def full_name(self):
+        return self._get_full_name()
 
     expertA_group = 'expertsA'
     expertB_group = 'expertsB'
@@ -353,6 +360,7 @@ User.userprofile = property(lambda u: u.get_profile())
 User.profile = property(lambda u: u.get_profile())
 
 User.legal_name = property(lambda u: u.profile.legal_name)
+User.full_name = property(lambda u: u.profile.full_name)
 
 User.is_expert = property(lambda u: u.is_active and u.profile.is_expert)
 User.is_expertB = property(lambda u: u.is_active and u.profile.is_expertB)

@@ -17,23 +17,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import datetime, time
+from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.forms import TextInput
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import formats
 from django.utils.translation import ugettext as _
-from django.views.generic import DeleteView, UpdateView
+from django.views.generic import DeleteView, DetailView, UpdateView
 
+from .forms import OrganizationsQueryForm, RepresentativesQueryForm
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
 from core.views import LoginRequiredMixin
-from exmo2010.models import Monitoring, Organization, InviteOrgs, Task, INV_STATUS
+from exmo2010.models import Monitoring, Organization, InviteOrgs, Score, Task, UserProfile, INV_STATUS
 from exmo2010.mail import mail_organization
 from modeltranslation_utils import CurLocaleModelForm
 
@@ -44,15 +46,11 @@ def organization_list(request, monitoring_pk):
     Organization page view.
 
     """
-    name_filter = invite_filter = None
     alert = request.GET.get('alert', False)
-    if request.method == "GET":
-        name_filter = request.GET.get('name_filter', False)
-        invite_filter = request.GET.get('invite_filter', False)
 
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
     title = _('Organizations for monitoring %s') % monitoring
 
     all_orgs = Organization.objects.filter(monitoring=monitoring)
@@ -84,50 +82,32 @@ def organization_list(request, monitoring_pk):
     else:
         inv_form = InviteOrgsForm(**kwargs)
 
-    if request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        queryset = Organization.objects.filter(monitoring=monitoring).extra(
-            select={
-                'task__count': 'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (
-                    Task._meta.db_table,
-                    Organization._meta.db_table,
-                ),
-            }
-        )
+    queryset = Organization.objects.filter(monitoring=monitoring).extra(
+        select={
+            'task__count': 'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (
+                Task._meta.db_table,
+                Organization._meta.db_table,
+            ),
+        }
+    )
 
-        headers = (
-            (_('organization'), 'name', None, None, None),
-            (_('email'), 'email', None, None, None),
-            (_('phone'), 'phone', None, None, None),
-            (_('invitation code'), 'inv_code', None, None, None),
-            (_('tasks'), 'task__count', None, None, None),
-            (_('invitation'), 'inv_status', None, None, None),
-        )
-    else:
-        org_list = []
-        for task in Task.objects.filter(organization__monitoring=monitoring).select_related():
-            if request.user.has_perm('exmo2010.view_task', task):
-                org_list.append(task.organization.pk)
-        org_list = list(set(org_list))
-        if not org_list:
-            return HttpResponseForbidden(_('Forbidden'))
-        queryset = Organization.objects.filter(pk__in=org_list)
-        headers = (
-            (_('organization'), 'name', None, None, None),
-            (_('email'), 'email', None, None, None),
-            (_('phone'), 'phone', None, None, None),
-            (_('invitation code'), 'inv_code', None, None, None),
-            (_('invitation'), 'inv_status', None, None, None),
-        )
+    headers = (
+        (_('organization'), 'name', None, None, None),
+        (_('email'), 'email', None, None, None),
+        (_('phone'), 'phone', None, None, None),
+        (_('invitation code'), 'inv_code', None, None, None),
+        (_('tasks'), 'task__count', None, None, None),
+        (_('invitation'), 'inv_status', None, None, None),
+    )
 
     if not sent:
         headers_list = list(headers)
         headers_list.pop()
         headers = tuple(headers_list)
 
-    if name_filter:
-        queryset = queryset.filter(name__icontains=name_filter)
-    if invite_filter and invite_filter != 'ALL':
-        queryset = queryset.filter(inv_status=invite_filter)
+    org_queryform = OrganizationsQueryForm(request.GET)
+    if org_queryform.is_valid():
+        queryset = org_queryform.apply(queryset)
 
     OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
 
@@ -154,8 +134,7 @@ def organization_list(request, monitoring_pk):
         if date_filter_history:
             input_format = formats.get_format('DATE_INPUT_FORMATS')[0]
             start_datetime = datetime.strptime(date_filter_history, input_format)
-            finish_datetime = datetime.combine(start_datetime, time.max)
-            inv_history = inv_history.filter(timestamp__range=(start_datetime, finish_datetime))
+            inv_history = inv_history.filter(timestamp__gte=start_datetime)
 
             tab = 'mail_history'
         if invite_filter_history and invite_filter_history != 'ALL':
@@ -181,6 +160,7 @@ def organization_list(request, monitoring_pk):
             'inv_history': inv_history,
             'date_filter_history': date_filter_history,
             'invite_filter_history': invite_filter_history,
+            'org_queryform': org_queryform,
         },
     )
 
@@ -212,3 +192,49 @@ class OrgEditView(OrgMixin, UpdateView):
 
 class OrgDeleteView(OrgMixin, DeleteView):
     template_name = "organization_confirm_delete.html"
+
+
+class RepresentativesView(LoginRequiredMixin, DetailView):
+    template_name = "organization_representatives.html"
+    pk_url_kwarg = 'monitoring_pk'
+    model = Monitoring
+
+    def get_object(self, queryset=None):
+        obj = super(RepresentativesView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', obj):
+            raise PermissionDenied
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super(RepresentativesView, self).get_context_data(**kwargs)
+
+        orgs = self.object.organization_set.exclude(userprofile=None).order_by('name')
+        users = UserProfile.objects.filter(user__groups__name='organizations', organization__monitoring=self.object)
+
+        queryform = RepresentativesQueryForm(self.request.GET)
+        org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
+        queryform.fields['organizations'].choices = org_choices
+
+        if queryform.is_valid():
+            users = queryform.apply(users)
+
+        users = set(users.values_list('pk', flat=True))
+
+        organizations = []
+        for org in orgs:
+            orgusers = []
+            for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
+                if user.pk in users:
+                    scores = Score.objects.filter(task__organization__in=orgs)
+                    comments_count = user.user.comment_comments.filter(object_pk__in=scores).count()
+                    user.comments_count = comments_count
+                    orgusers.append(user)
+
+            if orgusers:
+                org.users = orgusers
+                organizations.append(org)
+
+        context['orgs'] = organizations
+        context['queryform'] = queryform
+
+        return context

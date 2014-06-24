@@ -29,29 +29,20 @@
     {% endifequal %}
 {% endif %}
 
-<form id="search_form" action="" method="GET">
-    <table>
-        <tr>
-            <td>
-                <input id="name_filter" name="name_filter" value="" placeholder="{% trans 'Organization' %}">
-            </td>
-
-            {% if sent %}
-                <td>
-                    <select name="invite_filter">
-                        <option value="ALL">{% trans 'All invitations' %}</option>
-                        {% for status in inv_status %}
-                            <option value="{{ status.0 }}">{{ status.1 }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
-            {% endif %}
-
-            <td>
-                <input type="submit" id="search_button" value="{% trans 'Find' %}" />
-            </td>
-        </tr>
-    </table>
+<form class="filter" action="" method="GET">
+    <div class="table">
+        <div class="table-cell">
+            {{ org_queryform.org_name }}
+        </div>
+        {% if sent %}
+            <div class="table-cell select-cell">
+                {{ org_queryform.inv_status }}
+            </div>
+        {% endif %}
+        <div class="table-cell submit-cell">
+            <input type="submit" value="{% trans 'Find' %}" />
+        </div>
+    </div>
 </form>
 
 <table class="base-table">
