@@ -33,6 +33,11 @@
     <div class="representatives-content-block">
         <h2>{% trans "Representatives" %}</h2>
 
+        <div class="float-right">
+            <i class="icon"></i>
+            <a href="{% url 'exmo2010:representatives_export' monitoring.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
+        </div>
+
         <form class="filter" action="" method="GET">
             <div class="table">
                 <div class="table-cell">

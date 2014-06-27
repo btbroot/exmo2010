@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-25 14:57+0400\n"
+"POT-Creation-Date: 2014-06-27 10:22+0400\n"
 "PO-Revision-Date: 2014-05-15 18:38+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -46,7 +46,7 @@ msgstr "Фамилия"
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:115
 #: exmo2010/models/userprofile.py:98
-#: organizations/templates/organization_representatives.html:63
+#: organizations/templates/organization_representatives.html:68
 msgid "Job title"
 msgstr "Должность"
 
@@ -163,13 +163,13 @@ msgstr "Изменить пароль"
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
-#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:222
-#: exmo2010/urls.py:278 monitorings/views.py:966
+#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:223
+#: exmo2010/urls.py:279 monitorings/views.py:966
 #: monitorings/templates/ratings.html:33
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: bread_crumbs/tests.py:36 exmo2010/urls.py:279
+#: bread_crumbs/tests.py:36 exmo2010/urls.py:280
 #: monitorings/templates/rating.html:59 templates/_errors_header.html:34
 #: templates/certificate_order_form.html:69
 #: templates/exmo2010/sidebar/_sidebar.html:102
@@ -179,8 +179,8 @@ msgstr "Рейтинг"
 #: bread_crumbs/tests.py:38 bread_crumbs/tests.py:43
 #: claims/templates/claim_list.html:43
 #: clarifications/templates/clarification_list.html:43
-#: custom_comments/templates/comment_list.html:43 exmo2010/urls.py:259
-#: exmo2010/urls.py:264 exmo2010/urls.py:280
+#: custom_comments/templates/comment_list.html:43 exmo2010/urls.py:260
+#: exmo2010/urls.py:265 exmo2010/urls.py:281
 #: monitorings/templates/rating.html:137 monitorings/templates/rating.html:150
 #: organizations/forms.py:28 templates/certificate_order_form.html:97
 #: templates/certificate_order_form.html:110
@@ -192,15 +192,15 @@ msgstr "Рейтинг"
 msgid "Organization"
 msgstr "Организация"
 
-#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:224
+#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:225
 #: templates/exmo2010/monitoring_list.html:28
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
 
-#: bread_crumbs/tests.py:42 exmo2010/urls.py:231 exmo2010/urls.py:232
-#: exmo2010/urls.py:234 exmo2010/urls.py:235 exmo2010/urls.py:237
-#: exmo2010/urls.py:238 exmo2010/urls.py:243 exmo2010/urls.py:247
-#: exmo2010/urls.py:249 exmo2010/urls.py:251 exmo2010/urls.py:253
+#: bread_crumbs/tests.py:42 exmo2010/urls.py:232 exmo2010/urls.py:233
+#: exmo2010/urls.py:235 exmo2010/urls.py:236 exmo2010/urls.py:238
+#: exmo2010/urls.py:239 exmo2010/urls.py:244 exmo2010/urls.py:248
+#: exmo2010/urls.py:250 exmo2010/urls.py:252 exmo2010/urls.py:254
 #: exmo2010/models/questionnaire.py:36
 #: monitorings/templates/monitoring_form.html:70
 #: monitorings/templates/ratings.html:38 monitorings/templates/ratings.html:47
@@ -236,7 +236,7 @@ msgid "Claims report for \"%s\""
 msgstr "Отчет по претензиям для \"%s\""
 
 #: claims/views.py:166 dashboard/dashboard.py:116 dashboard/menu.py:76
-#: exmo2010/urls.py:220 templates/exmo2010/sidebar/_sidebar.html:88
+#: exmo2010/urls.py:221 templates/exmo2010/sidebar/_sidebar.html:88
 #: templates/scores/score.html:381
 msgid "Claims"
 msgstr "Претензии"
@@ -321,7 +321,7 @@ msgid "Clarifications report for \"%s\""
 msgstr "Отчет по уточнениям для \"%s\""
 
 #: clarifications/views.py:154 dashboard/dashboard.py:112 dashboard/menu.py:75
-#: exmo2010/urls.py:221 templates/exmo2010/sidebar/_sidebar.html:84
+#: exmo2010/urls.py:222 templates/exmo2010/sidebar/_sidebar.html:84
 #: templates/scores/score.html:380
 msgid "Clarifications"
 msgstr "Уточнения"
@@ -384,7 +384,7 @@ msgid "status"
 msgstr "статус"
 
 #: custom_comments/views.py:42 dashboard/dashboard.py:108 dashboard/menu.py:74
-#: exmo2010/urls.py:219 templates/exmo2010/sidebar/_sidebar.html:76
+#: exmo2010/urls.py:220 templates/exmo2010/sidebar/_sidebar.html:76
 #: templates/scores/score.html:299
 msgid "Comments"
 msgstr "Комментарии"
@@ -425,14 +425,14 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: dashboard/menu.py:83 exmo2010/urls.py:204 exmo2010/urls.py:205
-#: exmo2010/urls.py:206
+#: dashboard/menu.py:83 exmo2010/urls.py:205 exmo2010/urls.py:206
+#: exmo2010/urls.py:207
 #: monitorings/templates/monitoring_comment_report.html:57
 #: templates/_errors_header.html:39
 msgid "Statistics"
 msgstr "Статистика"
 
-#: dashboard/menu.py:84 exmo2010/urls.py:200 templates/_errors_header.html:44
+#: dashboard/menu.py:84 exmo2010/urls.py:201 templates/_errors_header.html:44
 msgid "Help"
 msgstr "Помощь"
 
@@ -607,7 +607,7 @@ msgstr "{subject_prefix}Изменен параметр: {param}"
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
-#: exmo2010/mail.py:256 exmo2010/mail.py:263 exmo2010/urls.py:201
+#: exmo2010/mail.py:256 exmo2010/mail.py:263 exmo2010/urls.py:202
 #: exmo2010/views.py:61 templates/_footer.html:29
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
@@ -622,106 +622,106 @@ msgstr "Смена пароля на %s"
 msgid "Registration on "
 msgstr "Регистрация на "
 
-#: exmo2010/urls.py:199 templates/_footer.html:26
+#: exmo2010/urls.py:200 templates/_footer.html:26
 msgid "About"
 msgstr "О проекте"
 
-#: exmo2010/urls.py:202 templates/_footer.html:28
+#: exmo2010/urls.py:203 templates/_footer.html:28
 #: templates/exmo2010/opendata.html:27
 msgid "Open data"
 msgstr "Открытые данные"
 
-#: exmo2010/urls.py:203 templates/admin/base_site.html:29
+#: exmo2010/urls.py:204 templates/admin/base_site.html:29
 msgid "Settings"
 msgstr "Настройки"
 
-#: exmo2010/urls.py:208 templates/registration/login.html:28
+#: exmo2010/urls.py:209 templates/registration/login.html:28
 msgid "Log in the system"
 msgstr "Войти в систему"
 
-#: exmo2010/urls.py:209
+#: exmo2010/urls.py:210
 msgid "Password reset (step 1 from 3)"
 msgstr "Восстановление пароля (шаг 1 из 3)"
 
-#: exmo2010/urls.py:210
+#: exmo2010/urls.py:211
 msgid "Password reset (step 2 from 3)"
 msgstr "Восстановление пароля (шаг 2 из 3)"
 
-#: exmo2010/urls.py:211
+#: exmo2010/urls.py:212
 msgid "Password reset (step 3 from 3)"
 msgstr "Восстановление пароля (шаг 3 из 3)"
 
-#: exmo2010/urls.py:212 exmo2010/custom_registration/views.py:169
+#: exmo2010/urls.py:213 exmo2010/custom_registration/views.py:169
 msgid "Registration (step 1 of 2)"
 msgstr "Регистрация (шаг 1 из 2)"
 
-#: exmo2010/urls.py:213 exmo2010/custom_registration/urls.py:43
+#: exmo2010/urls.py:214 exmo2010/custom_registration/urls.py:43
 msgid "Registration (step 2 of 2)"
 msgstr "Регистрация (шаг 2 из 2)"
 
-#: exmo2010/urls.py:214
+#: exmo2010/urls.py:215
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
 
-#: exmo2010/urls.py:215
+#: exmo2010/urls.py:216
 msgid "Activation complete"
 msgstr "Активация завершена"
 
-#: exmo2010/urls.py:225
+#: exmo2010/urls.py:226
 msgid "Add monitoring cycle"
 msgstr "Добавить цикл мониторинга"
 
-#: exmo2010/urls.py:226
+#: exmo2010/urls.py:227
 msgid "Delete monitoring cycle"
 msgstr "Удалить цикл мониторинга"
 
-#: exmo2010/urls.py:227
+#: exmo2010/urls.py:228
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo2010/urls.py:229 monitorings/views.py:164
+#: exmo2010/urls.py:230 monitorings/views.py:164
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: exmo2010/urls.py:240
+#: exmo2010/urls.py:241
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: exmo2010/urls.py:241
+#: exmo2010/urls.py:242
 msgid "Import organizations"
 msgstr "Импортировать организации"
 
-#: exmo2010/urls.py:245
+#: exmo2010/urls.py:246
 #: organizations/templates/organization_representatives.html:34
 #: templates/exmo2010/sidebar/_sidebar.html:45
 msgid "Representatives"
 msgstr "Представители"
 
-#: exmo2010/urls.py:254
+#: exmo2010/urls.py:255
 msgid "Add task"
 msgstr "Добавить задачу"
 
-#: exmo2010/urls.py:256
+#: exmo2010/urls.py:257
 msgid "Edit organization"
 msgstr "Редактировать организацию"
 
-#: exmo2010/urls.py:257
+#: exmo2010/urls.py:258
 msgid "Delete organization"
 msgstr "Удалить организацию"
 
-#: exmo2010/urls.py:261
+#: exmo2010/urls.py:262
 msgid "Edit task"
 msgstr "Редактировать задачу"
 
-#: exmo2010/urls.py:262
+#: exmo2010/urls.py:263
 msgid "Delete task"
 msgstr "Удалить задачу"
 
-#: exmo2010/urls.py:263
+#: exmo2010/urls.py:264
 msgid "Import task"
 msgstr "Импортировать задачу"
 
-#: exmo2010/urls.py:266 exmo2010/urls.py:267 exmo2010/urls.py:281
+#: exmo2010/urls.py:267 exmo2010/urls.py:268 exmo2010/urls.py:282
 #: exmo2010/models/parameter.py:33
 #: monitorings/templates/monitoring_parameter_filter.html:170
 #: monitorings/templates/monitoring_parameter_found_report.html:41
@@ -731,19 +731,19 @@ msgstr "Импортировать задачу"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo2010/urls.py:269
+#: exmo2010/urls.py:270
 msgid "Add parameter"
 msgstr "Добавить параметр"
 
-#: exmo2010/urls.py:270 templates/scores/score.html:56
+#: exmo2010/urls.py:271 templates/scores/score.html:56
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: exmo2010/urls.py:271
+#: exmo2010/urls.py:272
 msgid "Delete parameter"
 msgstr "Удалить параметр"
 
-#: exmo2010/urls.py:285 templates/certificate_order_form.html:23
+#: exmo2010/urls.py:286 templates/certificate_order_form.html:23
 #: templates/certificate_order_form.html:38
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
@@ -1045,11 +1045,11 @@ msgstr "Организации"
 msgid "Website"
 msgstr "Cайт"
 
-#: exmo2010/models/organization.py:127 organizations/views.py:96
+#: exmo2010/models/organization.py:127 organizations/views.py:97
 msgid "email"
 msgstr "электронная почта"
 
-#: exmo2010/models/organization.py:128 organizations/views.py:97
+#: exmo2010/models/organization.py:128 organizations/views.py:98
 msgid "phone"
 msgstr "телефон"
 
@@ -1337,7 +1337,7 @@ msgstr "одобрена"
 msgid "user"
 msgstr "пользователь"
 
-#: exmo2010/models/task.py:62 organizations/views.py:95 tasks/views.py:277
+#: exmo2010/models/task.py:62 organizations/views.py:96 tasks/views.py:277
 msgid "organization"
 msgstr "организация"
 
@@ -1828,7 +1828,7 @@ msgstr "Сформировать рейтинг"
 #: monitorings/templates/rating.html:139 monitorings/templates/ratings.html:40
 #: organizations/templates/_mail_history.html:32
 #: organizations/templates/_org_list.html:43
-#: organizations/templates/organization_representatives.html:45
+#: organizations/templates/organization_representatives.html:50
 #: templates/certificate_order_form.html:99
 msgid "Find"
 msgstr "Найти"
@@ -1843,7 +1843,7 @@ msgid "Repr."
 msgstr "Пред."
 
 #: monitorings/templates/rating.html:164
-#: organizations/templates/organization_representatives.html:64
+#: organizations/templates/organization_representatives.html:69
 msgid "Comm."
 msgstr "Коммен."
 
@@ -1944,24 +1944,24 @@ msgstr "Сбросить выделение "
 msgid "Full name or e-mail"
 msgstr "ФИО или электронная почта"
 
-#: organizations/views.py:54
+#: organizations/views.py:55
 #, python-format
 msgid "Organizations for monitoring %s"
 msgstr "Организации для цикла мониторинга %s"
 
-#: organizations/views.py:98
+#: organizations/views.py:99
 msgid "invitation code"
 msgstr "Код приглашения"
 
-#: organizations/views.py:99
+#: organizations/views.py:100
 msgid "tasks"
 msgstr "задачи"
 
-#: organizations/views.py:100
+#: organizations/views.py:101
 msgid "invitation"
 msgstr "Приглашение"
 
-#: organizations/views.py:215
+#: organizations/views.py:223
 msgid "Organization is not selected"
 msgstr "Организация не выбрана"
 
@@ -2039,16 +2039,20 @@ msgstr "история писем"
 msgid "add"
 msgstr "добавить"
 
-#: organizations/templates/organization_representatives.html:60
+#: organizations/templates/organization_representatives.html:38
+msgid "Save as CSV"
+msgstr "Сохранить как CSV"
+
+#: organizations/templates/organization_representatives.html:65
 msgid "Full name"
 msgstr "ФИО"
 
-#: organizations/templates/organization_representatives.html:61
+#: organizations/templates/organization_representatives.html:66
 msgctxt "short spelling"
 msgid "E-mail"
 msgstr "Эл. почта"
 
-#: organizations/templates/organization_representatives.html:62
+#: organizations/templates/organization_representatives.html:67
 msgid "Phone"
 msgstr "Телефон"
 

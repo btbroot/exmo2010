@@ -20,12 +20,11 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.forms import TextInput
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils import formats
 from django.utils.translation import ugettext as _
@@ -35,8 +34,10 @@ from .forms import OrganizationsQueryForm, RepresentativesQueryForm
 from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
 from core.views import LoginRequiredMixin
-from exmo2010.models import Monitoring, Organization, InviteOrgs, Score, Task, UserProfile, INV_STATUS
+from core.utils import UnicodeWriter
 from exmo2010.mail import mail_organization
+from exmo2010.models import (LicenseTextFragments, Monitoring, Organization,
+                             InviteOrgs, Score, Task, UserProfile, INV_STATUS)
 from modeltranslation_utils import CurLocaleModelForm
 
 
@@ -194,6 +195,13 @@ class OrgDeleteView(OrgMixin, DeleteView):
     template_name = "organization_confirm_delete.html"
 
 
+def _add_comments_count(user, orgs):
+    scores = Score.objects.filter(task__organization__in=orgs)
+    comments_count = user.user.comment_comments.filter(object_pk__in=scores).count()
+    user.comments_count = comments_count
+    return
+
+
 class RepresentativesView(LoginRequiredMixin, DetailView):
     template_name = "organization_representatives.html"
     pk_url_kwarg = 'monitoring_pk'
@@ -225,9 +233,7 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
             orgusers = []
             for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
                 if user.pk in users:
-                    scores = Score.objects.filter(task__organization__in=orgs)
-                    comments_count = user.user.comment_comments.filter(object_pk__in=scores).count()
-                    user.comments_count = comments_count
+                    _add_comments_count(user, orgs)
                     orgusers.append(user)
 
             if orgusers:
@@ -238,3 +244,52 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
         context['queryform'] = queryform
 
         return context
+
+
+def representatives_export(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
+    orgs = monitoring.organization_set.order_by('name')
+
+    organizations = []
+    for org in orgs:
+        orgusers = []
+        for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
+            _add_comments_count(user, orgs)
+            orgusers.append(user)
+
+        org.users = orgusers
+        organizations.append(org)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=representatives-%s.csv' % monitoring_pk
+    response.encoding = 'UTF-16'
+    writer = UnicodeWriter(response)
+    writer.writerow([
+        '#Organization',
+        'Full name',
+        'Email',
+        'Phone',
+        'Job title',
+        'Comments count',
+    ])
+
+    for org in organizations:
+        for user in org.users:
+            row = [
+                org.name,
+                user.full_name,
+                user.user.email,
+                user.phone,
+                user.position,
+                user.comments_count,
+            ]
+            writer.writerow(row)
+
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
+
+    return response

@@ -18,6 +18,7 @@
 #
 import re
 import time
+from cStringIO import StringIO
 from email.header import decode_header
 
 from django.conf import settings
@@ -33,6 +34,7 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.mail_tests import LocmemBackendTests
+from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
 
@@ -313,3 +315,59 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
         self.client.post(reverse('exmo2010:post_score_comment', args=[self.score.pk]), {'comment': '123'})
         # THEN organization invitation status should change to 'activated' ('ACT')
         self.assertEqual(Organization.objects.get(pk=self.org.pk).inv_status, 'ACT')
+
+
+class RepresentativesExportTestCase(TestCase):
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND there is 1 organization in monitoring
+        org = mommy.make(Organization, monitoring=self.monitoring)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        # AND expert B with approved task in monitoring
+        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        self.expertB.profile.is_expertB = True
+        task = mommy.make(Task, organization=org, user=self.expertB, status=Task.TASK_APPROVED)
+        # AND parameter with score
+        parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+        score = mommy.make(Score, task=task, parameter=parameter)
+        # AND org repersentative
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization = [org]
+        # AND comment by orguser
+        mommy.make(CommentExmo, object_pk=score.pk, user=orguser)
+        # AND I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_csv(self):
+        # WHEN I get csv-file from response for current monitoring
+        monitoring = Monitoring.objects.get(pk=self.monitoring.pk)
+        url = reverse('exmo2010:representatives_export', args=[monitoring.pk])
+        response = self.client.get(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND csv-file should be valid
+        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+        csv = UnicodeReader(StringIO(response.content))
+        organization = monitoring.organization_set.all()[0]
+        user = organization.userprofile_set.all()[0]
+        for row in csv:
+            if row[0].startswith('#'):
+                continue
+            # AND length of row should be 6
+            self.assertEqual(len(row), 6)
+            # AND 1 row should contain organization name
+            self.assertEqual(row[0], organization.name)
+            # AND 2 row should contain full user name
+            self.assertEqual(row[1], user.full_name)
+            # AND 3 row should contain user e-mail
+            self.assertEqual(row[2], user.user.email)
+            # AND 4 row should contain user phone number
+            self.assertEqual(row[3], user.phone)
+            # AND 5 row should contain user job title
+            self.assertEqual(row[4], user.position)
+            # AND 6 row should contain count of comments
+            self.assertEqual(int(row[5]), 1)
