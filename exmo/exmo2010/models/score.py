@@ -106,7 +106,7 @@ class Score(BaseModel):
 
         all_max = all(getattr(self, c) == self._meta.get_field(c).choices[-1][-1] for c in criteria)
 
-        if not all_max:
+        if self.parameter.monitoring.no_interact is False and not all_max:
             # If score is not maximum, recommendations should not be empty.
             if not self.recommendations:
                 raise ValidationError(ugettext('Score is not maximum, recommendations should exist'))

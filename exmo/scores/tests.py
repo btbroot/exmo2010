@@ -151,7 +151,11 @@ class ScoreAddTestCase(TestCase):
 
 
 class ScoreEditInitialTestCase(TestCase):
-    # ExpertA and expertB assigned to task should be able to edit score in MONITORING_RATE monitoring.
+    # TODO: Move this testcase to *general logic* tests directory.
+
+    # ExpertA and expertB assigned to task should be able to edit score in RATE monitoring.
+
+    # NOTE: See also ScoreEditInteractionTestCase for INTERACTION monitoring edit case.
 
     def setUp(self):
         # GIVEN expertA and expertB
@@ -190,9 +194,11 @@ class ScoreEditInitialTestCase(TestCase):
 class ScoreEditInteractionTestCase(TestCase):
     # TODO: Move this testcase to *general logic* tests directory.
 
-    # ExpertA and expertB assigned to task should be able to edit score in MONITORING_INTERACTION monitoring.
+    # ExpertA and expertB assigned to task should be able to edit score in INTERACTION monitoring.
     # Old score revision should be saved with new pk and 'last_modified' field in old score revision shouldn't change.
     # And comment should be added
+
+    # NOTE: See also ScoreEditInitialTestCase for RATE monitoring edit case.
 
     def setUp(self):
         # GIVEN expertA and expertB
@@ -247,6 +253,7 @@ class ScoreRecommendationsShouldChangeTestCase(TestCase):
     #   - old scores in database, which have empty recommendations. (BUG 2069)
     #   - new criterion is added and score was maximum.
     #  * When monitoring phase is not INTERACTION or FINALIZING.
+    #  * When monitoring has "no_interact" flag set to True.
 
     def setUp(self):
         # GIVEN i am logged in as expertA
@@ -306,6 +313,90 @@ class ScoreRecommendationsShouldChangeTestCase(TestCase):
         # THEN score should get updated in database.
         db_score = Score.objects.filter(pk=self.score.pk)
         self.assertEqual(list(db_score.values('found')), [{'found': 0}])
+
+    def test_monitoring_no_interact(self):
+        """
+        Recommendations MAY stay unchanged when monitoring "no_interact" flag set to True.
+        """
+
+        # WHEN monitoring "no_interact" flag set to True
+        Monitoring.objects.filter(pk=self.param.monitoring.pk).update(no_interact=True)
+
+        # AND i POST score edit form with the same recommendation and 'found' changed to 0
+        self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': '123'})
+
+        # THEN score should get updated in database.
+        db_score = Score.objects.filter(pk=self.score.pk)
+        self.assertEqual(list(db_score.values('found')), [{'found': 0}])
+
+
+class ScoreRecommendationsShouldExistTestCase(TestCase):
+    # TODO: Move this testcase to *validation* tests directory.
+
+    # Recommendations SHOULD exist when score is evaluated to non-maximum.
+    # Exception cases, when recommendations MAY be omitted:
+    #  * When monitoring has "no_interact" flag set to True.
+
+    def setUp(self):
+        # GIVEN i am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND organization  in MONITORING_INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        # AND parameter with no optional criteria
+        kwargs = dict(complete=0, topical=0, accessible=0, hypertext=0, document=0, image=0)
+        self.param = mommy.make(Parameter, monitoring=org.monitoring, **kwargs)
+        # AND maximum score with recommendations and found=1
+        self.score = mommy.make(Score, task__organization=org, parameter=self.param, found=1, recommendations='123')
+
+        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+
+    def test_recommendations_should_exist(self):
+        """
+        Recommendations SHOULD exist when score is evaluated to non-maximum.
+        """
+
+        # WHEN i POST score edit form with empty recommendation and 'found' changed to 0 (non-max score)
+        response = self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': ''})
+
+        # THEN score should stay unchanged in database
+        self.assertEqual(list(Score.objects.values_list('pk', 'found', 'recommendations')), [(self.score.pk, 1, '123')])
+        # AND response should contain recommendations error message
+        self.assertContains(response, _('Score is not maximum, recommendations should exist'), 1)
+
+    def test_all_max(self):
+        """
+        Recommendations MAY be omitted when all score criteria changed to maximum.
+        """
+
+        # WHEN new 'accessible' criterion added to parameter
+        Parameter.objects.filter(pk=self.param.pk).update(accessible=True)
+
+        # AND i POST score edit form with empty recommendation and 'accessible' set to max (3)
+        self.client.post(self.url, {'found': 1, 'accessible': 3, 'comment': 'lol', 'recommendations': ''})
+
+        # THEN score should get updated in database.
+        # "Accessible" should change from None to 3, recommendations should become empty.
+        db_score = Score.objects.filter(pk=self.score.pk)
+        self.assertEqual(list(db_score.values_list('found', 'accessible', 'recommendations')), [(1, 3, '')])
+
+    def test_monitoring_no_interact(self):
+        """
+        Recommendations MAY be omitted when monitoring "no_interact" flag set to True.
+        """
+
+        # WHEN monitoring "no_interact" flag set to True
+        Monitoring.objects.filter(pk=self.param.monitoring.pk).update(no_interact=True)
+
+        # AND i POST score edit form with empty recommendation and 'found' changed to 0 (non-max score)
+        self.client.post(self.url, {'found': 0, 'comment': 'lol', 'recommendations': ''})
+
+        # THEN score should get updated in database.
+        # "Found" should change from 1 to 0, recommendations should become empty.
+        db_score = Score.objects.filter(pk=self.score.pk)
+        self.assertEqual(list(db_score.values_list('found', 'recommendations')), [(0, '')])
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):

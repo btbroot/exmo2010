@@ -182,7 +182,7 @@ def score_view(request, **kwargs):
         'criteria': criteria,
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
         'claim_list': claim_list,
-        'all_max_initial': all_max,
+        'recommendations_required': param.monitoring.no_interact is False and not all_max,
         'comment_form': CommentForm(request.POST if request.method == 'POST' else None),
         'invcodeform': SettingsInvCodeForm(),
     }

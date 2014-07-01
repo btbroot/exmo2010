@@ -32,7 +32,7 @@ $(document).ready(function() {
     });
 
     $('#recommendations_form textarea').keyup(function(){
-        if (($('.editable-score-table.all_max_initial').length == 0) && ($(this).val().trim() == '')) {
+        if (($('.editable-score-table.recommendations_required').length != 0) && ($(this).val().trim() == '')) {
             $('#recommendations_form input[type="submit"]').attr('disabled', true);
         }
         else {

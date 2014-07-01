@@ -262,7 +262,7 @@
                     {{ form.non_field_errors }}
                 </div>
 
-                <div class="table editable-score-table {{ all_max_initial|yesno:'all_max_initial,' }}">
+                <div class="table editable-score-table {{ recommendations_required|yesno:'recommendations_required,' }}">
                     <div class="tbody">
                         {% for field in criteria %}
                             <div class="table-row" data-max="{{ field.field.choices|last|last }}" data-initial="{{ field.initial|default_if_none:'' }}">

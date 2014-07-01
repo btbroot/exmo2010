@@ -586,8 +586,10 @@ class AnswerClaimTestCase(BaseSeleniumTestCase):
 
 
 @attr('selenium')
-class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
+class ScoreRecommendationsShouldExistJsTestCase(BaseSeleniumTestCase):
     # If score is not maximum, recommendations submit button should be disabled if contents empty.
+    # Exception cases, when recommendations MAY be omitted:
+    #  * When monitoring has "no_interact" flag set to True.
 
     def setUp(self):
         self.scores = {}
@@ -598,13 +600,13 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
         self.login('expertB', 'password')
 
         # AND organization with task in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
-        task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
+        self.org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        task = mommy.make(Task, organization=self.org, user=expertB, status=Task.TASK_APPROVED)
 
         # AND parameter with one ctriteria (for ex. "topical")
         param_topical = mommy.make(
             Parameter,
-            monitoring=org.monitoring,
+            monitoring=self.org.monitoring,
             topical=True,
             image=False,
             complete=False,
@@ -614,11 +616,32 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
         )
 
         # AND score with found=0 (non-max)
-        self.score_nonmax = mommy.make(Score, task=task, parameter__monitoring=org.monitoring, found=0)
+        self.score_nonmax = mommy.make(Score, task=task, parameter__monitoring=self.org.monitoring, found=0)
         # AND score with all max criteria
         self.score_max = mommy.make(Score, task=task, parameter=param_topical, found=1, topical=3)
 
+    def test_max_score(self):
+        """
+        Recommendations MAY be omitted when score is maximum.
+        """
+
+        # WHEN i get max score page
+        self.get(reverse('exmo2010:score_view', args=(self.score_max.pk,)))
+
+        # THEN 'edit_recommendations' button should be visible
+        self.assertVisible('#edit_recommendations')
+
+        # WHEN i click 'edit_recommendations'
+        self.find('#edit_recommendations').click()
+
+        # THEN 'submit' button should be enabled
+        self.assertEnabled('#recommendations_form input[type="submit"]')
+
     def test_nonmax_score(self):
+        """
+        Recommendations SHOULD exist when score is evaluated to non-maximum.
+        """
+
         # WHEN i get nonmax score page
         self.get(reverse('exmo2010:score_view', args=(self.score_nonmax.pk,)))
 
@@ -637,9 +660,16 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
         # THEN 'submit' button should become enabled
         self.assertEnabled('#recommendations_form input[type="submit"]')
 
-    def test_max_score(self):
-        # WHEN i get max score page
-        self.get(reverse('exmo2010:score_view', args=(self.score_max.pk,)))
+    def test_nonmax_no_interact(self):
+        """
+        Recommendations MAY be omitted when monitoring "no_interact" flag set to True.
+        """
+
+        # WHEN monitoring "no_interact" flag set to True
+        Monitoring.objects.filter(pk=self.org.monitoring.pk).update(no_interact=True)
+
+        # WHEN i get nonmax score page
+        self.get(reverse('exmo2010:score_view', args=(self.score_nonmax.pk,)))
 
         # THEN 'edit_recommendations' button should be visible
         self.assertVisible('#edit_recommendations')
@@ -649,6 +679,7 @@ class DisableNonMaxScoreEmptyRecommendationsSubmit(BaseSeleniumTestCase):
 
         # THEN 'submit' button should be enabled
         self.assertEnabled('#recommendations_form input[type="submit"]')
+
 
 
 @attr('selenium')
