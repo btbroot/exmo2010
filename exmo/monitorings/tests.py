@@ -275,6 +275,55 @@ class OrgUserRatingsTableVisibilityTestCase(TestCase):
         self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
 
 
+class ObserversGroupRatingsTableVisibilityTestCase(TestCase):
+    # On ratings page observers SHOULD see only
+    # published monitorings and those with observed organizations
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # AND published hidden monitoring
+        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        # AND interaction monitoring
+        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        # AND interaction monitoring with observed organizations
+        self.mon_interaction_with_observed_orgs = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND interaction hidden monitoring with observed organizations
+        self.mon_interaction_hidden_with_observed_orgs = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+
+        # AND 1 organization in interaction monitoring with observed organizations
+        organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_observed_orgs)
+        # AND 1 organization in interaction hidden monitoring with observed organizations
+        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_observed_orgs)
+
+        # AND observer account
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for interaction monitoring with observed organizations
+        obs_group_1 = mommy.make(ObserversGroup, monitoring=self.mon_interaction_with_observed_orgs)
+        obs_group_1.organizations = [organization_1]
+        obs_group_1.users = [observer]
+        # AND observers group for interaction hidden monitoring with observed organizations
+        obs_group_2 = mommy.make(ObserversGroup, monitoring=self.mon_interaction_hidden_with_observed_orgs)
+        obs_group_2.organizations = [organization_2]
+        obs_group_2.users = [observer]
+
+        # AND I logged in as observer
+        self.client.login(username='observer', password='password')
+
+    def test_visible_monitorings(self):
+        # WHEN I get ratings page
+        response = self.client.get(reverse('exmo2010:ratings'))
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND context should contain expected monitorings count
+        expected_pks = {self.mon_published.pk,
+                        self.mon_interaction_with_observed_orgs.pk,
+                        self.mon_interaction_hidden_with_observed_orgs.pk}
+        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
+
+
 class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
     # On ratings page anonymous and regular users SHOULD see only
     # published monitorings that are not hidden
@@ -616,6 +665,13 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # AND regular user
         self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
 
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for published hidden monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=self.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+
         # AND expertB not connected to task
         self.expertB_out = User.objects.create_user('expertB_out', 'expertb.out@svobodainfo.org', 'password')
         self.expertB_out.groups.add(Group.objects.get(name=self.expertB_out.profile.expertB_group))
@@ -629,6 +685,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         ('org',),
         ('expertA',),
         ('su',),
+        ('observer',),
     ])
     def test_allowed_users_see_monitoring(self, username):
         # WHEN user logging in
@@ -637,7 +694,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         response = self.client.get(reverse('exmo2010:ratings'))
         response_monitoring = response.context['monitoring_list'][0]
         # THEN response's context contains hidden monitoring in monitoring list
-        # for connected organization representative, connected expertB, expertA and superuser
+        # for connected organization representative, connected observer, connected expertB, expertA and superuser
         self.assertEqual(response_monitoring, self.monitoring)
 
     @parameterized.expand([

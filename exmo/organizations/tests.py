@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import re
-import time
 from cStringIO import StringIO
 from email.header import decode_header
 
@@ -28,7 +27,6 @@ from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils.crypto import salted_hmac
 from livesettings import config_value
 from model_mommy import mommy
 from nose_parameterized import parameterized
@@ -109,6 +107,12 @@ class OrganizationEditAccessTestCase(TestCase):
         # AND organization representative
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [self.organization]
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=self.monitoring)
+        obs_group.organizations = [self.organization]
+        obs_group.users = [observer]
 
         self.url = reverse('exmo2010:organization_update', args=[self.monitoring.pk, self.organization.pk])
 
@@ -121,6 +125,7 @@ class OrganizationEditAccessTestCase(TestCase):
     @parameterized.expand([
         ('user', 403),
         ('org', 403),
+        ('observer', 403),
         ('expertB', 403),
         ('expertA', 200),
         ('admin', 200),
@@ -137,6 +142,7 @@ class OrganizationEditAccessTestCase(TestCase):
     @parameterized.expand([
         ('user',),
         ('org',),
+        ('observer',),
         ('expertB',),
     ])
     def test_forbid_unauthorized_organization_edit_post(self, username):

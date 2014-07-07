@@ -21,6 +21,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from exmo2010.models import Monitoring, MONITORING_PUBLISHED
+from queryform import QueryForm
 
 
 class MonitoringFilterForm(forms.Form):
@@ -35,3 +36,21 @@ class MonitoringFilterForm(forms.Form):
         required=False,
         empty_label=_('monitoring not select'),
     )
+
+
+class RatingsQueryForm(QueryForm):
+    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Monitoring cycle')}))
+
+    class Meta:
+        filters = {
+            'name': 'name__icontains',
+        }
+
+
+class ObserversGroupQueryForm(QueryForm):
+    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Group name')}))
+
+    class Meta:
+        filters = {
+            'name': 'name__icontains',
+        }

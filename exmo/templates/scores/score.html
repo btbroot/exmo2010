@@ -266,8 +266,8 @@
                     <div class="tbody">
                         {% for field in criteria %}
                             <div class="table-row" data-max="{{ field.field.choices|last|last }}" data-initial="{{ field.initial|default_if_none:'' }}">
-                                <div class="table-cell label">{{ field.label }}</div>
-                                <div class="table-cell">{{ field }}</div>
+                                <div class="table-cell-R label">{{ field.label }}</div>
+                                <div class="table-cell-R">{{ field }}</div>
                             </div>
                         {% endfor %}
                     </div>

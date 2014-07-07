@@ -22,7 +22,7 @@ from types import NoneType
 
 from django.db.models import Q
 
-from exmo2010.models import Task, Score, Parameter
+from exmo2010.models import Task, Score, Parameter, ObserversGroup
 from exmo2010.models.monitoring import Monitoring, PRE, RATE, RES, INT, PUB, FIN
 
 
@@ -32,16 +32,19 @@ def perm_filter(user, priv, queryset):
             return queryset
 
         published = Q(status=PUB, hidden=False)
+        can_observe = Q()
+        if user.is_active and ObserversGroup.objects.filter(users=user).exists():
+            can_observe = Q(observersgroup__users=user)
+
         if user.is_expertB:
             own = Q(organization__task__user=user) & ~Q(status=PRE)
-            return queryset.filter(published | own).distinct()
         elif user.is_organization:
             orgs = user.profile.organization.filter(task__status=Task.TASK_APPROVED)
             own = Q(status__in=(INT, FIN, PUB), organization__in=orgs)
-            return queryset.filter(published | own).distinct()
-        # TODO: when overseer role will be added - add its case here.
         else:
-            return queryset.filter(published)
+            own = Q()
+
+        return queryset.filter(published | own | can_observe).distinct()
 
     if priv == 'view_task':
         if user.is_expertA:
@@ -74,6 +77,9 @@ def monitoring_permission(user, priv, monitoring):
                 organization__monitoring__status__in=(INT, FIN, PUB),
                 organization__in=user.profile.organization.all()).exists():
             return True
+        elif phase in (INT, FIN) and user.is_active and \
+                ObserversGroup.objects.filter(monitoring=monitoring, users=user).exists():
+            return True
 
     return False
 
@@ -91,7 +97,7 @@ def task_permission(user, priv, task):
     if priv == 'view_task':
         if user.executes(task):
             return True
-        elif user.represents(task.organization):
+        elif user.represents(task.organization) or user.observes(task.organization):
             if task.approved and phase in (INT, FIN, PUB):
                 return True
         elif task.approved and phase == PUB and not monitoring.hidden:

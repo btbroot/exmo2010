@@ -223,13 +223,8 @@ span.score_rev1 {
     color: #ffffff;
 }
 
-.editable-score-table .table-cell {
-    text-align: left;
-    border-bottom: none;
-}
-
-.editable-score-table .label {
-    text-align: right;
+.editable-score-table .table-cell-R {
+    border: none;
 }
 
 /* links and recommendations area */

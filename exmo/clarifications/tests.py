@@ -25,7 +25,7 @@ from nose_parameterized import parameterized
 
 from exmo2010.models import (
     Monitoring, Organization, Score, Clarification,
-    Task, MONITORING_RATE)
+    ObserversGroup, Task, MONITORING_RATE)
 
 
 class ClarificationActionsAccessTestCase(TestCase):
@@ -49,6 +49,12 @@ class ClarificationActionsAccessTestCase(TestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.organization = [org]
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for rate monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=org.monitoring)
+        obs_group.organizations = [org]
+        obs_group.users = [observer]
 
         # AND score for expertB task
         score = mommy.make(Score, task__organization=org, task__user=expertB)
@@ -72,6 +78,7 @@ class ClarificationActionsAccessTestCase(TestCase):
     @parameterized.expand([
         ('user',),
         ('org',),
+        ('observer',),
         ('expertB',),
     ])
     def test_forbid_unauthorized_clarification_creation(self, username):
@@ -86,6 +93,7 @@ class ClarificationActionsAccessTestCase(TestCase):
     @parameterized.expand([
         ('user',),
         ('org',),
+        ('observer',),
         ('expertA',),
     ])
     def test_forbid_unauthorized_clarification_answer(self, username):

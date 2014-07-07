@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@ from django.test import TestCase
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from exmo2010.models import Monitoring, Organization, Parameter, Task, MONITORING_INTERACTION
+from exmo2010.models import Monitoring, Organization, Parameter, Task, ObserversGroup
 
 
 class ParameterEditAccessTestCase(TestCase):
@@ -51,6 +51,12 @@ class ParameterEditAccessTestCase(TestCase):
         # AND organization representative
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.profile.organization = [organization]
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=self.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
 
         self.url = reverse('exmo2010:parameter_update', args=[task.pk, self.parameter.pk])
 
@@ -63,6 +69,7 @@ class ParameterEditAccessTestCase(TestCase):
     @parameterized.expand([
         ('user', 403),
         ('org', 403),
+        ('observer', 403),
         ('expertB', 403),
         ('expertA', 200),
         ('admin', 200),
@@ -79,6 +86,7 @@ class ParameterEditAccessTestCase(TestCase):
     @parameterized.expand([
         ('user',),
         ('org',),
+        ('observer',),
         ('expertB',),
     ])
     def test_forbid_unauthorized_param_edit_post(self, username):

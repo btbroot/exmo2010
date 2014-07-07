@@ -35,7 +35,7 @@ from exmo2010.forms import CertificateOrderForm
 from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
     Group, Monitoring, Organization, Parameter, Questionnaire, Score, PhonesField, Claim, Clarification,
-    Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
+    ObserversGroup, Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
 )
 
 
@@ -242,6 +242,8 @@ class CanonicalViewKwargsTestCase(TestCase):
         # AND claim, clarification
         claim = mommy.make(Claim, score=score)
         clarification = mommy.make(Clarification, score=score)
+        # AND observers group
+        obs_group = mommy.make(ObserversGroup, monitoring=monitoring)
 
         # AND i am logged-in as superuser
         admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
@@ -257,6 +259,7 @@ class CanonicalViewKwargsTestCase(TestCase):
             'org_pk': organization.pk,
             'clarification_pk': clarification.pk,
             'claim_pk': claim.pk,
+            'obs_group_pk': obs_group.pk,
             'activation_key': '123',  # for registration_activate
             'uidb36': '123',          # for auth_password_reset_confirm
             'token': '123',           # for auth_password_reset_confirm

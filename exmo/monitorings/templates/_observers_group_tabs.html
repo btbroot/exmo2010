@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011, 2013 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,19 +15,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+{% endcomment %}
+{% load i18n %}
 
-from exmo import config  # livesettings init
-
-from .claim import *
-from .clarification import *
-from .monitoring import *
-from .openness_expression import *
-from .organization import *
-from .parameter import *
-from .questionnaire import *
-from .score import *
-from .static_page import *
-from .task import *
-from .text_fragments import *
-from .userprofile import *
-from .observers_group import *
+<div class="pseudo-tabs">
+    <span {% if object %}class="active"{% endif %}><a href="{% url 'exmo2010:observers_groups' monitoring.pk %}">{% trans 'all' %}</a></span>
+    <span {% if not object %}class="active"{% endif %}><a href="{% url 'exmo2010:observers_group_add' monitoring.pk %}">{% trans 'add' %}</a></span>
+</div>

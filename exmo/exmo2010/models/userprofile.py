@@ -369,6 +369,7 @@ User.is_customer = property(lambda u: u.is_active and u.profile.is_customer)
 User.is_translator = property(lambda u: u.is_active and u.profile.is_translator)
 User.is_organization = property(lambda u: u.is_active and u.profile.is_organization)
 User.represents = lambda u, org: u.is_active and u.profile.organization.filter(pk=org.pk).exists()
+User.observes = lambda u, org: u.is_active and org.observersgroup_set.filter(users=u).exists()
 User.executes = lambda u, task: u.is_expertB and task.user_id == u.pk
 
 # TODO: get rid of monkey-patching User.has_perm, instead use Django 1.5 User model customization.
@@ -382,6 +383,7 @@ AnonymousUser.is_expertA = False
 AnonymousUser.is_customer = False
 AnonymousUser.is_organization = False
 AnonymousUser.represents = lambda u, org: False
+AnonymousUser.observes = lambda u, org: False
 AnonymousUser.executes = lambda u, task: False
 
 

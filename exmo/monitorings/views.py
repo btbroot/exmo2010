@@ -27,36 +27,43 @@ from collections import defaultdict, OrderedDict
 from operator import attrgetter
 
 from django.conf import settings
+from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from django.contrib import messages
-from django.db.models import Count, Q
-from django.db import transaction
-from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import ValidationError, PermissionDenied
-from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField
-from django.forms.models import modelformset_factory, modelform_factory
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
+from django.db.models import Count, Q
+from django.db import transaction
+from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField, Media
+from django.forms.models import modelformset_factory, modelform_factory
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
 from django.utils import simplejson
-from django.views.generic import UpdateView, DeleteView
+from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
+from django.views.generic.edit import FormMixin
 from reversion.revisions import default_revision_manager as revision
 
+from .forms import RatingsQueryForm, ObserversGroupQueryForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import LoginRequiredMixin
 from custom_comments.utils import comment_report
+from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
 from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
+
+
+MEDIA = CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]})
 
 
 def avg(attr, items):
@@ -242,14 +249,14 @@ def monitoring_rating(request, monitoring_pk):
         'rating_columns_form': rating_columns_form,
     }
 
-    if user.is_organization and not user.is_superuser and not monitoring.is_published:
-        orgs = set(user.profile.organization.values_list('pk', flat=True))
-        rating_list = [t for t in rating_list if t.organization.pk in orgs]
-        context.update({'rating_list': rating_list})
-    else:
+    orgs = set()
+    if user.is_active and ObserversGroup.objects.filter(monitoring=monitoring, users=user).exists():
+        orgs = orgs.union(set(user.observersgroup_set.filter(monitoring=monitoring).values_list('organizations__pk', flat=True)))
+
+    if user.is_expert or monitoring.is_published:
         name_filter = request.GET.get('name_filter', '')
         if name_filter:
-            orgs = set(monitoring.organization_set.filter(name__icontains=name_filter).values_list('pk', flat=True))
+            orgs = orgs.union(set(monitoring.organization_set.filter(name__icontains=name_filter).values_list('pk', flat=True)))
             rating_list = [t for t in rating_list if t.organization.pk in orgs]
 
         approved_tasks = Task.approved_tasks.filter(organization__monitoring=monitoring).distinct()
@@ -266,6 +273,11 @@ def monitoring_rating(request, monitoring_pk):
             'rating_stats': rating_stats,
             'name_filter': name_filter,
         })
+    else:
+        if user.is_organization:
+            orgs = orgs.union(set(user.profile.organization.values_list('pk', flat=True)))
+        rating_list = [t for t in rating_list if t.organization.pk in orgs]
+        context.update({'rating_list': rating_list})
 
     return TemplateResponse(request, 'rating.html', context)
 
@@ -965,29 +977,34 @@ def ratings(request):
     """
     title = _('Ratings')
     user = request.user
-    name_filter = request.GET.get('name_filter', '')
+    queryset = Monitoring.objects.all()
 
-    monitoring_list = Monitoring.objects.all()
-    if name_filter:
-        monitoring_list = monitoring_list.filter(name__icontains=name_filter)
+    queryform = RatingsQueryForm(request.GET)
 
-    if user.is_expertA or user.is_superuser:
-        monitoring_list = monitoring_list.filter(status=MONITORING_PUBLISHED)
+    if queryform.is_valid():
+        queryset = queryform.apply(queryset)
+
+    mon = Q(status=PUB, hidden=False)
+    own = Q()
+    can_observe = Q()
+    appendix = Q()
+    if user.is_active and ObserversGroup.objects.filter(users=user).exists():
+        can_observe = Q(observersgroup__users=user)
+
+    if user.is_expertA:
+        mon = Q(status=PUB)
     elif user.is_expertB:
-        monitoring_list = monitoring_list.filter(
-            Q(status=MONITORING_PUBLISHED), Q(hidden=False) | Q(organization__task__user=user)
-        )
+        mon = Q(hidden=False)
+        appendix = Q(status=PUB)
+        own = Q(organization__task__user=user)
     elif user.is_organization:
-        monitoring_list = monitoring_list.filter(
-            Q(hidden=False, status=MONITORING_PUBLISHED) | Q(organization__userprofile__user=user)
-        )
-    else:
-        # anonymous or registered user without any permissions
-        monitoring_list = monitoring_list.filter(status=MONITORING_PUBLISHED, hidden=False)
+        own = Q(organization__userprofile__user=user)
 
-    monitoring_list = monitoring_list.annotate(org_count=Count('organization')).order_by('-publish_date')
+    queryset = queryset.filter(mon | own | can_observe, appendix).distinct()
 
-    for m in monitoring_list:
+    queryset = queryset.annotate(org_count=Count('organization')).order_by('-publish_date')
+
+    for m in queryset:
         if m.status == MONITORING_PUBLISHED:
             sql_openness = m.openness_expression.get_sql_openness()
             tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
@@ -995,8 +1012,8 @@ def ratings(request):
 
     context = {
         'title': title,
-        'monitoring_list': monitoring_list,
-        'name_filter': name_filter,
+        'monitoring_list': queryset,
+        'queryform': queryform,
     }
 
     return TemplateResponse(request, 'ratings.html', context)
@@ -1176,3 +1193,88 @@ def monitoring_export(request, monitoring_pk):
     elif export_format == 'json':
         r = export.json()
     return r
+
+
+class ObserversGroupView(LoginRequiredMixin, DetailView):
+    template_name = "observers_groups.html"
+    pk_url_kwarg = 'monitoring_pk'
+    model = Monitoring
+
+    def get_object(self, queryset=None):
+        monitoring = super(ObserversGroupView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            raise PermissionDenied
+        return monitoring
+
+    def get_context_data(self, **kwargs):
+        context = super(ObserversGroupView, self).get_context_data(**kwargs)
+
+        obs_groups = ObserversGroup.objects.filter(monitoring=self.object).order_by('name')
+
+        queryform = ObserversGroupQueryForm(self.request.GET)
+
+        if queryform.is_valid():
+            obs_groups = queryform.apply(obs_groups)
+
+        context['obs_groups'] = obs_groups
+        context['queryform'] = queryform
+
+        return dict(context, media=MEDIA)
+
+
+class ObserversGroupMixin(LoginRequiredMixin):
+    context_object_name = 'obs_group'
+
+    def get_context_data(self, **kwargs):
+        context = super(ObserversGroupMixin, self).get_context_data(**kwargs)
+        context['monitoring'] = self.monitoring
+
+        return dict(context, media=MEDIA)
+
+    def get_success_url(self):
+        return reverse('exmo2010:observers_groups', args=[self.monitoring.pk])
+
+
+class ObserversGroupEditView(ObserversGroupMixin, UpdateView):
+    template_name = "observers_group_edit.html"
+
+    def get_object(self, queryset=None):
+        if 'obs_group_pk' in self.kwargs:
+            # Existing observers group edit page
+            obj = get_object_or_404(ObserversGroup, pk=self.kwargs['obs_group_pk'])
+            self.monitoring = obj.monitoring
+        else:
+            # New observers group page
+            obj = None
+            self.monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
+
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return obj
+
+    def get_form_class(self):
+        widgets = {
+            'organizations': FilteredSelectMultiple('', is_stacked=False),
+            'users': FilteredSelectMultiple('', is_stacked=False),
+        }
+        form_class = modelform_factory(model=ObserversGroup, widgets=widgets)
+        form_class.base_fields['organizations'].queryset = Organization.objects.filter(monitoring=self.monitoring)
+        form_class.base_fields['users'].queryset = User.objects.filter(is_active=True, is_superuser=False).exclude(groups__name='expertsA')
+
+        return form_class
+
+    def get_initial(self):
+        self.initial['monitoring'] = self.monitoring
+        return super(ObserversGroupEditView, self).get_initial()
+
+
+class ObserversGroupDeleteView(ObserversGroupMixin, DeleteView):
+    template_name = "observers_group_confirm_delete.html"
+
+    def get_object(self, queryset=None):
+        obs_group = get_object_or_404(ObserversGroup, pk=self.kwargs['obs_group_pk'])
+        self.monitoring = obs_group.monitoring
+
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return obs_group

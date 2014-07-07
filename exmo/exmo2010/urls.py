@@ -26,7 +26,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, RedirectView
 
 from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
-from monitorings.views import MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView
+from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
+                               ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView)
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
@@ -107,6 +108,10 @@ monitoring_patterns = named_urls('monitorings.views',
     (r'^(?P<monitoring_pk>\d+)_update/$', MonitoringEditView, 'monitoring_update'),
     (r'^(?P<monitoring_pk>\d+)_delete/$', MonitoringDeleteView, 'monitoring_delete'),
     (r'^(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
+    (r'^(?P<monitoring_pk>\d+)/observers_groups/$', ObserversGroupView, 'observers_groups'),
+    (r'^(?P<monitoring_pk>\d+)/observers_group/add/$', ObserversGroupEditView, 'observers_group_add'),
+    (r'^(?P<monitoring_pk>\d+)/observers_group/(?P<obs_group_pk>\d+)_update/$', ObserversGroupEditView, 'observers_group_update'),
+    (r'^(?P<monitoring_pk>\d+)/observers_group/(?P<obs_group_pk>\d+)_delete/$', ObserversGroupDeleteView, 'observers_group_delete'),
 )
 
 monitoring_patterns += named_urls('tasks.views',
@@ -243,7 +248,12 @@ def crumbs_tree(is_expert=False):
 
             'organization_list': _('Monitoring cycle'),
 
-            'representatives': _('Representatives'),
+            'representatives': _('Monitoring cycle'),
+
+            'observers_groups': _('Monitoring cycle'),
+            'observers_group_add': _('Monitoring cycle'),
+            'observers_group_update': _('Monitoring cycle'),
+            'observers_group_delete': _('Monitoring cycle'),
 
             'set_npa_params': _('Monitoring cycle'),
 

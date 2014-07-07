@@ -38,21 +38,21 @@
             <a href="{% url 'exmo2010:representatives_export' monitoring.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
         </div>
 
-        <form class="filter" action="" method="GET">
-            <div class="table">
-                <div class="table-cell">
-                    {{ queryform.full_name_or_email }}
-                </div>
-                <div class="table-cell">
-                    {{ queryform.organizations }}
-                </div>
-                <div class="table-cell submit-cell">
-                    <input type="submit" value="{% trans 'Find' %}" />
-                </div>
-            </div>
-        </form>
-
         <table>
+            <caption>
+                <form class="filter" action="" method="GET">
+                    <div class="table">
+                        <div class="table-cell">
+                            {{ queryform.full_name_or_email }}
+                            {{ queryform.organizations }}
+                        </div>
+                        <div class="table-cell submit-cell">
+                            <input type="submit" value="{% trans 'Find' %}" />
+                        </div>
+                    </div>
+                </form>
+            </caption>
+
             {% for org in orgs %}
                 <tr>
                     <td colspan="5" class="table-name">

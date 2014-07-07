@@ -17,53 +17,57 @@
 #
 */
 
-h2, h3, input, select {
+h2 {
     margin: 0;
 }
 
-h2 {
+.observers-content-block > h2 {
     display: inline;
+    margin-right: 12px;
 }
 
-i.icon {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    vertical-align: text-top;
-    background: url("../../../static/exmo2010/img/download.png") no-repeat;
-    background-size: 18px 18px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../../../static/exmo2010/img/download.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../../../static/exmo2010/img/download.png', sizingMethod='scale')";
-}
-
-.filter .table {
-    margin-top: 20px;
-}
-
-.filter .table-cell {
-    padding: 0;
-}
-
-.filter input[type="text"], .filter select {
-    width: 49%;
+.tab-content {
+    margin-top: 15px;
 }
 
 .submit-cell {
     width: 80px;
 }
 
-.table-name {
-    padding: 20px 5px 10px;
+.observers-table caption {
+    margin-bottom: 15px;
+}
+
+.observers-table table th span {
+    cursor: pointer;
+    border-bottom: 1px dotted;
+}
+
+#observers_form td {
+    text-align: right;
     border: none;
 }
 
-th {
-    border-top: none;
+#observers_form td.field {
+    text-align: left;
 }
 
-td {
-    border-top: 1px solid #eeeeee;
+#edit_btn {
+    width: 120px;
+    margin-right: 20px;
+}
+
+#add_btn {
+    width: 100px;
+}
+
+.delete-form {
+    margin-top: 10px;
+}
+
+.delete-form input {
+    width: 185px;
+    margin-top: 20px;
 }
 
 tr.zebra:nth-child(odd) {

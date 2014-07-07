@@ -33,11 +33,15 @@
 {% block h1 %}<h1>{% trans 'Ratings' %}</h1>{% endblock %}
 
 {% block content %}
-    <form class="filter clearfix" action="" method="GET">
-        <div>
-            <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Monitoring cycle' %}" />
+    <form class="filter" action="" method="GET">
+        <div class="table">
+            <div class="table-cell">
+                {{ queryform.name }}
+            </div>
+            <div class="table-cell submit-cell">
+                <input type="submit" value="{% trans 'Find' %}" />
+            </div>
         </div>
-        <input type=submit value="{% trans 'Find' %}" />
     </form>
 
     <table id="ratings-data" class="base-table">

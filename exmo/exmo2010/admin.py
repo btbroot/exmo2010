@@ -65,3 +65,10 @@ class StaticPageAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
 @register(models.LicenseTextFragments)
 class LicenseTextFragmentsAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
     list_display = ('id', 'page_footer', 'csv_footer', 'json_name', 'json_url', 'json_rightsholder', 'json_source')
+
+
+@register(models.ObserversGroup)
+class ObserversGroupAdmin(admin.ModelAdmin):
+    list_display = search_fields = ('name',)
+    raw_id_fields = ('organizations', 'users')
+    list_filter = ('monitoring',)

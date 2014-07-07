@@ -262,6 +262,11 @@ p.mini {
 .nowrap {
     white-space: nowrap;
 }
+
+.inline {
+    display: inline;
+}
+
 /* TABLES */
 
 table {
@@ -415,10 +420,11 @@ table.orderable-initalized .order-cell, body>tr>td.order-cell {
     display: table-header-group;
 }
 
-.thead .table-cell {
+.thead .table-cell, .thead .table-cell-L, .thead .table-cell-R {
     padding: 5px;
     font-weight: bold;
     vertical-align: bottom;
+    border-top: none;
 }
 
 .tbody {
@@ -434,7 +440,7 @@ table.orderable-initalized .order-cell, body>tr>td.order-cell {
     padding: 5px;
     vertical-align: middle;
     border-top: 1px solid #d7d7d7;
-    border-bottom: 1px solid #D7D7D7;
+    border-bottom: 1px solid #d7d7d7;
 }
 
 .table-cell {

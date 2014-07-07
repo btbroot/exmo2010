@@ -110,33 +110,17 @@ ul.utils > li {
 }
 
 form.filter {
-    position: relative;
-    margin-top: 15px;
-    margin-bottom: 10px;
-    height: 26px;
+    margin: 15px 0 10px;
 }
 
-.filter > div {
-    margin-right: 90px;
-    padding: 0;
-}
-
-form.filter input[type="text"] {
+form.filter input {
     font-size: 13px;
-    width: 100%;
-    height: 18px;
-    margin: 0;
-
-}
-
-form.filter input[type="submit"] {
-    position: absolute;
-    right: 0;
-    top: 0;
-    font-size: 13px;
-    width: 84px;
     height: 25px;
-    margin: 0;
+
+}
+
+.submit-cell {
+    width: 80px;
 }
 
 table.base-table {

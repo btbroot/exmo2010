@@ -57,6 +57,12 @@ class ScoreAddAccessTestCase(TestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.organization = [org]
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=org.monitoring)
+        obs_group.organizations = [org]
+        obs_group.users = [observer]
 
         self.url = reverse('exmo2010:score_add', args=[task.pk, param.pk])
 
@@ -64,6 +70,7 @@ class ScoreAddAccessTestCase(TestCase):
         (None, 403),
         ('user', 403),
         ('orguser', 403),
+        ('observer', 403),
         ('other_expertB', 403),
         ('expertA', 200),
         ('admin', 200),
@@ -77,7 +84,7 @@ class ScoreAddAccessTestCase(TestCase):
         # THEN response status_code equals expected
         self.assertEqual(response.status_code, expected_response_code)
 
-    @parameterized.expand(zip([None, 'user', 'org', 'other_expertB']))
+    @parameterized.expand(zip([None, 'user', 'org', 'observer', 'other_expertB']))
     def test_forbid_unauthorized_score_creation(self, username):
         self.client.login(username=username, password='password')
 
