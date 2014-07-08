@@ -376,13 +376,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --
 
-exmo/scores/static/js/jquery.autosize.js
+exmo/static/jquery.autosize.js
 
-Autosize 1.15.2 - jQuery plugin for textareas
+Autosize v1.18.9 - 2014-05-27
+Automatically adjust textarea height based on user input.
 
 The MIT License (MIT)
 
-Copyright (c) 2012 Jack Moore - jacklmoore.com
+Copyright (c) 2014 Jack Moore - http://www.jacklmoore.com/autosize
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

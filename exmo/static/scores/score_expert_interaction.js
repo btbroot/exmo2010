@@ -22,6 +22,7 @@ $(document).ready(function() {
         $(this).closest('div.read_edit').find('.read').hide();
         $(this).closest('div.read_edit').find('.edit').show();
         $(this).hide();
+        $('textarea').trigger('autosize.resize');
         return false;
     });
     $('a.cancel').click(function(){

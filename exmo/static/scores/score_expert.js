@@ -16,11 +16,12 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
+    var settings = {append: ''};  // remove new line
 
-    $('textarea[name="recommendations"]').autosize();
-    $('textarea[name="links"]').autosize();
+    $('textarea[name="recommendations"]').autosize(settings);
+    $('textarea[name="links"]').autosize(settings);
 
-    // Prevent '-' radiobutton from being selected on clik.
+    // Prevent '-' radiobutton from being selected on click.
     $(".editable-score-table li label").on('click', function() {
         if ($(this).find('input').val() == '') {
             return false;
