@@ -103,7 +103,7 @@
         <h2>{% trans 'Scores' %}</h2>
 
         {% if not request.user.is_expert %}
-            <div class="pseudo-tabs">
+            <div class="tabs">
                 <span><a href="#show_explanations" class="pseudo">{% trans 'show explanations' %}</a></span>
                 <span class="float-right"><a href="#show_score_rev1" class="pseudo" data-url="{% url 'exmo2010:ajax_set_profile_setting' %}" data-active="{{ request.user.is_active }}">{% if show_rev1 %}{% trans 'hide initial scores' %}{% else %}{% trans 'show initial scores' %}{% endif %}</a></span>
             </div>
@@ -111,7 +111,7 @@
 
         {% if score.perms.edit_score %}
             {% if interaction and score.pk %}
-                <div class="pseudo-tabs reply-edit">
+                <div class="tabs reply-edit">
                     <span><a href="#reply" class="pseudo">{% trans 'Reply' %}</a></span>
                     <span><a href="#change_score" class="pseudo">{% trans 'Change score' %}</a></span>
                 </div>
@@ -199,14 +199,14 @@
                     <div class="links read_edit">
                         <h2>{% trans 'Found information links' %}</h2>
                         {% if score.perms.edit_score %}
-                            <div class="pseudo-tabs">
+                            <div class="tabs">
                                 <span><a href="#" class="pseudo" id="edit_links">{% trans 'edit' %}</a></span>
                             </div>
                             <div class="edit">
                                 <form action="{% url 'exmo2010:post_score_links' score.pk %}">{% csrf_token %}
                                     {{ form.links }}
                                     <input type="submit" value="{% trans 'Save' %}" />
-                                    <div class="pseudo-tabs">
+                                    <div class="tabs">
                                         <span><a href="#" class="pseudo cancel">{% trans 'Cancel' %}</a></span>
                                     </div>
                                 </form>
@@ -225,14 +225,14 @@
                         <div class="recommendations read_edit">
                             <h2>{% trans 'Recommendations' %}</h2>
                             {% if score.perms.edit_score %}
-                                <div class="pseudo-tabs">
+                                <div class="tabs">
                                     <span><a href="#" class="pseudo" id="edit_recommendations">{% trans 'edit' %}</a></span>
                                 </div>
                                 <div id="recommendations_form" class="edit">
                                     <form action="{% url 'exmo2010:post_recommendations' score.pk %}">{% csrf_token %}
                                         {{ form.recommendations }}
                                         <input type="submit" disabled="disabled" value="{% trans 'Save' %}" />
-                                        <div class="pseudo-tabs">
+                                        <div class="tabs">
                                             <span><a href="#" class="pseudo cancel">{% trans 'Cancel' %}</a></span>
                                         </div>
                                     </form>
@@ -357,7 +357,7 @@
 
     {% if score.pk and score.perms.add_comment %}
         {% if interaction and request.user.is_expert %}
-            <div class="pseudo-tabs reply-edit">
+            <div class="tabs reply-edit">
                 <span> <a href="#reply" class="pseudo"> {% trans 'Reply' %} </a> </span>
                 <span> <a href="#change_score" class="pseudo"> {% trans 'Change score' %} </a> </span>
             </div>

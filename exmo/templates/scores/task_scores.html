@@ -1,4 +1,4 @@
-{% extends request.user.is_expertA|yesno:"base_sidebar.html,base_leftaligned.html" %}
+{% extends request.user.is_expert|yesno:"base_sidebar.html,base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block sidebar_h1 %}
-    {% if is_expertA %}
+    {% if is_expert %}
         <h1>{{ task.organization.name }}</h1>
     {% endif %}
 {% endblock %}
@@ -60,7 +60,7 @@
 {% endblock %}
 
 {% block h1 %}
-    {% if not is_expertA %}
+    {% if not is_expert %}
         <h1>{{ title }}</h1>
     {% endif %}
 {% endblock %}

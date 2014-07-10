@@ -126,7 +126,7 @@
                                     {{ task.organization.monitoring.publish_date|date:"Y.m.d" }}
                                 </span>
                             </td>
-                            <td> <a href="{% url 'exmo2010:task_scores' pk %}">{{ task.organization.name }}</a> </td>
+                            <td> <a href="{% url 'exmo2010:recommendations' pk %}">{{ task.organization.name }}</a> </td>
                             <td> <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a> </td>
                             <td class="place"> <span>{{ task.place }}</span> </td>
                             <td class="openness"> {{ task.task_openness|floatformat:3 }}% </td>

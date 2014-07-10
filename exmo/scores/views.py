@@ -36,6 +36,7 @@ from django.template.response import TemplateResponse
 from django.utils.html import escape, urlize
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
+from django.views.generic import DetailView
 from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
@@ -45,7 +46,7 @@ from core.templatetags.target_blank import target_blank
 from core.utils import clean_message
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
-from exmo2010.models import Score, Task, Parameter, QQuestion, QAnswer, UserProfile
+from exmo2010.models import Organization, Score, Task, Parameter, QQuestion, QAnswer, UserProfile
 from exmo2010.models.monitoring import Monitoring
 from perm_utils import annotate_exmo_perms
 from questionnaire.forms import QuestionnaireDynForm
@@ -439,6 +440,33 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
 
                 if last_comment_id and (request.user.executes(score.task) or request.user.is_expertA):
                     param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
+
+
+class RecommendationsView(DetailView):
+    template_name = "scores/recommendations.html"
+    pk_url_kwarg = 'task_pk'
+    model = Task
+
+    def get_object(self, queryset=None):
+        self.task = super(RecommendationsView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.view_task', self.task):
+            raise PermissionDenied
+        return self.task
+
+    def get_context_data(self, **kwargs):
+        context = super(RecommendationsView, self).get_context_data(**kwargs)
+
+        monitoring = self.task.organization.monitoring
+        orgs_count = Organization.objects.filter(monitoring=monitoring).count()
+        registered_count = Organization.objects.filter(monitoring=monitoring, inv_status__in=('RGS', 'ACT')).count()
+
+        context['mon'] = monitoring
+        context['orgs_count'] = orgs_count
+        context['registered_count'] = registered_count
+        context['openness'] = self.task.openness
+        context['delta'] = self.task.openness - self.task.openness_initial if self.task.openness else None
+
+        return context
 
 
 @login_required

@@ -31,6 +31,7 @@ from monitorings.views import (MonitoringEditView, MonitoringDeleteView, Monitor
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
+from scores.views import RecommendationsView
 
 
 def named_urls(module, *urlpatterns):
@@ -166,6 +167,7 @@ urlpatterns = named_urls('',
     (r'^score/', include(scores_patterns)),
     (r'^scores/(?P<task_pk>\d+)/$', 'scores.views.task_scores'),
     (r'^scores/(?P<task_pk>\d+)/print/$', 'scores.views.task_scores_print'),
+    (r'^recommendations/(?P<task_pk>\d+)/$', RecommendationsView, 'recommendations'),
 
     (r'^tasks/', include(tasks_patterns)),
     (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),
@@ -267,6 +269,7 @@ def crumbs_tree(is_expert=False):
                 'organization_update':    _('Edit organization'),
                 'organization_delete':    _('Delete organization'),
 
+                'recommendations': _('Organization'),
                 'task_scores': (_('Organization'), {
                     # Task
                     'task_update':  _('Edit task'),
@@ -288,6 +291,7 @@ def crumbs_tree(is_expert=False):
     nonexpert_tree = {
         'ratings': (_('Ratings'), {
             'monitoring_rating': (_('Rating'), {
+                'recommendations': _('Organization'),
                 'task_scores': (_('Organization'), {
                     'score_view': _('Parameter'),
                 })

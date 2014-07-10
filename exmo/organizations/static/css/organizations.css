@@ -24,6 +24,7 @@
 .org-content-block h2 {
     display: inline;
     margin-right: 12px;
+    vertical-align: top;
 }
 
 .tab-content {

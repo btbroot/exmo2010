@@ -130,12 +130,18 @@
             {% endif %}
         {% else %}
             {% url 'exmo2010:task_scores' task.pk as url %}
-            <!-- {% trans 'Scores' %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="Scores" %}
+            <!-- {% trans 'Scores table' %} -->
+            {% include "exmo2010/sidebar/_item.html" with url=url title="Scores table" %}
 
-            {% url 'exmo2010:task_history' task.pk as url %}
-            <!-- {% trans 'History' %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="History" %}
+            {% url 'exmo2010:recommendations' task.pk as url %}
+            <!-- {% trans 'Scores' %} -->
+            {% include "exmo2010/sidebar/_item.html" with url=url title="Recommendations list" %}
+
+            {% if request.user.profile.is_expertA %}
+                {% url 'exmo2010:task_history' task.pk as url %}
+                <!-- {% trans 'History' %} -->
+                {% include "exmo2010/sidebar/_item.html" with url=url title="History" %}
+            {% endif %}
         {% endif %}
     </ul>
 </div>

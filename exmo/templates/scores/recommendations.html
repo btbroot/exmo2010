@@ -1,0 +1,136 @@
+{% extends request.user.is_expert|yesno:"base_sidebar.html,base_centered.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'scores/recommendations.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
+{% endblock %}
+
+{% block sidebar_h1 %}
+    {% if is_expert %}
+        <h1>{{ task.organization.name }}</h1>
+    {% endif %}
+{% endblock %}
+
+{% block h1 %}
+    {% if not is_expert %}
+        <h1>{{ task.organization.name }}</h1>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="recommendations-header-block">
+        {% if is_expert %}
+            <h2>{% trans "Recommendations list" %}</h2>
+        {% else %}
+            <h2>{% trans "View" %}</h2>
+        {% endif %}
+
+        {% if not is_expert %}
+            <div class="tabs">
+                <span class="active"><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
+                <span><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
+            </div>
+        {% endif %}
+
+{#  START -- Болванка для ссылок на печать  #}
+{#        <div class="float-right">#}
+{#            <i class="icon"></i>#}
+{#            <a href="{% url 'exmo2010:index' %}" class="pseudo">{% trans 'Print' %}</a>#}
+{#            <i class="icon"></i>#}
+{#            <a href="{% url 'exmo2010:index' %}" class="pseudo">{% trans 'Print with comments' %}</a>#}
+{#        </div>#}
+{#  END -- Болванка для ссылок на печать  #}
+
+        <p>
+            {% with task.rating_place as rating_place %}
+                {% if rating_place %}
+                    {% if is_expert and not mon.is_published %}
+                        {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
+                    {% else %}
+                        {% url 'exmo2010:monitoring_rating' mon.pk as url %}
+                    {% endif %}
+
+                    {% if orgs_count > 1 %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> has <span>{{ rating_place }} position</span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% else %}
+                    &mdash; {% blocktrans with url=task.organization.url %}Site <a href="{{ url }}" target="_blank">{{ url }}</a>.{% endblocktrans %}<br/>
+                {% endif %}
+            {% endwith %}
+
+            {% if openness %}
+                &mdash;
+                {% if delta > 0 %}
+                    {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
+                {% endif %}
+                {% if mon.is_published %}
+                    {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                {% else %}
+                    {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                {% endif %}
+            {% endif %}
+
+            {% if orgs_count > 1 %}
+                &mdash; {% blocktrans %}Total amount of organizations {{ orgs_count }}.{% endblocktrans %}<br />
+            {% endif %}
+
+            {% if mon.is_interact and registered_count > 1 %}
+                &mdash; {% blocktrans %}{{ registered_count }} organizations are working to increase their websites openness.{% endblocktrans %}
+                {% if is_organization %}
+                    {% blocktrans %}Your rating position will decrease as their openness increases.{% endblocktrans %}
+                {% endif %}
+                <br />
+            {% endif %}
+
+            {% if is_organization %}
+                {% if mon.is_published %}
+                    {% url 'exmo2010:certificate_order' as certificate_order_url %}
+                    &mdash; {% blocktrans %}<a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
+                {% else %}
+                    &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
+                {% endif %}
+            {% endif %}
+        </p>
+
+        {% if is_organization %}
+            <p>
+                {% if mon.is_interact %}
+                    {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}
+                {% endif %}
+
+                {% if mon.is_finishing %}
+                    {% blocktrans with publish_date=mon.publish_date %}You can not leave new comments. We are answering the latest comments and correct assessments. Please wait till rating is published {{ publish_date }}.{% endblocktrans %}
+                {% endif %}
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="recommendations-block">
+        {% if not is_expert %}
+            <h2>{% trans 'Recommendations list' %}</h2>
+        {% endif %}
+    </div>
+{% endblock %}

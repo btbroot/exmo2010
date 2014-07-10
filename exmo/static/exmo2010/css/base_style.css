@@ -77,21 +77,22 @@ a:hover, .dashboard-module-content a:hover {
     text-decoration: underline;
 }
 
-/* Pseudo links */
+/* Links & Pseudo links */
 
-.pseudo-tabs {
-    display: inline;
+.tabs {
+    display: inline-block;
+    line-height: 24px;
 }
 
-.pseudo-tabs span {
+.tabs span {
     padding: 5px;
 }
 
-.pseudo-tabs span.active {
-    background-color: #FFFFD6;
+.tabs span.active {
+    background-color: #ffffd6;
 }
 
-.pseudo-tabs span.active a {
+.tabs span.active a {
     border-bottom: none;
     color: #222222;
 }

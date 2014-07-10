@@ -197,7 +197,7 @@
                     <span>{{ task.place }}</span>
                 </td>
                 <td>
-                    <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task.organization.name }}</a>
+                    <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
                 </td>
                 <td>
                     <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a>
