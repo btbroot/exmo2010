@@ -81,7 +81,7 @@
                 {% endif %}
             {% endwith %}
 
-            {% if openness %}
+            {% ifnotequal openness None %}
                 &mdash;
                 {% if delta > 0 %}
                     {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
@@ -91,7 +91,7 @@
                 {% else %}
                     {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
                 {% endif %}
-            {% endif %}
+            {% endifnotequal %}
 
             {% if orgs_count > 1 %}
                 &mdash; {% blocktrans %}Total amount of organizations {{ orgs_count }}.{% endblocktrans %}<br />
