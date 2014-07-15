@@ -32,33 +32,36 @@
 
             {% url 'exmo2010:tasks_by_monitoring' monitoring.pk as url %}
             <!-- {% trans "Tasks" %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="Tasks" %}
+            {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Tasks" only %}
 
             {% if is_expertA %}
                 {% url 'exmo2010:organization_list' monitoring.pk as url %}
                 <!-- {% trans "Organizations" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Organizations" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Organizations" only %}
 
                 {% url 'exmo2010:representatives' monitoring.pk as url %}
                 <!-- {% trans "Representatives" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Representatives" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Representatives" only %}
 
                 {% url 'exmo2010:observers_groups' monitoring.pk as url %}
+                {% url 'exmo2010:observers_group_add' monitoring.pk as url2 %}
+                {% url 'exmo2010:observers_group_update' monitoring.pk obs_group.pk as url3 %}
+                {% url 'exmo2010:observers_group_delete' monitoring.pk obs_group.pk as url4 %}
                 <!-- {% trans "Observers" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Observers" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 url3=url3 url4=url4 title="Observers" only %}
             {% endif %}
 
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
             {% if perm %}
                 {% url 'exmo2010:task_mass_assign_tasks' monitoring.pk as url %}
                 <!-- {% trans "Task assignment" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Task assignment" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Task assignment" only %}
             {% endif %}
 
             {% if is_expertA %}
                 {% url 'exmo2010:set_npa_params' monitoring.pk as url %}
                 <!-- {% trans "Parameter type" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Parameter type" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Parameter type" only %}
 
                 <li class="nav-group">
                     {% trans 'Reports' %}
@@ -67,13 +70,13 @@
 
             {% url 'exmo2010:monitoring_parameter_filter' monitoring.pk as url %}
             <!-- {% trans "Task filtering" %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="Task filtering" %}
+            {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Task filtering" only %}
 
             {% if is_expert or request.user.is_superuser %}
                 {% if is_expertA and not monitoring.no_interact %}
                     {% url 'exmo2010:monitoring_comment_report' monitoring.pk as url %}
                     <!-- {% trans "Comments" %} -->
-                    {% include "exmo2010/sidebar/_item.html" with url=url title="Comments" %}
+                    {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Comments" only %}
                 {% endif %}
             {% endif %}
 
@@ -81,25 +84,25 @@
             {% if perm %}
                 {% url 'exmo2010:clarification_report' monitoring.pk as url %}
                 <!-- {% trans "Clarifications" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Clarifications" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Clarifications" only %}
 
                 {% url 'exmo2010:claim_report' monitoring.pk as url %}
                 <!-- {% trans "Claims" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Claims" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Claims" only %}
 
                 {% url 'exmo2010:monitoring_by_experts' monitoring.pk as url %}
                 <!-- {% trans "Experts" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Experts" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Experts" only %}
 
                 {% url 'exmo2010:monitoring_parameter_found_report' monitoring.pk as url %}
                 <!-- {% trans "Presence of the parameter" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Presence of the parameter" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Presence of the parameter" only %}
             {% endif %}
 
             {% if not is_expertB or request.user.is_superuser or monitoring.status == 5 %}
                 {% url 'exmo2010:monitoring_rating' monitoring.pk as url %}
                 <!-- {% trans "Rating" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Rating" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Rating" only %}
             {% endif %}
 
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
@@ -113,7 +116,7 @@
 
                 {% url 'exmo2010:monitoring_by_criteria_mass_export' monitoring.pk as url %}
                 <!-- {% trans "Criterion" %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="Criterion" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Criterion" only %}
 
                 {% if monitoring.has_questionnaire %}
                     <li>
@@ -131,16 +134,16 @@
         {% else %}
             {% url 'exmo2010:task_scores' task.pk as url %}
             <!-- {% trans 'Scores table' %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="Scores table" %}
+            {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Scores table" only %}
 
             {% url 'exmo2010:recommendations' task.pk as url %}
             <!-- {% trans 'Scores' %} -->
-            {% include "exmo2010/sidebar/_item.html" with url=url title="Recommendations list" %}
+            {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Recommendations list" only %}
 
             {% if request.user.profile.is_expertA %}
                 {% url 'exmo2010:task_history' task.pk as url %}
                 <!-- {% trans 'History' %} -->
-                {% include "exmo2010/sidebar/_item.html" with url=url title="History" %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="History" only %}
             {% endif %}
         {% endif %}
     </ul>

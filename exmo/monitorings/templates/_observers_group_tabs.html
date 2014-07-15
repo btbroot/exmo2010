@@ -18,7 +18,7 @@
 {% endcomment %}
 {% load i18n %}
 
-<div class="pseudo-tabs">
+<div class="tabs">
     <span {% if object %}class="active"{% endif %}><a href="{% url 'exmo2010:observers_groups' monitoring.pk %}">{% trans 'all' %}</a></span>
     <span {% if not object %}class="active"{% endif %}><a href="{% url 'exmo2010:observers_group_add' monitoring.pk %}">{% trans 'add' %}</a></span>
 </div>

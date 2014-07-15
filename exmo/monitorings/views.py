@@ -1210,6 +1210,7 @@ class ObserversGroupView(LoginRequiredMixin, DetailView):
         context = super(ObserversGroupView, self).get_context_data(**kwargs)
 
         obs_groups = ObserversGroup.objects.filter(monitoring=self.object).order_by('name')
+        context['is_obs_groups_exists'] = obs_groups.exists()
 
         queryform = ObserversGroupQueryForm(self.request.GET)
 
@@ -1259,7 +1260,8 @@ class ObserversGroupEditView(ObserversGroupMixin, UpdateView):
         }
         form_class = modelform_factory(model=ObserversGroup, widgets=widgets)
         form_class.base_fields['organizations'].queryset = Organization.objects.filter(monitoring=self.monitoring)
-        form_class.base_fields['users'].queryset = User.objects.filter(is_active=True, is_superuser=False).exclude(groups__name='expertsA')
+        users = User.objects.filter(is_active=True, is_superuser=False).exclude(groups__name='expertsA')
+        form_class.base_fields['users'].choices = [(u.id, u"%s — %s" % (u.profile.full_name, u.email)) for u in users]
 
         return form_class
 
