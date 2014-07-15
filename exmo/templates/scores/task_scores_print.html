@@ -25,19 +25,7 @@
     <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
         <head>
             <title>{{ task.organization.name }}</title>
-            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base_structure.css' %}"/>
-            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base_style.css' %}"/>
-            <style>
-                body { padding: 0 10px; background-color: #ffffff; }
-                .copyrights-fonts { margin: 0; }
-                h1 { margin-bottom: 10px; }
-                h2 { margin: 20px 0 10px; }
-                h3 { font-size: inherit; font-weight: bold; margin-top: 10px; }
-                p { margin: 0;}
-                thead td { vertical-align: bottom; }
-                #footer_print { margin-top: 20px; font-size: 10px; }
-                #footer_print div.first { margin-bottom: 10px; }
-            </style>
+            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/print_style.css' %}"/>
         </head>
 
         <body>
