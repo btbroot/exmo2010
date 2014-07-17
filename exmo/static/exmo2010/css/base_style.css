@@ -919,6 +919,14 @@ ul#errors-header li.portal a:hover {
     width: 250px;
 }
 
+/* Ajax */
+
+.rating-ajax {
+    height: 14px;
+    display: inline-block;
+    content: url("../img/ajax-loader.gif");
+}
+
 /* Misc */
 
 .required {

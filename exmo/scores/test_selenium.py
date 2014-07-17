@@ -202,15 +202,15 @@ class TaskAjaxRatingVisibilityTestCase(BaseSeleniumTestCase):
         url = reverse('exmo2010:task_scores', args=(self.opened_task.pk,))
         # WHEN I am on score page for opened task
         self.get(url)
-        # THEN rating place should be hidden
-        self.assertHidden('#place_all')
+        # THEN rating place should not exist
+        self.assertEqual(self.find('#rating_place'), None)
 
     def test_approved_task_rating_visible(self):
         url = reverse('exmo2010:task_scores', args=(self.approved_task.pk,))
         # WHEN I am on score page for approved task
         self.get(url)
         # THEN rating place should be visible
-        self.assertVisible('#place_all')
+        self.assertVisible('#rating_place')
 
 
 @attr('selenium')

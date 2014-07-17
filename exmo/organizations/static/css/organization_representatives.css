@@ -27,11 +27,11 @@ h2 {
 
 i.icon {
     display: inline-block;
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
     vertical-align: text-top;
     background: url("../../../static/exmo2010/img/download.png") no-repeat;
-    background-size: 18px 18px;
+    background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../../../static/exmo2010/img/download.png', sizingMethod='scale');
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../../../static/exmo2010/img/download.png', sizingMethod='scale')";

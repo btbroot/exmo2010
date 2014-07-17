@@ -17,13 +17,30 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static %}
+{% load i18n static trim_links %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'scores/recommendations.css' %}" />
 {% endblock %}
 
 {% block extra_script %}
+    {% if task.approved and orgs_count > 1 %}
+        <script>
+            $(document).ready(function() {
+                // insert loader image
+                $('<span class="rating-ajax" />').insertBefore('#rating_place');
+                // get rating places
+                $.getJSON("{% url 'exmo2010:rating_update' %}", { task_id: "{{ task.id }}" })
+                    .done(function(data) {
+                        var val = data['rating_place'];
+                        if (val) {
+                            $('#rating_place').text(val + ' ' + '{% trans 'place' %}').show();
+                        }
+                        $('.rating-ajax').remove();
+                    });
+            });
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block sidebar_h1 %}
@@ -63,23 +80,21 @@
 {#  END -- Болванка для ссылок на печать  #}
 
         <p>
-            {% with task.rating_place as rating_place %}
-                {% if rating_place %}
-                    {% if is_expert and not mon.is_published %}
-                        {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
-                    {% else %}
-                        {% url 'exmo2010:monitoring_rating' mon.pk as url %}
-                    {% endif %}
-
-                    {% if orgs_count > 1 %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> has <span>{{ rating_place }} position</span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                    {% else %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                    {% endif %}
+            {% if task.approved %}
+                {% if is_expert and not mon.is_published %}
+                    {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
                 {% else %}
-                    &mdash; {% blocktrans with url=task.organization.url %}Site <a href="{{ url }}" target="_blank">{{ url }}</a>.{% endblocktrans %}<br/>
+                    {% url 'exmo2010:monitoring_rating' mon.pk as url %}
                 {% endif %}
-            {% endwith %}
+
+                {% if orgs_count > 1 %}
+                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                {% else %}
+                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                {% endif %}
+            {% else %}
+                &mdash; {% blocktrans with org_url=task.organization.url %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a>.{% endblocktrans %}<br/>
+            {% endif %}
 
             {% ifnotequal openness None %}
                 &mdash;

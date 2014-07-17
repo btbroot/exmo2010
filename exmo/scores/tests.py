@@ -407,7 +407,7 @@ class ScoreRecommendationsShouldExistTestCase(TestCase):
 
 
 class AjaxGetRatingPlacesTestCase(TestCase):
-    # Ajax request should return correct rating places for valid rating types
+    # Ajax request should return correct rating place
 
     def setUp(self):
         # GIVEN interaction monitoring
@@ -440,16 +440,11 @@ class AjaxGetRatingPlacesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.content)
         # AND place by all parameters should be 2
-        self.assertEqual(result['place_all'], 2)
-        # AND place by normative parameters should be 1
-        self.assertEqual(result['place_npa'], 1)
-        # AND place by recommendatory parameters should be 2
-        self.assertEqual(result['place_other'], 2)
+        self.assertEqual(result['rating_place'], 2)
 
 
 class AjaxOpennessAccessTestCase(OptimizedTestCase):
     # Should allow to get rating place via ajax only if task is approved
-    # AND forbid access for expertB and regular user if monitoring is not published
 
     @classmethod
     def setUpClass(cls):
@@ -510,7 +505,7 @@ class AjaxOpennessAccessTestCase(OptimizedTestCase):
         with self.mock_request(username, self.task_approved_interaction) as request:
             self.assertEqual(rating_update(request).status_code, 200)
 
-    @parameterized.expand(zip(['user', 'expertB_free', 'expertB_engaged']))
+    @parameterized.expand(zip(['user']))
     def test_interaction_approved_task_forbid(self, username):
         with self.mock_request(username, self.task_approved_interaction) as request:
             self.assertRaises(PermissionDenied, rating_update, request)

@@ -19,6 +19,23 @@
 #
 */
 
+h2 {
+    display: inline;
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+p {
+    margin-top: 10px;
+}
+
+p span {
+    font-size: 18px;
+}
+
+
+/* Score table colors style */
+
 .score-ok-nonzero{
     background: #80e580;
     text-align: center;
@@ -58,38 +75,49 @@
     width: 100%
 }
 
-#legend td {
-    border-collapse: collapse;
-    border: 1px solid;
-}
-
 .score_interact {
     font-size: 12px;
     opacity: 0.5;
 }
 
-.rating-ajax {
-    height: 14px;
+i.icon {
     display: inline-block;
-    content: url("../../../static/exmo2010/img/ajax-loader.gif");
+    height: 16px;
+    width: 16px;
+    margin-left: 10px;
+    vertical-align: text-top;
 }
 
-.unreaded_comment {
-    float: right;
+i.add {
+    background: url("../exmo2010/img/add.png") no-repeat;
+    background-size: 16px 16px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale')";
 }
 
-.rating-ajax {
-    height: 14px;
+i.upload {
+    background: url("../exmo2010/img/upload.png") no-repeat;
+    background-size: 16px 16px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/upload.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/upload.png', sizingMethod='scale')";
 }
 
-.get-rating a, .get-rating span {
-    color: red;
+i.print {
+    background: url("../exmo2010/img/print.png") no-repeat;
+    background-size: 16px 16px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/print.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/print.png', sizingMethod='scale')";
 }
 
-/* Override base heading style */
-
-tr.heading th {
-    border: 1px solid #222;
+i.download {
+    background: url("../exmo2010/img/download.png") no-repeat;
+    background-size: 16px 16px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/download.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/download.png', sizingMethod='scale')";
 }
 
 /* Styles for ankete */
@@ -129,8 +157,12 @@ tr.heading th {
 
 /* Score legend */
 
+#legend td {
+    border-collapse: collapse;
+    border: 1px solid;
+}
+
 #table_color, #table_variant {
-    border: 1px solid #222;
     min-width: 900px;
     line-height: 11px;
 }
@@ -145,7 +177,7 @@ tr.heading th {
     vertical-align: middle;
 }
 
-#table_variant th {
+#table_variant th, tr.heading th {
     border: 1px solid #222;
 }
 

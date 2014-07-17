@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static check_object_permission %}
+{% load i18n static trim_links check_object_permission %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/changelists.css' %}" />
@@ -28,22 +28,34 @@
 {% endblock %}
 
 {% block extra_script %}
-    {% if view_openness_perm and task.approved %}
+    {% if task.approved and orgs_count > 1 %}
         <script>
             $(document).ready(function() {
                 // insert loader image
-                $('<span class="rating-ajax" />').insertBefore('.get-rating');
+                $('<span class="rating-ajax" />').insertBefore('#rating_place');
                 // get rating places
-                $.getJSON("{% url 'exmo2010:rating_update' %}", { task_id: "{{task.id}}" })
+                $.getJSON("{% url 'exmo2010:rating_update' %}", { task_id: "{{ task.id }}" })
                     .done(function(data) {
-                        $.each(data, function(key, val) {
-                            if (val) {
-                                $('.get-rating').show();
-                                $('#' + key).text(val + ' ' + '{% trans 'place' %}');
-                            }
-                        });
+                        var val = data['rating_place'];
+                        if (val) {$('#rating_place').text(val + ' ' + '{% trans 'place' %}').show();}
                         $('.rating-ajax').remove();
                     });
+            });
+        </script>
+    {% endif %}
+
+    {% if is_expertA %}
+        <script>
+            $(document).ready(function() {
+                // one click import task
+                $('#upload_link').click(function() {
+                    $("#upload_form input[type='file']").click();
+                    return false
+                });
+
+                $('#upload_form').change(function () {
+                    this.submit();
+                });
             });
         </script>
     {% endif %}
@@ -66,86 +78,99 @@
 {% endblock %}
 
 {% block content %}
-    {% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk as monitoring_rating %}
-    <div id=score_list>
-    <h2>
-        <a href="{{task.organization.url}}">{{task.organization.name}}</a><br />
+    <div class="task-scores-header-block">
+        {% if is_expert %}
+            <h2>{% trans "Scores table" %}</h2>
+        {% else %}
+            <h2>{% trans "View" %}</h2>
+        {% endif %}
 
-        {% if view_openness_perm %}
+        {% if not is_expert %}
+            <div class="tabs">
+                <span><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
+                <span class="active"><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
+            </div>
+        {% endif %}
 
-            {% trans 'Openness by all parameters' %}:&nbsp;{{ task.openness|floatformat:3 }}%
-            <span class="get-rating hidden">
-                {% if show_link %}
-                    &nbsp;(<a target="_blank" href="{{monitoring_rating}}"><span id="place_all"></span></a>)
-                {% else %}
-                    &nbsp;(<span id="place_all"></span>)
-                {% endif %}
-            </span>
-
-            {% if has_npa %}
-                <br />
-
-                {% trans 'Openness by normative parameters' %}:&nbsp;{{ task.openness_npa|floatformat:3 }}%
-                <span class="get-rating hidden">
-                    {% if show_link %}
-                        &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=npa"><span id="place_npa"></span></a>)
-                    {% else %}
-                        &nbsp;(<span id="place_npa"></span>)
-                    {% endif %}
-                </span>
-                <br />
-
-                {% trans 'Openness by recommendatory parameters' %}:&nbsp;{{ task.openness_other|floatformat:3 }}%
-                <span class="get-rating hidden">
-                    {% if show_link %}
-                        &nbsp;(<a target="_blank" href="{{monitoring_rating}}?type=other"><span id="place_other"></span></a>)
-                    {% else %}
-                        &nbsp;(<span id="place_other"></span>)
-                    {% endif %}
-                </span>
-                <br/>
+        <div class="float-right">
+            {% if is_expertA %}
+                <i class="icon add"></i>
+                <a href="{% url 'exmo2010:parameter_add' task.pk %}">{% trans 'Add new parameter' %}</a>
+                <i class="icon upload"></i>
+                <a href="#" id="upload_link" class="pseudo">{% trans 'Import task' %}</a>
+                <form id="upload_form" action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" class="hidden">{% csrf_token %}
+                    <input type="file" accept=".csv" name="taskfile">
+                    <input type="submit" value="{% trans 'Import' %}" />
+                </form>
             {% endif %}
-        {% endif %}
-    </h2>
+            <i class="icon print"></i>
+            <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
+            <i class="icon download"></i>
+            <a href="{% url 'exmo2010:task_export' task.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
+        </div>
 
-    <div id=utility>
-         <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans "Print" %}</a><br />
-         <a href="{% url 'exmo2010:task_export' task.pk %}">{% trans "Export task to CSV" %}</a>
-        {% check_object_permission exmo2010.fill_task task as import_perm %}
-        {% if import_perm %}
-           <form action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" style="display:inline">{% csrf_token %}
-               / <label>{% trans "Import task from CSV" %}: <input type="file" accept=".csv" name="taskfile"></label><input type="submit" value="{% trans 'Import' %}" />
-           </form>
-           {% if importLog %}<div>{{importLog}}</div>{% endif %}
-        {% endif %}
+        <p>
+            {% if task.approved %}
+                {% if is_expert and not mon.is_published %}
+                    {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
+                {% else %}
+                    {% url 'exmo2010:monitoring_rating' mon.pk as url %}
+                {% endif %}
+
+                {% if orgs_count > 1 %}
+                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                {% else %}
+                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                {% endif %}
+            {% else %}
+                &mdash; {% blocktrans with org_url=task.organization.url %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a>.{% endblocktrans %}<br/>
+            {% endif %}
+
+            {% ifnotequal openness None %}
+                &mdash;
+                {% if delta > 0 %}
+                    {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
+                {% endif %}
+                {% if mon.is_published %}
+                    {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                {% else %}
+                    {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                {% endif %}
+            {% endifnotequal %}
+
+            {% if orgs_count > 1 %}
+                &mdash; {% blocktrans %}Total amount of organizations {{ orgs_count }}.{% endblocktrans %}<br />
+            {% endif %}
+        </p>
     </div>
 
-    {% check_object_permission exmo2010.fill_task task as perm_fill_task %}
+    <div id=score_list>
+        {% check_object_permission exmo2010.fill_task task as perm_fill_task %}
 
-    <table>
-        {% include 'exmo2010/table_header.html' with headers=headers %}
+        <table>
+            {% include 'exmo2010/table_header.html' with headers=headers %}
 
-        <tbody>
-            <tr>
-                <td colspan=10>
-                    {% if perm_admin_monitoring %}
-                        <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">
-                            {% trans 'Add new parameter' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
-                        </a>&nbsp;
-                    {%endif%}
-                </td>
-            </tr>
-        {% if has_npa %}
-            <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Normative parameters' %}</td></tr>
-            {% include 'scores/_scores_table.html' with parameters=parameters_npa %}
-            <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Recommendatory parameters' %}</td></tr>
-        {% endif %}
+            <tbody>
+                <tr>
+                    <td colspan=10>
+                        {% if perm_admin_monitoring %}
+                            <a href="{% url 'exmo2010:parameter_add' task.pk %}?{{ request.GET.urlencode }}">
+                                {% trans 'Add new parameter' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
+                            </a>&nbsp;
+                        {%endif%}
+                    </td>
+                </tr>
+            {% if mon.has_npa %}
+                <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Normative parameters' %}</td></tr>
+                {% include 'scores/_scores_table.html' with parameters=parameters_npa %}
+                <tr><td colspan=10 style="background-color: #F2F2F2; font-weight: bold;">{% trans 'Recommendatory parameters' %}</td></tr>
+            {% endif %}
 
-        {% include 'scores/_scores_table.html' with parameters=parameters_other %}
-        </tbody>
-    </table>
-
+            {% include 'scores/_scores_table.html' with parameters=parameters_other %}
+            </tbody>
+        </table>
     </div><br>
+
     {% if form %}
         <div id='fc_container'>
             <a name="q"></a>

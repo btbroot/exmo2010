@@ -114,8 +114,7 @@ def task_permission(user, priv, task):
             if phase in (INT, FIN) or (phase == RATE and task.open):
                 return True
     elif priv == 'view_openness':
-        # TICKET 1470: expert B is forbidden to see openness due to performance penalty
-        if user.represents(task.organization) or phase == PUB:
+        if user.is_expertB or user.represents(task.organization) or phase == PUB:
             return True
 
     return False

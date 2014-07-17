@@ -20,7 +20,7 @@ import json
 import re
 
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -193,8 +193,8 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
         response = json.loads(response.content)
         ready_status_display = dict(Task.TASK_STATUS).get(Task.TASK_READY)
         self.assertEqual(response['status_display'], ready_status_display)
-        # AND new permitted actions should be in the ajax response ('open_task', 'view_task')
-        self.assertEqual(set(['open_task', 'view_task']), set(response['perms'].split()))
+        # AND new permitted actions should be in the ajax response ('open_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['open_task', 'view_task', 'view_openness']), set(response['perms'].split()))
 
     def test_forbid_close_incomplete_task_action(self):
         # WHEN I try to close opened Task that is assigned to me but does not have complete score
@@ -207,8 +207,8 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         res_pattern = re.compile(r'^%s \[.+\]$' % unicode(open_status_display))
         self.assertTrue(res_pattern.match(response['status_display']))
-        # AND ajax response permitted actions should be same as before ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(response['perms'].split()))
+        # AND ajax response permitted actions should be same as before ('close_task', 'fill_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(response['perms'].split()))
 
     def test_allow_open_closed_task_action(self):
         # WHEN I try to open closed Task that is assigned to me
@@ -220,8 +220,8 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
         response = json.loads(response.content)
         open_status_display = dict(Task.TASK_STATUS).get(Task.TASK_OPEN)
         self.assertEqual(response['status_display'], open_status_display)
-        # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task')
-        self.assertEqual(set(['close_task', 'fill_task', 'view_task']), set(response['perms'].split()))
+        # AND new permitted actions should be in the ajax response ('close_task', 'fill_task', 'view_task', 'view_openness')
+        self.assertEqual(set(['close_task', 'fill_task', 'view_task', 'view_openness']), set(response['perms'].split()))
 
     def test_forbid_open_approved_task_action(self):
         # WHEN I try to open approved Task that is assigned to me
@@ -233,8 +233,8 @@ class ExpertBTaskAjaxActionsTestCase(TestCase):
         response = json.loads(response.content)
         approved_status_display = dict(Task.TASK_STATUS).get(Task.TASK_APPROVED)
         self.assertEqual(response['status_display'], approved_status_display)
-        # AND ajax response permitted actions should be same as before ('view_task')
-        self.assertEqual('view_task', response['perms'])
+        # AND ajax response permitted actions should be same as before ('view_task', 'view_openness')
+        self.assertEqual(set(['view_task', 'view_openness']), set(response['perms'].split()))
 
 
 class ExpertATaskAjaxActionsTestCase(TestCase):

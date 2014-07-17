@@ -377,8 +377,7 @@ def task_scores(request, task_pk):
             form = QuestionnaireDynForm(questions=questions, initial=initial_data)
     else:
         form = None
-    has_npa = task.organization.monitoring.has_npa
-    if has_npa:
+    if monitoring.has_npa:
         parameters_npa = parameters.filter(npa=True)
         parameters_other = parameters.filter(npa=False)
     else:
@@ -390,17 +389,19 @@ def task_scores(request, task_pk):
     _new_comment_url(request, score_dict, scores_default, parameters_other)
 
     extra_context.update({
-        'view_openness_perm': request.user.has_perm('exmo2010.view_openness', task),
         'score_interact_dict': score_interact_dict,
         'parameters_npa': parameters_npa,
         'parameters_other': parameters_other,
         'perm_admin_monitoring': request.user.has_perm('exmo2010.admin_monitoring', monitoring),
+        'mon': monitoring,
         'task': task,
-        'has_npa': has_npa,
         'title': title,
         'form': form,
         'invcodeform': SettingsInvCodeForm(),
         'show_link': request.user.is_expertA or monitoring.is_published,
+        'orgs_count': Organization.objects.filter(monitoring=monitoring).count(),
+        'openness': task.openness,
+        'delta': task.openness - task.openness_initial if task.openness else None,
     })
 
     return TemplateResponse(request, 'scores/task_scores.html', extra_context)
@@ -501,27 +502,17 @@ def rating_update(request):
 
     """
     if request.method == "GET" and request.is_ajax():
+        task = get_object_or_404(Task, pk=request.GET.get('task_id', None))
 
-        task_id = request.GET['task_id']
+        if request.user.has_perm('exmo2010.view_openness', task) and task.approved:
+            place = None
+            for t in task.organization.monitoring.rating(rating_type='all'):
+                if t.pk == task.pk:
+                    place = t.place
+                    break
 
-        if task_id:
-            task = get_object_or_404(Task, pk=task_id)
-
-            if request.user.has_perm('exmo2010.view_openness', task) and task.approved:
-                if task.organization.monitoring.has_npa:
-                    rating_types = ['all', 'other', 'npa']
-                else:
-                    rating_types = ['all']
-
-                result = {}
-                for rating_type in rating_types:
-                    for t in task.organization.monitoring.rating(rating_type=rating_type):
-                        if t.pk == task.pk:
-                            result['place_' + rating_type] = t.place
-                            break
-
-                return JSONResponse(result)
-            else:
-                raise PermissionDenied
+            return JSONResponse({'rating_place': place})
+        else:
+            raise PermissionDenied
 
     raise Http404
