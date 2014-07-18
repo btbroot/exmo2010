@@ -106,10 +106,6 @@ def organization_list(request, monitoring_pk):
         headers_list.pop()
         headers = tuple(headers_list)
 
-    org_queryform = OrganizationsQueryForm(request.GET)
-    if org_queryform.is_valid():
-        queryset = org_queryform.apply(queryset)
-
     OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
 
     kwargs = {'instance': Organization(monitoring=monitoring), 'prefix': 'org'}
@@ -141,6 +137,10 @@ def organization_list(request, monitoring_pk):
         if invite_filter_history and invite_filter_history != 'ALL':
             inv_history = inv_history.filter(inv_status=invite_filter_history)
             tab = 'mail_history'
+
+    org_queryform = OrganizationsQueryForm(request.GET)
+    if org_queryform.is_valid():
+        queryset = org_queryform.apply(queryset)
 
     return table(
         request,

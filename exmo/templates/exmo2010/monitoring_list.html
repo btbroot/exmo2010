@@ -59,6 +59,6 @@
             {% endfor %}
             </tbody>
         </table>
-        {% include "exmo2010/paginator.html" %}
+        {% include "exmo2010/_paginator.html" with queryset=object_list %}
     </div>
 {%endblock%}

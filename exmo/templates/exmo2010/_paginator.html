@@ -20,20 +20,20 @@
 {% endcomment %}
 {% load i18n %}
 
-{% if object_list.has_other_pages %}
+{% if queryset.has_other_pages %}
     <div>
-        {% if object_list.has_previous %}
-            <a href="?page={{ object_list.previous_page_number }}">&lt; {% trans 'Prev' %}</a>
+        {% if queryset.has_previous %}
+            <a href="?page={{ queryset.previous_page_number }}">&lt; {% trans 'Prev' %}</a>
         {% endif %}
 
         <a href="?page=1">1</a> ...
-        {% if object_list.number != 1 and object_list.number != object_list.paginator.num_pages %}
-            {{ object_list.number }} ...
+        {% if queryset.number != 1 and queryset.number != queryset.paginator.num_pages %}
+            {{ queryset.number }} ...
         {% endif %}
-        <a href="?page={{ object_list.paginator.num_pages }}">{{ object_list.paginator.num_pages }}</a>
+        <a href="?page={{ queryset.paginator.num_pages }}">{{ queryset.paginator.num_pages }}</a>
 
-        {% if object_list.has_next %}
-            <a href="?page={{ object_list.next_page_number }}">{% trans 'Next' %} &gt;</a>
+        {% if queryset.has_next %}
+            <a href="?page={{ queryset.next_page_number }}">{% trans 'Next' %} &gt;</a>
         {% endif %}
     </div>
 {% endif %}

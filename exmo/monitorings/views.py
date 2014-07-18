@@ -979,11 +979,6 @@ def ratings(request):
     user = request.user
     queryset = Monitoring.objects.all()
 
-    queryform = RatingsQueryForm(request.GET)
-
-    if queryform.is_valid():
-        queryset = queryform.apply(queryset)
-
     mon = Q(status=PUB, hidden=False)
     own = Q()
     can_observe = Q()
@@ -1009,6 +1004,11 @@ def ratings(request):
             sql_openness = m.openness_expression.get_sql_openness()
             tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
             m.average = avg('_openness', tasks)
+
+    queryform = RatingsQueryForm(request.GET)
+
+    if queryform.is_valid():
+        queryset = queryform.apply(queryset)
 
     context = {
         'title': title,

@@ -53,7 +53,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% include "exmo2010/paginator.html" %}
+        {% include "exmo2010/_paginator.html" with queryset=object_list %}
     </div>
     {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
     {% if perm %}

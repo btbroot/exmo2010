@@ -18,6 +18,7 @@
 import operator
 
 from django import forms
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.forms.forms import DeclarativeFieldsMetaclass
 from django.utils import six
@@ -39,6 +40,10 @@ class DeclarativeMetaclass(DeclarativeFieldsMetaclass):
 
 class QueryForm(six.with_metaclass(DeclarativeMetaclass, forms.BaseForm)):
 
+    def __init__(self, data=None, objects_per_page=None, **kwargs):
+        super(QueryForm, self).__init__(data, **kwargs)
+        self.objects_per_page = objects_per_page
+
     def get_filter(self):
         opts = self._meta
         result = []
@@ -57,11 +62,29 @@ class QueryForm(six.with_metaclass(DeclarativeMetaclass, forms.BaseForm)):
 
         return reduce(operator.and_, result) if result else None
 
+    def paginate(self, queryset):
+        paginator = Paginator(queryset, self.objects_per_page)
+
+        page = self.data.get('page')
+        try:
+            queryset = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            queryset = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            queryset = paginator.page(paginator.num_pages)
+
+        return queryset
+
     def apply(self, queryset):
         query = self.get_filter()
         if query:
             if self._meta.distinct:
                 queryset = queryset.distinct()
             queryset = queryset.filter(query)
+
+        if self.objects_per_page:
+            queryset = self.paginate(queryset)
 
         return queryset
