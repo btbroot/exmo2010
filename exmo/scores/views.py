@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import datetime
+from decimal import Decimal
 
 from BeautifulSoup import BeautifulSoup
 from ckeditor.fields import RichTextFormField
@@ -78,16 +79,16 @@ def score_view(request, **kwargs):
 
         # Check if score already exist.
         try:
-            score = Score.objects.get(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
+            score = Score.objects.get(parameter=param, task=task, revision=Score.FINAL)
         except Score.DoesNotExist:
             # OK, score does not exist and can be created.
-            score = Score(parameter=param, task=task, revision=Score.REVISION_DEFAULT)
+            score = Score(parameter=param, task=task, revision=Score.FINAL)
         else:
             # User requested score creation by task and param, but score already exist.
             if request.user.has_perm('exmo2010.view_score', score):
                 # Redirect user to GET score page, even if current request method is POST.
                 # This way duplicate POST to create score will be ignored.
-                return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+                return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
             else:
                 raise PermissionDenied
 
@@ -115,14 +116,15 @@ def score_view(request, **kwargs):
 
         with transaction.commit_on_success():
             if org.monitoring.status in Monitoring.after_interaction_status and 'score_pk' in kwargs:
-                if not Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT).exists():
-                    # Initial revision does not exist and should be created. It will have new pk.
-                    initial_score = Score.objects.get(pk=kwargs['score_pk'])
-                    last_modified = initial_score.last_modified
-                    initial_score.pk = None
-                    initial_score.revision = Score.REVISION_INTERACT
-                    initial_score.save()
-                    Score.objects.filter(pk=initial_score.pk).update(last_modified=last_modified)
+                if not Score.objects.filter(parameter=param, task=task, revision=Score.INTERIM).exists():
+                    # Interim revision does not exist and should be created. It will have new pk.
+                    interim_score = Score.objects.get(pk=kwargs['score_pk'])
+                    last_modified = interim_score.last_modified
+                    interim_score.pk = None
+                    interim_score.revision = Score.INTERIM
+                    interim_score.save()
+                    # Restore last_modified field, that was overwritten by save()
+                    Score.objects.filter(pk=interim_score.pk).update(last_modified=last_modified)
 
                 if 'comment' in request.POST:
                     _add_comment(request, score)
@@ -130,27 +132,27 @@ def score_view(request, **kwargs):
             score.editor = request.user
             score.save()
         if org.monitoring.is_interact or org.monitoring.is_finishing:
-            return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+            return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
         else:
             url = reverse('exmo2010:task_scores', args=[task.pk])
             return HttpResponseRedirect('%s#parameter_%s' % (url, param.code))
 
-    score_rev1 = Score.objects.filter(parameter=param, task=task, revision=Score.REVISION_INTERACT)
+    score_interim = Score.objects.filter(parameter=param, task=task, revision=Score.INTERIM)
     score_table = [{
         'label': score._meta.get_field_by_name(criterion)[0].verbose_name,
         'score': getattr(score, criterion),
-        'score_rev1': getattr(score_rev1[0], criterion) if score_rev1 else '',
+        'score_interim': getattr(score_interim[0], criterion) if score_interim else '',
         'criterion': criterion,
         'max_score': getattr(score, criterion) == score._meta.get_field(criterion).choices[-1][-1]
     } for criterion in criteria]
 
-    score_delta = score.openness - score_rev1[0].openness if score_rev1 else 0
+    score_delta = score.openness - score_interim[0].openness if score_interim else 0
     if request.user.is_expert:
-        show_rev1 = True
+        show_interim_score = True
     elif request.user.is_anonymous():
-        show_rev1 = False
+        show_interim_score = False
     else:
-        show_rev1 = request.user.profile.show_score_rev1
+        show_interim_score = request.user.profile.show_interim_score
 
     all_max = True  # Flag if all criteria set to max
     for crit in criteria:
@@ -173,12 +175,12 @@ def score_view(request, **kwargs):
     context = {
         'form': form,
         'score': annotate_exmo_perms(score, request.user),
-        'score_rev1': annotate_exmo_perms(score_rev1[0] if score_rev1 else None, request.user),
+        'score_interim': annotate_exmo_perms(score_interim[0] if score_interim else None, request.user),
         'param': annotate_exmo_perms(param, request.user),
         'org': org,
         'score_table': score_table,
         'score_delta': score_delta,
-        'show_rev1': show_rev1,
+        'show_interim_score': show_interim_score,
         'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
         'criteria': criteria,
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
@@ -200,7 +202,7 @@ def post_score_comment(request, score_pk):
         raise PermissionDenied
 
     _add_comment(request, score)
-    return HttpResponseRedirect(reverse('exmo2010:score_view', args=[score.pk]))
+    return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
 
 
 def _add_comment(request, score):
@@ -321,7 +323,7 @@ def task_scores(request, task_pk):
 
     scores_default = Score.objects.select_related().filter(
         parameter__in=parameters,
-        revision=Score.REVISION_DEFAULT,
+        revision=Score.FINAL,
         task=task,
     )
 
@@ -440,7 +442,23 @@ def _new_comment_url(request, score_dict, scores_default, parameters):
                 last_comment_id = last_comments.get(score.pk, None)
 
                 if last_comment_id and (request.user.executes(score.task) or request.user.is_expertA):
-                    param.url = reverse('exmo2010:score_view', args=[score.pk]) + "#c" + str(last_comment_id)
+                    param.url = reverse('exmo2010:score', args=[score.pk]) + "#c" + str(last_comment_id)
+
+
+def _round(x):
+    """
+    If x < 0.1, round to the first nonzero decimal digit, Otherwise round to one decimal digit.
+    0.0 => 0.0
+    0.00123 => 0.001
+    0.54321 => 0.5
+    """
+    if x == 0.0:
+        return x
+    elif x < 0.1:
+        _x = Decimal(x).as_tuple()
+        return round(x, 1 - _x.exponent - len(_x.digits))
+    else:
+        return round(x, 1)
 
 
 class RecommendationsView(DetailView):
@@ -458,14 +476,48 @@ class RecommendationsView(DetailView):
         context = super(RecommendationsView, self).get_context_data(**kwargs)
 
         monitoring = self.task.organization.monitoring
-        orgs_count = Organization.objects.filter(monitoring=monitoring).count()
-        registered_count = Organization.objects.filter(monitoring=monitoring, inv_status__in=('RGS', 'ACT')).count()
+        scores = list(self.task.score_set.all())
+        with_comments = CommentExmo.objects.filter(object_pk__in=[s.pk for s in scores])
+        with_comments = set(int(pk) for pk in with_comments.values_list('object_pk', flat=True))
+        final_scores = [s for s in scores if s.revision == Score.FINAL]
+        interim_scores_by_param = dict((s.parameter.pk, s) for s in scores if s.revision == Score.INTERIM)
 
-        context['mon'] = monitoring
-        context['orgs_count'] = orgs_count
-        context['registered_count'] = registered_count
-        context['openness'] = self.task.openness
-        context['delta'] = self.task.openness - self.task.openness_initial if self.task.openness else None
+        param_nonrelevant = set(self.task.organization.parameter_set.values_list('pk', flat=True))
+        param_relevant = monitoring.parameter_set.exclude(pk__in=param_nonrelevant)
+        param_weight_sum = sum(p.weight for p in param_relevant)
+
+        scores = []
+        for score in final_scores:
+            if score.pk not in with_comments:
+                if score.parameter.pk in param_nonrelevant:
+                    continue
+                if not score.recommendations:
+                    continue
+            if param_weight_sum:
+                interim_score = interim_scores_by_param.get(score.parameter.pk) or score
+                score.interim_cost = score.parameter.weight * (100.0 - interim_score.openness) / param_weight_sum
+                score.cost = _round(score.parameter.weight * (100.0 - score.openness) / param_weight_sum)
+            else:
+                score.interim_cost = score.cost = 0.0
+            score.is_relevant = bool(score.parameter.pk not in param_nonrelevant)
+            scores.append(score)
+
+        scores.sort(key=lambda s: (-s.interim_cost, s.parameter.code))
+
+        if self.task.openness is None:
+            total_cost = None
+        else:
+            total_cost = _round(100.0 - float(self.task.openness))
+
+        context.update({
+            'scores': scores,
+            'mon': monitoring,
+            'orgs_count': monitoring.organization_set.count(),
+            'registered_count': monitoring.organization_set.filter(inv_status__in=('RGS', 'ACT')).count(),
+            'openness': self.task.openness,
+            'total_cost': total_cost,
+            'delta': self.task.openness - self.task.openness_initial if self.task.openness else None,
+        })
 
         return context
 

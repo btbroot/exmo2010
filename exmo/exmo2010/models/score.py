@@ -44,17 +44,17 @@ class Score(BaseModel):
             'parameter__code'
         )
 
-    REVISION_DEFAULT = 0
-    REVISION_INTERACT = 1
+    FINAL = REVISION_DEFAULT = 0
+    INTERIM = REVISION_INTERACT = 1
 
     REVISION_EXPORT = {
-        REVISION_DEFAULT: 'default',
-        REVISION_INTERACT: 'initial',
+        FINAL: 'default',
+        INTERIM: 'initial',
     }
 
     REVISION_CHOICE = (
-        (REVISION_DEFAULT, _('latest revision')),
-        (REVISION_INTERACT, _('pre-interact revision')),
+        (FINAL, _('latest revision')),
+        (INTERIM, _('pre-interact revision')),
     )
 
     task = models.ForeignKey("Task", verbose_name=_('task'))
@@ -76,7 +76,7 @@ class Score(BaseModel):
     created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True, null=True)
     editor = models.ForeignKey(User, null=True, blank=True, verbose_name=_('Editor'))
-    revision = models.PositiveIntegerField(default=REVISION_DEFAULT, choices=REVISION_CHOICE)
+    revision = models.PositiveIntegerField(default=FINAL, choices=REVISION_CHOICE)
     accomplished = models.BooleanField(default=True)
 
     def __unicode__(self):
@@ -153,7 +153,7 @@ class Score(BaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('exmo2010:score_view', [str(self.id)])
+        return ('exmo2010:score', [str(self.id)])
 
     @property
     def openness(self):

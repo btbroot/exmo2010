@@ -33,4 +33,75 @@ p span {
 
 .recommendations-block {
     margin-top: 20px;
+    width: 100%;
+    max-width: 940px;  /* 85 + 760 + 65 + 3 * (l_padding + r_padding) */
+    min-width: 790px;
+}
+.recommendations-block table {
+    width: 100%;
+}
+
+.recommendations-block h2 {
+    padding: 0 5px;
+}
+
+.recommendations-block h2 span {
+    color: #CD0200;
+}
+
+.recommendations-block td.code {
+    min-width: 85px;
+    width: 85px;
+    font-size: 18px;
+}
+.recommendations-block tr.nonrelevant td.code {
+    color: #666666;
+}
+
+.recommendations-block td.center {
+    max-width: 760px;
+    min-width: 610px;
+}
+.recommendations-block td.center > p {
+    font-size: 15px;
+    line-height: 20px;
+}
+.recommendations-block tr.nonrelevant td.center {
+    color: #666666;
+}
+.recommendations-block td.cost {
+    text-align: right;
+    min-width: 65px;
+    width: 65px;
+    font-size: 18px;
+    color: #CD0200;
+}
+.recommendations-block tr.nonrelevant td.cost {
+    color: #222222;
+}
+
+.recommendations-block td.cost.complete {
+    color: #222222;
+}
+
+.recommendations-block td {
+    border-bottom: none;
+    padding: 15px 5px;
+}
+.recommendations-block tr {
+    border-top: 1px solid #D7D7D7;
+    border-bottom: 1px solid #D7D7D7;
+}
+
+
+
+.grounds {
+    margin: 10px 0;
+    border: 1px dashed #d7d7d7;
+    background-color: #f5f5f5;
+}
+
+.grounds p {
+    margin: 0;
+    padding: 10px;
 }

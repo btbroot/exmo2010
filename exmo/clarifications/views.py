@@ -45,7 +45,7 @@ def clarification_create(request, score_pk):
         clarification = score.add_clarification(request.user, clean_message(form.cleaned_data['comment']))
         mail_clarification(request, clarification)
 
-    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#clarifications'
+    redirect = reverse('exmo2010:score', args=[score.pk]) + '#clarifications'
     return HttpResponseRedirect(redirect)
 
 
@@ -63,7 +63,7 @@ def clarification_answer(request, clarification_pk):
         clarification.add_answer(request.user, clean_message(form.cleaned_data['answer']))
         mail_clarification(request, clarification)
 
-    redirect = reverse('exmo2010:score_view', args=[clarification.score.pk]) + '#clarifications'
+    redirect = reverse('exmo2010:score', args=[clarification.score.pk]) + '#clarifications'
     return HttpResponseRedirect(redirect)
 
 

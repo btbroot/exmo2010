@@ -102,7 +102,7 @@
                 {% if expired %}
                     <ul>
                         {% for c in expired %}
-                            <li><a href="{% url 'exmo2010:score_view' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+                            <li><a href="{% url 'exmo2010:score' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}
@@ -114,7 +114,7 @@
                 {% if expiring %}
                     <ul>
                         {% for c in expiring %}
-                            <li><a href="{% url 'exmo2010:score_view' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+                            <li><a href="{% url 'exmo2010:score' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}
@@ -126,7 +126,7 @@
                 {% if pending %}
                     <ul>
                         {% for c in pending %}
-                            <li><a href="{% url 'exmo2010:score_view' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
+                            <li><a href="{% url 'exmo2010:score' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}

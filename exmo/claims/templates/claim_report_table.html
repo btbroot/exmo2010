@@ -27,7 +27,7 @@
         <td class="addressee">{{ c.addressee.profile.legal_name }}</td>
         <td class="creator">{{ c.creator.profile.legal_name }}</td>
         <td class="link">
-            <a href="{% url 'exmo2010:score_view' c.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
+            <a href="{% url 'exmo2010:score' c.score.pk %}#claims" target="_blank">{% trans 'go to claim' %}</a>
         </td>
     </tr>
     <tr style="display: none">

@@ -17,13 +17,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static trim_links %}
+{% load i18n static trim_links target_blank bleach_tags %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'scores/recommendations.css' %}" />
 {% endblock %}
 
 {% block extra_script %}
+    <script type="text/javascript" src="{% static 'scores/recommendations.js' %}"></script>
+
     {% if task.approved and orgs_count > 1 %}
         <script>
             $(document).ready(function() {
@@ -144,8 +146,50 @@
     </div>
 
     <div class="recommendations-block">
-        {% if not is_expert %}
-            <h2>{% trans 'Recommendations list' %}</h2>
-        {% endif %}
+        <table>
+            <h2>
+                {% if not request.user.is_expert %}
+                    {% trans 'Recommendations list' %}
+                {% endif %}
+                {% if total_cost %}
+                    &nbsp;
+                    <span class="float-right">{{ total_cost|floatformat }}%</span>
+                {% endif %}
+            </h2>
+
+            {% if scores|length == 0 %}
+                <p>{% trans 'No recommendations' %}</p>
+            {% else %}
+
+                {% for score in scores %}
+                    {% if score.is_relevant %}
+                        <tr>
+                            <td class='code'><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
+                            <td class='center'>
+                                <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
+                                <p>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
+                                {% if score.parameter.grounds and score.cost != 0 %}
+                                    <a href="#show_grounds" class="pseudo">{% trans 'Show grounds' %}</a>
+                                    <a href="#hide_grounds" style="display:none;" class="pseudo">{% trans 'Hide grounds' %}</a>
+                                    <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
+                                {% endif %}
+                            </td>
+                            {% if score.cost == 0 %}
+                                <td class='cost complete'>{% trans 'Ready' %}</td>
+                            {% else %}
+                                <td class='cost'>+{{ score.cost|floatformat }}%</td>
+                            {% endif %}
+                        </tr>
+                    {% else %}
+                        <tr class="nonrelevant">
+                            <td class='code'>{{ score.parameter.code }}</td>
+                            <td class='center'>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</td>
+                            <td class='cost'>{% trans 'Deleted' %}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+        </table>
     </div>
 {% endblock %}

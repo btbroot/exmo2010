@@ -84,10 +84,10 @@
 
         {% if request.user.is_expert and param.monitoring.status != 0 and score.pk %}
             <div>
-                {% if score_rev1 %}
+                {% if score_interim %}
                     <div class="score-editor">
                         <h2>{% trans 'Initial score`s author' %}</h2>
-                        <p>{% if score_rev1.editor %}{{ score_rev1.editor.legal_name }}, {% endif %}{{ score_rev1.last_modified|date:"DATE_FORMAT" }}</p>
+                        <p>{% if score_interim.editor %}{{ score_interim.editor.legal_name }}, {% endif %}{{ score_interim.last_modified|date:"DATE_FORMAT" }}</p>
                     </div>
                 {% endif %}
 
@@ -105,7 +105,7 @@
         {% if not request.user.is_expert %}
             <div class="tabs">
                 <span><a href="#show_explanations" class="pseudo">{% trans 'show explanations' %}</a></span>
-                <span class="float-right"><a href="#show_score_rev1" class="pseudo" data-url="{% url 'exmo2010:ajax_set_profile_setting' %}" data-active="{{ request.user.is_active }}">{% if show_rev1 %}{% trans 'hide initial scores' %}{% else %}{% trans 'show initial scores' %}{% endif %}</a></span>
+                <span class="float-right"><a href="#show_interim_score" class="pseudo" data-url="{% url 'exmo2010:ajax_set_profile_setting' %}" data-active="{{ request.user.is_active }}">{% if show_interim_score %}{% trans 'hide initial scores' %}{% else %}{% trans 'show initial scores' %}{% endif %}</a></span>
             </div>
         {% endif %}
 
@@ -159,7 +159,7 @@
                             <div class="table-cell parameters-score">
                                 {% trans 'Parameter`s score' %}
                             </div>
-                            <div class="table-cell score-changes score_rev1 {% if not show_rev1 %}hidden{% endif %}">
+                            <div class="table-cell score-changes score_interim {% if not show_interim_score %}hidden{% endif %}">
                                 {% trans 'Score changes' %}
                             </div>
                         </div>
@@ -169,8 +169,8 @@
                             {% for field in score_table %}
                                 <div class="table-cell {% if not field.max_score %}text-color-red{% endif %}">
                                     {{ field.score|default_if_none:'–' }}
-                                    {% if field.score_rev1 != '' and field.score != field.score_rev1 %}
-                                        <span class="score_rev1 {% if not show_rev1 %}hidden{% endif %}">({{ field.score_rev1|default_if_none:'–' }})</span>
+                                    {% if field.score_interim != '' and field.score != field.score_interim %}
+                                        <span class="score_interim {% if not show_interim_score %}hidden{% endif %}">({{ field.score_interim|default_if_none:'–' }})</span>
                                     {% endif %}
                                     {% if not field.max_score %}<div class="underline"></div>{% endif %}
                                 </div>
@@ -183,7 +183,7 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="table-cell score_rev1 {% if not show_rev1 %}hidden{% endif %}">
+                            <div class="table-cell score_interim {% if not show_interim_score %}hidden{% endif %}">
                                 {{ score_delta|floatformat }}%
                                 {% if score_delta > 0 %}
                                     <img src="{% static 'exmo2010/img/rate_up.png' %}">

@@ -19,6 +19,7 @@
 import json
 from contextlib import contextmanager
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -154,7 +155,7 @@ class ScoreAddTestCase(TestCase):
         score = Score.objects.get(task=self.task_interact.pk,
                                   parameter=self.param_interact.pk,
                                   revision=Score.REVISION_DEFAULT)
-        self.assertRedirects(response, reverse('exmo2010:score_view', args=[score.pk]))
+        self.assertRedirects(response, reverse('exmo2010:score', args=[score.pk]))
 
 
 class ScoreEditInitialTestCase(TestCase):
@@ -178,7 +179,7 @@ class ScoreEditInitialTestCase(TestCase):
         self.task = mommy.make(Task, organization=org, user=expertB)
         self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1)
 
-        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+        self.url = reverse('exmo2010:score', args=[self.score.pk])
 
     @parameterized.expand([
         ('expertA',),
@@ -222,7 +223,7 @@ class ScoreEditInteractionTestCase(TestCase):
         self.score = mommy.make(Score, task=self.task, parameter=self.param, found=1)
         self.score_last_modified = self.score.last_modified
 
-        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+        self.url = reverse('exmo2010:score', args=[self.score.pk])
 
     @parameterized.expand([
         ('expertA',),
@@ -276,7 +277,7 @@ class ScoreRecommendationsShouldChangeTestCase(TestCase):
         # AND maximum score with recommendations and found=1
         self.score = mommy.make(Score, task__organization=org, parameter=self.param, found=1, recommendations='123')
 
-        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+        self.url = reverse('exmo2010:score', args=[self.score.pk])
 
     def test_recommendations_should_change(self):
         """
@@ -358,7 +359,7 @@ class ScoreRecommendationsShouldExistTestCase(TestCase):
         # AND maximum score with recommendations and found=1
         self.score = mommy.make(Score, task__organization=org, parameter=self.param, found=1, recommendations='123')
 
-        self.url = reverse('exmo2010:score_view', args=[self.score.pk])
+        self.url = reverse('exmo2010:score', args=[self.score.pk])
 
     def test_recommendations_should_exist(self):
         """
@@ -546,13 +547,13 @@ class AddExistingScoreRedirectTestCase(TestCase):
         # WHEN I get score creation page
         response = self.client.get(self.score_add_url)
         # THEN response should redirect to
-        self.assertRedirects(response, reverse('exmo2010:score_view', args=(self.score.pk,)))
+        self.assertRedirects(response, reverse('exmo2010:score', args=(self.score.pk,)))
 
     def test_post(self):
         # WHEN I post to score creation page
         response = self.client.post(self.score_add_url)
         # THEN response should redirect to
-        self.assertRedirects(response, reverse('exmo2010:score_view', args=(self.score.pk,)))
+        self.assertRedirects(response, reverse('exmo2010:score', args=(self.score.pk,)))
 
 
 class AjaxPostScoreLinksTestCase(TestCase):
@@ -637,22 +638,208 @@ class AjaxSetPofileSettingTestCase(TestCase):
     # Posting ajax request SHOULD update fields in user profile.
 
     def setUp(self):
-        # GIVEN organization in MONITORING_INTERACTION monitoring
+        # GIVEN organization in INTERACTION monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
-        # AND organization representative with 'show_score_rev1' equals True
+        # AND organization representative with 'show_interim_score' setting turned on
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.show_score_rev1 = True
+        orguser.profile.show_interim_score = True
         orguser.profile.organization = [org]
         orguser.profile.save()
-        # AND ajax url
-        self.url = reverse('exmo2010:ajax_set_profile_setting')
         # AND I am logged in as organization representative
         self.client.login(username='orguser', password='password')
 
     def test_post(self):
-        # WHEN I post ajax-request with 'show_score_rev1' equals False
-        response = self.client.post(self.url, {'show_score_rev1': 0}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        url = reverse('exmo2010:ajax_set_profile_setting')
+        # WHEN I post ajax-request with 'show_interim_score' set to False
+        response = self.client.post(url, {'show_interim_score': 0}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
-        # AND 'show_score_rev1' should be updated in to False
-        self.assertEqual(User.objects.get(pk=1).profile.show_score_rev1, False)
+        # AND 'show_interim_score' should be updated to False
+        self.assertEqual(User.objects.get(pk=1).profile.show_interim_score, False)
+
+
+class RecommendationsTotalCostTestCase(TestCase):
+    # TODO: Move this testcase to *general logic* tests directory.
+    # exmo2010:recommendations
+
+    # On Recommendations page total cost of recommendations should be displayed.
+
+    def setUp(self):
+        # GIVEN I am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND task in INTERACTION monitoring
+        self.task = mommy.make(Task, organization__monitoring__status=MONITORING_INTERACTION)
+        # AND 2 parameters of weight 1
+        self.param1 = mommy.make(Parameter, monitoring=self.task.organization.monitoring, weight=1)
+        self.param2 = mommy.make(Parameter, monitoring=self.task.organization.monitoring, weight=1)
+
+        self.url = reverse('exmo2010:recommendations', args=(self.task.pk,))
+
+    def test_all_finished_zero_total_cost(self):
+        # WHEN two 100% scores added
+        mommy.make(Score, task=self.task, parameter=self.param1, recommendations='a', found=1)
+        mommy.make(Score, task=self.task, parameter=self.param2, recommendations='a', found=1)
+
+        # AND i get recommendations page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND total_cost should be 0%
+        self.assertEqual(response.context['total_cost'], 0.0)
+
+    def test_100p_total_cost(self):
+        # WHEN two 0% scores added
+        mommy.make(Score, task=self.task, parameter=self.param1, recommendations='a', found=0)
+        mommy.make(Score, task=self.task, parameter=self.param2, recommendations='a', found=0)
+
+        # AND i get recommendations page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND total_cost should be 100%
+        self.assertEqual(response.context['total_cost'], 100.0)
+
+    def test_50p_total_cost(self):
+        # WHEN 100% score is added
+        mommy.make(Score, task=self.task, parameter=self.param1, recommendations='a', found=1)
+
+        # AND 0% score is added
+        mommy.make(Score, task=self.task, parameter=self.param2, recommendations='b', found=0)
+
+        # AND i get recommendations page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND total_cost should be 50%
+        self.assertEqual(response.context['total_cost'], 50.0)
+
+
+class RecommendationsVisibilityNonrelevantTestCase(TestCase):
+    # TODO: Move this testcase to *general logic* tests directory.
+    # exmo2010:recommendations
+
+    # On Recommendations page should be displayed scores with nonrelevant parameters, only if
+    # that score has comments.
+    # If there are no relevant scores, then current and initial cost of nonrelevant scores should be zero.
+
+    def setUp(self):
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN I am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND organization in INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        task = mommy.make(Task, organization=org)
+
+        # AND score to nonrelevant parameter
+        s_nonrelevant = mommy.make(Score, task=task, parameter__monitoring=org.monitoring)
+
+        # AND score to nonrelevant parameter with recommendations
+        s_nonrelevant_recomm = mommy.make(Score, task=task, parameter__monitoring=org.monitoring, recommendations='a')
+
+        # AND score to nonrelevant parameter with comment
+        s_nonrelevant_commented = mommy.make(Score, task=task, parameter__monitoring=org.monitoring)
+        mommy.make(CommentExmo, object_pk=s_nonrelevant_commented.pk, content_type=content_type, user=expertA)
+
+        # non-relevant parameters
+        org.parameter_set = [
+            s_nonrelevant_commented.parameter,
+            s_nonrelevant.parameter,
+            s_nonrelevant_recomm.parameter]
+
+        self.url = reverse('exmo2010:recommendations', args=(task.pk,))
+
+    def test_recommendations_list(self):
+        # WHEN i get recommendations page
+        response = self.client.get(self.url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND exactly one nonrelevant score with cost of zero should be displayed.
+        # (Nonrelevant score without comment should be hidden)
+        self.assertEqual([s.cost for s in response.context['scores']], [0.0])
+
+
+class RecommendationsVisibilityRelevantTestCase(TestCase):
+    # TODO: Move this testcase to *general logic* tests directory.
+    # exmo2010:recommendations
+
+    # On Recommendations page relevant score should be displayed only if it has comments or recommendations.
+    # Display order should be interim_cost.
+
+    def setUp(self):
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN I am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        # AND organization in INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        self.task = mommy.make(Task, organization=org)
+
+        # AND 0% score with recommendations
+        # cost === 0.25 * (1 - 0) === 25%
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        mommy.make(Score, task=self.task, parameter=param, recommendations='a', found=0)
+
+        # AND 70%/85% interim/final scores with recommendations
+        # interim cost === 0.25 * (1 - 0.7) === 0.075 (7.5%)
+        # final cost === 0.25 * (1 - 0.85) === 0.0375 (3.75%)
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1, topical=True)
+        mommy.make(
+            Score,
+            revision=Score.INTERIM,
+            task=self.task,
+            parameter=param,
+            recommendations='a',
+            found=1,
+            topical=1)
+        mommy.make(
+            Score,
+            revision=Score.FINAL,
+            task=self.task,
+            parameter=param,
+            recommendations='a',
+            found=1,
+            topical=2)
+
+        # AND 100% score with comment (0% cost)
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        score_100_commented = mommy.make(Score, task=self.task, parameter=param, found=1)
+        mommy.make(CommentExmo, object_pk=score_100_commented.pk, content_type=content_type, user=expertA)
+
+        # AND 100% score
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        mommy.make(Score, task=self.task, parameter=param, found=1)
+
+    def test_recommendations_list(self):
+        # WHEN i get recommendations page
+        response = self.client.get(reverse('exmo2010:recommendations', args=(self.task.pk,)))
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND task openness should be 100 - 25 - 3.75 === 71.25%
+        self.assertEqual(self.task.openness, 71.25)
+
+        # AND scores with comments or recommendations should be displayed in order of interim_cost
+        expected_cost_list = [
+            25.0,  # 0% score,   25% interim_cost
+            3.8,   # 85% score,  7.5% interim_cost
+            0.0,   # 100% score, 0% interim_cost
+            # 0.0  # 100% score without recommendations or comments, not displayed.
+        ]
+        self.assertEqual([s.cost for s in response.context['scores']], expected_cost_list)

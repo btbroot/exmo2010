@@ -31,7 +31,7 @@
                     {% endif %}
                 {% endif %}
 
-                <a href="{% url 'exmo2010:score_view' param.score.pk %}?{{request.GET.urlencode}}">{{ param.name }}</a>
+                <a href="{% url 'exmo2010:score' param.score.pk %}?{{request.GET.urlencode}}">{{ param.name }}</a>
             {% else %}
                 {% if perm_fill_task %}
                     <a href="{% url 'exmo2010:score_add' task.pk param.pk %}?{{request.GET.urlencode}}">{{ param.name }}</a>

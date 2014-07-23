@@ -65,7 +65,7 @@
         <h4>Comments list from organizations without reply and date out of limit ({{ expired|length }}):</h4>
         {% for c in expired %}
             {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})<br />
+            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})<br />
         {% endfor %}
     </div>
 
@@ -73,7 +73,7 @@
         <h4>Comments list from organization that needs to reply today (exclude list above) ({{ expiring|length }}):</h4>
         {% for c in expiring %}
             {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})<br />
+            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})<br />
         {% endfor %}
     </div>
 
@@ -81,7 +81,7 @@
         <h4>Comments list from organization that needs to reply (exclude list above) ({{ pending|length }}):</h4>
         {% for c in pending %}
             {% get_object_by_pk exmo2010.Score c.object_pk as score %}
-            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score_view' c.object_pk %} ({{score.task.user}})<br />
+            {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})<br />
         {% endfor %}
     </div>
 {% endblock content %}

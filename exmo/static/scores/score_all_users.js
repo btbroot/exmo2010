@@ -27,21 +27,21 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    $('a[href="#show_score_rev1"]').click(function(e){
-        var score_rev1 = $(".score_rev1");
+    $('a[href="#show_interim_score"]').click(function(e){
+        var score_interim = $(".score_interim");
         var link = $(e.target);
         var show = 1;
 
-        if (score_rev1.is(":visible")) {
-            score_rev1.addClass('hidden');
+        if (score_interim.is(":visible")) {
+            score_interim.addClass('hidden');
             link.text(gettext('show initial scores'));
             show = 0;
         } else {
-            score_rev1.removeClass('hidden');
+            score_interim.removeClass('hidden');
             link.text(gettext('hide initial scores'));
         }
         if ($(this).data("active") == 'True') {
-            $.post($(this).data("url"), {show_score_rev1: show});
+            $.post($(this).data("url"), {show_interim_score: show});
         }
         e.preventDefault();
     });

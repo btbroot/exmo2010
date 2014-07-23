@@ -78,7 +78,7 @@ scores_patterns = named_urls('scores.views',
     (r'^(?P<score_pk>\d+)/detail/$', RedirectView.as_view(url='/score/%(score_pk)s/')),
 
     (r'^(?P<task_pk>\d+)_(?P<parameter_pk>\d+)/$', 'score_view', 'score_add'),
-    (r'^(?P<score_pk>\d+)/$', 'score_view'),
+    (r'^(?P<score_pk>\d+)/$', 'score_view', 'score'),
     (r'^rating_update/$', 'rating_update'),
     (r'^post_score_links/(?P<score_pk>\d+)/$', 'post_score_links'),
     (r'^post_recommendations/(?P<score_pk>\d+)/$', 'post_recommendations'),
@@ -278,7 +278,7 @@ def crumbs_tree(is_expert=False):
                     'task_history': _('Organization'),
                     # Score
                     'score_add':     _('Parameter'),
-                    'score_view':    _('Parameter'),
+                    'score':    _('Parameter'),
                     # Parameter
                     'parameter_add':    _('Add parameter'),
                     'parameter_update': _('Edit parameter'),
@@ -293,7 +293,7 @@ def crumbs_tree(is_expert=False):
             'monitoring_rating': (_('Rating'), {
                 'recommendations': _('Organization'),
                 'task_scores': (_('Organization'), {
-                    'score_view': _('Parameter'),
+                    'score': _('Parameter'),
                 })
             }),
         }),

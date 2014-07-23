@@ -46,7 +46,7 @@ def claim_create(request, score_pk):
         claim = score.add_claim(request.user, clean_message(form.cleaned_data['comment']))
         mail_claim_new(request, claim)
 
-    redirect = reverse('exmo2010:score_view', args=[score.pk]) + '#claims'
+    redirect = reverse('exmo2010:score', args=[score.pk]) + '#claims'
     return HttpResponseRedirect(redirect)
 
 
@@ -64,7 +64,7 @@ def claim_answer(request, claim_pk):
         claim.add_answer(request.user, clean_message(form.cleaned_data['answer']))
         mail_claim_new(request, claim)
 
-    redirect = reverse('exmo2010:score_view', args=[claim.score.pk]) + '#claims'
+    redirect = reverse('exmo2010:score', args=[claim.score.pk]) + '#claims'
     return HttpResponseRedirect(redirect)
 
 

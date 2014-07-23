@@ -173,7 +173,7 @@
                     <tbody>
                     <tr>
                         <td><a href="{% url 'exmo2010:task_scores' object.task.pk %}">{{ object.task }}</a></td>
-                        <td><a href="{% url 'exmo2010:score_view' object.pk %}">{{ object.parameter }}</a></td>
+                        <td><a href="{% url 'exmo2010:score' object.pk %}">{{ object.parameter }}</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -66,7 +66,7 @@ def _mail_claim(request, subject, claim, context):
         'subject': subject,
     }
 
-    url = request.build_absolute_uri(reverse('exmo2010:score_view', args=[claim.score.pk]))
+    url = request.build_absolute_uri(reverse('exmo2010:score', args=[claim.score.pk]))
     context = dict(context, claim=claim, request=request, url=url)
 
     users = User.objects.filter(_expertsA | Q(pk=claim.addressee.pk)).distinct()
@@ -96,7 +96,7 @@ def mail_clarification(request, clarification):
         'subject': _('New clarification')
     }
 
-    url = request.build_absolute_uri(reverse('exmo2010:score_view', args=[score.pk]))
+    url = request.build_absolute_uri(reverse('exmo2010:score', args=[score.pk]))
     context = dict(score=score, clarification=clarification, url=url)
 
     users = User.objects.filter(_expertsA | Q(pk=score.task.user.pk)).distinct()
@@ -211,7 +211,7 @@ def mail_comment(request, comment):
 
     context = {
         'title': '%s: %s' % (score.task.organization, score.parameter),
-        'url': request.build_absolute_uri(reverse('exmo2010:score_view', args=[score.pk])),
+        'url': request.build_absolute_uri(reverse('exmo2010:score', args=[score.pk])),
         'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT'))}
 
     # Send notifications with single comment.
