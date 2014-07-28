@@ -61,7 +61,7 @@
                                     <td>{{ crit|default:'' }}</td>
                                 {% endfor %}
 
-                                <td>{{ score.openness }}</td>
+                                <td>{{ score.openness|floatformat }}%</td>
                                 <td>{{ score.parameter.weight }}</td>
                                 {% if has_npa %}
                                     <td>{{ score.parameter.npa_display }}</td>
