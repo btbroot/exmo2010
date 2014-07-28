@@ -82,7 +82,7 @@
             {{ param.notes|bleach }}
         {% endif %}
 
-        {% if request.user.is_expertA and param.monitoring.status != 0 and score.pk %}
+        {% if request.user.is_expert and param.monitoring.status != 0 and score.pk %}
             <div>
                 {% if score_rev1 %}
                     <div class="score-editor">
