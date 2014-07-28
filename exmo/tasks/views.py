@@ -26,7 +26,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, QueryDict
@@ -67,6 +66,7 @@ def task_export(request, task_pk):
         'Hypertext',
         'Document',
         'Image',
+        'Links',
         'Recommendations'
     ])
     for p in parameters:
@@ -86,6 +86,7 @@ def task_export(request, task_pk):
             out += (s.hypertext,) if p.hypertext else ('',)
             out += (s.document,) if p.document else ('',)
             out += (s.image,) if p.image else ('',)
+            out += (s.links,)
             out += (s.recommendations,)
         writer.writerow(out)
     license = LicenseTextFragments.objects.filter(pk='license')
@@ -128,7 +129,7 @@ def task_import(request, task_pk):
                 score.task = task
                 score.parameter = parameter
                 for i, key in enumerate(['found', 'complete', 'topical', 'accessible',
-                                         'hypertext', 'document', 'image', 'recommendations']):
+                                         'hypertext', 'document', 'image', 'links', 'recommendations']):
                     value = row[i+2]
                     setattr(score, key, value if value else None)
                 score.full_clean()
