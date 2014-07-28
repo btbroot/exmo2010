@@ -73,9 +73,8 @@ textarea {
     text-align: center;
 }
 
-#certificate_image {
+.certificate_group img {
     width: 300px;
-    height: 430px;
 
 }
 

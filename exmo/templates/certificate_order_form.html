@@ -182,13 +182,13 @@
                     <div class="buttons_group">
                         <div class="left_field"> </div>
                         <div class="right_field">
-                            <input {% if not view.tasks %}disabled=true{% endif %} type="submit" value="{% trans 'Order certificate' %}"/> </div>
+                            <input {% if not view.tasks %}disabled="disabled"{% endif %} type="submit" value="{% trans 'Order certificate' %}"/> </div>
                     </div>
                 </div>
 
                 <div class="certificate_group">
                     <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">
-                        <img src="{% static 'exmo2010/img/certificate.jpg' %}" id="certificate_image">
+                        <img src="{% static 'exmo2010/img/certificate.jpg' %}">
                     </a>
                     <div>
                         <a href="{% static 'exmo2010/img/certificate.jpg' %}" target="_blank">{% trans 'Enlarge example' %}</a>
