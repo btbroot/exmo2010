@@ -21,10 +21,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-24 00:49+0400\n"
-"PO-Revision-Date: 2014-07-29 15:20+0400\n"
-"Last-Translator: u1\n"
-"Language-Team: Russian <kde-i18n-doc@kde.org>\n"
+"POT-Creation-Date: 2014-07-28 17:23+0400\n"
+"PO-Revision-Date: 2014-05-15 18:38+0400\n"
+"Last-Translator: Edited with Lokalize\n"
+"Language-Team: Russian <>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3521,7 +3521,7 @@ msgstr "претензия"
 #: templates/scores/recommendations.html:39
 #: templates/scores/task_scores.html:40
 msgid "place"
-msgstr "место"
+msgstr "месте"
 
 #: templates/scores/recommendations.html:63
 #: templates/scores/recommendations.html:151
@@ -3546,34 +3546,20 @@ msgstr "таблица оценок"
 #: templates/scores/recommendations.html:93
 #: templates/scores/task_scores.html:121
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> "
-"has <span id=\"rating_place\"></span> in the rating <a href=\"%(url)s\" "
-"target=\"_blank\">%(monitoring_name)s</a>."
-msgstr ""
-"Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> "
-"имеет <span id=\"rating_place\"></span> в рейтинге <a href=\"%(url)s\" "
-"target=\"_blank\">%(monitoring_name)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> has <span id=\"rating_place\"></span> in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
+msgstr "Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> на <span id=\"rating_place\"></span> в рейтинге <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 
 #: templates/scores/recommendations.html:95
 #: templates/scores/task_scores.html:123
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> is "
-"the only one in the rating <a href=\"%(url)s\" target=\"_blank\">"
-"%(monitoring_name)s</a>."
-msgstr ""
-"Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> "
-"единственный в рейтинге <a href=\"%(url)s\" target=\"_blank\">"
-"%(monitoring_name)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> is the only one in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
+msgstr "Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> единственный в рейтинге <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 
 #: templates/scores/recommendations.html:98
 #: templates/scores/task_scores.html:126
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a>."
-msgstr ""
-"Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>."
+msgstr "Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>."
 
 #: templates/scores/recommendations.html:104
 #: templates/scores/task_scores.html:132
@@ -3597,8 +3583,11 @@ msgstr "Текущая оценка открытости <span>%(openness)s%%</s
 #: templates/scores/recommendations.html:114
 #: templates/scores/task_scores.html:142
 #, python-format
-msgid "Total amount of organizations %(orgs_count)s."
-msgstr "Всего в рейтинге %(orgs_count)s организаций."
+msgid "Total amount of organizations %(orgs_count)s. "
+msgid_plural " Total amount of organizations %(orgs_count)s. "
+msgstr[0] "Всего в рейтинге %(orgs_count)s организация."
+msgstr[1] "Всего в рейтинге %(orgs_count)s организации."
+msgstr[2] "Всего в рейтинге %(orgs_count)s организаций."
 
 #: templates/scores/recommendations.html:118
 #, python-format

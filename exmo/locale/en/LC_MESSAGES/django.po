@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-24 00:49+0400\n"
+"POT-Creation-Date: 2014-07-28 17:23+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -3372,26 +3372,19 @@ msgstr ""
 #: templates/scores/recommendations.html:93
 #: templates/scores/task_scores.html:121
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> "
-"has <span id=\"rating_place\"></span> in the rating <a href=\"%(url)s\" "
-"target=\"_blank\">%(monitoring_name)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> has <span id=\"rating_place\"></span> in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:95
 #: templates/scores/task_scores.html:123
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a> is "
-"the only one in the rating <a href=\"%(url)s\" target=\"_blank\">"
-"%(monitoring_name)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> is the only one in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:98
 #: templates/scores/task_scores.html:126
 #, python-format
-msgid ""
-"Site <a href=\"%(org_url)s\" target=\"_blank\">%(org_url|trim_links)s</a>."
+msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:104
@@ -3416,8 +3409,10 @@ msgstr ""
 #: templates/scores/recommendations.html:114
 #: templates/scores/task_scores.html:142
 #, python-format
-msgid "Total amount of organizations %(orgs_count)s."
-msgstr ""
+msgid "Total amount of organizations %(orgs_count)s. "
+msgid_plural " Total amount of organizations %(orgs_count)s. "
+msgstr[0] ""
+msgstr[1] ""
 
 #: templates/scores/recommendations.html:118
 #, python-format

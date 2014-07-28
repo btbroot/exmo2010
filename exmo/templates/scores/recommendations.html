@@ -90,12 +90,12 @@
                 {% endif %}
 
                 {% if orgs_count > 1 %}
-                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
                 {% else %}
-                    &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
                 {% endif %}
             {% else %}
-                &mdash; {% blocktrans with org_url=task.organization.url %}Site <a href="{{ org_url }}" target="_blank">{{ org_url|trim_links }}</a>.{% endblocktrans %}<br/>
+                &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a>.{% endblocktrans %}<br/>
             {% endif %}
 
             {% ifnotequal openness None %}
@@ -111,7 +111,7 @@
             {% endifnotequal %}
 
             {% if orgs_count > 1 %}
-                &mdash; {% blocktrans %}Total amount of organizations {{ orgs_count }}.{% endblocktrans %}<br />
+                &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
             {% endif %}
 
             {% if mon.is_interact and registered_count > 1 %}

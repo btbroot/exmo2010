@@ -44,6 +44,9 @@ def trim_links(data, trim_url_limit=70):
     and appended with an elipsis.
 
     """
+    if data is None:
+        return data
+
     trim_url = lambda x, limit=trim_url_limit: limit is not None \
         and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
 
