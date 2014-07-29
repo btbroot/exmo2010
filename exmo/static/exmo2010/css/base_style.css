@@ -857,12 +857,16 @@ ul#errors-header li.portal a:hover {
 
 /* FILTER FORM */
 
+.filter {
+    min-width: 420px;
+}
+
 .filter .table {
     width: 100%;
 }
 
 .filter .table-cell {
-    padding: 0 5px;
+    padding: 0;
     border: none;
 }
 
@@ -872,6 +876,15 @@ ul#errors-header li.portal a:hover {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+}
+
+.filter .submit-cell {
+    width: 85px;
+}
+
+.filter .submit-cell input{
+    width: 80px;
+    float: right;
 }
 
 

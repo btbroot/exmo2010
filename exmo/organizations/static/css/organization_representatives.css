@@ -37,20 +37,12 @@ i.icon {
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../../../static/exmo2010/img/download.png', sizingMethod='scale')";
 }
 
-.filter .table {
+.representatives-table {
     margin-top: 20px;
-}
-
-.filter .table-cell {
-    padding: 0;
 }
 
 .filter input[type="text"], .filter select {
     width: 49%;
-}
-
-.submit-cell {
-    width: 80px;
 }
 
 .table-name {

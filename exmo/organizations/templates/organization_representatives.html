@@ -38,50 +38,66 @@
             <a href="{% url 'exmo2010:representatives_export' monitoring.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
         </div>
 
-        <table>
-            <caption>
-                <form class="filter" action="" method="GET">
-                    <div class="table">
-                        <div class="table-cell">
-                            {{ queryform.full_name_or_email }}
-                            {{ queryform.organizations }}
-                        </div>
-                        <div class="table-cell submit-cell">
-                            <input type="submit" value="{% trans 'Find' %}" />
-                        </div>
-                    </div>
-                </form>
-            </caption>
+        <div class="representatives-table">
+            {% if representatives_exist %}
+                <table>
+                    <caption>
+                        <form class="filter" action="" method="GET">
+                            <div class="table">
+                                <div class="table-cell">
+                                    {{ queryform.full_name_or_email }}
+                                    {{ queryform.organizations }}
+                                </div>
+                                <div class="table-cell submit-cell">
+                                    <input type="submit" value="{% trans 'Find' %}" />
+                                </div>
+                            </div>
+                        </form>
+                    </caption>
 
-            {% for org in orgs %}
-                <tr>
-                    <td colspan="5" class="table-name">
-                        <h3><a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name }}">{{ org.name }}</a></h3>
-                    </td>
-                </tr>
-
-                {% if forloop.first %}
-                    <tr>
-                        <th>{% trans 'Full name' %}</th>
-                        <th>{% trans "E-mail" context "short spelling" %}</th>
-                        <th>{% trans 'Phone' %}</th>
-                        <th>{% trans 'Job title' %}</th>
-                        <th class="align-right">{% trans 'Comm.' %}</th>
-                    </tr>
-                {% endif %}
-
-                <tbody>
-                    {% for user in org.users %}
-                        <tr class="zebra">
-                            <td>{{ user.full_name }}</td>
-                            <td>{{ user.user.email }}</td>
-                            <td>{{ user.phone }}</td>
-                            <td>{{ user.position }}</td>
-                            <td class="align-right">{{ user.comments_count }}</td>
+                    {% if not orgs %}
+                        <tr>
+                            <th>{% trans 'Full name' %}</th>
+                            <th>{% trans "E-mail" context "short spelling" %}</th>
+                            <th>{% trans 'Phone' %}</th>
+                            <th>{% trans 'Job title' %}</th>
+                            <th class="align-right">{% trans 'Comm.' %}</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            {% endfor %}
-        </table>
+                    {% else %}
+                        {% for org in orgs %}
+                            <tr>
+                                <td colspan="5" class="table-name">
+                                    <h3><a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name }}">{{ org.name }}</a></h3>
+                                </td>
+                            </tr>
+
+                            {% if forloop.first %}
+                                <tr>
+                                    <th>{% trans 'Full name' %}</th>
+                                    <th>{% trans "E-mail" context "short spelling" %}</th>
+                                    <th>{% trans 'Phone' %}</th>
+                                    <th>{% trans 'Job title' %}</th>
+                                    <th class="align-right">{% trans 'Comm.' %}</th>
+                                </tr>
+                            {% endif %}
+
+                            <tbody>
+                                {% for user in org.users %}
+                                    <tr class="zebra">
+                                        <td>{{ user.full_name }}</td>
+                                        <td>{{ user.user.email }}</td>
+                                        <td>{{ user.phone }}</td>
+                                        <td>{{ user.position }}</td>
+                                        <td class="align-right">{{ user.comments_count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            {% else %}
+                {% trans 'No representatives' %}
+            {% endif %}
+        </div>
     </div>
 {%endblock%}

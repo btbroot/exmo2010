@@ -218,6 +218,7 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
 
         orgs = self.object.organization_set.exclude(userprofile=None).order_by('name')
         users = UserProfile.objects.filter(user__groups__name='organizations', organization__monitoring=self.object)
+        representatives_exist = users.exists()
 
         queryform = RepresentativesQueryForm(self.request.GET)
         org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
@@ -241,6 +242,7 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
                 organizations.append(org)
 
         context['orgs'] = organizations
+        context['representatives_exist'] = representatives_exist
         context['queryform'] = queryform
 
         return context

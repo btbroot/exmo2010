@@ -49,12 +49,10 @@
 }
 
 .select-cell {
-    width: 200px;
+    width: 205px;
+    padding-left: 5px !important;
 }
 
-.submit-cell {
-    width: 90px;
-}
 
 /* == ORGANIZATION EMAIL FORM == */
 
