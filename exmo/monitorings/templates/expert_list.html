@@ -21,11 +21,11 @@
 {% endcomment %}
 {% load i18n monitoring_stats check_object_permission %}
 
-{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
+    <h2>{{ title }}</h2>
+
     <div id=expert_list>
         <table>
             {% include 'exmo2010/table_header.html' with headers=headers %}

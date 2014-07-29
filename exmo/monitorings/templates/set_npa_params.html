@@ -33,11 +33,11 @@
     </script>
 {% endblock %}
 
-{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block h1 %}<h1>{% trans 'Choose normative parameters' %}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
+    <h2>{% trans 'Choose normative parameters' %}</h2>
+
     <form action="" method="post">
         {% csrf_token %}
         {{ formset.management_form }}

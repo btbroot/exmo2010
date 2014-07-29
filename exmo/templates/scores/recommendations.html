@@ -45,17 +45,7 @@
     {% endif %}
 {% endblock %}
 
-{% block sidebar_h1 %}
-    {% if is_expert %}
-        <h1>{{ task.organization.name }}</h1>
-    {% endif %}
-{% endblock %}
-
-{% block h1 %}
-    {% if not is_expert %}
-        <h1>{{ task.organization.name }}</h1>
-    {% endif %}
-{% endblock %}
+{% block h1 %}<h1>{{ task.organization.name }}</h1>{% endblock %}
 
 {% block content %}
     <div class="recommendations-header-block">

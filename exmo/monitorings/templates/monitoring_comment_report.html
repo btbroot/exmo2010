@@ -41,11 +41,11 @@
     </script>
 {% endblock %}
 
-{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
+    <h2>{{ title }}</h2>
+
     <form method="post" action="">{% csrf_token %}
         {{ form.time_to_answer.label_tag }}
         {{ form.time_to_answer }}

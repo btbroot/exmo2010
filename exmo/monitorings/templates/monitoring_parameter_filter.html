@@ -85,11 +85,11 @@
     </script>
 {% endblock %}
 
-{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block h1 %}<h1>{% trans 'Parameter-criteria filter' %}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
+    <h2>{% trans 'Parameter-criteria filter' %}</h2>
+
     <div id=parameter_filter_form>
         <form id="form" method="post" action="">
             {{ form.non_field_errors }}

@@ -64,11 +64,11 @@
     </script>
 {% endblock %}
 
-{% block sidebar_h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block h1 %}<h1>{% trans "Tasks" %}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
+    <h2>{% trans "Tasks" %}</h2>
+
     <div id=task_list>
         <table>
             {% include 'exmo2010/table_header.html' with headers=headers %}
