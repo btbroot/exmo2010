@@ -26,9 +26,8 @@
 {% endblock %}
 
 {% block content %}
-    <h2>
-        {{ title }}
-    </h2>
+    <h2>{{ title }}</h2>
+
     <div>
         {% for comment in comments %}
             <p>
@@ -47,7 +46,7 @@
             <hr />
         {% endfor %}
         <p>
-            <span class="bold">{% trans 'Link' %}:</span>&nbsp;<a href="{{ url }}#comments">{{ url }}#comments</a>
+            <span class="bold">{% trans 'Link' %}:</span>&nbsp;<a href="{{ url }}">{{ url }}</a>
         </p>
     </div>
 {% endblock content %}

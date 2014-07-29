@@ -211,18 +211,21 @@ def mail_comment(request, comment):
 
     context = {
         'title': '%s: %s' % (score.task.organization, score.parameter),
-        'url': request.build_absolute_uri(reverse('exmo2010:score', args=[score.pk])),
         'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT'))}
 
+    comment_url = request.build_absolute_uri(reverse('exmo2010:score', args=[score.pk])) + '#c%s' % comment.pk
+    recommendation_url = request.build_absolute_uri(reverse('exmo2010:recommendations', args=[score.task.pk])) + \
+        '#param%s' % score.parameter.pk
+
     # Send notifications with single comment.
-    _mail_comment(experts_one, subject, dict(context, comments=[comment], mask_expert_name=False))
-    _mail_comment(orgusers_one, subject, dict(context, comments=[comment], mask_expert_name=True))
+    _mail_comment(experts_one, subject, dict(context, comments=[comment], url=comment_url, mask_expert_name=False))
+    _mail_comment(orgusers_one, subject, dict(context, comments=[comment], url=recommendation_url, mask_expert_name=True))
 
     thread = CommentExmo.objects.filter(object_pk=score.pk)
 
     # Send notifications with whole comments thread.
-    _mail_comment(experts_thread, subject, dict(context, comments=thread, mask_expert_name=False))
-    _mail_comment(orgusers_thread, subject, dict(context, comments=thread, mask_expert_name=True))
+    _mail_comment(experts_thread, subject, dict(context, comments=thread, url=comment_url, mask_expert_name=False))
+    _mail_comment(orgusers_thread, subject, dict(context, comments=thread, url=recommendation_url, mask_expert_name=True))
 
 
 def _mail_comment(rcpts, subject, context):
