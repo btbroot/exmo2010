@@ -47,6 +47,15 @@ class RatingsQueryForm(QueryForm):
         }
 
 
+class RatingQueryForm(QueryForm):
+    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Organization')}))
+
+    class Meta:
+        filters = {
+            'name': 'name__icontains',
+        }
+
+
 class ObserversGroupQueryForm(QueryForm):
     name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Group name')}))
 

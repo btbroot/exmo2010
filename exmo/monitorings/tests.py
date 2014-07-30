@@ -503,7 +503,7 @@ class RatingTableValuesTestCase(TestCase):
 
 
 class NameFilterRatingTestCase(TestCase):
-    ''' If name filter given on rating page, should show only filtered orgs '''
+    # If name filter given on rating page, should show only filtered orgs
 
     def setUp(self):
         # GIVEN monitoring with 2 organizations
@@ -517,8 +517,8 @@ class NameFilterRatingTestCase(TestCase):
         task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
         parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1)
         parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=1)
-        score1 = mommy.make(Score, task=task1, parameter=parameter1)
-        score2 = mommy.make(Score, task=task2, parameter=parameter2)
+        mommy.make(Score, task=task1, parameter=parameter1)
+        mommy.make(Score, task=task2, parameter=parameter2)
 
         self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
 
@@ -529,7 +529,7 @@ class NameFilterRatingTestCase(TestCase):
     ])
     def test_org_filter(self, filter_str, expected_org_names):
         # WHEN user requests rating page with name_filter
-        response = self.client.get(self.url, {'name_filter': filter_str})
+        response = self.client.get(self.url, {'name': filter_str})
 
         # THEN only expected orgs should be shown
         org_names = set(t.organization.name for t in response.context['rating_list'])

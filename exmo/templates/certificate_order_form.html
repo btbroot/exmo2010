@@ -65,38 +65,27 @@
             {% trans 'We will prepare an individual certificate and send it to your e-mail address or use Russian post services.' %}
         </p>
 
-        <div class="rating-menu clearfix">
+        <div class="rating-menu">
             <h2>{% trans "Rating" %}</h2>
 
-            <ul class="switcher">
-                <li {% if view.rating_type == "all" %}class="active"{% endif %}>
-                    <a href="?rating_type=all" class="pseudo{% if view.rating_type == "all" %}-off{% endif %}">
-                        {% trans 'common' %}
-                    </a>
-                </li>
-
+            <div class="tabs" data-rating_type="{{ view.rating_type }}">
+                <span><a href="?rating_type=all" class="pseudo">{% trans 'common' %}</a></span>
                 {% if view.vary_rating_type %}
-                    <li {% if view.rating_type == "npa" %}class="active"{% endif %}>
-                        <a href="?rating_type=npa" class="pseudo{% if view.rating_type == "npa" %}-off{% endif %}">
-                            {% trans 'normative' %}
-                        </a>
-                    </li>
-
-                    <li {% if view.rating_type == "other" %}class="active"{% endif %}>
-                        <a href="?rating_type=other" class="pseudo{% if view.rating_type == "other" %}-off{% endif %}">
-                            {% trans 'recommendatory' %}
-                        </a>
-                    </li>
+                    <span><a href="?rating_type=npa" class="pseudo">{% trans 'normative' %}</a></span>
+                    <span><a href="?rating_type=other" class="pseudo">{% trans 'recommendatory' %}</a></span>
                 {% endif %}
-            </ul>
-
+            </div>
         </div>
 
-        <form class="filter clearfix" action="" method="GET">
-            <div>
-                <input type=text id="name_filter" name="name_filter" value="{{ request.GET.name_filter }}" placeholder="{% trans 'Organization' %}" />
+        <form class="filter" action="" method="GET">
+            <div class="table">
+                <div class="table-cell">
+                    {{ view.queryform.name_filter }}
+                </div>
+                <div class="table-cell submit-cell">
+                    <input type="submit" value="{% trans 'Find' %}" />
+                </div>
             </div>
-            <input type=submit value="{% trans 'Find' %}" />
         </form>
 
         <form id="certificate_form" action="" method="POST">{% csrf_token %}

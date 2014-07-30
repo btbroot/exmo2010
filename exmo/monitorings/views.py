@@ -50,7 +50,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormMixin
 from reversion.revisions import default_revision_manager as revision
 
-from .forms import RatingsQueryForm, ObserversGroupQueryForm
+from .forms import RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
@@ -254,9 +254,12 @@ def monitoring_rating(request, monitoring_pk):
         orgs = orgs.union(set(user.observersgroup_set.filter(monitoring=monitoring).values_list('organizations__pk', flat=True)))
 
     if user.is_expert or monitoring.is_published:
-        name_filter = request.GET.get('name_filter', '')
-        if name_filter:
-            orgs = orgs.union(set(monitoring.organization_set.filter(name__icontains=name_filter).values_list('pk', flat=True)))
+
+        queryform = RatingQueryForm(request.GET)
+
+        if queryform.is_valid():
+            queryset = queryform.apply(monitoring.organization_set.all())
+            orgs = orgs.union(set(queryset.values_list('pk', flat=True)))
             rating_list = [t for t in rating_list if t.organization.pk in orgs]
 
         approved_tasks = Task.approved_tasks.filter(organization__monitoring=monitoring).distinct()
@@ -271,7 +274,7 @@ def monitoring_rating(request, monitoring_pk):
         context.update({
             'rating_list': rating_list,
             'rating_stats': rating_stats,
-            'name_filter': name_filter,
+            'queryform': queryform,
         })
     else:
         if user.is_organization:

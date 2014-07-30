@@ -22,10 +22,10 @@ from django import forms
 from django.conf import settings
 from django.forms.widgets import Textarea
 from django.utils import formats
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import clean_message
+from queryform import QueryForm
 
 DATETIME_INPUT_FORMATS = list(formats.get_format('DATETIME_INPUT_FORMATS')) + ['%d.%m.%Y %H:%M:%S']
 
@@ -81,3 +81,12 @@ class CertificateOrderForm(forms.Form):
             self.fields['name'].required = True
 
         return super(CertificateOrderForm, self).full_clean()
+
+
+class CertificateOrderQueryForm(QueryForm):
+    name_filter = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Organization')}))
+
+    class Meta:
+        filters = {
+            'name_filter': 'name__icontains',
+        }

@@ -25,11 +25,7 @@ h2 {
     display: inline;
 }
 
-i.icon {
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    vertical-align: text-top;
+i.download {
     background: url("../../../static/exmo2010/img/download.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */

@@ -24,6 +24,10 @@ $(document).ready(function() {
     /* Sortable table */
     $("#rating-data").tablesorter({sortList: [[0, 1]]});
 
+    /* Active tabs */
+    var rating_type = $('div.tabs').data('rating_type');
+    $('a[href="?rating_type=' + rating_type + '"]').parent().addClass('active');
+
     // replace machine readable date with verbose one
     $('td.published span').each(function() {
         $(this).replaceWith($(this).data('verbose'));
@@ -42,7 +46,7 @@ $(document).ready(function() {
         else
             $('.person_group').show();
     });
-    $("input[name='addressee']:checked").change()
+    $("input[name='addressee']:checked").change();
 
     $("input[name='delivery_method']").change(function(){
         $('.error').hide();
@@ -55,7 +59,7 @@ $(document).ready(function() {
             $('.email_group').hide();
         }
     });
-    $("input[name='delivery_method']:checked").change()
+    $("input[name='delivery_method']:checked").change();
 
     $('#id_zip_code').keypress(function(e) {
         if (e.which && (e.which < 48 || e.which > 57) && e.which != 8) {
@@ -65,13 +69,13 @@ $(document).ready(function() {
 
     $('#confirm').click(function() {
         $('#certificate_form').append($('<input>', {type:'hidden', name:'confirm'}));
-        $('#certificate_form').submit()
+        $('#certificate_form').submit();
         return false;
-    })
+    });
 
     $('#previous_form').click(function() {
         $('#certificate_form').append($('<input>', {type:'hidden', name:'back'}));
-        $('#certificate_form').submit()
+        $('#certificate_form').submit();
         return false;
     })
 });

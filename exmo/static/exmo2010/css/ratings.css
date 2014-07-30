@@ -18,66 +18,33 @@
 #
 */
 
-.icon-download-alt {
-    background-position: -96px -24px;
-    background-image: url("../img/glyphicons-halflings.png");
+.rating-menu {
+    margin-bottom: 15px;
 }
 
-.icon-map
-{
-    background-image: url("../img/earth_14x14.png");
-}
-
-[class^="icon-"], [class*=" icon-"] {
-    background-repeat: no-repeat;
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    height: 14px;
-    line-height: 14px;
-    margin-top: 1px;
-    vertical-align: text-top;
-    width: 18px;
-}
-
-h2 {
+.rating-menu h2 {
+    display: inline;
+    margin-right: 12px;
     margin-bottom: 0;
+    vertical-align: top;
 }
 
-div.rating-menu {
-    height: 26px;
+i.map {
+    background: url("../img/earth_14x14.png") no-repeat;
+    background-size: 16px 16px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale')";
 }
 
-div.rating-menu > h2 {
-    float: left;
+i.download-alt {
+    background: url("../img/glyphicons-halflings.png") -96px -24px no-repeat;
 }
 
-ul.switcher {
-    float: left;
-    margin: 0 0 0 11px;
-    padding: 0;
-}
-
-ul.utils {
+div.utils {
     float: right;
-    margin: 0;
-    padding: 0;
-}
-
-ul.switcher > li {
-    display: block;
-    float: left;
-    padding: 4px 11px 7px 11px;
-}
-
-ul.switcher > li.active {
-    background-color: #FFFFD6;
-}
-
-ul.utils > li {
-    display: block;
-    float: left;
-    padding-left: 15px;
+    line-height: 24px;
+    margin-bottom: 15px;
 }
 
 #user-defined-parameters {
@@ -110,7 +77,7 @@ ul.utils > li {
 }
 
 form.filter {
-    margin: 15px 0 10px;
+    margin: 15px 0;
 }
 
 form.filter input {

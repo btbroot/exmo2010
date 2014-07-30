@@ -33,71 +33,36 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
     <script type="text/javascript" src="{% static 'exmo2010/js/rating.js' %}"></script>
-
-    <script>
-        $(function(){
-            li = $('ul.switcher > li.rtype_{{rating_type}}');
-            li.addClass('active').children('a').addClass('off');
-        })
-    </script>
 {% endblock %}
 
 {% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
-    <div class="rating-menu clearfix">
+    <div class="rating-menu">
         <h2>{% trans "Rating" %}</h2>
 
-        <ul class="switcher">
-
-            <li class="rtype_all">
-                <a href="?type=all" class="pseudo">
-                    {% trans 'common' %}
-                </a>
-            </li>
-
+        <div class="tabs" data-rating_type="{{ rating_type }}">
+            <span><a href="?type=all" class="pseudo">{% trans 'common' %}</a></span>
             {% if monitoring.has_npa %}
-                <li class="rtype_npa">
-                    <a href="?type=npa" class="pseudo">
-                        {% trans 'normative' %}
-                    </a>
-                </li>
-
-                <li class="rtype_other">
-                    <a href="?type=other" class="pseudo">
-                        {% trans 'recommendatory' %}
-                    </a>
-                </li>
+                <span><a href="?type=npa" class="pseudo">{% trans 'normative' %}</a></span>
+                <span><a href="?type=other" class="pseudo">{% trans 'recommendatory' %}</a></span>
             {% endif %}
-
-            <li class="rtype_user">
-                <a href="#" class="pseudo" id="user-defined">
-                    {% trans 'user defined' %}
-                </a>
-            </li>
-        </ul>
+            <span><a href="?type=user" class="pseudo">{% trans 'user defined' %}</a></span>
+        </div>
 
         {% if monitoring.is_published or user.profile.is_expert %}
-            <ul class="utils">
+            <div class="utils">
                 {% if monitoring.is_published and monitoring.map_link %}
-                    <li>
-                        <a href="{{ monitoring.map_link }}" target="_blank">
-                            <i class="icon icon-map"></i>{% trans "Map" %}
-                        </a>
-                    </li>
+                    <i class="icon map"></i>
+                    <a href="{{ monitoring.map_link }}" target="_blank">{% trans 'Map' %}</a>
                 {% endif %}
 
-                <li>
-                    <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=json">
-                        <i class="icon icon-download-alt"></i>{% trans 'Export as JSON' %}
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=csv">
-                        <i class="icon icon-download-alt"></i>{% trans 'Export as CSV' %}
-                    </a>
-                </li>
-            </ul>
+                <i class="icon download-alt"></i>
+                <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=json">{% trans 'Export as JSON' %}</a>
+
+                <i class="icon download-alt"></i>
+                <a href="{% url 'exmo2010:monitoring_export' monitoring.pk %}?format=csv">{% trans 'Export as CSV' %}</a>
+            </div>
         {% endif %}
     </div>
 
@@ -122,11 +87,15 @@
     </div>
 
     {% if rating_stats %}
-        <form class="filter clearfix" action="" method="GET">
-            <div>
-                <input type=text id="name_filter" name="name_filter" value="{{ name_filter }}" placeholder="{% trans 'Organization' %}" />
+        <form class="filter" action="" method="GET">
+            <div class="table">
+                <div class="table-cell">
+                    {{ queryform.name }}
+                </div>
+                <div class="table-cell submit-cell">
+                    <input type="submit" value="{% trans 'Find' %}" />
+                </div>
             </div>
-            <input type=submit value="{% trans 'Find' %}" />
         </form>
     {% endif %}
 

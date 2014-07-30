@@ -37,9 +37,9 @@ from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
 
+from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm
 from .mail import mail_certificate_order, mail_feedback
 from core.response import JSONResponse
-from exmo2010.forms import FeedbackForm, CertificateOrderForm
 from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
 
 
@@ -140,8 +140,10 @@ class CertificateOrderView(FormView):
             self.vary_rating_type = False
 
         # Apply user provided filters
-        if self.request.GET.get('name_filter'):
-            orgs = orgs.filter(name__icontains=self.request.GET['name_filter'])
+        self.queryform = CertificateOrderQueryForm(self.request.GET)
+
+        if self.queryform.is_valid():
+            orgs = self.queryform.apply(orgs)
 
         _org_pks = set(orgs.values_list('pk', flat=True))
         _filter = {'organization__in': _org_pks}

@@ -80,14 +80,6 @@ p span {
     opacity: 0.5;
 }
 
-i.icon {
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    margin-left: 10px;
-    vertical-align: text-top;
-}
-
 i.add {
     background: url("../exmo2010/img/add.png") no-repeat;
     background-size: 16px 16px;

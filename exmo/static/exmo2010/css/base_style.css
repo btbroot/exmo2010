@@ -932,6 +932,16 @@ ul#errors-header li.portal a:hover {
     width: 250px;
 }
 
+/* Icons */
+
+i.icon {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    margin-left: 10px;
+    vertical-align: text-top;
+}
+
 /* Ajax */
 
 .rating-ajax {
