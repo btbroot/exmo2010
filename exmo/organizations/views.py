@@ -22,6 +22,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 from django.forms.models import modelform_factory
 from django.forms import TextInput
 from django.http import HttpResponse, HttpResponseRedirect
@@ -83,15 +84,6 @@ def organization_list(request, monitoring_pk):
     else:
         inv_form = InviteOrgsForm(**kwargs)
 
-    queryset = Organization.objects.filter(monitoring=monitoring).extra(
-        select={
-            'task__count': 'SELECT count(*) FROM %s WHERE organization_id = %s.id' % (
-                Task._meta.db_table,
-                Organization._meta.db_table,
-            ),
-        }
-    )
-
     headers = (
         (_('organization'), 'name', None, None, None),
         (_('email'), 'email', None, None, None),
@@ -137,6 +129,8 @@ def organization_list(request, monitoring_pk):
         if invite_filter_history and invite_filter_history != 'ALL':
             inv_history = inv_history.filter(inv_status=invite_filter_history)
             tab = 'mail_history'
+
+    queryset = Organization.objects.filter(monitoring=monitoring).annotate(tasks_count=Count('task'))
 
     org_queryform = OrganizationsQueryForm(request.GET)
     if org_queryform.is_valid():

@@ -33,6 +33,14 @@ class OrganizationsQueryForm(QueryForm):
             'org_name': 'name__icontains',
             'inv_status': 'inv_status',
         }
+        order = {
+            'org_name': 'name',
+            'email': 'email',
+            'phone': 'phone',
+            'inv_code': 'inv_code',
+            'tasks_count': 'tasks_count',
+            'inv_status': 'inv_status',
+        }
 
 
 class RepresentativesQueryForm(QueryForm):
