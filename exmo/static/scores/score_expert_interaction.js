@@ -81,7 +81,8 @@ $(document).ready(function() {
         }
     }
 
-    var cke_comment = CKEDITOR.instances['id_comment'];
+    var comment_field_id = $('div.comment-form').find('textarea').attr('id')
+    var cke_comment = CKEDITOR.instances[comment_field_id];
 
     cke_comment.on('instanceReady', function(e){
         // Comment handler should also check if score inputs changed when in edit mode

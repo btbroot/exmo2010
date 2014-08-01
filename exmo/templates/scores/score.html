@@ -364,7 +364,6 @@
         {% endif %}
 
         <div class="comment-form {% if request.user.is_expert %}hidden{% endif %}">
-            {% get_comment_form for score as form %}
             <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
                 {{ comment_form.comment }}
                 <input type="submit"  class="tab-reply-block" id="submit_comment" value="{% trans 'Post comment' %}" disabled="disabled" />

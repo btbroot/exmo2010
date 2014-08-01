@@ -685,7 +685,9 @@ class ScoreRecommendationsShouldExistJsTestCase(BaseSeleniumTestCase):
 
 @attr('selenium')
 class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
-    # On score page non-experts SHOULD be able to toggle initial scores visibility
+    # exmo2010:score
+
+    # On score page non-experts should be able to toggle initial scores visibility
 
     def setUp(self):
         # GIVEN PUBLISHED monitoring with organization
@@ -697,7 +699,7 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
         orguser.profile.organization = [org]
-        # AND approved task assigned to expert B
+        # AND approved task
         task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
         # AND parameter
         parameter = mommy.make(Parameter, monitoring=monitoring_published, weight=1)
@@ -728,3 +730,107 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         self.find('a[href="#show_interim_score"]').click()
         # THEN initial scores should be hidden
         self.assertHidden('.score_interim')
+
+
+@attr('selenium')
+class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
+    # exmo2010:recommendations
+
+    # On recommendations page non-experts should be able to toggle hidden comments visibility.
+    # For finished or nonrelevant scores all comments should be initially hidden.
+    # For other scores, all comments except the last 2 should be initially hidden.
+
+    def setUp(self):
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN organization and parameter in PUBLISHED monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED)
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.is_organization = True
+        orguser.profile.organization = [org]
+        # AND approved task
+        self.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+        # AND 100% score
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        self.score_100 = mommy.make(Score, task=self.task, parameter=param, found=1)
+        # AND 0% score
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        self.score_0 = mommy.make(Score, task=self.task, parameter=param, found=0)
+        # AND nonrelevant score
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        org.parameter_set = [param]  # non-relevant param
+        self.score_nonerelevant = mommy.make(Score, task=self.task, parameter=param, found=0)
+
+        def comment(score, dt):
+            return mommy.make(
+                CommentExmo, submit_date=datetime(2005, 1, 1 + dt), object_pk=score.pk,
+                content_type=content_type, site__pk=settings.SITE_ID, user=orguser, comment='123')
+
+        # AND 3 comments for each score
+        self.score_100.comments = [comment(self.score_100, n) for n in range(3)]
+        self.score_0.comments = [comment(self.score_0, n) for n in range(3)]
+        self.score_nonerelevant.comments = [comment(self.score_nonerelevant, n) for n in range(3)]
+
+    @parameterized.expand([
+        ('orguser',),
+        ('user',),
+        ('anonymous',)
+    ])
+    def test_score_comments_toggle(self, user):
+        # WHEN I login
+        if user != 'anonymous':
+            self.login(user, 'password')
+
+        # AND I get recommendations page
+        self.get(reverse('exmo2010:recommendations', args=(self.task.pk,)))
+
+        # THEN first comment of unfinished score should be hidden
+        self.assertHidden('#comment_%s' % self.score_0.comments[0].pk)
+
+        # AND last 2 comments of unfinished score should be visible
+        self.assertVisible('#comment_%s' % self.score_0.comments[1].pk)
+        self.assertVisible('#comment_%s' % self.score_0.comments[2].pk)
+
+        # AND all finished score comments should be hidden
+        for comment in self.score_100.comments:
+            self.assertHidden('#comment_%s' % comment.pk)
+
+        # AND all nonrelevant score comments should be hidden
+        for comment in self.score_nonerelevant.comments:
+            self.assertHidden('#comment_%s' % comment.pk)
+
+        # WHEN I click 'show all comments' for each score
+        self.find('#param%s div.comment-toggle.show' % self.score_0.parameter.pk).click()
+        self.find('#param%s div.comment-toggle.show' % self.score_100.parameter.pk).click()
+        self.find('#param%s div.comment-toggle.show' % self.score_nonerelevant.parameter.pk).click()
+
+        # THEN all scores comments should become visible
+        for comment in self.score_0.comments:
+            self.assertVisible('#comment_%s' % comment.pk)
+        for comment in self.score_100.comments:
+            self.assertVisible('#comment_%s' % comment.pk)
+        for comment in self.score_nonerelevant.comments:
+            self.assertVisible('#comment_%s' % comment.pk)
+
+        # WHEN I click 'hide comments' for each score
+        self.find('#param%s div.comment-toggle.hide' % self.score_0.parameter.pk).click()
+        self.find('#param%s div.comment-toggle.hide' % self.score_100.parameter.pk).click()
+        self.find('#param%s div.comment-toggle.hide' % self.score_nonerelevant.parameter.pk).click()
+
+        # THEN first comment of unfinished score should be hidden
+        self.assertHidden('#comment_%s' % self.score_0.comments[0].pk)
+
+        # AND last 2 comments of unfinished score should be visible
+        self.assertVisible('#comment_%s' % self.score_0.comments[1].pk)
+        self.assertVisible('#comment_%s' % self.score_0.comments[2].pk)
+
+        # AND all finished score comments should be hidden
+        for comment in self.score_100.comments:
+            self.assertHidden('#comment_%s' % comment.pk)
+
+        # AND all nonrelevant score comments should be hidden
+        for comment in self.score_nonerelevant.comments:
+            self.assertHidden('#comment_%s' % comment.pk)

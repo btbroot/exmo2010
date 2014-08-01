@@ -155,7 +155,7 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
 
     def test_browser_back_after_bad_filter(self):
         # WHEN I submit filter with incorrect organization name
-        self.find('#name_filter').send_keys('!@#&')
+        self.find('#id_name_filter').send_keys('!@#&')
         self.find('form.filter input[type="submit"]').click()
         # THEN warning message should be displayed
         self.assertVisible('p.warning')

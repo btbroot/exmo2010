@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 
@@ -59,7 +60,7 @@ from questionnaire.forms import QuestionnaireDynForm
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def score_view(request, **kwargs):
     if request.method not in ['POST', 'GET']:
-        return HttpResponseNotAllowed(['POST', 'GET'])
+        return HttpResponseNotAllowed(permitted_methods=['POST', 'GET'])
 
     if 'score_pk' in kwargs:
         # Score edit or view
@@ -126,8 +127,7 @@ def score_view(request, **kwargs):
                     # Restore last_modified field, that was overwritten by save()
                     Score.objects.filter(pk=interim_score.pk).update(last_modified=last_modified)
 
-                if 'comment' in request.POST:
-                    _add_comment(request, score)
+                _add_comment(request, score)
             score = form.save(commit=False)
             score.editor = request.user
             score.save()
@@ -171,7 +171,6 @@ def score_view(request, **kwargs):
     else:
         claim_list = []
 
-    CommentForm = modelform_factory(CommentExmo, widgets={'comment': CKEditorWidget(config_name='simplified')})
     context = {
         'form': form,
         'score': annotate_exmo_perms(score, request.user),
@@ -186,7 +185,7 @@ def score_view(request, **kwargs):
         'interaction': org.monitoring.is_interact or org.monitoring.is_finishing,
         'claim_list': claim_list,
         'recommendations_required': param.monitoring.no_interact is False and not all_max,
-        'comment_form': CommentForm(request.POST if request.method == 'POST' else None),
+        'comment_form': score.comment_form(request.POST if request.method == 'POST' else None),
         'invcodeform': SettingsInvCodeForm(),
     }
 
@@ -195,19 +194,24 @@ def score_view(request, **kwargs):
 
 def post_score_comment(request, score_pk):
     if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
 
     score = get_object_or_404(Score, pk=score_pk)
     if not request.user.has_perm('exmo2010.add_comment', score):
         raise PermissionDenied
 
     _add_comment(request, score)
-    return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
+    return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:score', args=[score.pk]))
 
 
 def _add_comment(request, score):
+    comment_form = score.comment_form(request.POST)
+    if not comment_form.is_valid():
+        # Comment is empty or request was forged.
+        return
+
     # Replace all autoscore bricks with normal text.
-    soup = BeautifulSoup(request.POST['comment'])
+    soup = BeautifulSoup(comment_form.cleaned_data['comment'])
     for input_node in soup.findAll('input'):
         input_node.replaceWith(BeautifulSoup(input_node['value']))
 
@@ -241,7 +245,7 @@ ajax_soup = lambda txt: target_blank(urlize(escape(txt), 70)).replace('\n', '<br
 
 def post_recommendations(request, score_pk):
     if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
 
     score = get_object_or_404(Score, pk=score_pk)
     if not request.user.has_perm('exmo2010.edit_score', score):
@@ -258,7 +262,7 @@ def post_recommendations(request, score_pk):
 
 def post_score_links(request, score_pk):
     if request.method != 'POST':
-        return HttpResponseNotAllowed(['POST'])
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
 
     score = get_object_or_404(Score, pk=score_pk)
     if not request.user.has_perm('exmo2010.edit_score', score):
@@ -467,7 +471,8 @@ class RecommendationsView(DetailView):
     model = Task
 
     def get_object(self, queryset=None):
-        self.task = super(RecommendationsView, self).get_object(queryset)
+        task = super(RecommendationsView, self).get_object(queryset)
+        self.task = annotate_exmo_perms(task, self.request.user)
         if not self.request.user.has_perm('exmo2010.view_task', self.task):
             raise PermissionDenied
         return self.task
@@ -477,8 +482,11 @@ class RecommendationsView(DetailView):
 
         monitoring = self.task.organization.monitoring
         scores = list(self.task.score_set.all())
-        with_comments = CommentExmo.objects.filter(object_pk__in=[s.pk for s in scores])
-        with_comments = set(int(pk) for pk in with_comments.values_list('object_pk', flat=True))
+
+        comments_by_score = defaultdict(list)
+        for comment in CommentExmo.objects.filter(object_pk__in=[s.pk for s in scores]):
+            comments_by_score[int(comment.object_pk)].append(comment)
+
         final_scores = [s for s in scores if s.revision == Score.FINAL]
         interim_scores_by_param = dict((s.parameter.pk, s) for s in scores if s.revision == Score.INTERIM)
 
@@ -488,7 +496,9 @@ class RecommendationsView(DetailView):
 
         scores = []
         for score in final_scores:
-            if score.pk not in with_comments:
+            if score.pk in comments_by_score:
+                score.comments = comments_by_score[score.pk]
+            else:
                 if score.parameter.pk in param_nonrelevant:
                     continue
                 if not score.recommendations:
@@ -504,20 +514,22 @@ class RecommendationsView(DetailView):
 
         scores.sort(key=lambda s: (-s.interim_cost, s.parameter.code))
 
-        if self.task.openness is None:
-            total_cost = None
-        else:
-            total_cost = _round(100.0 - float(self.task.openness))
-
         context.update({
             'scores': scores,
             'mon': monitoring,
             'orgs_count': monitoring.organization_set.count(),
             'registered_count': monitoring.organization_set.filter(inv_status__in=('RGS', 'ACT')).count(),
             'openness': self.task.openness,
-            'total_cost': total_cost,
-            'delta': self.task.openness - self.task.openness_initial if self.task.openness else None,
+            'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
         })
+
+        if context['openness'] is None:
+            context.update(total_cost=None, delta=None)
+        else:
+            context.update({
+                'total_cost': _round(100.0 - float(context['openness'])),
+                'delta': context['openness'] - self.task.openness_initial
+            })
 
         return context
 

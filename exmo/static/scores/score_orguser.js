@@ -17,7 +17,8 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    editor = CKEDITOR.instances['id_comment'];
+    var comment_field_id = $('div.comment-form').find('textarea').attr('id')
+    editor = CKEDITOR.instances[comment_field_id];
     if (editor != undefined) {
         // Update original form inputs when text typed in CKEDITOR
         // Enable submit button if CKEDITOR input not empty.

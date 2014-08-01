@@ -15,6 +15,32 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
+    $.each(CKEDITOR.instances, function(id, editor){
+        if (editor != undefined) {
+            // Update original form inputs when text typed in CKEDITOR
+            // Enable submit button if CKEDITOR input not empty.
+            function ckChangeHandler(e) {
+                var editor_body = $(e.sender.document.$).find('body');
+                var submit = $(e.sender.element.$).closest('form').find('input[type=submit]');
+
+                if(editor_body && editor_body.text().trim() != '') {
+                    submit.prop('disabled', false);
+                } else {
+                    submit.prop('disabled', true);
+                }
+                e.sender.updateElement()
+            }
+
+            if ($.browser.msie) {
+                editor.on('contentDom', function(e) {
+                    editor.document.on('keyup', function(event) { ckChangeHandler(e); });
+                });
+            } else {
+                editor.on('change', ckChangeHandler);
+            }
+        }
+    })
+
     $('a[href="#show_grounds"]').click(function(e){
         $(e.target).siblings('.grounds').slideToggle(function(){
             $(e.target).hide().siblings('a[href="#hide_grounds"]').show();
@@ -28,4 +54,33 @@ $(document).ready(function() {
         return false;
     });
 
+    $('div.recommendations-block tr').each(function(){
+        var tr = $(this);
+        var comments = tr.find('div.comment');
+        if (tr.hasClass('nonrelevant') || tr.hasClass('finished')) {
+            // Nonrelevant and finished will collapse all comments.
+            len = comments.length;
+        }
+        else {
+            // Relevant scores will collapse all except 2 last comments.
+            len = comments.length - 2;
+        }
+        for (i=0; i<len; i++) {
+            $(comments[i]).addClass('collapsible').hide();
+        }
+    })
+    $('.comment-toggle').click(function(){
+        var tr = $(this).closest('tr');
+        tr.find('.collapsible').toggle();
+        tr.find('.comment-toggle').toggle();
+        if (tr.hasClass('finished')) {
+            tr.find('div.comment-form').toggle()
+        }
+    })
+
+    $('input.fake_input').click(function(){
+        var div = $(this).hide().closest('div.comment-form').find('div')
+        div.show()
+        CKEDITOR.instances[div.find('textarea').attr('id')].focus()
+    })
 });

@@ -153,15 +153,20 @@
 
                 {% for score in scores %}
                     {% if score.is_relevant %}
-                        <tr id="param{{ score.parameter.pk }}">
+                        <tr id="param{{ score.parameter.pk }}" class="{% if score.cost == 0 %} finished {% endif %}">
                             <td class='code'><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
                             <td class='center'>
                                 <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
                                 <p>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
                                 {% if score.parameter.grounds and score.cost != 0 %}
-                                    <a href="#show_grounds" class="pseudo">{% trans 'Show grounds' %}</a>
-                                    <a href="#hide_grounds" style="display:none;" class="pseudo">{% trans 'Hide grounds' %}</a>
+                                    <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
+                                    <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>
                                     <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
+                                {% endif %}
+                                {% if view.task.perms.view_task %}
+                                    <div class="comments">
+                                        {% include 'scores/_recomm_comments.html' with score=score %}
+                                    </div>
                                 {% endif %}
                             </td>
                             {% if score.cost == 0 %}
@@ -171,9 +176,16 @@
                             {% endif %}
                         </tr>
                     {% else %}
-                        <tr class="nonrelevant">
+                        <tr id="param{{ score.parameter.pk }}" class="nonrelevant">
                             <td class='code'>{{ score.parameter.code }}</td>
-                            <td class='center'>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</td>
+                            <td class='center'>
+                                <div class="param">{{ score.parameter.name }}</div>
+                                {% if view.task.perms.view_task %}
+                                    <div class="comments">
+                                        {% include 'scores/_recomm_comments.html' with score=score %}
+                                    </div>
+                                {% endif %}
+                            </td>
                             <td class='cost'>{% trans 'Deleted' %}</td>
                         </tr>
                     {% endif %}

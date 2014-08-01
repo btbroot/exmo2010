@@ -1,0 +1,80 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n target_blank urlize_soup date_utils trim_links comments %}
+
+
+{% for comment in score.comments %}
+    {% if forloop.first %}
+        {% if score.comments|length > 2 or score.cost == 0 or not score.is_relevant %}
+            <div class="comment-toggle show">
+                {% blocktrans count counter=score.comments|length %} Show all {{ counter }} comments {% plural %} Show all {{ counter }} comments {% endblocktrans %}
+            </div>
+            <div class="comment-toggle hide hidden">
+                {% trans 'Hide comments' %}
+            </div>
+        {% else %}
+            <hr>
+        {% endif %}
+    {% endif %}
+    <div class="comment" id="comment_{{ comment.pk }}">
+        <span class="author">
+            {% if comment.user.is_expert and not request.user.is_expert %}
+                {{ masked_expert_name }}
+            {% else %}
+                {{ comment.user.legal_name }}
+            {% endif %}
+        </span>
+        <span class="date"> {{ comment.submit_date|date:"DATETIME_FORMAT" }} </span>
+        <div class="body"> {{ comment.comment|safe|urlize_soup|trim_links|target_blank }} </div>
+        {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
+            <div class="comment_deadline">
+                    {% trans 'Deadline for answer to your comment is' %}
+                    {{ comment.submit_date|date_until:score.parameter.monitoring.time_to_answer|date:"DATE_FORMAT" }}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% if not request.user.is_organization %}
+    {% if score.parameter.monitoring.is_interact %}
+        <div class="comment-form {% if score.cost == 0 or not score.is_relevant %} hidden {% endif %}">
+
+            <input type="text" class='fake_input' placeholder="{% trans 'Comment' context 'verb' %}" />
+
+            <div class="hidden">
+                <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'exmo2010:recommendations' view.task.pk %}#param{{ score.parameter.pk }}" />
+                    {{ score.comment_form.comment }}
+                    <input type="submit"  class="tab-reply-block" value="{% trans 'Post comment' %}" disabled="disabled" />
+                </form>
+            </div>
+        </div>
+    {% elif score.parameter.monitoring.is_finishing %}
+        <div class="comment_forbidden_notice">
+            {% trans "You can't leave new comments. We will answer last comments and adjust scores." %}
+        </div>
+    {% elif score.parameter.monitoring.is_published %}
+        <div class="comment_forbidden_notice">
+            {% trans "Rating is published. You can't leave new comments." %}
+        </div>
+    {% endif %}
+{% endif %}
+
+
+

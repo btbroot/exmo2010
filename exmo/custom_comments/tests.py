@@ -166,8 +166,9 @@ class CommentMailNotificationTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
     def test_mail_on_comment(self):
+        url = reverse('exmo2010:post_score_comment', args=[self.score.pk])
         # WHEN I post comment to the score
-        self.client.post(reverse('exmo2010:post_score_comment', args=[self.score.pk]), {'comment': '123'})
+        self.client.post(url, {'score_%s-comment' % self.score.pk: '123'})
         # THEN one email should be sent (to the representative of relevant organization)
         self.assertEqual(len(mail.outbox), 1)
 

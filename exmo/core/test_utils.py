@@ -34,12 +34,14 @@ TIMEOUT = getattr(settings, 'SELENIUM_TEST_TIMEOUT', 6)
 
 
 class BaseSeleniumTestCase(LiveServerTestCase):
-    """ Base class for all selenium tests
+    """
+    Base class for all selenium tests
     To configure default webdriver used, set SELENIUM_WEBDRIVER in your settings.py
-     possible values: FALLBACK PhantomJS Firefox Chrome Opera
-     default: FALLBACK - will try to find first working webdriver
+    possible values: FALLBACK PhantomJS Firefox Chrome Opera
+    default: FALLBACK - will try to find first working webdriver
 
     """
+
     @classmethod
     def setUpClass(cls):
         if not getattr(cls, '__unittest_skip__', False):

@@ -317,8 +317,9 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
         self.client.login(username='orguser', password='password')
 
     def test_activated_status(self):
+        url = reverse('exmo2010:post_score_comment', args=[self.score.pk])
         # WHEN I post first comment
-        self.client.post(reverse('exmo2010:post_score_comment', args=[self.score.pk]), {'comment': '123'})
+        self.client.post(url, {'score_%s-comment' % self.score.pk: '123'})
         # THEN organization invitation status should change to 'activated' ('ACT')
         self.assertEqual(Organization.objects.get(pk=self.org.pk).inv_status, 'ACT')
 

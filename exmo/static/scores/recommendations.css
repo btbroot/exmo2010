@@ -23,12 +23,78 @@
     vertical-align: top;
 }
 
-p {
+a.grounds_toggle {
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+div.comment_deadline {
+    padding: 5px;
+    background-color: #ddffdd;
+    margin: 0 -8px -8px;
+}
+
+div.recommendations-header-block p {
     margin-top: 10px;
 }
 
-p span {
+div.recommendations-header-block p span {
     font-size: 18px;
+}
+
+tr.nonrelevant td.center div.param {
+    margin-bottom: 10px;
+}
+
+div.comment_forbidden_notice {
+    background-color: #FECDCD;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+div.comment-form {
+    background-color: #F1F0EE;
+    padding: 2px 14px 2px 2px;
+    margin-top: 5px;
+}
+
+div.comment-form input.fake_input {
+    width: 100%;
+}
+
+div.comment span.author {
+    font-size: 13px;
+    width: 140px;
+    font-weight: bold;
+}
+
+div.comment span.date {
+    float: right;
+    font-size: 11px;
+    color: #666;
+}
+
+div.comment div.body {
+    margin: 0px;
+    padding: 6px 0px 0px;
+}
+
+
+div.comments div.comment {
+    padding: 8px;
+    line-height: 17px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid #BBB;
+}
+
+div.comments div.comment-toggle {
+    background-color: #F1F0EE;
+    cursor: pointer;
+    line-height: 14px;
+    padding: 9px;
+    text-align: center;
+    color: #005C9C;
 }
 
 .recommendations-block {
@@ -69,6 +135,12 @@ p span {
 .recommendations-block tr.nonrelevant td.center {
     color: #666666;
 }
+
+hr {
+    border-color: #d7d7d7;
+    background-color: #d7d7d7;
+}
+
 .recommendations-block td.cost {
     text-align: right;
     min-width: 65px;

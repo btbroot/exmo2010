@@ -20,9 +20,12 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms.models import modelform_factory
 from django.utils.translation import ugettext, ugettext_lazy as _
+from ckeditor.widgets import CKEditorWidget
 
 from core.utils import clean_message
+from custom_comments.models import CommentExmo
 
 from .base import BaseModel
 from .claim import Claim
@@ -225,3 +228,7 @@ class Score(BaseModel):
                 color = 'red'
 
         return color
+
+    def comment_form(self, data=None):
+        kwargs = dict(fields=['comment'], widgets={'comment': CKEditorWidget(config_name='simplified')})
+        return modelform_factory(CommentExmo, **kwargs)(data=data, prefix='score_%s' % str(self.pk))

@@ -232,8 +232,9 @@ class ScoreEditInteractionTestCase(TestCase):
     def test_edit_score(self, username):
         self.client.login(username=username, password='password')
 
+        data = {'found': 0, 'score_%s-comment' % self.score.pk: '<p>lol</p>', 'recommendations': '123'}
         # WHEN user POSTs score edit form
-        response = self.client.post(self.url, {'found': 0, 'comment': '<p>lol</p>', 'recommendations': '123'})
+        response = self.client.post(self.url, data)
 
         # THEN response redirects to score page
         self.assertRedirects(response, self.url)
