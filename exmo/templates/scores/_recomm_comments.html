@@ -51,7 +51,7 @@
     </div>
 {% endfor %}
 
-{% if not request.user.is_organization %}
+{% if request.user.is_organization %}
     {% if score.parameter.monitoring.is_interact %}
         <div class="comment-form {% if score.cost == 0 or not score.is_relevant %} hidden {% endif %}">
 
