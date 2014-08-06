@@ -1,3 +1,4 @@
+{% extends "base_print.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -20,73 +21,63 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% spaceless %}
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}">
-        <head>
-            <title>{{ task.organization.name }}</title>
-            <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/print_style.css' %}"/>
-        </head>
+{% block title %}{{ task.organization.name }}{% endblock %}
 
-        <body>
-            <h1>{{ task.organization.name }}</h1>
+{% block content %}
+    <h1>{{ task.organization.name }}</h1>
 
-            <p>{% trans 'Data source:' %} {{ task_scores_url }}</p>
+    <p>{% trans 'Data source:' %} {{ task_scores_url }}</p>
 
-            {% with task.organization.monitoring.has_npa as has_npa %}
-                {% for score in task.relevant_scores %}
-                    <h2>{{ score.parameter.code }} —  {{ score.parameter.name }}</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td>{% trans 'Found' %}</td>
-                                <td>{% trans 'Complete' %}</td>
-                                <td>{% trans 'Topical' %}</td>
-                                <td>{% trans 'Accessible' %}</td>
-                                <td>{% trans 'HTML' %}</td>
-                                <td>{% trans 'Document' %}</td>
-                                <td>{% trans 'Image' %}</td>
-                                <td>{% trans 'Parameter`s score' %}</td>
-                                <td>{% trans 'Weight' %}</td>
-                                {% if has_npa %}
-                                    <td>{% trans 'Type' %}</td>
-                                {% endif %}
-                            </tr>
-                        </thead>
+    {% with task.organization.monitoring.has_npa as has_npa %}
+        {% for score in task.relevant_scores %}
+            <h2>{{ score.parameter.code }} — {{ score.parameter.name }}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <td>{% trans 'Found' %}</td>
+                        <td>{% trans 'Complete' %}</td>
+                        <td>{% trans 'Topical' %}</td>
+                        <td>{% trans 'Accessible' %}</td>
+                        <td>{% trans 'HTML' %}</td>
+                        <td>{% trans 'Document' %}</td>
+                        <td>{% trans 'Image' %}</td>
+                        <td>{% trans 'Parameter`s score' %}</td>
+                        <td>{% trans 'Weight' %}</td>
+                        {% if has_npa %}
+                            <td>{% trans 'Type' %}</td>
+                        {% endif %}
+                    </tr>
+                </thead>
 
-                        <tbody>
-                            <tr>
-                                <td>{{ score.found }}</td>
-                                {% for crit in score.criteria %}
-                                    <td>{{ crit|default:'' }}</td>
-                                {% endfor %}
+                <tbody>
+                    <tr>
+                        <td>{{ score.found }}</td>
+                        {% for crit in score.criteria %}
+                            <td>{{ crit|default:'' }}</td>
+                        {% endfor %}
 
-                                <td>{{ score.openness|floatformat }}%</td>
-                                <td>{{ score.parameter.weight }}</td>
-                                {% if has_npa %}
-                                    <td>{{ score.parameter.npa_display }}</td>
-                                {% endif %}
-                            </tr>
-                        </tbody>
-                    </table>
+                        <td>{{ score.openness|floatformat }}%</td>
+                        <td>{{ score.parameter.weight }}</td>
+                        {% if has_npa %}
+                            <td>{{ score.parameter.npa_display }}</td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
 
-                    <h3>{% trans 'Found information links' %}</h3>
-                    {% if score.links %}
-                        <p>{{ score.links|linebreaksbr}}</p>
-                    {% else %}
-                        <p>{% trans 'No links' %}</p>
-                    {% endif %}
+            <h3>{% trans 'Found information links' %}</h3>
+            {% if score.links %}
+                <p>{{ score.links|linebreaksbr}}</p>
+            {% else %}
+                <p>{% trans 'No links' %}</p>
+            {% endif %}
 
-                    <h3>{% trans 'Recommendations' %}</h3>
-                    {% if score.recommendations %}
-                        <p>{{ score.recommendations|linebreaksbr}}</p>
-                    {% else %}
-                        <p>{% trans 'No recommendations' %}</p>
-                    {% endif %}
-                {% endfor %}
-            {% endwith %}
-
-            {% include "exmo2010/_footer_print.html" %}
-        </body>
-    </html>
-{% endspaceless %}
+            <h3>{% trans 'Recommendations' %}</h3>
+            {% if score.recommendations %}
+                <p>{{ score.recommendations|linebreaksbr}}</p>
+            {% else %}
+                <p>{% trans 'No recommendations' %}</p>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+{% endblock %}

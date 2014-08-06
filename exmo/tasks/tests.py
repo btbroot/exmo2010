@@ -279,8 +279,8 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         self.assertEqual(response['status_display'], unicode(open_status_display))
 
         # AND new permitted actions should be in the ajax response
-        # ('close_task', 'fill_task', 'view_task', 'view_openness')
-        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness']
+        # ('close_task', 'fill_task', 'view_task', 'view_openness', 'view_comments')
+        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness', 'view_comments']
         self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
     def test_allow_approve_complete_task_action(self):
@@ -296,8 +296,8 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         self.assertEqual(response['status_display'], unicode(approved_status_display))
 
         # AND new permitted actions should be in the ajax response
-        # ('open_task', 'fill_task', 'view_task', 'view_openness')
-        expected_perms = ['open_task', 'fill_task', 'view_task', 'view_openness']
+        # ('open_task', 'fill_task', 'view_task', 'view_openness', 'view_comments')
+        expected_perms = ['open_task', 'fill_task', 'view_task', 'view_openness', 'view_comments']
         self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
     def test_forbid_approve_open_task_action(self):
@@ -314,8 +314,8 @@ class ExpertATaskAjaxActionsTestCase(TestCase):
         self.assertTrue(res_pattern.match(response['status_display']))
 
         # AND ajax response  permitted actions should be same as before
-        # ('close_task', 'fill_task', 'view_task', 'view_openness')
-        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness']
+        # ('close_task', 'fill_task', 'view_task', 'view_openness', 'view_comments')
+        expected_perms = ['close_task', 'fill_task', 'view_task', 'view_openness', 'view_comments']
         self.assertEqual(set(expected_perms), set(response['perms'].split()))
 
 

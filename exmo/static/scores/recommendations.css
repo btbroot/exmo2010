@@ -17,6 +17,10 @@
 #
 */
 
+h2 {
+    margin: 0;
+}
+
 .recommendations-header-block h2 {
     display: inline;
     margin-right: 10px;
@@ -54,12 +58,15 @@ div.comment_forbidden_notice {
 
 div.comment-form {
     background-color: #F1F0EE;
-    padding: 2px 14px 2px 2px;
+    padding: 5px;
     margin-top: 5px;
 }
 
 div.comment-form input.fake_input {
     width: 100%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 div.comment span.author {
@@ -75,8 +82,8 @@ div.comment span.date {
 }
 
 div.comment div.body {
-    margin: 0px;
-    padding: 6px 0px 0px;
+    margin: 0;
+    padding: 6px 0 0;
 }
 
 
@@ -107,12 +114,9 @@ div.comments div.comment-toggle {
     width: 100%;
 }
 
-.recommendations-block h2 {
+.recommendations-block caption {
     padding: 0 5px;
-}
-
-.recommendations-block h2 span {
-    color: #CD0200;
+    margin-bottom: 10px;
 }
 
 .recommendations-block td.code {
@@ -120,6 +124,7 @@ div.comments div.comment-toggle {
     width: 85px;
     font-size: 18px;
 }
+
 .recommendations-block tr.nonrelevant td.code {
     color: #666666;
 }
@@ -128,10 +133,12 @@ div.comments div.comment-toggle {
     max-width: 760px;
     min-width: 610px;
 }
+
 .recommendations-block td.center > p {
     font-size: 15px;
     line-height: 20px;
 }
+
 .recommendations-block tr.nonrelevant td.center {
     color: #666666;
 }
@@ -141,18 +148,16 @@ hr {
     background-color: #d7d7d7;
 }
 
-.recommendations-block td.cost {
+.recommendations-block .cost {
     text-align: right;
     min-width: 65px;
     width: 65px;
     font-size: 18px;
     color: #CD0200;
 }
-.recommendations-block tr.nonrelevant td.cost {
-    color: #222222;
-}
 
-.recommendations-block td.cost.complete {
+.recommendations-block tr.nonrelevant td.cost,
+.recommendations-block td.complete {
     color: #222222;
 }
 
@@ -164,8 +169,6 @@ hr {
     border-top: 1px solid #D7D7D7;
     border-bottom: 1px solid #D7D7D7;
 }
-
-
 
 .grounds {
     margin: 10px 0;

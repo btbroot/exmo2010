@@ -736,7 +736,7 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
 class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
     # exmo2010:recommendations
 
-    # On recommendations page non-experts should be able to toggle hidden comments visibility.
+    # On recommendations page organizations representatives should be able to toggle hidden comments visibility.
     # For finished or nonrelevant scores all comments should be initially hidden.
     # For other scores, all comments except the last 2 should be initially hidden.
 
@@ -745,8 +745,6 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
 
         # GIVEN organization and parameter in PUBLISHED monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED)
-        # AND user without any permissions
-        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
@@ -774,15 +772,9 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
         self.score_0.comments = [comment(self.score_0, n) for n in range(3)]
         self.score_nonerelevant.comments = [comment(self.score_nonerelevant, n) for n in range(3)]
 
-    @parameterized.expand([
-        ('orguser',),
-        ('user',),
-        ('anonymous',)
-    ])
-    def test_score_comments_toggle(self, user):
+    def test_score_comments_toggle(self):
         # WHEN I login
-        if user != 'anonymous':
-            self.login(user, 'password')
+        self.login('orguser', 'password')
 
         # AND I get recommendations page
         self.get(reverse('exmo2010:recommendations', args=(self.task.pk,)))

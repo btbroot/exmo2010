@@ -1,0 +1,44 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+    <head>
+        <title>
+            {% block title %}{{ title }}{% endblock title %} |{% trans 'AIS Infometer' %}
+        </title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
+
+        <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/print_style.css' %}"/>
+        {% if LANGUAGE_BIDI %}
+            <link rel="stylesheet" type="text/css" href="{% static 'admin/css/rtl.css' %}" />
+        {% endif %}
+        {% block extra_css %}{% endblock %}
+    </head>
+
+    <body>
+        {% block h1 %}{% endblock %}
+        {% block content %}{% endblock content %}
+
+        {% include "_footer_print.html" %}
+    </body>
+</html>

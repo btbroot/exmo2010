@@ -31,7 +31,7 @@ from monitorings.views import (MonitoringEditView, MonitoringDeleteView, Monitor
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
-from scores.views import RecommendationsView
+from scores.views import RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments
 
 
 def named_urls(module, *urlpatterns):
@@ -168,6 +168,8 @@ urlpatterns = named_urls('',
     (r'^scores/(?P<task_pk>\d+)/$', 'scores.views.task_scores'),
     (r'^scores/(?P<task_pk>\d+)/print/$', 'scores.views.task_scores_print'),
     (r'^recommendations/(?P<task_pk>\d+)/$', RecommendationsView, 'recommendations'),
+    (r'^recommendations/(?P<task_pk>\d+)/print/$', RecommendationsPrint, 'recommendations_print'),
+    (r'^recommendations/(?P<task_pk>\d+)/print_with_comments/$', RecommendationsPrintWithComments, 'recommendations_print_with_comments'),
 
     (r'^tasks/', include(tasks_patterns)),
     (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),

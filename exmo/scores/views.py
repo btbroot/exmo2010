@@ -176,6 +176,7 @@ def score_view(request, **kwargs):
         'score': annotate_exmo_perms(score, request.user),
         'score_interim': annotate_exmo_perms(score_interim[0] if score_interim else None, request.user),
         'param': annotate_exmo_perms(param, request.user),
+        'task': annotate_exmo_perms(task, request.user),
         'org': org,
         'score_table': score_table,
         'score_delta': score_delta,
@@ -515,7 +516,7 @@ class RecommendationsView(DetailView):
         scores.sort(key=lambda s: (-s.interim_cost, s.parameter.code))
 
         context.update({
-            'scores': scores,
+            'scores': annotate_exmo_perms(scores, self.request.user),
             'mon': monitoring,
             'orgs_count': monitoring.organization_set.count(),
             'registered_count': monitoring.organization_set.filter(inv_status__in=('RGS', 'ACT')).count(),
@@ -532,6 +533,38 @@ class RecommendationsView(DetailView):
             })
 
         return context
+
+
+class RecommendationsPrint(RecommendationsView):
+    template_name = "scores/recommendations_print.html"
+    with_comments = False
+
+    def get_context_data(self, **kwargs):
+        context = super(RecommendationsPrint, self).get_context_data(**kwargs)
+        recommendations_url = reverse('exmo2010:recommendations', args=(self.task.pk,))
+        rating_place = None
+        if self.task.approved:
+            for t in self.task.organization.monitoring.rating(rating_type='all'):
+                if t.pk == self.task.pk:
+                    rating_place = t.place
+                    break
+
+        context.update({
+            'rating_place': rating_place,
+            'recommendations_url': self.request.build_absolute_uri(recommendations_url),
+        })
+
+        return context
+
+
+class RecommendationsPrintWithComments(RecommendationsPrint):
+    with_comments = True
+
+    def get_object(self, queryset=None):
+        task = super(RecommendationsPrintWithComments, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.view_comments', task):
+            raise PermissionDenied
+        return task
 
 
 @login_required

@@ -1,0 +1,153 @@
+{% extends "base_print.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static bleach_tags date_utils comments %}
+
+{% block title %}{{ task.organization.name }}{% endblock %}
+
+{% block extra_css %}
+        <link rel="stylesheet" type="text/css" href="{% static 'scores/recommendations.css' %}" />
+{% endblock %}
+
+{% block content %}
+        <h1>{{ task.organization.name }}</h1>
+
+        <p>{% trans 'Data source:' %} {{ recommendations_url }}</p>
+
+        <div class="recommendations-header-block">
+            <p>
+                {% if task.approved %}
+                    {% if orgs_count > 1 %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span>{{ rating_place }} position</span> in the rating {{ monitoring_name }}.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating {{ monitoring_name }}.{% endblocktrans %}<br />
+                    {% endif %}
+                {% else %}
+                    &mdash; {% blocktrans with org_url=task.organization.url %}Site {{ org_url }}.{% endblocktrans %}<br/>
+                {% endif %}
+
+                {% ifnotequal openness None %}
+                    &mdash;
+                    {% if delta > 0 %}
+                        {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
+                    {% endif %}
+                    {% if mon.is_published %}
+                        {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% else %}
+                        {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endifnotequal %}
+
+                {% if orgs_count > 1 %}
+                    &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
+                {% endif %}
+
+                {% if mon.is_interact and registered_count > 1 %}
+                    &mdash; {% blocktrans %}{{ registered_count }} organizations are working to increase their websites openness.{% endblocktrans %}
+                    {% if is_organization %}
+                        {% blocktrans %}Your rating position will decrease as their openness increases.{% endblocktrans %}
+                    {% endif %}
+                    <br />
+                {% endif %}
+
+                {% if is_organization %}
+                    {% if mon.is_published %}
+                        &mdash; {% blocktrans %}Order Certificate with rating position of the website and its openness value.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
+                    {% endif %}
+                {% endif %}
+            </p>
+
+            {% if is_organization %}
+                <p>
+                    {% if mon.is_interact %}
+                        {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}
+                    {% endif %}
+
+                    {% if mon.is_finishing %}
+                        {% blocktrans with publish_date=mon.publish_date %}You can not leave new comments. We are answering the latest comments and correct assessments. Please wait till rating is published {{ publish_date }}.{% endblocktrans %}
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="recommendations-block">
+            <table>
+                <caption>
+                    {% if scores|length != 0 %}
+                        <h2 class="float-left">{% trans 'Recommendations list' %}</h2>
+                    {% endif %}
+                    {% if total_cost %}
+                        <span class="cost float-right">{{ total_cost|floatformat }}%</span>
+                    {% endif %}
+                </caption>
+
+                {% if scores|length == 0 %}
+                    <p>{% trans 'No recommendations' %}</p>
+                {% else %}
+                    {% for score in scores %}
+                        <tr {% if not score.is_relevant %}class="nonrelevant"{% endif %}>
+                            <td class="code">{{ score.parameter.code }}</td>
+
+                            <td class="center">
+                                <div>{{ score.parameter.name }}</div>
+
+                                {% if score.is_relevant %}
+                                    <p>{{ score.recommendations|escape|linebreaksbr }}</p>
+                                    {% if view.with_comments and score.parameter.grounds and score.cost != 0 %}
+                                        <h3>{% trans 'Grounds' %}</h3>
+                                        <div>{{ score.parameter.grounds|bleach }}</div>
+                                    {% endif %}
+                                {% endif %}
+
+                                {% if view.with_comments and task.perms.view_comments and score.comments %}
+                                    <div class="comments">
+                                        {% for comment in score.comments %}
+                                            <div class="comment">
+                                                <span class="author">
+                                                    {% if comment.user.is_expert and not request.user.is_expert %}
+                                                        {{ masked_expert_name }}
+                                                    {% else %}
+                                                        {{ comment.user.legal_name }}
+                                                    {% endif %}
+                                                </span>
+                                                <span class="date"> {{ comment.submit_date|date:"DATETIME_FORMAT" }} </span>
+                                                <div class="body"> {{ comment.comment|safe }} </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </td>
+
+                            {% if score.is_relevant %}
+                                {% if score.cost == 0 %}
+                                    <td class="cost complete">{% trans 'Ready' %}</td>
+                                {% else %}
+                                    <td class="cost">+{{ score.cost|floatformat }}%</td>
+                                {% endif %}
+                            {% else %}
+                                <td class="cost">{% trans 'Deleted' %}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+{% endblock %}

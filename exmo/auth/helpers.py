@@ -116,6 +116,10 @@ def task_permission(user, priv, task):
     elif priv == 'view_openness':
         if user.is_expertB or user.represents(task.organization) or phase == PUB:
             return True
+    if priv == 'view_comments':
+        if phase in (INT, FIN, PUB):
+            if user.is_expertA or user.executes(task) or user.represents(task.organization):
+                return True
 
     return False
 
@@ -147,11 +151,6 @@ def score_permission(user, priv, score):
             return True
         elif user.represents(task.organization) and phase == INT:
             return True
-
-    if priv == 'view_comment':
-        if phase in (INT, FIN, PUB):
-            if user.is_expertA or user.executes(task) or user.represents(task.organization):
-                return True
 
     if priv in ['answer_claim', 'answer_clarification']:
         if user.executes(task) and phase in (RATE, INT, FIN):
@@ -221,6 +220,7 @@ _existing_permissions = {
         'view_task',
         'approve_task',
         'view_openness',
+        'view_comments',
     ],
     Score: [
         # clarifications
@@ -228,7 +228,7 @@ _existing_permissions = {
         # claims
         'view_claim', 'answer_claim', 'add_claim', 'delete_claim',
         # comments
-        'view_comment', 'add_comment',
+        'add_comment',
         # score
         'delete_score', 'edit_score', 'view_score'
     ],

@@ -52,14 +52,14 @@
         {% if param.perms.exclude_parameter %}
             <input type="button"
                    value="{% trans 'Set non-relevant' %}"
-                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' score.task.pk param.pk %}?{{ request.GET.urlencode }}'" />
-            <a href="{% url 'exmo2010:parameter_update' score.task.pk param.pk %}">{% trans 'Edit parameter' %}</a>
+                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' task.pk param.pk %}?{{ request.GET.urlencode }}'" />
+            <a href="{% url 'exmo2010:parameter_update' task.pk param.pk %}">{% trans 'Edit parameter' %}</a>
         {% endif %}
 
         <h2>{% trans 'Parameter characteristics' %}:</h2>
         <p>
             {% url 'exmo2010:monitoring_rating' param.monitoring.pk as rating_url %}
-            {% url 'exmo2010:task_scores' score.task.pk as task_url %}
+            {% url 'exmo2010:task_scores' task.pk as task_url %}
             &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}The parameter is evaluated for the website <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> of the <a href="{{ task_url }}">{{ org_name }}</a> within the rating <a href="{{ rating_url }}">{{ monitoring }}</a>.{% endblocktrans %}<br />
             &mdash; {% trans 'Social significance coefficient equals' %} {{ param.weight }}.<br />
             {% if param.monitoring.has_npa %}
@@ -294,7 +294,7 @@
         </div>
     {% endif %}
 
-    {% if score.pk and score.perms.view_comment %}
+    {% if score.pk and task.perms.view_comments %}
         <div class="comments-block">
             <h2>{% trans "Comments" %}</h2>
 

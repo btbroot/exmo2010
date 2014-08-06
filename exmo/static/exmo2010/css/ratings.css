@@ -29,21 +29,11 @@
     vertical-align: top;
 }
 
-i.map {
-    background: url("../img/earth_14x14.png") no-repeat;
-    background-size: 16px 16px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale')";
-}
-
 i.download-alt {
     background: url("../img/glyphicons-halflings.png") -96px -24px no-repeat;
 }
 
-div.utils {
-    float: right;
-    line-height: 24px;
+.utils {
     margin-bottom: 15px;
 }
 

@@ -33,6 +33,9 @@ p span {
     font-size: 18px;
 }
 
+.utils {
+    margin-bottom: 15px;
+}
 
 /* Score table colors style */
 
@@ -78,38 +81,6 @@ p span {
 .score_interact {
     font-size: 12px;
     opacity: 0.5;
-}
-
-i.add {
-    background: url("../exmo2010/img/add.png") no-repeat;
-    background-size: 16px 16px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/add.png', sizingMethod='scale')";
-}
-
-i.upload {
-    background: url("../exmo2010/img/upload.png") no-repeat;
-    background-size: 16px 16px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/upload.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/upload.png', sizingMethod='scale')";
-}
-
-i.print {
-    background: url("../exmo2010/img/print.png") no-repeat;
-    background-size: 16px 16px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/print.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/print.png', sizingMethod='scale')";
-}
-
-i.download {
-    background: url("../exmo2010/img/download.png") no-repeat;
-    background-size: 16px 16px;
-    /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/download.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../exmo2010/img/download.png', sizingMethod='scale')";
 }
 
 /* Styles for ankete */

@@ -62,14 +62,14 @@
             </div>
         {% endif %}
 
-{#  START -- Болванка для ссылок на печать  #}
-{#        <div class="float-right">#}
-{#            <i class="icon"></i>#}
-{#            <a href="{% url 'exmo2010:index' %}" class="pseudo">{% trans 'Print' %}</a>#}
-{#            <i class="icon"></i>#}
-{#            <a href="{% url 'exmo2010:index' %}" class="pseudo">{% trans 'Print with comments' %}</a>#}
-{#        </div>#}
-{#  END -- Болванка для ссылок на печать  #}
+        <div class="utils">
+            <i class="icon print"></i>
+            <a href="{% url 'exmo2010:recommendations_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
+            {% if task.perms.view_comments %}
+                <i class="icon print"></i>
+                <a href="{% url 'exmo2010:recommendations_print_with_comments' task.pk %}" target="_blank">{% trans 'Print with comments' %}</a>
+            {% endif %}
+        </div>
 
         <p>
             {% if task.approved %}
@@ -137,20 +137,18 @@
 
     <div class="recommendations-block">
         <table>
-            <h2>
+            <caption>
                 {% if not request.user.is_expert %}
-                    {% trans 'Recommendations list' %}
+                    <h2 class="float-left">{% trans 'Recommendations list' %}</h2>
                 {% endif %}
                 {% if total_cost %}
-                    &nbsp;
-                    <span class="float-right">{{ total_cost|floatformat }}%</span>
+                    <span class="cost float-right">{{ total_cost|floatformat }}%</span>
                 {% endif %}
-            </h2>
+            </caption>
 
             {% if scores|length == 0 %}
                 <p>{% trans 'No recommendations' %}</p>
             {% else %}
-
                 {% for score in scores %}
                     {% if score.is_relevant %}
                         <tr id="param{{ score.parameter.pk }}" class="{% if score.cost == 0 %} finished {% endif %}">
@@ -163,7 +161,7 @@
                                     <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>
                                     <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
                                 {% endif %}
-                                {% if view.task.perms.view_task %}
+                                {% if task.perms.view_comments %}
                                     <div class="comments">
                                         {% include 'scores/_recomm_comments.html' with score=score %}
                                     </div>
@@ -180,7 +178,7 @@
                             <td class='code'>{{ score.parameter.code }}</td>
                             <td class='center'>
                                 <div class="param">{{ score.parameter.name }}</div>
-                                {% if view.task.perms.view_task %}
+                                {% if task.perms.view_comments %}
                                     <div class="comments">
                                         {% include 'scores/_recomm_comments.html' with score=score %}
                                     </div>
@@ -190,7 +188,6 @@
                         </tr>
                     {% endif %}
                 {% endfor %}
-
             {% endif %}
         </table>
     </div>
