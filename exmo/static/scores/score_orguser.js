@@ -17,8 +17,9 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-    var comment_field_id = $('div.comment-form').find('textarea').attr('id')
-    editor = CKEDITOR.instances[comment_field_id];
+    var comment_field = $('div.comment-form').find('textarea');
+    var editor = CKEDITOR.instances[comment_field.attr('id')];
+
     if (editor != undefined) {
         // Update original form inputs when text typed in CKEDITOR
         // Enable submit button if CKEDITOR input not empty.
@@ -40,5 +41,13 @@ $(document).ready(function() {
         } else {
             editor.on('change', ckChangeHandler);
         }
+    } else {
+        comment_field.on('change keyup paste', function() {
+            if($(this).val().trim() != '') {
+                $('#submit_comment').prop('disabled', false);
+            } else {
+                $('#submit_comment').prop('disabled', true);
+            }
+        })
     }
 });

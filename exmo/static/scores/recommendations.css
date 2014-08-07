@@ -62,7 +62,8 @@ div.comment-form {
     margin-top: 5px;
 }
 
-div.comment-form input.fake_input {
+div.comment-form input.fake_input,
+div.comment-form textarea {
     width: 100%;
     box-sizing: border-box;
     -moz-box-sizing: border-box;

@@ -357,6 +357,10 @@ span.score_interim {
     margin-top: 20px;
 }
 
+.comment-form textarea {
+    width: 100%;
+    padding: 0;
+}
 
 /* Claims & Clarifications */
 
