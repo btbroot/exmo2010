@@ -340,7 +340,7 @@ class RepresentativesExportTestCase(TestCase):
         # AND parameter with score
         parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
         score = mommy.make(Score, task=task, parameter=parameter)
-        # AND org repersentative
+        # AND org representative
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
         orguser.profile.organization = [org]
@@ -378,3 +378,28 @@ class RepresentativesExportTestCase(TestCase):
             self.assertEqual(row[4], user.position)
             # AND 6 row should contain count of comments
             self.assertEqual(int(row[5]), 1)
+
+
+class RepresentativesFilterByOrganizationsTestCase(TestCase):
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND there are 2 organizations in monitoring
+        self.org1 = mommy.make(Organization, monitoring=self.monitoring)
+        self.org2 = mommy.make(Organization, monitoring=self.monitoring)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        # AND 1 representative connected to 2 organizations
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization = [self.org1, self.org2]
+        # AND I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+
+    def test_filter_query(self):
+        url = reverse('exmo2010:representatives', args=[self.monitoring.pk])
+        # WHEN I get filter by organizations
+        response = self.client.get(url, {'full_name_or_email': '', 'organizations': self.org1.pk})
+        # THEN count of organizations should equal 1
+        self.assertEqual(len(response.context['orgs']), 1)

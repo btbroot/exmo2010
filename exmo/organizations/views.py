@@ -220,6 +220,9 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
 
         if queryform.is_valid():
             users = queryform.apply(users)
+            org_pk = queryform.cleaned_data['organizations']
+            if org_pk:
+                orgs = orgs.filter(pk=org_pk)
 
         users = set(users.values_list('pk', flat=True))
 
