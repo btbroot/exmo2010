@@ -20,7 +20,7 @@ from contextlib import contextmanager
 
 from django.conf import settings
 from django.db import transaction
-from django.test import LiveServerTestCase, SimpleTestCase
+from django.test import LiveServerTestCase, SimpleTestCase, Client
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
@@ -145,6 +145,7 @@ class OptimizedTestCase(SimpleTestCase):
         transaction.enter_transaction_management(using='default')
         transaction.managed(True, using='default')
         disable_transaction_methods()
+        cls.client = Client()
 
     @classmethod
     def tearDownClass(cls):

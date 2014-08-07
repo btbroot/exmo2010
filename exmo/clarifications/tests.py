@@ -28,18 +28,17 @@ from exmo2010.models import (
     ObserversGroup, Task, MONITORING_RATE)
 
 
-class ClarificationActionsAccessTestCase(TestCase):
-    # SHOULD allow only expertA to create clarification
-    # SHOULD allow only expertB to answer clarification
+class ClarificationCreateAccessTestCase(TestCase):
+    # exmo2010:clarification_create
+
+    # Should allow only expertA to create clarification
 
     def setUp(self):
-        # GIVEN organization in MONITORING_RATE monitoring
+        # GIVEN organization in RATE monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
 
         # AND user without any permissions
         User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        # AND superuser
-        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
         # AND expert B
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         expertB.profile.is_expertB = True
@@ -90,6 +89,46 @@ class ClarificationActionsAccessTestCase(TestCase):
         # THEN clarification should not get created in the database (only one clarification exist)
         self.assertEqual(Clarification.objects.count(), 1)
 
+
+class ClarificationAnswerAccessTestCase(TestCase):
+    # exmo2010:clarification_answer
+
+    # Should allow only expertB to answer clarification
+
+    def setUp(self):
+        # GIVEN organization in MONITORING_RATE monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+
+        # AND user without any permissions
+        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        # AND superuser
+        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.organization = [org]
+        # AND observer user
+        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
+        # AND observers group for rate monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=org.monitoring)
+        obs_group.organizations = [org]
+        obs_group.users = [observer]
+
+        # AND score for expertB task
+        score = mommy.make(Score, task__organization=org, task__user=expertB)
+        # AND clarification in that score
+        self.clarification = mommy.make(Clarification, score=score)
+
+        answer_field = '%s-answer' % self.clarification.answer_form().prefix
+        self.answer_data = {answer_field: 'lol'}
+
+        self.url = reverse('exmo2010:clarification_answer', args=[self.clarification.pk])
+
     @parameterized.expand([
         ('user',),
         ('org',),
@@ -100,8 +139,7 @@ class ClarificationActionsAccessTestCase(TestCase):
         self.client.login(username=username, password='password')
 
         # WHEN unauthorized user forges and POSTs clarification form with answer to existing clarification
-        data = {'clarification-comment': 'lol', 'clarification-clarification_id': self.clarification.pk}
-        self.client.post(self.url, data)
+        self.client.post(self.url, self.answer_data)
 
         # THEN clarification answer should not change in the database
         self.assertEqual(Clarification.objects.get(pk=self.clarification.pk).answer, '')
@@ -110,9 +148,7 @@ class ClarificationActionsAccessTestCase(TestCase):
         self.client.login(username='expertB', password='password')
 
         # WHEN expertB submits clarification form with answer to existing clarification
-        url = reverse('exmo2010:clarification_answer', args=[self.clarification.pk])
-        post_field = '%s-answer' % self.clarification.answer_form().prefix
-        response = self.client.post(url, {post_field: 'lol'}, follow=True)
+        response = self.client.post(self.url, self.answer_data, follow=True)
 
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
@@ -122,7 +158,7 @@ class ClarificationActionsAccessTestCase(TestCase):
 
 
 class ClarificationEmailNotifyTestCase(TestCase):
-    # SHOULD send email notification when clarification is created
+    # Should send email notification when clarification is created
 
     def setUp(self):
         # GIVEN MONITORING_RATE monitoring
