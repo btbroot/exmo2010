@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from textwrap import dedent
+
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -25,18 +25,18 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.test import TestCase
 from django.utils import translation
-from mock import MagicMock
+from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from core.sql import *
+from core.test_utils import OptimizedTestCase
 from core.utils import get_named_patterns
-from exmo2010.forms import CertificateOrderForm
 from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
-    Group, Monitoring, Organization, Parameter, Questionnaire, Score, PhonesField, Claim, Clarification,
-    ObserversGroup, Task, OpennessExpression, UserProfile, ValidationError, MONITORING_PUBLISHED
+    Group, Monitoring, Organization, Parameter, Score, PhonesField,
+    Task, UserProfile, MONITORING_PUBLISHED
 )
+from exmo2010.views import CertificateOrderView
 
 
 class TestPhonesFieldValidation(TestCase):
@@ -87,246 +87,102 @@ class NegativeParamMonitoringRatingTestCase(TestCase):
         self.assertEqual(task.task_openness, 50)
 
 
-class TestOpennessExpression(TestCase):
-    # Scenario: openness expression model test
-    parameters_count = 10
-    empty_string = ""
-    revision_filter = sql_revision_filter
-    parameter_filter = sql_parameter_filter % ','.join(str(i) for i in range(1, parameters_count + 1))
-
-    def setUp(self):
-        # GIVEN 2 openness expressions with valid code
-        self.v1 = mommy.make(OpennessExpression, code=1)
-        self.v8 = mommy.make(OpennessExpression, code=8)
-        # AND 1 openness expression with invalid code
-        self.v2 = mommy.make(OpennessExpression, code=2)
-        # AND any 10 parameters objects
-        self.parameters = mommy.make(Parameter, _quantity=self.parameters_count)
-
-    @parameterized.expand([
-        ({}, [sql_score_openness_v1, revision_filter, empty_string]),
-        ({'initial': True}, [sql_score_openness_initial_v1, empty_string, empty_string]),
-        ({'parameters': True}, [sql_score_openness_v1, revision_filter, parameter_filter]),
-        ({'parameters': True, 'initial': True}, [sql_score_openness_initial_v1, empty_string, parameter_filter]),
-    ])
-    def test_get_sql_openness_valid_v1(self, kwargs, args):
-        # WHEN openness code in allowable range
-        if kwargs.get('parameters', False):
-            kwargs['parameters'] = self.parameters
-
-        # THEN function return expected result
-        self.assertEqual(self.v1.get_sql_openness(**kwargs),
-                         self.expected_result(*args))
-
-    @parameterized.expand([
-        ({}, [sql_score_openness_v8, revision_filter, empty_string]),
-        ({'initial': True}, [sql_score_openness_initial_v8, empty_string, empty_string]),
-        ({'parameters': True}, [sql_score_openness_v8, revision_filter, parameter_filter]),
-        ({'parameters': True, 'initial': True}, [sql_score_openness_initial_v8, empty_string, parameter_filter]),
-    ])
-    def test_get_sql_openness_valid_v1(self, kwargs, args):
-        # WHEN openness code in allowable range
-        if kwargs.get('parameters', False):
-            kwargs['parameters'] = self.parameters
-
-        # THEN function return expected result
-        self.assertEqual(self.v8.get_sql_openness(**kwargs),
-                         self.expected_result(*args))
-
-    @parameterized.expand([
-        ({},),
-        ({'initial': True},),
-        ({'parameters': True},),
-        ({'parameters': True, 'initial': True},),
-    ])
-    def test_get_sql_openness_invalid(self, kwargs):
-        # WHEN openness code is invalid
-        if kwargs.get('parameters', False):
-            kwargs['parameters'] = self.parameters
-
-        # THEN raises exception
-        self.assertRaises(ValidationError, self.v2.get_sql_openness, **kwargs)
-
-    def expected_result(self, sql_score_openness, sql_revision_filter, sql_parameter_filter):
-        result = sql_task_openness % {
-            'sql_score_openness': sql_score_openness,
-            'sql_revision_filter': sql_revision_filter,
-            'sql_parameter_filter': sql_parameter_filter,
-        }
-
-        return result
-
-    @parameterized.expand([
-        (1, {}, sql_score_openness_v1),
-        (8, {}, sql_score_openness_v8),
-        (1, {'initial': True}, sql_score_openness_initial_v1),
-        (8, {'initial': True}, sql_score_openness_initial_v8),
-    ])
-    def test_get_sql_expression_valid(self, code, kwargs, args):
-        # WHEN openness code in allowable range
-        # THEN function return expected result
-        openness = getattr(self, 'v%d' % code)
-        self.assertEqual(openness.get_sql_expression(kwargs), args)
-
-    @parameterized.expand([
-        ({},),
-        ({'initial': True},),
-    ])
-    def test_get_sql_expression_invalid(self, kwargs):
-        # WHEN openness code is invalid
-        # THEN raises exception
-        self.assertRaises(ValidationError, self.v2.get_sql_expression, **kwargs)
-
-    @parameterized.expand([
-        (1, sql_monitoring_v1),
-        (8, sql_monitoring_v8),
-    ])
-    def test_sql_monitoring_valid(self, code, result):
-        # WHEN openness code in allowable range
-        # THEN function return expected result
-        openness = getattr(self, 'v%d' % code)
-        self.assertEqual(openness.sql_monitoring(), result)
-
-    def test_sql_monitoring_invalid(self):
-        # WHEN openness code is invalid
-        # THEN raises exception
-        self.assertRaises(ValidationError, self.v2.sql_monitoring)
-
-
 class CanonicalViewKwargsTestCase(TestCase):
     # Url patterns and views should use and accept only canonical kwargs
 
-    exmo_urlpatterns = [pat for pat in get_named_patterns() if pat._full_name.startswith('exmo2010:')]
+    test_patterns = {p.name: p for p in get_named_patterns() if p._full_name.startswith('exmo2010:')}
 
-    post_urls = set([
-        'claim_create',
-        'claim_answer',
-        'claim_delete',
-        'clarification_create',
-        'clarification_answer',
-        'get_pc',
-        'user_reset_dashboard',
-        'toggle_comment',
-        'post_recommendations',
-        'post_score_comment',
-        'post_score_links',
-    ])
-
-    ajax_urls = set([
-        'get_qq',
-        'get_qqt',
-        'ajax_task_approve',
-        'ajax_task_open',
-        'ajax_task_close',
-        'ajax_set_profile_setting',
-    ])
-
-    urls_excluded = [
-        'auth_logout',   # do not logout during test
-        'rating_update',  # requires GET params, should be tested explicitly,
-        'certificate_order'  # require org permissions, should be tested explicitly
-    ]
-
-    test_patterns = set([p.name for p in exmo_urlpatterns]) - set(urls_excluded)
-
-    def setUp(self):
-        # GIVEN monitoring, organization
-        monitoring = mommy.make(Monitoring)
-        organization = mommy.make(Organization, monitoring=monitoring)
-        # AND approved task (for monitoring_answers_export to work)
-        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        # AND parameter, score, questionnaire
-        parameter = mommy.make(Parameter, monitoring=monitoring)
-        score = mommy.make(Score, task=task, parameter=parameter)
-        mommy.make(Questionnaire, monitoring=monitoring)
-        # AND claim, clarification
-        claim = mommy.make(Claim, score=score)
-        clarification = mommy.make(Clarification, score=score)
-        # AND observers group
-        obs_group = mommy.make(ObserversGroup, monitoring=monitoring)
-
-        # AND i am logged-in as superuser
-        admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        admin.groups.add(Group.objects.get(name=admin.profile.expertA_group))
-        self.client.login(username='admin', password='password')
-
-        # AND canonical kwargs to reverse view urls
-        self.auto_pattern_kwargs = {
-            'monitoring_pk': monitoring.pk,
-            'score_pk': score.pk,
-            'parameter_pk': parameter.pk,
-            'task_pk': task.pk,
-            'org_pk': organization.pk,
-            'clarification_pk': clarification.pk,
-            'claim_pk': claim.pk,
-            'obs_group_pk': obs_group.pk,
-            'activation_key': '123',  # for registration_activate
-            'uidb36': '123',          # for auth_password_reset_confirm
-            'token': '123',           # for auth_password_reset_confirm
-            'report_type': 'inprogress',   # for monitoring_report_*
-            'print_report_type': 'print',  # for task_scores
-        }
-
-        self.patterns_by_name = dict((p.name, p) for p in self.exmo_urlpatterns)
+    canonical_kwargs = {
+        'monitoring_pk',
+        'score_pk',
+        'parameter_pk',
+        'task_pk',
+        'org_pk',
+        'clarification_pk',
+        'claim_pk',
+        'obs_group_pk',
+        'activation_key',  # for registration_activate
+        'uidb36',          # for auth_password_reset_confirm
+        'token',           # for auth_password_reset_confirm
+        'report_type',     # for monitoring_report_*
+        'print_report_type',  # for task_scores
+    }
 
     @parameterized.expand(test_patterns)
     def test_urlpattern(self, name):
-        pat = self.patterns_by_name[name]
+        pat = self.test_patterns[name]
 
         if pat.regex.groups > len(pat.regex.groupindex):
-            raise Exception(dedent(
-                'Urlpattern ("%s", "%s") uses positional args and can\'t be reversed for this test.\
-                It should be modified to use only kwargs or excluded from this test and tested explicitly'\
-                    % (pat.regex.pattern, pat.name)))
-        unknown_kwargs = set(pat.regex.groupindex) - set(self.auto_pattern_kwargs)
+            raise Exception(
+                'Urlpattern ("%s", "%s") uses positional args and can\'t be reversed for this test. '
+                'It should be modified to use only kwargs or excluded from this test and tested explicitly'
+                    % (pat.regex.pattern, pat.name))
+        unknown_kwargs = set(pat.regex.groupindex) - self.canonical_kwargs
         if unknown_kwargs:
-            raise Exception(dedent(
-                'Urlpattern ("%s", "%s") uses unknown kwargs and can\'t be reversed for this test.\
-                These kwargs should be added to this test\'s auto_pattern_kwargs in setUp'\
-                    % (pat.regex.pattern, pat.name)))
-
-        kwargs = dict((k, self.auto_pattern_kwargs[k]) for k in pat.regex.groupindex)
-        url = reverse(pat._full_name, kwargs=kwargs)
-
-        # WHEN i get url
-        if pat.name in self.ajax_urls:
-            res = self.client.get(url, follow=True, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        else:
-            res = self.client.get(url, follow=True)
-
-        # THEN no exception should raise
-
-        if pat.name not in set(self.ajax_urls | self.post_urls):
-            # AND non-ajax and non-post urls should return http status 200 (OK)
-            self.assertEqual(res.status_code, 200)
+            raise Exception(
+                'Urlpattern ("%s", "%s") uses unknown kwargs and can\'t be reversed for this test. '
+                'These kwargs should be added to this test\'s auto_pattern_kwargs in setUp'
+                    % (pat.regex.pattern, pat.name))
 
 
-class CertificateOrderFormValidationTestCase(TestCase):
+class CertificateOrderFormValidationTestCase(OptimizedTestCase):
+    # TODO: move this testcase to *validation* tests directory
+
+    # exmo2010:certificate_order
+
     # CertificateOrderForm should properly validate input data
 
-    fields = 'task_id addressee delivery_method name wishes email for_whom zip_code address'.split()
+    fields = 'addressee delivery_method name email for_whom zip_code address'.split()
+
+    @classmethod
+    def setUpClass(cls):
+        super(CertificateOrderFormValidationTestCase, cls).setUpClass()
+        cls.view = staticmethod(CertificateOrderView.as_view())
+
+        # GIVEN organization and approved task in PUBLISHED monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED)
+        cls.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+        # AND parameter with score
+        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
+        mommy.make(Score, task=cls.task, parameter=param, found=1)
+        # AND organization representative
+        cls.orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        cls.orguser.groups.add(Group.objects.get(name=cls.orguser.profile.organization_group))
+        cls.orguser.profile.organization = [org]
+
+    def mock_request(self, values):
+        data = dict(zip(self.fields, values), task_id=self.task.pk, rating_type='all')
+        return Mock(user=self.orguser, method='POST', is_ajax=lambda: False, POST=data, GET={})
 
     @parameterized.expand([
-        (1, 'org', 'email', '', 'wishes', 'test@mail.com', '', '', ''),
-        (2, 'user', 'email', 'name', '', 'test@mail.com', '', '', ''),
-        (3, 'user', 'post', 'name', '', 'test@mail.com', 'name', '123456', 'address'),
+        # Email Delivery
+        ('org', 'email', '', 'test@mail.com', '', '', ''),
+        ('user', 'email', 'name', 'test@mail.com', '', '', ''),
+        # Postal Delivery
+        ('org', 'post', '', '', 'for me', '123456', 'address'),
+        ('user', 'post', 'name', '', 'for me', '123456', 'address'),
     ])
     def test_valid_form(self, *values):
-        # WHEN form initialized with valid data
-        form = CertificateOrderForm(data=dict(zip(self.fields, values)))
+        # WHEN orguser submits request with valid data
+        response = self.view(self.mock_request(values))
         # THEN form validation should succeed
-        self.assertEqual(form.is_valid(), True)
+        self.assertEqual(response.context_data['form'].is_valid(), True)
 
     @parameterized.expand([
-        (1, 'user', 'email', 'name', 'wishes', 'test@.mail.com', '', '', ''),
-        (3, 'org', 'post', '', '', 'test@mail.com', 'name', '1234', 'address'),
-        (3, 'org', 'post', '', '', 'test@mail.com', 'name', 'text', 'address'),
+        # Email Delivery
+        ('org', 'email', '', '', '', '', ''),  # missing email
+        # Postal Delivery
+        ('org', 'post', '', '', 'for me', '123456', ''),   # missing address
+        ('org', 'post', '', '', 'for me', '', 'address'),  # missing zip_code
+        ('org', 'post', '', '', '', '123456', 'address'),  # missing for_whom
+        ('org', 'post', '', '', 'for me', '1234', 'address'),  # malformed zip_code
+        ('org', 'post', '', '', 'for me', 'text', 'address'),
     ])
     def test_invalid_form(self, *values):
-        # WHEN form initialized with invalid data
-        form = CertificateOrderForm(data=dict(zip(self.fields, values)))
+        # WHEN orguser submits request with invalid data
+        response = self.view(self.mock_request(values))
         # THEN form validation should fail
-        self.assertEqual(form.is_valid(), False)
+        self.assertEqual(response.context_data['form'].is_valid(), False)
 
 
 class CertificateOpennessValuesByTypeTestCase(TestCase):

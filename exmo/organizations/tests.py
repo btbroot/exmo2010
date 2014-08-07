@@ -105,8 +105,8 @@ class OrganizationEditAccessTestCase(TestCase):
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
         # AND organization representative
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.profile.organization = [self.organization]
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.profile.organization = [self.organization]
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for monitoring
@@ -124,7 +124,7 @@ class OrganizationEditAccessTestCase(TestCase):
 
     @parameterized.expand([
         ('user', 403),
-        ('org', 403),
+        ('orguser', 403),
         ('observer', 403),
         ('expertB', 403),
         ('expertA', 200),
@@ -141,7 +141,7 @@ class OrganizationEditAccessTestCase(TestCase):
 
     @parameterized.expand([
         ('user',),
-        ('org',),
+        ('orguser',),
         ('observer',),
         ('expertB',),
     ])

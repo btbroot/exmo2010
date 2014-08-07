@@ -20,44 +20,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from nose_parameterized import parameterized
 
-from accounts.forms import SubscribeForm, SubscribeAndNotifyForm
 from exmo2010.models import *
-
-
-class FormsTestCase(TestCase):
-    # Scenario: Form tests
-    @parameterized.expand([
-        (False,),
-        (True,),
-    ])
-    def test_subscribe_form(self, subscribe):
-        # WHEN user send SubscribeForm with data
-        form_data = {'subscribe': subscribe}
-        form = SubscribeForm(data=form_data)
-        # THEN form is valid
-        self.assertEqual(form.is_valid(), True)
-
-    @parameterized.expand([
-        (False, 0, 1, False, False),
-        (False, 1, 3, True, False),
-        (False, 2, 6, False, True),
-        (True, 0, 12, True, True),
-        (True, 1, 24, False, False),
-        (True, 2, 12, True, False),
-    ])
-    def test_subscribe_and_notify_form(self, subscribe, notification_type, notification_interval,
-                                       notification_self, notification_thread):
-        # WHEN user send SubscribeAndNotifyForm with data
-        form_data = {
-            'subscribe': subscribe,
-            'notification_type': notification_type,
-            'notification_interval': notification_interval,
-            'notification_self': notification_self,
-            'notification_thread': notification_thread,
-        }
-        form = SubscribeAndNotifyForm(data=form_data)
-        # THEN form is valid
-        self.assertEqual(form.is_valid(), True)
 
 
 class SettingsViewTestCase(TestCase):
