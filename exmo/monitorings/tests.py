@@ -384,36 +384,16 @@ class RatingTableColumnOptionsTestCase(TestCase):
         }
 
     def profile_fields(self, username, fields):
-        ''' Get dictionary of field-value from UserProfile for given user '''
+        """ Get dictionary of field-value from UserProfile for given user """
         return UserProfile.objects.filter(user__username=username).values(*fields)[0]
 
-    def get_response_columns_options(self, *args):
-        ''' Get dictionary of rt_* field values from response to rating_url with given *args (GET params) '''
+    def get_response_columns_options(self, data={}):
+        """ Get dictionary of rt_* field values from response to rating_url with given *args (POST params) """
         rating_url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
-        response = self.client.get(rating_url, *args)
+        data.update({'settings_submit': ''})  # submit button
+        response = self.client.post(rating_url, data)
         columns_form = response.context['rating_columns_form']
         return {f: bool(columns_form[f].value()) for f in columns_form.fields}
-
-    @parameterized.expand([
-        ('nonexpert', rt_fields_nonexpert),
-        ('expert', rt_fields_all),
-    ])
-    def test_rt_columns_default(self, username, fields):
-        # WHEN User just created
-        # THEN default options are stored in user's profile
-        self.assertEqual(self.default_options[username], self.profile_fields(username, fields))
-
-        # WHEN User logs in
-        self.client.login(username=username, password='password')
-
-        # AND requests rating page without GET parameters
-        columns_options = self.get_response_columns_options()
-
-        # THEN default columns are displayed (columns_form values are equal defaults)
-        self.assertEqual(columns_options, self.default_options[username])
-
-        # AND default options are still stored in user's profile
-        self.assertEqual(self.default_options[username], self.profile_fields(username, fields))
 
     @parameterized.expand([
         ('nonexpert', rt_fields_nonexpert),
@@ -423,7 +403,7 @@ class RatingTableColumnOptionsTestCase(TestCase):
         # WHEN User logs in
         self.client.login(username=username, password='password')
 
-        # AND user requests rating page with only rt_final_openness column (GET parameter "on")
+        # AND user requests rating page with only rt_final_openness column (POST parameter "on")
         changed_options = self.get_response_columns_options({'rt_final_openness': 'on'})
 
         # THEN only rt_final_openness column is displayed (only this value is True in columns_form)
@@ -432,30 +412,31 @@ class RatingTableColumnOptionsTestCase(TestCase):
         self.assertEqual(changed_options, expected)
 
         # AND changes are stored in user's profile
-        self.assertEqual(changed_options, self.profile_fields(username, fields))
+        self.assertEqual(self.profile_fields(username, fields), changed_options)
 
-        # WHEN user requests rating page again, but without GET parameters
+        # WHEN user requests rating page again, but without POST parameters
         requested_again_options = self.get_response_columns_options()
 
-        # THEN only columns that was saved before as enabled are displayed (only rt_final_openness)
-        self.assertEqual(requested_again_options, changed_options)
+        # THEN no one columns should be displayed
+        no_selected_options = {f: False for f in self.default_options[username]}
+        self.assertEqual(requested_again_options, no_selected_options)
 
-        # AND previously changed options are still stored in user's profile
-        self.assertEqual(changed_options, self.profile_fields(username, fields))
+        # AND new changes are stored in user's profile
+        self.assertEqual(self.profile_fields(username, no_selected_options), no_selected_options)
 
     def test_rt_columns_nonexpert_forbidden(self):
         # WHEN user logs in
         self.client.login(username='nonexpert', password='password')
 
-        # AND user requests rating page with forbidden rt_representatives column (GET parameter "on")
+        # AND user requests rating page with forbidden rt_representatives column (POST parameter "on")
         forbidden_options = self.get_response_columns_options({'rt_representatives': 'on'})
 
         # THEN default columns are displayed, and forbidden column is not
-        self.assertEqual(forbidden_options, self.default_options['nonexpert'])
+        self.assertEqual(forbidden_options, {f: False for f in self.default_options['nonexpert']})
 
     def test_rt_columns_anonymous(self):
-        # WHEN AnonymousUser requests rating page without GET parameters
-        columns_options = self.get_response_columns_options()
+        # WHEN AnonymousUser requests rating page with POST parameter
+        columns_options = self.get_response_columns_options({'rt_comment_quantity': 'on'})
 
         # THEN default columns are displayed
         self.assertEqual(columns_options, self.default_options['nonexpert'])

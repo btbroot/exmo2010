@@ -46,8 +46,7 @@ from django.utils.decorators import method_decorator
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
-from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
-from django.views.generic.edit import FormMixin
+from django.views.generic import DeleteView, DetailView, UpdateView
 from reversion.revisions import default_revision_manager as revision
 
 from .forms import RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
@@ -219,9 +218,9 @@ def monitoring_rating(request, monitoring_pk):
         # Displayed rating columns options are saved in UserProfile.rt_* fields
         RatingColumnsForm = modelform_factory(UserProfile, fields=column_fields)
 
-        if set(column_fields) & set(request.GET):
-            # Options was provided in GET request.
-            rating_columns_form = RatingColumnsForm(request.GET, instance=user.profile)
+        if request.method == 'POST' and 'settings_submit' in request.POST:
+            # Options was provided in POST request.
+            rating_columns_form = RatingColumnsForm(request.POST, instance=user.profile)
 
             if rating_columns_form.is_valid():
                 rating_columns_form.save()  # Save changes in UserProfile

@@ -277,7 +277,7 @@
 
     <!-- Modal -->
     <div id="settings-modal" class="hidden">
-        <form action="." method="GET">
+        <form action="" method="POST">{% csrf_token %}
             <div id="checkboxes">
                 <h2 class="modal-heading">{% trans "Table settings" %}</h2>
                 {% for field in rating_columns_form %}
@@ -286,7 +286,7 @@
             </div>
             <div id="buttons">
                 <span>
-                    <input type="submit" value="{% trans "Change" %}">
+                    <input type="submit" name="settings_submit" value="{% trans "Change" %}">
                 </span>
                 <a href="#" id="cancel-link" class="pseudo">{% trans "Cancel" %}</a>
             </div>
