@@ -93,7 +93,7 @@ class Score(BaseModel):
         for crit in Parameter.OPTIONAL_CRITERIONS:
             if getattr(self.parameter, crit):
                 value = getattr(self, crit)
-                yield '-' if value is None else value
+                yield '–' if value is None else value
             else:
                 yield None
 
