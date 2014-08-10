@@ -29,6 +29,10 @@ h2 {
     margin-top: 20px;
 }
 
+.table-header th {
+    padding-top: 15px;
+}
+
 .filter input[type="text"], .filter select {
     width: 49%;
 }
