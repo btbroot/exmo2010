@@ -937,6 +937,7 @@ ul#errors-header li.portal a:hover {
 .utils {
     float: right;
     line-height: 24px;
+    margin-bottom: 10px;
 }
 
 /* Icons */
