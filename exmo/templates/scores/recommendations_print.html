@@ -94,7 +94,7 @@
                     {% if scores|length != 0 %}
                         <h2 class="float-left">{% trans 'Recommendations list' %}</h2>
                     {% endif %}
-                    {% if total_cost %}
+                    {% if total_cost and scores|length != 0 %}
                         <span class="cost float-right">{{ total_cost|floatformat }}%</span>
                     {% endif %}
                 </caption>
