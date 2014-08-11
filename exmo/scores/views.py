@@ -511,6 +511,7 @@ class RecommendationsView(DetailView):
                 score.cost = _round(score.parameter.weight * (100.0 - score.openness) / param_weight_sum)
             else:
                 score.interim_cost = score.cost = 0.0
+            score.is_finished = bool(score.cost == 0 and not score.recommendations)
             score.is_relevant = bool(score.parameter.pk not in param_nonrelevant)
             scores.append(score)
 

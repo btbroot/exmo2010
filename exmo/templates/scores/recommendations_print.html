@@ -111,7 +111,7 @@
 
                                 {% if score.is_relevant %}
                                     <p>{{ score.recommendations|escape|linebreaksbr }}</p>
-                                    {% if view.with_comments and score.parameter.grounds and score.cost != 0 %}
+                                    {% if view.with_comments and score.parameter.grounds and not score.is_finished %}
                                         <h3>{% trans 'Grounds' %}</h3>
                                         <div>{{ score.parameter.grounds|bleach }}</div>
                                     {% endif %}
@@ -137,10 +137,10 @@
                             </td>
 
                             {% if score.is_relevant %}
-                                {% if score.cost == 0 %}
+                                {% if score.is_finished %}
                                     <td class="cost complete">{% trans 'Ready' %}</td>
                                 {% else %}
-                                    <td class="cost">+{{ score.cost|floatformat }}%</td>
+                                    <td class="cost">{% if score.cost != 0 %}+{{ score.cost|floatformat }}%{% endif %}</td>
                                 {% endif %}
                             {% else %}
                                 <td class="cost">{% trans 'Deleted' %}</td>

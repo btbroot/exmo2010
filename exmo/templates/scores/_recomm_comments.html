@@ -21,7 +21,7 @@
 
 {% for comment in score.comments %}
     {% if forloop.first %}
-        {% if score.comments|length > 2 or score.cost == 0 or not score.is_relevant %}
+        {% if score.comments|length > 2 or score.is_finished or not score.is_relevant %}
             <div class="comment-toggle show">
                 {% blocktrans count counter=score.comments|length %} Show all {{ counter }} comments {% plural %} Show all {{ counter }} comments {% endblocktrans %}
             </div>
@@ -53,7 +53,7 @@
 
 {% if request.user.is_organization %}
     {% if score.parameter.monitoring.is_interact %}
-        <div class="comment-form {% if score.cost == 0 or not score.is_relevant %} hidden {% endif %}">
+        <div class="comment-form {% if score.is_finished or not score.is_relevant %} hidden {% endif %}">
 
             <input type="text" class='fake_input' placeholder="{% trans 'Comment' context 'verb' %}" />
 
@@ -75,6 +75,3 @@
         </div>
     {% endif %}
 {% endif %}
-
-
-

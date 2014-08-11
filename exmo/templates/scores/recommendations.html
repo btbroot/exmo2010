@@ -151,12 +151,12 @@
             {% else %}
                 {% for score in scores %}
                     {% if score.is_relevant %}
-                        <tr id="param{{ score.parameter.pk }}" class="{% if score.cost == 0 %} finished {% endif %}">
-                            <td class='code'><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
-                            <td class='center'>
+                        <tr id="param{{ score.parameter.pk }}" class="{% if score.is_finished %} finished {% endif %}">
+                            <td class="code"><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
+                            <td class="center">
                                 <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
                                 <p>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
-                                {% if score.parameter.grounds and score.cost != 0 %}
+                                {% if score.parameter.grounds and not score.is_finished %}
                                     <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
                                     <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>
                                     <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
@@ -167,16 +167,16 @@
                                     </div>
                                 {% endif %}
                             </td>
-                            {% if score.cost == 0 %}
-                                <td class='cost complete'>{% trans 'Ready' %}</td>
+                            {% if score.is_finished %}
+                                <td class="cost complete">{% trans 'Ready' %}</td>
                             {% else %}
-                                <td class='cost'>+{{ score.cost|floatformat }}%</td>
+                                <td class="cost">{% if score.cost != 0 %}+{{ score.cost|floatformat }}%{% endif %}</td>
                             {% endif %}
                         </tr>
                     {% else %}
                         <tr id="param{{ score.parameter.pk }}" class="nonrelevant">
-                            <td class='code'>{{ score.parameter.code }}</td>
-                            <td class='center'>
+                            <td class="code">{{ score.parameter.code }}</td>
+                            <td class="center">
                                 <div class="param">{{ score.parameter.name }}</div>
                                 {% if task.perms.view_comments %}
                                     <div class="comments">
@@ -184,7 +184,7 @@
                                     </div>
                                 {% endif %}
                             </td>
-                            <td class='cost'>{% trans 'Deleted' %}</td>
+                            <td class="cost">{% trans 'Deleted' %}</td>
                         </tr>
                     {% endif %}
                 {% endfor %}
