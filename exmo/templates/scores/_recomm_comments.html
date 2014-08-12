@@ -34,7 +34,7 @@
     {% endif %}
     <div class="comment" id="comment_{{ comment.pk }}">
         <span class="author">
-            {% if comment.user.is_expert and not request.user.is_expert %}
+            {% if comment.posted_by_expert and not request.user.is_expert %}
                 {{ masked_expert_name }}
             {% else %}
                 {{ comment.user.legal_name }}
@@ -42,7 +42,7 @@
         </span>
         <span class="date"> {{ comment.submit_date|date:"DATETIME_FORMAT" }} </span>
         <div class="body"> {{ comment.comment|safe|urlize_soup|trim_links|target_blank }} </div>
-        {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
+        {% if request.user.is_organization and not comment.posted_by_expert and comment.status == comment.OPEN %}
             <div class="comment_deadline">
                     {% trans 'Deadline for answer to your comment is' %}
                     {{ comment.submit_date|date_until:score.parameter.monitoring.time_to_answer|date:"DATE_FORMAT" }}

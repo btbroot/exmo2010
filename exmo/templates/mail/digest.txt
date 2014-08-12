@@ -29,7 +29,7 @@
     {% get_object_by_pk exmo2010.Score comment.object_pk as score %}
     {{ score.task.organization }}: {{ score.parameter }}
     {% trans 'Date' %}: {{ comment.submit_date }}
-    {% trans 'User' %}: {% if comment.user.is_expert and not user.is_expert %} {{ masked_expert_name }} {% else %} {{ comment.user.legal_name }} {% endif %}
+    {% trans 'User' %}: {% if comment.posted_by_expert and not user.is_expert %} {{ masked_expert_name }} {% else %} {{ comment.user.legal_name }} {% endif %}
     {% trans 'Comment' %}:
     {{ comment.comment|striptags }}
     {% trans 'Link' %}: http://{{ site }}{{ score.get_absolute_url }}

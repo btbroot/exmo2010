@@ -221,10 +221,11 @@ def _add_comment(request, score):
         content_type=ContentType.objects.get_for_model(Score),
         user=request.user,
         comment=clean_message(unicode(soup)),
+        posted_by_expert=request.user.is_expert,
         site_id=1)
 
     if request.user.is_expert:
-        # Expert comment. Close existing org represenatives comments for this score.
+        # Expert comment. Close existing org representatives comments for this score.
         org_comments = CommentExmo.objects.filter(
             object_pk=score.pk,
             status=CommentExmo.OPEN,
@@ -232,7 +233,7 @@ def _add_comment(request, score):
 
         org_comments.update(status=CommentExmo.ANSWERED, answered_date=datetime.now())
     else:
-        # Org represenative comment, update org status to "Active"
+        # Org representative comment, update org status to "Active"
         org = score.task.organization
         if org.inv_status == 'RGS' and org in request.user.profile.organization.all():
             org.inv_status = 'ACT'

@@ -40,3 +40,4 @@ class CommentExmo(Comment):
 
     status = models.PositiveIntegerField(choices=STATUSES, default=OPEN, verbose_name=_('status'))
     answered_date = models.DateTimeField(default=datetime.min)
+    posted_by_expert = models.BooleanField(default=False, verbose_name=_('posted by expert'))

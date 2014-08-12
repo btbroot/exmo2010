@@ -32,7 +32,7 @@
         {% for comment in comments %}
             <p>
                 <span class="bold">
-                {% if comment.user.is_expert and mask_expert_name %}
+                {% if comment.posted_by_expert and mask_expert_name %}
                     {{ masked_expert_name }},
                 {% else %}
                     {{ comment.user.legal_name }},

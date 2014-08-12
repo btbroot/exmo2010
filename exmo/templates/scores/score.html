@@ -306,13 +306,13 @@
                         <tr id="c{{ comment.id }}">
                             <td
                             {% with comment.submit_date|workdays_still_left:param.monitoring.time_to_answer as ndays %}
-                                {% if request.user.is_expert and comment.user.is_organization and not comment.user.is_superuser and comment.status == comment.OPEN %}
+                                {% if request.user.is_expert and not comment.posted_by_expert and comment.status == comment.OPEN %}
                                     class="answer-{% if ndays < 0 %}missed{% elif ndays > 0 %}later{% else %}today{% endif %}"
                                 {% endif %}
                             {% endwith %}
                             >
                                 <span class="messages-author">
-                                    {% if comment.user.is_expert and not request.user.is_expert %}
+                                    {% if comment.posted_by_expert and not request.user.is_expert %}
                                         {{ masked_expert_name }}
                                     {% else %}
                                         {{ comment.user.legal_name }}
@@ -325,7 +325,7 @@
 
                                 <div class="messages-content">{{ comment.comment|safe|urlize_soup|trim_links|target_blank }}</div>
 
-                                {% if request.user.is_expertA and not comment.user.is_expert and comment.status != comment.ANSWERED %}
+                                {% if request.user.is_expertA and not comment.posted_by_expert and comment.status != comment.ANSWERED %}
                                     <div class="toggle-comment-container">
                                         <a href="{% url 'exmo2010:toggle_comment' %}" rel="{{comment.pk}}">
                                             {% if comment.status == comment.OPEN %}
@@ -338,7 +338,7 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        {% if request.user.is_organization and comment.user.is_organization and comment.status == comment.OPEN %}
+                        {% if request.user.is_organization and not comment.posted_by_expert and comment.status == comment.OPEN %}
                             <tr class="orguser-notification">
                                 <td>
                                     {% trans 'Deadline for answer to your comment is' %}

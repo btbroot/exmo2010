@@ -33,7 +33,7 @@
         <p>{% trans 'Date' %}: {{ comment.submit_date }}</p>
         <p>
             {% trans 'User' %}:
-            {% if comment.user.is_expert and not user.is_expert %}
+            {% if comment.posted_by_expert and not user.is_expert %}
                 {{ masked_expert_name }}
             {% else %}
                 {{ comment.user.legal_name }}

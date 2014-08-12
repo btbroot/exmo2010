@@ -122,7 +122,7 @@
                                         {% for comment in score.comments %}
                                             <div class="comment">
                                                 <span class="author">
-                                                    {% if comment.user.is_expert and not request.user.is_expert %}
+                                                    {% if comment.posted_by_expert and not request.user.is_expert %}
                                                         {{ masked_expert_name }}
                                                     {% else %}
                                                         {{ comment.user.legal_name }}
