@@ -61,8 +61,7 @@ class OrganizationMngr(models.Manager):
             o.save()
 
 
-phone_re = re.compile(r'([+])?([\d()\s\-]+)[-\.\s]?(\d{2})[-\.\s]?(\d{2})')
-phone_re_reverse = re.compile(r'(\d{2})[-\.\s]?(\d{2})[-\.\s]?([\d()\s\-]+)([+])?')
+phone_re = re.compile(r'([+()\d\s\-]{3,25})')
 email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})')
 delimiters_re = re.compile(r',|\s||(,\s)|\n|(,\n)')
 
@@ -86,14 +85,20 @@ add_introspection_rules([], ["^exmo2010\.models\.organization\.EmailsField"])
 def format_phone(phone):
     if not phone:
         return None
+
     phone = phone.strip()
     if not phone_re.match(phone):
         return None
-    if re.search(r'[ \-]', phone):
-        return phone
-    else:
-        ntmp = re.findall(phone_re_reverse, phone[::-1])[0]
-        return ntmp[3][::-1] + ntmp[2][::-1] + "-" + ntmp[1][::-1] + "-" + ntmp[0][::-1]
+
+    # 1234567 -> 123-45-67
+    if re.search(r'\d{5}$', phone):
+        return '-'.join([phone[:-4], phone[-4:-2], phone[-2:]])
+
+    # 123 4567 -> 123 45-67
+    if re.search(r'\d{4}$', phone):
+        return '-'.join([phone[:-2], phone[-2:]])
+
+    return phone
 
 
 class PhonesField(models.TextField):

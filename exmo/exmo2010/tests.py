@@ -46,7 +46,7 @@ class TestPhonesFieldValidation(TestCase):
         field = PhonesField()
         # All combinations of delimeters should be properly stripped
         # Spaces should only be stripped on edges
-        self.assertEqual(field.to_python('\t,\r1-2345\n   1 23 45,\t \n12345,\n\r, '), '1-2345, 1 23 45, 1-23-45')
+        self.assertEqual(field.to_python('\t,\r1-2345\n   1 23 45,\t \n12345,\n\r, '), '1-23-45, 1 23 45, 1-23-45')
         self.assertEqual(field.to_python("+7(868)876-45-56, +7(868)876-45-56"), "+7(868)876-45-56, +7(868)876-45-56")
 
 

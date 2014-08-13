@@ -53,4 +53,20 @@ $(document).ready(function () {
     $("input[type='text']").focusout(function(){
         $('#help-text').hide();
     });
+
+    // allowed keys: numbers, +, -, (, ), whitespace, comma
+    function phone_validate(e) {
+        var theEvent = e || window.event;
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+        var regex = /[0-9]|\+|\-|\(|\)|\s|\,/;
+        if( !regex.test(key) ) {
+            theEvent.returnValue = false;
+            if(theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+
+    $('#id_phone, #id_org-phone').keypress(function(e) {
+        phone_validate(e);
+    });
 });
