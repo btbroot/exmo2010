@@ -66,7 +66,7 @@ class CustomMenu(Menu):
             if task_id is not None:
                 self.children += [
                     items.MenuItem(_('Scores of my organisation'),
-                                   reverse('exmo2010:task_scores', args=[task_id])),
+                                   reverse('exmo2010:recommendations', args=[task_id])),
                 ]
 
         if user.is_active and user.profile.is_expertB and not user.profile.is_expertA:
