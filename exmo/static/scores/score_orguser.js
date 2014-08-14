@@ -26,7 +26,7 @@ $(document).ready(function() {
         function ckChangeHandler(e) {
             var editor_body = $(e.sender.document.$).find('body');
 
-            if(editor_body && editor_body.text().trim() != '') {
+            if(editor_body && $.trim(editor_body.text()) != '') {
                 $('#submit_comment').prop('disabled', false);
             } else {
                 $('#submit_comment').prop('disabled', true);
@@ -43,7 +43,7 @@ $(document).ready(function() {
         }
     } else {
         comment_field.on('change keyup paste', function() {
-            if($(this).val().trim() != '') {
+            if($.trim($(this).val()) != '') {
                 $('#submit_comment').prop('disabled', false);
             } else {
                 $('#submit_comment').prop('disabled', true);

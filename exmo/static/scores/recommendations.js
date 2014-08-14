@@ -25,7 +25,7 @@ $(document).ready(function() {
                     var editor_body = $(e.sender.document.$).find('body');
                     var submit = $(e.sender.element.$).closest('form').find('input[type=submit]');
 
-                    if(editor_body && editor_body.text().trim() != '') {
+                    if(editor_body && $.trim(editor_body.text()) != '') {
                         submit.prop('disabled', false);
                     } else {
                         submit.prop('disabled', true);
@@ -46,7 +46,7 @@ $(document).ready(function() {
         $('div.comment-form').find('textarea').each(function(){
             $(this).on('change keyup paste', function() {
                 var submit = $(this).closest('form').find('input[type=submit]');
-                if($(this).val().trim() != '') {
+                if($.trim($(this).val()) != '') {
                     submit.prop('disabled', false);
                 } else {
                     submit.prop('disabled', true);

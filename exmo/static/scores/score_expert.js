@@ -81,7 +81,7 @@ $(document).ready(function() {
         var submit = $(e.sender.container.$).closest('form').find('input[type="submit"]');
         var editor_body = $(e.sender.document.$).find('body');
 
-        if(editor_body && editor_body.text().trim() != '') {
+        if(editor_body && $.trim(editor_body.text()) != '') {
             submit.prop('disabled', false);
         } else {
             submit.prop('disabled', true);

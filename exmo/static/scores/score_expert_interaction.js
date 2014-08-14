@@ -33,7 +33,7 @@ $(document).ready(function() {
     });
 
     $('#recommendations_form textarea').keyup(function(){
-        if (($('.editable-score-table.recommendations_required').length != 0) && ($(this).val().trim() == '')) {
+        if (($('.editable-score-table.recommendations_required').length != 0) && ($.trim($(this).val()) == '')) {
             $('#recommendations_form input[type="submit"]').attr('disabled', true);
         }
         else {
@@ -90,7 +90,7 @@ $(document).ready(function() {
             addContentListener(cke_comment, function (e) {
                 var editor_body = $(e.sender.document.$).find('body');
 
-                if (editor_body && editor_body.text().trim() != '') {
+                if (editor_body && $.trim(editor_body.text()) != '') {
                     $("#submit_comment").prop('disabled', false);
 
                     if ($('form div.changed').length > 0) {
@@ -158,7 +158,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                var label = input.closest('div.table-row').find('div.label').html().trim();
+                var label = $.trim(input.closest('div.table-row').find('div.label').html());
                 var text = label + ': ' + initial + ' → ' + newVal;
 
                 var id = input.attr('name') + '_brick';
