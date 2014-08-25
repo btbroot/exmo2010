@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,8 @@ from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import *
+from exmo2010.models import Monitoring, Organization, Task
+from exmo2010.models.monitoring import MONITORING_PUBLISHED
 
 
 ACCOUNT = {
@@ -157,7 +158,7 @@ class HeaderMenuTestCase(BaseSeleniumTestCase):
 
         if user == 'org':
             self.assertEqual(self.get_url_path(NAVIGATION[3]),
-                             reverse_lazy('exmo2010:task_scores', args=[self.task.id]))
+                             reverse_lazy('exmo2010:recommendations', args=[self.task.id]))
 
     def get_url_path(self, selector):
         """
