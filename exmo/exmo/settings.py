@@ -107,7 +107,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # MODELTRANSLATION_FALLBACK_LANGUAGES will be used as fallback language if some model does not
-# have translated field to other language.
+# have transalted field to other language.
 MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka', 'az')
 
 USE_ETAGS = True
@@ -289,6 +289,12 @@ ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
 COMMENTS_APP = 'custom_comments'
 CSRF_FAILURE_VIEW = 'exmo2010.custom_registration.views.csrf_failure'
 
+# E-mail
+SERVER_EMAIL = 'www-data@svobodainfo.org'
+IMAP_SERVER = 'imap.example.com'
+IMAP_LOGIN = 'example@example.com'
+IMAP_PASSWORD = 'password'
+
 # Registration
 CUSTOM_REGISTRATION_BACKEND = 'exmo2010.custom_registration.backends.CustomBackend'
 ACCOUNT_ACTIVATION_DAYS = 30
@@ -337,20 +343,3 @@ if DEVEL or TEST:
     MEDIA_ROOT = mkdir_ifnotexist(path('../media'))
     STATIC_ROOT = mkdir_ifnotexist(path('../static'))
 
-
-from . import config  # livesettings init
-from livesettings import config_value
-
-
-class GetConfig(object):
-    """get variables from livesettings"""
-    def __init__(self, config_group, config_name):
-        self.config_group = config_group
-        self.config_name = config_name
-
-    def __repr__(self):
-        return config_value(self.config_group, self.config_name)
-
-# E-mail
-SERVER_EMAIL = GetConfig('EmailServer', 'DEFAULT_FROM_EMAIL')
-EMAIL_SUBJECT_PREFIX = GetConfig('EmailServer', 'EMAIL_SUBJECT_PREFIX')

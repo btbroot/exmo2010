@@ -31,7 +31,7 @@ if __name__ == "__main__":
     secret_key_file = 'exmo/django_key'
     if not os.path.exists(secret_key_file):
         logging.info(u'*** Creating random secret key file %s' % secret_key_file)
-        with open(secret_key_file, 'w+') as f:
+        with open(secret_key_file, 'w') as f:
             f.write(str(uuid.uuid4()))
 
     execute_from_command_line(sys.argv)

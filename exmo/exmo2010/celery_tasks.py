@@ -60,9 +60,9 @@ def check_mdn_emails():
 
     """
     try:
-        server = config_value('ImapServer', 'IMAP_SERVER')
-        login = config_value('ImapServer', 'IMAP_LOGIN')
-        password = config_value('ImapServer', 'IMAP_PASSWORD')
+        server = settings.IMAP_SERVER
+        login = settings.IMAP_LOGIN
+        password = settings.IMAP_PASSWORD
         m = imaplib.IMAP4_SSL(server)
         m.login(login, password)
     except:

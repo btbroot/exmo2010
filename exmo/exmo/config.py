@@ -43,7 +43,7 @@ config_register_list(
         'DEFAULT_FROM_EMAIL',
         description=_('Email'),
         ordering=0,
-        default='system@infometer.org',
+        default='exmo@svobodainfo.org',
         help_text=_('Default email address'),
     ),
 
@@ -52,7 +52,7 @@ config_register_list(
         'EMAIL_SUBJECT_PREFIX',
         description=_('Prefix'),
         ordering=1,
-        default='[infometer] ',
+        default='[exmo] ',
         help_text=_('Email subject prefix'),
     ),
 
@@ -93,36 +93,7 @@ config_register_list(
     ),
 )
 
-IMAP_SERVER_GROUP = ConfigurationGroup('ImapServer', _('IMAP Server Settings'), ordering=1)
-
-config_register_list(
-    StringValueWidget(
-        IMAP_SERVER_GROUP,
-        'IMAP_SERVER',
-        description=_('Address'),
-        ordering=0,
-        default='imap.svobodainfo.org',
-        help_text=_('IMAP server address'),
-    ),
-
-    StringValueWidget(
-        IMAP_SERVER_GROUP,
-        'IMAP_LOGIN',
-        description=_('Login'),
-        ordering=1,
-        help_text=_('IMAP server login'),
-    ),
-
-    StringValueWidget(
-        IMAP_SERVER_GROUP,
-        'IMAP_PASSWORD',
-        description=_('Password'),
-        ordering=2,
-        help_text=_('IMAP server password'),
-    ),
-)
-
-LINKS_GROUP = ConfigurationGroup('Links', _('Links'), ordering=2)
+LINKS_GROUP = ConfigurationGroup('Links', _('Links'), ordering=1)
 
 config_register_list(
     StringValueWidget(
@@ -143,7 +114,7 @@ config_register_list(
     ),
 )
 
-GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=3)
+GLOBAL_PARAMETERS_GROUP = ConfigurationGroup('GlobalParameters', _('Global Parameters'), ordering=2)
 
 config_register_list(
     StringValueWidget(
