@@ -16,7 +16,7 @@
 //
 $(document).ready(function() {
 
-    if (Object.keys(CKEDITOR.instances).length) {
+    if (CKEDITOR.env.isCompatible) {
         $.each(CKEDITOR.instances, function(id, editor){
             if (editor != undefined) {
                 // Update original form inputs when text typed in CKEDITOR

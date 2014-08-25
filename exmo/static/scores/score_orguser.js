@@ -20,7 +20,7 @@ $(document).ready(function() {
     var comment_field = $('div.comment-form').find('textarea');
     var editor = CKEDITOR.instances[comment_field.attr('id')];
 
-    if (editor != undefined) {
+    if (CKEDITOR.env.isCompatible) {
         // Update original form inputs when text typed in CKEDITOR
         // Enable submit button if CKEDITOR input not empty.
         function ckChangeHandler(e) {

@@ -68,23 +68,27 @@ $(document).ready(function() {
         return false;
     });
 
-    function addContentListener(editor, func) {
-        if (!editor)
-            return;
-
-        if ($.browser.msie) {
-            editor.on('contentDom', function( e ) {
-                editor.document.on('keyup', function(event) { func(e); });
-            });
-        } else {
-            editor.on('change', func);
-        }
+    if (!CKEDITOR.env.isCompatible) {
+        alert(gettext('Your browser is not supported'));
     }
+    else {
+        var comment_field_id = $('div.comment-form').find('textarea').attr('id');
+        var cke_comment = CKEDITOR.instances[comment_field_id];
 
-    var comment_field_id = $('div.comment-form').find('textarea').attr('id');
-    var cke_comment = CKEDITOR.instances[comment_field_id];
+        function addContentListener(editor, func) {
+            if (!editor)
+                return;
 
-    if (cke_comment != undefined) {
+            if ($.browser.msie) {
+                // TODO: do we really need this case for IE? Ckeditor dropped support for IE<=8
+                editor.on('contentDom', function( e ) {
+                    editor.document.on('keyup', function(event) { func(e); });
+                });
+            } else {
+                editor.on('change', func);
+            }
+        }
+
         cke_comment.on('instanceReady', function (e) {
             // Comment handler should also check if score inputs changed when in edit mode
             addContentListener(cke_comment, function (e) {
@@ -240,8 +244,6 @@ $(document).ready(function() {
             $('form.tab_edit').submit();
             return false;
         });
-    } else {
-        alert(gettext('Your browser is not supported'));
     }
 
     // If form was posted and contain errors - open edit tab.
