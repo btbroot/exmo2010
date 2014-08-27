@@ -29,7 +29,7 @@ from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, H
 from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
                                ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView)
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
-from parameters.views import ParamEditView, ParamDeleteView
+from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 from scores.views import RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments
 
@@ -154,7 +154,6 @@ tasks_patterns += named_urls('parameters.views',
     (r'^task/(?P<task_pk>\d+)/parameter/add/$', ParamEditView, 'parameter_add',),
     (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_update/$', ParamEditView, 'parameter_update'),
     (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_delete/$', ParamDeleteView, 'parameter_delete'),
-    (r'^task/(?P<task_pk>\d+)/parameter/(?P<parameter_pk>\d+)_exclude/$', 'parameter_exclude'),
 )
 
 
@@ -173,6 +172,7 @@ urlpatterns = named_urls('',
 
     (r'^tasks/', include(tasks_patterns)),
     (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),
+    (r'^post_org_param_relevance/$', PostOrgParamRelevanceView, 'post_org_param_relevance'),
 
     # Отчеты
     (r'^reports/comments/$', 'custom_comments.views.comment_list'),

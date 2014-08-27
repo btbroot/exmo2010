@@ -50,10 +50,23 @@
 {% block content %}
     <div class="score-header-block">
         {% if param.perms.exclude_parameter %}
-            <input type="button"
-                   value="{% trans 'Set non-relevant' %}"
-                   onclick="window.location.href='{% url 'exmo2010:parameter_exclude' task.pk param.pk %}?{{ request.GET.urlencode }}'" />
+            <form action="{% url 'exmo2010:post_org_param_relevance' %}" method="POST"> {% csrf_token %}
+                <input type="hidden" name="task_pk" value="{{task.pk}}"/>
+                <input type="hidden" name="param_pk" value="{{param.pk}}"/>
+                {% if param.relevant %}
+                    <input type="hidden" name="set_relevant" value="false"/>
+                    <input type="submit" class="red" value="{% trans 'Set non-relevant' %}"/>
+                {% else %}
+                    <input type="hidden" name="set_relevant" value="1"/>
+                    <input type="submit" class="green" value="{% trans 'Set relevant' %}"/>
+                {% endif %}
+            </form>
             <a href="{% url 'exmo2010:parameter_update' task.pk param.pk %}">{% trans 'Edit parameter' %}</a>
+        {% endif %}
+        {% if not param.relevant %}
+            <div class="nonrelevant_notice">
+            {% blocktrans with org_name=org.name %}This parameter is considered non-relevant for organization {{org_name}}.{% endblocktrans %}
+            </div>
         {% endif %}
 
         <h2>{% trans 'Parameter characteristics' %}:</h2>
@@ -371,6 +384,12 @@
                     <input type="submit" class="tab_edit" id="submit_score_and_comment" value="{% trans 'Post comment and change score' %}" disabled="disabled" />
                 {% endif %}
             </form>
+        </div>
+    {% endif %}
+
+    {% if not param.relevant %}
+        <div class="nonrelevant_notice">
+        {% blocktrans with org_name=org.name %}This parameter is considered non-relevant for organization {{org_name}}.{% endblocktrans %}
         </div>
     {% endif %}
 

@@ -94,6 +94,10 @@ def score_view(request, **kwargs):
                 raise PermissionDenied
 
     org = task.organization
+    param.relevant = bool(task.organization not in param.exclude.all())
+
+    if not param.relevant and not request.user.is_expert:
+        raise PermissionDenied
 
     # Relevant criteria names
     criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
