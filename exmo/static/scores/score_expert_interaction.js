@@ -240,7 +240,7 @@ $(document).ready(function() {
         // Submit score form with comment.
         $("#submit_score_and_comment").click(function () {
             cke_comment.updateElement();
-            $('form.tab_edit input[name="comment"]').val($('#id_comment').val());
+            $('form.tab_edit input[name="' + comment_field_id.slice(3) + '"]').val($('#' + comment_field_id).val());
             $('form.tab_edit').submit();
             return false;
         });
