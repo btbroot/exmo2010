@@ -286,7 +286,7 @@
                 </div>
 
                 {% if interaction and score.pk %}
-                    <input type="hidden" name='comment' />
+                    <input type="hidden" name='{{ comment_form.comment.auto_id|slice:"3:" }}' />
                 {% else %}
                     <input type="submit" value="{% trans 'Save' %}" />
                 {% endif %}
