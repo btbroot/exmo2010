@@ -38,8 +38,8 @@ Organizations with comments from organization: {{ active_orgs|length }}
 Comments count from organizations: {{ num_unanswered }}
 Comments count from organizations with reply date in limit: {{ num_answered }}
 Comments count from organizations with reply date out of limit: {{ num_answered_late }}
-Comments count from organizations without reply and date in limit: {{ pending|length }}
-Comments count from organizations without reply and should be answered today: {{ expiring|length }}
+Comments count from organizations without reply and date in limit: {{ non_urgent|length }}
+Comments count from organizations without reply and should be answered today: {{ urgent|length }}
 Comments count from organizations without reply and date out of limit: {{ expired|length }}
 
 Statistics by organization:
@@ -60,14 +60,14 @@ Comments list from organizations without reply and date out of limit ({{ expired
 {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
-Comments list from organization that needs to reply today (exclude list above) ({{ expiring|length }}):
-{% for c in expiring %}
+Comments list from organization that needs to reply today (exclude list above) ({{ urgent|length }}):
+{% for c in urgent %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
 {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})
 {% endfor %}
 
-Comments list from organization that needs to reply (exclude list above) ({{ pending|length }}):
-{% for c in pending %}
+Comments list from organization that needs to reply (exclude list above) ({{ non_urgent|length }}):
+{% for c in non_urgent %}
 {% get_object_by_pk exmo2010.Score c.object_pk as score %}
 {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})
 {% endfor %}

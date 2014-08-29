@@ -23,6 +23,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from mock import Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -103,6 +104,46 @@ class CommentReportTestCase(TestCase):
 
         self.assertEqual(report['num_answered'], 2)
         self.assertEqual(report['num_answered_late'], 1)
+
+
+class OpenCommentsAnswerTimeUrgencyTestCase(TestCase):
+    # Unanswered comments should be divided in expired, urgent and non-urgent, depending on
+    # the time_to_answer, comment submission date and current date.
+
+    def setUp(self):
+        # GIVEN organization in monitoring with answer time of 3 days
+        self.org = mommy.make(Organization, name='org1', monitoring__time_to_answer=3)
+        # AND score in approved task
+        score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=self.org)
+
+        # AND organization representative
+        orguser = mommy.make(User)
+        orguser.profile.organization.add(self.org)
+
+        # AND today is 2014.08.14 10:25 (Thursday morning)
+        patch('custom_comments.utils.datetime', Mock(today=lambda: datetime(2014, 8, 14, 10, 25))).start()
+
+        # AND 4 comments by organization representative
+        kwargs = dict(model=CommentExmo, status=CommentExmo.OPEN, object_pk=score.pk, user=orguser)
+
+        # BUG 2178. Submitted at previous Thursday evening. Calcuations should ignore hours, use date only.
+        mommy.make(submit_date=datetime(2014, 8, 7, 18, 31), **kwargs)  # expired
+
+        mommy.make(submit_date=datetime(2014, 8, 8), **kwargs)          # expired
+        mommy.make(submit_date=datetime(2014, 8, 11), **kwargs)         # urgent
+        mommy.make(submit_date=datetime(2014, 8, 13), **kwargs)         # non-urgent
+
+    def tearDown(self):
+        patch.stopall()
+
+    def test_open_comments_count(self):
+        # WHEN comment report is constructed
+        report = comment_report(self.org.monitoring)
+
+        # THEN length of expired, urgent and non-urgent comments lists should be correct
+        self.assertEqual(len(report['expired']), 2)
+        self.assertEqual(len(report['urgent']), 1)
+        self.assertEqual(len(report['non_urgent']), 1)
 
 
 class PostCommentUnprivilegedAccessTestCase(TestCase):

@@ -20,6 +20,7 @@
 import codecs
 import cStringIO
 import csv
+from datetime import timedelta, datetime
 import re
 
 from django.conf import settings
@@ -28,13 +29,43 @@ from django.utils.safestring import mark_safe
 from lxml.html.clean import Cleaner
 
 
+# datetime.weekday() values start from 0.
+LAST_WORKDAY = 4
+
+
 def workday_count(start, end):
     """
-    Count days diff excluding weekends.
+    Count days diff excluding weekends
     """
+    if isinstance(start, datetime):
+        start = start.date()
+    if isinstance(end, datetime):
+        end = end.date()
+
+    if start.weekday() > LAST_WORKDAY:
+        # If start day is weekend, move start forward to nearest workday
+        start += timedelta(7 - start.weekday())
+
+    if end.weekday() > LAST_WORKDAY:
+        # If end day is weekend, move end back to nearest workday
+        end -= timedelta(end.weekday() - LAST_WORKDAY)
+
+    if end <= start:
+        return 0
+
+    # (In examples below, week begins on Monday, as in most Europe countries)
+    # From Friday to Monday (day 08 to 11)
+    #  daydiff == -4
+    #  nweeks == 1
+    #  result == 5 - 4
+    # From Monday to Tuesday (day 04 to 12)
+    #  daydiff == 1
+    #  nweeks == 1
+    #  result == 5 + 1
     daydiff = end.weekday() - start.weekday()
     nweeks = ((end - start).days - daydiff) / 7
-    return nweeks * 5 + min(daydiff, 5)
+
+    return nweeks * 5 + daydiff
 
 
 def safeConvert(string):

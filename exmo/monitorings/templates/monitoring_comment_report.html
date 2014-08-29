@@ -62,8 +62,8 @@
                 <li>{% trans 'Number of comments from organizations' %}: {{ num_org_comments }}</li>
                 <li>{% trans 'Number of comments from organizations with reply before deadline' %}: {{ num_answered }}</li>
                 <li>{% trans 'Number of comments from organizations with reply after deadline' %}: {{ num_answered_late }}</li>
-                <li>{% trans 'Number of comments from organizations without reply' %}: {{ pending|length }}</li>
-                <li>{% trans 'Number of comments from organizations which should be answered today' %}: {{ expiring|length }}</li>
+                <li>{% trans 'Number of comments from organizations without reply' %}: {{ non_urgent|length }}</li>
+                <li>{% trans 'Number of comments from organizations which should be answered today' %}: {{ urgent|length }}</li>
                 <li>{% trans 'Number of comments from organizations without reply before deadline' %}: {{ expired|length }}</li>
             </ul>
 
@@ -108,24 +108,24 @@
                 {% endif %}
             </div>
 
-            <h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('expiring');">
-                {% trans 'Comments list from organization that should be replied today (exclude list above)' %} ({{ expiring|length }})</h3>
-            <div id="expiring" style="color:#ff9218; display: none;" >
-                {% if expiring %}
+            <h3 style="color:#ff9218; cursor: pointer;" onClick="toggle('urgent');">
+                {% trans 'Comments list from organization that should be replied today (exclude list above)' %} ({{ urgent|length }})</h3>
+            <div id="urgent" style="color:#ff9218; display: none;" >
+                {% if urgent %}
                     <ul>
-                        {% for c in expiring %}
+                        {% for c in urgent %}
                             <li><a href="{% url 'exmo2010:score' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endif %}
             </div>
 
-            <h3 style="color:green; cursor: pointer;" onClick="toggle('pending');">
-                {% trans 'Comments list from organization that should be replied (exclude list above)' %} ({{ pending|length }})</h3>
-            <div id="pending" style="color:green; display: none;">
-                {% if pending %}
+            <h3 style="color:green; cursor: pointer;" onClick="toggle('non_urgent');">
+                {% trans 'Comments list from organization that should be replied (exclude list above)' %} ({{ non_urgent|length }})</h3>
+            <div id="non_urgent" style="color:green; display: none;">
+                {% if non_urgent %}
                     <ul>
-                        {% for c in pending %}
+                        {% for c in non_urgent %}
                             <li><a href="{% url 'exmo2010:score' c.object_pk %}">{{ c.submit_date }} -- {{ c.content_object.task.user }}</a></li>
                         {% endfor %}
                     </ul>

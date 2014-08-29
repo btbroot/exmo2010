@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import timedelta, datetime
+from datetime import datetime
 
 from django.contrib.auth.models import User
 
@@ -52,7 +52,7 @@ def comment_report(monitoring):
 
     # Dict by pk. Later this will become a list of active_experts and active_orgs.
     dict_active_experts, dict_active_orgs = {}, {}
-    pending, expiring, expired = [], [], []
+    non_urgent, urgent, expired = [], [], []
     num_org_comments = num_answered = num_answered_late = 0
 
     for comment in CommentExmo.objects.filter(object_pk__in=scores).prefetch_related('user'):
@@ -62,19 +62,18 @@ def comment_report(monitoring):
             dict_active_orgs[org_pk]['num_comments'] += 1
 
             num_org_comments += 1
-            tstart = comment.submit_date + timedelta(days=1)
             if comment.status == CommentExmo.ANSWERED:
                 num_answered += 1
-                if workday_count(tstart, comment.answered_date) > monitoring.time_to_answer:
+                if workday_count(comment.submit_date, comment.answered_date) > monitoring.time_to_answer:
                     num_answered_late += 1
             elif comment.status == CommentExmo.OPEN:
-                days_passed = workday_count(tstart, datetime.today())
+                days_passed = workday_count(comment.submit_date, datetime.today())
                 if days_passed == monitoring.time_to_answer:
-                    expiring.append(comment)
+                    urgent.append(comment)
                 elif days_passed > monitoring.time_to_answer:
                     expired.append(comment)
                 else:
-                    pending.append(comment)
+                    non_urgent.append(comment)
         else:
             # Comment by expert.
             if comment.user.pk in dict_active_experts:

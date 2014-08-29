@@ -40,8 +40,8 @@
         Comments count from organizations: {{ num_org_comments }}<br />
         Comments count from organizations with reply date in limit: {{ num_answered }}<br />
         Comments count from organizations with reply date out of limit: {{ num_answered_late }}<br />
-        Comments count from organizations without reply and date in limit: {{ pending|length }}<br />
-        Comments count from organizations without reply and should be answered today: {{ expiring|length }}<br />
+        Comments count from organizations without reply and date in limit: {{ non_urgent|length }}<br />
+        Comments count from organizations without reply and should be answered today: {{ urgent|length }}<br />
         Comments count from organizations without reply and date out of limit: {{ expired|length }}<br />
     </div>
 
@@ -70,16 +70,16 @@
     </div>
 
     <div>
-        <h4>Comments list from organization that needs to reply today (exclude list above) ({{ expiring|length }}):</h4>
-        {% for c in expiring %}
+        <h4>Comments list from organization that needs to reply today (exclude list above) ({{ urgent|length }}):</h4>
+        {% for c in urgent %}
             {% get_object_by_pk exmo2010.Score c.object_pk as score %}
             {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})<br />
         {% endfor %}
     </div>
 
     <div>
-        <h4>Comments list from organization that needs to reply (exclude list above) ({{ pending|length }}):</h4>
-        {% for c in pending %}
+        <h4>Comments list from organization that needs to reply (exclude list above) ({{ non_urgent|length }}):</h4>
+        {% for c in non_urgent %}
             {% get_object_by_pk exmo2010.Score c.object_pk as score %}
             {{ c.submit_date }} -- {{ c.user }} -- {{ site }}{% url 'exmo2010:score' c.object_pk %} ({{score.task.user}})<br />
         {% endfor %}

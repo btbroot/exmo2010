@@ -20,34 +20,37 @@ $(document).ready(function() {
     var comment_field = $('div.comment-form').find('textarea');
     var editor = CKEDITOR.instances[comment_field.attr('id')];
 
-    if (CKEDITOR.env.isCompatible) {
-        // Update original form inputs when text typed in CKEDITOR
-        // Enable submit button if CKEDITOR input not empty.
-        function ckChangeHandler(e) {
-            var editor_body = $(e.sender.document.$).find('body');
+    // editor is undefined when comments are closed (for ex. published monitoring)
+    if (editor != undefined) {
+        if (CKEDITOR.env.isCompatible) {
+            // Update original form inputs when text typed in CKEDITOR
+            // Enable submit button if CKEDITOR input not empty.
+            function ckChangeHandler(e) {
+                var editor_body = $(e.sender.document.$).find('body');
 
-            if(editor_body && $.trim(editor_body.text()) != '') {
-                $('#submit_comment').prop('disabled', false);
-            } else {
-                $('#submit_comment').prop('disabled', true);
+                if(editor_body && $.trim(editor_body.text()) != '') {
+                    $('#submit_comment').prop('disabled', false);
+                } else {
+                    $('#submit_comment').prop('disabled', true);
+                }
+                e.sender.updateElement()
             }
-            e.sender.updateElement()
-        }
 
-        if ($.browser.msie) {
-            editor.on('contentDom', function(e) {
-                editor.document.on('keyup', function(event) { ckChangeHandler(e); });
-            });
+            if ($.browser.msie) {
+                editor.on('contentDom', function(e) {
+                    editor.document.on('keyup', function(event) { ckChangeHandler(e); });
+                });
+            } else {
+                editor.on('change', ckChangeHandler);
+            }
         } else {
-            editor.on('change', ckChangeHandler);
+            comment_field.on('change keyup paste', function() {
+                if($.trim($(this).val()) != '') {
+                    $('#submit_comment').prop('disabled', false);
+                } else {
+                    $('#submit_comment').prop('disabled', true);
+                }
+            })
         }
-    } else {
-        comment_field.on('change keyup paste', function() {
-            if($.trim($(this).val()) != '') {
-                $('#submit_comment').prop('disabled', false);
-            } else {
-                $('#submit_comment').prop('disabled', true);
-            }
-        })
     }
 });
