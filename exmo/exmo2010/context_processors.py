@@ -33,7 +33,10 @@ def live_settings(request):
     Variables from livesettings.
 
     """
-    return {'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY')}
+    return {
+        'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY'),
+        'og_description': config_value('GlobalParameters', 'OG:DESCRIPTION')
+    }
 
 
 def text_fragments(request):

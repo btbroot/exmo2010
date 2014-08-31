@@ -125,4 +125,12 @@ config_register_list(
         default=_('Freedom Information Foundation Expert'),
         help_text=_('Default organization`s expert'),
     ),
+    StringValueWidget(
+        GLOBAL_PARAMETERS_GROUP,
+        'OG:DESCRIPTION',
+        description=_('og:description meta tag content'),
+        ordering=0,
+        default='',
+        help_text=_('og:description meta tag content'),
+    ),
 )

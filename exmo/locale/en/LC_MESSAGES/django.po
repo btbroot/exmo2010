@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-27 01:44+0400\n"
+"POT-Creation-Date: 2014-08-31 22:32+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -205,7 +205,7 @@ msgstr ""
 #: exmo2010/urls.py:266 exmo2010/urls.py:268
 #: exmo2010/models/questionnaire.py:36 monitorings/forms.py:42
 #: monitorings/templates/monitoring_form.html:70
-#: monitorings/templates/ratings.html:51 templates/exmo2010/opendata.html:56
+#: monitorings/templates/ratings.html:51 templates/exmo2010/opendata.html:58
 #: templates/mail/certificate_order_email.html:26
 #: templates/mail/certificate_order_email.txt:24
 #: templates/mail/parameter_email.html:27
@@ -226,7 +226,7 @@ msgstr ""
 #: monitorings/views.py:86 monitorings/views.py:332 monitorings/views.py:431
 #: monitorings/views.py:488 monitorings/views.py:580 monitorings/views.py:642
 #: monitorings/views.py:693 monitorings/views.py:1190
-#: monitorings/views.py:1192 scores/views.py:351 tasks/views.py:52
+#: monitorings/views.py:1192 scores/views.py:354 tasks/views.py:52
 #: tasks/views.py:274 tasks/views.py:314
 msgid "Forbidden"
 msgstr ""
@@ -540,6 +540,10 @@ msgstr ""
 msgid "Default organization`s expert"
 msgstr ""
 
+#: exmo/config.py:131 exmo/config.py:134
+msgid "og:description meta tag content"
+msgstr ""
+
 #: exmo2010/celery_tasks.py:108
 #, python-format
 msgid "%(prefix)s Email digest"
@@ -632,7 +636,7 @@ msgid "About"
 msgstr ""
 
 #: exmo2010/urls.py:212 templates/_footer.html:28
-#: templates/exmo2010/opendata.html:27
+#: templates/exmo2010/opendata.html:27 templates/exmo2010/opendata.html:29
 msgid "Open data"
 msgstr ""
 
@@ -724,7 +728,7 @@ msgstr ""
 #: exmo2010/models/parameter.py:33
 #: monitorings/templates/monitoring_parameter_filter.html:170
 #: monitorings/templates/monitoring_parameter_found_report.html:41
-#: parameters/forms.py:47 scores/views.py:319
+#: parameters/forms.py:47 scores/views.py:322
 #: templates/exmo2010/score_legend.html:91
 #: templates/exmo2010/score_legend.html:123
 msgid "Parameter"
@@ -1254,7 +1258,7 @@ msgstr ""
 msgid "parameter"
 msgstr ""
 
-#: exmo2010/models/score.py:69 parameters/forms.py:49 scores/views.py:320
+#: exmo2010/models/score.py:69 parameters/forms.py:49 scores/views.py:323
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:58
 #: templates/exmo2010/score_legend.html:79
@@ -1262,7 +1266,7 @@ msgstr ""
 msgid "Found"
 msgstr ""
 
-#: exmo2010/models/score.py:70 parameters/forms.py:51 scores/views.py:321
+#: exmo2010/models/score.py:70 parameters/forms.py:51 scores/views.py:324
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1273,7 +1277,7 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
-#: exmo2010/models/score.py:71 parameters/forms.py:53 scores/views.py:322
+#: exmo2010/models/score.py:71 parameters/forms.py:53 scores/views.py:325
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1284,7 +1288,7 @@ msgstr ""
 msgid "Topical"
 msgstr ""
 
-#: exmo2010/models/score.py:72 parameters/forms.py:55 scores/views.py:323
+#: exmo2010/models/score.py:72 parameters/forms.py:55 scores/views.py:326
 #: templates/exmo2010/score_legend.html:34
 #: templates/exmo2010/score_legend.html:42
 #: templates/exmo2010/score_legend.html:50
@@ -1303,7 +1307,7 @@ msgstr ""
 msgid "Hypertext"
 msgstr ""
 
-#: exmo2010/models/score.py:74 parameters/forms.py:59 scores/views.py:325
+#: exmo2010/models/score.py:74 parameters/forms.py:59 scores/views.py:328
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
 #: templates/exmo2010/score_legend.html:67
@@ -1312,7 +1316,7 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: exmo2010/models/score.py:75 parameters/forms.py:61 scores/views.py:326
+#: exmo2010/models/score.py:75 parameters/forms.py:61 scores/views.py:329
 #: templates/exmo2010/score_legend.html:33
 #: templates/exmo2010/score_legend.html:59
 #: templates/exmo2010/score_legend.html:67
@@ -2209,15 +2213,15 @@ msgstr ""
 msgid "Save questionnaire"
 msgstr ""
 
-#: scores/views.py:318
+#: scores/views.py:321
 msgid "Code"
 msgstr ""
 
-#: scores/views.py:324 templates/scores/task_scores_print.html:41
+#: scores/views.py:327 templates/scores/task_scores_print.html:41
 msgid "HTML"
 msgstr ""
 
-#: scores/views.py:327 templates/scores/task_scores_print.html:45
+#: scores/views.py:330 templates/scores/task_scores_print.html:45
 msgid "Weight"
 msgstr ""
 
@@ -2379,7 +2383,7 @@ msgid ""
 "version 3 of the License, or (at your option) any later version."
 msgstr ""
 
-#: templates/base.html:29 templates/base_print.html:25
+#: templates/base.html:27 templates/base_print.html:25
 #: templates/registration/activation_complete.html:24
 #: templates/registration/password_change_done.html:24
 #: templates/registration/password_reset_complete.html:24
@@ -2458,6 +2462,11 @@ msgstr ""
 msgid ""
 "Our site requires enabled cookies and JavaScript. Please enable them in your "
 "browser settings."
+msgstr ""
+
+#: templates/index.html:29
+msgctxt "Front page"
+msgid "Home"
 msgstr ""
 
 #: templates/admin/base_site.html:24
@@ -2540,7 +2549,7 @@ msgstr ""
 msgid "Organizations with approved task"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:31
+#: templates/exmo2010/opendata.html:33
 msgid ""
 "There's ability to download dataset for an every monitoring cycle in "
 "Infometer system using two formats, JSON and CSV. JSON file is for machine "
@@ -2548,190 +2557,190 @@ msgid ""
 "application."
 msgstr ""
 
-#: templates/exmo2010/opendata.html:34
+#: templates/exmo2010/opendata.html:36
 msgid ""
 "Data available to download from finished monitoring cycles pages. For "
 "understanding data to download, we suggest familiarize with"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:35
+#: templates/exmo2010/opendata.html:37
 msgid "metodology of official sites of government authorities"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:37
+#: templates/exmo2010/opendata.html:39
 msgid "Structure of JSON dataset to download"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:42 templates/exmo2010/opendata.html:390
+#: templates/exmo2010/opendata.html:44 templates/exmo2010/opendata.html:392
 msgid "Designation"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:45 templates/exmo2010/opendata.html:393
+#: templates/exmo2010/opendata.html:47 templates/exmo2010/opendata.html:395
 msgid "Description"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:48 templates/exmo2010/opendata.html:396
+#: templates/exmo2010/opendata.html:50 templates/exmo2010/opendata.html:398
 msgid "Possible values"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:67 templates/exmo2010/opendata.html:407
+#: templates/exmo2010/opendata.html:69 templates/exmo2010/opendata.html:409
 msgid "Name of monitoring cycle"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:78
+#: templates/exmo2010/opendata.html:80
 msgid "Organizations array within monitoring cycle"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:89 templates/exmo2010/opendata.html:435
+#: templates/exmo2010/opendata.html:91 templates/exmo2010/opendata.html:437
 msgid "Organization's ID in database"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:100 templates/exmo2010/opendata.html:421
+#: templates/exmo2010/opendata.html:102 templates/exmo2010/opendata.html:423
 msgid "Organization's name"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:111
+#: templates/exmo2010/opendata.html:113
 msgid "Organization's site URL"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:122 templates/exmo2010/opendata.html:449
+#: templates/exmo2010/opendata.html:124 templates/exmo2010/opendata.html:451
 msgid "Organization's place in rating"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:125 templates/exmo2010/opendata.html:452
+#: templates/exmo2010/opendata.html:127 templates/exmo2010/opendata.html:454
 msgid "Natural number"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:133 templates/exmo2010/opendata.html:463
+#: templates/exmo2010/opendata.html:135 templates/exmo2010/opendata.html:465
 msgid ""
 "Score of organization's site openness before interaction of organization's "
 "representatives with experts"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:136 templates/exmo2010/opendata.html:147
-#: templates/exmo2010/opendata.html:466 templates/exmo2010/opendata.html:480
+#: templates/exmo2010/opendata.html:138 templates/exmo2010/opendata.html:149
+#: templates/exmo2010/opendata.html:468 templates/exmo2010/opendata.html:482
 msgid "From"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:136 templates/exmo2010/opendata.html:147
-#: templates/exmo2010/opendata.html:466 templates/exmo2010/opendata.html:480
+#: templates/exmo2010/opendata.html:138 templates/exmo2010/opendata.html:149
+#: templates/exmo2010/opendata.html:468 templates/exmo2010/opendata.html:482
 msgid "to"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:144 templates/exmo2010/opendata.html:477
+#: templates/exmo2010/opendata.html:146 templates/exmo2010/opendata.html:479
 msgid "Final score of site's openness"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:155
+#: templates/exmo2010/opendata.html:157
 msgid "Parameter's scores array of organization's site within monitoring cycle"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:168 templates/exmo2010/opendata.html:491
+#: templates/exmo2010/opendata.html:170 templates/exmo2010/opendata.html:493
 msgid "Parameters's name"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:180
+#: templates/exmo2010/opendata.html:182
 msgid "Scores's ID in database"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:192 templates/exmo2010/opendata.html:505
+#: templates/exmo2010/opendata.html:194 templates/exmo2010/opendata.html:507
 msgid "Parameters's ID in database"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:204 templates/exmo2010/opendata.html:617
+#: templates/exmo2010/opendata.html:206 templates/exmo2010/opendata.html:619
 msgid "Value of social importance factor"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:216 templates/exmo2010/opendata.html:228
-#: templates/exmo2010/opendata.html:240 templates/exmo2010/opendata.html:252
-#: templates/exmo2010/opendata.html:264 templates/exmo2010/opendata.html:276
-#: templates/exmo2010/opendata.html:288 templates/exmo2010/opendata.html:519
-#: templates/exmo2010/opendata.html:533 templates/exmo2010/opendata.html:547
-#: templates/exmo2010/opendata.html:561 templates/exmo2010/opendata.html:575
-#: templates/exmo2010/opendata.html:589 templates/exmo2010/opendata.html:603
+#: templates/exmo2010/opendata.html:218 templates/exmo2010/opendata.html:230
+#: templates/exmo2010/opendata.html:242 templates/exmo2010/opendata.html:254
+#: templates/exmo2010/opendata.html:266 templates/exmo2010/opendata.html:278
+#: templates/exmo2010/opendata.html:290 templates/exmo2010/opendata.html:521
+#: templates/exmo2010/opendata.html:535 templates/exmo2010/opendata.html:549
+#: templates/exmo2010/opendata.html:563 templates/exmo2010/opendata.html:577
+#: templates/exmo2010/opendata.html:591 templates/exmo2010/opendata.html:605
 msgid "Factor's value"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:216 templates/exmo2010/opendata.html:519
+#: templates/exmo2010/opendata.html:218 templates/exmo2010/opendata.html:521
 msgid "\"Found\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:228 templates/exmo2010/opendata.html:533
+#: templates/exmo2010/opendata.html:230 templates/exmo2010/opendata.html:535
 msgid "\"Complete\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:240 templates/exmo2010/opendata.html:547
+#: templates/exmo2010/opendata.html:242 templates/exmo2010/opendata.html:549
 msgid "\"Topical\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:252 templates/exmo2010/opendata.html:561
+#: templates/exmo2010/opendata.html:254 templates/exmo2010/opendata.html:563
 msgid "\"Accessible\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:264 templates/exmo2010/opendata.html:575
+#: templates/exmo2010/opendata.html:266 templates/exmo2010/opendata.html:577
 msgid "\"Hypertext\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:276 templates/exmo2010/opendata.html:589
+#: templates/exmo2010/opendata.html:278 templates/exmo2010/opendata.html:591
 msgid "\"Document\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:288 templates/exmo2010/opendata.html:603
+#: templates/exmo2010/opendata.html:290 templates/exmo2010/opendata.html:605
 msgid "\"Image\""
 msgstr ""
 
-#: templates/exmo2010/opendata.html:300 templates/exmo2010/opendata.html:631
+#: templates/exmo2010/opendata.html:302 templates/exmo2010/opendata.html:633
 msgid "Parameter's type"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:312 templates/exmo2010/opendata.html:645
+#: templates/exmo2010/opendata.html:314 templates/exmo2010/opendata.html:647
 msgid "Parameter's score version"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:322
+#: templates/exmo2010/opendata.html:324
 msgid "Data use terms"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:330
+#: templates/exmo2010/opendata.html:332
 msgid "License name"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:339
+#: templates/exmo2010/opendata.html:341
 msgid "License URL"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:348
+#: templates/exmo2010/opendata.html:350
 msgid "Rightsholder URL"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:357
+#: templates/exmo2010/opendata.html:359
 msgid "Data source URL"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:365 templates/exmo2010/opendata.html:654
+#: templates/exmo2010/opendata.html:367 templates/exmo2010/opendata.html:656
 msgid "Dataset description"
 msgstr ""
 
-#: templates/exmo2010/opendata.html:369 templates/exmo2010/opendata.html:658
+#: templates/exmo2010/opendata.html:371 templates/exmo2010/opendata.html:660
 msgid ""
 "Quantity of parameters from different organizations may not be the same "
 "because some parameters are relevant only for several organizations."
 msgstr ""
 
-#: templates/exmo2010/opendata.html:372 templates/exmo2010/opendata.html:661
+#: templates/exmo2010/opendata.html:374 templates/exmo2010/opendata.html:663
 msgid ""
 "Within estimate absent may be such criteria as Fullness, Actuality, "
 "Navigation accessibility, HTML accessibility, File accessibility, Graphical "
 "accessibility as they may be not relevant for parameter."
 msgstr ""
 
-#: templates/exmo2010/opendata.html:375 templates/exmo2010/opendata.html:664
+#: templates/exmo2010/opendata.html:377 templates/exmo2010/opendata.html:666
 msgid ""
 "Parameter type can have two values: 1) \"other\" for formulated by experts "
 "parameters; 2) \"npa\" for formulated by normative legal acts parameters."
 msgstr ""
 
-#: templates/exmo2010/opendata.html:378 templates/exmo2010/opendata.html:667
+#: templates/exmo2010/opendata.html:380 templates/exmo2010/opendata.html:669
 msgid ""
 "Version of parameter's estimate can have two values: 1) \"initial\" for "
 "parameter's estimate before interaction of organization's representatives "
@@ -2741,7 +2750,7 @@ msgid ""
 "was not changed during interaction."
 msgstr ""
 
-#: templates/exmo2010/opendata.html:382
+#: templates/exmo2010/opendata.html:384
 msgid "Structure of CSV dataset to download"
 msgstr ""
 

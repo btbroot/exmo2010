@@ -19,12 +19,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load admin_tools_dashboard_tags admin_tools_menu_tags %}
+{% load i18n admin_tools_dashboard_tags admin_tools_menu_tags %}
 
 {% block extra_css %}
     {% admin_tools_render_dashboard_css %}
     <style>html {background-color: #ffffff;}</style>
 {% endblock %}
+
+{% block title %} {% trans "Home" context "Front page" %} {% endblock %}
 
 {% block main %}
     <div id="main" class="dashboard">

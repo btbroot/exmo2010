@@ -24,13 +24,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
     <head>
         <title>
-            {% block title %}
-                {% if title %}{{ title }} |{% endif %}
-                {% trans 'AIS Infometer' %}
-            {% endblock title %}
+            {% block title %} {{ title }} {% endblock %} | {% trans 'AIS Infometer' %}
         </title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta property="og:image" content="{% static 'exmo2010/img/infometer_logo_100x100.png' %}" />
+        <meta property="og:description" content="{{ og_description }}" />
         <link rel="shortcut icon" type="image/png" href="{% static 'exmo2010/img/favicon.png' %}" />
 
         <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/base_structure.css' %}" />
