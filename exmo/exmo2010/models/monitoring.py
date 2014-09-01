@@ -28,7 +28,7 @@ from core.sql import iter_i18n_fields_sql, sql_monitoring_scores
 from .base import BaseModel
 from .organization import Organization
 from .parameter import Parameter
-from .questionnaire import Questionnaire, QAnswer
+from .questionnaire import Questionnaire, QAnswer, QQuestion
 
 
 PRE, RATE, INT, RES, PUB, FIN = 0, 1, 3, 4, 5, 7
@@ -85,37 +85,17 @@ class Monitoring(BaseModel):
         return Questionnaire.objects.filter(monitoring=self).exists()
 
     def get_questionnaire(self):
-        try:
-            return Questionnaire.objects.get(monitoring=self)
-        except ObjectDoesNotExist:
-            return None
+        questionnaire = Questionnaire.objects.filter(monitoring=self)
+        return questionnaire[0] if questionnaire else None
 
     def has_questions(self):
-        questionnaire = self.get_questionnaire()
-        if questionnaire and questionnaire.qquestion_set.exists():
-            return True
-        else:
-            return False
-
-    def del_questionnaire(self):
-        try:
-            questionnaire = Questionnaire.objects.get(monitoring=self)
-        except ObjectDoesNotExist:
-            pass
-        else:
-            questionnaire.delete()
+        return QQuestion.objects.filter(questionnaire__monitoring=self).exists()
 
     def ready_export_answers(self):
-        '''
-        Готов ли мониторинг к экспорту ответов анкеты
-        '''
+        """Готов ли мониторинг к экспорту ответов анкеты"""
         from .task import Task
-        questionnaire = self.get_questionnaire()
-        if questionnaire and QAnswer.objects.filter(
-           question__questionnaire=questionnaire, task__status=Task.TASK_APPROVED).exists():
-            return True
-        else:
-            return False
+        return QAnswer.objects.filter(question__questionnaire__monitoring=self,
+                                      task__status=Task.TASK_APPROVED).exists()
 
     def rating(self, parameters=None, rating_type=None):
         """

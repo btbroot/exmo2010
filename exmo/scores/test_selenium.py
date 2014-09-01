@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -719,17 +720,17 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         # AND I get score page
         self.get(reverse('exmo2010:score', args=(self.score1.pk,)))
         # THEN initial scores should be hidden
-        self.assertHidden('.score_interim')
+        self.assertHidden('.score-interim')
 
         # WHEN I click 'show_interim_score'
         self.find('a[href="#show_interim_score"]').click()
         # THEN initial scores should be visible
-        self.assertVisible('.score_interim')
+        self.assertVisible('.score-interim')
 
         # WHEN I click 'show_interim_score'
         self.find('a[href="#show_interim_score"]').click()
         # THEN initial scores should be hidden
-        self.assertHidden('.score_interim')
+        self.assertHidden('.score-interim')
 
 
 @attr('selenium')

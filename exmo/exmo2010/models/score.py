@@ -212,23 +212,6 @@ class Score(BaseModel):
         claim.save()
         return claim
 
-    def claim_color(self):
-        """
-        Return the color of the claim`s icon.
-
-        """
-        color = None
-
-        claims = Claim.objects.filter(score=self, addressee=self.task.user)
-        open_claims = claims.filter(close_date__isnull=True)
-
-        if claims:
-            color = 'green'
-            if open_claims:
-                color = 'red'
-
-        return color
-
     def comment_form(self, data=None):
         kwargs = dict(fields=['comment'], widgets={'comment': CKEditorWidget(config_name='simplified')})
         return modelform_factory(CommentExmo, **kwargs)(data=data, prefix='score_%s' % str(self.pk))

@@ -4,6 +4,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n target_blank urlize_soup widget_tweaks criteria_css_class static comments date_utils trim_links bleach_tags %}
+{% load i18n target_blank urlize_soup widget_tweaks static comments date_utils trim_links bleach_tags %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
@@ -172,7 +173,7 @@
                             <div class="table-cell parameters-score">
                                 {% trans 'Parameter`s score' %}
                             </div>
-                            <div class="table-cell score-changes score_interim {% if not show_interim_score %}hidden{% endif %}">
+                            <div class="table-cell score-changes score-interim {% if not show_interim_score %}hidden{% endif %}">
                                 {% trans 'Score changes' %}
                             </div>
                         </div>
@@ -183,7 +184,7 @@
                                 <div class="table-cell {% if not field.max_score %}text-color-red{% endif %}">
                                     {{ field.score|default_if_none:'–' }}
                                     {% if field.score_interim != '' and field.score != field.score_interim %}
-                                        <span class="score_interim {% if not show_interim_score %}hidden{% endif %}">({{ field.score_interim|default_if_none:'–' }})</span>
+                                        <span class="score-interim {% if not show_interim_score %}hidden{% endif %}">({{ field.score_interim|default_if_none:'–' }})</span>
                                     {% endif %}
                                     {% if not field.max_score %}<div class="underline"></div>{% endif %}
                                 </div>
@@ -196,7 +197,7 @@
                                     </div>
                                 {% endif %}
                             </div>
-                            <div class="table-cell score_interim {% if not show_interim_score %}hidden{% endif %}">
+                            <div class="table-cell score-interim {% if not show_interim_score %}hidden{% endif %}">
                                 {{ score_delta|floatformat }}%
                                 {% if score_delta > 0 %}
                                     <img src="{% static 'exmo2010/img/rate_up.png' %}">
@@ -365,6 +366,7 @@
             {% else %}
                 <p>{% trans 'There are no comments' %}</p>
             {% endif %}
+            <a id="last_comment"></a>
         </div>
     {% endif %}
 

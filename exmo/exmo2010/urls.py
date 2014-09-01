@@ -31,7 +31,8 @@ from monitorings.views import (MonitoringEditView, MonitoringDeleteView, Monitor
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
-from scores.views import RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments
+from scores.views import (RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments,
+                          TaskScoresView, TaskScoresPrint)
 
 
 def named_urls(module, *urlpatterns):
@@ -132,6 +133,7 @@ monitoring_patterns += named_urls('organizations.views',
 monitoring_patterns += named_urls('questionnaire.views',
     (r'^(?P<monitoring_pk>\d+)/add_questionnaire/$', 'add_questionnaire'),
     (r'^(?P<monitoring_pk>\d+)/answers_export/$', 'answers_export', 'monitoring_answers_export'),
+    (r'^post_questionnaire/(?P<task_pk>\d+)/$', 'post_questionnaire'),
 )
 
 monitoring_patterns += named_urls('',
@@ -164,8 +166,8 @@ urlpatterns = named_urls('',
     (r'^monitoring/', include(monitoring_patterns)),
 
     (r'^score/', include(scores_patterns)),
-    (r'^scores/(?P<task_pk>\d+)/$', 'scores.views.task_scores'),
-    (r'^scores/(?P<task_pk>\d+)/print/$', 'scores.views.task_scores_print'),
+    (r'^scores/(?P<task_pk>\d+)/$', TaskScoresView, 'task_scores'),
+    (r'^scores/(?P<task_pk>\d+)/print/$', TaskScoresPrint, 'task_scores_print'),
     (r'^recommendations/(?P<task_pk>\d+)/$', RecommendationsView, 'recommendations'),
     (r'^recommendations/(?P<task_pk>\d+)/print/$', RecommendationsPrint, 'recommendations_print'),
     (r'^recommendations/(?P<task_pk>\d+)/print_with_comments/$', RecommendationsPrintWithComments, 'recommendations_print_with_comments'),

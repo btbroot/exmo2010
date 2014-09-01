@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,20 +20,17 @@
 #
 from collections import defaultdict
 from datetime import datetime
-from decimal import Decimal
 
 from BeautifulSoup import BeautifulSoup
 from ckeditor.fields import RichTextFormField
-from ckeditor.widgets import CKEditorWidget
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Max
 from django.forms import RadioSelect
 from django.forms.models import modelform_factory
-from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, Http404, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.html import escape, urlize
@@ -42,14 +40,14 @@ from django.views.generic import DetailView
 from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
-from core.helpers import table_prepare_queryset
 from core.response import JSONResponse
 from core.templatetags.target_blank import target_blank
-from core.utils import clean_message
+from core.utils import clean_message, round_ex
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
-from exmo2010.models import Organization, Score, Task, Parameter, QQuestion, QAnswer, UserProfile
+from exmo2010.models import Organization, Score, Task, Parameter, QAnswer, QQuestion, UserProfile
 from exmo2010.models.monitoring import Monitoring
+from parameters.forms import ParametersQueryForm
 from perm_utils import annotate_exmo_perms
 from questionnaire.forms import QuestionnaireDynForm
 
@@ -296,192 +294,145 @@ def toggle_comment(request):
     raise Http404
 
 
-def task_scores_print(request, task_pk):
-    task = get_object_or_404(Task, pk=task_pk)
-
-    if not request.user.has_perm('exmo2010.view_task', task):
-        raise PermissionDenied
-
-    task_scores_url = reverse('exmo2010:task_scores', args=(task.pk, ))
-    return TemplateResponse(request, 'scores/task_scores_print.html', {
-        'task': task,
-        'task_scores_url': request.build_absolute_uri(task_scores_url)})
-
-
-def task_scores(request, task_pk):
-    task = get_object_or_404(Task, pk=task_pk)
-    title = task.organization.name
-
-    if not request.user.has_perm('exmo2010.view_task', task):
-        raise PermissionDenied
-
-    monitoring = task.organization.monitoring
-    parameters = Parameter.objects.filter(monitoring=monitoring).exclude(exclude=task.organization)
-    headers = (
-        (_('Code'), None, None, None, None),
-        (_('Parameter'), 'name', 'name', None, None),
-        (_('Found'), None, None, None, None),
-        (_('Complete'), None, None, None, None),
-        (_('Topical'), None, None, None, None),
-        (_('Accessible'), None, None, None, None),
-        (_('HTML'), None, None, None, None),
-        (_('Document'), None, None, None, None),
-        (_('Image'), None, None, None, None),
-        (_('Weight'), None, None, None, None),
-    )
-    parameters, extra_context = table_prepare_queryset(request, headers, queryset=parameters)
-
-    scores_default = Score.objects.select_related().filter(
-        parameter__in=parameters,
-        revision=Score.FINAL,
-        task=task,
-    )
-
-    scores_interact = Score.objects.select_related().filter(
-        parameter__in=parameters,
-        revision=Score.REVISION_INTERACT,
-        task=task,
-    )
-
-    score_dict = {s.parameter.pk: s for s in scores_default}
-    score_interact_dict = {s.parameter.pk: s for s in scores_interact}
-
-    questionnaire = monitoring.get_questionnaire()
-    if questionnaire and questionnaire.qquestion_set.exists():
-        questions = questionnaire.qquestion_set.order_by("pk")
-        if request.method == "POST":
-            if not request.user.has_perm('exmo2010.fill_task', task):
-                return HttpResponseForbidden(_('Forbidden'))
-            form = QuestionnaireDynForm(request.POST, questions=questions, task=task)
-            if form.is_valid():
-                cd = form.cleaned_data
-                for answ in cd.items():
-                    if answ[0].startswith("q_"):
-                        try:
-                            q_id = int(answ[0][2:])
-                            question_obj = QQuestion.objects.get(pk=q_id)
-                        except (ValueError, ObjectDoesNotExist):
-                            continue
-                        if answ[1]:  # Непустое значение ответа.
-                            answer = QAnswer.objects.get_or_create(task=task, question=question_obj)[0]
-                            if question_obj.qtype == 0:
-                                answer.text_answer = answ[1]
-                                answer.save()
-                            elif question_obj.qtype == 1:
-                                answer.numeral_answer = answ[1]
-                                answer.save()
-                            elif question_obj.qtype == 2:
-                                answer.variance_answer = answ[1]
-                                answer.save()
-                        else:  # Пустой ответ.
-                            try:
-                                answer = QAnswer.objects.get(task=task, question=question_obj)
-                            except ObjectDoesNotExist:
-                                continue
-                            else:
-                                answer.delete()
-                return HttpResponseRedirect(reverse('exmo2010:task_scores', args=[task.pk]))
-        else:
-            existing_answers = task.get_questionnaire_answers()
-            initial_data = {}
-            for a in existing_answers:
-                initial_data["q_%s" % a.question.pk] = a.answer(True)
-            form = QuestionnaireDynForm(questions=questions, initial=initial_data)
-    else:
-        form = None
-    if monitoring.has_npa:
-        parameters_npa = parameters.filter(npa=True)
-        parameters_other = parameters.filter(npa=False)
-    else:
-        parameters_npa = []
-        parameters_other = parameters
-
-    _new_comment_url(request, score_dict, scores_default, parameters_npa)
-
-    _new_comment_url(request, score_dict, scores_default, parameters_other)
-
-    extra_context.update({
-        'score_interact_dict': score_interact_dict,
-        'parameters_npa': parameters_npa,
-        'parameters_other': parameters_other,
-        'perm_admin_monitoring': request.user.has_perm('exmo2010.admin_monitoring', monitoring),
-        'mon': monitoring,
-        'task': task,
-        'title': title,
-        'form': form,
-        'invcodeform': SettingsInvCodeForm(),
-        'show_link': request.user.is_expertA or monitoring.is_published,
-        'orgs_count': Organization.objects.filter(monitoring=monitoring).count(),
-        'openness': task.openness,
-        'delta': task.openness - task.openness_initial if task.openness else None,
-    })
-
-    return TemplateResponse(request, 'scores/task_scores.html', extra_context)
-
-
-def _new_comment_url(request, score_dict, scores_default, parameters):
-    """
-    Get URL for new comments, if exists.
-
-    """
-    last_comments = {}
-
-    scores = scores_default.filter(parameter_id__in=parameters)
-
-    for param in parameters:
-        score = score_dict.get(param.id, None)
-        param.score = score
-
-    if not request.user.is_anonymous() and scores:
-        comments = CommentExmo.objects.filter(
-            object_pk__in=scores,
-            content_type__model='score',
-            status=CommentExmo.OPEN,
-            user__groups__name=UserProfile.organization_group,
-        ).values('object_pk').annotate(pk=Max('pk'))
-
-        for comment in comments:
-            last_comments[int(comment['object_pk'])] = comment['pk']
-
-        if last_comments:
-            for param in parameters:
-                score = param.score
-                if not score:
-                    continue
-
-                last_comment_id = last_comments.get(score.pk, None)
-
-                if last_comment_id and (request.user.executes(score.task) or request.user.is_expertA):
-                    param.url = reverse('exmo2010:score', args=[score.pk]) + "#c" + str(last_comment_id)
-
-
-def _round(x):
-    """
-    If x < 0.1, round to the first nonzero decimal digit, Otherwise round to one decimal digit.
-    0.0 => 0.0
-    0.00123 => 0.001
-    0.54321 => 0.5
-    """
-    if x == 0.0:
-        return x
-    elif x < 0.1:
-        _x = Decimal(x).as_tuple()
-        return round(x, 1 - _x.exponent - len(_x.digits))
-    else:
-        return round(x, 1)
-
-
-class RecommendationsView(DetailView):
-    template_name = "scores/recommendations.html"
+class TaskScoresMixin(object):
     pk_url_kwarg = 'task_pk'
     model = Task
 
     def get_object(self, queryset=None):
-        task = super(RecommendationsView, self).get_object(queryset)
+        task = super(TaskScoresMixin, self).get_object(queryset)
         self.task = annotate_exmo_perms(task, self.request.user)
         if not self.request.user.has_perm('exmo2010.view_task', self.task):
             raise PermissionDenied
+
         return self.task
+
+
+class TaskScoresView(TaskScoresMixin, DetailView):
+    template_name = "scores/task_scores.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskScoresView, self).get_context_data(**kwargs)
+
+        monitoring = self.task.organization.monitoring
+
+        # Relevant parameters
+        relevant_parameters = Parameter.objects.filter(monitoring=monitoring)\
+                                               .exclude(exclude=self.task.organization)\
+                                               .defer('grounds', 'rating_procedure', 'notes')
+        scores_rel = Score.objects.filter(task=self.task)\
+                                  .exclude(parameter__exclude=self.task.organization)\
+                                  .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
+        relevant_parameters_exist = relevant_parameters.exists()
+
+        # Non relevant parameters
+        nonrelevant_parameters = Parameter.objects.filter(monitoring=monitoring, exclude=self.task.organization)\
+                                                  .defer('grounds', 'rating_procedure', 'notes')
+        scores_nonrel = Score.objects.filter(task=self.task, parameter__exclude=self.task.organization)\
+                                     .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
+        nonrelevant_parameters_exist = nonrelevant_parameters.exists()
+
+        # Apply user provided filters
+        self.queryform = ParametersQueryForm(self.request.GET)
+
+        if self.queryform.is_valid():
+            relevant_parameters = self.queryform.apply(relevant_parameters)
+            nonrelevant_parameters = self.queryform.apply(nonrelevant_parameters)
+
+        # Set scores to relevant parameters list
+        self._set_parameters_scores(relevant_parameters, scores_rel)
+        self._set_last_comment_url(relevant_parameters, scores_rel)
+        # Set scores to non relevant parameters list
+        self._set_parameters_scores(nonrelevant_parameters, scores_nonrel)
+
+        # Get questionnaire form
+        questionnaire_form = None
+        questions = QQuestion.objects.filter(questionnaire__monitoring=monitoring).order_by("pk")
+        if questions:
+            existing_answers = QAnswer.objects.filter(task=self.task).order_by("pk")
+            initial_data = {"q_%s" % a.question.pk: a.answer(True) for a in existing_answers}
+            questionnaire_form = QuestionnaireDynForm(questions=questions, initial=initial_data)
+
+        context.update({
+            'relevant_parameters': relevant_parameters,
+            'nonrelevant_parameters': nonrelevant_parameters,
+            'relevant_parameters_exist': relevant_parameters_exist,
+            'nonrelevant_parameters_exist': nonrelevant_parameters_exist,
+            'mon': monitoring,
+            'task': self.task,
+            'questionnaire_form': questionnaire_form,
+            'invcodeform': SettingsInvCodeForm(),
+            'orgs_count': Organization.objects.filter(monitoring=monitoring).count(),
+            'openness': self.task.openness,
+            'delta': self.task.openness - self.task.openness_initial if self.task.openness is not None else None,
+        })
+
+        return context
+
+    @staticmethod
+    def _set_parameters_scores(parameters, scores):
+        score_fin_dict = {s.parameter.pk: s for s in scores if s.revision == Score.FINAL}
+        score_int_dict = {s.parameter.pk: s for s in scores if s.revision == Score.INTERIM}
+
+        for param in parameters:
+            score_fin = score_fin_dict.get(param.pk, None)
+            if score_fin:
+                param.score_pk = score_fin.pk
+                param.score_accomplished = score_fin.accomplished
+                score_int = score_int_dict.get(param.pk, None)
+                param.score_openness = score_fin.openness
+                param.score_openness_delta = score_fin.openness - score_int.openness if score_int else 0
+
+                criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+
+                score_table = []
+                for criterion in ['found'] + Parameter.OPTIONAL_CRITERIONS:
+                    if criterion in criteria:
+                        score_table.append({
+                            'score_final': getattr(score_fin, criterion),
+                            'score_interim': getattr(score_int, criterion) if score_int else '',
+                            'max_score': getattr(score_fin, criterion) == score_fin._meta.get_field(criterion).choices[-1][-1]
+                        })
+                    else:
+                        score_table.append({})
+
+                param.score_table = score_table
+
+    def _set_last_comment_url(self, parameters, scores):
+        if self.request.user.executes(self.task) or self.request.user.is_expertA:
+            scores_with_opened_comments = CommentExmo.objects.filter(
+                object_pk__in=scores.values_list('pk', flat=True),
+                content_type__model=ContentType.objects.get_for_model(Score),
+                status=CommentExmo.OPEN,
+                user__groups__name=UserProfile.organization_group,
+            ).values_list('object_pk', flat=True)
+
+            if scores_with_opened_comments:
+                scores_with_opened_comments = [int(s) for s in set(scores_with_opened_comments)]
+                for param in parameters:
+                    if not getattr(param, 'score_pk', None):
+                        continue
+
+                    if param.score_pk in scores_with_opened_comments:
+                        param.comment_url = reverse('exmo2010:score', args=[param.score_pk]) + "#last_comment"
+
+
+class TaskScoresPrint(TaskScoresMixin, DetailView):
+    template_name = "scores/task_scores_print.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskScoresPrint, self).get_context_data(**kwargs)
+        task_scores_url = reverse('exmo2010:task_scores', args=(self.task.pk, ))
+
+        context.update({
+            'task': self.task,
+            'task_scores_url': self.request.build_absolute_uri(task_scores_url),
+        })
+
+        return context
+
+
+class RecommendationsView(TaskScoresMixin, DetailView):
+    template_name = "scores/recommendations.html"
 
     def get_context_data(self, **kwargs):
         context = super(RecommendationsView, self).get_context_data(**kwargs)
@@ -512,7 +463,7 @@ class RecommendationsView(DetailView):
             if param_weight_sum:
                 interim_score = interim_scores_by_param.get(score.parameter.pk) or score
                 score.interim_cost = score.parameter.weight * (100.0 - interim_score.openness) / param_weight_sum
-                score.cost = _round(score.parameter.weight * (100.0 - score.openness) / param_weight_sum)
+                score.cost = round_ex(score.parameter.weight * (100.0 - score.openness) / param_weight_sum)
             else:
                 score.interim_cost = score.cost = 0.0
             score.is_finished = bool(score.cost == 0 and not score.recommendations)
@@ -534,7 +485,7 @@ class RecommendationsView(DetailView):
             context.update(total_cost=None, delta=None)
         else:
             context.update({
-                'total_cost': _round(100.0 - float(context['openness'])),
+                'total_cost': round_ex(100.0 - float(context['openness'])),
                 'delta': context['openness'] - self.task.openness_initial
             })
 
@@ -571,32 +522,6 @@ class RecommendationsPrintWithComments(RecommendationsPrint):
         if not self.request.user.has_perm('exmo2010.view_comments', task):
             raise PermissionDenied
         return task
-
-
-@login_required
-def score_claim_color(request, score_pk):
-    """
-    AJAX-вьюха для получения изображения для претензий.
-
-    """
-    score = get_object_or_404(Score, pk=score_pk)
-    if request.method == "GET" and request.is_ajax():
-        return TemplateResponse(request, 'claim_image.html', {'score': score})
-    else:
-        raise Http404
-
-
-@login_required
-def score_comment_unreaded(request, score_pk):
-    """
-    AJAX-вьюха для получения изображения для непрочитанных коментов.
-
-    """
-    score = get_object_or_404(Score, pk=score_pk)
-    if request.method == "GET" and request.is_ajax():
-        return TemplateResponse(request, 'commentunread_image.html', {'score': score})
-    else:
-        raise Http404
 
 
 def rating_update(request):

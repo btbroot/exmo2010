@@ -2,7 +2,8 @@
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -34,12 +35,12 @@ class QuestionnaireDynForm(forms.Form):
             if q.qtype == 0:
                 self.fields['q_%s' % q.pk] = forms.CharField(label=q.question,
                                                              help_text=q.comment, max_length=300, required=False,
-                                                             widget=forms.TextInput(attrs={'class': 'aqtext',
+                                                             widget=forms.TextInput(attrs={'class': 'name_input',
                                                                                            'placeholder': _('Text')}))
             elif q.qtype == 1:
                 self.fields['q_%s' % q.pk] = forms.IntegerField(
                     label=q.question, help_text=q.comment, required=False,
-                    widget=forms.TextInput(attrs={'class': 'aqint',
+                    widget=forms.TextInput(attrs={'class': 'align-right',
                                                   'placeholder': _('Number')}),
                     min_value=0, max_value=4294967295)
             elif q.qtype == 2:
@@ -47,7 +48,7 @@ class QuestionnaireDynForm(forms.Form):
                     label=q.question, help_text=q.comment, empty_label=None,
                     required=False,
                     queryset=q.answervariant_set.order_by('-pk'),
-                    widget=forms.RadioSelect(attrs={'class': 'aqchoice'}))
+                    widget=forms.RadioSelect())
 
     def clean(self):
         cleaned_data = self.cleaned_data

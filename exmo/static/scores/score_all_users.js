@@ -1,5 +1,6 @@
 // This file is part of EXMO2010 software.
 // Copyright 2014 Foundation "Institute for Information Freedom Development"
+// Copyright 2014 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -28,7 +29,7 @@ $(document).ready(function() {
     });
 
     $('a[href="#show_interim_score"]').click(function(e){
-        var score_interim = $(".score_interim");
+        var score_interim = $(".score-interim");
         var link = $(e.target);
         var show = 1;
 

@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,147 +20,125 @@
 #
 */
 
-h2 {
+/* Page header */
+
+.task-scores-header-block h2 {
     display: inline;
     margin-right: 10px;
     vertical-align: top;
 }
 
-p {
+.task-scores-header-block p {
     margin-top: 10px;
 }
 
-p span {
+.task-scores-header-block p span {
     font-size: 18px;
 }
 
-/* Score table colors style */
+/* Filter */
 
-.score-ok-nonzero{
-    background: #80e580;
-    text-align: center;
+.filter {
+    margin: 15px 0;
 }
 
-.score-ok-val1{
-    background: #fecb80;
-    text-align: center;
+/* Parameters tables */
+
+#main.fixed-width .relevant-params-table {
+    min-width: 800px;
 }
 
-.score-ok-val2{
-    background: #fefe80;
-    text-align: center;
+#main.fixed-width .parameter {
+    min-width: 500px;
 }
 
-.score-ok-val3{
-    background: #80e580;
-    text-align: center;
-}
+/* Relevant parameters table */
 
-.score-ok-zero{
-    background: #fe9898;
-    text-align: center;
-}
-
-.score-none {
-    background: #a0a0a0;
-
-}
-
-#score_list td {
-    border-collapse: collapse;
-    border: 1px solid;
-}
-
-#score_list table {
-    width: 100%
-}
-
-.score_interact {
-    font-size: 12px;
-    opacity: 0.5;
-}
-
-/* Styles for ankete */
-
-#fc_container {
-    background: none repeat scroll 0 0 #FFFFCC;
-    clear: both;
-    margin: 0 auto;
-    padding: 20px;
+.relevant-params-table .icons-column {
     position: relative;
+    padding: 0;
+    min-width: 0;
+    max-width: 20px;
+    line-height: 24px;
 }
 
-.fc_item_header{
-    font-size: 12px;
+.relevant-params-table .icons-column img {
+    margin: 2px;
+    vertical-align: middle;
+}
+
+.relevant-params-table .code {
+    text-align: right;
+}
+
+.relevant-params-table .scores-column {
+    width: 45px;
+    text-align: center;
+}
+
+.relevant-params-table .scores-column span.score-interim {
+    position: relative;
+    bottom: 1px;
+    color: #222222;
+    font-size: 10px;
+}
+
+.relevant-params-table .score {
+    width: 65px;
+    text-align: right;
+}
+
+.relevant-params-table .difference {
+    position: relative;
+    width: 90px;
+    text-align: right;
+}
+
+.relevant-params-table .difference span {
+    position: relative;
+    right: 15px;
+}
+
+.relevant-params-table .difference img {
+    position: absolute;
+    top: 11px;
+    right: 5px;
+}
+
+.relevant-params-table .weight {
+    width: 30px;
+    text-align: right;
+}
+
+.relevant-params-table .type {
+    width: 125px;
+}
+
+.relevant-params-table tfoot td:first-child {
     font-weight: bold;
-    font-family: "Verdana";
-    margin-bottom: 7px;
 }
 
-.fc_field_header{
+
+/* Styles for questionnaire */
+
+#questionnaire {
+    position: relative;
+    clear: both;
+    margin: 15px auto 0;
+    padding: 20px;
+    background: none repeat scroll 0 0 #ffffcc;
+}
+
+.questionnaire-field-header {
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+.questionnaire-field {
     margin-top: 8px;
     margin-bottom: 15px;
 }
 
-.aqtext{
-    width: 600px;
-}
-
-.aqint{
-    text-align: right;
-}
-
-.fc_field_header ul li {
-    list-style-type: none
-}
-
-
-/* Score legend */
-
-#legend td {
-    border-collapse: collapse;
-    border: 1px solid;
-}
-
-#table_color, #table_variant {
-    min-width: 900px;
-    line-height: 11px;
-}
-
-#table_color td.first_column, #table_variant td.first_column {
-    width: 180px;
-}
-
-#table_variant th, #table_variant td {
-    width: 130px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-#table_variant th, tr.heading th {
-    border: 1px solid #222;
-}
-
-.green {
-    background-color: #80e580;
-}
-
-.yellow {
-    background-color: #fefe80;
-}
-
-.orange {
-    background-color: #fecb80;
-}
-
-.red {
-    background-color: #fe9898;
-}
-
-.gray {
-    background-color: #a0a0a0;
-}
-
-h3 {
-    margin-top: 10px;
+.questionnaire-field ul li {
+    list-style-type: none;
 }

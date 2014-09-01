@@ -21,6 +21,7 @@ import codecs
 import cStringIO
 import csv
 from datetime import timedelta, datetime
+from decimal import Decimal
 import re
 
 from django.conf import settings
@@ -186,3 +187,19 @@ def iter_named_patterns(root_resolver):
             else:
                 child._full_name = name
             yield child
+
+
+def round_ex(x):
+    """
+    If x < 0.1, round to the first nonzero decimal digit, Otherwise round to one decimal digit.
+    0.0 => 0.0
+    0.00123 => 0.001
+    0.54321 => 0.5
+    """
+    if x == 0.0:
+        return x
+    elif x < 0.1:
+        _x = Decimal(x).as_tuple()
+        return round(x, 1 - _x.exponent - len(_x.digits))
+    else:
+        return round(x, 1)

@@ -21,15 +21,17 @@ import json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, Http404
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
+from .forms import QuestionnaireDynForm
 from exmo2010.models import Monitoring, Task, LicenseTextFragments
-from exmo2010.models import Questionnaire, QQuestion, QUESTION_TYPE_CHOICES, AnswerVariant
+from exmo2010.models import Questionnaire, QAnswer, QQuestion, QUESTION_TYPE_CHOICES, AnswerVariant
 from core.utils import UnicodeWriter
 
 
@@ -164,3 +166,48 @@ def get_qq(request):
         return TemplateResponse(request, 'question_div.html', {"choices": QUESTION_TYPE_CHOICES})
     else:
         raise Http404
+
+
+@login_required
+def post_questionnaire(request, task_pk):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
+
+    task = get_object_or_404(Task, pk=task_pk)
+    if not request.user.has_perm('exmo2010.fill_task', task):
+        raise PermissionDenied
+
+    questionnaire = get_object_or_404(Questionnaire, monitoring=task.organization.monitoring)
+    questions = questionnaire.qquestion_set.order_by("pk")
+
+    questionnaire_form = QuestionnaireDynForm(request.POST, questions=questions, task=task)
+    if questionnaire_form.is_valid():
+        for answ in questionnaire_form.cleaned_data.items():
+            if answ[0].startswith("q_"):
+                try:
+                    q_id = int(answ[0][2:])
+                    question_obj = QQuestion.objects.get(pk=q_id)
+                except (ValueError, ObjectDoesNotExist):
+                    continue
+                if answ[1]:  # Непустое значение ответа.
+                    answer = QAnswer.objects.get_or_create(task=task, question=question_obj)[0]
+                    if question_obj.qtype == 0:
+                        answer.text_answer = answ[1]
+                        answer.save()
+                    elif question_obj.qtype == 1:
+                        answer.numeral_answer = answ[1]
+                        answer.save()
+                    elif question_obj.qtype == 2:
+                        answer.variance_answer = answ[1]
+                        answer.save()
+                else:  # Пустой ответ.
+                    try:
+                        answer = QAnswer.objects.get(task=task, question=question_obj)
+                    except ObjectDoesNotExist:
+                        continue
+                    else:
+                        answer.delete()
+
+        return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:task_scores', args=[task.pk]))
+
+    return HttpResponse()

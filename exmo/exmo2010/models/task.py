@@ -185,21 +185,6 @@ class Task(BaseModel):
         else:
             return None
 
-    def get_questionnaire_answers(self):
-        return QAnswer.objects.filter(task=self).order_by("pk")
-
-    def all_questionnaire_answered(self):
-        """
-        Метод, возвращающего False/True в зависимости от того,
-        даны ли ответы на все вопросы анкеты или нет.
-        """
-        questionnaire = self.organization.monitoring.get_questionnaire()
-        answers = QAnswer.objects.filter(task=self)
-        if questionnaire and questionnaire.qquestion_set.count() == answers.count():
-            return True
-        else:
-            return False
-
     open = property(_get_open, _set_open)
     ready = property(_get_ready, _set_ready)
     approved = property(_get_approved, _set_approved)

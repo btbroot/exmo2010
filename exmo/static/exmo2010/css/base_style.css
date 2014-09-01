@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -268,6 +269,14 @@ p.mini {
     display: inline;
 }
 
+.text-color-red {
+    color: #cd0200;
+}
+
+.text-color-grey {
+    color: #aeaeae;
+}
+
 /* TABLES */
 
 table {
@@ -316,27 +325,23 @@ tr.alt {
 
 /* BASE TABLES */
 
+table.base-table th,
+table.base-table td {
+    background-image: none;
+    word-wrap: break-word;
+    background-clip: padding-box; /* firefox fix */
+    border-color: #d7d7d7;
+}
+
 table.base-table th {
     font-weight: bold;
     color: #222;
-    border-color: #D7D7D7;
     border-left: 0;
     border-right: 0;
-    background-image: none;
     background-color: #fff;
 }
 
-tfoot > tr > td {
-    background-color: #fff;
-    border-left: none;
-}
-
-table.base-table td {
-    background-image: none;
-    border-color: #D7D7D7;
-}
-
-table.base-table tr:hover td {
+table.base-table tbody tr:hover td {
     background-color: #FFFFD6;
 }
 
@@ -344,8 +349,13 @@ table.base-table td span.arrow, table.base-table th span.arrow {
     font-weight: normal;
 }
 
-table.base-table tr:nth-child(even) {
-    background: #F5F5F5;
+table.base-table tfoot > tr > td {
+    background-color: #fff;
+    border-left: none;
+}
+
+table.base-table tbody tr:nth-of-type(odd) {
+    background: #f5f5f5;
 }
 
 .table-implicit {
@@ -355,21 +365,6 @@ table.base-table tr:nth-child(even) {
 
 .table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
     border: none;
-}
-
-
-/* SORTABLE TABLES */
-
-table thead th.sorted {
-    background-position: bottom left !important;
-}
-
-table thead th.ascending a {
-    background: url(../../admin/img/arrow-up.gif) right .4em no-repeat;
-}
-
-table thead th.descending a {
-    background: url(../../admin/img/arrow-down.gif) right .4em no-repeat;
 }
 
 
@@ -393,22 +388,6 @@ table thead th.descending a {
     margin: 5px 0 0;
 }
 
-
-/* ORDERABLE TABLES */
-
-table.orderable tbody tr td:hover {
-    cursor: move;
-}
-
-table.orderable tbody tr td:first-child {
-    padding-left: 14px;
-    background-image: url(../../admin/img/nav-bg-grabber.gif);
-    background-repeat: repeat-y;
-}
-
-table.orderable-initalized .order-cell, body>tr>td.order-cell {
-    display: none;
-}
 
 /* DIV TABLES */
 
@@ -442,6 +421,7 @@ table.orderable-initalized .order-cell, body>tr>td.order-cell {
     vertical-align: middle;
     border-top: 1px solid #d7d7d7;
     border-bottom: 1px solid #d7d7d7;
+    word-wrap: break-word;
 }
 
 .table-cell {
@@ -454,6 +434,10 @@ table.orderable-initalized .order-cell, body>tr>td.order-cell {
 
 .table-cell-R {
     text-align: right;
+}
+
+.zebra .tbody .table-row:nth-of-type(odd) {
+    background: #f5f5f5;
 }
 
 /* FORM DEFAULTS */
@@ -863,6 +847,7 @@ ul#errors-header li.portal a:hover {
 
 .filter .table {
     width: 100%;
+    margin: 0 !important;
 }
 
 .filter .table-cell {
@@ -1042,4 +1027,30 @@ i.upload {
 input.name_input[type="text"] {
     width: 100%;
     max-width: 600px;
+}
+
+/* Score`s underline */
+
+.underline {
+    margin: 0 auto;
+    width: 20px;
+    height: 3px;
+    background-color: #cd0200;
+}
+
+
+/* Score`s progressbar */
+
+.progressbar {
+    margin: 0 auto;
+    width: 60px;
+    height: 1px;
+    background-color: #cd0200;
+    border: 1px solid #cd0200;
+}
+
+.progressbar > div {
+    height: 1px;
+    float: left;
+    background-color: #ffffff;
 }

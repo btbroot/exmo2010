@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,26 +25,30 @@ h1 {
 }
 
 div.nonrelevant_notice {
-    background: none, #FECDCD;
-    border: solid 1px #FE9898;
-    padding: 10px;
     margin: 15px 0 -5px;
+    padding: 10px;
+    border: solid 1px #fe9898;
+    background: none, #fecdcd;
 }
 
 /* == SCORE HEADER BLOCK == */
 
-.score-header-block form { display: inline; }
+.score-header-block form {
+    display: inline;
+}
 
 .score-header-block input {
     margin-right: 20px;
     vertical-align: baseline;
     cursor: pointer;
 }
+
 .score-header-block input.red {
     background: none, #ffd8dd;
 }
+
 .score-header-block input.green {
-    background: none, #ECFFEC;
+    background: none, #ecffec;
 }
 
 .score-header-block h2 {
@@ -55,18 +60,18 @@ div.nonrelevant_notice {
 }
 
 .score-editor {
-    width: 50%;
     float: left;
+    width: 50%;
 }
 
 
 /* == PSEUDO-LINKS BLOCK == */
 
 .pseudo-links-block {
-    width: 100%;
     overflow: hidden;
-    padding-top: 20px;
     margin-bottom: 5px;
+    padding-top: 20px;
+    width: 100%;
 }
 
 .pseudo-links-block h2 {
@@ -150,40 +155,11 @@ div.nonrelevant_notice {
     max-width: 100px;
 }
 
-span.score_interim {
+span.score-interim {
     position: relative;
     bottom: 1px;
-    font-size: 10px;
     color: #222222;
-}
-
-.text-color-red {
-    color: #cd0200;
-}
-
-/* score underline */
-
-.underline {
-    margin: 0 auto;
-    width: 20px;
-    height: 3px;
-    background-color: #cd0200;
-}
-
-/* progressbar */
-
-.progressbar {
-    margin: 0 auto;
-    width: 60px;
-    height: 1px;
-    background-color: #cd0200;
-    border: 1px solid #cd0200;
-}
-
-.progressbar > div {
-    height: 1px;
-    float: left;
-    background-color: #ffffff;
+    font-size: 10px;
 }
 
 
@@ -196,33 +172,33 @@ span.score_interim {
 /* editable score table */
 
 .editable-score-table .tbody ul {
-    list-style: none;
     margin: 0;
     padding: 0;
-    white-space:nowrap;
     border-collapse: collapse;
+    list-style: none;
+    white-space: nowrap;
 }
 
 .editable-score-table input[type=radio] {
-    cursor: pointer;
     display: none;
     margin: 10px;
+    cursor: pointer;
 }
 
 .editable-score-table li {
     display: table-cell;
-    width: 40px;
-    line-height: 25px;
     padding: 0;
-    text-align: center;
-    cursor: pointer;
-    background-color: #e4e4e4;
+    width: 40px;
     border: 1px solid #797979;
+    background-color: #e4e4e4;
+    text-align: center;
+    line-height: 25px;
+    cursor: pointer;
 }
 
 .editable-score-table li label {
-    cursor: pointer;
     padding: 5px 16px;
+    cursor: pointer;
 }
 
 .editable-score-table li.found_0_frozen_red {
@@ -247,7 +223,9 @@ span.score_interim {
 
 /* links and recommendations area */
 
-.links-recommendations-area, .links, .recommendations {
+.links-recommendations-area,
+.links,
+.recommendations {
     margin-top: 10px;
 }
 
@@ -257,12 +235,12 @@ span.score_interim {
 }
 
 .links-recommendations-area textarea {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0 0 10px 0;
     width: 100%;
     height: 15px;
-    margin: 0 0 10px 0;
-    box-sizing:border-box;
-    -moz-box-sizing:border-box;
-    -webkit-box-sizing:border-box;
 }
 
 .links-recommendations-area .edit {
@@ -288,32 +266,32 @@ span.score_interim {
 
 .table-messages-parameter {
     display: inline-table; /* Firefox fix */
-    background-color: transparent;
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 101%;
     margin-bottom: 20px;
+    width: 101%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    background-color: transparent;
 }
 
 .table-messages-parameter td {
     padding: 8px;
-    line-height: 17px;
-    text-align: left;
+    border-top: 1px solid #bbbbbb;
+    border-bottom: 1px solid #bbbbbb;
     vertical-align: top;
-    border-top: 1px solid #bbb;
-    border-bottom: 1px solid #bbb;
+    text-align: left;
+    line-height: 17px;
 }
 
 .table-messages-parameter .messages-author {
-    font-size: 13px;
     width: 140px;
     font-weight: bold;
+    font-size: 13px;
 }
 
 .table-messages-parameter .messages-date {
     float: right;
+    color: #666666;
     font-size: 11px;
-    color: #666;
 }
 
 .table-messages-parameter .messages-content {
@@ -322,8 +300,8 @@ span.score_interim {
 }
 
 .table-messages-parameter .messages-content p {
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 .answer-missed {
@@ -345,8 +323,8 @@ span.score_interim {
 }
 
 .toggle-comment-container a {
-    font-size:12px;
     border-bottom: 1px dashed;
+    font-size: 12px;
 }
 
 .toggle-comment-container a:hover {
@@ -372,8 +350,8 @@ span.score_interim {
 }
 
 .comment-form textarea {
-    width: 100%;
     padding: 0;
+    width: 100%;
 }
 
 /* Claims & Clarifications */
@@ -384,9 +362,9 @@ span.score_interim {
 
 .messages-answer {
     margin-top: 10px;
-    border-top: 1px #bbb solid;
-    padding-left: 50px;
     padding-top: 10px;
+    padding-left: 50px;
+    border-top: 1px #bbbbbb solid;
 }
 
 .not-answered {

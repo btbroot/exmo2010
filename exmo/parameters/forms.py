@@ -21,6 +21,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from exmo2010.models import Parameter
+from queryform import QueryForm
 
 
 SCORE_CHOICES1 = (
@@ -87,3 +88,12 @@ class ParameterTypeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ParameterTypeForm, self).__init__(*args, **kwargs)
         self.fields['npa'].label = self.instance.name
+
+
+class ParametersQueryForm(QueryForm):
+    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Parameter')}))
+
+    class Meta:
+        filters = {
+            'name': 'name__icontains',
+        }
