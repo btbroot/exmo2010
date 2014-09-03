@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,18 +19,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n %}
 
 <div id="footer_print">
     {% if license %}
-        <div class="first"> {{ license|safe }} </div>
+        <div class="first">{{ license|safe }}</div>
     {% endif %}
     <div>
-        {% blocktrans with url="http://www.svobodainfo.org/" %}© 2012–2014 Foundation "<a href="{{ url }}" target="_blank">Institute for Information Freedom Development</a>"{% endblocktrans %} <br/>
-        {% trans '© 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %} <br/>
-        {% trans '© 2010, 2011, 2013 Al Nikolov' %}
+        {% blocktrans with url="http://trac.svobodainfo.org/" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Software rightholders:{% endblocktrans %}
     </div>
     <div>
-        {% blocktrans with url="http://trac.svobodainfo.org/" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.{% endblocktrans %}
+        {% trans '© 2014 IRSI LTD' %}<br />
+        {% trans '© 2012–2014 Foundation "Institute for Information Freedom Development"' %}<br/>
+        {% trans '© 2010, 2011 Non-profit Partnership "Institute of Information Freedom Development"' %}<br/>
+        {% trans '© 2010, 2011, 2013 Al Nikolov' %}
     </div>
 </div>
