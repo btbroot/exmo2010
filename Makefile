@@ -3,6 +3,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -34,7 +35,6 @@ dist: releaseinfo
 	git archive --format tar --prefix $(PREFIX) $(OBJECT) -o $(TARBALL_FILE)
 	tar -r $(RELEASE_FILE) --xform 's,^,$(PREFIX),S' -f $(TARBALL_FILE)
 	gzip -f $(TARBALL_FILE)
-	$(MAKE) -C media_sources
 
 dist-clean: releaseinfo-clean
 	$(RM) $(TARBALL_FILE) $(TARBALL_FILE).gz

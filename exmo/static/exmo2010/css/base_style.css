@@ -22,6 +22,10 @@
 
 /* GLOBAL DEFAULTS */
 
+* {
+    word-wrap: break-word;
+}
+
 h1 {
     font-size: 24px;
     color: #555;
@@ -1034,10 +1038,10 @@ input.name_input[type="text"] {
 .underline {
     margin: 0 auto;
     width: 20px;
-    height: 3px;
+    height: 1px;
     background-color: #cd0200;
+    border: 1px solid #cd0200;
 }
-
 
 /* Score`s progressbar */
 
@@ -1053,4 +1057,9 @@ input.name_input[type="text"] {
     height: 1px;
     float: left;
     background-color: #ffffff;
+}
+
+.inactive {
+    background-color: #aeaeae !important;
+    border: 1px solid #aeaeae !important;
 }

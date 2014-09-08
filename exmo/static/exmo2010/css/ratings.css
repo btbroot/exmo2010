@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -164,7 +165,7 @@ td.diff > div > span  {
     display: block;
     float: right;
     position: relative;
-    right: 23px;
+    right: 15px;
 }
 
 td.diff > div > img  {

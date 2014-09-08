@@ -34,6 +34,7 @@
     <script>
         $(document).ready(function() {
             $(".relevant-params-table").tablesorter();
+            $(".nonrelevant-params-table").tablesorter();
 
             {% if task.approved and orgs_count > 1 %}
                 // insert loader image
@@ -133,35 +134,208 @@
         </p>
     </div>
 
-    <form class="filter" action="" method="GET">
-        <div class="table">
-            <div class="table-cell">
-                {{ view.queryform.name }}
+    {% if relevant_parameters_exist or nonrelevant_parameters_exist %}
+        <form class="filter" action="" method="GET">
+            <div class="table">
+                <div class="table-cell">
+                    {{ view.queryform.name }}
+                </div>
+                <div class="table-cell submit-cell">
+                    <input type="submit" value="{% trans 'Find' %}" />
+                </div>
             </div>
-            <div class="table-cell submit-cell">
-                <input type="submit" value="{% trans 'Find' %}" />
-            </div>
-        </div>
-    </form>
+        </form>
 
-    {% if relevant_parameters_exist %}
-        <table class="base-table relevant-params-table">
-            <thead>
-                <tr>
-                    {% if is_expert %}
+        {% if relevant_parameters_exist %}
+            <table class="base-table relevant-params-table">
+                <thead>
+                    <tr>
+                        {% if is_expert %}
+                            <th class="icons-column"></th>
+                            <th class="icons-column"></th>
+                        {% endif %}
+                        <th class="code">
+                            {% trans 'Code' %}
+                        </th>
+                        <th class="parameter">
+                            {% trans 'Parameter' %}
+                        </th>
+                        {% if is_expertA %}
+                            <th class="icons-column"></th>
+                        {% endif %}
+                        {% if is_expert %}
+                            <th class="scores-column">{% trans 'Fnd' context 'Found abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'Com' context 'Complete abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'Top' context 'Topical abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'Acc' context 'Accessible abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'HTML' context 'Hypertext abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'Doc' context 'Document abbreviation' %}</th>
+                            <th class="scores-column">{% trans 'Img' context 'Image abbreviation' %}</th>
+                        {% endif %}
+                        <th class="score">{% trans 'Score' %}</th>
+                        <th class="difference">{% trans 'Difference' %}</th>
+                        {% if is_expert %}
+                            <th class="weight">{% trans 'Weight' %}</th>
+                        {% endif %}
+                        {% if mon.has_npa %}
+                            <th class="type">{% trans 'Type' %}</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                {% if relevant_parameters %}
+                    <tbody>
+                        {% for parameter in relevant_parameters %}
+                            <tr>
+                                {% if is_expert %}
+                                    <td class="icons-column">
+                                        {% if parameter.score_pk and not parameter.score_accomplished %}
+                                            <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                        {% endif %}
+                                    </td>
+                                    <td class="icons-column">
+                                        {% if parameter.comment_url %}
+                                            <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                <td class="code">
+                                    {% if parameter.score_pk %}
+                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
+                                    {% else %}
+                                        {% if task.perms.fill_task %}
+                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
+                                        {% else %}
+                                            {{ parameter.code }}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="parameter">
+                                    {% if parameter.score_pk %}
+                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
+                                    {% else %}
+                                        {% if task.perms.fill_task %}
+                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
+                                        {% else %}
+                                            {{ parameter.name }}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% if is_expertA %}
+                                    <td class="icons-column">
+                                        <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
+                                            <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                        </a>
+                                    </td>
+                                {% endif %}
+                                {% if is_expert %}
+                                    {% if parameter.score_table %}
+                                        {% for score in parameter.score_table %}
+                                            {% if score %}
+                                                <td class="scores-column {% if not score.max_score %}text-color-red{% endif %}">
+                                                    {{ score.score_final|default_if_none:"–" }}
+                                                    {% if score.score_interim != '' and score.score_interim != score.score_final %}
+                                                        <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
+                                                    {% endif %}
+                                                    {% if score and not score.max_score %}<div class="underline"></div>{% endif %}
+                                                </td>
+                                            {% else %}
+                                                <td class="scores-column text-color-grey">–</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <td colspan="7"></td>
+                                    {% endif %}
+                                {% endif %}
+                                <td class="score {% if parameter.score_openness != 100 %}text-color-red{% endif %}">
+                                    {% ifnotequal parameter.score_openness None %}
+                                        {{ parameter.score_openness|floatformat }}%
+                                        {% if parameter.score_openness != 100 %}
+                                            <div class="progressbar">
+                                                <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    {% endifnotequal %}
+                                </td>
+                                <td class="difference">
+                                    {% ifnotequal parameter.score_openness_delta None %}
+                                        <span>{{ parameter.score_openness_delta|floatformat }}%</span>
+                                        {% if parameter.score_openness_delta > 0 %}
+                                            <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
+                                        {% elif parameter.score_openness_delta < 0 %}
+                                            <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
+                                        {% endif %}
+                                    {% endifnotequal %}
+                                </td>
+                                {% if is_expert %}
+                                    <td class="weight">{{ parameter.weight }}</td>
+                                {% endif %}
+                                {% if mon.has_npa %}
+                                    <td class="type">{{ parameter.npa_display }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            {% if is_expertA %}
+                                <td colspan="12">
+                            {% elif is_expert %}
+                                <td colspan="11">
+                            {% else %}
+                                <td colspan="2">
+                            {% endif %}
+                                {% trans 'Total score openness' %}
+                            </td>
+                            <td class="score {% if openness != 100 %}text-color-red{% endif %}">
+                                {% ifnotequal openness None %}
+                                    {{ openness|floatformat }}%
+                                    {% if openness != 100 %}
+                                        <div class="progressbar">
+                                            <div style="width: {{ openness|floatformat:"0" }}%;"></div>
+                                        </div>
+                                    {% endif %}
+                                {% endifnotequal %}
+                            </td>
+                            <td class="difference">
+                                {% ifnotequal delta None %}
+                                    <span>{{ delta|floatformat }}%</span>
+                                    {% if delta > 0 %}
+                                        <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
+                                    {% elif delta < 0 %}
+                                        <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
+                                    {% endif %}
+                                {% endifnotequal %}
+                            </td>
+                            {% if is_expert and mon.has_npa %}
+                                <td colspan="2"></td>
+                            {% elif is_expert or mon.has_npa %}
+                                <td></td>
+                            {% else %}
+                            {% endif %}
+                        </tr>
+                    </tfoot>
+                {% endif %}
+            </table>
+        {% endif %}
+
+        {% if nonrelevant_parameters_exist %}
+            <h2>{% trans 'Non relevant parameters' %}</h2>
+
+            <table class="base-table nonrelevant-params-table">
+                <thead>
+                    <tr>
                         <th class="icons-column"></th>
-                        <th class="icons-column"></th>
-                    {% endif %}
-                    <th class="code">
-                        {% trans 'Code' %}
-                    </th>
-                    <th class="parameter">
-                        {% trans 'Parameter' %}
-                    </th>
-                    {% if is_expertA %}
-                        <th class="icons-column"></th>
-                    {% endif %}
-                    {% if is_expert %}
+                        <th class="code">
+                            {% trans 'Code' %}
+                        </th>
+                        <th class="parameter">
+                            {% trans 'Parameter' %}
+                        </th>
+                        {% if is_expertA %}
+                            <th class="icons-column"></th>
+                        {% endif %}
                         <th class="scores-column">{% trans 'Fnd' context 'Found abbreviation' %}</th>
                         <th class="scores-column">{% trans 'Com' context 'Complete abbreviation' %}</th>
                         <th class="scores-column">{% trans 'Top' context 'Topical abbreviation' %}</th>
@@ -169,153 +343,102 @@
                         <th class="scores-column">{% trans 'HTML' context 'Hypertext abbreviation' %}</th>
                         <th class="scores-column">{% trans 'Doc' context 'Document abbreviation' %}</th>
                         <th class="scores-column">{% trans 'Img' context 'Image abbreviation' %}</th>
-                    {% endif %}
-                    <th class="score">{% trans 'Score' %}</th>
-                    <th class="difference">{% trans 'Difference' %}</th>
-                    {% if is_expert %}
+                        <th class="score">{% trans 'Score' %}</th>
+                        <th class="difference">{% trans 'Difference' %}</th>
                         <th class="weight">{% trans 'Weight' %}</th>
-                    {% endif %}
-                    {% if mon.has_npa %}
-                        <th class="type">{% trans 'Type' %}</th>
-                    {% endif %}
-                </tr>
-            </thead>
+                        {% if mon.has_npa %}
+                            <th class="type">{% trans 'Type' %}</th>
+                        {% endif %}
+                    </tr>
+                </thead>
 
-            {% if relevant_parameters %}
-                <tbody>
-                    {% for parameter in relevant_parameters %}
-                        <tr>
-                            {% if is_expert %}
-                                <td class="icons-column">
-                                    {% if parameter.score_pk and not parameter.score_accomplished %}
-                                        <img src="{% static 'exmo2010/img/red_spot.svg' %}" />
-                                    {% endif %}
-                                </td>
+                {% if nonrelevant_parameters %}
+                    <tbody>
+                        {% for parameter in nonrelevant_parameters %}
+                            <tr>
                                 <td class="icons-column">
                                     {% if parameter.comment_url %}
                                         <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
                                     {% endif %}
                                 </td>
-                            {% endif %}
-                            <td class="code">
-                                {% if parameter.score_pk %}
-                                    <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
-                                {% else %}
-                                    {% if task.perms.fill_task %}
-                                        <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
+                                <td class="code">
+                                    {% if parameter.score_pk %}
+                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
                                     {% else %}
-                                        {{ parameter.code }}
+                                        {% if task.perms.fill_task %}
+                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
+                                        {% else %}
+                                            {{ parameter.code }}
+                                        {% endif %}
                                     {% endif %}
-                                {% endif %}
-                            </td>
-                            <td class="parameter">
-                                {% if parameter.score_pk %}
-                                    <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
-                                {% else %}
-                                    {% if task.perms.fill_task %}
-                                        <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
-                                    {% else %}
-                                        {{ parameter.name }}
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                            {% if is_expertA %}
-                                <td class="icons-column">
-                                    <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
-                                        <img src="{% static 'admin/img/icon_changelink.gif' %}" />
-                                    </a>
                                 </td>
-                            {% endif %}
-                            {% if is_expert %}
+                                <td class="parameter">
+                                    {% if parameter.score_pk %}
+                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
+                                    {% else %}
+                                        {% if task.perms.fill_task %}
+                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
+                                        {% else %}
+                                            {{ parameter.name }}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                {% if is_expertA %}
+                                    <td class="icons-column">
+                                        <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
+                                            <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                        </a>
+                                    </td>
+                                {% endif %}
                                 {% if parameter.score_table %}
                                     {% for score in parameter.score_table %}
                                         {% if score %}
-                                            <td class="scores-column {% if not score.max_score %}text-color-red{% endif %}">
+                                            <td class="scores-column">
                                                 {{ score.score_final|default_if_none:"–" }}
                                                 {% if score.score_interim != '' and score.score_interim != score.score_final %}
                                                     <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
                                                 {% endif %}
-                                                {% if score and not score.max_score %}<div class="underline"></div>{% endif %}
+                                                {% if score and not score.max_score %}<div class="underline inactive"></div>{% endif %}
                                             </td>
                                         {% else %}
-                                            <td class="scores-column text-color-grey">–</td>
+                                            <td class="scores-column">–</td>
                                         {% endif %}
                                     {% endfor %}
                                 {% else %}
                                     <td colspan="7"></td>
                                 {% endif %}
-                            {% endif %}
-                            <td class="score {% if parameter.score_openness != 100 %}text-color-red{% endif %}">
-                                {% ifnotequal parameter.score_openness None %}
-                                    {{ parameter.score_openness|floatformat }}%
-                                    {% if parameter.score_openness != 100 %}
-                                        <div class="progressbar">
-                                            <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
-                                        </div>
-                                    {% endif %}
-                                {% endifnotequal %}
-                            </td>
-                            <td class="difference">
-                                {% ifnotequal parameter.score_openness_delta None %}
-                                    <span>{{ parameter.score_openness_delta|floatformat }}%</span>
-                                    {% if parameter.score_openness_delta > 0 %}
-                                        <img src="{% static 'exmo2010/img/rate_up.png' %}">
-                                    {% elif parameter.score_openness_delta < 0 %}
-                                        <img src="{% static 'exmo2010/img/rate_down.png' %}">
-                                    {% endif %}
-                                {% endifnotequal %}
-                            </td>
-                            {% if is_expert %}
+                                <td class="score">
+                                    {% ifnotequal parameter.score_openness None %}
+                                        {{ parameter.score_openness|floatformat }}%
+                                        {% if parameter.score_openness != 100 %}
+                                            <div class="progressbar inactive">
+                                                <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    {% endifnotequal %}
+                                </td>
+                                <td class="difference">
+                                    {% ifnotequal parameter.score_openness_delta None %}
+                                        <span>{{ parameter.score_openness_delta|floatformat }}%</span>
+                                        {% if parameter.score_openness_delta > 0 %}
+                                            <img src="{% static 'exmo2010/img/rate_up_gray_8x5.svg' %}">
+                                        {% elif parameter.score_openness_delta < 0 %}
+                                            <img src="{% static 'exmo2010/img/rate_down_gray_8x5.svg' %}">
+                                        {% endif %}
+                                    {% endifnotequal %}
+                                </td>
                                 <td class="weight">{{ parameter.weight }}</td>
-                            {% endif %}
-                            {% if mon.has_npa %}
-                                <td class="type">{{ parameter.npa_display }}</td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-
-                <tfoot>
-                    <tr>
-                        {% if is_expertA %}
-                            <td colspan="12">
-                        {% elif is_expert %}
-                            <td colspan="11">
-                        {% else %}
-                            <td colspan="2">
-                        {% endif %}
-                            {% trans 'Total score openness' %}
-                        </td>
-                        <td class="score {% if openness != 100 %}text-color-red{% endif %}">
-                            {% ifnotequal openness None %}
-                                {{ openness|floatformat }}%
-                                {% if openness != 100 %}
-                                    <div class="progressbar">
-                                        <div style="width: {{ openness|floatformat:"0" }}%;"></div>
-                                    </div>
+                                {% if mon.has_npa %}
+                                    <td class="type">{{ parameter.npa_display }}</td>
                                 {% endif %}
-                            {% endifnotequal %}
-                        </td>
-                        <td class="difference">
-                            {% ifnotequal delta None %}
-                                <span>{{ delta|floatformat }}%</span>
-                                {% if delta > 0 %}
-                                    <img src="{% static 'exmo2010/img/rate_up.png' %}">
-                                {% elif delta < 0 %}
-                                    <img src="{% static 'exmo2010/img/rate_down.png' %}">
-                                {% endif %}
-                            {% endifnotequal %}
-                        </td>
-                        {% if is_expert and mon.has_npa %}
-                            <td colspan="2"></td>
-                        {% elif is_expert or mon.has_npa %}
-                            <td></td>
-                        {% else %}
-                        {% endif %}
-                    </tr>
-                </tfoot>
-            {% endif %}
-        </table>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endif %}
+            </table>
+        {% endif %}
+    {% else %}
+        <div class="noparameters">{% trans 'No parameters' %}</div>
     {% endif %}
 
     {% if questionnaire_form %}

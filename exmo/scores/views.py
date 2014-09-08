@@ -314,6 +314,7 @@ class TaskScoresView(TaskScoresMixin, DetailView):
         context = super(TaskScoresView, self).get_context_data(**kwargs)
 
         monitoring = self.task.organization.monitoring
+        self.queryform = ParametersQueryForm(self.request.GET)
 
         # Relevant parameters
         relevant_parameters = Parameter.objects.filter(monitoring=monitoring)\
@@ -324,25 +325,32 @@ class TaskScoresView(TaskScoresMixin, DetailView):
                                   .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
         relevant_parameters_exist = relevant_parameters.exists()
 
-        # Non relevant parameters
-        nonrelevant_parameters = Parameter.objects.filter(monitoring=monitoring, exclude=self.task.organization)\
-                                                  .defer('grounds', 'rating_procedure', 'notes')
-        scores_nonrel = Score.objects.filter(task=self.task, parameter__exclude=self.task.organization)\
-                                     .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
-        nonrelevant_parameters_exist = nonrelevant_parameters.exists()
-
-        # Apply user provided filters
-        self.queryform = ParametersQueryForm(self.request.GET)
-
+        # Apply user provided filters to relevant parameters
         if self.queryform.is_valid():
             relevant_parameters = self.queryform.apply(relevant_parameters)
-            nonrelevant_parameters = self.queryform.apply(nonrelevant_parameters)
 
         # Set scores to relevant parameters list
         self._set_parameters_scores(relevant_parameters, scores_rel)
         self._set_last_comment_url(relevant_parameters, scores_rel)
-        # Set scores to non relevant parameters list
-        self._set_parameters_scores(nonrelevant_parameters, scores_nonrel)
+
+        if self.request.user.is_expert:
+            # Non relevant parameters
+            nonrelevant_parameters = Parameter.objects.filter(monitoring=monitoring, exclude=self.task.organization)\
+                                                      .defer('grounds', 'rating_procedure', 'notes')
+            scores_nonrel = Score.objects.filter(task=self.task, parameter__exclude=self.task.organization)\
+                                         .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
+            nonrelevant_parameters_exist = nonrelevant_parameters.exists()
+
+            # Apply user provided filters to non relevant parameters
+            if self.queryform.is_valid():
+                nonrelevant_parameters = self.queryform.apply(nonrelevant_parameters)
+
+            # Set scores to non relevant parameters list
+            self._set_parameters_scores(nonrelevant_parameters, scores_nonrel)
+            context.update({
+                'nonrelevant_parameters': nonrelevant_parameters,
+                'nonrelevant_parameters_exist': nonrelevant_parameters_exist,
+            })
 
         # Get questionnaire form
         questionnaire_form = None
@@ -354,9 +362,7 @@ class TaskScoresView(TaskScoresMixin, DetailView):
 
         context.update({
             'relevant_parameters': relevant_parameters,
-            'nonrelevant_parameters': nonrelevant_parameters,
             'relevant_parameters_exist': relevant_parameters_exist,
-            'nonrelevant_parameters_exist': nonrelevant_parameters_exist,
             'mon': monitoring,
             'task': self.task,
             'questionnaire_form': questionnaire_form,
