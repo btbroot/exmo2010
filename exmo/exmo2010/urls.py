@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -84,6 +85,7 @@ scores_patterns = named_urls('scores.views',
     (r'^post_score_links/(?P<score_pk>\d+)/$', 'post_score_links'),
     (r'^post_recommendations/(?P<score_pk>\d+)/$', 'post_recommendations'),
     (r'^post_score_comment/(?P<score_pk>\d+)/$', 'post_score_comment'),
+    (r'^post_task_scores_table_settings/(?P<task_pk>\d+)/$', 'post_task_scores_table_settings'),
 )
 
 scores_patterns += named_urls('',

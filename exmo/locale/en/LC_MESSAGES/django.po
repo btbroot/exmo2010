@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-08 16:22+0400\n"
+"POT-Creation-Date: 2014-09-11 10:22+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -43,14 +43,14 @@ msgid "Last name"
 msgstr ""
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:115
-#: exmo2010/models/userprofile.py:98
+#: exmo2010/models/userprofile.py:99
 #: organizations/templates/organization_representatives.html:63
 #: organizations/templates/organization_representatives.html:79
 msgid "Job title"
 msgstr ""
 
 #: accounts/forms.py:64 exmo2010/custom_registration/forms.py:117
-#: exmo2010/models/userprofile.py:99
+#: exmo2010/models/userprofile.py:100
 msgid "Phone number"
 msgstr ""
 
@@ -75,40 +75,41 @@ msgstr ""
 msgid "Failed to change password: it can contain only latin characters (A-Z, a-z) and digits (0-9)"
 msgstr ""
 
-#: accounts/views.py:99
+#: accounts/views.py:100
 msgid "You are associated with the organization with"
 msgstr ""
 
-#: accounts/views.py:103
+#: accounts/views.py:104
 msgid "Submitted invitation code does not exist."
 msgstr ""
 
-#: accounts/views.py:113
+#: accounts/views.py:114
 msgid "Password changed"
 msgstr ""
 
-#: accounts/views.py:122
+#: accounts/views.py:123
 msgid "E-mail notification settings saved"
 msgstr ""
 
-#: accounts/templates/user_settings.html:33 dashboard/menu.py:89
+#: accounts/templates/user_settings.html:25
+#: accounts/templates/user_settings.html:36 dashboard/menu.py:89
 #: templates/user_dashboard/modules/quicklinks.html:33
 msgid "Preferences"
 msgstr ""
 
-#: accounts/templates/user_settings.html:36
+#: accounts/templates/user_settings.html:39
 msgid "Here you can change your account, password and notification settings."
 msgstr ""
 
-#: accounts/templates/user_settings.html:38
+#: accounts/templates/user_settings.html:41
 msgid "Personal information"
 msgstr ""
 
-#: accounts/templates/user_settings.html:42
+#: accounts/templates/user_settings.html:45
 msgid "Personal information successfully changed"
 msgstr ""
 
-#: accounts/templates/user_settings.html:52 exmo2010/forms.py:45
+#: accounts/templates/user_settings.html:55 exmo2010/forms.py:45
 #: exmo2010/custom_registration/forms.py:59
 #: exmo2010/custom_registration/forms.py:178
 #: exmo2010/custom_registration/forms.py:200
@@ -118,26 +119,26 @@ msgstr ""
 msgid "E-mail"
 msgstr ""
 
-#: accounts/templates/user_settings.html:76
-#: accounts/templates/user_settings.html:212
+#: accounts/templates/user_settings.html:79
+#: accounts/templates/user_settings.html:215
 #: monitorings/templates/monitoring_comment_report.html:52
 #: monitorings/templates/monitoring_form.html:55
 #: monitorings/templates/set_npa_params.html:48
 #: organizations/templates/_organization_form.html:42
 #: parameters/templates/parameter_form.html:72 templates/scores/score.html:222
 #: templates/scores/score.html.py:248 templates/scores/score.html:305
-#: templates/scores/task_scores.html:479
+#: templates/scores/task_scores.html:502
 msgid "Save"
 msgstr ""
 
-#: accounts/templates/user_settings.html:85
+#: accounts/templates/user_settings.html:88
 #: exmo2010/custom_registration/forms.py:119
 #: exmo2010/models/organization.py:137
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr ""
 
-#: accounts/templates/user_settings.html:113 exmo2010/forms.py:60
+#: accounts/templates/user_settings.html:116 exmo2010/forms.py:60
 #: monitorings/templates/monitoring_form.html:87
 #: organizations/templates/organization_confirm_delete.html:38
 #: tasks/templates/mass_assign_tasks.html:46
@@ -150,26 +151,26 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#: accounts/templates/user_settings.html:122
+#: accounts/templates/user_settings.html:125
 msgid "Change password"
 msgstr ""
 
-#: accounts/templates/user_settings.html:150
+#: accounts/templates/user_settings.html:153
 msgid "Apply password change"
 msgstr ""
 
-#: accounts/templates/user_settings.html:158
+#: accounts/templates/user_settings.html:161
 msgid "E-mail notifications"
 msgstr ""
 
-#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:234
-#: exmo2010/urls.py:296 monitorings/views.py:980
+#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:236
+#: exmo2010/urls.py:298 monitorings/views.py:980
 #: monitorings/templates/ratings.html:33
 msgid "Ratings"
 msgstr ""
 
-#: bread_crumbs/tests.py:36 exmo2010/urls.py:297
-#: monitorings/templates/rating.html:43 templates/_errors_header.html:34
+#: bread_crumbs/tests.py:36 exmo2010/urls.py:299
+#: monitorings/templates/rating.html:42 templates/_errors_header.html:34
 #: templates/certificate_order_form.html:69
 #: templates/exmo2010/sidebar/_sidebar.html:104
 msgid "Rating"
@@ -179,9 +180,9 @@ msgstr ""
 #: claims/templates/claim_list.html:43
 #: clarifications/templates/clarification_list.html:43
 #: custom_comments/templates/comment_list.html:43 exmo2010/forms.py:87
-#: exmo2010/urls.py:276 exmo2010/urls.py:277 exmo2010/urls.py:282
-#: exmo2010/urls.py:298 exmo2010/urls.py:299 monitorings/forms.py:51
-#: monitorings/templates/rating.html:110 organizations/forms.py:28
+#: exmo2010/urls.py:278 exmo2010/urls.py:279 exmo2010/urls.py:284
+#: exmo2010/urls.py:300 exmo2010/urls.py:301 monitorings/forms.py:51
+#: monitorings/templates/rating.html:109 organizations/forms.py:28
 #: templates/certificate_order_form.html:99
 #: templates/exmo2010/rating_common.html:24
 #: templates/mail/certificate_order_email.html:31
@@ -191,17 +192,17 @@ msgstr ""
 msgid "Organization"
 msgstr ""
 
-#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:236
+#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:238
 #: templates/exmo2010/monitoring_list.html:28
 msgid "Monitoring cycles"
 msgstr ""
 
-#: bread_crumbs/tests.py:42 exmo2010/urls.py:243 exmo2010/urls.py:244
-#: exmo2010/urls.py:246 exmo2010/urls.py:247 exmo2010/urls.py:249
-#: exmo2010/urls.py:250 exmo2010/urls.py:255 exmo2010/urls.py:257
-#: exmo2010/urls.py:259 exmo2010/urls.py:260 exmo2010/urls.py:261
-#: exmo2010/urls.py:262 exmo2010/urls.py:264 exmo2010/urls.py:266
-#: exmo2010/urls.py:268 exmo2010/urls.py:270
+#: bread_crumbs/tests.py:42 exmo2010/urls.py:245 exmo2010/urls.py:246
+#: exmo2010/urls.py:248 exmo2010/urls.py:249 exmo2010/urls.py:251
+#: exmo2010/urls.py:252 exmo2010/urls.py:257 exmo2010/urls.py:259
+#: exmo2010/urls.py:261 exmo2010/urls.py:262 exmo2010/urls.py:263
+#: exmo2010/urls.py:264 exmo2010/urls.py:266 exmo2010/urls.py:268
+#: exmo2010/urls.py:270 exmo2010/urls.py:272
 #: exmo2010/models/questionnaire.py:36 monitorings/forms.py:42
 #: monitorings/templates/monitoring_form.html:70
 #: monitorings/templates/ratings.html:51 templates/exmo2010/opendata.html:58
@@ -236,7 +237,7 @@ msgid "Claims report for \"%s\""
 msgstr ""
 
 #: claims/views.py:166 dashboard/dashboard.py:116 dashboard/menu.py:76
-#: exmo2010/urls.py:232 templates/exmo2010/sidebar/_sidebar.html:90
+#: exmo2010/urls.py:234 templates/exmo2010/sidebar/_sidebar.html:90
 #: templates/scores/score.html:401
 msgid "Claims"
 msgstr ""
@@ -321,7 +322,7 @@ msgid "Clarifications report for \"%s\""
 msgstr ""
 
 #: clarifications/views.py:154 dashboard/dashboard.py:112 dashboard/menu.py:75
-#: exmo2010/urls.py:233 templates/exmo2010/sidebar/_sidebar.html:86
+#: exmo2010/urls.py:235 templates/exmo2010/sidebar/_sidebar.html:86
 #: templates/scores/score.html:400
 msgid "Clarifications"
 msgstr ""
@@ -388,7 +389,7 @@ msgid "posted by expert"
 msgstr ""
 
 #: custom_comments/views.py:42 dashboard/dashboard.py:108 dashboard/menu.py:74
-#: exmo2010/urls.py:231 templates/exmo2010/sidebar/_sidebar.html:78
+#: exmo2010/urls.py:233 templates/exmo2010/sidebar/_sidebar.html:78
 #: templates/scores/score.html:313
 msgid "Comments"
 msgstr ""
@@ -429,14 +430,14 @@ msgstr ""
 msgid "Scores of my organisation"
 msgstr ""
 
-#: dashboard/menu.py:83 exmo2010/urls.py:216 exmo2010/urls.py:217
-#: exmo2010/urls.py:218
+#: dashboard/menu.py:83 exmo2010/urls.py:218 exmo2010/urls.py:219
+#: exmo2010/urls.py:220
 #: monitorings/templates/monitoring_comment_report.html:57
 #: templates/_errors_header.html:39
 msgid "Statistics"
 msgstr ""
 
-#: dashboard/menu.py:84 exmo2010/urls.py:212 templates/_errors_header.html:44
+#: dashboard/menu.py:84 exmo2010/urls.py:214 templates/_errors_header.html:44
 msgid "Help"
 msgstr ""
 
@@ -615,7 +616,7 @@ msgstr ""
 msgid "You have an assigned task"
 msgstr ""
 
-#: exmo2010/mail.py:259 exmo2010/mail.py:266 exmo2010/urls.py:213
+#: exmo2010/mail.py:259 exmo2010/mail.py:266 exmo2010/urls.py:215
 #: exmo2010/views.py:61 templates/_footer.html:30
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
@@ -630,121 +631,121 @@ msgstr ""
 msgid "Registration on "
 msgstr ""
 
-#: exmo2010/urls.py:211 templates/_footer.html:27
+#: exmo2010/urls.py:213 templates/_footer.html:27
 msgid "About"
 msgstr ""
 
-#: exmo2010/urls.py:214 templates/_footer.html:29
+#: exmo2010/urls.py:216 templates/_footer.html:29
 #: templates/exmo2010/opendata.html:27 templates/exmo2010/opendata.html:29
 msgid "Open data"
 msgstr ""
 
-#: exmo2010/urls.py:215 templates/admin/base_site.html:29
+#: exmo2010/urls.py:217 templates/admin/base_site.html:29
 msgid "Settings"
 msgstr ""
 
-#: exmo2010/urls.py:220 templates/registration/login.html:28
+#: exmo2010/urls.py:222 templates/registration/login.html:28
 msgid "Log in the system"
 msgstr ""
 
-#: exmo2010/urls.py:221
+#: exmo2010/urls.py:223
 msgid "Password reset (step 1 from 3)"
 msgstr ""
 
-#: exmo2010/urls.py:222
+#: exmo2010/urls.py:224
 msgid "Password reset (step 2 from 3)"
 msgstr ""
 
-#: exmo2010/urls.py:223
+#: exmo2010/urls.py:225
 msgid "Password reset (step 3 from 3)"
 msgstr ""
 
-#: exmo2010/urls.py:224 exmo2010/custom_registration/views.py:169
+#: exmo2010/urls.py:226 exmo2010/custom_registration/views.py:169
 msgid "Registration (step 1 of 2)"
 msgstr ""
 
-#: exmo2010/urls.py:225 exmo2010/custom_registration/urls.py:43
+#: exmo2010/urls.py:227 exmo2010/custom_registration/urls.py:43
 msgid "Registration (step 2 of 2)"
 msgstr ""
 
-#: exmo2010/urls.py:226
+#: exmo2010/urls.py:228
 msgid "Registration disallowed"
 msgstr ""
 
-#: exmo2010/urls.py:227
+#: exmo2010/urls.py:229
 msgid "Activation complete"
 msgstr ""
 
-#: exmo2010/urls.py:237
+#: exmo2010/urls.py:239
 msgid "Add monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:238
+#: exmo2010/urls.py:240
 msgid "Delete monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:239
+#: exmo2010/urls.py:241
 msgid "Edit monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:241 monitorings/views.py:170
+#: exmo2010/urls.py:243 monitorings/views.py:170
 msgid "Add questionnaire"
 msgstr ""
 
-#: exmo2010/urls.py:252
+#: exmo2010/urls.py:254
 msgid "Import parameter"
 msgstr ""
 
-#: exmo2010/urls.py:253
+#: exmo2010/urls.py:255
 msgid "Import organizations"
 msgstr ""
 
-#: exmo2010/urls.py:271
+#: exmo2010/urls.py:273
 msgid "Add task"
 msgstr ""
 
-#: exmo2010/urls.py:273
+#: exmo2010/urls.py:275
 msgid "Edit organization"
 msgstr ""
 
-#: exmo2010/urls.py:274
+#: exmo2010/urls.py:276
 msgid "Delete organization"
 msgstr ""
 
-#: exmo2010/urls.py:279
+#: exmo2010/urls.py:281
 msgid "Edit task"
 msgstr ""
 
-#: exmo2010/urls.py:280
+#: exmo2010/urls.py:282
 msgid "Delete task"
 msgstr ""
 
-#: exmo2010/urls.py:281 templates/scores/task_scores.html:90
+#: exmo2010/urls.py:283 templates/scores/task_scores.html:62
 msgid "Import task"
 msgstr ""
 
-#: exmo2010/urls.py:284 exmo2010/urls.py:285 exmo2010/urls.py:300
+#: exmo2010/urls.py:286 exmo2010/urls.py:287 exmo2010/urls.py:302
 #: exmo2010/models/parameter.py:33
 #: monitorings/templates/monitoring_parameter_filter.html:170
 #: monitorings/templates/monitoring_parameter_found_report.html:41
 #: parameters/forms.py:48 parameters/forms.py:94
-#: templates/scores/task_scores.html:161 templates/scores/task_scores.html:334
+#: templates/scores/task_scores.html:134 templates/scores/task_scores.html:336
 msgid "Parameter"
 msgstr ""
 
-#: exmo2010/urls.py:287
+#: exmo2010/urls.py:289
 msgid "Add parameter"
 msgstr ""
 
-#: exmo2010/urls.py:288 templates/scores/score.html:65
+#: exmo2010/urls.py:290 templates/scores/score.html:65
 msgid "Edit parameter"
 msgstr ""
 
-#: exmo2010/urls.py:289
+#: exmo2010/urls.py:291
 msgid "Delete parameter"
 msgstr ""
 
-#: exmo2010/urls.py:304 templates/certificate_order_form.html:23
+#: exmo2010/urls.py:306 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:38
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
@@ -802,7 +803,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:63 exmo2010/models/userprofile.py:97
+#: exmo2010/custom_registration/forms.py:63 exmo2010/models/userprofile.py:98
 msgid "Subscribe to news"
 msgstr ""
 
@@ -1067,7 +1068,7 @@ msgstr ""
 msgid "Organizations"
 msgstr ""
 
-#: exmo2010/models/organization.py:131 monitorings/templates/rating.html:113
+#: exmo2010/models/organization.py:131 monitorings/templates/rating.html:112
 #: templates/certificate_order_form.html:100
 msgid "Website"
 msgstr ""
@@ -1152,12 +1153,12 @@ msgstr ""
 msgid "normative parameter"
 msgstr ""
 
-#: exmo2010/models/parameter.py:56 monitorings/templates/rating.html:49
+#: exmo2010/models/parameter.py:56 monitorings/templates/rating.html:48
 #: templates/certificate_order_form.html:75
 msgid "recommendatory"
 msgstr ""
 
-#: exmo2010/models/parameter.py:56 monitorings/templates/rating.html:48
+#: exmo2010/models/parameter.py:56 monitorings/templates/rating.html:47
 #: templates/certificate_order_form.html:74
 msgid "normative"
 msgstr ""
@@ -1286,11 +1287,11 @@ msgstr ""
 msgid "%(criterion)s must be set"
 msgstr ""
 
-#: exmo2010/models/score.py:116 scores/tests.py:376
+#: exmo2010/models/score.py:116 scores/tests.py:377
 msgid "Score is not maximum, recommendations should exist"
 msgstr ""
 
-#: exmo2010/models/score.py:128 scores/tests.py:294
+#: exmo2010/models/score.py:128 scores/tests.py:295
 msgid "Recommendations should change when score is changed"
 msgstr ""
 
@@ -1375,125 +1376,146 @@ msgstr ""
 msgid "json source"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:62
+#: exmo2010/models/userprofile.py:63
 msgid "user profile"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:65
+#: exmo2010/models/userprofile.py:66
 msgid "not set"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:66
+#: exmo2010/models/userprofile.py:67
 msgid "male"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:67
+#: exmo2010/models/userprofile.py:68
 msgid "female"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:74
+#: exmo2010/models/userprofile.py:75
 msgid "do not send"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:75
+#: exmo2010/models/userprofile.py:76
 msgid "one email per one changing"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:76
+#: exmo2010/models/userprofile.py:77
 msgid "one email for all in time interval"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:80
+#: exmo2010/models/userprofile.py:81
 msgid "Once in 1 hour"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:81
+#: exmo2010/models/userprofile.py:82
 msgid "Once in 3 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:82
+#: exmo2010/models/userprofile.py:83
 msgid "Once in 6 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:83
+#: exmo2010/models/userprofile.py:84
 msgid "Once in 12 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:84
+#: exmo2010/models/userprofile.py:85
 msgid "Once in 24 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:88
+#: exmo2010/models/userprofile.py:89
 msgid "Russian"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:89
+#: exmo2010/models/userprofile.py:90
 msgid "English"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:90
+#: exmo2010/models/userprofile.py:91
 msgid "Georgian"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:91
+#: exmo2010/models/userprofile.py:92
 msgid "Azerbaijani"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:95
+#: exmo2010/models/userprofile.py:96
 msgid "organizations for view"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:96
+#: exmo2010/models/userprofile.py:97
 msgid "Sex"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:102
+#: exmo2010/models/userprofile.py:103
 msgctxt "number of representatives"
 msgid "Representatives"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:103
+#: exmo2010/models/userprofile.py:104
 msgid "Comment quantity"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:104
+#: exmo2010/models/userprofile.py:105
 msgid "Initial Openness"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:105
+#: exmo2010/models/userprofile.py:106
 msgid "Final Openness"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:106 templates/scores/task_scores.html:176
-#: templates/scores/task_scores.html:347
+#: exmo2010/models/userprofile.py:107 exmo2010/models/userprofile.py:112
+#: templates/scores/task_scores.html:152 templates/scores/task_scores.html:354
 msgid "Difference"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:109
-msgid "Notification about changes"
+#: exmo2010/models/userprofile.py:110
+msgid "Criteria"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:112
-msgid "Notification interval"
+#: exmo2010/models/userprofile.py:111 templates/scores/task_scores.html:149
+#: templates/scores/task_scores.html:351
+msgid "Score"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:115
-msgid "Receive a notice about self changes"
+#: exmo2010/models/userprofile.py:113 templates/scores/task_scores.html:155
+#: templates/scores/task_scores.html:357
+#: templates/scores/task_scores_print.html:45
+msgid "Weight"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:116
-msgid "Send whole comment thread"
-msgstr ""
-
-#: exmo2010/models/userprofile.py:117
-msgid "Last digest sending date"
+#: exmo2010/models/userprofile.py:114 templates/scores/task_scores.html:158
+#: templates/scores/task_scores.html:360
+#: templates/scores/task_scores_print.html:47
+msgid "Type"
 msgstr ""
 
 #: exmo2010/models/userprofile.py:119
+msgid "Notification about changes"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:122
+msgid "Notification interval"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:125
+msgid "Receive a notice about self changes"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:126
+msgid "Send whole comment thread"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:127
+msgid "Last digest sending date"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:129
 msgid "Language"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:121
+#: exmo2010/models/userprofile.py:131
 msgid "Show initial scores"
 msgstr ""
 
@@ -1683,7 +1705,7 @@ msgstr ""
 
 #: monitorings/templates/monitoring_form.html:55
 #: monitorings/templates/monitoring_form.html:59
-#: templates/scores/task_scores.html:93
+#: templates/scores/task_scores.html:65
 msgid "Import"
 msgstr ""
 
@@ -1829,12 +1851,12 @@ msgid "Observers"
 msgstr ""
 
 #: monitorings/templates/observers_groups.html:55
-#: monitorings/templates/rating.html:97 monitorings/templates/ratings.html:42
+#: monitorings/templates/rating.html:96 monitorings/templates/ratings.html:42
 #: organizations/templates/_mail_history.html:32
 #: organizations/templates/_org_list.html:43
 #: organizations/templates/organization_representatives.html:52
 #: templates/certificate_order_form.html:86
-#: templates/scores/task_scores.html:144
+#: templates/scores/task_scores.html:117
 msgid "Find"
 msgstr ""
 
@@ -1852,77 +1874,77 @@ msgstr ""
 msgid "No observers"
 msgstr ""
 
-#: monitorings/templates/rating.html:46
+#: monitorings/templates/rating.html:45
 #: templates/certificate_order_form.html:72
 msgid "common"
 msgstr ""
 
-#: monitorings/templates/rating.html:51
+#: monitorings/templates/rating.html:50
 msgid "user defined"
 msgstr ""
 
-#: monitorings/templates/rating.html:58
+#: monitorings/templates/rating.html:57
 msgid "Map"
 msgstr ""
 
-#: monitorings/templates/rating.html:62
+#: monitorings/templates/rating.html:61
 msgid "Export as JSON"
 msgstr ""
 
-#: monitorings/templates/rating.html:65
+#: monitorings/templates/rating.html:64
 msgid "Export as CSV"
 msgstr ""
 
-#: monitorings/templates/rating.html:72
+#: monitorings/templates/rating.html:71
 msgid "Parameter list"
 msgstr ""
 
-#: monitorings/templates/rating.html:74
+#: monitorings/templates/rating.html:73
 msgid "show"
 msgstr ""
 
-#: monitorings/templates/rating.html:74
+#: monitorings/templates/rating.html:73
 msgid "hide"
 msgstr ""
 
-#: monitorings/templates/rating.html:86
+#: monitorings/templates/rating.html:85
 msgid "Get rating"
 msgstr ""
 
-#: monitorings/templates/rating.html:107
+#: monitorings/templates/rating.html:106
 #: templates/certificate_order_form.html:101
 msgid "Position"
 msgstr ""
 
-#: monitorings/templates/rating.html:118
+#: monitorings/templates/rating.html:117
 msgid "Repr."
 msgstr ""
 
-#: monitorings/templates/rating.html:124
+#: monitorings/templates/rating.html:123
 #: organizations/templates/organization_representatives.html:64
 #: organizations/templates/organization_representatives.html:80
 msgid "Comm."
 msgstr ""
 
-#: monitorings/templates/rating.html:130
+#: monitorings/templates/rating.html:129
 msgid "Init. openness"
 msgstr ""
 
-#: monitorings/templates/rating.html:136
+#: monitorings/templates/rating.html:135
 #: templates/certificate_order_form.html:102
 msgid "Final openness"
 msgstr ""
 
-#: monitorings/templates/rating.html:142
+#: monitorings/templates/rating.html:141
 msgid "Diff."
 msgstr ""
 
-#: monitorings/templates/rating.html:208
+#: monitorings/templates/rating.html:207
 #: templates/exmo2010/rating_common.html:28
 msgid "Average value"
 msgstr ""
 
-#: monitorings/templates/rating.html:264
+#: monitorings/templates/rating.html:263
 #, python-format
 msgid ""
 "\n"
@@ -1935,7 +1957,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: monitorings/templates/rating.html:270
+#: monitorings/templates/rating.html:269
 #, python-format
 msgid ""
 "\n"
@@ -1947,19 +1969,6 @@ msgid_plural ""
 "                "
 msgstr[0] ""
 msgstr[1] ""
-
-#: monitorings/templates/rating.html:283
-msgid "Table settings"
-msgstr ""
-
-#: monitorings/templates/rating.html:290
-msgid "Change"
-msgstr ""
-
-#: monitorings/templates/rating.html:292 templates/scores/score.html:224
-#: templates/scores/score.html.py:250
-msgid "Cancel"
-msgstr ""
 
 #: monitorings/templates/ratings.html:58
 msgid "Published"
@@ -2076,7 +2085,7 @@ msgid "Representatives"
 msgstr ""
 
 #: organizations/templates/organization_representatives.html:38
-#: templates/scores/task_scores.html:99
+#: templates/scores/task_scores.html:71
 msgid "Save as CSV"
 msgstr ""
 
@@ -2108,7 +2117,7 @@ msgstr ""
 
 #: parameters/templates/parameter_form.html:28
 #: parameters/templates/parameter_form.html:46
-#: templates/scores/task_scores.html:88
+#: templates/scores/task_scores.html:60
 msgid "Add new parameter"
 msgstr ""
 
@@ -2291,6 +2300,19 @@ msgstr ""
 
 #: templates/_footer.html:44 templates/_footer_print.html:35
 msgid "© 2010, 2011, 2013 Al Nikolov"
+msgstr ""
+
+#: templates/_modal_window.html:25
+msgid "Table settings"
+msgstr ""
+
+#: templates/_modal_window.html:31
+msgid "Change"
+msgstr ""
+
+#: templates/_modal_window.html:32 templates/scores/score.html:224
+#: templates/scores/score.html.py:250
+msgid "Cancel"
 msgstr ""
 
 #: templates/base.html:27 templates/base_print.html:25
@@ -2752,7 +2774,7 @@ msgid "You must have approved task for export"
 msgstr ""
 
 #: templates/exmo2010/sidebar/_sidebar.html:136
-#: templates/scores/task_scores.html:75
+#: templates/scores/task_scores.html:47
 msgid "Scores table"
 msgstr ""
 
@@ -3109,7 +3131,6 @@ msgid "Rating is published. You can't leave new comments."
 msgstr ""
 
 #: templates/scores/recommendations.html:42
-#: templates/scores/task_scores.html:46
 msgid "place"
 msgstr ""
 
@@ -3120,22 +3141,22 @@ msgid "Recommendations list"
 msgstr ""
 
 #: templates/scores/recommendations.html:58
-#: templates/scores/task_scores.html:77
+#: templates/scores/task_scores.html:49
 msgid "View"
 msgstr ""
 
 #: templates/scores/recommendations.html:63
-#: templates/scores/task_scores.html:80
+#: templates/scores/task_scores.html:52
 msgid "recommendations list"
 msgstr ""
 
 #: templates/scores/recommendations.html:64
-#: templates/scores/task_scores.html:81
+#: templates/scores/task_scores.html:53
 msgid "scores table"
 msgstr ""
 
 #: templates/scores/recommendations.html:70
-#: templates/scores/task_scores.html:97
+#: templates/scores/task_scores.html:69
 msgid "Print"
 msgstr ""
 
@@ -3144,47 +3165,47 @@ msgid "Print with comments"
 msgstr ""
 
 #: templates/scores/recommendations.html:86
-#: templates/scores/task_scores.html:111
+#: templates/scores/task_scores.html:84
 #, python-format
 msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> has <span id=\"rating_place\"></span> in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:88
-#: templates/scores/task_scores.html:113
+#: templates/scores/task_scores.html:86
 #, python-format
 msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a> is the only one in the rating <a href=\"%(url)s\" target=\"_blank\">%(monitoring_name)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:91
-#: templates/scores/task_scores.html:116
+#: templates/scores/task_scores.html:89
 #, python-format
 msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:97
 #: templates/scores/recommendations_print.html:48
-#: templates/scores/task_scores.html:122
+#: templates/scores/task_scores.html:95
 #, python-format
 msgid "Fulfilled recommendations make up %(delta)s%% website openness increase."
 msgstr ""
 
 #: templates/scores/recommendations.html:100
 #: templates/scores/recommendations_print.html:51
-#: templates/scores/task_scores.html:125
+#: templates/scores/task_scores.html:98
 #, python-format
 msgid "Final openness <span>%(openness)s%%</span>."
 msgstr ""
 
 #: templates/scores/recommendations.html:102
 #: templates/scores/recommendations_print.html:53
-#: templates/scores/task_scores.html:127
+#: templates/scores/task_scores.html:100
 #, python-format
 msgid "Current openness <span>%(openness)s%%</span>."
 msgstr ""
 
 #: templates/scores/recommendations.html:107
 #: templates/scores/recommendations_print.html:58
-#: templates/scores/task_scores.html:132
+#: templates/scores/task_scores.html:105
 #, python-format
 msgid "Total amount of organizations %(orgs_count)s. "
 msgid_plural " Total amount of organizations %(orgs_count)s. "
@@ -3410,68 +3431,54 @@ msgstr ""
 msgid "Post comment and change score"
 msgstr ""
 
-#: templates/scores/task_scores.html:158 templates/scores/task_scores.html:331
+#: templates/scores/task_scores.html:131 templates/scores/task_scores.html:333
 msgid "Code"
 msgstr ""
 
-#: templates/scores/task_scores.html:167 templates/scores/task_scores.html:339
+#: templates/scores/task_scores.html:140 templates/scores/task_scores.html:342
 msgctxt "Found abbreviation"
 msgid "Fnd"
 msgstr ""
 
-#: templates/scores/task_scores.html:168 templates/scores/task_scores.html:340
+#: templates/scores/task_scores.html:141 templates/scores/task_scores.html:343
 msgctxt "Complete abbreviation"
 msgid "Com"
 msgstr ""
 
-#: templates/scores/task_scores.html:169 templates/scores/task_scores.html:341
+#: templates/scores/task_scores.html:142 templates/scores/task_scores.html:344
 msgctxt "Topical abbreviation"
 msgid "Top"
 msgstr ""
 
-#: templates/scores/task_scores.html:170 templates/scores/task_scores.html:342
+#: templates/scores/task_scores.html:143 templates/scores/task_scores.html:345
 msgctxt "Accessible abbreviation"
 msgid "Acc"
 msgstr ""
 
-#: templates/scores/task_scores.html:171 templates/scores/task_scores.html:343
+#: templates/scores/task_scores.html:144 templates/scores/task_scores.html:346
 msgctxt "Hypertext abbreviation"
 msgid "HTML"
 msgstr ""
 
-#: templates/scores/task_scores.html:172 templates/scores/task_scores.html:344
+#: templates/scores/task_scores.html:145 templates/scores/task_scores.html:347
 msgctxt "Document abbreviation"
 msgid "Doc"
 msgstr ""
 
-#: templates/scores/task_scores.html:173 templates/scores/task_scores.html:345
+#: templates/scores/task_scores.html:146 templates/scores/task_scores.html:348
 msgctxt "Image abbreviation"
 msgid "Img"
 msgstr ""
 
-#: templates/scores/task_scores.html:175 templates/scores/task_scores.html:346
-msgid "Score"
-msgstr ""
-
-#: templates/scores/task_scores.html:178 templates/scores/task_scores.html:348
-#: templates/scores/task_scores_print.html:45
-msgid "Weight"
-msgstr ""
-
-#: templates/scores/task_scores.html:181 templates/scores/task_scores.html:350
-#: templates/scores/task_scores_print.html:47
-msgid "Type"
-msgstr ""
-
-#: templates/scores/task_scores.html:289
+#: templates/scores/task_scores.html:283
 msgid "Total score openness"
 msgstr ""
 
-#: templates/scores/task_scores.html:324
+#: templates/scores/task_scores.html:326
 msgid "Non relevant parameters"
 msgstr ""
 
-#: templates/scores/task_scores.html:441
+#: templates/scores/task_scores.html:463
 msgid "No parameters"
 msgstr ""
 

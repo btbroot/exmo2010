@@ -1,6 +1,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-07 12:37+0400\n"
+"POT-Creation-Date: 2014-09-11 10:22+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -32,27 +33,27 @@ msgstr ""
 msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
 msgstr ""
 
-#: static/exmo2010/js/rating.js:92
+#: static/exmo2010/js/rating.js:75
 msgid "hide"
 msgstr ""
 
-#: static/exmo2010/js/rating.js:96
+#: static/exmo2010/js/rating.js:79
 msgid "show"
 msgstr ""
 
-#: static/scores/score_all_users.js:22
+#: static/scores/score_all_users.js:23
 msgid "hide explanations"
 msgstr ""
 
-#: static/scores/score_all_users.js:24
+#: static/scores/score_all_users.js:25
 msgid "show explanations"
 msgstr ""
 
-#: static/scores/score_all_users.js:37
+#: static/scores/score_all_users.js:38
 msgid "show initial scores"
 msgstr ""
 
-#: static/scores/score_all_users.js:41
+#: static/scores/score_all_users.js:42
 msgid "hide initial scores"
 msgstr ""
 
@@ -68,14 +69,18 @@ msgstr ""
 msgid "Score is invalid, recommendation can not be changed."
 msgstr ""
 
-#: static/scores/score_expert_interaction.js:134
+#: static/scores/score_expert_interaction.js:72
+msgid "Your browser is not supported"
+msgstr ""
+
+#: static/scores/score_expert_interaction.js:138
 msgid "Score changed to maximum"
 msgstr ""
 
-#: static/scores/score_expert_interaction.js:137
+#: static/scores/score_expert_interaction.js:141
 msgid "Score changed"
 msgstr ""
 
-#: static/scores/score_expert_interaction.js:244
-msgid "Your browser is not supported"
+#: static/scores/task_scores.js:39
+msgid "place"
 msgstr ""

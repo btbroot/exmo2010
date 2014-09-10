@@ -46,7 +46,7 @@
     margin: 15px 0;
 }
 
-/* Parameters tables */
+/* Both parameters tables */
 
 #main.fixed-width .relevant-params-table {
     min-width: 800px;
@@ -144,7 +144,7 @@
     color: #aeaeae;
 }
 
-/* Styles for questionnaire */
+/* Questionnaire */
 
 #questionnaire {
     position: relative;

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2013 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -29,7 +30,7 @@ from exmo2010.models import Monitoring, MONITORING_PUBLISHED
 @attr('selenium')
 class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
     # Scenario: Check if initial openness column is display
-    modal_window = '#modal-open'
+    modal_window = '.modal-open'
     init_openness = '.init-openness'
 
     def setUp(self):
@@ -77,6 +78,6 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         # WHEN i click initial openness checkbox
         self.find('#id_rt_initial_openness').click()
         # AND submit my changes
-        self.find('#buttons span input').click()
+        self.find('#modal_window input[type="submit"]').click()
         # THEN initial openness column should be displayed
         self.assertEqual(self.find(self.init_openness).is_displayed(), True)

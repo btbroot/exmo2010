@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -104,6 +105,15 @@ class UserProfile(BaseModel):
     rt_initial_openness = models.BooleanField(verbose_name=_("Initial Openness"), default=False)
     rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
     rt_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
+
+    # Scores table settings
+    st_criteria = models.BooleanField(verbose_name=_("Criteria"), default=True)
+    st_score = models.BooleanField(verbose_name=_("Score"), default=True)
+    st_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
+    st_weight = models.BooleanField(verbose_name=_("Weight"), default=False)
+    st_type = models.BooleanField(verbose_name=_("Type"), default=False)
+
+    SCORES_TABLE_FIELDS = 'st_criteria st_score st_difference st_weight st_type'.split()
 
     # Change notification settings
     notification_type = models.PositiveSmallIntegerField(verbose_name=_("Notification about changes"),

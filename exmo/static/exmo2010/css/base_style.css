@@ -1063,3 +1063,41 @@ input.name_input[type="text"] {
     background-color: #aeaeae !important;
     border: 1px solid #aeaeae !important;
 }
+
+/* Modal window */
+
+#modal_window {
+    width: 260px;
+    height: 240px;
+    padding: 20px;
+    background-color: white;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+#modal_window input[type="checkbox"] {
+    margin: 0;
+    height: 15px;
+}
+
+#modal_window p {
+    margin-bottom: 8px;
+}
+
+#modal_window label {
+    margin-left: 5px;
+}
+
+#modal_window div {
+    margin-top: 20px;
+}
+
+#modal_window input[type="submit"] {
+    margin: 0 20px 0 0;
+    width: 100px;
+}
+
+.simplemodal-overlay {
+  background-color: black;
+}

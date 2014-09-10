@@ -1,6 +1,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-07 12:37+0400\n"
+"POT-Creation-Date: 2014-09-11 10:22+0400\n"
 "PO-Revision-Date: 2014-05-28 17:46+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -35,27 +36,27 @@ msgstr ""
 msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
 msgstr "Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты и собранных данных. Желаете ли вы удалить анкету?"
 
-#: static/exmo2010/js/rating.js:92
+#: static/exmo2010/js/rating.js:75
 msgid "hide"
 msgstr "скрыть"
 
-#: static/exmo2010/js/rating.js:96
+#: static/exmo2010/js/rating.js:79
 msgid "show"
 msgstr "показать"
 
-#: static/scores/score_all_users.js:22
+#: static/scores/score_all_users.js:23
 msgid "hide explanations"
 msgstr "скрыть пояснения"
 
-#: static/scores/score_all_users.js:24
+#: static/scores/score_all_users.js:25
 msgid "show explanations"
 msgstr "показать пояснения"
 
-#: static/scores/score_all_users.js:37
+#: static/scores/score_all_users.js:38
 msgid "show initial scores"
 msgstr "показать первичные оценки"
 
-#: static/scores/score_all_users.js:41
+#: static/scores/score_all_users.js:42
 msgid "hide initial scores"
 msgstr "скрыть первичные оценки"
 
@@ -71,14 +72,18 @@ msgstr "Открыть комментарий"
 msgid "Score is invalid, recommendation can not be changed."
 msgstr "Оценка выставлена неверно, рекоммендации не могут быть изменены."
 
-#: static/scores/score_expert_interaction.js:134
+#: static/scores/score_expert_interaction.js:72
+msgid "Your browser is not supported"
+msgstr "Ваш браузер не поддерживается"
+
+#: static/scores/score_expert_interaction.js:138
 msgid "Score changed to maximum"
 msgstr "Оценка изменена до максимального значения"
 
-#: static/scores/score_expert_interaction.js:137
+#: static/scores/score_expert_interaction.js:141
 msgid "Score changed"
 msgstr "Оценка изменена"
 
-#: static/scores/score_expert_interaction.js:244
-msgid "Your browser is not supported"
-msgstr "Ваш браузер не поддерживается"
+#: static/scores/task_scores.js:39
+msgid "place"
+msgstr "месте"

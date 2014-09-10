@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+{% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2014 IRSI LTD
@@ -18,21 +18,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import logging
-import os
-import sys
-import uuid
+{% endcomment %}
+{% load i18n %}
 
-
-if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exmo.settings")
-
-    from django.core.management import execute_from_command_line
-
-    secret_key_file = 'exmo/django_key'
-    if not os.path.exists(secret_key_file):
-        logging.info(u'*** Creating random secret key file %s' % secret_key_file)
-        with open(secret_key_file, 'w+') as f:
-            f.write(str(uuid.uuid4()))
-
-    execute_from_command_line(sys.argv)
+<div id="modal_window" class="hidden">
+    <h2>{% trans "Table settings" %}</h2>
+    <form action="{{ url }}" method="post">{% csrf_token %}
+        {% for field in form %}
+            <p>{{ field }}{{ field.label_tag }}</p>
+        {% endfor %}
+        <div>
+            <input type="submit" name="settings_submit" value="{% trans "Change" %}">
+            <a href="#" id="cancel_link" class="pseudo">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>

@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,12 +18,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from accounts.forms import *
+from .forms import *
 from exmo2010.models import Organization, UserProfile
 
 
@@ -35,7 +36,7 @@ def settings(request):
         raise Http404
 
     user = request.user
-    profile = user.get_profile()
+    profile = user.profile
     is_organization = profile.is_organization
     is_internal = profile.is_internal()
     subscribe_form = SubscribeAndNotifyForm if is_internal or is_organization else SubscribeForm

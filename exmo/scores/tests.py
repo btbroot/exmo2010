@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -33,7 +34,7 @@ from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
 from exmo2010.models.monitoring import Monitoring, RATE, MONITORING_INTERACTION
-from scores.views import rating_update
+from scores.views import rating_update, post_task_scores_table_settings
 
 
 class ScoreAddAccessTestCase(TestCase):
@@ -486,7 +487,7 @@ class AjaxOpennessAccessTestCase(OptimizedTestCase):
             Task, organization=org5, user=expertB_engaged, status=Task.TASK_OPEN)
         cls.task_closed_pub = mommy.prepare(
             Task, organization=org6, user=expertB_engaged, status=Task.TASK_CLOSED)
-        # AND org repersentative
+        # AND org representative
         cls.users['org_user'] = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
         cls.users['org_user'].profile.organization = [org1, org2]
         # AND just registered user
@@ -844,3 +845,51 @@ class RecommendationsVisibilityRelevantTestCase(TestCase):
             # 0.0  # 100% score without recommendations or comments, not displayed.
         ]
         self.assertEqual([s.cost for s in response.context['scores']], expected_cost_list)
+
+
+class TaskScoresSettingsTestCase(OptimizedTestCase):
+    # Should allow to post task scores table settings only if user is expert
+
+    @classmethod
+    def setUpClass(cls):
+        super(TaskScoresSettingsTestCase, cls).setUpClass()
+        cls.users = {}
+        # GIVEN organization
+        org = mommy.make(Organization)
+        # AND task
+        cls.task = mommy.make(Task, organization=org)
+        # AND expert A
+        cls.users['expertA'] = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        cls.users['expertA'].profile.is_expertA = True
+        # AND expert B
+        cls.users['expertB'] = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        cls.users['expertB'].profile.is_expertB = True
+        # AND org representative
+        cls.users['org_user'] = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
+        cls.users['org_user'].profile.organization = [org]
+        # AND just registered user
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+
+        cls.post_data = [False, False, False, True, True]
+
+    @method_decorator(contextmanager)
+    def mock_request(self, username, task):
+        """
+        Patch get_object_or_404 to return given task.
+        Yield Mock request as context variable.
+        """
+        patch('scores.views.get_object_or_404', Mock(side_effect=lambda *a, **k: task)).start()
+        yield Mock(user=self.users[username], method='POST', POST=dict(zip(UserProfile.SCORES_TABLE_FIELDS, self.post_data)))
+        patch.stopall()
+
+    @parameterized.expand(zip(['expertA', 'expertB']))
+    def test_post_task_scores_table_settings_allow(self, username):
+        with self.mock_request(username, self.task) as request:
+            self.assertEqual(post_task_scores_table_settings(request, self.task.pk).status_code, 302)
+        user = UserProfile.objects.get(user__username=username)
+        self.assertEqual([getattr(user, item) for item in UserProfile.SCORES_TABLE_FIELDS], self.post_data)
+
+    @parameterized.expand(zip(['org_user', 'user']))
+    def test_post_task_scores_table_settings_forbid(self, username):
+        with self.mock_request(username, self.task.pk) as request:
+            self.assertRaises(PermissionDenied, post_task_scores_table_settings, request, self.task.pk)

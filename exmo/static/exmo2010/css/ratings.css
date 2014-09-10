@@ -43,23 +43,22 @@ i.download-alt {
 }
 
 .param_scroll {
-    line-height: 20px;
+    overflow-y: scroll;
     margin-bottom: 2px;
-    border: 1px solid #000000;
     padding: 3px 0;
     max-height: 150px;
-    overflow-y: scroll;
+    border: 1px solid #000000;
+    line-height: 20px;
 }
 
 .param_scroll ul li {
-    list-style-type: none;
-    padding: 0;
-    left: -30px;
     position: relative;
+    left: -30px;
+    padding: 0;
+    list-style-type: none;
 }
 
-.scroll input[type="checkbox"]
-{
+.scroll input[type="checkbox"] {
     margin-right: 10px;
 }
 
@@ -68,9 +67,8 @@ form.filter {
 }
 
 form.filter input {
-    font-size: 13px;
     height: 25px;
-
+    font-size: 13px;
 }
 
 
@@ -79,18 +77,18 @@ table.base-table {
 }
 
 table.base-table tr:nth-child(odd) {
-    background: #F5F5F5;
+    background: #f5f5f5;
 }
 table.base-table tr:nth-child(even) {
-    background: #fff;
+    background: #ffffff;
 }
 
 table.base-table tfoot td {
-    border-bottom: #D7D7D7 1px solid;
+    border-bottom: #d7d7d7 1px solid;
 }
 
 table.base-table tfoot tr:hover td {
-    background-color: #fff;
+    background-color: #ffffff;
 }
 
 th.tablesorter-headerDesc  span.arrow:before {
@@ -102,11 +100,12 @@ th.tablesorter-headerAsc span.arrow:before {
 }
 
 th span {
-    cursor: pointer;
     border-bottom: 1px dotted;
+    cursor: pointer;
 }
 
-th.tablesorter-headerAsc span, th.tablesorter-headerDesc span {
+th.tablesorter-headerAsc span,
+th.tablesorter-headerDesc span {
     border-bottom: none;
 }
 
@@ -146,9 +145,9 @@ td.place {
 }
 
 td.place > span {
-    display: block;
     position: relative;
     left: -8px;
+    display: block;
 }
 
 td.comments {
@@ -161,21 +160,22 @@ td.diff > div {
     height: 100%;
 }
 
-td.diff > div > span  {
-    display: block;
-    float: right;
+td.diff > div > span {
     position: relative;
     right: 15px;
-}
-
-td.diff > div > img  {
     display: block;
-    position: absolute;
-    right: -1px;
-    top: 5px;
+    float: right;
 }
 
-td.init-openness, td.openness {
+td.diff > div > img {
+    position: absolute;
+    top: 5px;
+    right: -1px;
+    display: block;
+}
+
+td.init-openness,
+td.openness {
     text-align: right;
 }
 
@@ -190,11 +190,14 @@ td.openness {
 
 /* Ratings Table */
 
-th.map, td.map {
+th.map,
+td.map {
     width: 14px;
 }
 
-th.monitoring, th.published, th.sites {
+th.monitoring,
+th.published,
+th.sites {
     vertical-align: bottom;
 }
 
@@ -220,48 +223,6 @@ p.total-organizations {
     top: -1px;
 }
 
-#simplemodal-overlay {
-  background-color: black;
-  opacity: .5;
-}
-
-#settings-modal {
-    width: 260px;
-    background-color: #fff;
-    margin: 0;
-    padding: 0;
-}
-
-#settings-modal #checkboxes {
-    padding: 20px 20px 0 20px;
-}
-
-#settings-modal #buttons {
-    margin-top: 11px;
-    padding-left: 20px;
-    padding-bottom: 30px;
-}
-
-
-#settings-modal form {
-    line-height: 27px;
-}
-
-#settings-modal form span {
-    top: 8px;
-    width: 130px;
-}
-
-.modal-heading {
-    margin-bottom: 5px;
-}
-
-#cancel-link {
-    position: relative;
-    top: 2px;
-    left: 21px;
-}
-
 a.pseudo {
     margin-top: 1px;
 }
@@ -271,5 +232,5 @@ p#parameter-list-heading {
 }
 
 .placeholder {
-    color: #999;
+    color: #999999;
 }
