@@ -605,7 +605,7 @@ class ScoreRecommendationsShouldExistJsTestCase(BaseSeleniumTestCase):
         self.org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
         task = mommy.make(Task, organization=self.org, user=expertB, status=Task.TASK_APPROVED)
 
-        # AND parameter with one ctriteria (for ex. "topical")
+        # AND parameter with one criterion (for ex. "topical")
         param_topical = mommy.make(
             Parameter,
             monitoring=self.org.monitoring,
@@ -827,3 +827,56 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
         # AND all nonrelevant score comments should be hidden
         for comment in self.score_nonerelevant.comments:
             self.assertHidden('#comment_%s' % comment.pk)
+
+
+@attr('selenium')
+class ScoreEditInteractionJsTestCase(BaseSeleniumTestCase):
+    # ExpertA and expertB assigned to task should be able to edit score in INTERACTION monitoring.
+    # And comment should be added
+
+    def setUp(self):
+        # GIVEN expert A account
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND organization with task in INTERACTION monitoring
+        self.org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        task = mommy.make(Task, organization=self.org, user=expertB)
+        # AND parameter with only "found" criterion
+        criteria = {crit: False for crit in Parameter.OPTIONAL_CRITERIA}
+        param = mommy.make(Parameter, monitoring=self.org.monitoring, **criteria)
+        # AND score with found = 0
+        score = mommy.make(Score, task=task, parameter=param, found=0)
+
+        self.url = reverse('exmo2010:score', args=(score.pk,))
+
+    @parameterized.expand([
+        ('expertA',),
+        ('expertB',),
+    ])
+    def test_edit_score_and_post_comment(self, username):
+        # BUG 2194: Comments are not saved in "score change" mode.
+
+        # WHEN I log in as expert
+        self.login(username, 'password')
+        # AND get score page
+        self.get(self.url)
+        # THEN comments should not exist
+        self.assertEquals(self.find('.table-messages-parameter'), None)
+
+        # WHEN I click "change score"
+        self.find('a[href="#change_score"]').click()
+        # AND post comment "Comment"
+        with self.frame('iframe'):
+            # WHEN I type new line character in the comment area
+            self.find('body').send_keys('Comment')
+        # AND change found score to 1
+        self.find('label[for="id_found_2"]').click()
+        # AND submit all changes
+        self.find('#submit_score_and_comment').click()
+        # THEN comments should exist
+        self.assertVisible('.table-messages-parameter tr#c1')
+        # AND visible comment text and posted comment text should be equal
+        self.assertEquals(self.find('tr#c1 div.messages-content div p:nth-child(2)').text, 'Comment')

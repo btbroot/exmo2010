@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -1041,7 +1042,7 @@ class MonitoringExport(object):
         'id',
         'found',
     ]
-    CSV_CRITERIONS.extend(Parameter.OPTIONAL_CRITERIONS)
+    CSV_CRITERIONS.extend(Parameter.OPTIONAL_CRITERIA)
     CSV_CRITERIONS.extend(['social', 'type', 'revision'])
 
     def __init__(self, monitoring):
@@ -1071,7 +1072,7 @@ class MonitoringExport(object):
             }
             if settings.DEBUG:
                 score_dict['pk'] = score.pk
-            for criteria in Parameter.OPTIONAL_CRITERIONS:
+            for criteria in Parameter.OPTIONAL_CRITERIA:
                 row_criteria = getattr(score, criteria, -1)
                 #for sql_v1: document and image always None
                 if row_criteria is None:

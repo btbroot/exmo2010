@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -51,7 +52,7 @@ class Parameter(BaseModel):
     npa = models.BooleanField(default=False, verbose_name=_('normative parameter'))
 
     #необязательные критерии в оценке
-    OPTIONAL_CRITERIONS = 'complete topical accessible hypertext document image'.split()
+    OPTIONAL_CRITERIA = 'complete topical accessible hypertext document image'.split()
 
     NPA_TYPE = {0: _("recommendatory"), 1: _("normative")}
 
@@ -67,8 +68,8 @@ class Parameter(BaseModel):
         if self.pk is None:
             super(Parameter, self).save(*args, **kwargs)
         else:
-            before = Parameter.objects.filter(pk=self.pk).values_list(*Parameter.OPTIONAL_CRITERIONS)[0]
-            after = tuple(getattr(self, i) for i in Parameter.OPTIONAL_CRITERIONS)
+            before = Parameter.objects.filter(pk=self.pk).values_list(*Parameter.OPTIONAL_CRITERIA)[0]
+            after = tuple(getattr(self, i) for i in Parameter.OPTIONAL_CRITERIA)
             super(Parameter, self).save(*args, **kwargs)
 
             if (False, True) in zip(before, after):
@@ -92,7 +93,7 @@ class Parameter(BaseModel):
             # 4) Relevance changed back to True - Score "accomplished" flag unset.
             # -- Score should become accomplished again, because this criterion was initially rated.
             scores = self.score_set.filter(found=1, revision=Score.REVISION_DEFAULT)
-            for criterion in Parameter.OPTIONAL_CRITERIONS:
+            for criterion in Parameter.OPTIONAL_CRITERIA:
                 if getattr(self, criterion) is True:
                     # Criterion is relevant
                     scores = scores.filter(**{criterion + '__isnull': False})

@@ -98,7 +98,7 @@ def score_view(request, **kwargs):
         raise PermissionDenied
 
     # Relevant criteria names
-    criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+    criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIA)
 
     ScoreForm = modelform_factory(
         Score,
@@ -399,10 +399,10 @@ class TaskScoresView(TaskScoresMixin, DetailView):
                 param.score_openness = score_fin.openness
                 param.score_openness_delta = score_fin.openness - score_int.openness if score_int else 0
 
-                criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+                criteria = ['found'] + filter(param.__getattribute__, Parameter.OPTIONAL_CRITERIA)
 
                 score_table = []
-                for criterion in ['found'] + Parameter.OPTIONAL_CRITERIONS:
+                for criterion in ['found'] + Parameter.OPTIONAL_CRITERIA:
                     if criterion in criteria:
                         score_table.append({
                             'score_final': getattr(score_fin, criterion),

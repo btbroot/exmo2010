@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,7 +28,7 @@ class Migration(DataMigration):
         in 'links' field as plaintext.
 
         """
-        fields = [field + 'Comment' for field in Parameter.OPTIONAL_CRITERIONS]
+        fields = [field + 'Comment' for field in Parameter.OPTIONAL_CRITERIA]
 
         scores = orm.Score.objects.filter(foundComment__isnull=False)
         for f in fields:
