@@ -2,6 +2,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -110,7 +111,7 @@
                                 <div>{{ score.parameter.name }}</div>
 
                                 {% if score.is_relevant %}
-                                    <p>{{ score.recommendations|escape|linebreaksbr }}</p>
+                                    <p>{{ score.recommendations|default_if_none:""|escape|linebreaksbr }}</p>
                                     {% if view.with_comments and score.parameter.grounds and not score.is_finished %}
                                         <h3>{% trans 'Grounds' %}</h3>
                                         <div>{{ score.parameter.grounds|bleach }}</div>

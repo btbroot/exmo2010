@@ -158,7 +158,7 @@
                             <td class="code"><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
                             <td class="center">
                                 <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
-                                <p>{{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
+                                <p>{{ score.recommendations|default_if_none:""|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
                                 {% if score.parameter.grounds and not score.is_finished %}
                                     <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
                                     <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>

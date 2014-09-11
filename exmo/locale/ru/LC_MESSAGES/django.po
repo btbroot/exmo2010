@@ -3166,7 +3166,7 @@ msgstr "месте"
 #: templates/scores/recommendations.html:145
 #: templates/scores/recommendations_print.html:95
 msgid "Recommendations list"
-msgstr "Список рекоммендаций"
+msgstr "Список рекомендаций"
 
 #: templates/scores/recommendations.html:58
 #: templates/scores/task_scores.html:49
