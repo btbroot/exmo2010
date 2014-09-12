@@ -136,6 +136,7 @@ div.comments div.comment-toggle {
 }
 
 .recommendations-block td.center > p {
+    margin-top: 10px;
     font-size: 15px;
     line-height: 20px;
 }
