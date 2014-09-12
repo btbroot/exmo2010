@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -49,35 +50,23 @@
     {% include 'exmo2010/table_header.html' with headers=headers %}
 
     <tbody>
-        {% for object in object_list %}
+        {% for org in object_list %}
             <tr>
                 <td>
-                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{object.name|urlencode}}">{{ object.name|slice:"120" }}{% if object.name|length > 120 %}...{% endif %}</a>
-                    &nbsp;<a href="{% url 'exmo2010:organization_update' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
+                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name|urlencode }}">{{ org.name|truncatechars:"123" }}</a>
+                    &nbsp;<a href="{% url 'exmo2010:organization_update' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
                     {% if not monitoring.is_published %}
-                        &nbsp;<a href="{% url 'exmo2010:organization_delete' monitoring.pk object.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>
+                        &nbsp;<a href="{% url 'exmo2010:organization_delete' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>
                     {%endif%}
                 </td>
-
-                <td>
-                    {{ object.email|truncatewords:1 }}
-                </td>
-
-                <td>
-                    {{ object.phone|truncatewords:1 }}
-                </td>
-
-                <td>
-                    {{ object.inv_code|default_if_none:'' }}
-                </td>
-
-                <td>
-                    {{ object.tasks_count }}
-                </td>
+                <td>{{ org.email|default_if_none:""|truncatewords:1 }}</td>
+                <td>{{ org.phone|default_if_none:""|truncatewords:1 }}</td>
+                <td>{{ org.inv_code|default_if_none:'' }}</td>
+                <td>{{ org.tasks_count }}</td>
                 {% if sent %}
-                    {% with object.inv_status as status %}
+                    {% with org.inv_status as status %}
                         <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
-                            {{ object.get_inv_status_display|default_if_none:'' }}
+                            {{ org.get_inv_status_display|default_if_none:'' }}
                         </td>
                     {% endwith %}
                 {% endif %}
@@ -85,6 +74,7 @@
         {% endfor %}
     </tbody>
 </table>
+
 {% include "exmo2010/_paginator.html" with queryset=object_list %}
 <br />
 {% monitoring_stats monitoring %}
