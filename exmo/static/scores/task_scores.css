@@ -95,12 +95,12 @@
     text-align: right;
 }
 
-.difference span {
+td.difference span {
     position: relative;
     right: 15px;
 }
 
-.difference img {
+td.difference img {
     position: absolute;
     top: 11px;
     right: 5px;

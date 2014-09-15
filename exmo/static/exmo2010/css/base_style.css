@@ -349,10 +349,6 @@ table.base-table tbody tr:hover td {
     background-color: #FFFFD6;
 }
 
-table.base-table td span.arrow, table.base-table th span.arrow {
-    font-weight: normal;
-}
-
 table.base-table tfoot > tr > td {
     background-color: #fff;
     border-left: none;
@@ -370,7 +366,6 @@ table.base-table tbody tr:nth-of-type(odd) {
 .table-implicit, .table-implicit tr, .table-implicit th, .table-implicit td {
     border: none;
 }
-
 
 /* SORTABLE TABLES HEADERS */
 
@@ -392,6 +387,22 @@ table.base-table tbody tr:nth-of-type(odd) {
     margin: 5px 0 0;
 }
 
+.tablesorter-header-inner span:first-child {
+    border-bottom: 1px dotted #000000;
+    cursor: pointer;
+}
+
+span.arrow {
+    margin-left: 2px;
+}
+
+.tablesorter-headerDesc  span.arrow:before {
+    content: "↓";
+}
+
+.tablesorter-headerAsc span.arrow:before {
+    content: "↑";
+}
 
 /* DIV TABLES */
 

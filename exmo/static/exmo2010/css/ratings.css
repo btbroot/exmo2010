@@ -91,19 +91,6 @@ table.base-table tfoot tr:hover td {
     background-color: #ffffff;
 }
 
-th.tablesorter-headerDesc  span.arrow:before {
-    content: "↓";
-}
-
-th.tablesorter-headerAsc span.arrow:before {
-    content: "↑";
-}
-
-th span {
-    border-bottom: 1px dotted;
-    cursor: pointer;
-}
-
 th.tablesorter-headerAsc span,
 th.tablesorter-headerDesc span {
     border-bottom: none;

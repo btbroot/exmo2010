@@ -21,8 +21,11 @@ $(document).ready(function() {
 
     /* Tables sorting */
 
-    $(".relevant-params-table").tablesorter();
-    $(".nonrelevant-params-table").tablesorter();
+    var ordering = ($('th').hasClass('icons-column')) ? [[2, 0]] : [[0, 0]]; /* for experts and non experts */
+
+    $(".relevant-params-table").tablesorter({sortList: ordering});
+    $(".nonrelevant-params-table").tablesorter({sortList: ordering});
+
 
     /* Rating place */
 
