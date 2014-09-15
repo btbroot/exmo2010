@@ -4,6 +4,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -23,9 +24,9 @@
 
 {% block title %}
     {% if param.pk %}
-        {% blocktrans %}Edit parameter {{param}}{% endblocktrans %}
+        {% trans 'Edit parameter' %}
     {% else %}
-        {% blocktrans %}Add new parameter{% endblocktrans %}
+        {% trans 'Add new parameter' %}
     {% endif %}
 {% endblock %}
 
@@ -41,19 +42,29 @@
 {% block h1 %}
     <h1>
         {% if param.pk %}
-            {% blocktrans %}Edit parameter {{param}}{% endblocktrans %}
+            {% trans 'Edit parameter' %}
         {% else %}
-            {% blocktrans %}Add new parameter{% endblocktrans %}
+            {% trans 'Add new parameter' %}
         {% endif %}
     </h1>
 {% endblock %}
 
 {% block content %}
+    {% if param.pk %}
+        <a class="likeabutton" href="{% url 'exmo2010:parameter_delete' view.task.pk param.pk %}">{% trans 'Delete' %}</a>
+    {% endif %}
+
     <p>{{ form.non_field_errors }}</p>
 
-    <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
+    <form method="post" action="?{{ request.GET.urlencode }}">{% csrf_token %}
         <table id="param_form">
             {% include "_form_field.html" with field=form.code %}
+            {% if param.pk %}
+                <tr>
+                    <td><label>{% trans 'name'|capfirst %}</label></td>
+                    <td class="field">{{ param }}</td>
+                </tr>
+            {% endif %}
             {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
             {% include "_form_field.html" with field=form.trans_fields.grounds %}
             {% include "_form_field.html" with field=form.trans_fields.rating_procedure %}

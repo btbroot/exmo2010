@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-11 10:22+0400\n"
+"POT-Creation-Date: 2014-09-15 12:48+0400\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -125,7 +125,7 @@ msgstr ""
 #: monitorings/templates/monitoring_form.html:55
 #: monitorings/templates/set_npa_params.html:48
 #: organizations/templates/_organization_form.html:42
-#: parameters/templates/parameter_form.html:72 templates/scores/score.html:222
+#: parameters/templates/parameter_form.html:82 templates/scores/score.html:222
 #: templates/scores/score.html.py:248 templates/scores/score.html:305
 #: templates/scores/task_scores.html:502
 msgid "Save"
@@ -737,7 +737,8 @@ msgstr ""
 msgid "Add parameter"
 msgstr ""
 
-#: exmo2010/urls.py:290 templates/scores/score.html:65
+#: exmo2010/urls.py:290 parameters/templates/parameter_form.html:26
+#: parameters/templates/parameter_form.html:44 templates/scores/score.html:65
 msgid "Edit parameter"
 msgstr ""
 
@@ -964,6 +965,7 @@ msgstr ""
 
 #: exmo2010/models/monitoring.py:64 exmo2010/models/openness_expression.py:37
 #: exmo2010/models/organization.py:130 exmo2010/models/parameter.py:37
+#: parameters/templates/parameter_form.html:63
 msgid "name"
 msgstr ""
 
@@ -1604,6 +1606,7 @@ msgid "Edit"
 msgstr ""
 
 #: monitorings/templates/_observers_group_form.html:35
+#: parameters/templates/parameter_form.html:53
 msgid "Delete"
 msgstr ""
 
@@ -1853,7 +1856,7 @@ msgstr ""
 #: monitorings/templates/observers_groups.html:55
 #: monitorings/templates/rating.html:96 monitorings/templates/ratings.html:42
 #: organizations/templates/_mail_history.html:32
-#: organizations/templates/_org_list.html:43
+#: organizations/templates/_org_list.html:44
 #: organizations/templates/organization_representatives.html:52
 #: templates/certificate_order_form.html:86
 #: templates/scores/task_scores.html:117
@@ -2026,7 +2029,7 @@ msgstr ""
 msgid "Invitation"
 msgstr ""
 
-#: organizations/templates/_org_list.html:27
+#: organizations/templates/_org_list.html:28
 msgid "Mails sent."
 msgstr ""
 
@@ -2109,23 +2112,17 @@ msgstr ""
 msgid "No representatives"
 msgstr ""
 
-#: parameters/templates/parameter_form.html:26
-#: parameters/templates/parameter_form.html:44
-#, python-format
-msgid "Edit parameter %(param)s"
-msgstr ""
-
 #: parameters/templates/parameter_form.html:28
 #: parameters/templates/parameter_form.html:46
 #: templates/scores/task_scores.html:60
 msgid "Add new parameter"
 msgstr ""
 
-#: parameters/templates/parameter_form.html:74
+#: parameters/templates/parameter_form.html:84
 msgid "Save and send notifications"
 msgstr ""
 
-#: parameters/templates/parameter_form.html:76
+#: parameters/templates/parameter_form.html:86
 #: templates/exmo2010/task_form.html:39
 msgid "Reset"
 msgstr ""
@@ -3136,7 +3133,7 @@ msgstr ""
 
 #: templates/scores/recommendations.html:56
 #: templates/scores/recommendations.html:145
-#: templates/scores/recommendations_print.html:95
+#: templates/scores/recommendations_print.html:96
 msgid "Recommendations list"
 msgstr ""
 
@@ -3183,28 +3180,28 @@ msgid "Site <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>."
 msgstr ""
 
 #: templates/scores/recommendations.html:97
-#: templates/scores/recommendations_print.html:48
+#: templates/scores/recommendations_print.html:49
 #: templates/scores/task_scores.html:95
 #, python-format
 msgid "Fulfilled recommendations make up %(delta)s%% website openness increase."
 msgstr ""
 
 #: templates/scores/recommendations.html:100
-#: templates/scores/recommendations_print.html:51
+#: templates/scores/recommendations_print.html:52
 #: templates/scores/task_scores.html:98
 #, python-format
 msgid "Final openness <span>%(openness)s%%</span>."
 msgstr ""
 
 #: templates/scores/recommendations.html:102
-#: templates/scores/recommendations_print.html:53
+#: templates/scores/recommendations_print.html:54
 #: templates/scores/task_scores.html:100
 #, python-format
 msgid "Current openness <span>%(openness)s%%</span>."
 msgstr ""
 
 #: templates/scores/recommendations.html:107
-#: templates/scores/recommendations_print.html:58
+#: templates/scores/recommendations_print.html:59
 #: templates/scores/task_scores.html:105
 #, python-format
 msgid "Total amount of organizations %(orgs_count)s. "
@@ -3213,13 +3210,13 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/scores/recommendations.html:111
-#: templates/scores/recommendations_print.html:62
+#: templates/scores/recommendations_print.html:63
 #, python-format
 msgid "%(registered_count)s organizations are working to increase their websites openness."
 msgstr ""
 
 #: templates/scores/recommendations.html:113
-#: templates/scores/recommendations_print.html:64
+#: templates/scores/recommendations_print.html:65
 msgid "Your rating position will decrease as their openness increases."
 msgstr ""
 
@@ -3229,24 +3226,24 @@ msgid "<a href=\"%(certificate_order_url)s\" target=\"_blank\">Order Certificate
 msgstr ""
 
 #: templates/scores/recommendations.html:123
-#: templates/scores/recommendations_print.html:73
+#: templates/scores/recommendations_print.html:74
 #, python-format
 msgid "Order Certificate reflecting your website rating position and openness value after publication of the rating (%(publish_date)s)."
 msgstr ""
 
 #: templates/scores/recommendations.html:131
-#: templates/scores/recommendations_print.html:81
+#: templates/scores/recommendations_print.html:82
 msgid "We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation."
 msgstr ""
 
 #: templates/scores/recommendations.html:135
-#: templates/scores/recommendations_print.html:85
+#: templates/scores/recommendations_print.html:86
 #, python-format
 msgid "You can not leave new comments. We are answering the latest comments and correct assessments. Please wait till rating is published %(publish_date)s."
 msgstr ""
 
 #: templates/scores/recommendations.html:153
-#: templates/scores/recommendations_print.html:103
+#: templates/scores/recommendations_print.html:104
 #: templates/scores/score.html:255 templates/scores/score.html.py:259
 #: templates/scores/task_scores_print.html:79
 msgid "No recommendations"
@@ -3261,40 +3258,40 @@ msgid "Hide grounds"
 msgstr ""
 
 #: templates/scores/recommendations.html:174
-#: templates/scores/recommendations_print.html:141
+#: templates/scores/recommendations_print.html:142
 msgid "Ready"
 msgstr ""
 
 #: templates/scores/recommendations.html:190
-#: templates/scores/recommendations_print.html:146
+#: templates/scores/recommendations_print.html:147
 msgid "Deleted"
 msgstr ""
 
-#: templates/scores/recommendations_print.html:31
+#: templates/scores/recommendations_print.html:32
 #: templates/scores/task_scores_print.html:29
 msgid "Data source:"
 msgstr ""
 
-#: templates/scores/recommendations_print.html:37
+#: templates/scores/recommendations_print.html:38
 #, python-format
 msgid "Site %(org_url)s has <span>%(rating_place)s position</span> in the rating %(monitoring_name)s."
 msgstr ""
 
-#: templates/scores/recommendations_print.html:39
+#: templates/scores/recommendations_print.html:40
 #, python-format
 msgid "Site %(org_url)s is the only one in the rating %(monitoring_name)s."
 msgstr ""
 
-#: templates/scores/recommendations_print.html:42
+#: templates/scores/recommendations_print.html:43
 #, python-format
 msgid "Site %(org_url)s."
 msgstr ""
 
-#: templates/scores/recommendations_print.html:71
+#: templates/scores/recommendations_print.html:72
 msgid "Order Certificate with rating position of the website and its openness value."
 msgstr ""
 
-#: templates/scores/recommendations_print.html:115
+#: templates/scores/recommendations_print.html:116
 #: templates/scores/score.html:85
 msgid "Grounds"
 msgstr ""

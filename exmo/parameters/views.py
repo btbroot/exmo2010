@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -83,7 +84,7 @@ class ParamEditView(ParameterMixin, UpdateView):
         context = super(ParamEditView, self).get_context_data(**kwargs)
         return dict(context, media=CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]}))
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
         if not self.request.user.has_perm('exmo2010.admin_monitoring', self.task.organization.monitoring):
             raise PermissionDenied
@@ -116,7 +117,7 @@ class ParamEditView(ParameterMixin, UpdateView):
 class ParamDeleteView(ParameterMixin, DeleteView):
     template_name = "exmo2010/parameter_confirm_delete.html"
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
         if not self.request.user.has_perm('exmo2010.admin_monitoring', self.task.organization.monitoring):
             raise PermissionDenied
