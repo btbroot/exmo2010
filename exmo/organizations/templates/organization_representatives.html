@@ -2,6 +2,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,6 +27,8 @@
 {% block extra_script %}
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
 {% endblock %}
+
+{% block title %}{{ monitoring.name }}{% endblock %}
 
 {% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
@@ -57,11 +60,13 @@
 
                     {% if not orgs %}
                         <tr class="table-header">
+                            <th></th>
                             <th>{% trans 'Full name' %}</th>
                             <th>{% trans "E-mail" context "short spelling" %}</th>
                             <th>{% trans 'Phone' %}</th>
                             <th>{% trans 'Job title' %}</th>
                             <th class="align-right">{% trans 'Comm.' %}</th>
+                            <th class="align-right">{% trans 'Date joined' %}</th>
                         </tr>
                     {% else %}
                         {% for org in orgs %}
@@ -73,22 +78,30 @@
 
                             {% if forloop.first %}
                                 <tr>
+                                    <th></th>
                                     <th>{% trans 'Full name' %}</th>
                                     <th>{% trans "E-mail" context "short spelling" %}</th>
                                     <th>{% trans 'Phone' %}</th>
                                     <th>{% trans 'Job title' %}</th>
                                     <th class="align-right">{% trans 'Comm.' %}</th>
+                                    <th class="align-right">{% trans 'Date joined' %}</th>
                                 </tr>
                             {% endif %}
 
                             <tbody>
                                 {% for user in org.users %}
                                     <tr class="zebra">
+                                        <td class="collapsible">
+                                            {% if user.user.is_active %}
+                                                <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                            {% endif %}
+                                        </td>
                                         <td>{{ user.full_name }}</td>
                                         <td>{{ user.user.email }}</td>
                                         <td>{{ user.phone }}</td>
                                         <td>{{ user.position }}</td>
                                         <td class="align-right">{{ user.comments_count }}</td>
+                                        <td class="align-right">{{ user.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -267,23 +268,29 @@ def representatives_export(request, monitoring_pk):
     response.encoding = 'UTF-16'
     writer = UnicodeWriter(response)
     writer.writerow([
-        '#Organization',
-        'Full name',
+        '#Verified',
+        'Organization',
+        'First name',
+        'Last name',
         'Email',
         'Phone',
         'Job title',
         'Comments count',
+        'Date joined',
     ])
 
     for org in organizations:
         for user in org.users:
             row = [
+                int(user.user.is_active),
                 org.name,
-                user.full_name,
+                user.user.first_name,
+                user.user.last_name,
                 user.user.email,
                 user.phone,
                 user.position,
                 user.comments_count,
+                user.user.date_joined.date().isoformat(),
             ]
             writer.writerow(row)
 

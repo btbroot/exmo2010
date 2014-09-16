@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -364,20 +365,26 @@ class RepresentativesExportTestCase(TestCase):
         for row in csv:
             if row[0].startswith('#'):
                 continue
-            # AND length of row should be 6
-            self.assertEqual(len(row), 6)
-            # AND 1 row should contain organization name
-            self.assertEqual(row[0], organization.name)
-            # AND 2 row should contain full user name
-            self.assertEqual(row[1], user.full_name)
-            # AND 3 row should contain user e-mail
-            self.assertEqual(row[2], user.user.email)
-            # AND 4 row should contain user phone number
-            self.assertEqual(row[3], user.phone)
-            # AND 5 row should contain user job title
-            self.assertEqual(row[4], user.position)
-            # AND 6 row should contain count of comments
-            self.assertEqual(int(row[5]), 1)
+            # AND length of row should be 9
+            self.assertEqual(len(row), 9)
+            # AND row 1 should contain user activation status
+            self.assertEqual(int(row[0]), int(user.user.is_active))
+            # AND row 2 should contain organization name
+            self.assertEqual(row[1], organization.name)
+            # AND row 3 should contain user first name
+            self.assertEqual(row[2], user.user.first_name)
+            # AND row 4 should contain user last name
+            self.assertEqual(row[3], user.user.last_name)
+            # AND row 5 should contain user e-mail
+            self.assertEqual(row[4], user.user.email)
+            # AND row 6 should contain user phone number
+            self.assertEqual(row[5], user.phone)
+            # AND row 7 should contain user job title
+            self.assertEqual(row[6], user.position)
+            # AND row 8 should contain count of comments
+            self.assertEqual(int(row[7]), 1)
+            # AND row 9 should contain date of user registration
+            self.assertEqual(row[8], user.user.date_joined.date().isoformat())
 
 
 class RepresentativesFilterByOrganizationsTestCase(TestCase):

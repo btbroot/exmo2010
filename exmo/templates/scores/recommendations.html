@@ -155,7 +155,7 @@
                 {% for score in scores %}
                     {% if score.is_relevant %}
                         <tr id="param{{ score.parameter.pk }}" class="{% if score.is_finished %} finished {% endif %}">
-                            <td class="code"><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
+                            <td class="code"><a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
                             <td class="center">
                                 <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
                                 <p>{{ score.recommendations|default_if_none:""|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
