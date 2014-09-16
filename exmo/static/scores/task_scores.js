@@ -24,7 +24,7 @@ $(document).ready(function() {
     var ordering = ($('th').hasClass('icons-column')) ? [[2, 0]] : [[0, 0]]; /* for experts and non experts */
 
     $(".relevant-params-table").tablesorter({sortList: ordering});
-    $(".nonrelevant-params-table").tablesorter({sortList: ordering});
+    $(".nonrelevant-params-table").tablesorter({sortList: [[1, 0]]});
 
 
     /* Rating place */
