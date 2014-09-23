@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,29 +18,46 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django import forms
+from django.forms import BooleanField, CharField, CheckboxSelectMultiple, MultipleChoiceField, TextInput
 from django.utils.translation import ugettext_lazy as _
 
-from exmo2010.models import Monitoring, MONITORING_PUBLISHED
+from exmo2010.models import Monitoring
+from modeltranslation_utils import CurLocaleModelForm
 from queryform import QueryForm
 
 
-class MonitoringFilterForm(forms.Form):
-    """
-    Форма выбора мониторинга. К выбору доступны лишь опубликованные.
+class MonitoringCopyForm(CurLocaleModelForm):
 
-    """
-    monitoring = forms.ModelChoiceField(
-        queryset=Monitoring.objects.exclude(hidden=True).filter(
-            status=MONITORING_PUBLISHED
-        ).order_by('-publish_date'),
-        required=False,
-        empty_label=_('monitoring not select'),
+    class Meta:
+        model = Monitoring
+        exclude = ['time_to_answer', 'map_link']
+
+    DONORS = (
+        ('all', _('All')),
+        ('organizations', _('Organizations')),
+        ('parameters', _('Parameters')),
+        ('tasks', _('Tasks list')),
+        ('all_scores', _('All scores')),
+        ('current_scores', _('Current scores')),
+        ('representatives', _('Representatives')),
     )
+    add_questionnaire = BooleanField(required=False, label=_('Monitoring cycle with questionnaire'))
+    donors = MultipleChoiceField(required=False, label=_('What to copy?'),
+                                 choices=DONORS, widget=CheckboxSelectMultiple)
+
+    def clean_donors(self):
+        """
+        :return: valid list of 'donors' field options
+        """
+        donors = set(self.cleaned_data['donors'])
+        if not {'parameters', 'tasks'}.issubset(donors):
+            donors -= {'all_scores', 'current_scores'}
+
+        return donors
 
 
 class RatingsQueryForm(QueryForm):
-    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Monitoring cycle')}))
+    name = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Monitoring cycle')}))
 
     class Meta:
         filters = {
@@ -48,7 +66,7 @@ class RatingsQueryForm(QueryForm):
 
 
 class RatingQueryForm(QueryForm):
-    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Organization')}))
+    name = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Organization')}))
 
     class Meta:
         filters = {
@@ -57,7 +75,7 @@ class RatingQueryForm(QueryForm):
 
 
 class ObserversGroupQueryForm(QueryForm):
-    name = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Group name')}))
+    name = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Group name')}))
 
     class Meta:
         filters = {

@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,6 +19,7 @@
 #
 import datetime
 import json
+import unittest
 from cStringIO import StringIO
 
 from django.conf import settings
@@ -29,11 +31,12 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.formats import get_format
-from django.utils.unittest import skipIf
+from django.utils.translation import get_language
 from model_mommy import mommy
 from nose_parameterized import parameterized
 from BeautifulSoup import BeautifulSoup
 
+from .forms import MonitoringCopyForm
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
@@ -917,7 +920,7 @@ class TestMonitoringExportApproved(TestCase):
     #   File "/tmp/exmo_test_repo/exmo/monitorings/tests.py", line 888, in test_approved_csv
     #     self.assertEqual(len(csv), 3)
     # AssertionError: 4 != 3
-    @skipIf(not settings.DEBUG, 'Git hook with autotests return AssertionError')
+    @unittest.skipIf(not settings.DEBUG, 'Git hook with autotests return AssertionError')
     def test_approved_csv(self):
         url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
         response = self.client.get(url + '?format=csv')
@@ -1243,60 +1246,165 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
         self.assertEqual(statistics['organization_users_active'], 1)
 
 
-class CopyMonitoringTestCase(TestCase):
-    # Script SHOULD create monitoring copy
+class MonitoringCopyAccessTestCase(TestCase):
+    # SHOULD allow only expertA to copy monitoring
 
     def setUp(self):
-        # GIVEN published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+        # AND organization
+        organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND superuser account
+        User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert A account
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND expert B account
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        # AND user without any permissions
+        User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND monitoring copy page url
+        self.url = reverse('exmo2010:monitoring_copy', args=[self.monitoring.pk])
+
+    def test_anonymous_monitoring_copy_get(self):
+        # WHEN anonymous user gets monitoring copy page
+        response = self.client.get(self.url, follow=True)
+        # THEN he is redirected to login page
+        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
+
+    @parameterized.expand([
+        ('user', 403),
+        ('orguser', 403),
+        ('expertB', 403),
+        ('expertA', 200),
+        ('admin', 200),
+    ])
+    def test_monitoring_copy_get(self, username, expected_response_code):
+        # WHEN I am logged in
+        self.client.login(username=username, password='password')
+        # AND I get monitoring copy page
+        response = self.client.get(self.url)
+        # THEN response status_code equals expected
+        self.assertEqual(response.status_code, expected_response_code)
+
+    @parameterized.expand([
+        ('user',),
+        ('orguser',),
+        ('expertB',),
+    ])
+    def test_forbid_unauthorized_monitoring_copy_post(self, username):
+        # WHEN I am logged in
+        self.client.login(username=username, password='password')
+
+        now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
+
+        # AND I forge and POST monitoring copy form
+        self.client.post(self.url, {
+            'name_%s' % get_language(): 'monitoring name',
+            'status': MONITORING_PREPARE,
+            'openness_expression': 8,
+            'donors': ['all'],
+            'rate_date': now,
+            'interact_date': now,
+            'finishing_date': now,
+            'publish_date': now,
+        })
+        # THEN monitoring copy does not get created in the database
+        self.assertEqual(1, Monitoring.objects.all().count())
+
+
+class MonitoringCopyFormTestCase(TestCase):
+    # MonitoringCopyForm should validate user form and return corrected values
+
+    @parameterized.expand([
+        (['all'], {'all'}),
+        (['parameters'], {'parameters'}),
+        (['tasks'], {'tasks'}),
+        (['all_scores'], set([])),
+        (['current_scores'], set([])),
+        (['representatives'], {'representatives'}),
+        (['parameters', 'all_scores', 'representatives'], {'parameters', 'representatives'}),
+        (['organizations', 'tasks', 'all_scores', 'current_scores'], {'organizations', 'tasks'}),
+        (['parameters', 'tasks', 'current_scores'], {'parameters', 'tasks', 'current_scores'}),
+        (['parameters', 'tasks', 'all_scores'], {'parameters', 'tasks', 'all_scores'}),
+        (['all', 'current_scores'], {'all'}),
+    ])
+    def test_donors_field_validate(self, donors_list, expected_list):
+        # WHEN I fill data monitoring copy form
+        now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
+        form_data = {
+            'name_%s' % get_language(): 'monitoring name',
+            'status': MONITORING_PREPARE,
+            'openness_expression': 8,
+            'donors': donors_list,
+            'rate_date': now,
+            'interact_date': now,
+            'finishing_date': now,
+            'publish_date': now,
+        }
+        form = MonitoringCopyForm(data=form_data)
+        # THEN form should be valid
+        self.assertEqual(form.is_valid(), True)
+        # AND 'donors' field should contain expected list of values
+        self.assertEqual(form.cleaned_data['donors'], expected_list)
+
+
+class CopyMonitoringViewTestCase(TestCase):
+    # monitoring copy should be created
+
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
         # AND 3 organizations connected to monitoring
-        organizations = mommy.make(Organization, monitoring=self.monitoring, _quantity=3)
+        orgs = mommy.make(Organization, monitoring=self.monitoring, _quantity=3)
         # AND parameter connected to monitoring
         self.parameter = mommy.make(Parameter, monitoring=self.monitoring)
+        # AND expert A account
+        self.expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
         # AND expert B account
-        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        self.expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
         self.expertB.profile.is_expertB = True
         # AND 3 approved tasks connected to organizations
-        task1 = mommy.make(
-            Task,
-            organization=organizations[0],
-            user=self.expertB,
-            status=Task.TASK_APPROVED,
-        )
-        task2 = mommy.make(
-            Task,
-            organization=organizations[1],
-            user=self.expertB,
-            status=Task.TASK_APPROVED,
-        )
-        task3 = mommy.make(
-            Task,
-            organization=organizations[2],
-            user=self.expertB,
-            status=Task.TASK_APPROVED,
-        )
+        task1 = mommy.make(Task, organization=orgs[0], user=self.expertB, status=Task.TASK_APPROVED)
+        task2 = mommy.make(Task, organization=orgs[1], user=self.expertB, status=Task.TASK_APPROVED)
+        task3 = mommy.make(Task, organization=orgs[2], user=self.expertB, status=Task.TASK_APPROVED)
         # AND 1 score for each task
         mommy.make(Score, task=task1, parameter=self.parameter)
         mommy.make(Score, task=task2, parameter=self.parameter)
         mommy.make(Score, task=task3, parameter=self.parameter)
+        # AND monitoring copy page url
+        self.url = reverse('exmo2010:monitoring_copy', args=[self.monitoring.pk])
+        # WHEN I am logged in as expert A
+        self.client.login(username='expertA', password='password')
 
     def test_copy_monitoring(self):
-        # WHEN I call 'copy_monitoring' comamnd
-        call_command('copy_monitoring', self.monitoring.pk)
-        # AND get new monitoring and parameter
+        # WHEN I post monitoring copy form
+        now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
+        self.client.post(self.url, {
+            'name_%s' % get_language(): 'monitoring name',
+            'status': MONITORING_PREPARE,
+            'openness_expression': 8,
+            'donors': ['parameters', 'tasks', 'all_scores', 'representatives'],
+            'rate_date': now,
+            'interact_date': now,
+            'finishing_date': now,
+            'publish_date': now,
+        })
+        # THEN monitoring copy does get created in the database
+        self.assertEqual(2, Monitoring.objects.all().count())
+
+        # WHEN I get new monitoring and parameter
         copied_monitoring = Monitoring.objects.all().order_by('-id')[0]
         copied_parameter = Parameter.objects.all().order_by('-id')[0]
         # THEN monitorings fields should be equal
-        self.assertEqual('%s_copy' % self.monitoring.name, copied_monitoring.name)
-        self.assertEqual(copied_monitoring.status, MONITORING_RATE)
-        self.assertEqual(self.monitoring.map_link, copied_monitoring.map_link)
-        self.assertEqual(self.monitoring.time_to_answer, copied_monitoring.time_to_answer)
-        self.assertEqual(self.monitoring.no_interact, copied_monitoring.no_interact)
-        self.assertEqual(self.monitoring.hidden, copied_monitoring.hidden)
-        self.assertEqual(self.monitoring.rate_date, copied_monitoring.rate_date)
-        self.assertEqual(self.monitoring.interact_date, copied_monitoring.interact_date)
-        self.assertEqual(self.monitoring.publish_date, copied_monitoring.publish_date)
-        self.assertEqual(self.monitoring.finishing_date, copied_monitoring.finishing_date)
+        # FIXME: modeltranslated fields doesn`t exists in post request
+        # self.assertEqual(getattr(copied_monitoring, 'name_%s' % get_language()), 'monitoring name')
+        self.assertEqual(copied_monitoring.status, MONITORING_PREPARE)
         # AND organizations names should be equal
         self.assertEqual(set(self.monitoring.organization_set.values_list('name', flat=True)),
                          set(copied_monitoring.organization_set.values_list('name', flat=True)))

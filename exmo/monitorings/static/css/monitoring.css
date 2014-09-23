@@ -1,0 +1,103 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+/* General style */
+
+h3 {
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    vertical-align: text-bottom;
+}
+
+select,
+input[type="text"] {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    width: 250px;
+}
+
+
+/* Button */
+
+.likeabutton,
+.likeabutton:hover {
+    margin: 10px 0 20px;
+    background-color: #ecffec;
+}
+
+
+/* Form tables */
+
+.table-cell-L,
+.table-cell-R {
+    border: none;
+}
+
+.choice-buttons .table-cell-R {
+    vertical-align: top;
+}
+
+.choice-buttons .table-cell-L {
+    padding: 0 5px;
+}
+
+.choice-buttons ul {
+    margin: 0 20px 0;
+    padding: 0;
+}
+
+.choice-buttons li {
+    padding: 5px 0;
+    list-style: none;
+}
+
+.choice-buttons li:first-child {
+    margin-left: -20px;
+}
+
+input[value="current_scores"] {
+    margin-left: 20px;
+}
+
+.name-cell input[type="text"] {
+    width: 600px;
+}
+
+.datepicker img {
+    position: relative;
+    right: 18px;
+    vertical-align: middle;
+}
+
+.submit-cell {
+    padding-top: 10px;
+}
+
+.submit-cell input {
+    margin: 0;
+    width: 100px;
+}
+
+.submit-cell a {
+    margin-left: 20px;
+    vertical-align: middle;
+}

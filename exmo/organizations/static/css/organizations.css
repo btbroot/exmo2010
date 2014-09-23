@@ -145,6 +145,10 @@ td.pseudo {
 
 /* Mail history search form */
 
+input.datepicker {
+    background: url(../../../static/exmo2010/img/calendar.png) 127px 4px no-repeat;
+}
+
 #mail_history_search_form > input[name="date_filter_history"] {
     width: 140px;
 }

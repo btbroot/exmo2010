@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +20,6 @@
 #
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext_lazy
@@ -54,18 +54,10 @@ class Monitoring(BaseModel):
     class Meta(BaseModel.Meta):
         ordering = ('name',)
 
-    MONITORING_EDIT_STATUSES = {
-        MONITORING_RATE: _('Monitoring evaluation begin date'),
-        MONITORING_INTERACTION: _('Monitoring interact start date'),
-        MONITORING_FINALIZING: _('Monitoring interact end date'),
-        MONITORING_PUBLISHED: _('Monitoring publish date'),
-    }
-
     name = models.CharField(max_length=255, verbose_name=_('name'))
     status = models.PositiveIntegerField(choices=MONITORING_STATUS, default=MONITORING_PREPARE, verbose_name=_('status'))
-    hidden = models.BooleanField(default=False, verbose_name=_('Hidden monitoring'))
-    openness_expression = models.ForeignKey("OpennessExpression", default=8,
-                                            verbose_name=_('formula for calculating IACoef'))
+    hidden = models.BooleanField(default=False, verbose_name=_('Hide monitoring in statistics and ratings'))
+    openness_expression = models.ForeignKey("OpennessExpression", default=8, verbose_name=_('Formula'))
     map_link = models.URLField(null=True, blank=True, verbose_name=_('Link to map'))
 
     # Максимальное время ответа в днях.

@@ -28,7 +28,7 @@ from django.views.generic import TemplateView, RedirectView
 
 from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
-                               ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView)
+                               ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView, MonitoringCopyView)
 from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
@@ -111,6 +111,7 @@ monitoring_patterns = named_urls('monitorings.views',
     (r'^(?P<monitoring_pk>\d+)/set_npa_params/$', 'set_npa_params'),
     (r'^(?P<monitoring_pk>\d+)_update/$', MonitoringEditView, 'monitoring_update'),
     (r'^(?P<monitoring_pk>\d+)_delete/$', MonitoringDeleteView, 'monitoring_delete'),
+    (r'^(?P<monitoring_pk>\d+)_copy/$', MonitoringCopyView, 'monitoring_copy'),
     (r'^(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
     (r'^(?P<monitoring_pk>\d+)/observers_groups/$', ObserversGroupView, 'observers_groups'),
     (r'^(?P<monitoring_pk>\d+)/observers_group/add/$', ObserversGroupEditView, 'observers_group_add'),
@@ -240,6 +241,7 @@ def crumbs_tree(is_expert=False):
             'monitoring_add':    _('Add monitoring cycle'),
             'monitoring_delete': _('Delete monitoring cycle'),
             'monitoring_update': _('Edit monitoring cycle'),
+            'monitoring_copy': _('Copy monitoring cycle'),
 
             'add_questionnaire': _('Add questionnaire'),
 

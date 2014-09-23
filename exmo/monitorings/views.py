@@ -18,13 +18,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import copy
 import csv
 import os
 import tempfile
 import zipfile
-from cStringIO import StringIO
 from collections import defaultdict, OrderedDict
+from copy import deepcopy
+from cStringIO import StringIO
 from operator import attrgetter
 
 from django.conf import settings
@@ -50,7 +50,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import DeleteView, DetailView, UpdateView
 from reversion.revisions import default_revision_manager as revision
 
-from .forms import RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
+from .forms import MonitoringCopyForm, RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
@@ -58,6 +58,7 @@ from core.views import LoginRequiredMixin
 from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
 from exmo2010.models import *
+from exmo2010.models.monitoring import MONITORING_PREPARE
 from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
@@ -146,7 +147,7 @@ class MonitoringEditView(MonitoringMixin, UpdateView):
             initial.update({'add_questionnaire': self.object.has_questionnaire})
         return initial
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         if 'monitoring_pk' in self.kwargs:
             # Existing monitoring edit page
             monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
@@ -168,7 +169,8 @@ class MonitoringEditView(MonitoringMixin, UpdateView):
         form_class = modelform_factory(**_modelform_kwargs)
 
         # Add pseudo-field to toggle questionnaire addition in the form
-        form_class.base_fields['add_questionnaire'] = BooleanField(required=False, label=_('Add questionnaire'))
+        form_class.base_fields['add_questionnaire'] = BooleanField(required=False,
+                                                                   label=_('Monitoring cycle with questionnaire'))
 
         return form_class
 
@@ -187,7 +189,7 @@ class MonitoringEditView(MonitoringMixin, UpdateView):
 class MonitoringDeleteView(MonitoringMixin, DeleteView):
     template_name = "exmo2010/monitoring_confirm_delete.html"
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
         if not self.request.user.has_perm('exmo2010.delete_monitoring', monitoring):
             raise PermissionDenied
@@ -196,6 +198,124 @@ class MonitoringDeleteView(MonitoringMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super(MonitoringDeleteView, self).get_context_data(**kwargs)
         return dict(context, tasks=Task.objects.filter(organization__monitoring=self.object))
+
+
+class MonitoringCopyView(LoginRequiredMixin, UpdateView):
+    """
+    Generic view to copy monitoring
+    """
+    context_object_name = "monitoring"
+    pk_url_kwarg = "monitoring_pk"
+    form_class = MonitoringCopyForm
+    template_name = "monitoring_copy.html"
+
+    def get_initial(self):
+        initial = super(MonitoringCopyView, self).get_initial()
+        initial.update({
+            'status': MONITORING_PREPARE,
+            'openness_expression': 8,
+            'no_interact': False,
+            'hidden': False,
+            'add_questionnaire': False,
+            'rate_date': None,
+            'interact_date': None,
+            'publish_date': None,
+            'finishing_date': None,
+        })
+        return initial
+
+    def get_object(self, queryset=None):
+        self.monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return self.monitoring
+
+    def get_success_url(self):
+        return '%s?%s' % (reverse('exmo2010:monitoring_update', args=[self.monitoring.pk]), self.request.GET.urlencode())
+
+    def get_form_kwargs(self):
+        kwargs = super(MonitoringCopyView, self).get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({'instance': None})
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.commit_on_success():
+            origin_monitoring = self.get_object()
+            self.monitoring = form.save()
+            cd = form.cleaned_data
+
+            if cd.get('add_questionnaire'):
+                Questionnaire.objects.create(monitoring=self.monitoring)
+
+            organization_map = {}
+            task_map = {}
+            parameter_map = {}
+
+            orgs = Organization.objects.filter(monitoring=origin_monitoring)
+            for org in orgs:
+                copied_org = deepcopy(org)
+                copied_org.id = None
+                copied_org.monitoring = self.monitoring
+                copied_org.inv_status = 'NTS'
+                copied_org.inv_code = generate_inv_code(6)
+                copied_org.save()
+                organization_map[org.id] = copied_org.id
+
+            if 'tasks' in cd.get('donors', []):
+                for task in Task.objects.filter(organization__monitoring=origin_monitoring):
+                    copied_task = deepcopy(task)
+                    copied_task.id = None
+                    copied_task.organization_id = organization_map[task.organization_id]
+                    copied_task.save()
+                    task_map[task.id] = copied_task.id
+
+            if 'parameters' in cd.get('donors', []):
+                for param in Parameter.objects.filter(monitoring=origin_monitoring):
+                    copied_param = deepcopy(param)
+                    copied_param.id = None
+                    copied_param.monitoring = self.monitoring
+                    copied_param.save()
+                    copied_param.exclude.add(*[organization_map[x] for x in param.exclude.values_list('pk', flat=True)])
+                    parameter_map[param.id] = copied_param.id
+
+            scores = None
+            if 'all_scores' in cd.get('donors', []):
+                scores = Score.objects.filter(task__organization__monitoring=origin_monitoring,
+                                              parameter__monitoring=origin_monitoring)
+            elif 'current_scores' in cd.get('donors', []):
+                scores = Score.objects.filter(task__organization__monitoring=origin_monitoring,
+                                              parameter__monitoring=origin_monitoring,
+                                              revision=Score.FINAL)
+            if scores:
+                bulk_of_scores = []
+                for score in scores:
+                    copied_score = deepcopy(score)
+                    copied_score.id = None
+                    copied_score.task_id = task_map[score.task_id]
+                    copied_score.parameter_id = parameter_map[score.parameter_id]
+                    bulk_of_scores.append(copied_score)
+
+                # Disable 'auto_now' option to copy 'last_modified' field as is
+                for field in Score._meta.local_fields:
+                    if field.name == 'last_modified':
+                        field.auto_now = False
+                # Then create all scores in one query
+                Score.objects.bulk_create(bulk_of_scores, batch_size=3000)
+                # And restore 'auto_now' option
+                for field in Score._meta.local_fields:
+                    if field.name == 'last_modified':
+                        field.auto_now = True
+
+            if 'representatives' in cd.get('donors', []):
+                users = UserProfile.objects.filter(user__groups__name='organizations',
+                                                   organization__monitoring=origin_monitoring)
+                for user in users:
+                    orgs = [organization_map[org_pk] for org_pk in user.organization.values_list('pk', flat=True)
+                            if org_pk in organization_map]
+                    user.organization.add(*orgs)
+
+        return HttpResponseRedirect(self.get_success_url())
 
 
 def monitoring_rating(request, monitoring_pk):
@@ -350,13 +470,13 @@ def monitoring_by_criteria_mass_export(request, monitoring_pk):
     header_row = True
     parameters = Parameter.objects.filter(monitoring = monitoring)
     for task in Task.approved_tasks.filter(organization__monitoring = monitoring):
-        row = copy.deepcopy(row_template)
+        row = deepcopy(row_template)
         if header_row:
             for criteria in row.keys():
                 row[criteria] = [''] + [ p.code for p in parameters ]
                 writer[criteria].writerow(row[criteria])
             header_row = False
-            row = copy.deepcopy(row_template)
+            row = deepcopy(row_template)
         for criteria in row.keys():
             row[criteria] = [task.organization.name]
         for parameter in parameters:

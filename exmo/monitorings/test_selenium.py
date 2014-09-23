@@ -36,7 +36,7 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
     def setUp(self):
         # GIVEN expert B account
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
+        expertB.profile.is_expertB = True
         # AND published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
         # AND organzation at this monitoring
@@ -81,3 +81,57 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         self.find('#modal_window input[type="submit"]').click()
         # THEN initial openness column should be displayed
         self.assertEqual(self.find(self.init_openness).is_displayed(), True)
+
+
+@attr('selenium')
+class DonorsCheckboxDependencyTestCase(BaseSeleniumTestCase):
+    # exmo2010:monitoring_copy
+
+    # Donors checkboxes should be enabled/disabled or checked/unchecked depending on current selection.
+    # * scores should only be enabled if parameters and tasks are checked.
+    # * checking "All" checkbox should disable and check all other checkboxes.
+    # * checking "all_scores" checkbox should check "current_scores" checkbox.
+
+    def setUp(self):
+        # GIVEN expert A account
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND monitoring
+        monitoring = mommy.make(Monitoring)
+        # AND monitoring copy page url
+        self.url = reverse('exmo2010:monitoring_copy', args=[monitoring.pk])
+        # AND I logged in as expert A
+        self.login('expertA', 'password')
+        # AND get monitoring copy page
+        self.get(self.url)
+
+    def test_checkboxes_initial_state(self):
+        # WHEN I get this page
+        # THEN 'organizations' checkbox should be selected and disabled
+        self.assertEqual(self.find('input[value="organizations"]').is_selected(), True)
+        self.assertEqual(self.find('input[value="organizations"]').is_enabled(), False)
+        # AND 'all_scores' checkbox shouldn't be selected and should be disabled
+        self.assertEqual(self.find('input[value="all_scores"]').is_selected(), False)
+        self.assertEqual(self.find('input[value="all_scores"]').is_enabled(), False)
+        # AND 'current_scores' checkbox shouldn't be selected and should be disabled
+        self.assertEqual(self.find('input[value="current_scores"]').is_selected(), False)
+        self.assertEqual(self.find('input[value="current_scores"]').is_enabled(), False)
+
+    def test_scores_checkboxes_availability(self):
+        # WHEN I get this page and click to 'parameters' and 'tasks' checkboxes
+        self.find('input[value="parameters"]').click()
+        self.find('input[value="tasks"]').click()
+        # THEN 'all_scores' and 'current_scores' checkboxes should become enabled
+        self.assertEqual(self.find('input[value="all_scores"]').is_enabled(), True)
+        self.assertEqual(self.find('input[value="current_scores"]').is_enabled(), True)
+
+        # WHEN I select 'all_scores' checkbox
+        self.find('input[value="all_scores"]').click()
+        # THEN 'current_scores' checkbox should become selected too
+        self.assertEqual(self.find('input[value="current_scores"]').is_selected(), True)
+
+    def test_all_checkboxes_availability(self):
+        # WHEN I get this page and click to 'all' checkbox
+        self.find('input[value="all"]').click()
+        # THEN all checkboxes should become selected
+        self.assertEqual(self.find('input[name="donors"]').is_selected(), True)

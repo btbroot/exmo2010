@@ -1,9 +1,6 @@
 {% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -22,13 +19,7 @@
 {% endcomment %}
 {% load i18n static widget_tweaks %}
 
-{% block title %}
-    {% if monitoring %}
-        {% blocktrans %}Edit monitoring {{monitoring}}{% endblocktrans %}
-    {% else %}
-        {% trans 'Add new monitoring' %}
-    {% endif %}
-{% endblock %}
+{% block title %}{% trans 'Copy monitoring cycle' %}{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring.css' %}" />
@@ -39,37 +30,9 @@
     <script type="text/javascript" src="{% static 'js/monitoring.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}
-    <h1>
-        {% if monitoring %}
-            {% blocktrans %}Edit monitoring {{monitoring}}{% endblocktrans %}
-        {% else %}
-            {% trans 'Add new monitoring' %}
-        {% endif %}
-    </h1>
-{% endblock %}
+{% block h1 %}<h1>{% trans 'Copy monitoring cycle' %}</h1>{% endblock %}
 
 {% block content %}
-    {% if monitoring %}
-        <a class="likeabutton" href="{% url 'exmo2010:monitoring_copy' monitoring.pk %}">{% trans 'Copy' %}</a>
-
-        <form action="{% url 'exmo2010:monitoring_organization_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-            <a href="{% url 'exmo2010:monitoring_organization_export' monitoring.pk %}">{% trans 'Export organizations' %}</a> /
-            <label>{% trans "Import organizations from CSV" %}: <input type="file" accept=".csv" name="orgfile" value="{% trans 'Save' %}"></label>
-            <input type="submit" value="{% trans 'Import' %}" />
-        </form>
-        <form action="{% url 'exmo2010:monitoring_parameter_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-            <a href="{% url 'exmo2010:monitoring_parameter_export' monitoring.pk %}">{% trans 'Export parameters' %}</a> /
-            <label>{% trans "Import parameters from CSV" %}: <input type="file" accept=".csv" name="paramfile"></label>
-            <input type="submit" value="{% trans 'Import' %}" />
-        </form>
-        {% if not monitoring.has_questions %}
-            <a id="addqa" class="hidden" href="{% url 'exmo2010:add_questionnaire' monitoring.pk %}">{% trans 'Edit questionnaire' %}</a>
-            <br />
-        {% else %}
-            <div style="background-color: #ffffcc;">{% trans 'Questionnaire is already created. To delete it turn off "Add questionnaire" checkbox and save changes' %}.</div>
-        {% endif %}
-    {% endif %}
 
     {% if form.errors %}
         <div class="warning">
@@ -83,8 +46,20 @@
         </div>
     {% endif %}
 
-    <form id="main_form" action="" method="post">{% csrf_token %}
+    <form action="" method="post">{% csrf_token %}
         <div class="table">
+            <div class="table-row">
+                <div class="table-cell-R">{% trans 'Original cycle' %}</div>
+                <div class="table-cell-L">
+                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}" target="_blank">{{ monitoring.name }}</a>
+                </div>
+            </div>
+
+            <div class="table-row choice-buttons">
+                <div class="table-cell-R">{{ form.donors.label }}</div>
+                <div class="table-cell-L">{{ form.donors }}</div>
+            </div>
+
             <div class="table-row">
                 <div class="table-cell-L">
                     <h3>{% trans 'Monitoring cycle' %}</h3>
@@ -98,21 +73,14 @@
                 <div class="table-cell-L name-cell">{{ form.trans_fields.name }}</div>
             </div>
 
-            {% if form.status %}
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.status.label }}</div>
-                    <div class="table-cell-L">{{ form.status }}</div>
-                </div>
-            {% endif %}
+            <div class="table-row">
+                <div class="table-cell-R">{{ form.status.label }}</div>
+                <div class="table-cell-L">{{ form.status }}</div>
+            </div>
 
             <div class="table-row">
                 <div class="table-cell-R">{{ form.openness_expression.label }}</div>
                 <div class="table-cell-L">{{ form.openness_expression }}</div>
-            </div>
-
-            <div class="table-row">
-                <div class="table-cell-R">{{ form.map_link.label }}</div>
-                <div class="table-cell-L">{{ form.map_link }}</div>
             </div>
 
             <div class="table-row">
@@ -168,7 +136,8 @@
             <div class="table-row">
                 <div class="table-cell-R"></div>
                 <div class="table-cell-L submit-cell">
-                    <input type="submit" value="{% trans 'Send' %}" />
+                    <input type="submit" value="{% trans 'Copy' %}" />
+                    <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">{% trans 'Cancel' %}</a>
                 </div>
             </div>
         </div>
