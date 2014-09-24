@@ -124,8 +124,8 @@
                 <thead>
                     <tr>
                         {% if is_expert %}
-                            <th class="icons-column"></th>
-                            <th class="icons-column"></th>
+                            <th class="icons-column" data-sorter="false"></th>
+                            <th class="icons-column" data-sorter="false"></th>
                         {% endif %}
                         <th class="code">
                             <span>{% trans 'Code' %}</span><span class="arrow"></span>
@@ -134,7 +134,7 @@
                             <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
                         </th>
                         {% if is_expertA %}
-                            <th class="icons-column"></th>
+                            <th class="icons-column" data-sorter="false"></th>
                         {% endif %}
                         {% if columns_form.st_criteria.value %}
                             <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
@@ -158,7 +158,7 @@
                             <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         {% if is_expert %}
-                            <th class="icons-column settings">
+                            <th class="icons-column settings" data-sorter="false">
                                 <a href="#" class="modal-open"><img src="{% static 'dashboard/img/settings.png' %}" /></a>
                             </th>
                         {% endif %}
@@ -328,38 +328,38 @@
             <table class="base-table nonrelevant-params-table">
                 <thead>
                     <tr>
-                        <th class="icons-column"></th>
+                        <th class="icons-column" data-sorter="false"></th>
                         <th class="code">
-                            {% trans 'Code' %}
+                            <span>{% trans 'Code' %}</span><span class="arrow"></span>
                         </th>
                         <th class="parameter">
-                            {% trans 'Parameter' %}
+                            <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
                         </th>
                         {% if is_expertA %}
-                            <th class="icons-column"></th>
+                            <th class="icons-column" data-sorter="false"></th>
                         {% endif %}
                         {% if columns_form.st_criteria.value %}
-                            <th class="scores-column">{% trans 'Fnd' context 'Found abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'Com' context 'Complete abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'Top' context 'Topical abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'Acc' context 'Accessible abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'HTML' context 'Hypertext abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'Doc' context 'Document abbreviation' %}</th>
-                            <th class="scores-column">{% trans 'Img' context 'Image abbreviation' %}</th>
+                            <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'Com' context 'Complete abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'Top' context 'Topical abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'Acc' context 'Accessible abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'HTML' context 'Hypertext abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'Doc' context 'Document abbreviation' %}</span><span class="arrow"></span></th>
+                            <th class="scores-column"><span>{% trans 'Img' context 'Image abbreviation' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         {% if columns_form.st_score.value %}
-                            <th class="score">{% trans 'Score' %}</th>
+                            <th class="score"><span>{% trans 'Score' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         {% if columns_form.st_difference.value %}
-                            <th class="difference">{% trans 'Difference' %}</th>
+                            <th class="difference"><span>{% trans 'Difference' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         {% if columns_form.st_weight.value %}
-                            <th class="weight">{% trans 'Weight' %}</th>
+                            <th class="weight"><span>{% trans 'Weight' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         {% if mon.has_npa and columns_form.st_type.value %}
-                            <th class="type">{% trans 'Type' %}</th>
+                            <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
                         {% endif %}
-                        <th class="icons-column settings">
+                        <th class="icons-column settings" data-sorter="false">
                             <a href="#" class="modal-open"><img src="{% static 'dashboard/img/settings.png' %}" /></a>
                         </th>
                     </tr>

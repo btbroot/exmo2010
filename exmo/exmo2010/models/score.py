@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -90,7 +91,7 @@ class Score(BaseModel):
         )
 
     def criteria(self):
-        for crit in Parameter.OPTIONAL_CRITERIONS:
+        for crit in Parameter.OPTIONAL_CRITERIA:
             if getattr(self.parameter, crit):
                 value = getattr(self, crit)
                 yield '–' if value is None else value
@@ -99,7 +100,7 @@ class Score(BaseModel):
 
     def clean(self):
         # Relevant criteria
-        criteria = ['found'] + filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIONS)
+        criteria = ['found'] + filter(self.parameter.__getattribute__, Parameter.OPTIONAL_CRITERIA)
 
         # If found == 1, all relevant criteria should be non-null
         if self.found:
@@ -150,7 +151,7 @@ class Score(BaseModel):
         # -- At this point criterion should be rated as zero regardless of its initial value at
         #    point 1, because found is zero.
         if not self.found:
-            for crit in self.parameter.OPTIONAL_CRITERIONS:
+            for crit in self.parameter.OPTIONAL_CRITERIA:
                 setattr(self, crit, None)
 
         super(Score, self).save(*args, **kwargs)
