@@ -92,7 +92,7 @@
                                 {% for user in org.users %}
                                     <tr class="zebra">
                                         <td class="collapsible">
-                                            {% if user.user.is_active %}
+                                            {% if not user.user.is_active %}
                                                 <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
                                             {% endif %}
                                         </td>
