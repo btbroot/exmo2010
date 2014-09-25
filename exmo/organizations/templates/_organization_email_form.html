@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,10 +21,10 @@
 {% endcomment %}
 {% load i18n static %}
 
-<form action="" method="post">{% csrf_token %}
+<form action="{% url 'exmo2010:post_org_email' monitoring.pk %}" method="post">{% csrf_token %}
     {% ifequal alert 'fail' %}
         <div class="warning">
-            {% for field in inv_form %}
+            {% for field in mail_form %}
                 {% if field.errors %}
                     <li>{{ field.label }} {% trans 'is required field' %}.</li>
                 {% endif %}
@@ -34,21 +35,21 @@
     <div class="table org-email-form">
         <div class="table-row">
             <div class="table-cell">
-                {{ inv_form.subject.label }} <span class="required">*</span>
+                {{ mail_form.subject.label }} <span class="required">*</span>
             </div>
 
             <div class="table-cell">
-                {{ inv_form.subject }}
+                {{ mail_form.subject }}
             </div>
         </div>
 
         <div class="table-row">
             <div class="table-cell">
-                {{ inv_form.comment.label }} <span class="required">*</span>
+                {{ mail_form.comment.label }} <span class="required">*</span>
             </div>
 
             <div class="table-cell text-area">
-                {{ inv_form.comment }}
+                {{ mail_form.comment }}
             </div>
 
             <div class="alert-info">
@@ -58,11 +59,25 @@
 
         <div class="table-row">
             <div class="table-cell">
-                {% trans 'Invitation' %}
+                {% trans 'To' context 'mail destination' %}
             </div>
 
             <div class="table-cell">
-                {{ inv_form.inv_status }}
+                <div class="destination">
+                    <div>
+                        <input class='group' type='checkbox' id='all_orgs'/> <label for='all_orgs'>{% trans 'All organizations' %} </label>
+                    </div>
+                    <div> {{ mail_form.dst_orgs_noreg }} {{ mail_form.dst_orgs_noreg.label_tag }} </div>
+                    <div> {{ mail_form.dst_orgs_inact }} {{ mail_form.dst_orgs_inact.label_tag }} </div>
+                    <div> {{ mail_form.dst_orgs_activ }} {{ mail_form.dst_orgs_activ.label_tag }} </div>
+                </div>
+                <div class="destination">
+                    <div>
+                        <input class='group' type='checkbox' id='all_orgusers'/> <label for='all_orgusers'>{% trans 'All representatives' %}</label>
+                    </div>
+                    <div> {{ mail_form.dst_orgusers_inact }} {{ mail_form.dst_orgusers_inact.label_tag }} </div>
+                    <div> {{ mail_form.dst_orgusers_activ }} {{ mail_form.dst_orgusers_activ.label_tag }} </div>
+                </div>
             </div>
         </div>
 
@@ -70,7 +85,7 @@
             <div class="table-cell"></div>
 
             <div class="table-cell">
-                <input type="submit" name="submit_invite" value="{% trans 'Invite' %}"/>
+                <input type="submit" disabled="disabled" name="submit_mail" value="{% trans 'Send' %}"/>
             </div>
         </div>
     </div>

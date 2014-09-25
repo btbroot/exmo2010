@@ -20,13 +20,14 @@
 #
 from datetime import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms.models import modelform_factory
 from django.forms import TextInput
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.utils import formats
 from django.utils.translation import ugettext as _
@@ -37,7 +38,7 @@ from accounts.forms import SettingsInvCodeForm
 from core.helpers import table
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeWriter
-from exmo2010.mail import mail_organization
+from exmo2010.mail import mail_organization, mail_orguser
 from exmo2010.models import (LicenseTextFragments, Monitoring, Organization,
                              InviteOrgs, Score, Task, UserProfile, INV_STATUS)
 from modeltranslation_utils import CurLocaleModelForm
@@ -56,33 +57,7 @@ def organization_list(request, monitoring_pk):
         raise PermissionDenied
     title = _('Organizations for monitoring %s') % monitoring
 
-    all_orgs = Organization.objects.filter(monitoring=monitoring)
-
     tab = 'all'
-
-    InviteOrgsForm = modelform_factory(InviteOrgs, widgets={'subject': TextInput})
-    kwargs = {'instance': InviteOrgs(monitoring=monitoring)}
-
-    if request.method == "POST" and "submit_invite" in request.POST:
-        inv_form = InviteOrgsForm(request.POST, **kwargs)
-        message = inv_form.data['comment']
-        subject = inv_form.data['subject']
-        inv_status = inv_form.data['inv_status']
-        if inv_form.is_valid():
-            inv_form.save()
-
-            if inv_status != 'ALL':
-                all_orgs = all_orgs.filter(inv_status=inv_status)
-
-            for org in all_orgs:
-                mail_organization(org, subject, message)
-
-            redirect = reverse('exmo2010:organization_list', args=[monitoring_pk]) + "?alert=success#all"
-            return HttpResponseRedirect(redirect)
-        else:
-            alert = 'fail'
-    else:
-        inv_form = InviteOrgsForm(**kwargs)
 
     headers = (
         (_('organization'), 'name', None, None, None),
@@ -94,7 +69,6 @@ def organization_list(request, monitoring_pk):
     )
 
     OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
-
     kwargs = {'instance': Organization(monitoring=monitoring), 'prefix': 'org'}
 
     if request.method == "POST" and "submit_add" in request.POST:
@@ -113,7 +87,6 @@ def organization_list(request, monitoring_pk):
 
     if request.method == "GET":
         date_filter_history = request.GET.get('date_filter_history', False)
-        invite_filter_history = request.GET.get('invite_filter_history', False)
 
         if date_filter_history:
             input_format = formats.get_format('DATE_INPUT_FORMATS')[0]
@@ -121,15 +94,14 @@ def organization_list(request, monitoring_pk):
             inv_history = inv_history.filter(timestamp__gte=start_datetime)
 
             tab = 'mail_history'
-        if invite_filter_history and invite_filter_history != 'ALL':
-            inv_history = inv_history.filter(inv_status=invite_filter_history)
-            tab = 'mail_history'
 
     queryset = Organization.objects.filter(monitoring=monitoring).annotate(tasks_count=Count('task'))
 
     org_queryform = OrganizationsQueryForm(request.GET)
     if org_queryform.is_valid():
         queryset = org_queryform.apply(queryset)
+
+    MailForm = modelform_factory(InviteOrgs, widgets={'subject': TextInput})
 
     return table(
         request,
@@ -139,7 +111,7 @@ def organization_list(request, monitoring_pk):
         template_name='organization_list.html',
         extra_context={
             'title': title,
-            'inv_form': inv_form,
+            'mail_form': MailForm(instance=InviteOrgs(monitoring=monitoring)),
             'alert': alert,
             'tab': tab,
             'inv_status': INV_STATUS,
@@ -152,6 +124,66 @@ def organization_list(request, monitoring_pk):
             'org_queryform': org_queryform,
         },
     )
+
+
+def post_org_email(request, monitoring_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
+
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
+    MailForm = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'))
+    mail_form = MailForm(request.POST, instance=InviteOrgs(monitoring=monitoring))
+    if not mail_form.is_valid():
+        messages.error(request, mail_form.errors)
+        return HttpResponseRedirect(reverse('exmo2010:organization_list', args=[monitoring_pk]) + '#send_mail')
+    else:
+        mail_form.save()
+        formdata = mail_form.cleaned_data
+
+        orgs = []
+        if formdata.get('dst_orgs_noreg'):
+            orgs += monitoring.organization_set.filter(inv_status__in=['NTS', 'SNT', 'RD'])
+        if formdata.get('dst_orgs_inact'):
+            orgs += monitoring.organization_set.filter(inv_status='RGS')
+        if formdata.get('dst_orgs_activ'):
+            orgs += monitoring.organization_set.filter(inv_status='ACT')
+
+        for org in orgs:
+            mail_organization(org, formdata['subject'], formdata['comment'])
+
+        orgs = set(monitoring.organization_set.all())
+
+        orgusers = UserProfile.objects.filter(organization__monitoring=monitoring).prefetch_related('organization')
+        scores = Score.objects.filter(parameter__monitoring=monitoring)
+        active = orgusers.filter(user__comment_comments__object_pk__in=scores).distinct()
+        inactive = orgusers.exclude(user__comment_comments__object_pk__in=scores).distinct()
+
+        if formdata.get('dst_orgusers_inact'):
+            for user in inactive:
+                if '%code%' in formdata['comment']:
+                    # Send email to this user for every related org in this monitoring, expanding %code%
+                    for org in filter(orgs.__contains__, user.organization.all()):
+                        mail_orguser(user.user, org.inv_code, formdata['subject'], formdata['comment'])
+                else:
+                    # Send single email to this user.
+                    mail_orguser(user.user, '', formdata['subject'], formdata['comment'])
+
+        if formdata.get('dst_orgusers_activ'):
+            for user in active:
+                if '%code%' in formdata['comment']:
+                    # Send email to this user for every related org in this monitoring, expanding %code%
+                    for org in filter(orgs.__contains__, user.organization.all()):
+                        mail_orguser(user.user, org.inv_code, formdata['subject'], formdata['comment'])
+                else:
+                    # Send single email to this user.
+                    mail_orguser(user.user, '', formdata['subject'], formdata['comment'])
+
+        messages.success(request, _('Mails sent.'))
+
+    return HttpResponseRedirect(reverse('exmo2010:organization_list', args=[monitoring_pk]))
 
 
 class OrgMixin(LoginRequiredMixin):

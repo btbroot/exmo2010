@@ -29,8 +29,8 @@
 }
 
 .tab-content {
-    width: 100%;
     margin-top: 20px;
+    width: 100%;
 }
 
 .tab-content div.active {
@@ -46,21 +46,34 @@
 /* Organization search form */
 
 .select-cell {
-    width: 205px;
     padding-left: 5px !important;
+    width: 205px;
 }
 
 
 /* == ORGANIZATION EMAIL FORM == */
 
+.org-email-form .destination {
+    display: table-cell;
+    width: 200px;
+}
+
+.org-email-form .destination div {
+    padding-left: 15px;
+}
+
+.org-email-form .destination div:first-child {
+    padding-left: 0;
+}
+
 .org-email-form .table-cell {
-    text-align: left;
     border: none;
+    text-align: left;
 }
 
 .org-email-form .table-cell:first-child {
-    text-align: right;
     vertical-align: top;
+    text-align: right;
     line-height: 22px;
 }
 
@@ -79,8 +92,8 @@
 
 .org-email-form .alert-info {
     position: absolute;
-    width: 270px;
     margin: 5px;
+    width: 270px;
 }
 
 .org-email-form select {
@@ -118,8 +131,10 @@
 
 /* == MAIL HISTORY == */
 
-.mail_history td:first-child, .mail_history td:last-child,
-.mail_history th:first-child, .mail_history th:last-child {
+.mail_history td:first-child,
+.mail_history td:last-child,
+.mail_history th:first-child,
+.mail_history th:last-child {
     width: 1%;
     white-space: nowrap;
 }
@@ -135,20 +150,20 @@ td.pseudo {
 }
 
 #mail_history_search_form > select {
-    width: 190px;
     margin: 10px 4px;
+    width: 190px;
 }
 
 td.comment .preview-container {
     display: block;
+    overflow: hidden;
     width: 100%;
     height: 17px;
-    overflow: hidden;
 }
 
 #help-text {
     position: absolute;
+    padding-left: 9px;
     width: 450px;
     background: url(../../../static/exmo2010/img/registration-triangle.png) 0 10px no-repeat;
-    padding-left: 9px;
 }

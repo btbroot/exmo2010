@@ -128,6 +128,7 @@ monitoring_patterns += named_urls('organizations.views',
     (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_delete/$', OrgDeleteView, 'organization_delete'),
     (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_update/$', OrgEditView, 'organization_update'),
     (r'^(?P<monitoring_pk>\d+)/organizations/$', 'organization_list'),
+    (r'^(?P<monitoring_pk>\d+)/post_org_email/$', 'post_org_email'),
     (r'^(?P<monitoring_pk>\d+)/representatives/$', RepresentativesView, 'representatives'),
     (r'^(?P<monitoring_pk>\d+)/representatives_export/$', 'representatives_export'),
 )

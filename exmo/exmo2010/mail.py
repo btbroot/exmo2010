@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -108,14 +109,13 @@ def mail_clarification(request, clarification):
 
 
 def mail_organization(org, subject, body):
-    to = filter(None, org.email.split(', '))
-    if not to:
+    if org.email is None or org.email.replace(', ', '') == '':
         return
 
     message = ExmoEmail(
-        template_basename='mail/invitation_email',
-        context={'subject': subject, 'message': body.replace('%code%', org.inv_code)},
-        to=to,
+        template_basename='mail/email_base',
+        context={'subject': subject, 'body': body.replace('%code%', org.inv_code)},
+        to=filter(None, org.email.split(', ')),
         subject=subject)
 
     message.extra_headers = {
@@ -125,6 +125,19 @@ def mail_organization(org, subject, body):
         'Message-ID': '<%s@%s>' % (org.inv_code, DNS_NAME)}
 
     send_org_email.delay(message, org.pk)
+
+
+def mail_orguser(user, inv_code, subject, body):
+    if not user.email:
+        return
+
+    message = ExmoEmail(
+        template_basename='mail/email_base',
+        context={'subject': subject, 'body': body.replace('%code%', inv_code)},
+        to=[user.email],
+        subject=subject)
+
+    send_email.delay(message)
 
 
 def mail_certificate_order(request, email_data):

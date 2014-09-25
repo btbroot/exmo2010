@@ -29,43 +29,45 @@ from exmo2010.models import Organization
 
 
 @attr('selenium')
-class OrganizationSendMailPageTestCase(BaseSeleniumTestCase):
-    # Scenario: Test organization page
-    submit_button = '#send_mail input[type="submit"]'
+class OrgEmailFormValidationTestCase(BaseSeleniumTestCase):
+    # exmo2010:organization_list
 
+    # Submit email button should be disabled if required inputs are not provided.
+    
     def setUp(self):
         # GIVEN organization with email
         org = mommy.make(Organization, email='email@mail.ru')
+
         # AND I am logged in as expert A
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         expertA.profile.is_expertA = True
         self.login('expertA', 'password')
+
         # AND i am on organization list page
         self.get(reverse('exmo2010:organization_list', args=[org.monitoring.pk]))
 
-    def test_warning_message_at_send_mail_page(self):
-        # WHEN i click on 'send mail' tab
+        # AND i click on 'send mail' tab
         self.find('a[href="#send_mail"]').click()
-        # AND submit form
-        self.find(self.submit_button).click()
-        # THEN warning window should be displayed
-        self.assertVisible('div.warning')
 
-    def test_success_message_at_send_mail_page(self):
-        # WHEN i click on 'send mail' tab
-        self.find('a[href="#send_mail"]').click()
-        # AND post form data
+    def test_email_form_validation(self):
+        # INITIALLY submit button should be disabled
+        self.assertDisabled('input[name="submit_mail"]')
+
+        # WHEN i type message subject in form
         self.find('#id_subject').send_keys('Subject')
+
+        # THEN submit button should stay disabled
+        self.assertDisabled('input[name="submit_mail"]')
+
+        # WHEN i type message body in form
         with self.frame('iframe'):
             self.find('body').send_keys('Content')
-        # AND submit form
-        self.find(self.submit_button).click()
-        # THEN success window should be displayed
-        self.assertVisible('p.success')
-        # AND mail outbox should have 1 email
-        self.assertEqual(len(mail.outbox), 1)
-        # AND current url should contain expected query parameter
-        current_url = urlparse(self.webdrv.current_url)
-        self.assertEqual(current_url.query, 'alert=success')
-        # AND current url should contain expected hash
-        self.assertEqual(current_url.fragment, 'all')
+
+        # THEN submit button should stay disabled
+        self.assertDisabled('input[name="submit_mail"]')
+
+        # WHEN i check destination "inactive orgs" checkbox
+        self.find('#id_dst_orgs_inact').click()
+
+        # THEN submit button should become enabled
+        self.assertEnabled('input[name="submit_mail"]')

@@ -17,22 +17,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import re
 from cStringIO import StringIO
-from email.header import decode_header
 
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core import mail
+from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from livesettings import config_value
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from core.mail_tests import LocmemBackendTests
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import *
@@ -180,9 +178,8 @@ class TestOrganizationsPage(TestCase):
         self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
         # AND organizations representative
-        self.org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        profile = self.org.get_profile()
-        profile.organization = [self.organization]
+        self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        self.orguser.get_profile().organization = [self.organization]
 
     def test_anonymous_organizations_page_access(self):
         url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
@@ -193,7 +190,7 @@ class TestOrganizationsPage(TestCase):
 
     @parameterized.expand([
         ('user', 403),
-        ('org', 403),
+        ('orguser', 403),
         ('expertB', 403),
         ('expertA', 200),
         ('admin', 200),
@@ -207,63 +204,130 @@ class TestOrganizationsPage(TestCase):
         self.assertEqual(resp.status_code, response_code)
 
 
-class SendOrgsEmailTestCase(LocmemBackendTests, TestCase):
-    # Scenario: send and check emails
+class SelectiveOrgEmailTestCase(TestCase):
+    # exmo2010:post_org_email
+
+    # Email messages should be sent only to those receivers, which was selected in form.
+
     def setUp(self):
-        # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring)
-        # AND ten organizations connected to monitoring
-        self.organizations = mommy.make(Organization, monitoring=self.monitoring, email='test@test.ru',
-                                        inv_status='NTS', _quantity=10)
-        # AND expert A account
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN published monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+
+        # AND 5 organizations of different inv_status
+        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
+        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
+        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
+        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
+        self.org_act = mommy.make(Organization, monitoring=self.monitoring, email='act@test.ru', inv_status='ACT')
+
+        # AND inactive representative of organization org_rgs
+        self.orguser_inactive = User.objects.create_user('orguser_inactive', 'inactive@test.ru', 'password')
+        self.orguser_inactive.get_profile().organization = [self.org_rgs]
+
+        # AND active representative of organization org_rgs
+        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
+        self.orguser_active.get_profile().organization = [self.org_rgs]
+
+        # AND comment of active representative
+        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
+        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
+        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
+
+        # AND server email address
+        self.server_address = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+
+        # AND I am logged in as expertA
         self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        # AND 'from' email
-        self.from_email = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
-        # AND organization page url
-        self.url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+        self.client.login(username='expertA', password='password')
+
+        self.url = reverse('exmo2010:post_org_email', args=[self.monitoring.pk])
 
     @parameterized.expand([
-        (u'Тема', u'Содержание', 'NTS'),
-        ('Subject', 'Content', 'ALL'),
+        ('dst_orgs_noreg', {'nts', 'snt', 'rd'}),
+        ('dst_orgs_inact', {'rgs'}),
+        ('dst_orgs_activ', {'act'}),
     ])
-    def test_sending_emails(self, email_subject, email_content, invitation_status):
-        # WHEN I am logged in as expertA
-        self.client.login(username='expertA', password='password')
-        # AND I submit email sending form
-        resp = self.client.post(
-            self.url,
-            {
-                'comment': [email_content],
-                'subject': [email_subject],
-                'inv_status': [invitation_status],
-                'monitoring': ['%d' % self.monitoring.pk],
-                'submit_invite': [''],
-            },
-            follow=True
-        )
+    def test_send_org_emails(self, selected_orgs, expected_receivers):
+        post_data = {'comment': u'Содержание', 'subject': u'Тема', selected_orgs: '1'}
+
+        # WHEN I submit email form
+        response = self.client.post(self.url, post_data, follow=True)
+
         # THEN response status_code should be 200 (OK)
-        self.assertEqual(resp.status_code, 200)
-        # AND expert A should be redirected to the same url with get parameter and hash
-        self.assertRedirects(resp, self.url + '?alert=success#all')
-        # AND 10 emails should be sent
-        self.assertEqual(len(mail.outbox), 10)
-        # AND emails should have expected headers
-        email = mail.outbox[0].message()
-        self.assertEqual(email['From'].encode(), self.from_email)
-        subject, encoding = decode_header(email['Subject'])[0]
-        if encoding:
-            subject = subject.decode(encoding)
-        self.assertEqual(subject, email_subject)
-        self.assertEqual(email['To'].encode(), self.organizations[0].email)
-        # AND should have headers for Message Delivery Notification
-        self.assertEqual(email['Disposition-Notification-To'].encode(), self.from_email)
-        self.assertEqual(email['Return-Receipt-To'].encode(), self.from_email)
-        self.assertEqual(email['X-Confirm-Reading-To'].encode(), self.from_email)
-        # AND message ID should contain organizations invitation code
-        match = re.search("<(?P<invitation_code>[\w\d]+)@(?P<host>[\w\d.-]+)>", email['Message-ID'].encode())
-        invitation_code = match.group('invitation_code')
-        self.assertIn(invitation_code, [org.inv_code for org in self.organizations])
+        self.assertEqual(response.status_code, 200)
+
+        # AND i should be redirected to the organizations list page
+        self.assertRedirects(response, reverse('exmo2010:organization_list', args=[self.monitoring.pk]))
+
+        # AND email messages should be sent to expected receivers
+        receivers = set(tuple(m.to) for m in mail.outbox)
+        expected_receivers = set((addr + '@test.ru',) for addr in expected_receivers)
+        self.assertEqual(receivers, expected_receivers)
+
+    @parameterized.expand([
+        ('dst_orgusers_inact', {('inactive@test.ru',)}),
+        ('dst_orgusers_activ', {('active@test.ru',)}),
+    ])
+    def test_send_orguser_emails(self, selected_orgusers, expected_receivers):
+        post_data = {'comment': u'Содержание', 'subject': u'Тема', selected_orgusers: '1'}
+
+        # WHEN I submit email form
+        response = self.client.post(self.url, post_data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND i should be redirected to the organizations list page
+        self.assertRedirects(response, reverse('exmo2010:organization_list', args=[self.monitoring.pk]))
+
+        # AND email messages should be sent to expected receivers
+        receivers = set(tuple(m.to) for m in mail.outbox)
+        self.assertEqual(receivers, expected_receivers)
+
+
+class OrgEmailHeadersTestCase(TestCase):
+    # exmo2010:post_org_email
+
+    # Email messages sent to organizations should have proper headers.
+
+    def setUp(self):
+        # GIVEN organization with 'NTS' inv_status
+        self.org = mommy.make(Organization, email='nts@test.ru', inv_status='NTS')
+
+        # AND I am logged in as expertA
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+        self.client.login(username='expertA', password='password')
+
+    def test_send_org_emails(self):
+        url = reverse('exmo2010:post_org_email', args=[self.org.monitoring.pk])
+        post_data = {'comment': u'Содержание', 'subject': u'Тема', 'dst_orgs_noreg': '1'}
+        server_address = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+
+        # WHEN I submit email form
+        response = self.client.post(url, post_data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND one email should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        # AND email message should have expected headers
+        message = mail.outbox[0]
+        self.assertEqual(message.from_email, server_address)
+        self.assertEqual(message.subject, u'Тема')
+        self.assertEqual(message.to, [self.org.email])
+        # AND should have headers for Message Delivery Notification and ID
+        self.assertEqual(message.extra_headers['Disposition-Notification-To'], server_address)
+        self.assertEqual(message.extra_headers['Return-Receipt-To'], server_address)
+        self.assertEqual(message.extra_headers['X-Confirm-Reading-To'], server_address)
+        self.assertEqual(message.extra_headers['Message-ID'], '<%s@%s>' % (self.org.inv_code, DNS_NAME))
+
+        # TODO: move out this into new TestCase
         # AND invitation status should change from 'Not sent' to 'Sent'
         for org in Organization.objects.all():
             self.assertEqual(org.inv_status, 'SNT')
