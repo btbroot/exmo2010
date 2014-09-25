@@ -57,7 +57,6 @@ def organization_list(request, monitoring_pk):
     title = _('Organizations for monitoring %s') % monitoring
 
     all_orgs = Organization.objects.filter(monitoring=monitoring)
-    sent = all_orgs.exclude(inv_status='NTS')
 
     tab = 'all'
 
@@ -91,13 +90,8 @@ def organization_list(request, monitoring_pk):
         (_('phone'), 'phone', None, None, None),
         (_('invitation code'), 'inv_code', None, None, None),
         (_('tasks'), 'task__count', None, None, None),
-        (_('invitation'), 'inv_status', None, None, None),
+        (_('status'), 'inv_status', None, None, None),
     )
-
-    if not sent:
-        headers_list = list(headers)
-        headers_list.pop()
-        headers = tuple(headers_list)
 
     OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
 
@@ -145,7 +139,6 @@ def organization_list(request, monitoring_pk):
         template_name='organization_list.html',
         extra_context={
             'title': title,
-            'sent': sent,
             'inv_form': inv_form,
             'alert': alert,
             'tab': tab,

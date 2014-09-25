@@ -35,11 +35,9 @@
         <div class="table-cell">
             {{ org_queryform.org_name }}
         </div>
-        {% if sent %}
-            <div class="table-cell select-cell">
-                {{ org_queryform.inv_status }}
-            </div>
-        {% endif %}
+        <div class="table-cell select-cell">
+            {{ org_queryform.inv_status }}
+        </div>
         <div class="table-cell submit-cell">
             <input type="submit" value="{% trans 'Find' %}" />
         </div>
@@ -63,13 +61,11 @@
                 <td>{{ org.phone|default_if_none:""|truncatewords:1 }}</td>
                 <td>{{ org.inv_code|default_if_none:'' }}</td>
                 <td>{{ org.tasks_count }}</td>
-                {% if sent %}
-                    {% with org.inv_status as status %}
-                        <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
-                            {{ org.get_inv_status_display|default_if_none:'' }}
-                        </td>
-                    {% endwith %}
-                {% endif %}
+                {% with org.inv_status as status %}
+                    <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
+                        {{ org.get_inv_status_display|default_if_none:'' }}
+                    </td>
+                {% endwith %}
             </tr>
         {% endfor %}
     </tbody>
