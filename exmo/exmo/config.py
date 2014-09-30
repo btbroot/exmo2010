@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -58,11 +59,11 @@ config_register_list(
 
     StringValueWidget(
         EMAIL_GROUP,
-        'NOTIFY_LIST_INTERACTION',
+        'DEFAULT_SUPPORT_EMAIL',
         description=_('Email'),
         ordering=2,
-        default='monitoring_interaction@svobodainfo.org',
-        help_text=_('Notify list interaction'),
+        default='tsupport@svobodainfo.org',
+        help_text=_('Default support email address'),
     ),
 
     StringValueWidget(
@@ -76,18 +77,9 @@ config_register_list(
 
     StringValueWidget(
         EMAIL_GROUP,
-        'DEFAULT_SUPPORT_EMAIL',
-        description=_('Email'),
-        ordering=0,
-        default='tsupport@svobodainfo.org',
-        help_text=_('Default support email address'),
-    ),
-
-    StringValueWidget(
-        EMAIL_GROUP,
         'CERTIFICATE_ORDER_NOTIFICATION_EMAIL',
         description=_('Email'),
-        ordering=5,
+        ordering=4,
         default='tsupport@svobodainfo.org',
         help_text=_('Certificate order notification email'),
     ),

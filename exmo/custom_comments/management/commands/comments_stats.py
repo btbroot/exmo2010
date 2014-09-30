@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,7 +20,6 @@
 #
 from datetime import date
 
-from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.encoding import smart_str
@@ -65,9 +65,9 @@ class Command(BaseCommand):
             subject = u"Comment report from {monitoring.interact_date} to {today} for {monitoring.name}"
             subject = subject.format(today=date.today(), monitoring=monitoring)
 
-            rcpt = [x[1] for x in settings.ADMINS]
-            rcpt.append(config_value('EmailServer', 'NOTIFY_LIST_REPORT'))
+            rcpt = [config_value('EmailServer', 'NOTIFY_LIST_REPORT')]
 
             # NOTE: User Story #1900 - Always send comment reports in Russian language.
             with translation.override('ru'):
-                send_email.delay(ExmoEmail(template_basename='mail/comments_stats', context=context, to=rcpt, subject=subject))
+                send_email.delay(ExmoEmail(template_basename='mail/comments_stats',
+                                           context=context, to=rcpt, subject=subject))
