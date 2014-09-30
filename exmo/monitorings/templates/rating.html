@@ -20,7 +20,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static %}
+{% load i18n static target_blank %}
 
 {% block title %}{{ monitoring.name }}{% endblock %}
 
@@ -159,7 +159,7 @@
                     <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
                 </td>
                 <td>
-                    <a target="_blank" href="{{ task.organization.url }}">{{ task.organization.url }}</a>
+                    {{ task.organization.url|urlizetrunc:70|target_blank }}
                 </td>
 
                 {% if rating_columns_form.rt_representatives.value %}
