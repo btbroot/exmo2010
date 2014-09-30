@@ -898,7 +898,7 @@ msgstr "Учетная запись уже активирована."
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've registered?"
-msgstr ""
+msgstr "С этим адресом электронной почты не связан ни один аккаунт. Вы точно зарегистрированы?"
 
 #: exmo2010/custom_registration/views.py:70
 msgid ""
