@@ -1128,3 +1128,9 @@ input.name_input[type="text"] {
 .simplemodal-overlay {
   background-color: black;
 }
+
+/* CKEditor's div wrapper class */
+
+.django-ckeditor-widget {
+    width: 100%;
+}

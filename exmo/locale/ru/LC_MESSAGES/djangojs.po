@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-11 10:22+0400\n"
+"POT-Creation-Date: 2014-10-03 18:10+0400\n"
 "PO-Revision-Date: 2014-05-28 17:46+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: monitorings/static/js/monitoring_form.js:58
+#: monitorings/static/js/monitoring.js:55
 msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
 msgstr "Вы выбрали удаление анкеты из цикла. Это приведет к удалению вопросов анкеты и собранных данных. Желаете ли вы удалить анкету?"
 
@@ -60,30 +60,30 @@ msgstr "показать первичные оценки"
 msgid "hide initial scores"
 msgstr "скрыть первичные оценки"
 
-#: static/scores/score_expert.js:178
+#: static/scores/score_expert.js:180
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
-#: static/scores/score_expert.js:183
+#: static/scores/score_expert.js:185
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
-#: static/scores/score_expert_interaction.js:66
+#: static/scores/score_expert.js:242
 msgid "Score is invalid, recommendation can not be changed."
 msgstr "Оценка выставлена неверно, рекоммендации не могут быть изменены."
 
-#: static/scores/score_expert_interaction.js:72
+#: static/scores/score_expert.js:248
 msgid "Your browser is not supported"
 msgstr "Ваш браузер не поддерживается"
 
-#: static/scores/score_expert_interaction.js:138
+#: static/scores/score_expert.js:297
 msgid "Score changed to maximum"
 msgstr "Оценка изменена до максимального значения"
 
-#: static/scores/score_expert_interaction.js:141
+#: static/scores/score_expert.js:299
 msgid "Score changed"
 msgstr "Оценка изменена"
 
-#: static/scores/task_scores.js:39
+#: static/scores/task_scores.js:42
 msgid "place"
 msgstr "месте"

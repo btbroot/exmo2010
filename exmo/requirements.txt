@@ -2,6 +2,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,7 +19,7 @@
 #
 
 BeautifulSoup==3.2.1
-Django==1.5.8
+Django==1.5.10
 MySQL-python==1.2.5
 Pillow==2.3.0
 
@@ -39,7 +40,7 @@ django-annoying==0.7.9
 django-bleach
 django-celery==3.1.10
 django-celery-with-mongodb==3.0
-django-ckeditor-updated==4.4.0
+django-ckeditor==4.4.6
 django-modeltranslation==0.7.3
 django-registration==0.8
 django-reversion==1.7.1

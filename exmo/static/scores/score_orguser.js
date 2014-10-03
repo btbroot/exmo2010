@@ -2,6 +2,7 @@
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 Institute for Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+// Copyright 2014 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -20,15 +21,15 @@ $(document).ready(function() {
     var comment_field = $('div.comment-form').find('textarea');
     var editor = CKEDITOR.instances[comment_field.attr('id')];
 
-    // editor is undefined when comments are closed (for ex. published monitoring)
-    if (editor != undefined) {
-        if (CKEDITOR.env.isCompatible) {
+    if (CKEDITOR.env.isCompatible) {
+        // editor is undefined when comments are closed (for ex. published monitoring)
+        if (editor != undefined) {
             // Update original form inputs when text typed in CKEDITOR
             // Enable submit button if CKEDITOR input not empty.
             function ckChangeHandler(e) {
                 var editor_body = $(e.sender.document.$).find('body');
 
-                if(editor_body && $.trim(editor_body.text()) != '') {
+                if (editor_body && $.trim(editor_body.text()) != '') {
                     $('#submit_comment').prop('disabled', false);
                 } else {
                     $('#submit_comment').prop('disabled', true);
@@ -37,15 +38,19 @@ $(document).ready(function() {
             }
 
             if ($.browser.msie) {
-                editor.on('contentDom', function(e) {
-                    editor.document.on('keyup', function(event) { ckChangeHandler(e); });
+                editor.on('contentDom', function (e) {
+                    editor.document.on('keyup', function (event) {
+                        ckChangeHandler(e);
+                    });
                 });
             } else {
                 editor.on('change', ckChangeHandler);
             }
-        } else {
-            comment_field.on('change keyup paste', function() {
-                if($.trim($(this).val()) != '') {
+        }
+    } else {
+        if (comment_field.length) {
+            comment_field.on('change keyup paste', function () {
+                if ($.trim($(this).val()) != '') {
                     $('#submit_comment').prop('disabled', false);
                 } else {
                     $('#submit_comment').prop('disabled', true);

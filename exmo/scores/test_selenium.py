@@ -19,7 +19,6 @@
 #
 from datetime import datetime
 from itertools import product
-import unittest
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -28,6 +27,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
+from selenium.webdriver.common.keys import Keys
 
 from core.test_utils import BaseSeleniumTestCase
 from custom_comments.models import CommentExmo
@@ -154,13 +154,13 @@ class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
 
     def test_criteria_inputs_disable(self):
         # WHEN i just opened page ("found" value equals 0)
-        # THEN "topical" creiterion inputs should be hidden
+        # THEN "topical" criteria inputs should be hidden
         self.assertHidden('label[for="id_topical_2"]')
 
         # WHEN i set "found" criterion to "1"
         self.find('label[for="id_found_2"]').click()
 
-        # THEN "topical" creiterion inputs should become visible
+        # THEN "topical" criteria inputs should become visible
         self.assertVisible('label[for="id_topical_2"]')
 
 
@@ -233,12 +233,12 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         # AND approved task assigned to expert B
         task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
 
-        # AND parameter with only 'accessible' attribute
+        # AND parameter with only 'found' and 'accessible' attribute
         kwargs = dict(accessible=True, complete=False, topical=False, hypertext=False, document=False, image=False)
         parameter = mommy.make(Parameter, monitoring=monitoring, npa=False, **kwargs)
 
-        # AND score with zero initial values for parameter attributes
-        self.score = mommy.make(Score, task=task, parameter=parameter)
+        # AND score with found = 1 and accessible = 1
+        self.score = mommy.make(Score, task=task, parameter=parameter, found=1, accessible=1)
 
     def test_orguser(self):
         # WHEN I login as organization representative
@@ -302,35 +302,32 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         # THEN submit button should turn disabled
         self.assertDisabled('#submit_comment')
 
-    @unittest.skip('This test fails sometimes.')  # TODO
     def test_expertb_edit_score(self):
         # WHEN I login as expertB
         self.login('expertB', 'password')
 
-        # AND I get score page with 'change_score' hash
-        self.get('{}#change_score'.format(reverse('exmo2010:score', args=(self.score.pk,))))
+        # AND I get score page
+        self.get(reverse('exmo2010:score', args=(self.score.pk,)))
 
-        # THEN form with 'found' radio input should become visible
-        self.assertVisible('label[for="id_found_2"]')
+        # AND click to 'change_score' pseudo link
+        self.find('a[href="#change_score"]').click()
 
-        # TODO: This wait does not help...
-        from selenium.webdriver.support.wait import WebDriverWait
-        def condition(*args):
-            return self.webdrv.execute_script('return window.score_expert_interaction_loaded') is True
-        WebDriverWait(self.webdrv, 5).until(condition)
+        # THEN form with 'accessible' radio input should become visible
+        self.assertVisible('label[for="id_accessible_2"]')
 
-        # WHEN i set 'found' value to 1
-        self.find('label[for="id_found_2"]').click()
+        # WHEN I set 'accessible' value to 2
+        self.find('label[for="id_accessible_2"]').click()
+
+        # AND fill recommendation field
+        self.find('div.recommendations > textarea#id_recommendations').send_keys('new recommendation')
 
         # THEN submit button should be disabled
         self.assertDisabled('#submit_score_and_comment')
 
         with self.frame('.comment-form iframe'):
-            # TODO: Here test fails - autocomment brick does not get created.
-            # AssertionError: Element is missing or not visible: #found_brick
-            self.assertVisible('#found_brick')
-            # WHEN I type new line character in the comment area
-            self.find('body').send_keys('\n')
+            self.assertVisible('#accessible_brick')
+            # WHEN I type new line character in the comment area after autocomment brick
+            self.find('body').send_keys(Keys.DOWN * 2 + '\n')
 
         # THEN submit button still should be disabled
         self.assertDisabled('#submit_score_and_comment')
