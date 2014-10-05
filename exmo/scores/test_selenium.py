@@ -154,13 +154,13 @@ class CriteriaValuesDependencyTestCase(BaseSeleniumTestCase):
 
     def test_criteria_inputs_disable(self):
         # WHEN i just opened page ("found" value equals 0)
-        # THEN "topical" criteria inputs should be hidden
+        # THEN "topical" criterion inputs should be hidden
         self.assertHidden('label[for="id_topical_2"]')
 
         # WHEN i set "found" criterion to "1"
         self.find('label[for="id_found_2"]').click()
 
-        # THEN "topical" criteria inputs should become visible
+        # THEN "topical" criterion inputs should become visible
         self.assertVisible('label[for="id_topical_2"]')
 
 
