@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,21 +19,23 @@
 #
 from datetime import datetime, timedelta
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import AnonymousUser, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from mock import Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
-
 from exmo2010.celery_tasks import send_digest
 from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_STATUS
 from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
+from scores.views import post_score_comment
 
 
 class CommentReportTestCase(TestCase):
@@ -146,40 +149,85 @@ class OpenCommentsAnswerTimeUrgencyTestCase(TestCase):
         self.assertEqual(len(report['non_urgent']), 1)
 
 
-class PostCommentUnprivilegedAccessTestCase(TestCase):
-    # SHOULD forbid anonymous or unprivileged user to post score comments
+class PostCommentUnprivilegedAccessTestCase(OptimizedTestCase):
+    # exmo2010:post_score_comment
 
-    def setUp(self):
-        self.score_urls = {}
+    # Should forbid anonymous or unprivileged user to post score comments
+
+    @classmethod
+    def setUpClass(cls):
+        super(PostCommentUnprivilegedAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        cls.scores = {}
         # GIVEN scores in monitoring for every possible monitoring status
         for status, label in MONITORING_STATUS:
             param = mommy.make(Parameter, monitoring__status=status)
             task = mommy.make(Task, organization__monitoring=param.monitoring, status=Task.TASK_APPROVED)
-            score = mommy.make(Score, task=task, parameter=param, found=1)
-            self.score_urls[status] = reverse('exmo2010:post_score_comment', args=[score.pk])
+            cls.score = mommy.make(Score, task=task, parameter=param, found=1)
+            cls.scores[status] = cls.score
         # AND user without any permissions
-        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
 
     @parameterized.expand(MONITORING_STATUS)
     def test_forbid_post_comment_anonymous(self, status, *args):
-        # WHEN I anonymous user post comment
-        response = self.client.post(self.score_urls[status], {'comment': '123'})
-        # THEN response status_code should be 403 (forbidden)
-        self.assertEqual(response.status_code, 403)
+        # WHEN anonymous user post comment
+        request = Mock(user=self.users['anonymous'], method='POST',
+                       POST={'score_%d-comment' % self.scores[status].pk: '123'})
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, post_score_comment, request, self.scores[status].pk)
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
 
     @parameterized.expand(MONITORING_STATUS)
     def test_forbid_post_comment_unprivileged(self, status, *args):
-        # WHEN I am logged in as user without permissions
-        self.client.login(username='user', password='password')
-        # AND I post comment
-        response = self.client.post(self.score_urls[status], {'comment': '123'})
-        # THEN response status_code should be 403 (forbidden)
-        self.assertEqual(response.status_code, 403)
+        # WHEN I am logged in as user without permissions and I post comment
+        request = Mock(user=self.users['user'], method='POST',
+                       POST={'score_%d-comment' % self.scores[status].pk: '123'})
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, post_score_comment, request, self.scores[status].pk)
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
 
+
+class PostCommentTestCase(OptimizedTestCase):
+    # exmo2010:post_score_comment
+
+    # Should return corrected comment message when comment contain special characters (like ampersand).
+    # BUG 2230. Improper handling of ampersand in comments.
+
+    @classmethod
+    def setUpClass(cls):
+        super(PostCommentTestCase, cls).setUpClass()
+
+        # GIVEN parameter in monitoring INTERACTION
+        param = mommy.make(Parameter, monitoring__status=MONITORING_INTERACTION)
+        # AND approved task
+        cls.task = mommy.make(Task, organization__monitoring=param.monitoring, status=Task.TASK_APPROVED)
+        # AND score
+        cls.score = mommy.make(Score, task=cls.task, parameter=param, found=1)
+        # AND expert A account
+        cls.expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        cls.expertA.profile.is_expertA = True
+
+    @parameterized.expand([
+        ('<p>&id</p>', '<p>&amp;id</p>'),  # ampersand
+        ('<p>&id;</p>', '<p>&amp;id;</p>'),  # ampersand and semicolon
+        ('<p>modules.php?name=info&id=37</p>', '<p>modules.php?name=info&amp;id=37</p>'),  # ampersand in url
+        ('<p>modules.php?name=info&amp;id=37</p>', '<p>modules.php?name=info&amp;id=37</p>'),  # from CKEditor
+    ])
+    @patch('scores.views.mail_comment', Mock())  # do not send emails
+    def test_post_task_scores_table_settings_allow(self, original_message, expected_message):
+        # WHEN I am logged in as expert A and I post comment
+        request = Mock(user=self.expertA, method='POST', POST={'score_%d-comment' % self.score.pk: original_message})
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(post_score_comment(request, self.score.pk).status_code, 302)
+        # AND new comment should get created in db
+        # AND this comment should contain expected message
+        self.assertEqual(CommentExmo.objects.filter(object_pk=self.score.pk).order_by('-id')[0].comment,
+                         expected_message)
 
 
 class CommentMailNotificationTestCase(TestCase):

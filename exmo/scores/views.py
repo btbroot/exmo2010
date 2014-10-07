@@ -129,7 +129,7 @@ def score_view(request, **kwargs):
                     # Restore last_modified field, that was overwritten by save()
                     Score.objects.filter(pk=interim_score.pk).update(last_modified=last_modified)
 
-                _add_comment(request, score)
+                _add_comment(request, score, with_autoscore=True)
             score = form.save(commit=False)
             score.editor = request.user
             score.save()
@@ -207,22 +207,34 @@ def post_score_comment(request, score_pk):
     return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:score', args=[score.pk]))
 
 
-def _add_comment(request, score):
+def _add_comment(request, score, with_autoscore=False):
+    """
+    Handle new comment adding from POST data.
+    If with_autoscore is True, process autoscore bricks in comment.
+    For browsers incompatible with CKEditor, input is not escaped before submission and
+    autoscore processing with BeautifulSoup will break some text and should be disabled.
+    (see BUG 2230. Improper handling of ampersand in comments.)
+
+    """
     comment_form = score.comment_form(request.POST)
     if not comment_form.is_valid():
         # Comment is empty or request was forged.
         return
 
-    # Replace all autoscore bricks with normal text.
-    soup = BeautifulSoup(comment_form.cleaned_data['comment'])
-    for input_node in soup.findAll('input'):
-        input_node.replaceWith(BeautifulSoup(input_node['value']))
+    message = comment_form.cleaned_data['comment']
+
+    if with_autoscore:
+        # Replace all autoscore bricks with normal text.
+        soup = BeautifulSoup(message)
+        for input_node in soup.findAll('input'):
+            input_node.replaceWith(BeautifulSoup(input_node['value']))
+        message = unicode(soup)
 
     comment = CommentExmo.objects.create(
         object_pk=score.pk,
         content_type=ContentType.objects.get_for_model(Score),
         user=request.user,
-        comment=clean_message(unicode(soup)),
+        comment=clean_message(message),
         posted_by_expert=request.user.is_expert,
         site_id=1)
 
