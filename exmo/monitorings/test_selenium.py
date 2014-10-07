@@ -130,6 +130,11 @@ class DonorsCheckboxDependencyTestCase(BaseSeleniumTestCase):
         # THEN 'current_scores' checkbox should become selected too
         self.assertEqual(self.find('input[value="current_scores"]').is_selected(), True)
 
+        # WHEN I uncheck 'current_scores' checkbox
+        self.find('input[value="current_scores"]').click()
+        # THEN 'all_scores' checkbox should become unchecked too
+        self.assertEqual(self.find('input[value="all_scores"]').is_selected(), False)
+
     def test_all_checkboxes_availability(self):
         # WHEN I get this page and click to 'all' checkbox
         self.find('input[value="all"]').click()

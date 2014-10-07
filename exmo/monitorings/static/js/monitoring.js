@@ -79,7 +79,14 @@ $(document).ready(function () {
                 current_scores.prop('disabled', !this.checked);
                 break;
             case 'all_scores':
-                current_scores.prop('checked', this.checked);
+                if (this.checked) {
+                    current_scores.prop('checked', this.checked);
+                }
+                break;
+            case 'current_scores':
+                if (!this.checked) {
+                    all_scores.prop('checked', this.checked);
+                }
                 break;
             default:
                 var activate = $('input[value="tasks"]').is(':checked:enabled') && $('input[value="parameters"]').is(':checked:enabled');
