@@ -1,0 +1,96 @@
+{% extends "base_sidebar.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static widget_tweaks %}
+
+{% block title %}{{ monitoring.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
+{% endblock %}
+
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+{% block content %}
+    <div class="organizations-content-block">
+        {% if org %}
+            <h2>{% trans "Organization editing" %}</h2>
+        {% else %}
+            <h2>{% trans "Organizations" %}</h2>
+            {% include "_organizations_tabs.html" with tab='add' %}
+        {% endif %}
+
+        <div class="tab-content">
+            {% if form.errors %}
+                <div class="warning">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }} {{ error|lower }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form action="?{{ request.GET.urlencode }}" method="post">{% csrf_token %}
+                <table class="organizations-table">
+                    <tr>
+                        <td>{{ form.trans_fields.name.label_tag }} <span class="required">*</span></td>
+                        <td class="field">{{ form.trans_fields.name|add_class:"name_input" }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.url.label_tag }}</td>
+                        <td class="field">{{ form.url }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.phone.label_tag }}</td>
+                        <td class="field">{{ form.phone }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form.email.label_tag }}</td>
+                        <td class="field">{{ form.email }}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="field">
+                            <input type="submit" value="{% if org %}{% trans "Save" %}{% else %}{% trans "Add" %}{% endif %}"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="help-text">
+                    <p id="help-emails" class="alert-info">
+                        {% trans "Enter a list of emails separating them by commas, spaces or newlines." %}
+                    </p>
+                    <p id="help-phones" class="alert-info">
+                        {% trans "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines." %}
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+{%endblock%}

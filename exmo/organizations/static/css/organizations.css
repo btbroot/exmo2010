@@ -20,29 +20,41 @@
 #
 */
 
-/* == ORGANIZATION CONTENT BLOCK == */
+/* == ORGANIZATIONS CONTENT BLOCK == */
 
-.org-content-block h2 {
+h2 {
     display: inline;
     margin-right: 12px;
     vertical-align: top;
 }
 
+select,
+textarea,
+input[type="text"] {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
 .tab-content {
     margin-top: 20px;
-    width: 100%;
-}
-
-.tab-content div.active {
-    display: block;
 }
 
 
-/* == ORGANIZATION LIST == */
+/* == ORGANIZATIONS == */
 
-.base-table {
-    margin-top: 20px;
+.base-table caption {
+    margin-bottom: 15px;
 }
+
+.base-table th {
+    white-space: nowrap;
+}
+
+#monitoring_stats {
+    margin-top: 15px;
+}
+
 /* Organization search form */
 
 .select-cell {
@@ -51,122 +63,33 @@
 }
 
 
-/* == ORGANIZATION EMAIL FORM == */
+/* == ORGANIZATIONS EDIT == */
 
-.org-email-form .destination {
-    display: table-cell;
-    width: 200px;
-}
-
-.org-email-form .destination div {
-    padding-left: 15px;
-}
-
-.org-email-form .destination div:first-child {
-    padding-left: 0;
-}
-
-.org-email-form .table-cell {
+.organizations-table td {
     border: none;
-    text-align: left;
 }
 
-.org-email-form .table-cell:first-child {
-    vertical-align: top;
-    text-align: right;
-    line-height: 22px;
-}
-
-.org-email-form input[type="text"] {
-    width: 590px;
-}
-
-.org-email-form .text-area {
-    position: relative;
-    padding: 5px 6px;
-}
-
-.org-email-form p {
-    margin: 0;
-}
-
-.org-email-form .alert-info {
-    position: absolute;
-    margin: 5px;
-    width: 270px;
-}
-
-.org-email-form select {
-    width: 200px;
-}
-
-.org-email-form input[type="submit"] {
-    width: 100px;
-}
-
-
-/* == ORGANIZATION FORM == */
-
-.table-implicit td:first-child {
-    text-align: right;
-}
-
-.table-implicit textarea {
+.organizations-table textarea,
+.organizations-table input[name="url"] {
     width: 250px;
+}
+
+.organizations-table textarea {
     height: 85px;
 }
 
-.table-implicit input[name="org-url"] {
-    width: 250px;
+.organizations-table td:first-child {
+    text-align: right;
+    white-space: nowrap;
 }
 
 .field {
     width: 100%;
 }
 
-.errorlist {
-    text-align: left;
-}
-
-
-/* == MAIL HISTORY == */
-
-.mail_history td:first-child,
-.mail_history td:last-child,
-.mail_history th:first-child,
-.mail_history th:last-child {
-    width: 1%;
-    white-space: nowrap;
-}
-
-td.pseudo {
-    border-bottom: 1px solid #eeeeee;
-}
-
-/* Mail history search form */
-
-input.datepicker {
-    background: url(../../../static/exmo2010/img/calendar.png) 127px 4px no-repeat;
-}
-
-#mail_history_search_form > input[name="date_filter_history"] {
-    width: 140px;
-}
-
-#mail_history_search_form > select {
-    margin: 10px 4px;
-    width: 190px;
-}
-
-td.comment .preview-container {
-    display: block;
-    overflow: hidden;
-    width: 100%;
-    height: 17px;
-}
-
-#help-text {
+.help-text {
     position: absolute;
+    display: none;
     padding-left: 9px;
     width: 450px;
     background: url(../../../static/exmo2010/img/registration-triangle.png) 0 10px no-repeat;

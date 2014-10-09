@@ -18,7 +18,10 @@
 #
 */
 
-h2, h3, input, select {
+h2,
+h3,
+input,
+select {
     margin: 0;
 }
 
@@ -27,7 +30,7 @@ h2 {
 }
 
 div.representatives-table td.collapsible {
-    padding: 0px;
+    padding: 0;
     line-height: 24px;
 }
 
@@ -43,7 +46,8 @@ div.representatives-table td.collapsible img {
     padding-top: 15px;
 }
 
-.filter input[type="text"], .filter select {
+.filter select,
+.filter input[type="text"] {
     width: 49%;
 }
 

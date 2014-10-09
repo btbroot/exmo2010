@@ -1,0 +1,117 @@
+{% extends "base_sidebar.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{{ monitoring.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/send_mail.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'js/send_mail.js' %}"></script>
+{% endblock %}
+
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+{% block content %}
+    <div class="send-mail-content-block">
+        <h2>{% trans "Organizations" %}</h2>
+
+        {% include "_organizations_tabs.html" with tab='send_mail' %}
+
+        <div class="tab-content">
+            {% if form.errors %}
+                <div class="warning">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }} {{ error|lower }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form action="{% url 'exmo2010:send_mail' monitoring.pk %}" method="post">{% csrf_token %}
+                <div class="table org-email-form">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            {{ form.subject.label }} <span class="required">*</span>
+                        </div>
+
+                        <div class="table-cell">
+                            {{ form.subject }}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">
+                            {{ form.comment.label }} <span class="required">*</span>
+                        </div>
+
+                        <div class="table-cell text-area">
+                            {{ form.comment }}
+                        </div>
+
+                        <div class="help-text alert-info">
+                            %code% - {% trans 'use this keyword for invitation addition in email.' %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">
+                            {% trans 'To' context 'mail destination' %}
+                        </div>
+
+                        <div class="table-cell">
+                            <div class="destination">
+                                <div>
+                                    <input class='group' type='checkbox' id='all_orgs'/> <label for='all_orgs'>{% trans 'All organizations' %}</label>
+                                </div>
+                                <div>{{ form.dst_orgs_noreg }} {{ form.dst_orgs_noreg.label_tag }}</div>
+                                <div>{{ form.dst_orgs_inact }} {{ form.dst_orgs_inact.label_tag }}</div>
+                                <div>{{ form.dst_orgs_activ }} {{ form.dst_orgs_activ.label_tag }}</div>
+                            </div>
+                            <div class="destination">
+                                <div>
+                                    <input class='group' type='checkbox' id='all_orgusers'/> <label for='all_orgusers'>{% trans 'All representatives' %}</label>
+                                </div>
+                                <div>{{ form.dst_orgusers_inact }} {{ form.dst_orgusers_inact.label_tag }}</div>
+                                <div>{{ form.dst_orgusers_activ }} {{ form.dst_orgusers_activ.label_tag }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell"></div>
+
+                        <div class="table-cell">
+                            <input type="submit" value="{% trans 'Send' %}"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{%endblock%}

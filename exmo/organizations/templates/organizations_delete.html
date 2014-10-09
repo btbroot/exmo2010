@@ -1,9 +1,10 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_sidebar.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,22 +22,32 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block title %}
-    {% blocktrans %}Edit organization {{org}}{% endblocktrans %}
-{% endblock %}
+{% block title %}{{ monitoring.name }}{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
 {% endblock %}
 
-{% block extra_script %}
-    {{ media }}
-    {{ form.media }}
-    <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
-{% endblock %}
-
-{% block h1 %}<h1>{% blocktrans %}Edit organization {{org}}{% endblocktrans %}</h1>{% endblock %}
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
 
 {% block content %}
-    {% include "_organization_form.html" %}
-{% endblock %}
+    <div class="organizations-content-block">
+        <h2>{% trans 'Organization deleting' %}</h2>
+
+        <div class="tab-content">
+            <div>
+                {% if org.task_set.all %}
+                    <p>{% trans 'When you delete organization you also delete this tasks:'%}</p>
+                    {% for task in org.task_set.all %}
+                        <p><a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task }}</a></p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <form action="?{{ request.GET.urlencode }}" method="post">{% csrf_token %}
+                <p>{% trans 'Delete this organization?' %}</p>
+                <p><input type="submit" value="{% trans 'Send' %}" /></p>
+            </form>
+        </div>
+    </div>
+{%endblock%}

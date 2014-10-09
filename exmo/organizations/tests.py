@@ -37,28 +37,32 @@ from exmo2010.models import *
 
 
 class OrgCreateTestCase(TestCase):
+    # exmo2010:organizations_add
+
     # test adding organization using form
 
     def setUp(self):
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
-        # AND i am logged in as expertA:
+        # AND I am logged in as expertA:
         self.expertA = User.objects.create_user('expertA', 'A@ya.ru', 'password')
         self.expertA.profile.is_expertA = True
         self.client.login(username='expertA', password='password')
 
     def test_add_org(self):
-        formdata = {'org-name_en': 'ooo', 'org-monitoring': 99, 'submit_add': True}
+        formdata = {'name_en': 'ooo'}
         # WHEN I submit organization add form
-        response = self.client.post(reverse('exmo2010:organization_list', args=[self.monitoring.pk]), formdata)
-        # THEN new organization shoud get created in database
+        response = self.client.post(reverse('exmo2010:organizations_add', args=[self.monitoring.pk]), formdata)
+        # THEN response status_code should be 302 (Redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND new organization should get created in database
         orgs = Organization.objects.values_list('name', 'monitoring_id')
         self.assertEqual(list(orgs), [('ooo', self.monitoring.pk)])
-        # AND response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
 
 
 class DuplicateOrgCreationTestCase(TestCase):
+    # exmo2010:organizations_add
+
     # SHOULD return validation error if organization with already existing name is added
 
     def setUp(self):
@@ -72,13 +76,13 @@ class DuplicateOrgCreationTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
     def test_error_on_duplicate(self):
-        formdata = {'org-name_en': self.org.name, 'org-monitoring': 99, 'submit_add': True}
+        formdata = {'name_en': self.org.name}
         # WHEN I submit organization add form with existing name
-        response = self.client.post(reverse('exmo2010:organization_list', args=[self.monitoring.pk]), formdata)
-        # THEN no new orgs shoud get created in database
-        self.assertEqual(list(Organization.objects.all()), [self.org])
-        # AND response status_code should be 200 (OK)
+        response = self.client.post(reverse('exmo2010:organizations_add', args=[self.monitoring.pk]), formdata)
+        # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
+        # AND no new orgs should get created in database
+        self.assertEqual(list(Organization.objects.all()), [self.org])
         # AND error message should say that such organization exists
         errors = {'__all__': [u'Organization with this Name [en] and Monitoring already exists.']}
         self.assertEqual(response.context['form'].errors, errors)
@@ -113,7 +117,7 @@ class OrganizationEditAccessTestCase(TestCase):
         obs_group.organizations = [self.organization]
         obs_group.users = [observer]
 
-        self.url = reverse('exmo2010:organization_update', args=[self.monitoring.pk, self.organization.pk])
+        self.url = reverse('exmo2010:organizations_update', args=[self.monitoring.pk, self.organization.pk])
 
     def test_anonymous_org_edit_get(self):
         # WHEN anonymous user gets organization edit page
@@ -182,7 +186,7 @@ class TestOrganizationsPage(TestCase):
         self.orguser.get_profile().organization = [self.organization]
 
     def test_anonymous_organizations_page_access(self):
-        url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
         # WHEN anonymous user get organizations page
         resp = self.client.get(url, follow=True)
         # THEN redirect to login page
@@ -196,7 +200,7 @@ class TestOrganizationsPage(TestCase):
         ('admin', 200),
     ])
     def test_authenticated__user_organizations_page_access(self, username, response_code):
-        url = reverse('exmo2010:organization_list', args=[self.monitoring.pk])
+        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
         # WHEN user get organizations page
         self.client.login(username=username, password='password')
         resp = self.client.get(url)
@@ -205,7 +209,7 @@ class TestOrganizationsPage(TestCase):
 
 
 class SelectiveOrgEmailTestCase(TestCase):
-    # exmo2010:post_org_email
+    # exmo2010:send_mail
 
     # Email messages should be sent only to those receivers, which was selected in form.
 
@@ -243,7 +247,7 @@ class SelectiveOrgEmailTestCase(TestCase):
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
         self.client.login(username='expertA', password='password')
 
-        self.url = reverse('exmo2010:post_org_email', args=[self.monitoring.pk])
+        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
 
     @parameterized.expand([
         ('dst_orgs_noreg', {'nts', 'snt', 'rd'}),
@@ -260,7 +264,7 @@ class SelectiveOrgEmailTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # AND i should be redirected to the organizations list page
-        self.assertRedirects(response, reverse('exmo2010:organization_list', args=[self.monitoring.pk]))
+        self.assertRedirects(response, reverse('exmo2010:organizations', args=[self.monitoring.pk]))
 
         # AND email messages should be sent to expected receivers
         receivers = set(tuple(m.to) for m in mail.outbox)
@@ -281,7 +285,7 @@ class SelectiveOrgEmailTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # AND i should be redirected to the organizations list page
-        self.assertRedirects(response, reverse('exmo2010:organization_list', args=[self.monitoring.pk]))
+        self.assertRedirects(response, reverse('exmo2010:organizations', args=[self.monitoring.pk]))
 
         # AND email messages should be sent to expected receivers
         receivers = set(tuple(m.to) for m in mail.outbox)
@@ -289,7 +293,7 @@ class SelectiveOrgEmailTestCase(TestCase):
 
 
 class OrgEmailHeadersTestCase(TestCase):
-    # exmo2010:post_org_email
+    # exmo2010:send_mail
 
     # Email messages sent to organizations should have proper headers.
 
@@ -303,7 +307,7 @@ class OrgEmailHeadersTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
     def test_send_org_emails(self):
-        url = reverse('exmo2010:post_org_email', args=[self.org.monitoring.pk])
+        url = reverse('exmo2010:send_mail', args=[self.org.monitoring.pk])
         post_data = {'comment': u'Содержание', 'subject': u'Тема', 'dst_orgs_noreg': '1'}
         server_address = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
 

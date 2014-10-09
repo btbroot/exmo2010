@@ -18,146 +18,140 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from datetime import datetime
-
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms.models import modelform_factory
 from django.forms import TextInput
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils import formats
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, DetailView, UpdateView
 
-from .forms import OrganizationsQueryForm, RepresentativesQueryForm
-from accounts.forms import SettingsInvCodeForm
-from core.helpers import table
+from .forms import InviteOrgsQueryForm, OrganizationsQueryForm, RepresentativesQueryForm
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeWriter
 from exmo2010.mail import mail_organization, mail_orguser
-from exmo2010.models import (LicenseTextFragments, Monitoring, Organization,
-                             InviteOrgs, Score, Task, UserProfile, INV_STATUS)
+from exmo2010.models import LicenseTextFragments, Monitoring, Organization, InviteOrgs, Score, UserProfile
 from modeltranslation_utils import CurLocaleModelForm
 
 
-@login_required
-def organization_list(request, monitoring_pk):
-    """
-    Organization page view.
+class OrganizationsView(LoginRequiredMixin, DetailView):
+    template_name = "organizations.html"
+    pk_url_kwarg = 'monitoring_pk'
+    model = Monitoring
 
-    """
-    alert = request.GET.get('alert', False)
+    def get_object(self, queryset=None):
+        monitoring = super(OrganizationsView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+            raise PermissionDenied
+        return monitoring
 
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        raise PermissionDenied
-    title = _('Organizations for monitoring %s') % monitoring
+    def get_context_data(self, **kwargs):
+        context = super(OrganizationsView, self).get_context_data(**kwargs)
 
-    tab = 'all'
+        organizations = Organization.objects.filter(monitoring=self.object).annotate(tasks_count=Count('task'))
+        context['is_organizations_exists'] = organizations.exists()
 
-    headers = (
-        (_('organization'), 'name', None, None, None),
-        (_('email'), 'email', None, None, None),
-        (_('phone'), 'phone', None, None, None),
-        (_('invitation code'), 'inv_code', None, None, None),
-        (_('tasks'), 'task__count', None, None, None),
-        (_('status'), 'inv_status', None, None, None),
-    )
+        queryform = OrganizationsQueryForm(self.request.GET)
+        if queryform.is_valid():
+            organizations = queryform.apply(organizations)
 
-    OrgForm = modelform_factory(Organization, form=CurLocaleModelForm)
-    kwargs = {'instance': Organization(monitoring=monitoring), 'prefix': 'org'}
+        context['organizations'] = organizations
+        context['queryform'] = queryform
 
-    if request.method == "POST" and "submit_add" in request.POST:
-        form = OrgForm(request.POST, **kwargs)
-        if form.is_valid():
-            form.save()
+        return context
+
+
+class OrganizationsMixin(LoginRequiredMixin):
+    context_object_name = 'org'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganizationsMixin, self).get_context_data(**kwargs)
+        context['monitoring'] = self.monitoring
+        return context
+
+    def get_success_url(self):
+        url = reverse('exmo2010:organizations', args=[self.object.monitoring.pk])
+        return '%s?%s' % (url, self.request.GET.urlencode())
+
+
+class OrganizationsEditView(OrganizationsMixin, UpdateView):
+    template_name = "organizations_edit.html"
+
+    def get_object(self, queryset=None):
+        if 'org_pk' in self.kwargs:
+            # Existing organization edit page
+            org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
+            self.monitoring = org.monitoring
         else:
-            tab = 'add'
-    else:
-        form = OrgForm(**kwargs)
+            # New organization page
+            self.monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
+            org = Organization(monitoring=self.monitoring)
 
-    inv_history = InviteOrgs.objects.filter(monitoring=monitoring)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return org
 
-    date_filter_history = None
-    invite_filter_history = None
-
-    if request.method == "GET":
-        date_filter_history = request.GET.get('date_filter_history', False)
-
-        if date_filter_history:
-            input_format = formats.get_format('DATE_INPUT_FORMATS')[0]
-            start_datetime = datetime.strptime(date_filter_history, input_format)
-            inv_history = inv_history.filter(timestamp__gte=start_datetime)
-
-            tab = 'mail_history'
-
-    queryset = Organization.objects.filter(monitoring=monitoring).annotate(tasks_count=Count('task'))
-
-    org_queryform = OrganizationsQueryForm(request.GET)
-    if org_queryform.is_valid():
-        queryset = org_queryform.apply(queryset)
-
-    MailForm = modelform_factory(InviteOrgs, widgets={'subject': TextInput})
-
-    return table(
-        request,
-        headers,
-        queryset=queryset,
-        paginate_by=100,
-        template_name='organization_list.html',
-        extra_context={
-            'title': title,
-            'mail_form': MailForm(instance=InviteOrgs(monitoring=monitoring)),
-            'alert': alert,
-            'tab': tab,
-            'inv_status': INV_STATUS,
-            'monitoring': monitoring,
-            'invcodeform': SettingsInvCodeForm(),
-            'form': form,
-            'inv_history': inv_history,
-            'date_filter_history': date_filter_history,
-            'invite_filter_history': invite_filter_history,
-            'org_queryform': org_queryform,
-        },
-    )
+    def get_form_class(self):
+        return modelform_factory(Organization, form=CurLocaleModelForm)
 
 
-def post_org_email(request, monitoring_pk):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(permitted_methods=['POST'])
+class OrganizationsDeleteView(OrganizationsMixin, DeleteView):
+    template_name = "organizations_delete.html"
 
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
-    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        raise PermissionDenied
+    def get_object(self, queryset=None):
+        org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
+        self.monitoring = org.monitoring
 
-    MailForm = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'))
-    mail_form = MailForm(request.POST, instance=InviteOrgs(monitoring=monitoring))
-    if not mail_form.is_valid():
-        messages.error(request, mail_form.errors)
-        return HttpResponseRedirect(reverse('exmo2010:organization_list', args=[monitoring_pk]) + '#send_mail')
-    else:
-        mail_form.save()
-        formdata = mail_form.cleaned_data
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return org
+
+
+class SendMailMixin(LoginRequiredMixin):
+    pk_url_kwarg = 'monitoring_pk'
+    context_object_name = 'monitoring'
+    model = Monitoring
+
+    def get_object(self, queryset=None):
+        self.monitoring = super(SendMailMixin, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+        return self.monitoring
+
+
+class SendMailView(SendMailMixin, UpdateView):
+    template_name = "send_mail.html"
+
+    def get_form_class(self):
+        return modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': TextInput})
+
+    def get_form_kwargs(self):
+        kwargs = super(SendMailView, self).get_form_kwargs()
+        kwargs.update({'instance': InviteOrgs(monitoring=self.monitoring)})
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save()
+        formdata = form.cleaned_data
 
         orgs = []
         if formdata.get('dst_orgs_noreg'):
-            orgs += monitoring.organization_set.filter(inv_status__in=['NTS', 'SNT', 'RD'])
+            orgs += self.monitoring.organization_set.filter(inv_status__in=['NTS', 'SNT', 'RD'])
         if formdata.get('dst_orgs_inact'):
-            orgs += monitoring.organization_set.filter(inv_status='RGS')
+            orgs += self.monitoring.organization_set.filter(inv_status='RGS')
         if formdata.get('dst_orgs_activ'):
-            orgs += monitoring.organization_set.filter(inv_status='ACT')
+            orgs += self.monitoring.organization_set.filter(inv_status='ACT')
 
         for org in orgs:
             mail_organization(org, formdata['subject'], formdata['comment'])
 
-        orgs = set(monitoring.organization_set.all())
+        orgs = set(self.monitoring.organization_set.all())
 
-        orgusers = UserProfile.objects.filter(organization__monitoring=monitoring).prefetch_related('organization')
-        scores = Score.objects.filter(parameter__monitoring=monitoring)
+        orgusers = UserProfile.objects.filter(organization__monitoring=self.monitoring).prefetch_related('organization')
+        scores = Score.objects.filter(parameter__monitoring=self.monitoring)
         active = orgusers.filter(user__comment_comments__object_pk__in=scores).distinct()
         inactive = orgusers.exclude(user__comment_comments__object_pk__in=scores).distinct()
 
@@ -181,38 +175,28 @@ def post_org_email(request, monitoring_pk):
                     # Send single email to this user.
                     mail_orguser(user.user, '', formdata['subject'], formdata['comment'])
 
-        messages.success(request, _('Mails sent.'))
+        messages.success(self.request, _('Mails sent.'))
+        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
 
-    return HttpResponseRedirect(reverse('exmo2010:organization_list', args=[monitoring_pk]))
-
-
-class OrgMixin(LoginRequiredMixin):
-    context_object_name = 'org'
-
-    def get_success_url(self):
-        url = reverse('exmo2010:organization_list', args=[self.object.monitoring.pk])
-        return '%s?%s' % (url, self.request.GET.urlencode())
-
-    def get_object(self):
-        org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
-        if not self.request.user.has_perm('exmo2010.admin_monitoring', org.monitoring):
-            raise PermissionDenied
-        return org
+        return HttpResponseRedirect('%s?%s' % (url, self.request.GET.urlencode()))
 
 
-class OrgEditView(OrgMixin, UpdateView):
-    """
-    Generic view to edit Organization
+class SendMailHistoryView(SendMailMixin, DetailView):
+    template_name = "send_mail_history.html"
 
-    """
-    template_name = "edit_organization.html"
+    def get_context_data(self, **kwargs):
+        context = super(SendMailHistoryView, self).get_context_data(**kwargs)
+        mail_history = InviteOrgs.objects.filter(monitoring=self.object)
+        is_mail_history_exist = mail_history.exists()
 
-    def get_form_class(self):
-        return modelform_factory(Organization, form=CurLocaleModelForm)
+        self.queryform = InviteOrgsQueryForm(self.request.GET)
+        if self.queryform.is_valid():
+            mail_history = self.queryform.apply(mail_history)
 
+        context['mail_history'] = mail_history
+        context['is_mail_history_exist'] = is_mail_history_exist
 
-class OrgDeleteView(OrgMixin, DeleteView):
-    template_name = "organization_confirm_delete.html"
+        return context
 
 
 def _add_comments_count(user, orgs):
@@ -223,7 +207,7 @@ def _add_comments_count(user, orgs):
 
 
 class RepresentativesView(LoginRequiredMixin, DetailView):
-    template_name = "organization_representatives.html"
+    template_name = "representatives.html"
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 

@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-01 14:56+0400\n"
+"POT-Creation-Date: 2014-10-10 10:31+0400\n"
 "PO-Revision-Date: 2014-09-25 23:07+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -47,8 +47,8 @@ msgstr "Фамилия"
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:115
 #: exmo2010/models/userprofile.py:99
-#: organizations/templates/organization_representatives.html:67
-#: organizations/templates/organization_representatives.html:85
+#: organizations/templates/representatives.html:67
+#: organizations/templates/representatives.html:85
 msgid "Job title"
 msgstr "Должность"
 
@@ -127,9 +127,9 @@ msgstr "Электронная почта"
 #: monitorings/templates/monitoring_comment_report.html:52
 #: monitorings/templates/monitoring_form.html:58
 #: monitorings/templates/set_npa_params.html:48
-#: organizations/templates/_organization_form.html:42
-#: parameters/templates/parameter_form.html:83 templates/scores/score.html:222
-#: templates/scores/score.html.py:248 templates/scores/score.html:305
+#: organizations/templates/organizations_edit.html:82
+#: parameters/templates/parameter_form.html:83 templates/scores/score.html:217
+#: templates/scores/score.html.py:243 templates/scores/score.html:300
 #: templates/scores/task_scores.html:502
 msgid "Save"
 msgstr "Сохранить"
@@ -137,14 +137,15 @@ msgstr "Сохранить"
 #: accounts/templates/user_settings.html:88
 #: exmo2010/custom_registration/forms.py:119
 #: exmo2010/models/organization.py:138
+#: organizations/templates/organizations.html:74
 #: templates/exmo2010/helpers/inv_code_bubble.html:36
 msgid "Invitation code"
 msgstr "Код приглашения"
 
 #: accounts/templates/user_settings.html:116 exmo2010/forms.py:60
 #: monitorings/templates/monitoring_form.html:171
-#: organizations/templates/_organization_email_form.html:88
-#: organizations/templates/organization_confirm_delete.html:38
+#: organizations/templates/organizations_delete.html:49
+#: organizations/templates/send_mail.html:110
 #: tasks/templates/mass_assign_tasks.html:46
 #: templates/exmo2010/feedback.html:65
 #: templates/exmo2010/monitoring_confirm_delete.html:37
@@ -167,16 +168,16 @@ msgstr "Изменить пароль"
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
-#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:238
-#: exmo2010/urls.py:301 monitorings/views.py:1101
+#: bread_crumbs/tests.py:35 dashboard/menu.py:82 exmo2010/urls.py:241
+#: exmo2010/urls.py:306 monitorings/views.py:1101
 #: monitorings/templates/ratings.html:33
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: bread_crumbs/tests.py:36 exmo2010/urls.py:302
+#: bread_crumbs/tests.py:36 exmo2010/urls.py:307
 #: monitorings/templates/rating.html:42 templates/_errors_header.html:34
 #: templates/certificate_order_form.html:69
-#: templates/exmo2010/sidebar/_sidebar.html:104
+#: templates/exmo2010/sidebar/_sidebar.html:110
 msgid "Rating"
 msgstr "Рейтинг"
 
@@ -184,9 +185,10 @@ msgstr "Рейтинг"
 #: claims/templates/claim_list.html:43
 #: clarifications/templates/clarification_list.html:43
 #: custom_comments/templates/comment_list.html:43 exmo2010/forms.py:87
-#: exmo2010/urls.py:281 exmo2010/urls.py:282 exmo2010/urls.py:287
-#: exmo2010/urls.py:303 exmo2010/urls.py:304 monitorings/forms.py:69
-#: monitorings/templates/rating.html:109 organizations/forms.py:28
+#: exmo2010/urls.py:286 exmo2010/urls.py:287 exmo2010/urls.py:292
+#: exmo2010/urls.py:308 exmo2010/urls.py:309 monitorings/forms.py:69
+#: monitorings/templates/rating.html:109 organizations/forms.py:29
+#: organizations/templates/organizations.html:71
 #: templates/certificate_order_form.html:99
 #: templates/exmo2010/rating_common.html:24
 #: templates/mail/certificate_order_email.html:31
@@ -196,19 +198,20 @@ msgstr "Рейтинг"
 msgid "Organization"
 msgstr "Организация"
 
-#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:240
+#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:243
 #: templates/exmo2010/monitoring_list.html:28
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
 
-#: bread_crumbs/tests.py:42 exmo2010/urls.py:248 exmo2010/urls.py:249
-#: exmo2010/urls.py:251 exmo2010/urls.py:252 exmo2010/urls.py:254
-#: exmo2010/urls.py:255 exmo2010/urls.py:260 exmo2010/urls.py:262
-#: exmo2010/urls.py:264 exmo2010/urls.py:265 exmo2010/urls.py:266
-#: exmo2010/urls.py:267 exmo2010/urls.py:269 exmo2010/urls.py:271
-#: exmo2010/urls.py:273 exmo2010/urls.py:275
-#: exmo2010/models/questionnaire.py:36 monitorings/forms.py:60
-#: monitorings/templates/monitoring_copy.html:65
+#: bread_crumbs/tests.py:42 exmo2010/urls.py:251 exmo2010/urls.py:252
+#: exmo2010/urls.py:254 exmo2010/urls.py:255 exmo2010/urls.py:257
+#: exmo2010/urls.py:258 exmo2010/urls.py:263 exmo2010/urls.py:264
+#: exmo2010/urls.py:265 exmo2010/urls.py:266 exmo2010/urls.py:268
+#: exmo2010/urls.py:269 exmo2010/urls.py:271 exmo2010/urls.py:273
+#: exmo2010/urls.py:274 exmo2010/urls.py:275 exmo2010/urls.py:276
+#: exmo2010/urls.py:278 exmo2010/urls.py:280 exmo2010/urls.py:282
+#: exmo2010/urls.py:284 exmo2010/models/questionnaire.py:36
+#: monitorings/forms.py:60 monitorings/templates/monitoring_copy.html:65
 #: monitorings/templates/monitoring_form.html:90
 #: monitorings/templates/ratings.html:51 templates/exmo2010/opendata.html:58
 #: templates/mail/certificate_order_email.html:26
@@ -242,8 +245,8 @@ msgid "Claims report for \"%s\""
 msgstr "Отчет по претензиям для \"%s\""
 
 #: claims/views.py:166 dashboard/dashboard.py:116 dashboard/menu.py:76
-#: exmo2010/urls.py:236 templates/exmo2010/sidebar/_sidebar.html:90
-#: templates/scores/score.html:401
+#: exmo2010/urls.py:239 templates/exmo2010/sidebar/_sidebar.html:96
+#: templates/scores/score.html:396
 msgid "Claims"
 msgstr "Претензии"
 
@@ -261,7 +264,7 @@ msgstr "Ваш ответ на претензию"
 
 #: claims/templates/claim.html:62
 #: clarifications/templates/clarification.html:56
-#: templates/scores/score.html:129 templates/scores/score.html.py:376
+#: templates/scores/score.html:124 templates/scores/score.html.py:371
 msgid "Reply"
 msgstr "Ответить"
 
@@ -309,7 +312,7 @@ msgstr "перейти к претензии"
 
 #: claims/templates/claim_report.html:43
 #: clarifications/templates/clarification_report.html:43
-#: organizations/templates/_mail_history.html:34
+#: organizations/templates/send_mail_history.html:62
 msgid "Date and time"
 msgstr "Время и дата"
 
@@ -327,8 +330,8 @@ msgid "Clarifications report for \"%s\""
 msgstr "Отчет по уточнениям для \"%s\""
 
 #: clarifications/views.py:154 dashboard/dashboard.py:112 dashboard/menu.py:75
-#: exmo2010/urls.py:237 templates/exmo2010/sidebar/_sidebar.html:86
-#: templates/scores/score.html:400
+#: exmo2010/urls.py:240 templates/exmo2010/sidebar/_sidebar.html:92
+#: templates/scores/score.html:395
 msgid "Clarifications"
 msgstr "Уточнения"
 
@@ -385,7 +388,7 @@ msgstr "Комментарий закрыт и не отвечен"
 
 #: custom_comments/models.py:41 exmo2010/models/monitoring.py:58
 #: exmo2010/models/task.py:63 exmo2010/models/task.py:240
-#: monitorings/views.py:124 organizations/views.py:68 tasks/views.py:279
+#: monitorings/views.py:124 tasks/views.py:279
 msgid "status"
 msgstr "статус"
 
@@ -394,8 +397,8 @@ msgid "posted by expert"
 msgstr ""
 
 #: custom_comments/views.py:42 dashboard/dashboard.py:108 dashboard/menu.py:74
-#: exmo2010/urls.py:235 templates/exmo2010/sidebar/_sidebar.html:78
-#: templates/scores/score.html:313
+#: exmo2010/urls.py:238 templates/exmo2010/sidebar/_sidebar.html:84
+#: templates/scores/score.html:308
 msgid "Comments"
 msgstr "Комментарии"
 
@@ -435,14 +438,14 @@ msgstr "Админ"
 msgid "Scores of my organisation"
 msgstr "Мои оценки"
 
-#: dashboard/menu.py:83 exmo2010/urls.py:220 exmo2010/urls.py:221
-#: exmo2010/urls.py:222
+#: dashboard/menu.py:83 exmo2010/urls.py:223 exmo2010/urls.py:224
+#: exmo2010/urls.py:225
 #: monitorings/templates/monitoring_comment_report.html:57
 #: templates/_errors_header.html:39
 msgid "Statistics"
 msgstr "Статистика"
 
-#: dashboard/menu.py:84 exmo2010/urls.py:216 templates/_errors_header.html:44
+#: dashboard/menu.py:84 exmo2010/urls.py:219 templates/_errors_header.html:44
 msgid "Help"
 msgstr "Помощь"
 
@@ -468,7 +471,8 @@ msgid "Email Server Settings"
 msgstr "Конфигурация почтового сервера"
 
 #: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
-#: exmo2010/forms.py:64 templates/mail/feedback_recipient.html:34
+#: exmo2010/forms.py:64 organizations/templates/organizations.html:72
+#: templates/mail/feedback_recipient.html:34
 #: templates/mail/feedback_recipient.txt:31
 msgid "Email"
 msgstr "Электронная почта"
@@ -615,7 +619,7 @@ msgstr "{subject_prefix}Изменен параметр: {param}"
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
-#: exmo2010/mail.py:272 exmo2010/mail.py:279 exmo2010/urls.py:217
+#: exmo2010/mail.py:272 exmo2010/mail.py:279 exmo2010/urls.py:220
 #: exmo2010/views.py:61 templates/_footer.html:30
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
@@ -630,108 +634,100 @@ msgstr "Смена пароля на %s"
 msgid "Registration on "
 msgstr "Регистрация на "
 
-#: exmo2010/urls.py:215 templates/_footer.html:27
+#: exmo2010/urls.py:218 templates/_footer.html:27
 msgid "About"
 msgstr "О проекте"
 
-#: exmo2010/urls.py:218 templates/_footer.html:29
+#: exmo2010/urls.py:221 templates/_footer.html:29
 #: templates/exmo2010/opendata.html:27 templates/exmo2010/opendata.html:29
 msgid "Open data"
 msgstr "Открытые данные"
 
-#: exmo2010/urls.py:219 templates/admin/base_site.html:29
+#: exmo2010/urls.py:222 templates/admin/base_site.html:29
 msgid "Settings"
 msgstr "Настройки"
 
-#: exmo2010/urls.py:224 templates/registration/login.html:28
+#: exmo2010/urls.py:227 templates/registration/login.html:28
 msgid "Log in the system"
 msgstr "Войти в систему"
 
-#: exmo2010/urls.py:225 templates/registration/password_reset_form.html:26
+#: exmo2010/urls.py:228 templates/registration/password_reset_form.html:26
 #: templates/registration/password_reset_form.html:32
 msgid "Password reset (step 1 from 3)"
 msgstr "Восстановление пароля (шаг 1 из 3)"
 
-#: exmo2010/urls.py:226 templates/registration/password_reset_done.html:25
+#: exmo2010/urls.py:229 templates/registration/password_reset_done.html:25
 #: templates/registration/password_reset_done.html:27
 msgid "Password reset (step 2 from 3)"
 msgstr "Восстановление пароля (шаг 2 из 3)"
 
-#: exmo2010/urls.py:227 templates/registration/password_reset_confirm.html:25
+#: exmo2010/urls.py:230 templates/registration/password_reset_confirm.html:25
 #: templates/registration/password_reset_confirm.html:33
 msgid "Password reset (step 3 from 3)"
 msgstr "Восстановление пароля (шаг 3 из 3)"
 
-#: exmo2010/urls.py:228 exmo2010/custom_registration/views.py:169
+#: exmo2010/urls.py:231 exmo2010/custom_registration/views.py:169
 msgid "Registration (step 1 of 2)"
 msgstr "Регистрация (шаг 1 из 2)"
 
-#: exmo2010/urls.py:229 exmo2010/custom_registration/urls.py:43
+#: exmo2010/urls.py:232 exmo2010/custom_registration/urls.py:43
 msgid "Registration (step 2 of 2)"
 msgstr "Регистрация (шаг 2 из 2)"
 
-#: exmo2010/urls.py:230
+#: exmo2010/urls.py:233
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
 
-#: exmo2010/urls.py:231
+#: exmo2010/urls.py:234
 msgid "Activation complete"
 msgstr "Активация завершена"
 
-#: exmo2010/urls.py:241
+#: exmo2010/urls.py:244
 msgid "Add monitoring cycle"
 msgstr "Добавить цикл мониторинга"
 
-#: exmo2010/urls.py:242
+#: exmo2010/urls.py:245
 msgid "Delete monitoring cycle"
 msgstr "Удалить цикл мониторинга"
 
-#: exmo2010/urls.py:243
+#: exmo2010/urls.py:246
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo2010/urls.py:244 monitorings/templates/monitoring_copy.html:22
+#: exmo2010/urls.py:247 monitorings/templates/monitoring_copy.html:22
 #: monitorings/templates/monitoring_copy.html:33
 msgid "Copy monitoring cycle"
 msgstr "Копировать цикл мониторинга"
 
-#: exmo2010/urls.py:246
+#: exmo2010/urls.py:249
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: exmo2010/urls.py:257
+#: exmo2010/urls.py:260
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: exmo2010/urls.py:258
+#: exmo2010/urls.py:261
 msgid "Import organizations"
 msgstr "Импортировать организации"
 
-#: exmo2010/urls.py:276
+#: exmo2010/urls.py:285
 msgid "Add task"
 msgstr "Добавить задачу"
 
-#: exmo2010/urls.py:278
-msgid "Edit organization"
-msgstr "Редактировать организацию"
-
-#: exmo2010/urls.py:279
-msgid "Delete organization"
-msgstr "Удалить организацию"
-
-#: exmo2010/urls.py:284
+#: exmo2010/urls.py:289
 msgid "Edit task"
 msgstr "Редактировать задачу"
 
-#: exmo2010/urls.py:285
+#: exmo2010/urls.py:290
 msgid "Delete task"
 msgstr "Удалить задачу"
 
-#: exmo2010/urls.py:286 templates/scores/task_scores.html:62
+#: exmo2010/urls.py:291 templates/scores/task_scores.html:62
 msgid "Import task"
 msgstr "Импортировать задачу"
 
-#: exmo2010/urls.py:289 exmo2010/urls.py:290 exmo2010/urls.py:305
+#: exmo2010/urls.py:294 exmo2010/urls.py:295 exmo2010/urls.py:310
 #: exmo2010/models/parameter.py:34
 #: monitorings/templates/monitoring_parameter_filter.html:170
 #: monitorings/templates/monitoring_parameter_found_report.html:41
@@ -740,20 +736,20 @@ msgstr "Импортировать задачу"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo2010/urls.py:292
+#: exmo2010/urls.py:297
 msgid "Add parameter"
 msgstr "Добавить параметр"
 
-#: exmo2010/urls.py:293 parameters/templates/parameter_form.html:27
-#: parameters/templates/parameter_form.html:45 templates/scores/score.html:65
+#: exmo2010/urls.py:298 parameters/templates/parameter_form.html:27
+#: parameters/templates/parameter_form.html:45 templates/scores/score.html:60
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: exmo2010/urls.py:294
+#: exmo2010/urls.py:299
 msgid "Delete parameter"
 msgstr "Удалить параметр"
 
-#: exmo2010/urls.py:309 templates/certificate_order_form.html:24
+#: exmo2010/urls.py:314 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:38
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
@@ -804,6 +800,7 @@ msgid "private person"
 msgstr "заинтересованное лицо"
 
 #: exmo2010/custom_registration/forms.py:52
+#: organizations/templates/organizations.html:76
 msgid "Status"
 msgstr "Статус"
 
@@ -1017,7 +1014,7 @@ msgid "monitoring"
 msgstr "цикл мониторинга"
 
 #: exmo2010/models/observers_group.py:34
-#: organizations/templates/_mail_history.html:51
+#: organizations/templates/send_mail_history.html:83
 msgid "organizations"
 msgstr "организации"
 
@@ -1054,7 +1051,7 @@ msgstr "зарегистрирована"
 msgid "Activated"
 msgstr "активна"
 
-#: exmo2010/models/organization.py:45 organizations/forms.py:25
+#: exmo2010/models/organization.py:45 organizations/forms.py:26
 msgid "All invitations"
 msgstr "все статусы приглашения"
 
@@ -1073,8 +1070,11 @@ msgstr "Организацию"
 
 #: exmo2010/models/organization.py:129 monitorings/forms.py:37
 #: monitorings/templates/monitoring_parameter_found_report.html:42
-#: organizations/templates/organization_list.html:47
-#: templates/exmo2010/sidebar/_sidebar.html:39
+#: organizations/templates/organizations.html:46
+#: organizations/templates/organizations_edit.html:42
+#: organizations/templates/send_mail.html:39
+#: organizations/templates/send_mail_history.html:40
+#: templates/exmo2010/sidebar/_sidebar.html:45
 msgid "Organizations"
 msgstr "Организации"
 
@@ -1083,11 +1083,11 @@ msgstr "Организации"
 msgid "Website"
 msgstr "Cайт"
 
-#: exmo2010/models/organization.py:133 organizations/views.py:64
+#: exmo2010/models/organization.py:133
 msgid "email"
 msgstr "электронная почта"
 
-#: exmo2010/models/organization.py:134 organizations/views.py:65
+#: exmo2010/models/organization.py:134
 msgid "phone"
 msgstr "телефон"
 
@@ -1235,7 +1235,7 @@ msgid "Questionnaire comment"
 msgstr "Примечание к анкете"
 
 #: exmo2010/models/questionnaire.py:46
-#: templates/exmo2010/sidebar/_sidebar.html:130
+#: templates/exmo2010/sidebar/_sidebar.html:136
 msgid "Questionnaire"
 msgstr "Анкета"
 
@@ -1321,8 +1321,8 @@ msgstr "Файловая доступность"
 msgid "Image"
 msgstr "Графическая доступность"
 
-#: exmo2010/models/score.py:79 templates/scores/score.html:240
-#: templates/scores/score.html.py:297
+#: exmo2010/models/score.py:79 templates/scores/score.html:235
+#: templates/scores/score.html.py:292
 #: templates/scores/task_scores_print.html:75
 msgid "Recommendations"
 msgstr "Рекомендации"
@@ -1376,7 +1376,7 @@ msgstr "одобрена"
 msgid "user"
 msgstr "пользователь"
 
-#: exmo2010/models/task.py:62 organizations/views.py:63 tasks/views.py:278
+#: exmo2010/models/task.py:62 tasks/views.py:278
 msgid "organization"
 msgstr "организация"
 
@@ -1584,9 +1584,8 @@ msgstr "Все оценки"
 msgid "Current scores"
 msgstr "Текущие оценки"
 
-#: monitorings/forms.py:42
-#: organizations/templates/organization_representatives.html:37
-#: templates/exmo2010/sidebar/_sidebar.html:43
+#: monitorings/forms.py:42 organizations/templates/representatives.html:37
+#: templates/exmo2010/sidebar/_sidebar.html:49
 msgid "Representatives"
 msgstr "Представители"
 
@@ -1684,17 +1683,17 @@ msgid "Delete"
 msgstr "Удалить"
 
 #: monitorings/templates/_observers_group_form.html:37
-#: organizations/templates/_organization_form.html:42
+#: organizations/templates/organizations_edit.html:82
 msgid "Add"
 msgstr "Добавить"
 
 #: monitorings/templates/_observers_group_tabs.html:22
-#: organizations/templates/organization_list.html:50
+#: organizations/templates/_organizations_tabs.html:23
 msgid "all"
 msgstr "все"
 
 #: monitorings/templates/_observers_group_tabs.html:23
-#: organizations/templates/organization_list.html:53
+#: organizations/templates/_organizations_tabs.html:26
 msgid "add"
 msgstr "добавить"
 
@@ -1773,8 +1772,8 @@ msgid "Copy"
 msgstr "Копировать"
 
 #: monitorings/templates/monitoring_copy.html:140
-#: templates/_modal_window.html:32 templates/scores/score.html:224
-#: templates/scores/score.html.py:250
+#: templates/_modal_window.html:32 templates/scores/score.html:219
+#: templates/scores/score.html.py:245
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -1942,15 +1941,15 @@ msgstr "Редактирование группы наблюдателей"
 
 #: monitorings/templates/observers_group_edit.html:38
 #: monitorings/templates/observers_groups.html:41
-#: templates/exmo2010/sidebar/_sidebar.html:50
+#: templates/exmo2010/sidebar/_sidebar.html:56
 msgid "Observers"
 msgstr "Наблюдатели"
 
 #: monitorings/templates/observers_groups.html:56
 #: monitorings/templates/rating.html:96 monitorings/templates/ratings.html:42
-#: organizations/templates/_mail_history.html:27
-#: organizations/templates/_org_list.html:42
-#: organizations/templates/organization_representatives.html:55
+#: organizations/templates/organizations.html:63
+#: organizations/templates/representatives.html:55
+#: organizations/templates/send_mail_history.html:54
 #: templates/certificate_order_form.html:86
 #: templates/scores/task_scores.html:117
 msgid "Find"
@@ -2017,8 +2016,8 @@ msgid "Repr."
 msgstr "Пред."
 
 #: monitorings/templates/rating.html:123
-#: organizations/templates/organization_representatives.html:68
-#: organizations/templates/organization_representatives.html:86
+#: organizations/templates/representatives.html:68
+#: organizations/templates/representatives.html:86
 msgid "Comm."
 msgstr "Коммен."
 
@@ -2102,130 +2101,123 @@ msgstr "Выбрать нормативные параметры"
 msgid "Reset Selection"
 msgstr "Сбросить выделение "
 
-#: organizations/forms.py:48
+#: organizations/forms.py:49
 msgid "Full name or e-mail"
 msgstr "ФИО или электронная почта"
 
-#: organizations/views.py:58
-#, python-format
-msgid "Organizations for monitoring %s"
-msgstr "Организации для цикла мониторинга %s"
-
-#: organizations/views.py:66
-msgid "invitation code"
-msgstr "Код приглашения"
-
-#: organizations/views.py:67
-msgid "tasks"
-msgstr "задачи"
-
-#: organizations/views.py:184 organizations/templates/_org_list.html:28
+#: organizations/views.py:183
 msgid "Mails sent."
 msgstr "Письма отправлены."
 
-#: organizations/views.py:244
+#: organizations/views.py:233
 msgid "Organization is not selected"
 msgstr "Организация не выбрана"
 
-#: organizations/templates/_mail_history.html:35
-msgid "Letter subject and content"
-msgstr "Тема и текст письма"
-
-#: organizations/templates/_mail_history.html:36
-msgid "Invitation"
-msgstr "Приглашение"
-
-#: organizations/templates/_mail_history.html:56
-msgid "representatives"
-msgstr "представители"
-
-#: organizations/templates/_organization_email_form.html:29
-#: templates/registration/login.html:69
-#: templates/registration/password_reset_form.html:50
-msgid "is required field"
-msgstr "является обязательным полем"
-
-#: organizations/templates/_organization_email_form.html:56
-msgid "use this keyword for invitation addition in email."
-msgstr "используйте это ключевое слово для автоматического добавления кода приглашения в письмо."
-
-#: organizations/templates/_organization_email_form.html:62
-msgctxt "mail destination"
-msgid "To"
-msgstr "Кому"
-
-#: organizations/templates/_organization_email_form.html:68
-msgid "All organizations"
-msgstr "Все организации"
-
-#: organizations/templates/_organization_email_form.html:76
-msgid "All representatives"
-msgstr "Все представители"
-
-#: organizations/templates/_organization_form.html:48
-msgid "Enter a list of emails separating them by commas, spaces or newlines."
-msgstr "Введите список адресов, разделяя их запятыми, пробелами или переносами строки."
-
-#: organizations/templates/_organization_form.html:51
-msgid "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines."
-msgstr "Введите список телефонов в формате +x(xxx)xxx-xx-xx, разделяя их запятыми или переносами строки."
-
-#: organizations/templates/edit_organization.html:25
-#: organizations/templates/edit_organization.html:38
-#, python-format
-msgid "Edit organization %(org)s"
-msgstr "Редактировать организацию %(org)s"
-
-#: organizations/templates/organization_confirm_delete.html:25
-#, python-format
-msgid "Delete organization %(org)s"
-msgstr "Удалить организацию %(org)s"
-
-#: organizations/templates/organization_confirm_delete.html:30
-msgid "When you delete organization you also delete this tasks:"
-msgstr "При удалении организации Вы так же удалите следующие задачи:"
-
-#: organizations/templates/organization_confirm_delete.html:37
-msgid "Delete this organization?"
-msgstr "Удалить организацию?"
-
-#: organizations/templates/organization_list.html:51
+#: organizations/templates/_organizations_tabs.html:24
 msgid "send mail"
 msgstr "отправить письмо"
 
-#: organizations/templates/organization_list.html:52
+#: organizations/templates/_organizations_tabs.html:25
 msgid "mail history"
 msgstr "история писем"
 
-#: organizations/templates/organization_representatives.html:41
+#: organizations/templates/organizations.html:73
+#: organizations/templates/representatives.html:66
+#: organizations/templates/representatives.html:84
+msgid "Phone"
+msgstr "Телефон"
+
+#: organizations/templates/organizations.html:75
+#: tasks/templates/task_list.html:70
+#: templates/exmo2010/sidebar/_sidebar.html:35
+msgid "Tasks"
+msgstr "Задачи "
+
+#: organizations/templates/organizations.html:108
+msgid "No organizations"
+msgstr "Организаций нет"
+
+#: organizations/templates/organizations_delete.html:35
+msgid "Organization deleting"
+msgstr "Удаление организации"
+
+#: organizations/templates/organizations_delete.html:40
+msgid "When you delete organization you also delete this tasks:"
+msgstr "При удалении организации Вы так же удалите следующие задачи:"
+
+#: organizations/templates/organizations_delete.html:48
+msgid "Delete this organization?"
+msgstr "Удалить организацию?"
+
+#: organizations/templates/organizations_edit.html:40
+msgid "Organization editing"
+msgstr "Редактирование организации"
+
+#: organizations/templates/organizations_edit.html:89
+msgid "Enter a list of emails separating them by commas, spaces or newlines."
+msgstr "Введите список адресов, разделяя их запятыми, пробелами или переносами строки."
+
+#: organizations/templates/organizations_edit.html:92
+msgid "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines."
+msgstr "Введите список телефонов в формате +x(xxx)xxx-xx-xx, разделяя их запятыми или переносами строки."
+
+#: organizations/templates/representatives.html:41
 #: templates/scores/task_scores.html:71
 msgid "Save as CSV"
 msgstr "Сохранить как CSV"
 
-#: organizations/templates/organization_representatives.html:64
-#: organizations/templates/organization_representatives.html:82
+#: organizations/templates/representatives.html:64
+#: organizations/templates/representatives.html:82
 msgid "Full name"
 msgstr "ФИО"
 
-#: organizations/templates/organization_representatives.html:65
-#: organizations/templates/organization_representatives.html:83
+#: organizations/templates/representatives.html:65
+#: organizations/templates/representatives.html:83
 msgctxt "short spelling"
 msgid "E-mail"
 msgstr "Эл. почта"
 
-#: organizations/templates/organization_representatives.html:66
-#: organizations/templates/organization_representatives.html:84
-msgid "Phone"
-msgstr "Телефон"
-
-#: organizations/templates/organization_representatives.html:69
-#: organizations/templates/organization_representatives.html:87
+#: organizations/templates/representatives.html:69
+#: organizations/templates/representatives.html:87
 msgid "Date joined"
 msgstr "Зарегистрирован"
 
-#: organizations/templates/organization_representatives.html:112
+#: organizations/templates/representatives.html:112
 msgid "No representatives"
 msgstr "Представителей нет"
+
+#: organizations/templates/send_mail.html:78
+msgid "use this keyword for invitation addition in email."
+msgstr "используйте это ключевое слово для автоматического добавления кода приглашения в письмо."
+
+#: organizations/templates/send_mail.html:84
+msgctxt "mail destination"
+msgid "To"
+msgstr "Кому"
+
+#: organizations/templates/send_mail.html:90
+msgid "All organizations"
+msgstr "Все организации"
+
+#: organizations/templates/send_mail.html:98
+msgid "All representatives"
+msgstr "Все представители"
+
+#: organizations/templates/send_mail_history.html:63
+msgid "Letter subject and content"
+msgstr "Тема и текст письма"
+
+#: organizations/templates/send_mail_history.html:64
+msgid "Invitation"
+msgstr "Приглашение"
+
+#: organizations/templates/send_mail_history.html:88
+msgid "representatives"
+msgstr "представители"
+
+#: organizations/templates/send_mail_history.html:97
+msgid "No mail history"
+msgstr "Истории писем нет"
 
 #: parameters/templates/parameter_form.html:29
 #: parameters/templates/parameter_form.html:47
@@ -2319,7 +2311,7 @@ msgid "Mass assign tasks"
 msgstr "Массовое назначение"
 
 #: tasks/templates/mass_assign_tasks.html:27
-#: templates/exmo2010/sidebar/_sidebar.html:57
+#: templates/exmo2010/sidebar/_sidebar.html:63
 msgid "Task assignment"
 msgstr "Назначение задач"
 
@@ -2328,18 +2320,13 @@ msgid "Process log:"
 msgstr "Журнал обработки:"
 
 #: tasks/templates/task_history.html:35
-#: templates/exmo2010/sidebar/_sidebar.html:145
+#: templates/exmo2010/sidebar/_sidebar.html:151
 msgid "History"
 msgstr "История"
 
 #: tasks/templates/task_history.html:42
 msgid "Stage"
 msgstr "Этап"
-
-#: tasks/templates/task_list.html:70
-#: templates/exmo2010/sidebar/_sidebar.html:34
-msgid "Tasks"
-msgstr "Задачи "
 
 #: tasks/templates/task_list.html:80
 msgid "Add new task"
@@ -2422,7 +2409,7 @@ msgstr "Настройка таблицы"
 msgid "Change"
 msgstr "Изменить"
 
-#: templates/base.html:27 templates/base_print.html:25
+#: templates/base.html:28 templates/base_print.html:25
 #: templates/registration/activation_complete.html:24
 #: templates/registration/password_change_done.html:24
 msgid "AIS Infometer"
@@ -2557,19 +2544,19 @@ msgstr "Удалить цикл мониторинга?"
 msgid "Monitoring cycles list"
 msgstr "Циклы мониторинга"
 
-#: templates/exmo2010/monitoring_stats.html:24
+#: templates/exmo2010/monitoring_stats.html:25
 msgid "Organizations count"
 msgstr "Всего организаций"
 
-#: templates/exmo2010/monitoring_stats.html:25
+#: templates/exmo2010/monitoring_stats.html:26
 msgid "Organizations with task"
 msgstr "Организации назначенные экспертам"
 
-#: templates/exmo2010/monitoring_stats.html:26
+#: templates/exmo2010/monitoring_stats.html:27
 msgid "Organizations with ready task"
 msgstr "Организации с готовыми задачами"
 
-#: templates/exmo2010/monitoring_stats.html:27
+#: templates/exmo2010/monitoring_stats.html:28
 msgid "Organizations with approved task"
 msgstr "Организации с одобренными задачами"
 
@@ -2843,49 +2830,49 @@ msgstr "Цикл мониторинга \"%(mname)s\" завершен и опу
 msgid "When new monitoring will start, you'll recieve invitation code which is needed to be entered here."
 msgstr "Когда начнется новый цикл мониторинга, вам будет выслано приглашение, с новым кодом, который нужно будет ввести здесь:"
 
-#: templates/exmo2010/sidebar/_sidebar.html:29
+#: templates/exmo2010/sidebar/_sidebar.html:30
 msgid "Cycle management"
 msgstr "Управление циклом"
 
-#: templates/exmo2010/sidebar/_sidebar.html:63 templates/scores/score.html:80
+#: templates/exmo2010/sidebar/_sidebar.html:69 templates/scores/score.html:75
 msgid "Parameter type"
 msgstr "Тип параметра"
 
-#: templates/exmo2010/sidebar/_sidebar.html:67
+#: templates/exmo2010/sidebar/_sidebar.html:73
 msgid "Reports"
 msgstr "Отчеты"
 
-#: templates/exmo2010/sidebar/_sidebar.html:72
+#: templates/exmo2010/sidebar/_sidebar.html:78
 msgid "Task filtering"
 msgstr "Фильтрация задач"
 
-#: templates/exmo2010/sidebar/_sidebar.html:94
+#: templates/exmo2010/sidebar/_sidebar.html:100
 msgid "Experts"
 msgstr "Эксперты"
 
-#: templates/exmo2010/sidebar/_sidebar.html:98
+#: templates/exmo2010/sidebar/_sidebar.html:104
 msgid "Presence of the parameter"
 msgstr "Наличие параметра"
 
-#: templates/exmo2010/sidebar/_sidebar.html:113
+#: templates/exmo2010/sidebar/_sidebar.html:119
 msgid "Export"
 msgstr "Экспорт"
 
-#: templates/exmo2010/sidebar/_sidebar.html:118
+#: templates/exmo2010/sidebar/_sidebar.html:124
 msgid "Criterion"
 msgstr "Критерий"
 
-#: templates/exmo2010/sidebar/_sidebar.html:126
+#: templates/exmo2010/sidebar/_sidebar.html:132
 msgid "You must have approved task for export"
 msgstr "Для экспорта необходима одобренная задача"
 
-#: templates/exmo2010/sidebar/_sidebar.html:136
+#: templates/exmo2010/sidebar/_sidebar.html:142
 #: templates/scores/task_scores.html:47
 msgid "Scores table"
 msgstr "Таблица оценок"
 
-#: templates/exmo2010/sidebar/_sidebar.html:140
-#: templates/scores/score.html:117
+#: templates/exmo2010/sidebar/_sidebar.html:146
+#: templates/scores/score.html:112
 msgid "Scores"
 msgstr "Оценки"
 
@@ -3066,6 +3053,11 @@ msgstr "Для правильной работы сайта включите Jav
 msgid "This account is inactive. Did you recieve the letter containing a registration confirmation link?"
 msgstr "Эта учетная запись не активирована. Вы получили письмо со ссылкой для подтверждения регистрации?"
 
+#: templates/registration/login.html:69
+#: templates/registration/password_reset_form.html:50
+msgid "is required field"
+msgstr "является обязательным полем"
+
 #: templates/registration/login.html:89
 msgid "Send the activation letter again"
 msgstr "Выслать письмо подтверждения повторно"
@@ -3216,7 +3208,7 @@ msgstr[2] "Показать все %(counter)s комментариев"
 msgid "Hide comments"
 msgstr "Скрыть комментарии"
 
-#: templates/scores/_recomm_comments.html:47 templates/scores/score.html:358
+#: templates/scores/_recomm_comments.html:47 templates/scores/score.html:353
 msgid "Deadline for answer to your comment is"
 msgstr "Крайний срок ответа на ваш комментарий"
 
@@ -3225,7 +3217,7 @@ msgctxt "verb"
 msgid "Comment"
 msgstr "Комментировать"
 
-#: templates/scores/_recomm_comments.html:64 templates/scores/score.html:384
+#: templates/scores/_recomm_comments.html:64 templates/scores/score.html:379
 msgid "Post comment"
 msgstr "Оставить комментарий"
 
@@ -3355,7 +3347,7 @@ msgstr "Вы не можете оставлять новые комментар�
 
 #: templates/scores/recommendations.html:153
 #: templates/scores/recommendations_print.html:104
-#: templates/scores/score.html:255 templates/scores/score.html.py:259
+#: templates/scores/score.html:250 templates/scores/score.html.py:254
 #: templates/scores/task_scores_print.html:79
 msgid "No recommendations"
 msgstr "Рекомендаций нет"
@@ -3403,139 +3395,139 @@ msgid "Order Certificate with rating position of the website and its openness va
 msgstr "Закажите сертификат с местом сайта в рейтинге и оценкой открытости."
 
 #: templates/scores/recommendations_print.html:116
-#: templates/scores/score.html:85
+#: templates/scores/score.html:80
 msgid "Grounds"
 msgstr "Обоснование"
 
-#: templates/scores/score.html:59
+#: templates/scores/score.html:54
 msgid "Set non-relevant"
 msgstr "Признать нерелевантным"
 
-#: templates/scores/score.html:62
+#: templates/scores/score.html:57
 msgid "Set relevant"
 msgstr "Признать релевантным"
 
-#: templates/scores/score.html:69 templates/scores/score.html.py:394
+#: templates/scores/score.html:64 templates/scores/score.html.py:389
 #, python-format
 msgid "This parameter is considered non-relevant for organization %(org_name)s."
 msgstr "Этот параметр признан нерелевантным для организации %(org_name)s."
 
-#: templates/scores/score.html:73
+#: templates/scores/score.html:68
 msgid "Parameter characteristics"
 msgstr "Характеристики параметра"
 
-#: templates/scores/score.html:77
+#: templates/scores/score.html:72
 #, python-format
 msgid "The parameter is evaluated for the website <a href=\"%(org_url)s\" target=\"_blank\">%(org_url)s</a> of the <a href=\"%(task_url)s\">%(org_name)s</a> within the rating <a href=\"%(rating_url)s\">%(monitoring)s</a>."
 msgstr "Оценивается для сайта <a href=\"%(org_url)s\" target=\"_blank\">%(org_url)s</a> организации <a href=\"%(task_url)s\">%(org_name)s</a> в рейтинге <a href=\"%(rating_url)s\">%(monitoring)s</a>."
 
-#: templates/scores/score.html:78
+#: templates/scores/score.html:73
 msgid "Social significance coefficient equals"
 msgstr "Коэффициент социальной значимости равен"
 
-#: templates/scores/score.html:90
+#: templates/scores/score.html:85
 msgid "Rating procedure"
 msgstr "Порядок оценки"
 
-#: templates/scores/score.html:95
+#: templates/scores/score.html:90
 msgid "Notes"
 msgstr "Примечание"
 
-#: templates/scores/score.html:103
+#: templates/scores/score.html:98
 msgid "Initial score`s author"
 msgstr "Автор первичной оценки"
 
-#: templates/scores/score.html:109
+#: templates/scores/score.html:104
 msgid "Current score`s author"
 msgstr "Автор текущей оценки"
 
-#: templates/scores/score.html:121
+#: templates/scores/score.html:116
 msgid "show explanations"
 msgstr "показать пояснения"
 
-#: templates/scores/score.html:122
+#: templates/scores/score.html:117
 msgid "hide initial scores"
 msgstr "скрыть первичные оценки"
 
-#: templates/scores/score.html:122
+#: templates/scores/score.html:117
 msgid "show initial scores"
 msgstr "показать первичные оценки"
 
-#: templates/scores/score.html:130 templates/scores/score.html.py:377
+#: templates/scores/score.html:125 templates/scores/score.html.py:372
 msgid "Change score"
 msgstr "Изменить оценку"
 
-#: templates/scores/score.html:138
+#: templates/scores/score.html:133
 msgid "<strong>Availability ('Found')</strong> describes the fact of publishing the information or service corresponding to the particular parameter at the official website (0; 1)."
 msgstr "<strong>Наличие</strong> — факт размещения на официальном сайте информации или сервиса, соответствующих параметру (0; 1)."
 
-#: templates/scores/score.html:140
+#: templates/scores/score.html:135
 msgid "<strong>Comprehensiveness ('Complete')</strong> describes the sufficiency of the information published at the official websites for forming an integral idea by the particular parameter (1; 2; 3)."
 msgstr "<strong>Полнота</strong> — достаточность объема размещенной на официальном сайте информации для формирования целостного представления по соответствующему параметру (1; 2; 3)."
 
-#: templates/scores/score.html:143
+#: templates/scores/score.html:138
 msgid "<strong>Relevance ('Topical')</strong> describes the updating rate of the information available at the official website as well as its relevance at the moment of the expert analyzes (1; 2; 3)."
 msgstr "<strong>Актуальность</strong> — частота обновления информации на официальном сайте и сохранение ценности информации на момент ее анализа экспертами (1; 2; 3)."
 
-#: templates/scores/score.html:146
+#: templates/scores/score.html:141
 msgid "<strong>Navigability ('Accessible')</strong> describes convenience for finding information relevant to the given parameter at the official website. It takes in consideration whether the information is placed in a correct section, and how many consecutive hyperlinks, starting from the home page, are to be followed (1; 2; 3)."
 msgstr "<strong>Навигационная доступность</strong> — удобство поиска размещенной на официальном сайте соответствующей параметру информации, с учетом логичности раздела и количества переходов с главной страницы сайта (1; 2; 3)."
 
-#: templates/scores/score.html:149
+#: templates/scores/score.html:144
 msgid "<strong>HTML accessibility ('Hypertext')</strong> describes the fact of placing the parameter information at the official website in HTML format, facilitating the search (0; 1)."
 msgstr "<strong>HTML доступность</strong> — факт размещения на официальном сайте соответствующей параметру информации на языке гипертекстовой разметки HTML, который обеспечивает для пользователей удобство ее поиска средствами веб-обозревателя (0; 1)."
 
-#: templates/scores/score.html:152
+#: templates/scores/score.html:147
 msgid "<strong>File accessibility ('Document')</strong> describes the fact of placing the document required by the given parameter at the official website in a format that allows the user to store it at his/her hardware devices, to search for and to copy extracts of the text in the document so that the users can further use the information (0; 1)."
 msgstr "<strong>Файловая доступность</strong> — факт размещения на официальном сайте соответствующего параметру документа в формате, обеспечивающем возможность его сохранения на технические средства пользователя и допускающем возможность поиска и копирования фрагмента текста в документе, которая обеспечивает для пользователей дальнейшее использование информации (0; 1)."
 
-#: templates/scores/score.html:155
+#: templates/scores/score.html:150
 msgid "<strong>Graphic accessibility ('Image')</strong> describes the fact of placing the document required by the given parameter at the official website in the graphic format the actual image of the document so that the users can read its original version (0; 1)."
 msgstr "<strong>Графическая доступность</strong> — факт размещения на официальном сайте соответствующего параметру документа в графическом формате точного образа документа, который обеспечивает для пользователей возможность ознакомиться с оригиналом документа (0; 1)."
 
-#: templates/scores/score.html:157
+#: templates/scores/score.html:152
 msgid "<strong>Parameter`s score</strong> is the openness of the parameter calculated as a product of criteria fines."
 msgstr "<strong>Оценка параметра</strong> — оценка открытости параметра, вычисляемая перемножением штрафов критериев, подробности см. в методике."
 
-#: templates/scores/score.html:158
+#: templates/scores/score.html:153
 msgid "<strong>Score changes</strong> is the difference between current parameter`s score and the parameter`s score after the initial evaluation."
 msgstr "<strong>Изменение оценки</strong> — разница между текущей оценкой параметра и оценкой параметра после первоначальной оценки."
 
-#: templates/scores/score.html:174 templates/scores/task_scores_print.html:44
+#: templates/scores/score.html:169 templates/scores/task_scores_print.html:44
 msgid "Parameter`s score"
 msgstr "Оценка параметра"
 
-#: templates/scores/score.html:177
+#: templates/scores/score.html:172
 msgid "Score changes"
 msgstr "Изменение оценки"
 
-#: templates/scores/score.html:214 templates/scores/score.html.py:292
+#: templates/scores/score.html:209 templates/scores/score.html.py:287
 #: templates/scores/task_scores_print.html:68
 msgid "Found information links"
 msgstr "Ссылки на найденную информацию"
 
-#: templates/scores/score.html:217 templates/scores/score.html.py:243
+#: templates/scores/score.html:212 templates/scores/score.html.py:238
 msgid "edit"
 msgstr "редактировать"
 
-#: templates/scores/score.html:229 templates/scores/score.html.py:233
+#: templates/scores/score.html:224 templates/scores/score.html.py:228
 #: templates/scores/task_scores_print.html:72
 msgid "No links"
 msgstr "Ссылок нет"
 
-#: templates/scores/score.html:346
+#: templates/scores/score.html:341
 msgid "Close without answer"
 msgstr "Закрыть без ответа"
 
-#: templates/scores/score.html:348
+#: templates/scores/score.html:343
 msgid "Open comment"
 msgstr "Открыть комментарий"
 
-#: templates/scores/score.html:367
+#: templates/scores/score.html:362
 msgid "There are no comments"
 msgstr "Комментариев нет"
 
-#: templates/scores/score.html:386
+#: templates/scores/score.html:381
 msgid "Post comment and change score"
 msgstr "Оставить комментарий и изменить оценку"
 

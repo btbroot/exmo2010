@@ -1,0 +1,101 @@
+{% extends "base_sidebar.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static widget_tweaks %}
+
+{% block title %}{{ monitoring.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'jquery-ui/jquery-ui-1.10.4.custom.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/send_mail.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'js/send_mail_history.js' %}"></script>
+{% endblock %}
+
+{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
+
+{% block content %}
+    <div class="send-mail-content-block">
+        <h2>{% trans "Organizations" %}</h2>
+
+        {% include "_organizations_tabs.html" with tab='mail_history' %}
+
+        <div class="tab-content">
+            {% if is_mail_history_exist %}
+                <table class="base-table">
+                    <caption>
+                        <form class="filter" action="" method="GET">
+                            <div class="table">
+                                <div class="table-cell datepicker">
+                                    {{ view.queryform.timestamp|attr:"maxlength:10" }}
+                                </div>
+                                <div class="table-cell submit-cell">
+                                    <input type="submit" value="{% trans 'Find' %}" />
+                                </div>
+                            </div>
+                        </form>
+                    </caption>
+
+                    <thead>
+                        <tr>
+                            <th>{% trans "Date and time" %} <span class="arrow">↓</span></th>
+                            <th>{% trans "Letter subject and content" %}</th>
+                            <th>{% trans "Invitation" %}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for mail in mail_history %}
+                            <tr>
+                                <td>{{ mail.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
+                                <td class="pseudo">
+                                    <div class="preview-container">
+                                        <a class="pseudo">{{ mail.subject }}</a>
+                                    </div>
+                                    <div class="hidden">
+                                        <h2>{{ mail.subject }}</h2>{{ mail.comment|safe }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        {% if mail.dst_orgs_display %}
+                                            {% trans "organizations" %} ({{ mail.dst_orgs_display|lower }})
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% if mail.dst_orgusers_display %}
+                                            {% trans "representatives" %} ({{ mail.dst_orgusers_display|lower }})
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                {% trans 'No mail history' %}
+            {% endif %}
+        </div>
+    </div>
+{%endblock%}

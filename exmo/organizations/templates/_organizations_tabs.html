@@ -1,8 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -21,12 +19,9 @@
 {% endcomment %}
 {% load i18n %}
 
-{% with path=request.path %}
-    <li {% if path == url or path == url2 or path == url3 or path == url4 or path == url5 or path == url6 %}class="selected"{% endif %}>
-        {% if path != url and path != url2 and path != url3 and path != url4 and path != url5 and path != url6 %}
-            <a href="{{ url }}">{% trans title %}</a>
-        {% else %}
-            {% trans title %}
-        {% endif %}
-    </li>
-{% endwith %}
+<div class="tabs">
+    <span {% if tab == 'all' %}class="active"{% endif %}><a href="{% url 'exmo2010:organizations' monitoring.pk %}">{% trans 'all' %}</a></span>
+    <span {% if tab == 'send_mail' %}class="active"{% endif %}><a href="{% url 'exmo2010:send_mail' monitoring.pk %}">{% trans 'send mail' %}</a></span>
+    <span {% if tab == 'mail_history' %}class="active"{% endif %}><a href="{% url 'exmo2010:send_mail_history' monitoring.pk %}">{% trans 'mail history' %}</a></span>
+    <span {% if tab == 'add' %}class="active"{% endif %}><a href="{% url 'exmo2010:organizations_add' monitoring.pk %}">{% trans 'add' %}</a></span>
+</div>

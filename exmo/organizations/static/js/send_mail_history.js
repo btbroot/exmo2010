@@ -19,32 +19,14 @@
 //
 
 $(document).ready(function () {
-    // help text windows handler
-    function helptextHandler( e ) {
-        var top = $(e.target).position().top;
-        var left = $(e.target).position().left + $(e.target).width() + 15;
-        $('.help-text').css('top', top).css('left', left).show();
-        $('.alert-info').hide();
-        $(e.data.p).show();
-    }
+    // calendar initializing
+    var settings = $.datepicker.regional[$('html').attr('lang')];
+    settings['numberOfMonths'] = 3;
+    settings['showCurrentAtPos'] = 1;
+    $('.datepicker input').datepicker(settings);
 
-    $("#id_email").focusin({p: '#help-emails'}, helptextHandler);
-    $("#id_phone").focusin({p: '#help-phones'}, helptextHandler);
-    $("textarea").focusout(function(){$('.help-text').hide();});
-
-    // allowed keys: numbers, +, -, (, ), whitespace, comma
-    function phone_validate(e) {
-        var theEvent = e || window.event;
-        var key = theEvent.keyCode || theEvent.which;
-        key = String.fromCharCode(key);
-        var regex = /[0-9]|\+|\-|\(|\)|\s|\,/;
-        if( !regex.test(key) ) {
-            theEvent.returnValue = false;
-            if(theEvent.preventDefault) theEvent.preventDefault();
-        }
-    }
-
-    $('#id_phone').keypress(function(e) {
-        phone_validate(e);
+    $("td.pseudo").click(function( e ) {
+        $(this).children('div.preview-container').toggle();
+        $(this).children('div.hidden').toggle();
     });
 });

@@ -3,6 +3,7 @@
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,7 +22,7 @@
 {% load i18n future %}
 
 <div id=monitoring_stats>
-    {% trans 'Organizations count' %}: <a href="{% url 'exmo2010:organization_list' monitoring.pk %}">{{ organization_all_count }}</a><br />
+    {% trans 'Organizations count' %}: <a href="{% url 'exmo2010:organizations' monitoring.pk %}">{{ organization_all_count }}</a><br />
     {% trans 'Organizations with task' %}: <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ organization_with_task_count }}</a><br />
     {% trans 'Organizations with ready task' %}: {{ organization_ready_count }}<br />
     {% trans 'Organizations with approved task' %}: <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter2={{ models.Task.TASK_APPROVED }}">{{ organization_approved_count }}</a><br />

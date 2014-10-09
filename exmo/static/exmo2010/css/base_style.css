@@ -345,10 +345,6 @@ table.base-table th {
     background-color: #fff;
 }
 
-table.base-table tbody tr:hover td {
-    background-color: #FFFFD6;
-}
-
 table.base-table tfoot > tr > td {
     background-color: #fff;
     border-left: none;
@@ -356,6 +352,10 @@ table.base-table tfoot > tr > td {
 
 table.base-table tbody tr:nth-of-type(odd) {
     background: #f5f5f5;
+}
+
+table.base-table tbody tr:hover {
+    background-color: #ffffd6;
 }
 
 .table-implicit {

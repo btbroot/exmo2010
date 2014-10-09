@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,9 +36,14 @@
             {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Tasks" only %}
 
             {% if is_expertA %}
-                {% url 'exmo2010:organization_list' monitoring.pk as url %}
+                {% url 'exmo2010:organizations' monitoring.pk as url %}
+                {% url 'exmo2010:organizations_add' monitoring.pk as url2 %}
+                {% url 'exmo2010:organizations_update' monitoring.pk org.pk as url3 %}
+                {% url 'exmo2010:organizations_delete' monitoring.pk org.pk as url4 %}
+                {% url 'exmo2010:send_mail' monitoring.pk as url5 %}
+                {% url 'exmo2010:send_mail_history' monitoring.pk as url6 %}
                 <!-- {% trans "Organizations" %} -->
-                {% include "exmo2010/sidebar/_item.html" with request=request url=url title="Organizations" only %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 url3=url3 url4=url4 url5=url5 url6=url6 title="Organizations" only %}
 
                 {% url 'exmo2010:representatives' monitoring.pk as url %}
                 <!-- {% trans "Representatives" %} -->

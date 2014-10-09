@@ -1,5 +1,6 @@
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -57,4 +58,13 @@ class RepresentativesQueryForm(QueryForm):
                 'user__email__icontains'
             ],
             'organizations': 'organization__pk',
+        }
+
+
+class InviteOrgsQueryForm(QueryForm):
+    timestamp = forms.DateField(required=False, widget=forms.TextInput())
+
+    class Meta:
+        filters = {
+            'timestamp': 'timestamp__gte',
         }

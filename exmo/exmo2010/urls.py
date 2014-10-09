@@ -29,7 +29,8 @@ from django.views.generic import TemplateView, RedirectView
 from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
                                ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView, MonitoringCopyView)
-from organizations.views import OrgEditView, OrgDeleteView, RepresentativesView
+from organizations.views import (OrganizationsView, OrganizationsEditView, OrganizationsDeleteView,
+                                 SendMailView, SendMailHistoryView, RepresentativesView)
 from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
 from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
 from scores.views import (RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments,
@@ -126,10 +127,12 @@ monitoring_patterns += named_urls('tasks.views',
 )
 
 monitoring_patterns += named_urls('organizations.views',
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_delete/$', OrgDeleteView, 'organization_delete'),
-    (r'^(?P<monitoring_pk>\d+)/organization/(?P<org_pk>\d+)_update/$', OrgEditView, 'organization_update'),
-    (r'^(?P<monitoring_pk>\d+)/organizations/$', 'organization_list'),
-    (r'^(?P<monitoring_pk>\d+)/post_org_email/$', 'post_org_email'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/$', OrganizationsView, 'organizations'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/add/$', OrganizationsEditView, 'organizations_add'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_update/$', OrganizationsEditView, 'organizations_update'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_delete/$', OrganizationsDeleteView, 'organizations_delete'),
+    (r'^(?P<monitoring_pk>\d+)/send_mail/$', SendMailView, 'send_mail'),
+    (r'^(?P<monitoring_pk>\d+)/send_mail/history/$', SendMailHistoryView, 'send_mail_history'),
     (r'^(?P<monitoring_pk>\d+)/representatives/$', RepresentativesView, 'representatives'),
     (r'^(?P<monitoring_pk>\d+)/representatives_export/$', 'representatives_export'),
 )
@@ -257,7 +260,13 @@ def crumbs_tree(is_expert=False):
             'monitoring_parameter_import':    _('Import parameter'),
             'monitoring_organization_import': _('Import organizations'),
 
-            'organization_list': _('Monitoring cycle'),
+            'organizations': _('Monitoring cycle'),
+            'organizations_add': _('Monitoring cycle'),
+            'organizations_update': _('Monitoring cycle'),
+            'organizations_delete': _('Monitoring cycle'),
+
+            'send_mail': _('Monitoring cycle'),
+            'send_mail_history': _('Monitoring cycle'),
 
             'representatives': _('Monitoring cycle'),
 
@@ -274,10 +283,6 @@ def crumbs_tree(is_expert=False):
 
             'tasks_by_monitoring': (_('Monitoring cycle'), {
                 'task_add':     _('Add task'),
-
-                'organization_update':    _('Edit organization'),
-                'organization_delete':    _('Delete organization'),
-
                 'recommendations': _('Organization'),
                 'task_scores': (_('Organization'), {
                     # Task
