@@ -87,6 +87,11 @@ if TEST:
         'django.contrib.auth.hashers.MD5PasswordHasher',
     )
 
+    import logging
+    logging.getLogger('south').setLevel(logging.WARNING)
+    logging.getLogger('configuration').setLevel(logging.WARNING)
+    logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(logging.WARNING)
+
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # A secret key for this particular Django installation. Used in secret-key hashing algorithms.
@@ -108,7 +113,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # MODELTRANSLATION_FALLBACK_LANGUAGES will be used as fallback language if some model does not
-# have transalted field to other language.
+# have translated field to other language.
 MODELTRANSLATION_FALLBACK_LANGUAGES = ('en', 'ru', 'ka', 'az')
 
 USE_ETAGS = True

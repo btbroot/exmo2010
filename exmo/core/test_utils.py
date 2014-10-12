@@ -59,7 +59,7 @@ class BaseSeleniumTestCase(LiveServerTestCase):
         if not getattr(cls, '__unittest_skip__', False):
             webdriver_type = getattr(settings, 'SELENIUM_WEBDRIVER', 'FALLBACK')
             if webdriver_type == 'FALLBACK':
-                for webdriver_type in 'PhantomJS Firefox Chrome Opera'.split():
+                for webdriver_type in 'Firefox PhantomJS Chrome Opera'.split():
                     try:
                         cls.webdrv = getattr(webdriver, webdriver_type)()
                     except Exception:
@@ -90,9 +90,9 @@ class BaseSeleniumTestCase(LiveServerTestCase):
 
     def _assertWebElementMethod(self, selector, method, expected_result, wait_timeout=TIMEOUT):
         def condition(*args):
-            element = self.find(selector)
-            if element:
-                return method(element) == expected_result
+            elements = self.findall(selector)
+            if elements:
+                return all(item == expected_result for item in map(method, elements))
         WebDriverWait(self.webdrv, wait_timeout).until(condition)
 
     def assertVisible(self, selector, wait_timeout=TIMEOUT):

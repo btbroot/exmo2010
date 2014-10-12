@@ -17,7 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 from nose.plugins.attrib import attr
@@ -29,17 +29,17 @@ from exmo2010.models import Monitoring, MONITORING_PUBLISHED
 
 @attr('selenium')
 class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
-    # Scenario: Check if initial openness column is display
+    # Check if initial openness column is display
     modal_window = '.modal-open'
     init_openness = '.init-openness'
 
     def setUp(self):
         # GIVEN expert B account
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
         expertB.profile.is_expertB = True
         # AND published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-        # AND organzation at this monitoring
+        # AND organization at this monitoring
         self.organization = mommy.make(Organization, monitoring=self.monitoring)
         # AND task for expert B
         self.task = mommy.make(
@@ -75,12 +75,12 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         self.find(self.modal_window).click()
         # THEN checkboxes should become visible
         self.assertVisible('#id_rt_initial_openness')
-        # WHEN i click initial openness checkbox
+        # WHEN I click initial openness checkbox
         self.find('#id_rt_initial_openness').click()
         # AND submit my changes
         self.find('#modal_window input[type="submit"]').click()
         # THEN initial openness column should be displayed
-        self.assertEqual(self.find(self.init_openness).is_displayed(), True)
+        self.assertVisible(self.init_openness)
 
 
 @attr('selenium')
