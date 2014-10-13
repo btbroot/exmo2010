@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,11 +17,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.test import TestCase
@@ -33,10 +33,10 @@ from core.test_utils import OptimizedTestCase
 from core.utils import get_named_patterns
 from exmo2010.middleware import CustomLocaleMiddleware
 from exmo2010.models import (
-    Group, Monitoring, Organization, Parameter, Score, PhonesField,
-    Task, UserProfile, MONITORING_PUBLISHED
+    Group, Monitoring, ObserversGroup, Organization, Parameter,
+    Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED
 )
-from exmo2010.views import CertificateOrderView
+from exmo2010.views import CertificateOrderView, ckeditor_upload
 
 
 class TestPhonesFieldValidation(TestCase):
@@ -351,3 +351,86 @@ class CustomLocaleMiddlewareTest(TestCase):
         self.assertIsInstance(response, HttpResponseRedirect)
         # AND response should have expected url to redirect
         self.assertEqual(response['Location'], 'http://test/ru/')
+
+
+class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
+    # ckeditor_upload
+
+    # Should forbid all user to get upload url.
+    # Should forbid anonymous or unprivileged user to upload files
+
+    @classmethod
+    def setUpClass(cls):
+        super(CKEditorImageUploadAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization, task and parameter
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND organization representative
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+
+    def test_redirect_get_anonymous(self):
+        # WHEN anonymous user get upload url
+        request = Mock(user=self.users['anonymous'], method='GET')
+        request.build_absolute_uri.return_value = 'http://localhost/ru/accounts/login/'
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(ckeditor_upload(request).status_code, 302)
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_get(self, username, *args):
+        # WHEN authenticated user get upload url
+        request = Mock(user=self.users[username], method='GET')
+        # THEN response status_code should be 405 (not allowed)
+        self.assertEqual(ckeditor_upload(request).status_code, 405)
+
+    def test_redirect_post_anonymous(self):
+        # WHEN anonymous user upload file
+        request = Mock(user=self.users['anonymous'], method='POST',
+                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
+        request.build_absolute_uri.return_value = ''
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(ckeditor_upload(request).status_code, 302)
+
+    @parameterized.expand(zip(['orguser', 'observer', 'user']))
+    def test_forbid_post_comment(self, username, *args):
+        # WHEN unprivileged user upload file
+        request = Mock(user=self.users[username], method='POST',
+                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, ckeditor_upload, request)
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'translator']))
+    def test_allow_post(self, username, *args):
+        # WHEN privileged user upload file
+        request = Mock(user=self.users[username], method='POST',
+                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(ckeditor_upload(request).status_code, 200)
