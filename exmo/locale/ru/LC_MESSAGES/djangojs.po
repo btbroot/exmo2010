@@ -70,7 +70,7 @@ msgstr "Открыть комментарий"
 
 #: static/scores/score_expert.js:242
 msgid "Score is invalid, recommendation can not be changed."
-msgstr "Оценка выставлена неверно, рекоммендации не могут быть изменены."
+msgstr "Оценка выставлена неверно, рекомендации не могут быть изменены."
 
 #: static/scores/score_expert.js:248
 msgid "Your browser is not supported"

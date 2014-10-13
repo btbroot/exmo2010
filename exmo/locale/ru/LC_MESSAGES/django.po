@@ -3247,7 +3247,7 @@ msgstr "Вид"
 #: templates/scores/recommendations.html:63
 #: templates/scores/task_scores.html:52
 msgid "recommendations list"
-msgstr "список рекоммендаций"
+msgstr "список рекомендаций"
 
 #: templates/scores/recommendations.html:64
 #: templates/scores/task_scores.html:53
@@ -3286,7 +3286,7 @@ msgstr "Сайт <a href=\"%(org_url)s\" target=\"_blank\">%(trim_org_url)s</a>.
 #: templates/scores/task_scores.html:95
 #, python-format
 msgid "Fulfilled recommendations make up %(delta)s%% website openness increase."
-msgstr "Выполнено рекоммендаций на %(delta)s%%."
+msgstr "Выполнено рекомендаций на %(delta)s%%."
 
 #: templates/scores/recommendations.html:100
 #: templates/scores/recommendations_print.html:52
