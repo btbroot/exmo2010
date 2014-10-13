@@ -1075,13 +1075,13 @@ input.name_input[type="text"] {
 .progressbar {
     margin: 0 auto;
     width: 60px;
-    height: 1px;
+    height: 2px;
     background-color: #cd0200;
     border: 1px solid #cd0200;
 }
 
 .progressbar > div {
-    height: 1px;
+    height: 2px;
     float: left;
     background-color: #ffffff;
 }
