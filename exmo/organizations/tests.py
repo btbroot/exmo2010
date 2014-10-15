@@ -27,13 +27,15 @@ from django.core import mail
 from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from livesettings import config_value
+from livesettings import config_get, config_value
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
-from exmo2010.models import *
+from exmo2010.models import (
+    Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED
+)
 
 
 class OrgCreateTestCase(TestCase):
@@ -309,7 +311,9 @@ class OrgEmailHeadersTestCase(TestCase):
     def test_send_org_emails(self):
         url = reverse('exmo2010:send_mail', args=[self.org.monitoring.pk])
         post_data = {'comment': u'Содержание', 'subject': u'Тема', 'dst_orgs_noreg': '1'}
-        server_address = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
+        server_address = config_get('EmailServer', 'DEFAULT_FROM_EMAIL')
+        server_email_address = 'test@domain.com'
+        server_address.update(u'Имя хоста <{}>'.format(server_email_address))
 
         # WHEN I submit email form
         response = self.client.post(url, post_data, follow=True)
@@ -326,9 +330,9 @@ class OrgEmailHeadersTestCase(TestCase):
         self.assertEqual(message.subject, u'Тема')
         self.assertEqual(message.to, [self.org.email])
         # AND should have headers for Message Delivery Notification and ID
-        self.assertEqual(message.extra_headers['Disposition-Notification-To'], server_address)
-        self.assertEqual(message.extra_headers['Return-Receipt-To'], server_address)
-        self.assertEqual(message.extra_headers['X-Confirm-Reading-To'], server_address)
+        self.assertEqual(message.extra_headers['Disposition-Notification-To'], server_email_address)
+        self.assertEqual(message.extra_headers['Return-Receipt-To'], server_email_address)
+        self.assertEqual(message.extra_headers['X-Confirm-Reading-To'], server_email_address)
         self.assertEqual(message.extra_headers['Message-ID'], '<%s@%s>' % (self.org.inv_code, DNS_NAME))
 
         # TODO: move out this into new TestCase

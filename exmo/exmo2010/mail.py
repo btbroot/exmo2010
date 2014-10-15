@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import re
 from urllib import urlencode
 
 from django.conf import settings
@@ -75,7 +76,8 @@ def _mail_claim(request, subject, claim, context):
     for email, language in users.values_list('email', 'userprofile__language'):
         if email:
             with translation.override(language or settings.LANGUAGE_CODE):
-                send_email.delay(ExmoEmail(template_basename='mail/score_claim', context=context, to=[email], subject=subject))
+                send_email.delay(ExmoEmail(template_basename='mail/score_claim',
+                                           context=context, to=[email], subject=subject))
 
 
 def mail_claim_new(request, claim):
@@ -105,7 +107,8 @@ def mail_clarification(request, clarification):
     for email, language in users.values_list('email', 'userprofile__language'):
         if email:
             with translation.override(language or settings.LANGUAGE_CODE):
-                send_email.delay(ExmoEmail(template_basename='mail/score_clarification', context=context, to=[email], subject=subject))
+                send_email.delay(ExmoEmail(template_basename='mail/score_clarification',
+                                           context=context, to=[email], subject=subject))
 
 
 def mail_organization(org, subject, body):
@@ -118,10 +121,13 @@ def mail_organization(org, subject, body):
         to=filter(None, org.email.split(', ')),
         subject=subject)
 
+    match = re.search('([\w.-]+)@([\w.-]+)', message.from_email)
+    extra_headers_email = match.group() if match else ''
+
     message.extra_headers = {
-        'Disposition-Notification-To': message.from_email,
-        'X-Confirm-Reading-To': message.from_email,
-        'Return-Receipt-To': message.from_email,
+        'Disposition-Notification-To': extra_headers_email,
+        'X-Confirm-Reading-To': extra_headers_email,
+        'Return-Receipt-To': extra_headers_email,
         'Message-ID': '<%s@%s>' % (org.inv_code, DNS_NAME)}
 
     send_org_email.delay(message, org.pk)
@@ -158,7 +164,8 @@ def mail_certificate_order(request, email_data):
     )
 
     to = config_value('EmailServer', 'CERTIFICATE_ORDER_NOTIFICATION_EMAIL')
-    send_email.delay(ExmoEmail(template_basename='mail/certificate_order_email', context=context, to=[to], subject=subject))
+    send_email.delay(ExmoEmail(template_basename='mail/certificate_order_email',
+                               context=context, to=[to], subject=subject))
 
 
 def mail_param_edited(param, form):
@@ -193,7 +200,8 @@ def mail_param_edited(param, form):
     for email, language in set(orgusers) | set(expertsA):
         if email:
             with translation.override(language or settings.LANGUAGE_CODE):
-                send_email.delay(ExmoEmail(template_basename='mail/parameter_email', context=context, to=[email], subject=subject))
+                send_email.delay(ExmoEmail(template_basename='mail/parameter_email',
+                                           context=context, to=[email], subject=subject))
 
 
 def mail_comment(request, comment):
@@ -260,7 +268,8 @@ def mail_task_assigned(task):
     context = dict(task=task, subject=subject, url='http://%s%s' % (Site.objects.get_current(), url))
 
     with translation.override(task.user.profile.language or settings.LANGUAGE_CODE):
-        message = ExmoEmail(template_basename='mail/task_user_assigned', context=context, subject=subject, to=[task.user.email])
+        message = ExmoEmail(template_basename='mail/task_user_assigned',
+                            context=context, subject=subject, to=[task.user.email])
         send_email.delay(message)
 
 
@@ -307,4 +316,5 @@ def mail_register_activation(request, user, activation_key):
         site=site,
         subject=subject)
 
-    send_email.delay(ExmoEmail(template_basename='mail/activation_email', context=context, subject=subject, to=[user.email]))
+    send_email.delay(ExmoEmail(template_basename='mail/activation_email',
+                               context=context, subject=subject, to=[user.email]))
