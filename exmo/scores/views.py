@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import re
 from collections import defaultdict
 from datetime import datetime
 
@@ -207,6 +208,7 @@ def post_score_comment(request, score_pk):
     return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:score', args=[score.pk]))
 
 
+# TODO: maybe get rid of with_autoscore argument, but instead update BeautifulSoup to version 4
 def _add_comment(request, score, with_autoscore=False):
     """
     Handle new comment adding from POST data.
@@ -222,6 +224,9 @@ def _add_comment(request, score, with_autoscore=False):
         return
 
     message = comment_form.cleaned_data['comment']
+
+    # BUG 2174 Replace &nbsp; with regular space to fix urlization.
+    message = re.sub('&nbsp;', ' ', message)
 
     if with_autoscore:
         # Replace all autoscore bricks with normal text.

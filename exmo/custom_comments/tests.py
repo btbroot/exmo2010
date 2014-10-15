@@ -217,6 +217,7 @@ class PostCommentTestCase(OptimizedTestCase):
         ('<p>&id;</p>', '<p>&amp;id;</p>'),  # ampersand and semicolon
         ('<p>modules.php?name=info&id=37</p>', '<p>modules.php?name=info&amp;id=37</p>'),  # ampersand in url
         ('<p>modules.php?name=info&amp;id=37</p>', '<p>modules.php?name=info&amp;id=37</p>'),  # from CKEditor
+        ('<p>&nbsp;111</p>', '<p> 111</p>'),  # non-breakable space should be replaced with space
     ])
     @patch('scores.views.mail_comment', Mock())  # do not send emails
     def test_post_task_scores_table_settings_allow(self, original_message, expected_message):
