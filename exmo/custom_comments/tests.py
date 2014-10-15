@@ -149,8 +149,43 @@ class OpenCommentsAnswerTimeUrgencyTestCase(TestCase):
         self.assertEqual(len(report['non_urgent']), 1)
 
 
+class ForbidCommentNotApprovedTaskTestCase(TestCase):
+    # exmo2010:post_score_comment
+
+    # TODO: move this testcase to permissions tests directory
+
+    # Should forbid orguser to post score comments if task is not approved.
+
+    def setUp(self):
+        # GIVEN organization in interaction monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        # AND not approved task
+        task = mommy.make(Task, organization=org, status=Task.TASK_OPEN)
+        # AND score
+        self.score = mommy.make(Score, task=task, found=1)
+
+        # AND i am logged in as organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization.add(org)
+        self.client.login(username='orguser', password='password')
+
+    def test_forbid_comment_not_approved_task(self):
+        url = reverse('exmo2010:post_score_comment', args=[self.score.pk])
+        # WHEN I post comment to the score
+        response = self.client.post(url, {'score_%s-comment' % self.score.pk: '123'})
+
+        # THEN response.status_code should be 403 (forbidden)
+        self.assertEqual(response.status_code, 403)
+        # AND no new comments should get created in db
+        self.assertEqual(CommentExmo.objects.all().count(), 0)
+        # AND no email messages should be sent
+        self.assertEqual(len(mail.outbox), 0)
+
+
 class PostCommentUnprivilegedAccessTestCase(OptimizedTestCase):
     # exmo2010:post_score_comment
+
+    # TODO: move this testcase to permissions tests directory
 
     # Should forbid anonymous or unprivileged user to post score comments
 
@@ -180,6 +215,8 @@ class PostCommentUnprivilegedAccessTestCase(OptimizedTestCase):
         self.assertRaises(PermissionDenied, post_score_comment, request, self.scores[status].pk)
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
+        # AND no email messages should be sent.
+        self.assertEqual(len(mail.outbox), 0)
 
     @parameterized.expand(MONITORING_STATUS)
     def test_forbid_post_comment_unprivileged(self, status, *args):
@@ -190,6 +227,8 @@ class PostCommentUnprivilegedAccessTestCase(OptimizedTestCase):
         self.assertRaises(PermissionDenied, post_score_comment, request, self.scores[status].pk)
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
+        # AND no email messages should be sent.
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class PostCommentTestCase(OptimizedTestCase):

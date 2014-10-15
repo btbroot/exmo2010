@@ -149,7 +149,7 @@ def score_permission(user, priv, score):
             return True
         elif user.is_expertB and task.user_id == user.pk and phase in (INT, FIN):
             return True
-        elif user.represents(task.organization) and phase == INT:
+        elif user.represents(task.organization) and task.approved and phase == INT:
             return True
 
     if priv in ['answer_claim', 'answer_clarification']:

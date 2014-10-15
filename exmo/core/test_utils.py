@@ -20,6 +20,7 @@
 from contextlib import contextmanager
 
 from django.conf import settings
+from django.core import mail
 from django.db import transaction
 from django.test import LiveServerTestCase, SimpleTestCase, Client
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
@@ -136,7 +137,7 @@ class BaseSeleniumTestCase(LiveServerTestCase):
 class OptimizedTestCase(SimpleTestCase):
     """
     Allow to modify database in setUpClass method. Start transaction and rollback it in tearDownClass.
-    As with django TestCase - transactions does note work within the test itself, they are monekeypatched
+    As with django TestCase - transactions does not work within the test itself, they are monekeypatched
     to do nothing.
     """
 
@@ -147,6 +148,9 @@ class OptimizedTestCase(SimpleTestCase):
         transaction.managed(True, using='default')
         disable_transaction_methods()
         cls.client = Client()
+
+        # Flush mail outbox after previous testcases.
+        mail.outbox = []
 
     @classmethod
     def tearDownClass(cls):
