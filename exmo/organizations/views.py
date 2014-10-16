@@ -199,56 +199,46 @@ class SendMailHistoryView(SendMailMixin, DetailView):
         return context
 
 
-def _add_comments_count(user, orgs):
-    scores = Score.objects.filter(task__organization__in=orgs)
-    comments_count = user.user.comment_comments.filter(object_pk__in=scores).count()
-    user.comments_count = comments_count
-    return
-
-
 class RepresentativesView(LoginRequiredMixin, DetailView):
     template_name = "representatives.html"
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
     def get_object(self, queryset=None):
-        obj = super(RepresentativesView, self).get_object(queryset)
-        if not self.request.user.has_perm('exmo2010.admin_monitoring', obj):
+        self.monitoring = super(RepresentativesView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
             raise PermissionDenied
-        return obj
+        return self.monitoring
 
     def get_context_data(self, **kwargs):
         context = super(RepresentativesView, self).get_context_data(**kwargs)
 
-        orgs = self.object.organization_set.exclude(userprofile=None).order_by('name')
-        users = UserProfile.objects.filter(user__groups__name='organizations', organization__monitoring=self.object)
-        representatives_exist = users.exists()
+        orgs = self.monitoring.organization_set.exclude(userprofile=None).order_by('name').prefetch_related('userprofile_set')
 
         queryform = RepresentativesQueryForm(self.request.GET)
         org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
-        queryform.fields['organizations'].choices = org_choices
+        queryform.fields['organization'].choices = org_choices
+
+        orgusers = UserProfile.objects.filter(organization__monitoring=self.monitoring)
+        representatives_exist = orgusers.exists()
 
         if queryform.is_valid():
-            users = queryform.apply(users)
-            org_pk = queryform.cleaned_data['organizations']
+            orgusers = queryform.apply(orgusers)
+            org_pk = queryform.cleaned_data['organization']
             if org_pk:
-                orgs = orgs.filter(pk=org_pk)
+                orgs = [Organization.objects.get(pk=org_pk)]
 
-        users = set(users.values_list('pk', flat=True))
+        queried_users = set(orgusers.values_list('pk', flat=True))
 
-        organizations = []
         for org in orgs:
-            orgusers = []
-            for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
-                if user.pk in users:
-                    _add_comments_count(user, orgs)
-                    orgusers.append(user)
+            org.users = []
+            for user in sorted(org.userprofile_set.all(), key=lambda u: u.full_name):
+                if user.pk in queried_users:
+                    scores = Score.objects.filter(task__organization=org).values_list('pk', flat=True)
+                    user.comments = user.user.comment_comments.filter(object_pk__in=scores)
+                    org.users.append(user)
 
-            if orgusers:
-                org.users = orgusers
-                organizations.append(org)
-
-        context['orgs'] = organizations
+        context['orgs'] = [org for org in orgs if org.users]
         context['representatives_exist'] = representatives_exist
         context['queryform'] = queryform
 
@@ -262,15 +252,12 @@ def representatives_export(request, monitoring_pk):
 
     orgs = monitoring.organization_set.order_by('name')
 
-    organizations = []
     for org in orgs:
-        orgusers = []
+        org.users = []
         for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
-            _add_comments_count(user, orgs)
-            orgusers.append(user)
-
-        org.users = orgusers
-        organizations.append(org)
+            scores = Score.objects.filter(task__organization=org).values_list('pk', flat=True)
+            user.comments = user.user.comment_comments.filter(object_pk__in=scores)
+            org.users.append(user)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=representatives-%s.csv' % monitoring_pk
@@ -288,7 +275,7 @@ def representatives_export(request, monitoring_pk):
         'Date joined',
     ])
 
-    for org in organizations:
+    for org in orgs:
         for user in org.users:
             row = [
                 int(user.user.is_active),
@@ -298,7 +285,7 @@ def representatives_export(request, monitoring_pk):
                 user.user.email,
                 user.phone,
                 user.position,
-                user.comments_count,
+                user.comments.count(),
                 user.user.date_joined.date().isoformat(),
             ]
             writer.writerow(row)

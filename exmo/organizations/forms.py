@@ -47,7 +47,7 @@ class OrganizationsQueryForm(QueryForm):
 class RepresentativesQueryForm(QueryForm):
     full_name_or_email = forms.CharField(required=False,
                                          widget=forms.TextInput(attrs={'placeholder': _('Full name or e-mail')}))
-    organizations = forms.ChoiceField(required=False)
+    organization = forms.ChoiceField(required=False)
 
     class Meta:
         distinct = True
@@ -57,7 +57,7 @@ class RepresentativesQueryForm(QueryForm):
                 'user__last_name__icontains',
                 'user__email__icontains'
             ],
-            'organizations': 'organization__pk',
+            'organization': 'organization__pk',
         }
 
 

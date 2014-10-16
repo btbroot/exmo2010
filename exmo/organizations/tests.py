@@ -28,14 +28,17 @@ from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from livesettings import config_get, config_value
+from mock import Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
+
 
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import (
     Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED
 )
+from .views import RepresentativesView
 
 
 class OrgCreateTestCase(TestCase):
@@ -65,7 +68,7 @@ class OrgCreateTestCase(TestCase):
 class DuplicateOrgCreationTestCase(TestCase):
     # exmo2010:organizations_add
 
-    # SHOULD return validation error if organization with already existing name is added
+    # Should return validation error if organization with already existing name is added
 
     def setUp(self):
         # GIVEN monitoring with organization
@@ -91,7 +94,7 @@ class DuplicateOrgCreationTestCase(TestCase):
 
 
 class OrganizationEditAccessTestCase(TestCase):
-    # SHOULD allow only expertA to edit organization
+    # Should allow only expertA to edit organization
 
     def setUp(self):
         # GIVEN monitoring with organization
@@ -342,8 +345,8 @@ class OrgEmailHeadersTestCase(TestCase):
 
 
 class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCase):
-    # Organization SHOULD change invitation status to 'registered' when first representative is registered.
-    # Different organizations of single representative SHOULD NOT affect status of each other.
+    # Organization should change invitation status to 'registered' when first representative is registered.
+    # Different organizations of single representative should not affect status of each other.
 
     def setUp(self):
         site = Site.objects.get_current()
@@ -373,7 +376,7 @@ class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCa
 
 
 class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
-    # Organization SHOULD change invitation status to 'activated'
+    # Organization should change invitation status to 'activated'
     # when representative posts comment to relevant task's score.
 
     def setUp(self):
@@ -417,7 +420,7 @@ class RepresentativesExportTestCase(TestCase):
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
         orguser.profile.organization = [org]
-        # AND comment by orguser
+        # AND comment from orguser
         mommy.make(CommentExmo, object_pk=score.pk, user=orguser)
         # AND I am logged in as expert A
         self.client.login(username='expertA', password='password')
@@ -460,6 +463,8 @@ class RepresentativesExportTestCase(TestCase):
 
 
 class RepresentativesFilterByOrganizationsTestCase(TestCase):
+    # exmo2010:representatives
+
     def setUp(self):
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
@@ -479,6 +484,48 @@ class RepresentativesFilterByOrganizationsTestCase(TestCase):
     def test_filter_query(self):
         url = reverse('exmo2010:representatives', args=[self.monitoring.pk])
         # WHEN I get filter by organizations
-        response = self.client.get(url, {'full_name_or_email': '', 'organizations': self.org1.pk})
+        response = self.client.get(url, {'full_name_or_email': '', 'organization': self.org1.pk})
         # THEN count of organizations should equal 1
         self.assertEqual(len(response.context['orgs']), 1)
+
+
+class OrguserCommentCountTestCase(TestCase):
+    # exmo2010:representatives
+
+    # Displayed comment count of representatives should be calculated for each organization separately.
+
+    def setUp(self):
+        # GIVEN parameter in monitoring
+        self.param = mommy.make(Parameter, weight=1)
+        # AND 2 organizations in monitoring
+        self.org1 = mommy.make(Organization, monitoring=self.param.monitoring, name='org1')
+        self.org2 = mommy.make(Organization, monitoring=self.param.monitoring, name='org2')
+
+        # AND 1 representative of 2 organizations
+        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        orguser.profile.organization = [self.org1, self.org2]
+
+        # AND score for each organization
+        score_org1 = mommy.make(Score, task__organization=self.org1, parameter=self.param)
+        score_org2 = mommy.make(Score, task__organization=self.org2, parameter=self.param)
+
+        # AND 2 comments from representative for org1 score
+        mommy.make(CommentExmo, object_pk=score_org1.pk, user=orguser)
+        mommy.make(CommentExmo, object_pk=score_org1.pk, user=orguser)
+        # AND 1 comment from representative for org2 score
+        mommy.make(CommentExmo, object_pk=score_org2.pk, user=orguser)
+
+        # AND expert A
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+
+    def test_comment_count(self):
+        # WHEN I get representatives page as expertA
+        request = Mock(user=self.expertA, method='GET')
+        response = RepresentativesView.as_view()(request, monitoring_pk=self.param.monitoring.pk)
+        orgs = dict((org.name, org) for org in response.context_data['orgs'])
+        # THEN org1 comments count should be 2
+        self.assertEqual(orgs['org1'].users[0].comments.count(), 2)
+        # AND org2 comments count should be 1
+        self.assertEqual(orgs['org2'].users[0].comments.count(), 1)
