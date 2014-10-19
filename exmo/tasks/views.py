@@ -292,11 +292,11 @@ def tasks_by_monitoring(request, monitoring_pk):
             except ValueError:
                 request.GET = QueryDict('')
 
-    tasks = Task.objects.filter(organization__monitoring=monitoring)
+    tasks = Task.objects.filter(organization__monitoring=monitoring).select_related('user__userprofile', 'organization')
     return table(
         request,
         headers,
-        queryset=perm_filter(request.user, 'view_task', tasks).select_related(),
+        queryset=perm_filter(request.user, 'view_task', tasks).prefetch_related('qanswer_set'),
         paginate_by=50,
         extra_context={
             'monitoring': annotate_exmo_perms(monitoring, request.user),

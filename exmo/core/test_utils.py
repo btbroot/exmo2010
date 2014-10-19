@@ -31,6 +31,16 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
 
+try:
+    from pyvirtualdisplay import Display
+except ImportError:
+    pass
+else:
+    if getattr(settings, 'SELENIUM_XVFB_ENABLED', False):
+        # Run all selenium tests in xvfb (browser window will be invisible)
+        display = Display(visible=0, size=(800, 600))
+        display.start()
+
 
 TIMEOUT = getattr(settings, 'SELENIUM_TEST_TIMEOUT', 6)
 
@@ -136,7 +146,8 @@ class BaseSeleniumTestCase(LiveServerTestCase):
 
 class OptimizedTestCase(SimpleTestCase):
     """
-    Allow to modify database in setUpClass method. Start transaction and rollback it in tearDownClass.
+    This testcase will not reset database between tests, so database setup may be done once in setUpClass method.
+    Database will be reset only in tearDownClass (with transaction rollback).
     As with django TestCase - transactions does not work within the test itself, they are monekeypatched
     to do nothing.
     """

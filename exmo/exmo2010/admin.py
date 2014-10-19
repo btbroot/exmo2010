@@ -3,6 +3,7 @@
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,6 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.contrib import admin
+from django.contrib.admin.util import unquote
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.db.utils import DEFAULT_DB_ALIAS
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.utils.decorators import method_decorator
+from django.utils.html import escape
+from django.utils.translation import ugettext as _
+from django.utils.encoding import force_text
+from django.views.decorators.csrf import csrf_protect
 from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin
 from reversion.admin import VersionAdmin
 
@@ -35,8 +48,77 @@ admin.site.register(models.OpennessExpression)
 
 
 @register(models.Monitoring)
-class MonitoringAdmin(TranslationAdmin, VersionAdmin):
+class MonitoringAdmin(TranslationAdmin):
     list_display = ('name',)
+
+    @method_decorator(csrf_protect)
+    @transaction.commit_on_success
+    def delete_view(self, request, object_id, extra_context=None):
+        """
+        This method was copied from contrib.admin with changes to prevent memory exhaustion.
+        Unfortunately overriding this whole method is the only way we can customize deletion as needed.
+        NOTE: If in the future django releases we will be able to customize usage of
+        contrib.admin.util.get_deleted_objects by default implementation of this view, this may be simplified.
+        """
+        opts = self.model._meta
+        app_label = opts.app_label
+
+        obj = self.get_object(request, unquote(object_id))
+
+        if not self.has_delete_permission(request, obj):
+            raise PermissionDenied
+
+        if obj is None:
+            errdata = {'name': force_text(opts.verbose_name), 'key': escape(object_id)}
+            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % errdata)
+
+        if request.POST:  # The user has already confirmed the deletion.
+            obj_display = force_text(obj)
+            self.log_deletion(request, obj, obj_display)
+
+            # To prevent memory exhaustion use _raw_delete() for scores and models below (BUG 2249)
+            # TODO: after rewrite of comments code, delete score comments here, before scores deletion.
+            models.Claim.objects.filter(score__parameter__monitoring=obj)._raw_delete(using=DEFAULT_DB_ALIAS)
+            models.Clarification.objects.filter(score__parameter__monitoring=obj)._raw_delete(using=DEFAULT_DB_ALIAS)
+            models.Score.objects.filter(parameter__monitoring=obj)._raw_delete(using=DEFAULT_DB_ALIAS)
+
+            # Delete monitoring normally. This will still try to fetch scores, but they got deleted above and
+            # should not consume all memory.
+            obj.delete()
+
+            msgdata = {'name': force_text(opts.verbose_name), 'obj': force_text(obj_display)}
+            self.message_user(request, _('The %(name)s "%(obj)s" was deleted successfully.') % msgdata)
+
+            if not self.has_change_permission(request, None):
+                return HttpResponseRedirect(reverse('admin:index', current_app=self.admin_site.name))
+
+            urlname = 'admin:%s_%s_changelist' % (opts.app_label, opts.module_name)
+            return HttpResponseRedirect(reverse(urlname, current_app=self.admin_site.name))
+
+        object_name = force_text(opts.verbose_name)
+
+        if not request.user.has_perm('exmo2010.delete_monitoring', obj):
+            title = _("Cannot delete %(name)s") % {"name": object_name}
+        else:
+            title = _("Are you sure?")
+
+        context = {
+            "title": title,
+            "object_name": object_name,
+            "object": obj,
+            "deleted_objects": [],  # TODO: show at least some deleted objects.
+            "perms_lacking": [],
+            "protected": [],
+            "opts": opts,
+            "app_label": app_label,
+        }
+        context.update(extra_context or {})
+
+        return TemplateResponse(request, self.delete_confirmation_template or [
+            "admin/%s/%s/delete_confirmation.html" % (app_label, opts.object_name.lower()),
+            "admin/%s/delete_confirmation.html" % app_label,
+            "admin/delete_confirmation.html"
+        ], context, current_app=self.admin_site.name)
 
 
 @register(models.Organization)
@@ -58,12 +140,12 @@ class ParameterAdmin(TabbedTranslationAdmin, VersionAdmin):
 
 
 @register(models.StaticPage)
-class StaticPageAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
+class StaticPageAdmin(TabbedTranslationAdmin):
     list_display = search_fields = ('id', 'description')
 
 
 @register(models.LicenseTextFragments)
-class LicenseTextFragmentsAdmin(TabbedTranslationAdmin, admin.ModelAdmin):
+class LicenseTextFragmentsAdmin(TabbedTranslationAdmin):
     list_display = ('id', 'page_footer', 'csv_footer', 'json_name', 'json_url', 'json_rightsholder', 'json_source')
 
 

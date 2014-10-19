@@ -142,11 +142,11 @@ class Task(BaseModel):
 
     @property
     def completeness(self):
-        monitoring = self.organization.monitoring
+        monitoring = self.organization.monitoring_id
         parameters_num = Parameter.objects.filter(monitoring=monitoring).exclude(exclude=self.organization).count()
         if parameters_num:
             questions_num = QQuestion.objects.filter(questionnaire__monitoring=monitoring).count()
-            answers_num = QAnswer.objects.filter(question__questionnaire__monitoring=monitoring, task=self).count()
+            answers_num = len(self.qanswer_set.all())
             scores_num = Score.objects.filter(task=self, parameter__monitoring=monitoring)\
                                       .filter(revision=Score.REVISION_DEFAULT, accomplished=True)\
                                       .exclude(parameter__exclude=self.organization).count()

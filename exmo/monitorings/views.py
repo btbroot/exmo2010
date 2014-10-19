@@ -38,6 +38,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db.models import Count, Q
 from django.db import transaction
+from django.db.utils import DEFAULT_DB_ALIAS
 from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField, Media
 from django.forms.models import modelformset_factory, modelform_factory
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
@@ -195,9 +196,25 @@ class MonitoringDeleteView(MonitoringMixin, DeleteView):
             raise PermissionDenied
         return monitoring
 
+    def post(self, *args, **kwargs):
+        monitoring = self.get_object()
+
+        with transaction.commit_on_success():
+            # To prevent memory exhaustion use _raw_delete() for scores and models below (BUG 2249)
+            # TODO: after rewrite of comments code, delete score comments here, before scores deletion.
+            Claim.objects.filter(score__parameter__monitoring=monitoring)._raw_delete(using=DEFAULT_DB_ALIAS)
+            Clarification.objects.filter(score__parameter__monitoring=monitoring)._raw_delete(using=DEFAULT_DB_ALIAS)
+            Score.objects.filter(parameter__monitoring=monitoring)._raw_delete(using=DEFAULT_DB_ALIAS)
+
+            # Delete monitoring normally. This will still try to fetch scores, but they got deleted above and
+            # should not consume all memory.
+            monitoring.delete()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_context_data(self, **kwargs):
         context = super(MonitoringDeleteView, self).get_context_data(**kwargs)
-        return dict(context, tasks=Task.objects.filter(organization__monitoring=self.object))
+        tasks = Task.objects.filter(organization__monitoring=self.object)
+        return dict(context, tasks=tasks.select_related('user__userprofile', 'organization'))
 
 
 class MonitoringCopyView(LoginRequiredMixin, UpdateView):

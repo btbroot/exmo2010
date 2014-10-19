@@ -726,8 +726,9 @@ class RecommendationsTotalCostTestCase(TestCase):
 
 
 class RecommendationsVisibilityNonrelevantTestCase(TestCase):
-    # TODO: Move this testcase to *general logic* tests directory.
     # exmo2010:recommendations
+
+    # TODO: Move this testcase to *general logic* tests directory.
 
     # On Recommendations page should be displayed scores with nonrelevant parameters, only if
     # that score has comments.
@@ -774,8 +775,9 @@ class RecommendationsVisibilityNonrelevantTestCase(TestCase):
 
 
 class RecommendationsVisibilityRelevantTestCase(TestCase):
-    # TODO: Move this testcase to *general logic* tests directory.
     # exmo2010:recommendations
+
+    # TODO: Move this testcase to *general logic* tests directory.
 
     # On Recommendations page relevant score should be displayed only if it has comments or recommendations.
     # Display order should be interim_cost.

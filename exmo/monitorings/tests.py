@@ -27,7 +27,6 @@ from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.files.base import ContentFile
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.formats import get_format
@@ -43,12 +42,53 @@ from exmo2010.models import *
 from exmo2010.models.monitoring import MONITORING_INTERACTION
 
 
-class MonitoringEditAccessTestCase(TestCase):
-    # SHOULD allow only expertA to edit monitoring
+class MonitoringDeleteTestCase(TestCase):
+    # exmo2010:monitoring_delete
+
+    # TODO: move this testcase to *general logic* tests directory
+
+    # Should delete monitoring with all related objects from database.
 
     def setUp(self):
-        # GIVEN monitoring with organization and openness_expression
-        #openness_expression = mommy.make(OpennessExpression, openness_expression)
+        # GIVEN monitoring, parameter, organization, task, score and claim
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PREPARE)
+        param = mommy.make(Parameter, monitoring=self.monitoring)
+        org = mommy.make(Organization, monitoring=self.monitoring)
+        task = mommy.make(Task, organization=org)
+        score = mommy.make(Score, parameter=param, task=task)
+        mommy.make(Claim, score=score)
+
+        # AND i am logged in as expert A
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test_monitoring_deletion(self):
+        url = reverse('exmo2010:monitoring_delete', args=[self.monitoring.pk])
+
+        # WHEN i post monitoring deletion request
+        response = self.client.post(url, follow=True)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # THEN Claims, Scores, Tasks, Organizations, Parameters and Monitoring should get deleted
+        self.assertEqual(Claim.objects.count(), 0)
+        self.assertEqual(Score.objects.count(), 0)
+        self.assertEqual(Task.objects.count(), 0)
+        self.assertEqual(Organization.objects.count(), 0)
+        self.assertEqual(Parameter.objects.count(), 0)
+        self.assertEqual(Monitoring.objects.count(), 0)
+
+
+class MonitoringEditAccessTestCase(TestCase):
+    # exmo2010:monitoring_update
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # Should allow only expertA to edit monitoring
+
+    def setUp(self):
+        # GIVEN monitoring with organization
         self.monitoring = mommy.make(Monitoring, name='initial', status=MONITORING_PREPARE)
         organization = mommy.make(Organization, monitoring=self.monitoring)
 
@@ -117,6 +157,10 @@ class MonitoringEditAccessTestCase(TestCase):
 
 
 class RatingsAverageTestCase(TestCase):
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *general logic* tests directory
+
     # Ratings page should correctly display average openness
 
     def setUp(self):
@@ -160,7 +204,11 @@ class RatingsAverageTestCase(TestCase):
 
 
 class ExpertARatingsTableVisibilityTestCase(TestCase):
-    # On ratings page expert A SHOULD see only published monitorings (including hidden)
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # On ratings page expert A should see only published monitorings (including hidden)
 
     def setUp(self):
         # GIVEN published monitoring
@@ -190,7 +238,11 @@ class ExpertARatingsTableVisibilityTestCase(TestCase):
 
 
 class ExpertBRatingsTableVisibilityTestCase(TestCase):
-    # On ratings page expert B SHOULD see only published monitorings that are not hidden
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # On ratings page expert B should see only published monitorings that are not hidden
     # and published monitorings with assigned tasks (hidden or not)
 
     def setUp(self):
@@ -236,7 +288,11 @@ class ExpertBRatingsTableVisibilityTestCase(TestCase):
 
 
 class OrgUserRatingsTableVisibilityTestCase(TestCase):
-    # On ratings page organization representative SHOULD see only
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # On ratings page organization representative should see only
     # published monitorings and those with related organizations
 
     def setUp(self):
@@ -279,7 +335,11 @@ class OrgUserRatingsTableVisibilityTestCase(TestCase):
 
 
 class ObserversGroupRatingsTableVisibilityTestCase(TestCase):
-    # On ratings page observers SHOULD see only
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # On ratings page observers should see only
     # published monitorings and those with observed organizations
 
     def setUp(self):
@@ -328,7 +388,11 @@ class ObserversGroupRatingsTableVisibilityTestCase(TestCase):
 
 
 class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
-    # On ratings page anonymous and regular users SHOULD see only
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+
+    # On ratings page anonymous and regular users should see only
     # published monitorings that are not hidden
 
     def setUp(self):
@@ -352,7 +416,11 @@ class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
 
 
 class RatingTableColumnOptionsTestCase(TestCase):
-    # SHOULD display only permitted rating table columns for users
+    # exmo2010:monitoring_rating
+
+    # TODO: move this testcase to *general logic* tests directory
+
+    # Should display only permitted rating table columns for users
     # AND allow to choose displayed columns for registered users and remember that choice
 
     rt_fields_nonexpert = ['rt_initial_openness', 'rt_final_openness', 'rt_difference']
@@ -616,6 +684,11 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
 
 class HiddenMonitoringVisibilityTestCase(TestCase):
+    # exmo2010:ratings
+
+    # TODO: move this testcase to *permissions* tests directory
+    # TODO: split in few separate testcases for each view.
+
     def setUp(self):
         # GIVEN hidden and published monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
@@ -629,9 +702,9 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.expertB.groups.add(Group.objects.get(name=self.expertB.profile.expertB_group))
 
         # AND representative connected to organization
-        self.org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        self.org.groups.add(Group.objects.get(name=self.org.profile.organization_group))
-        profile = self.org.get_profile()
+        self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        self.orguser.groups.add(Group.objects.get(name=self.orguser.profile.organization_group))
+        profile = self.orguser.get_profile()
         profile.organization = [organization]
 
         # AND expertA
@@ -661,12 +734,12 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.expertB_out.groups.add(Group.objects.get(name=self.expertB_out.profile.expertB_group))
 
         # AND organization representative not connected to task
-        self.org_out = User.objects.create_user('org_out', 'org.out@svobodainfo.org', 'password')
-        self.org_out.groups.add(Group.objects.get(name=self.org_out.profile.organization_group))
+        self.orguser_out = User.objects.create_user('orguser_out', 'orguser.out@svobodainfo.org', 'password')
+        self.orguser_out.groups.add(Group.objects.get(name=self.orguser_out.profile.organization_group))
 
     @parameterized.expand([
         ('expertB',),
-        ('org',),
+        ('orguser',),
         ('expertA',),
         ('su',),
         ('observer',),
@@ -681,12 +754,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # for connected organization representative, connected observer, connected expertB, expertA and superuser
         self.assertEqual(response_monitoring, self.monitoring)
 
-    @parameterized.expand([
-        (None,),
-        ('usr',),
-        ('expertB_out',),
-        ('org_out',),
-    ])
+    @parameterized.expand(zip([None, 'usr', 'expertB_out', 'orguser_out']))
     def test_forbidden_users_do_not_see_monitoring(self, username):
         # WHEN user logging in
         self.client.login(username=username, password='password')
@@ -697,12 +765,8 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # for disconnected organization representative, disconnected expertB, anonymous and regular user
         self.assertEqual(len(response_monitoring_list), 0)
 
-    @parameterized.expand([
-        (None,),
-        ('usr',),
-        ('expertB_out',),
-        ('org_out',)
-    ])
+    # TODO: move out into new testcase
+    @parameterized.expand(zip([None, 'usr', 'expertB_out', 'orguser_out']))
     def test_forbid_hidden_score_page(self, username):
         # WHEN i log in
         self.client.login(username=username, password='password')
@@ -713,40 +777,17 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # THEN response status_code is 403 (forbidden)
         self.assertEqual(response.status_code, 403)
 
-    @parameterized.expand([
-        (None,),
-        ('usr',),
-        ('expertB_out',),
-        ('org_out',)
-    ])
+    # TODO: move out into new testcase
+    @parameterized.expand(zip([None, 'usr', 'expertB_out', 'orguser_out']))
     def test_forbid_hidden_task_page(self, username):
         # WHEN i log in
         self.client.login(username=username, password='password')
 
-        # WHEN i request task page
+        # AND i request task page
         response = self.client.get(reverse('exmo2010:task_scores', args=[self.task.pk]))
 
         # THEN response status_code is 403 (forbidden)
         self.assertEqual(response.status_code, 403)
-
-
-class EmptyMonitoringRatingTestCase(TestCase):
-    def setUp(self):
-        # GIVEN monitoring without tasks
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-        self.monitoring_id = self.monitoring.pk
-        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-        # AND expertA account
-        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
-        self.usr.groups.add(Group.objects.get(name=self.usr.profile.expertA_group))
-
-    def test_ok_response(self):
-        self.client.login(username='usr', password='password')
-        # WHEN expertA requests rating page
-        response = self.client.get(self.url)
-        # THEN server's response is OK
-        self.assertEqual(response.status_code, 200)
 
 
 class TestMonitoringExport(TestCase):
@@ -963,7 +1004,7 @@ class UploadParametersCSVTest(TestCase):
 
 
 class TranslatedMonitoringScoresDataExportTestCase(TestCase):
-    # Scenario: SHOULD export content in a different languages
+    # Should export content in a different languages
 
     def setUp(self):
         # GIVEN published monitoring with 1 organization
@@ -1024,7 +1065,7 @@ class TranslatedMonitoringScoresDataExportTestCase(TestCase):
 
 
 class OrgUserRatingAccessTestCase(TestCase):
-    # SHOULD allow org representatives to see only related orgs in unpublished ratings
+    # Should allow org representatives to see only related orgs in unpublished ratings
 
     def setUp(self):
 
@@ -1069,7 +1110,11 @@ class OrgUserRatingAccessTestCase(TestCase):
 
 
 class RatingStatsTestCase(TestCase):
-    # SHOULD properly calculate rating statistics
+    # exmo2010:monitoring_rating
+
+    # TODO: move this testcase into *general logic* tests directory
+
+    # Should properly calculate rating statistics
 
     def setUp(self):
         # GIVEN monitoring
@@ -1121,7 +1166,7 @@ class RatingStatsTestCase(TestCase):
 
 
 class RatingStatsOrgCountTestCase(TestCase):
-    # Rating stats with 'user' rating_type SHOULD
+    # Rating stats with 'user' rating_type should
     # proprely count rated and total organizations
 
     def setUp(self):
@@ -1163,7 +1208,11 @@ class RatingStatsOrgCountTestCase(TestCase):
 
 
 class SuperuserRatingOrgsVisibilityTestCase(TestCase):
-    # Scenario: superuser SHOULD see all organizations on rating page
+    # exmo2010:monitoring_rating
+
+    # TODO: move this testcase into *permissions* tests directory
+
+    # Superuser should see all organizations on rating page
 
     def setUp(self):
         # GIVEN interaction monitoring
@@ -1196,7 +1245,7 @@ class SuperuserRatingOrgsVisibilityTestCase(TestCase):
 
 
 class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
-    # Monitorings statistics SHOULD contain correct count of active users
+    # Monitorings statistics should contain correct count of active users
 
     def setUp(self):
         # GIVEN interaction monitoring
@@ -1247,7 +1296,11 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
 
 
 class MonitoringCopyAccessTestCase(TestCase):
-    # SHOULD allow only expertA to copy monitoring
+    # exmo2010:monitoring_copy
+
+    # TODO: move this testcase into *permissions* tests directory
+
+    # Should allow only expertA to copy monitoring
 
     def setUp(self):
         # GIVEN monitoring
@@ -1354,6 +1407,10 @@ class MonitoringCopyFormTestCase(TestCase):
 
 
 class CopyMonitoringViewTestCase(TestCase):
+    # exmo2010:monitoring_copy
+
+    # TODO: move this testcase into *general logic* tests directory
+
     # monitoring copy should be created
 
     def setUp(self):

@@ -92,7 +92,7 @@ class UserProfile(BaseModel):
         ('az', _('Azerbaijani')),
     )
 
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User)
     organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
     sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
     subscribe = models.BooleanField(verbose_name=_("Subscribe to news"), default=False)
@@ -366,8 +366,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 post_save.connect(create_user_profile, sender=User)
 
-User.userprofile = property(lambda u: u.get_profile())
-User.profile = property(lambda u: u.get_profile())
+User.profile = property(lambda u: u.userprofile)
 
 User.legal_name = property(lambda u: u.profile.legal_name)
 User.full_name = property(lambda u: u.profile.full_name)
