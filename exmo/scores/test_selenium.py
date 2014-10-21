@@ -680,7 +680,6 @@ class ScoreRecommendationsShouldExistJsTestCase(BaseSeleniumTestCase):
         self.assertEnabled('#recommendations_form input[type="submit"]')
 
 
-
 @attr('selenium')
 class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
     # exmo2010:score

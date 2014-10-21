@@ -41,10 +41,9 @@ from django.db import transaction
 from django.db.utils import DEFAULT_DB_ALIAS
 from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField, Media
 from django.forms.models import modelformset_factory, modelform_factory
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.utils.decorators import method_decorator
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -58,8 +57,9 @@ from core.utils import UnicodeReader, UnicodeWriter
 from core.views import LoginRequiredMixin
 from custom_comments.utils import comment_report
 from exmo2010.forms import CORE_MEDIA
-from exmo2010.models import *
-from exmo2010.models.monitoring import MONITORING_PREPARE
+from exmo2010.models import (Claim, Clarification, LicenseTextFragments, Monitoring, ObserversGroup, Organization,
+                             Parameter, Questionnaire, Score, Task, UserProfile, generate_inv_code)
+from exmo2010.models.monitoring import MONITORING_PREPARE, MONITORING_PUBLISHED, MONITORING_STATUS, PUB
 from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
@@ -69,11 +69,11 @@ MEDIA = CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]})
 
 
 def avg(attr, items):
-    '''
+    """
     Calculate average attribute value for list of items, given attribute name.
-    Values of None will be excluded from calcualtions. If resulting list is empty,
+    Values of None will be excluded from calculations. If resulting list is empty,
     average will be None
-    '''
+    """
     values = [val for val in map(attrgetter(attr), items) if val is not None]
     return round(sum(values) / len(values), 3) if values else None
 
@@ -84,14 +84,12 @@ def set_npa_params(request, monitoring_pk):
     Страница 'Выбрать согласованные параметры'.
 
     """
-    # На админа проверять не надо. Они и так все is_expertA.
-    if not request.user.is_active or not request.user.profile.is_expertA:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
     parameters = monitoring.parameter_set.all()
-    ParameterTypeFormSet = modelformset_factory(Parameter,
-                                                extra=0,
-                                                form=ParameterTypeForm)
+    ParameterTypeFormSet = modelformset_factory(Parameter, extra=0, form=ParameterTypeForm)
     if request.method == "POST":
         formset = ParameterTypeFormSet(request.POST, queryset=parameters)
         # Нельзя изменять опубликованные мониторинги.
@@ -109,12 +107,13 @@ def set_npa_params(request, monitoring_pk):
     return TemplateResponse(request, 'set_npa_params.html', context)
 
 
+@login_required
 def monitorings_list(request):
     """
     List of monitorings for experts
     """
 
-    if not request.user.is_active or not request.user.userprofile.is_expert:
+    if not request.user.userprofile.is_expert:
         raise PermissionDenied
 
     queryset = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
@@ -465,9 +464,10 @@ def monitoring_by_criteria_mass_export(request, monitoring_pk):
     Архив из CVS файлов -- по файлу на критерий.
 
     """
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
     row_template = {
         'Found':      [],
         'Complete':   [],
@@ -566,11 +566,12 @@ def monitoring_by_experts(request, monitoring_pk):
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    experts = Task.objects.filter(organization__monitoring = monitoring).values('user').annotate(cuser=Count('user'))
+        raise PermissionDenied
+
+    experts = Task.objects.filter(organization__monitoring=monitoring).values('user').annotate(cuser=Count('user'))
     title = _('Experts of monitoring %s') % monitoring.name
     epk = [e['user'] for e in experts]
-    org_list = "( %s )" % " ,".join([str(o.pk) for o in Organization.objects.filter(monitoring = monitoring)])
+    org_list = "( %s )" % " ,".join([str(o.pk) for o in Organization.objects.filter(monitoring=monitoring)])
     queryset = User.objects.filter(pk__in = epk).extra(select = {
         'open_tasks': 'select count(*) from %(task_table)s where %(task_table)s.user_id = %(user_table)s.id and status = %(status)s and %(task_table)s.organization_id in %(org_list)s' % {
             'task_table': Task._meta.db_table,
@@ -622,8 +623,9 @@ def monitoring_parameter_filter(request, monitoring_pk):
     """
     Отчёт по параметру и критерию
     """
-    if not (request.user.profile.is_expert or request.user.is_superuser):
-        return HttpResponseForbidden(_('Forbidden'))
+    if not request.user.profile.is_expert:
+        raise PermissionDenied
+
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     queryset = None
     if request.method == "POST":
@@ -715,7 +717,8 @@ def monitoring_parameter_found_report(request, monitoring_pk):
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
     queryset = Parameter.objects.filter(monitoring = monitoring).extra(select={
             'organization_count':'''(select count(*) from %(organization_table)s where %(organization_table)s.monitoring_id = %(monitoring)s) -
                                     (select count(*) from %(parameterexclude_table)s where %(parameterexclude_table)s.parameter_id = %(parameter_table)s.id
@@ -728,7 +731,7 @@ def monitoring_parameter_found_report(request, monitoring_pk):
                 }
         }
     )
-    object_list=[]
+    object_list = []
     score_count_total = 0
     organization_count_total = 0
     score_per_organization_total = 0
@@ -777,7 +780,8 @@ def monitoring_parameter_export(request, monitoring_pk):
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
     parameters = Parameter.objects.filter(monitoring=monitoring)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-parameters-%s.csv' % monitoring_pk
@@ -828,7 +832,8 @@ def monitoring_organization_export(request, monitoring_pk):
     """
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.edit_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
     organizations = Organization.objects.filter(monitoring=monitoring)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=monitoring-organization-%s.csv' % monitoring_pk
@@ -1027,28 +1032,28 @@ def monitoring_parameter_import(request, monitoring_pk):
     })
 
 
-class MonitoringCommentReportView(UpdateView):
+class MonitoringCommentReportView(LoginRequiredMixin, UpdateView):
     template_name = 'monitoring_comment_report.html'
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
+    def get_object(self, queryset=None):
+        self.monitoring = super(MonitoringCommentReportView, self).get_object(queryset)
+        if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
+            raise PermissionDenied
+
+        return self.monitoring
+
     def get_form_class(self):
         return modelform_factory(Monitoring, fields=['time_to_answer'])
 
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_expertA:
-            raise PermissionDenied
-
-        return super(MonitoringCommentReportView, self).dispatch(request, *args, **kwargs)
-
     def get_success_url(self):
-        return reverse('exmo2010:monitoring_comment_report', args=[self.object.pk])
+        return reverse('exmo2010:monitoring_comment_report', args=[self.monitoring.pk])
 
     def get_context_data(self, **kwargs):
         context = super(MonitoringCommentReportView, self).get_context_data(**kwargs)
-        context.update(comment_report(self.object))
-        context.update({'title': _('Comment report for %s') % self.object.name})
+        context.update(comment_report(self.monitoring))
+        context.update({'title': _('Comment report for %s') % self.monitoring.name})
 
         return context
 
@@ -1321,18 +1326,16 @@ def monitoring_export(request, monitoring_pk):
     :return:
         json or csv with all scores for monitoring
     """
-
-    export_format = request.GET.get('format', 'json')
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.view_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    export = MonitoringExport(monitoring)
-    r = HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
+
+    export_format = request.GET.get('format', 'json')
     if export_format == 'csv':
-        r = export.csv()
+        return MonitoringExport(monitoring).csv()
     elif export_format == 'json':
-        r = export.json()
-    return r
+        return MonitoringExport(monitoring).json()
+    raise PermissionDenied
 
 
 class ObserversGroupView(LoginRequiredMixin, DetailView):

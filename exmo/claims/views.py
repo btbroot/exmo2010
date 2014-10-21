@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,12 +21,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import Http404, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from claims.forms import ClaimReportForm
+from .forms import ClaimReportForm
 from core.response import JSONResponse
 from core.utils import clean_message
 from exmo2010.mail import mail_claim_deleted, mail_claim_new
@@ -92,9 +93,10 @@ def claim_report(request, monitoring_pk):
     Отчёт по претензиям.
 
     """
-    if not request.user.profile.is_expertA:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
     all_claims = Claim.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
 
@@ -148,14 +150,15 @@ def claim_report(request, monitoring_pk):
     })
 
 
+@login_required
 def claim_list(request):
     """
     Страница сводного списка претензий для аналитиков.
 
     """
     user = request.user
-    if not (user.is_active and user.profile.is_expert):
-        return HttpResponseForbidden(_('Forbidden'))
+    if not user.profile.is_expert:
+        raise PermissionDenied
 
     if request.is_ajax():
         claims = user.profile.get_closed_claims()
@@ -166,5 +169,3 @@ def claim_list(request):
             'title': _('Claims'),
             'claims': claims,
         })
-
-

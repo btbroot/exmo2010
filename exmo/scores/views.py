@@ -196,6 +196,7 @@ def score_view(request, **kwargs):
     return TemplateResponse(request, 'scores/score.html', context)
 
 
+@login_required
 def post_score_comment(request, score_pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(permitted_methods=['POST'])
@@ -264,6 +265,7 @@ def _add_comment(request, score, with_autoscore=False):
 ajax_soup = lambda txt: target_blank(urlize(escape(txt), 70)).replace('\n', '<br />')
 
 
+@login_required
 def post_recommendations(request, score_pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(permitted_methods=['POST'])
@@ -281,6 +283,7 @@ def post_recommendations(request, score_pk):
     return JSONResponse({'data': ajax_soup(score.recommendations)})
 
 
+@login_required
 def post_score_links(request, score_pk):
     if request.method != 'POST':
         return HttpResponseNotAllowed(permitted_methods=['POST'])

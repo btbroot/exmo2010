@@ -20,12 +20,13 @@
 #
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms import Media, Form, BooleanField, IntegerField
 from django.forms.models import modelform_factory
-from django.http import HttpResponseRedirect, Http404, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, UpdateView, DeleteView
@@ -48,7 +49,7 @@ class ParamRelevanceForm(Form):
     set_relevant = BooleanField(required=False)
 
 
-class PostOrgParamRelevanceView(View):
+class PostOrgParamRelevanceView(LoginRequiredMixin, View):
     def post(self, request):
         form = ParamRelevanceForm(request.POST)
         if not form.is_valid():
@@ -125,31 +126,20 @@ class ParamDeleteView(ParameterMixin, DeleteView):
         return get_object_or_404(Parameter, pk=self.kwargs['parameter_pk'])
 
 
+@login_required
 @csrf_exempt
-def get_pc(request):
+def ajax_get_pc(request):
     """
     AJAX-вьюха для получения списка критериев, отключенных у параметра.
 
     """
-    if request.user.is_authenticated() and request.method == "POST" and request.is_ajax():
-        try:
-            parameter = Parameter.objects.get(pk=request.POST.get("p_id"))
-        except ObjectDoesNotExist:
-            raise Http404
+    if request.method == "POST" and request.is_ajax():
+        parameter = get_object_or_404(Parameter, pk=request.POST.get("p_id"))
         skip_list = []
-        if not parameter.complete:
-            skip_list.append(2)
-        if not parameter.topical:
-            skip_list.append(3)
-        if not parameter.accessible:
-            skip_list.append(4)
-        if not parameter.hypertext:
-            skip_list.append(5)
-        if not parameter.document:
-            skip_list.append(6)
-        if not parameter.image:
-            skip_list.append(7)
+        for index, crit in enumerate(Parameter.OPTIONAL_CRITERIA):
+            if not getattr(parameter, crit, None):
+                skip_list.append(index+2)
 
         return HttpResponse(json.dumps(skip_list), mimetype='application/json')
-    else:
-        raise Http404
+
+    raise PermissionDenied

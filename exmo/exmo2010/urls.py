@@ -32,7 +32,8 @@ from monitorings.views import (MonitoringEditView, MonitoringDeleteView, Monitor
 from organizations.views import (OrganizationsView, OrganizationsEditView, OrganizationsDeleteView,
                                  SendMailView, SendMailHistoryView, RepresentativesView)
 from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
-from tasks.views import AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView, TaskEditView, TaskDeleteView
+from tasks.views import (AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView,
+                         TaskEditView, TaskDeleteView, TaskHistoryView)
 from scores.views import (RecommendationsView, RecommendationsPrint, RecommendationsPrintWithComments,
                           TaskScoresView, TaskScoresPrint)
 
@@ -180,7 +181,7 @@ urlpatterns = named_urls('',
     (r'^recommendations/(?P<task_pk>\d+)/print_with_comments/$', RecommendationsPrintWithComments, 'recommendations_print_with_comments'),
 
     (r'^tasks/', include(tasks_patterns)),
-    (r'^task/(?P<task_pk>\d+)/history/$', 'tasks.views.task_history'),
+    (r'^task/(?P<task_pk>\d+)/history/$', TaskHistoryView, 'task_history'),
     (r'^post_org_param_relevance/$', PostOrgParamRelevanceView, 'post_org_param_relevance'),
 
     # Отчеты
@@ -204,12 +205,9 @@ urlpatterns = named_urls('',
     (r'^opendata/$', OpenDataView, 'opendata'),
     (r'^feedback/$', 'exmo2010.views.feedback'),
     (r'^ajax_set_profile_setting/$', AjaxSetProfileSettingView, 'ajax_set_profile_setting'),
-    # AJAX-вьюха для получения списка критериев, отключенных у параметра
-    (r'^get_pc/$', 'parameters.views.get_pc'),
-    # AJAX-вьюха для получения кода div'а для одного вопроса (c полями).
-    (r'^get_qq/$', 'questionnaire.views.get_qq'),
-    # AJAX-вьюха для получения кода div'а для одного вопроса (без полей).
-    (r'^get_qqt/$', 'questionnaire.views.get_qqt'),
+    (r'^ajax_get_pc/$', 'parameters.views.ajax_get_pc'),
+    (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
+    (r'^ajax_get_qqt/$', 'questionnaire.views.ajax_get_qqt'),
 )
 
 

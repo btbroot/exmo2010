@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,12 +21,12 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponseNotAllowed
+from django.http import HttpResponseRedirect, Http404, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from clarifications.forms import ClarificationReportForm
+from .forms import ClarificationReportForm
 from core.utils import clean_message
 from exmo2010.mail import mail_clarification
 from exmo2010.models import Clarification, Monitoring, Score
@@ -73,9 +74,10 @@ def clarification_report(request, monitoring_pk):
     Отчёт по уточнениям.
 
     """
-    if not request.user.profile.is_expertA:
-        return HttpResponseForbidden(_('Forbidden'))
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
     all_clarifications = Clarification.objects.filter(
         score__task__organization__monitoring=monitoring).order_by("open_date")
     title = _('Clarifications report for "%s"') % monitoring.name
@@ -134,14 +136,15 @@ def clarification_report(request, monitoring_pk):
     })
 
 
+@login_required
 def clarification_list(request):
     """
     Страница сводного списка уточнений для аналитиков.
 
     """
     user = request.user
-    if not (user.is_active and user.profile.is_expert):
-        return HttpResponseForbidden(_('Forbidden'))
+    if not user.profile.is_expert:
+        raise PermissionDenied
 
     if request.is_ajax():
         clarifications = user.profile.get_closed_clarifications()

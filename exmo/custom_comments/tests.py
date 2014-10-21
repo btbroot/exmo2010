@@ -19,13 +19,14 @@
 #
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from mock import Mock, patch
+from mock import MagicMock, Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
@@ -129,7 +130,7 @@ class OpenCommentsAnswerTimeUrgencyTestCase(TestCase):
         # AND 4 comments by organization representative
         kwargs = dict(model=CommentExmo, status=CommentExmo.OPEN, object_pk=score.pk, user=orguser)
 
-        # BUG 2178. Submitted at previous Thursday evening. Calcuations should ignore hours, use date only.
+        # BUG 2178. Submitted at previous Thursday evening. Calculations should ignore hours, use date only.
         mommy.make(submit_date=datetime(2014, 8, 7, 18, 31), **kwargs)  # expired
 
         mommy.make(submit_date=datetime(2014, 8, 8), **kwargs)          # expired
@@ -208,11 +209,16 @@ class PostCommentUnprivilegedAccessTestCase(OptimizedTestCase):
 
     @parameterized.expand(MONITORING_STATUS)
     def test_forbid_post_comment_anonymous(self, status, *args):
+        url = reverse('exmo2010:post_score_comment', args=[self.scores[status].pk])
         # WHEN anonymous user post comment
-        request = Mock(user=self.users['anonymous'], method='POST',
-                       POST={'score_%d-comment' % self.scores[status].pk: '123'})
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, post_score_comment, request, self.scores[status].pk)
+        request = MagicMock(user=self.users['anonymous'], method='POST',
+                            POST={'score_%d-comment' % self.scores[status].pk: '123'})
+        request.get_full_path.return_value = url
+        response = post_score_comment(request, self.scores[status].pk)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, url))
         # AND new comments should not get created in db
         self.assertEqual(CommentExmo.objects.all().count(), 0)
         # AND no email messages should be sent.

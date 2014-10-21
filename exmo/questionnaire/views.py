@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,6 +36,7 @@ from exmo2010.models import Questionnaire, QAnswer, QQuestion, QUESTION_TYPE_CHO
 from core.utils import UnicodeWriter
 
 
+@login_required
 @csrf_exempt
 def add_questionnaire(request, monitoring_pk):
     """
@@ -146,26 +148,28 @@ def answers_export(request, monitoring_pk):
     return response
 
 
-def get_qqt(request):
+@login_required
+def ajax_get_qqt(request):
     """
     AJAX-вьюха для получения кода div'а для одного вопроса (без полей).
 
     """
     if request.method == "GET" and request.is_ajax():
         return TemplateResponse(request, 'question_div2.html')
-    else:
-        raise Http404
+
+    raise PermissionDenied
 
 
-def get_qq(request):
+@login_required
+def ajax_get_qq(request):
     """
     AJAX-вьюха для получения кода div'а для одного вопроса (c полями).
 
     """
     if request.method == "GET" and request.is_ajax():
         return TemplateResponse(request, 'question_div.html', {"choices": QUESTION_TYPE_CHOICES})
-    else:
-        raise Http404
+
+    raise PermissionDenied
 
 
 @login_required

@@ -364,7 +364,7 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         super(CKEditorImageUploadAccessTestCase, cls).setUpClass()
 
         cls.users = {}
-        # GIVEN monitoring with organization, task and parameter
+        # GIVEN monitoring with organization
         cls.monitoring = mommy.make(Monitoring)
         organization = mommy.make(Organization, monitoring=cls.monitoring)
         # AND anonymous user
@@ -385,7 +385,7 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
         orguser.profile.organization = [organization]
         cls.users['orguser'] = orguser
-        # AND organization representative
+        # AND translator
         translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
         translator.profile.is_translator = True
         cls.users['translator'] = translator
@@ -396,41 +396,46 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         obs_group.organizations = [organization]
         obs_group.users = [observer]
         cls.users['observer'] = observer
+        # AND url
+        cls.url = reverse('ckeditor_upload')
 
     def test_redirect_get_anonymous(self):
         # WHEN anonymous user get upload url
-        request = Mock(user=self.users['anonymous'], method='GET')
-        request.build_absolute_uri.return_value = 'http://localhost/ru/accounts/login/'
+        request = MagicMock(user=self.users['anonymous'], method='GET')
+        request.get_full_path.return_value = self.url
+        response = ckeditor_upload(request)
         # THEN response status_code should be 302 (redirect)
-        self.assertEqual(ckeditor_upload(request).status_code, 302)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
 
     @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'orguser', 'translator', 'observer', 'user']))
     def test_forbid_get(self, username, *args):
         # WHEN authenticated user get upload url
         request = Mock(user=self.users[username], method='GET')
-        # THEN response status_code should be 405 (not allowed)
+        # THEN response status_code should be 405 (method not allowed)
         self.assertEqual(ckeditor_upload(request).status_code, 405)
 
     def test_redirect_post_anonymous(self):
         # WHEN anonymous user upload file
-        request = Mock(user=self.users['anonymous'], method='POST',
-                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
-        request.build_absolute_uri.return_value = ''
+        request = MagicMock(user=self.users['anonymous'], method='POST', FILES={'upload': Mock()})
+        request.get_full_path.return_value = self.url
+        response = ckeditor_upload(request)
         # THEN response status_code should be 302 (redirect)
-        self.assertEqual(ckeditor_upload(request).status_code, 302)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
 
     @parameterized.expand(zip(['orguser', 'observer', 'user']))
     def test_forbid_post_comment(self, username, *args):
         # WHEN unprivileged user upload file
-        request = Mock(user=self.users[username], method='POST',
-                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
+        request = Mock(user=self.users[username], method='POST', FILES={'upload': Mock()})
         # THEN response should raise PermissionDenied exception
         self.assertRaises(PermissionDenied, ckeditor_upload, request)
 
     @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'translator']))
     def test_allow_post(self, username, *args):
         # WHEN privileged user upload file
-        request = Mock(user=self.users[username], method='POST',
-                       GET={'CKEditorFuncNum': Mock()}, FILES={'upload': Mock()})
+        request = MagicMock(user=self.users[username], method='POST', FILES={'upload': Mock()})
         # THEN response status_code should be 200 (OK)
         self.assertEqual(ckeditor_upload(request).status_code, 200)

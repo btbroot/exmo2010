@@ -41,6 +41,7 @@ from livesettings import config_value
 from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm
 from .mail import mail_certificate_order, mail_feedback
 from core.response import JSONResponse
+from core.views import LoginRequiredMixin
 from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
 
 
@@ -66,11 +67,10 @@ def feedback(request):
     return TemplateResponse(request, 'exmo2010/feedback.html', context)
 
 
-
 class StaticPageView(DetailView):
     template_name = 'exmo2010/static_page.html'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         """ Create static page if it does not exist yet. Fill in default content_en if empty. """
         page, created = StaticPage.objects.get_or_create(pk=self.static_page_pk)
         if not page.content_en:
@@ -226,7 +226,7 @@ class CertificateOrderView(FormView):
         return email_data
 
 
-class AjaxSetProfileSettingView(View):
+class AjaxSetProfileSettingView(LoginRequiredMixin, View):
     def post(self, request):
         if request.is_ajax() and request.user.is_active:
             user = request.user

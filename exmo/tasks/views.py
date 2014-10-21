@@ -28,12 +28,11 @@ from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
 from django.forms.widgets import HiddenInput
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, QueryDict
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
-from django.views.generic import View
-from django.views.generic.edit import DeleteView, UpdateView
+from django.views.generic import DeleteView, ListView, UpdateView, View
 
 from accounts.forms import SettingsInvCodeForm
 from auth.helpers import perm_filter
@@ -49,7 +48,7 @@ from perm_utils import annotate_exmo_perms
 def task_export(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.view_task', task):
-        return HttpResponseForbidden(_('Forbidden'))
+        raise PermissionDenied
     parameters = Parameter.objects.filter(monitoring=task.organization.monitoring).exclude(exclude=task.organization)
     scores = Score.objects.filter(task=task_pk, revision=Score.REVISION_DEFAULT)
     response = HttpResponse(mimetype='application/vnd.ms-excel')
@@ -102,6 +101,7 @@ def task_import(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.fill_task', task):
         raise PermissionDenied
+
     if 'taskfile' not in request.FILES:
         return HttpResponseRedirect(reverse('exmo2010:task_scores', args=[task_pk]))
     reader = UnicodeReader(request.FILES['taskfile'])
@@ -166,7 +166,7 @@ def task_import(request, task_pk):
     })
 
 
-class AjaxTaskActionView(View):
+class AjaxTaskActionView(LoginRequiredMixin, View):
     def post(self, request, task_pk):
         task = get_object_or_404(Task, pk=task_pk)
         annotate_exmo_perms(task, request.user)
@@ -174,7 +174,7 @@ class AjaxTaskActionView(View):
             try:
                 self.action(task)
             except ValidationError as e:
-                # Action was not sucessful, task was not saved in the db
+                # Action was not successful, task was not saved in the db
                 # We should return actual task status from db, not the one that was modified in action
                 task = get_object_or_404(Task, pk=task_pk)
                 annotate_exmo_perms(task, request.user)
@@ -227,7 +227,7 @@ class TaskEditView(TaskMixin, UpdateView):
         form_class.base_fields['organization'].queryset = self.monitoring.organization_set.all()
         return form_class
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         if 'task_pk' in self.kwargs:
             # Existing task edit page
             task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
@@ -245,7 +245,7 @@ class TaskEditView(TaskMixin, UpdateView):
 class TaskDeleteView(TaskMixin, DeleteView):
     template_name = "exmo2010/task_confirm_delete.html"
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
         self.monitoring = task.organization.monitoring
         if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
@@ -253,25 +253,24 @@ class TaskDeleteView(TaskMixin, DeleteView):
         return task
 
 
-def task_history(request, task_pk):
-    task = Task.objects.get(pk=task_pk)
-    history = TaskHistory.objects.filter(task=task_pk)
+class TaskHistoryView(LoginRequiredMixin, ListView):
+    template_name = "task_history.html"
+    context_object_name = 'history'
 
-    return TemplateResponse(request, 'task_history.html', {
-        'task': task,
-        'history': history,
-        'title': task.organization.name,
-    })
+    def get_queryset(self):
+        if not self.request.user.is_expertA:
+            raise PermissionDenied
+
+        self.task = get_object_or_404(Task, pk=self.kwargs.get('task_pk', None))
+        return TaskHistory.objects.filter(task=self.task.id)
 
 
 @login_required
 def tasks_by_monitoring(request, monitoring_pk):
-    if not request.user.is_expert:
-        raise PermissionDenied
-    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     user = request.user
-    if not user.has_perm('exmo2010.view_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not user.is_expert or not user.has_perm('exmo2010.view_monitoring', monitoring):
+        raise PermissionDenied
 
     title = _('Task list for %(monitoring)s') % {'monitoring': monitoring}
     headers = [
@@ -309,27 +308,28 @@ def tasks_by_monitoring(request, monitoring_pk):
 
 @login_required
 def task_mass_assign_tasks(request, monitoring_pk):
-    monitoring = get_object_or_404(Monitoring, pk = monitoring_pk)
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
-        return HttpResponseForbidden(_('Forbidden'))
-    organizations = Organization.objects.filter(monitoring = monitoring)
+        raise PermissionDenied
+
+    organizations = Organization.objects.filter(monitoring=monitoring)
     title = _('Mass assign tasks')
     groups = []
-    for group_name in ['expertsA','expertsB']:
-        group, created = Group.objects.get_or_create(name = group_name)
+    for group_name in ['expertsA', 'expertsB']:
+        group, created = Group.objects.get_or_create(name=group_name)
         groups.append(group)
-    users = User.objects.filter(is_active = True).filter(groups__in = groups)
+    users = User.objects.filter(is_active=True).filter(groups__in=groups)
     log = []
-    if request.method == 'POST' and request.POST.has_key('organizations') and request.POST.has_key('users'):
+    if request.method == 'POST' and 'organizations' in request.POST and 'users' in request.POST:
         for organization_id in request.POST.getlist('organizations'):
             for user_id in request.POST.getlist('users'):
                 try:
-                    user = User.objects.get(pk = (user_id))
-                    organization = Organization.objects.get(pk = int(organization_id))
+                    user = User.objects.get(pk=user_id)
+                    organization = Organization.objects.get(pk=int(organization_id))
                     task = Task(
-                        user = user,
-                        organization = organization,
-                        status = Task.TASK_OPEN,
+                        user=user,
+                        organization=organization,
+                        status=Task.TASK_OPEN,
                     )
                     task.full_clean()
                     task.save()

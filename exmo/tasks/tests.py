@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,15 +21,19 @@ import json
 import re
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from .views import TaskHistoryView
+from core.test_utils import OptimizedTestCase
 from exmo2010.models import (
-    Monitoring, Organization, TaskHistory, Task, Score,
+    Monitoring, ObserversGroup, Organization, TaskHistory, Task, Score,
     Parameter, MONITORING_INTERACTION, MONITORING_RATE)
 
 
@@ -566,3 +571,86 @@ class TaskCompletenessTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         # AND task completeness should be 100%, because 'accessible' criterion was initially rated
         self.assertEqual(self.task.completeness, 100)
+
+
+class TaskHistoryAccessTestCase(OptimizedTestCase):
+    # exmo2010:task_history
+
+    # Should always redirect anonymous to login page.
+    # Should forbid all post requests.
+    # Should allow to get page admin and expert A only.
+
+    @classmethod
+    def setUpClass(cls):
+        super(TaskHistoryAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization and task
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        cls.task = mommy.make(Task, organization__monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND translator
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+        # AND page url
+        cls.url = reverse('exmo2010:task_history', args=[cls.task.id])
+
+    @parameterized.expand(zip(['GET', 'POST']))
+    def test_redirect_anonymous(self, method, *args):
+        # WHEN anonymous user send request to history page
+        request = MagicMock(user=self.users['anonymous'], method=method)
+        request.get_full_path.return_value = self.url
+        response = TaskHistoryView.as_view()(request, task_pk=self.task.id)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+    @parameterized.expand(zip(['expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_get(self, username, *args):
+        # WHEN authenticated user get history page
+        request = Mock(user=self.users[username], method='GET')
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, TaskHistoryView.as_view(), request, self.task.id)
+
+    @parameterized.expand(zip(['admin', 'expertA']))
+    def test_allow_get(self, username, *args):
+        # WHEN admin or expert A get history page
+        request = Mock(user=self.users[username], method='GET')
+        response = TaskHistoryView.as_view()(request, task_pk=self.task.id)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_post(self, username, *args):
+        # WHEN authenticated user post to history page
+        request = Mock(user=self.users[username], method='POST')
+        response = TaskHistoryView.as_view()(request, task_pk=self.task.id)
+        # THEN response status_code should be 405 (method not allowed)
+        self.assertEqual(response.status_code, 405)
