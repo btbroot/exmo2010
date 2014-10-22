@@ -168,7 +168,7 @@
                 {% if relevant_parameters %}
                     <tbody>
                         {% for parameter in relevant_parameters %}
-                            <tr>
+                            <tr id="parameter_{{ parameter.code }}">
                                 {% if is_expert %}
                                     <td class="icons-column">
                                         {% if parameter.score_pk and not parameter.score_accomplished %}
@@ -368,7 +368,7 @@
                 {% if nonrelevant_parameters %}
                     <tbody>
                         {% for parameter in nonrelevant_parameters %}
-                            <tr>
+                            <tr id="parameter_{{ parameter.code }}">
                                 <td class="icons-column">
                                     {% if parameter.comment_url %}
                                         <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
