@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,15 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.test import TestCase
+from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-from exmo2010.models import Monitoring, Organization, Parameter, Task, ObserversGroup
+from .views import PostOrgParamRelevanceView
+from core.test_utils import OptimizedTestCase
+from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Score, Task
 
 
 class ParameterEditAccessTestCase(TestCase):
@@ -236,3 +241,141 @@ class ParamEditValidTestCase(TestCase):
 
         # AND notes_en should change to NULL (None) in database
         self.assertEqual(list(Parameter.objects.values('notes_en')), [{'notes_en': None}])
+
+
+class PostOrgParamRelevanceAccessTestCase(OptimizedTestCase):
+    # exmo2010:post_org_param_relevance
+
+    # Should always redirect anonymous to login page.
+    # Should forbid all get requests.
+    # Should allow post admin and expert A only.
+
+    @classmethod
+    def setUpClass(cls):
+        super(PostOrgParamRelevanceAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization, task and parameter
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        cls.task = mommy.make(Task, organization__monitoring=cls.monitoring)
+        cls.param = mommy.make(Parameter, monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND translator
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+        # AND page url
+        cls.url = reverse('exmo2010:post_org_param_relevance')
+
+    @parameterized.expand(zip(['GET', 'POST']))
+    def test_redirect_anonymous(self, method, *args):
+        # WHEN anonymous user send request to get or change parameter relevance
+        request = MagicMock(user=self.users['anonymous'], method=method)
+        request.get_full_path.return_value = self.url
+        response = PostOrgParamRelevanceView.as_view()(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_get(self, username, *args):
+        # WHEN authenticated user get parameter relevance
+        request = Mock(user=self.users[username], method='GET')
+        response = PostOrgParamRelevanceView.as_view()(request)
+        # THEN response status_code should be 405 (method not allowed)
+        self.assertEqual(response.status_code, 405)
+
+    @parameterized.expand(zip(['admin', 'expertA']))
+    def test_allow_post(self, username, *args):
+        # WHEN admin or expert A post change parameter relevance
+        request = MagicMock(user=self.users[username], method='POST',
+                            POST={'param_pk': self.param.pk, 'task_pk': self.task.pk, 'set_relevant': 1})
+        response = PostOrgParamRelevanceView.as_view()(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+
+    @parameterized.expand(zip(['expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_post(self, username, *args):
+        # WHEN authenticated user post change parameter relevance
+        request = Mock(user=self.users[username], method='POST',
+                       POST={'param_pk': self.param.pk, 'task_pk': self.task.pk, 'set_relevant': 1})
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, PostOrgParamRelevanceView.as_view(), request)
+
+
+class PostOrgParamRelevanceTestCase(OptimizedTestCase):
+    # exmo2010:post_org_param_relevance
+
+    # Should set parameter relevance and redirect to score page if score is already exist.
+    # Otherwise redirect to 'score add' page.
+
+    @classmethod
+    def setUpClass(cls):
+        super(PostOrgParamRelevanceTestCase, cls).setUpClass()
+
+        # GIVEN monitoring with task and organization
+        cls.monitoring = mommy.make(Monitoring)
+        cls.org = mommy.make(Organization, monitoring=cls.monitoring)
+        cls.task = mommy.make(Task, organization=cls.org)
+        # AND nonrelevant parameter with score
+        cls.param = mommy.make(Parameter, monitoring=cls.monitoring)
+        cls.param.exclude.add(cls.org)
+        cls.score = mommy.make(Score, task=cls.task, parameter=cls.param)
+        # AND nonrelevant parameter without score
+        cls.param_without_score = mommy.make(Parameter, monitoring=cls.monitoring)
+        cls.param_without_score.exclude.add(cls.org)
+        # AND expert A
+        cls.expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        cls.expertA.profile.is_expertA = True
+
+    def test_score_add_redirect(self):
+        # WHEN expert A change parameter relevance for parameter without score
+        request = MagicMock(user=self.expertA, method='POST',
+                            POST={'param_pk': self.param_without_score.pk, 'task_pk': self.task.pk, 'set_relevant': 1})
+        response = PostOrgParamRelevanceView.as_view()(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to 'score add' page
+        self.assertEqual(response['Location'],
+                         reverse('exmo2010:score_add', args=[self.task.pk, self.param_without_score.pk]))
+        # AND parameter with score should become relevant
+        self.assertEqual(Parameter.objects.get(pk=self.param_without_score.pk).exclude.count(), 0)
+
+    def test_score_exist_redirect(self):
+        # WHEN expert A change parameter relevance for parameter with score
+        request = MagicMock(user=self.expertA, method='POST',
+                            POST={'param_pk': self.param.pk, 'task_pk': self.task.pk, 'set_relevant': 1})
+        response = PostOrgParamRelevanceView.as_view()(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to 'score' page
+        self.assertEqual(response['Location'],
+                         reverse('exmo2010:score', args=[self.score.pk]))
+        # AND parameter with score should become relevant
+        self.assertEqual(Parameter.objects.get(pk=self.param.pk).exclude.count(), 0)
