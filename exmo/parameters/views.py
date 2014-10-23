@@ -62,8 +62,14 @@ class PostOrgParamRelevanceView(LoginRequiredMixin, View):
         if form.cleaned_data.get('set_relevant'):
             if task.organization in param.exclude.all():
                 param.exclude.remove(task.organization)
-            score = get_object_or_404(Score, task=task, parameter=param, revision=Score.FINAL)
-            return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
+
+            # Check if score already exist.
+            try:
+                score = Score.objects.get(parameter=param, task=task, revision=Score.FINAL)
+            except Score.DoesNotExist:
+                return HttpResponseRedirect(reverse('exmo2010:score_add', args=[task.pk, param.pk]))
+            else:
+                return HttpResponseRedirect(reverse('exmo2010:score', args=[score.pk]))
         else:
             if task.organization not in param.exclude.all():
                 param.exclude.add(task.organization)
