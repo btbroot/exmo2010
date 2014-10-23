@@ -44,17 +44,7 @@
         {% endif %}
 
         <div class="tab-content">
-            {% if form.errors %}
-                <div class="warning">
-                    <ul>
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{ field.label }} {{ error|lower }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
+            {% include "_form_errors.html" with form=form %}
 
             <form action="?{{ request.GET.urlencode }}" method="post">{% csrf_token %}
                 <table class="organizations-table">

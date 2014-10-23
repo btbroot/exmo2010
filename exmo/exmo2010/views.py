@@ -91,7 +91,7 @@ class HelpView(StaticPageView):
     def get_default_context(self):
         return {
             'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
-            'registration_url': self.request.build_absolute_uri(reverse('exmo2010:registration_register'))
+            'registration_url': self.request.build_absolute_uri(reverse('exmo2010:registration_form'))
         }
 
 

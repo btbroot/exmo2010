@@ -102,8 +102,8 @@ class CanonicalViewKwargsTestCase(TestCase):
         'claim_pk',
         'obs_group_pk',
         'activation_key',  # for registration_activate
-        'uidb36',          # for auth_password_reset_confirm
-        'token',           # for auth_password_reset_confirm
+        'user_pk',         # for password_reset_confirm
+        'token',           # for password_reset_confirm
         'report_type',     # for monitoring_report_*
         'print_report_type',  # for task_scores
     }

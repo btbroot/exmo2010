@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -55,7 +56,7 @@ URLS = {
     'index': reverse_lazy('exmo2010:index'),
     'login': reverse_lazy('exmo2010:auth_login'),
     'logout': reverse_lazy('exmo2010:auth_logout'),
-    'registration': reverse_lazy('exmo2010:registration_register'),
+    'registration': reverse_lazy('exmo2010:registration_form'),
     'settings': reverse_lazy('exmo2010:settings'),
     'admin': reverse_lazy('admin:index'),
     'comment': reverse_lazy('exmo2010:comment_list'),

@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -89,5 +90,5 @@ class CustomMenu(Menu):
             self.auth.append(items.MenuItem(_('Preferences'), reverse('exmo2010:settings'), css_classes=['pref-icon']))
             self.auth.append(items.MenuItem(_('Log out'), settings.LOGOUT_URL, css_classes=['logout-icon']))
         else:
-            self.auth.append(items.MenuItem(_('Registration'), reverse('exmo2010:registration_register')))
+            self.auth.append(items.MenuItem(_('Registration'), reverse('exmo2010:registration_form')))
             self.auth.append(items.MenuItem(_('Log in'), settings.LOGIN_URL))

@@ -23,7 +23,6 @@ from urllib import urlencode
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import Site, RequestSite
 from django.core.mail.utils import DNS_NAME
 from django.core.mail import EmailMultiAlternatives
@@ -32,7 +31,6 @@ from django.db.models import Q
 from django.template import loader, Context
 from django.utils.translation import get_language, ugettext as _
 from django.utils import translation
-from django.utils.http import int_to_base36
 from livesettings import config_value
 
 from custom_comments.models import CommentExmo
@@ -289,29 +287,24 @@ def mail_feedback(request, sender_email, body):
         to=[config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')]))
 
 
-def mail_password_reset(request, users):
-    for user in users:
-        token = default_token_generator.make_token(user)
-        url = reverse('exmo2010:auth_password_reset_confirm', args=[int_to_base36(user.id), token])
-
-        send_email.delay(ExmoEmail(
-            template_basename='mail/password_reset_email',
-            subject=_("Password reset on %s") % RequestSite(request),
-            context={'url': request.build_absolute_uri(url)},
-            to=[user.email]))
+def mail_password_reset(request, user, reset_url):
+    send_email.delay(ExmoEmail(
+        template_basename='mail/password_reset_email',
+        subject=_("Password reset on %s") % RequestSite(request),
+        context={'url': request.build_absolute_uri(reset_url)},
+        to=[user.email]))
 
 
-def mail_register_activation(request, user, activation_key):
+def mail_register_activation(request, user, activation_url):
     if Site._meta.installed:
         site = Site.objects.get_current()
     else:
         site = RequestSite(request)
 
     subject = _('Registration on ') + unicode(site)
-    url = reverse('exmo2010:registration_activate', args=[activation_key])
 
     context = dict(
-        activation_url="http://%s%s" % (site, url),
+        activation_url="http://%s%s" % (site, activation_url),
         login_url="http://%s%s" % (site, settings.LOGIN_URL),
         site=site,
         subject=subject)

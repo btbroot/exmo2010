@@ -25,7 +25,7 @@
     <div class="top-row">
         <div class="left-cell">
             <a href="{% url 'exmo2010:about' %}">{% trans "About" %}</a> |
-            <a href="{{ link_to_methodology }}" target="_blank">{% trans "Methodology" %}</a> |
+            <a href="{{ exmo2010.livesettings.link_to_methodology }}" target="_blank">{% trans "Methodology" %}</a> |
             <a href="{% url 'exmo2010:opendata' %}">{% trans "Open data" %}</a> |
             <a href="{% url 'exmo2010:feedback' %}">{% trans "Feedback" %}</a>
         </div>
@@ -35,7 +35,7 @@
     </div>
     <div class="bottom-row copyrights-fonts">
         <div class="left-cell">
-            {{ license|safe }}
+            {{ exmo2010.fragments.license|safe }}
         </div>
         <div class="right-cell">
             {% trans '© 2014 IRSI LTD' %}<br />

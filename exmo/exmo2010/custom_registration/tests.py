@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -15,124 +16,202 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import os
+import re
 
-from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from model_mommy import mommy
-from nose_parameterized import parameterized
-
-from exmo2010.custom_registration.forms import RegistrationFormFull, RegistrationFormShort
-from exmo2010.models import Monitoring, Organization, MONITORING_INTERACTION
 
 
-class RegistrationFormTestCase(TestCase):
-    # Registration forms should properly validate input data
+class EmailConfirmationTestCase(TestCase):
+    # exmo2010:confirm_email
 
-    user_fields = 'status first_name patronymic last_name email password subscribe'.split()
-    orguser_fields = user_fields + 'position phone invitation_code'.split()
+    #TODO: move this testcase to *general logic* tests directory
 
-    def setUp(self):
-        # GIVEN: interaction monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization
-        self.organization = mommy.make(Organization, monitoring=monitoring)
+    # Should activate user after he visits confirmation link from email.
+    # Should fail if url token is forged.
 
-    @parameterized.expand([
-        ('0', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', ''),
-        ('1', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', ''),
-    ])
-    def test_valid_user_registration_form(self, *values):
-        # WHEN form initialized with valid data
-        form = RegistrationFormShort(data=dict(zip(self.user_fields, values)))
-        # THEN form validation should succeed
-        self.assertEqual(form.is_valid(), True)
+    fields = 'status first_name patronymic last_name email password subscribe'.split()
 
-    @parameterized.expand([
-        ('', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', ''),
-    ])
-    def test_invalid_user_registration_form(self, *values):
-        # WHEN form initialized with invalid data
-        form = RegistrationFormShort(data=dict(zip(self.user_fields, values)))
-        # THEN form validation should fail
-        self.assertEqual(form.is_valid(), False)
+    def test_after_registration(self):
+        # WHEN i visit registration page (to enable test_cookie)
+        self.client.get(reverse('exmo2010:registration_form'))
+        # AND i submit registration form
+        data = ('individual', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
+        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
 
-    @parameterized.expand([
-        ('0', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '', '', ''),
-        ('1', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '', '', ''),
-    ])
-    def test_valid_orguser_registration_form(self, *values):
-        values = values + (self.organization.inv_code,)
-        # WHEN form initialized with valid data
-        form = RegistrationFormFull(data=dict(zip(self.orguser_fields, values)))
-        # THEN form validation should succeed
-        self.assertEqual(form.is_valid(), True)
+        # THEN i should be redirected to the please_confirm_email page
+        self.assertRedirects(response, reverse('exmo2010:please_confirm_email'))
+        # AND one user should be created with email_confirmed=False and is_active=False
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [False])
+        self.assertEqual(all_active, [False])
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
 
-    @parameterized.expand([
-        ('', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '', '', ''),
-    ])
-    def test_invalid_orguser_registration_form(self, *values):
-        values = values + (self.organization.inv_code,)
-        # WHEN form initialized with invalid data
-        form = RegistrationFormFull(data=dict(zip(self.orguser_fields, values)))
-        # THEN form validation should fail
-        self.assertEqual(form.is_valid(), False)
+        # WHEN i visit confirmation link
+        url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
+        response = self.client.get(url)
 
+        # THEN i should be redirected to the index page
+        self.assertRedirects(response, reverse('exmo2010:index'))
+        # AND user should be activated with email_confirmed=True and is_active=True
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [True])
+        self.assertEqual(all_active, [True])
 
-class ActivationTestCase(TestCase):
-    # SHOULD allow activation with correct activation key only
+    def test_after_resend_email(self):
+        # GIVEN existing non-activated user
+        user = User.objects.create_user('org', 'test@mail.com', 'password')
+        user.is_active = False
+        user.save()
+        user.profile.email_confirmed = False
+        user.profile.save()
 
-    def test_activation_with_invalid_key(self):
-        # WHEN anonymous user tries to activate account with the right length random key
-        activation_key = os.urandom(20).encode('hex')
-        url = reverse('exmo2010:registration_activate', args=[activation_key])
+        # WHEN i submit resend confirmation email form
+        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': 'test@mail.com'})
+
+        # THEN i should be redirected to the please_confirm_email page
+        self.assertRedirects(response, reverse('exmo2010:please_confirm_email'))
+        # AND one user should be created with email_confirmed=False and is_active=False
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [False])
+        self.assertEqual(all_active, [False])
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        # WHEN i visit confirmation link
+        url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
+        response = self.client.get(url)
+
+        # THEN i should be redirected to the index page
+        self.assertRedirects(response, reverse('exmo2010:index'))
+        # AND user should be activated with email_confirmed=True and is_active=True
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [True])
+        self.assertEqual(all_active, [True])
+
+    def test_forged_confirmation_url(self):
+        # WHEN i visit registration page (to enable test_cookie)
+        self.client.get(reverse('exmo2010:registration_form'))
+        # AND i submit registration form
+        data = ('individual', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
+        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+
+        # WHEN i visit forged confirm_email url
+        url = reverse('exmo2010:confirm_email', args=[User.objects.all()[0].pk, '122-2342262654'])
         response = self.client.get(url, follow=True)
-        # THEN anonymous should be redirected to the login page
-        self.assertRedirects(response, unicode(settings.LOGIN_URL))
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND user should still have email_confirmed=False and is_active=False
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [False])
+        self.assertEqual(all_active, [False])
 
 
 class RegistrationEmailTestCase(TestCase):
-    # SHOULD send email with activation url when registration form is submitted.
-    # AND should resend email when resend activation email form submitted.
+    # exmo2010:registration_form
+
+    #TODO: move this testcase to email tests directory
+
+    # Should send email with activation url when registration form is submitted.
 
     fields = 'status first_name patronymic last_name email password subscribe'.split()
 
     def test_registration(self):
         # WHEN i visit registration page (to enable test_cookie)
-        self.client.get(reverse('exmo2010:registration_register'))
+        self.client.get(reverse('exmo2010:registration_form'))
         # AND i submit registration form
-        data = ('1', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
-        response = self.client.post(reverse('exmo2010:registration_register'), dict(zip(self.fields, data)))
-        # THEN i should be redirected to the registration_complete page
-        self.assertRedirects(response, reverse('exmo2010:registration_complete'))
+        data = ('representative', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
+        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+        # THEN i should be redirected to the please_confirm_email page
+        self.assertRedirects(response, reverse('exmo2010:please_confirm_email'))
         # AND one email message should be sent
         self.assertEqual(len(mail.outbox), 1)
 
-    def test_resend(self):
-        # WHEN i sbmit registration form
-        self.test_registration()
-        # AND i submit resend email form
-        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': 'test@mail.com'})
-        # THEN i should be redirected to the registration_complete page
-        self.assertRedirects(response, reverse('exmo2010:registration_complete'))
-        # AND one more email message should be sent (total 2)
-        self.assertEqual(len(mail.outbox), 2)
 
+class ResendConfirmationEmailTestCase(TestCase):
+    # exmo2010:auth_resend_email
 
-class PasswordResetEmailTestCase(TestCase):
-    # SHOULD send email with password reset url when reset password form is submitted.
+    #TODO: move this testcase to email tests directory
+
+    # Should send email when resend activation email form submitted.
 
     def setUp(self):
         # GIVEN existing user
-        User.objects.create_user('org', 'org@svobodainfo.org', 'password')
+        User.objects.create_user('user', 'test@mail.com', 'password')
+
+    def test_resend(self):
+        # WHEN i submit resend email form
+        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': 'test@mail.com'})
+        # THEN i should be redirected to the please_confirm_email page
+        self.assertRedirects(response, reverse('exmo2010:please_confirm_email'))
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+
+class PasswordResetEmailTestCase(TestCase):
+    # exmo2010:password_reset_request
+
+    #TODO: move this testcase to email tests directory
+
+    # Should send email with password reset url when reset password form is submitted.
+
+    def setUp(self):
+        # GIVEN existing user
+        User.objects.create_user('user', 'test@mail.com', 'password')
 
     def test_password_reset(self):
         # WHEN i submit reset password form
-        response = self.client.post(reverse('exmo2010:auth_password_reset'), {'email': 'org@svobodainfo.org'})
-        # THEN i should be redirected to the auth_password_reset_done page
-        self.assertRedirects(response, reverse('exmo2010:auth_password_reset_done'))
+        response = self.client.post(reverse('exmo2010:password_reset_request'), {'email': 'test@mail.com'})
+        # THEN i should be redirected to the password_reset_sent page
+        self.assertRedirects(response, reverse('exmo2010:password_reset_sent'))
         # AND one email message should be sent
         self.assertEqual(len(mail.outbox), 1)
+
+
+class PasswordResetConfirmTestCase(TestCase):
+    # exmo2010:password_reset_confirm
+
+    #TODO: move this testcase to general logic tests directory
+
+    # Valid reset url should show password reset form, which should allow to update password.
+
+    def setUp(self):
+        # GIVEN existing user
+        self.user = User.objects.create_user('user', 'test@mail.com', 'password')
+
+    def test_password_reset(self):
+        # WHEN i submit reset password form
+        response = self.client.post(reverse('exmo2010:password_reset_request'), {'email': 'test@mail.com'})
+        # THEN i should be redirected to the password_reset_sent page
+        self.assertRedirects(response, reverse('exmo2010:password_reset_sent'))
+        # AND one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        # WHEN i visit confirmation link
+        url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
+        response = self.client.get(url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND new_password form should be displayed.
+        self.assertTrue('new_password_form' in response.content)
+
+        # WHEN i submit new_password form with new password
+        response = self.client.post(url, {'new_password': 'new'})
+
+        # THEN i should be redirected to the index page
+        self.assertRedirects(response, reverse('exmo2010:index'))
+        # AND user password should change
+        user = authenticate(username='user', password='new')
+        self.assertEqual(self.user, user)

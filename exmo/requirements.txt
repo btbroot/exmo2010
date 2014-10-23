@@ -44,7 +44,6 @@ django-ckeditor==4.4.6
 django-keyedcache==1.5.1
 django-livesettings==1.4-14
 django-modeltranslation==0.8
-django-registration==0.8
 django-reversion==1.7.1
 django-widget-tweaks
 kombu==3.0.23

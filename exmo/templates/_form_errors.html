@@ -1,9 +1,6 @@
-{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,12 +16,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
 
-{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
 
-{% block content %}
-    <p class="alert-info">
-        {% trans 'We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can use full advantage of Infometer system.' %}
-    </p>
-{% endblock %}
+{% if form.errors or form.non_field_errors %}
+    <div class="warning">
+        <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error|lower }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

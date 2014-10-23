@@ -25,5 +25,5 @@
     {% trans 'Organizations count' %}: <a href="{% url 'exmo2010:organizations' monitoring.pk %}">{{ organization_all_count }}</a><br />
     {% trans 'Organizations with task' %}: <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ organization_with_task_count }}</a><br />
     {% trans 'Organizations with ready task' %}: {{ organization_ready_count }}<br />
-    {% trans 'Organizations with approved task' %}: <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter2={{ models.Task.TASK_APPROVED }}">{{ organization_approved_count }}</a><br />
+    {% trans 'Organizations with approved task' %}: <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter2={{ exmo2010.models.Task.TASK_APPROVED }}">{{ organization_approved_count }}</a><br />
 </div>

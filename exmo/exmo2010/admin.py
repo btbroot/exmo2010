@@ -20,6 +20,8 @@
 #
 from django.contrib import admin
 from django.contrib.admin.util import unquote
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import transaction
@@ -35,6 +37,7 @@ from modeltranslation.admin import TranslationAdmin, TabbedTranslationAdmin
 from reversion.admin import VersionAdmin
 
 from . import models
+from core.admin_utils import VerboseAdminMixin
 
 
 def register(model):
@@ -154,3 +157,33 @@ class ObserversGroupAdmin(admin.ModelAdmin):
     list_display = search_fields = ('name',)
     raw_id_fields = ('organizations', 'users')
     list_filter = ('monitoring',)
+
+
+class UserProfileInline(VerboseAdminMixin, admin.StackedInline):
+    model = models.UserProfile
+    fk_name = 'user'
+    max_num = 1
+    raw_id_fields_verbose = ('organization', )
+
+    class Media:
+        css = {
+            "all": ("exmo2010/css/selector.css", "exmo2010/css/admin_user_edit.css")
+        }
+
+
+class CustomUserAdmin(UserAdmin):
+    filter_horizontal = ('user_permissions', 'groups')
+    inlines = [UserProfileInline, ]
+
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
+
+
+class CustomGroupAdmin(GroupAdmin):
+    class Media:
+        css = {"all": ("exmo2010/css/selector.css",)}
+
+
+admin.site.unregister(Group)
+admin.site.register(Group, CustomGroupAdmin)

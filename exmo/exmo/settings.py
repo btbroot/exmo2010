@@ -236,9 +236,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'core.context_processors.user_groups',
-    'exmo2010.context_processors.exmo_models',
-    'exmo2010.context_processors.live_settings',
-    'exmo2010.context_processors.text_fragments',
+    'exmo2010.context_processors.exmo2010',
 )
 
 # Applications
@@ -263,7 +261,6 @@ INSTALLED_APPS = (
     'reversion',
     'south',
     'djcelery',
-    'registration',
     'ckeditor',
     'modeltranslation',
     'widget_tweaks',
@@ -278,6 +275,7 @@ INSTALLED_APPS = (
     'dashboard',
     'exmo2010',
     'monitorings',
+    #'registration',
     'organizations',
     'parameters',
     'scores',
@@ -304,8 +302,6 @@ IMAP_LOGIN = 'example@example.com'
 IMAP_PASSWORD = 'password'
 
 # Registration
-CUSTOM_REGISTRATION_BACKEND = 'exmo2010.custom_registration.backends.CustomBackend'
-ACCOUNT_ACTIVATION_DAYS = 30
 LOGIN_URL = reverse_lazy('exmo2010:auth_login')
 LOGOUT_URL = reverse_lazy('exmo2010:auth_logout')
 LOGIN_REDIRECT_URL = reverse_lazy('exmo2010:index')
@@ -314,6 +310,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'auth.backends.ObjectPermBackend',
 )
+EMAIL_CONFIRM_TIMEOUT_DAYS = 30
 
 # Tags
 MAX_TAG_LENGTH = 255
@@ -350,4 +347,3 @@ if DEVEL or TEST:
     CACHE_PATH = mkdir_ifnotexist(path('../cache'))
     MEDIA_ROOT = mkdir_ifnotexist(path('../media'))
     STATIC_ROOT = mkdir_ifnotexist(path('../static'))
-

@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,34 +17,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.conf import settings
 from livesettings import config_value
 
 from . import models
 
 
-def exmo_models(request):
-    """
-    Exmo2010 models classes
-    """
-    return {'models': models}
-
-
-def live_settings(request):
-    """
-    Variables from livesettings.
-
-    """
-    return {
-        'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY'),
-        'og_description': config_value('GlobalParameters', 'OG:DESCRIPTION')
-    }
-
-
-def text_fragments(request):
-    """
-    Variables from TextFragments.
-
-    """
+def exmo2010(request):
     license = models.LicenseTextFragments.objects.filter(pk='license')
-    license = license[0].page_footer if license else ''
-    return {'license': license}
+    context = {
+        'models': models,
+        'settings': settings,
+        'livesettings': {
+            'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY'),
+            'og_description': config_value('GlobalParameters', 'OG:DESCRIPTION')
+        },
+        'fragments': {
+            'license': license[0].page_footer if license else ''
+        }
+    }
+    return {'exmo2010': context}

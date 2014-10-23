@@ -453,9 +453,9 @@ class RepresentativesExportTestCase(TestCase):
             # AND row 5 should contain user e-mail
             self.assertEqual(row[4], user.user.email)
             # AND row 6 should contain user phone number
-            self.assertEqual(row[5], user.phone)
+            self.assertEqual(row[5], user.phone or '')
             # AND row 7 should contain user job title
-            self.assertEqual(row[6], user.position)
+            self.assertEqual(row[6], user.position or '')
             # AND row 8 should contain count of comments
             self.assertEqual(int(row[7]), 1)
             # AND row 9 should contain date of user registration

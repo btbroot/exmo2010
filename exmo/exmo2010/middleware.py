@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -63,7 +64,7 @@ class StaticDataInitMiddleware(object):
 
         registration_url = 'http://%s%s' % (
             Site.objects.get_current().domain,
-            reverse('exmo2010:registration_register'))
+            reverse('exmo2010:registration_form'))
         context = {
             'support_email': config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL'),
             'registration_url': registration_url,

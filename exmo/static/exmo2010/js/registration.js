@@ -2,6 +2,7 @@
 // Copyright 2010, 2011 Al Nikolov
 // Copyright 2010, 2011, 2012 Institute for Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+// Copyright 2014 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -17,7 +18,7 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function () {
-    if ($("#id_status").val() == '1') {
+    if ($("#id_status").val() == 'individual') {
         $("#id_err_position").hide();
         $("#id_position").attr('disabled', true);
         $("#id_row_position").hide();
@@ -30,7 +31,7 @@ $(document).ready(function () {
     }
 
     $('#id_status').change(function () {
-        if ($("#id_status").val() == '0') {
+        if ($("#id_status").val() == 'representative') {
             $("#id_row_position").show();
             $("#id_position").attr('disabled', false);
             $("#id_row_phone").show();
@@ -55,7 +56,7 @@ $(document).ready(function () {
         var top = $(e.target).position().top - 8;
         $('#help-text').show().css('top', top);
         $('.alert-info').hide();
-        if ($("#id_status").val() == "0") {
+        if ($("#id_status").val() == "representative") {
             $(e.data.o).show();
         }
         else {

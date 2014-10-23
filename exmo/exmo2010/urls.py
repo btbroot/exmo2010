@@ -38,6 +38,10 @@ from scores.views import (RecommendationsView, RecommendationsPrint, Recommendat
                           TaskScoresView, TaskScoresPrint)
 
 
+def view(template_name):
+    return TemplateView.as_view(template_name=template_name)
+
+
 def named_urls(module, *urlpatterns):
     '''
     Wrapper around django.conf.urls.patterns which can guess url name from view and
@@ -167,9 +171,27 @@ tasks_patterns += named_urls('parameters.views',
 )
 
 
+auth_patterns = named_urls('exmo2010.custom_registration.views',
+    (r'^login/$', 'login', 'auth_login'),
+    (r'^logout/$', 'logout', 'auth_logout'),
+    (r'^activate/(?P<user_pk>\d+)-(?P<token>.+)/$', 'confirm_email'),
+    (r'^activate/complete/$', view('registration/email_confirmed.html'), 'email_confirmed'),
+    (r'^activate/error/$', view('registration/email_confirm_error.html'), 'email_confirm_error'),
+    (r'^register/$', 'registration_form'),
+    (r'^register/complete/$', view('registration/please_confirm_email.html'), 'please_confirm_email'),
+    (r'^resend_activation_email/$', 'resend_email', 'auth_resend_email'),
+    (r'^password/reset/$', 'password_reset_request'),
+    (r'^password/reset/confirm/(?P<user_pk>\d+)-(?P<token>.+)/$', 'password_reset_confirm'),
+    (r'^password/reset/done/$', view('registration/password_reset_sent.html'), 'password_reset_sent'),
+    # TODO: delete this?
+    (r'^register/closed/$', view('registration/registration_closed.html'), 'registration_disallowed'),
+)
+
+
 urlpatterns = named_urls('',
-    (r'^$', TemplateView.as_view(template_name='index.html'), 'index'),
-    (r'^accounts/', include('exmo2010.custom_registration.urls')),
+    (r'^$', view('index.html'), 'index'),
+    (r'^settings/$', 'accounts.views.settings'),
+    (r'^accounts/', include(auth_patterns)),
 
     (r'^monitoring/', include(monitoring_patterns)),
 
@@ -223,13 +245,15 @@ def crumbs_tree(is_expert=False):
         'monitoring_report_finished': _('Statistics'),
 
         'auth_login': _('Log in the system'),
-        'auth_password_reset':         _('Password reset (step 1 from 3)'),
-        'auth_password_reset_done':    _('Password reset (step 2 from 3)'),
-        'auth_password_reset_confirm': _('Password reset (step 3 from 3)'),
-        'registration_register':   _('Registration (step 1 of 2)'),
-        'registration_complete':   _('Registration (step 2 of 2)'),
-        'registration_disallowed': _('Registration disallowed'),
-        'registration_activation_complete': _('Activation complete'),
+        'password_reset_request':  _('Password reset (step 1 from 3)'),
+        'password_reset_sent':     _('Password reset (step 2 from 3)'),
+        'password_reset_confirm':  _('Password reset (step 3 from 3)'),
+        'registration_form':       _('Registration (step 1 of 2)'),
+        'please_confirm_email':    _('Registration (step 2 of 2)'),
+        'registration_disallowed': _('Registration disallowed'),  # TODO: delete this?
+        'email_confirmed':     _('Activation complete'),
+        'auth_resend_email':   _('Resend activation email'),
+        'email_confirm_error': _('Activation link invalid'),
     }
 
     expert_tree = {
