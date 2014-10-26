@@ -39,6 +39,7 @@ from exmo2010.custom_registration import tokens
 from exmo2010.custom_registration.forms import (
     LoginForm, RegistrationFormFull, RegistrationFormShort, ExistingEmailForm, SetPasswordForm)
 from exmo2010.mail import mail_register_activation, mail_password_reset
+from exmo2010.models import Task
 
 
 @csrf_protect
@@ -95,7 +96,7 @@ def registration_form(request):
             form_class = RegistrationFormShort
 
     if request.method == 'GET':
-        form = form_class()
+        form = form_class(initial={'email': request.GET.get('email')})
     elif request.method == 'POST':
         if request.session.test_cookie_worked():
             request.session.delete_test_cookie()
@@ -106,11 +107,27 @@ def registration_form(request):
 
         if form.is_valid():
             user = form.save(request)
-            token = tokens.EmailConfirmTokenGenerator().make_token(user)
-            url = reverse('exmo2010:confirm_email', args=(user.pk, token))
-            mail_register_activation(request, user, url)
+            for org in form.orgs:
+                if user.email in org.email:
+                    # User email match org email, activate him immediately.
+                    user.is_active = True
+                    user.save()
+                    user.profile.email_confirmed = True
+                    user.profile.save()
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    auth_login(request, user)
+                    tasks = Task.objects.filter(organization=org, status=Task.TASK_APPROVED)
+                    if tasks and user.has_perm('exmo2010.view_task', tasks[0]):
+                        return redirect('exmo2010:recommendations', task_pk=tasks[0].pk)
+                    else:
+                        return redirect('exmo2010:index')
+            else:
+                # User email does not match any org email, send him activation email message.
+                token = tokens.EmailConfirmTokenGenerator().make_token(user)
+                url = reverse('exmo2010:confirm_email', args=(user.pk, token))
+                mail_register_activation(request, user, url)
 
-            return redirect('exmo2010:please_confirm_email')
+                return redirect('exmo2010:please_confirm_email')
 
     request.session.set_test_cookie()
 
@@ -170,7 +187,7 @@ def login(request):
         return redirect('exmo2010:index')
 
     if request.method == "GET":
-        form = LoginForm()
+        form = LoginForm(initial={'username': request.GET.get('email')})
     elif request.method == "POST":
         if not request.session.test_cookie_worked():
             return TemplateResponse(request, 'cookies.html')
@@ -204,13 +221,28 @@ def login(request):
 def logout(request):
     auth_logout(request)
 
-    next_page = reverse('exmo2010:index')
-    if REDIRECT_FIELD_NAME in request.REQUEST:
-        # Security check -- don't allow redirection to a different host.
-        if is_safe_url(url=request.REQUEST[REDIRECT_FIELD_NAME], host=request.get_host()):
-            next_page = request.REQUEST[REDIRECT_FIELD_NAME]
+    redirect_url = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    # Security check -- don't allow redirection to a different host.
+    if not is_safe_url(url=redirect_url, host=request.get_host()):
+        redirect_url = reverse('exmo2010:index')
 
-    return HttpResponseRedirect(next_page)
+    return HttpResponseRedirect(redirect_url)
+
+
+def auth_orguser(request):
+    """
+    If user with given GET parameter 'email' exists - redirect to login.
+    Otherwise redirect to registration_form.
+    TODO: add current user to the list of org representatives for given GET parameter 'code'.
+    """
+    if request.user.is_authenticated():
+        return redirect('exmo2010:index')
+
+    email = request.GET.get('email')
+    if email and User.objects.filter(email=email).exists():
+        return HttpResponseRedirect(reverse('exmo2010:auth_login') + '?' + request.GET.urlencode())
+
+    return HttpResponseRedirect(reverse('exmo2010:registration_form') + '?' + request.GET.urlencode())
 
 
 def csrf_failure(request, reason=""):

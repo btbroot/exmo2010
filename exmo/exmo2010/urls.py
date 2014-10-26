@@ -172,10 +172,10 @@ tasks_patterns += named_urls('parameters.views',
 
 
 auth_patterns = named_urls('exmo2010.custom_registration.views',
+    (r'^auth_orguser/$', 'auth_orguser'),
     (r'^login/$', 'login', 'auth_login'),
     (r'^logout/$', 'logout', 'auth_logout'),
     (r'^activate/(?P<user_pk>\d+)-(?P<token>.+)/$', 'confirm_email'),
-    (r'^activate/complete/$', view('registration/email_confirmed.html'), 'email_confirmed'),
     (r'^activate/error/$', view('registration/email_confirm_error.html'), 'email_confirm_error'),
     (r'^register/$', 'registration_form'),
     (r'^register/complete/$', view('registration/please_confirm_email.html'), 'please_confirm_email'),
@@ -251,7 +251,6 @@ def crumbs_tree(is_expert=False):
         'registration_form':       _('Registration (step 1 of 2)'),
         'please_confirm_email':    _('Registration (step 2 of 2)'),
         'registration_disallowed': _('Registration disallowed'),  # TODO: delete this?
-        'email_confirmed':     _('Activation complete'),
         'auth_resend_email':   _('Resend activation email'),
         'email_confirm_error': _('Activation link invalid'),
     }

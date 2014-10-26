@@ -23,6 +23,9 @@ from django.contrib.auth import authenticate
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from model_mommy import mommy
+
+from exmo2010.models import Organization, Task, MONITORING_INTERACTION
 
 
 class EmailConfirmationTestCase(TestCase):
@@ -118,21 +121,81 @@ class EmailConfirmationTestCase(TestCase):
         self.assertEqual(all_active, [False])
 
 
+class RegistrationWithKnownOrgEmailTestCase(TestCase):
+    # exmo2010:registration_form
+
+    #TODO: move this testcase to general logic tests directory
+
+    # If registering user email matches any organization email which he is willing to represent, he should be activated
+    # immediately after registration form is submitted.
+    # If task for given org exists and user has permission to view it - redirect him to the task recommendations page.
+    # Otherwise redirect him to the front page
+
+    fields = 'status email password invitation_code'.split()
+
+    def setUp(self):
+        # GIVEN organization in INTERACTION monitoring
+        self.org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION, email='org@test.ru')
+
+    def test_registration_with_task_accessible(self):
+        # GIVEN approved task for existing org
+        expertB = User.objects.create_user('expertB', 'expertB', 'expertB')
+        task = mommy.make(Task, organization=self.org, status=Task.TASK_APPROVED, user=expertB)
+        # NOTE: pop email message about task assignment
+        mail.outbox.pop()
+
+        # WHEN i visit registration page (to enable test_cookie)
+        self.client.get(reverse('exmo2010:registration_form'))
+        # AND i submit registration form
+        data = ('representative', self.org.email, 'password', self.org.inv_code)
+        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+
+        # THEN i should be redirected to the front page
+        self.assertRedirects(response, reverse('exmo2010:recommendations', args=(task.pk,)))
+        # AND no email message should be sent
+        self.assertEqual(len(mail.outbox), 0)
+        # AND 2 users should exist in database (new user and task expertB)
+        emails = set(User.objects.values_list('email', flat=True))
+        self.assertEqual(emails, {'expertB', self.org.email})
+        # AND user should be activated with email_confirmed=True and is_active=True
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [True, True])
+        self.assertEqual(all_active, [True, True])
+
+    def test_registration_without_task(self):
+        # WHEN i visit registration page (to enable test_cookie)
+        self.client.get(reverse('exmo2010:registration_form'))
+        # AND i submit registration form
+        data = ('representative', self.org.email, 'password', self.org.inv_code)
+        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+
+        # THEN i should be redirected to the front page
+        self.assertRedirects(response, reverse('exmo2010:index'))
+        # AND no email message should be sent
+        self.assertEqual(len(mail.outbox), 0)
+        # AND user should be activated with email_confirmed=True and is_active=True
+        all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
+        all_active = [u.is_active for u in User.objects.all()]
+        self.assertEqual(all_confirmed, [True])
+        self.assertEqual(all_active, [True])
+
+
 class RegistrationEmailTestCase(TestCase):
     # exmo2010:registration_form
 
     #TODO: move this testcase to email tests directory
 
-    # Should send email with activation url when registration form is submitted.
-
-    fields = 'status first_name patronymic last_name email password subscribe'.split()
+    # If registering user email does not match any organization email which he is willing to represent, email message with
+    # activation url should be sent when registration form is submitted.
 
     def test_registration(self):
         # WHEN i visit registration page (to enable test_cookie)
         self.client.get(reverse('exmo2010:registration_form'))
         # AND i submit registration form
-        data = ('representative', 'first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
-        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+        form_data = {'status': 'representative', 'email': 'test@mail.com', 'password': '123'}
+        response = self.client.post(reverse('exmo2010:registration_form'), form_data)
+
         # THEN i should be redirected to the please_confirm_email page
         self.assertRedirects(response, reverse('exmo2010:please_confirm_email'))
         # AND one email message should be sent

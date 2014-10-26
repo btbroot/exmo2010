@@ -18,6 +18,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from urllib import urlencode
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -134,6 +136,11 @@ class SendMailView(SendMailMixin, UpdateView):
         kwargs.update({'instance': InviteOrgs(monitoring=self.monitoring)})
         return kwargs
 
+    def replace_keywords(self, text, user_email, org):
+        params = {'code': org.inv_code, 'email': user_email}
+        url = reverse('exmo2010:auth_orguser') + '?' + urlencode(params)
+        return text.replace('%code%', org.inv_code).replace('%link%', self.request.build_absolute_uri(url))
+
     def form_valid(self, form):
         self.object = form.save()
         formdata = form.cleaned_data
@@ -147,7 +154,9 @@ class SendMailView(SendMailMixin, UpdateView):
             orgs += self.monitoring.organization_set.filter(inv_status='ACT')
 
         for org in orgs:
-            mail_organization(org, formdata['subject'], formdata['comment'])
+            for addr in org.email_iter():
+                text = self.replace_keywords(formdata['comment'], addr, org)
+                mail_organization(addr, org, formdata['subject'], text)
 
         orgs = set(self.monitoring.organization_set.all())
 
@@ -156,25 +165,21 @@ class SendMailView(SendMailMixin, UpdateView):
         active = orgusers.filter(user__comment_comments__object_pk__in=scores).distinct()
         inactive = orgusers.exclude(user__comment_comments__object_pk__in=scores).distinct()
 
+        mailto = []
         if formdata.get('dst_orgusers_inact'):
-            for user in inactive:
-                if '%code%' in formdata['comment']:
-                    # Send email to this user for every related org in this monitoring, expanding %code%
-                    for org in filter(orgs.__contains__, user.organization.all()):
-                        mail_orguser(user.user, org.inv_code, formdata['subject'], formdata['comment'])
-                else:
-                    # Send single email to this user.
-                    mail_orguser(user.user, '', formdata['subject'], formdata['comment'])
-
+            mailto += list(inactive)
         if formdata.get('dst_orgusers_activ'):
-            for user in active:
-                if '%code%' in formdata['comment']:
-                    # Send email to this user for every related org in this monitoring, expanding %code%
-                    for org in filter(orgs.__contains__, user.organization.all()):
-                        mail_orguser(user.user, org.inv_code, formdata['subject'], formdata['comment'])
-                else:
-                    # Send single email to this user.
-                    mail_orguser(user.user, '', formdata['subject'], formdata['comment'])
+            mailto += list(active)
+
+        for user in mailto:
+            if '%code%' in formdata['comment'] or '%link%' in formdata['comment']:
+                # Send email to this user for every related org in this monitoring, expanding %code% and %link%
+                for org in filter(orgs.__contains__, user.organization.all()):
+                    text = self.replace_keywords(formdata['comment'], user.user.email, org)
+                    mail_orguser(user.user.email, formdata['subject'], text)
+            else:
+                # Send single email to this user.
+                mail_orguser(user.user.email, formdata['subject'], formdata['comment'])
 
         messages.success(self.request, _('Mails sent.'))
         url = reverse('exmo2010:organizations', args=[self.monitoring.pk])

@@ -177,6 +177,14 @@ class Organization(BaseModel):
                 if not getattr(self, '{}_{}'.format(field, lang[0])):
                     setattr(self, '{}_{}'.format(field, lang[0]), None)
 
+    def email_iter(self):
+        if not self.email:
+            return
+
+        for email in self.email.replace(' ', '').split(','):
+            if email:
+                yield email
+
 
 class InviteOrgs(BaseModel):
     """

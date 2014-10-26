@@ -101,6 +101,7 @@ class RegistrationFormShort(forms.Form):
 
         profile = UserProfile.objects.get_or_create(user=user)[0]
         profile.subscribe = data.get("subscribe", False)
+        self.orgs = []
         if data.get("status") == 'representative':
             profile.position = data.get("position", None)
             profile.phone = data.get("phone", None)
@@ -111,6 +112,7 @@ class RegistrationFormShort(forms.Form):
                 except ObjectDoesNotExist:
                     pass
                 else:
+                    self.orgs = [org]
                     org_group = Group.objects.get(name=UserProfile.organization_group)
                     user.groups.add(org_group)
                     profile.organization.add(org)

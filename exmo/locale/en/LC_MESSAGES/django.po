@@ -646,7 +646,8 @@ msgid "Password reset on %s"
 msgstr ""
 
 #: exmo2010/mail.py:304
-msgid "Registration on "
+#, python-format
+msgid "Registration on %s"
 msgstr ""
 
 #: exmo2010/urls.py:240 templates/_footer.html:27

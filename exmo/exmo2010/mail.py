@@ -23,7 +23,7 @@ from urllib import urlencode
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site, RequestSite
+from django.contrib.sites.models import Site
 from django.core.mail.utils import DNS_NAME
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
@@ -109,14 +109,11 @@ def mail_clarification(request, clarification):
                                            context=context, to=[email], subject=subject))
 
 
-def mail_organization(org, subject, body):
-    if org.email is None or org.email.replace(', ', '') == '':
-        return
-
+def mail_organization(email, org, subject, body):
     message = ExmoEmail(
         template_basename='mail/email_base',
-        context={'subject': subject, 'body': body.replace('%code%', org.inv_code)},
-        to=filter(None, org.email.split(', ')),
+        context={'subject': subject, 'body': body},
+        to=[email],
         subject=subject)
 
     match = re.search('([\w.-]+)@([\w.-]+)', message.from_email)
@@ -131,14 +128,14 @@ def mail_organization(org, subject, body):
     send_org_email.delay(message, org.pk)
 
 
-def mail_orguser(user, inv_code, subject, body):
-    if not user.email:
+def mail_orguser(email, subject, body):
+    if not email:
         return
 
     message = ExmoEmail(
         template_basename='mail/email_base',
-        context={'subject': subject, 'body': body.replace('%code%', inv_code)},
-        to=[user.email],
+        context={'subject': subject, 'body': body},
+        to=[email],
         subject=subject)
 
     send_email.delay(message)
@@ -290,24 +287,18 @@ def mail_feedback(request, sender_email, body):
 def mail_password_reset(request, user, reset_url):
     send_email.delay(ExmoEmail(
         template_basename='mail/password_reset_email',
-        subject=_("Password reset on %s") % RequestSite(request),
+        subject=_('Password reset on %s') % request.get_host(),
         context={'url': request.build_absolute_uri(reset_url)},
         to=[user.email]))
 
 
 def mail_register_activation(request, user, activation_url):
-    if Site._meta.installed:
-        site = Site.objects.get_current()
-    else:
-        site = RequestSite(request)
+    subject = _('Registration on %s') % request.get_host()
 
-    subject = _('Registration on ') + unicode(site)
-
-    context = dict(
-        activation_url="http://%s%s" % (site, activation_url),
-        login_url="http://%s%s" % (site, settings.LOGIN_URL),
-        site=site,
-        subject=subject)
+    context = {
+        'activation_url': request.build_absolute_uri(activation_url),
+        'login_url': request.build_absolute_uri(unicode(settings.LOGIN_URL)),
+        'subject': subject}
 
     send_email.delay(ExmoEmail(template_basename='mail/activation_email',
                                context=context, subject=subject, to=[user.email]))
