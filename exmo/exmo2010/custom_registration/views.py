@@ -58,7 +58,8 @@ def password_reset_request(request, **kwargs):
             token = tokens.PasswordResetTokenGenerator().make_token(user)
             url = reverse('exmo2010:password_reset_confirm', args=(user.pk, token))
             mail_password_reset(request, user, url)
-            return HttpResponseRedirect(reverse('exmo2010:password_reset_sent'))
+            return redirect('{}?{}'.format(reverse('exmo2010:password_reset_sent'),
+                                           urlencode({'email': form.cleaned_data['email']})))
     context = dict(form=form, required_error=Field.default_error_messages['required'])
     return TemplateResponse(request, 'registration/password_reset_request.html', context)
 
@@ -129,7 +130,8 @@ def registration_form(request):
                     url += '?{}'.format(urlencode(params, True))
                 mail_register_activation(request, user, url)
 
-                return redirect('exmo2010:please_confirm_email')
+                return redirect('{}?{}'.format(reverse('exmo2010:please_confirm_email'),
+                                               urlencode({'email': form.cleaned_data['email']})))
 
     request.session.set_test_cookie()
     data = {'form': form, 'orgs': orgs, 'monitorings': Monitoring.objects.filter(organization__in=orgs).distinct()}
@@ -152,7 +154,8 @@ def resend_email(request):
             token = tokens.EmailConfirmTokenGenerator().make_token(user)
             url = reverse('exmo2010:confirm_email', args=(user.pk, token))
             mail_register_activation(request, user, url)
-            return HttpResponseRedirect(reverse('exmo2010:please_confirm_email'))
+            return redirect('{}?{}'.format(reverse('exmo2010:please_confirm_email'),
+                                           urlencode({'email': form.cleaned_data['email']})))
 
     return TemplateResponse(request, 'registration/resend_email_form.html', {'form': form})
 

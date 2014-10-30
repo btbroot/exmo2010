@@ -171,6 +171,10 @@ span.score-interim {
 
 /* editable score table */
 
+.editable-score-table .table-cell-R {
+    padding-left: 0;
+}
+
 .editable-score-table .tbody ul {
     margin: 0;
     padding: 0;
@@ -217,9 +221,6 @@ span.score-interim {
     color: #ffffff;
 }
 
-.editable-score-table .table-cell-R {
-    border: none;
-}
 
 /* links and recommendations area */
 
@@ -355,6 +356,12 @@ span.score-interim {
 }
 
 /* Claims & Clarifications */
+
+.tabs {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 6px;
+}
 
 .claim-delete-container {
     margin-top: 7px;

@@ -1,4 +1,4 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,25 +22,44 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}{% trans 'Account activation' %}{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/auth.css' %}"/>
 {% endblock %}
 
-{% block title %}{% trans 'Account activaion' %}{% endblock %}
+{% block extra_script %}
+    <script type="text/javascript">
+        $(document).ready(function() { $('input[name="email"]').focus(); })
+    </script>
+{% endblock %}
 
-{% block h1 %}<h1>{% trans "Account activaion" %}</h1>{% endblock %}
+{% block h1 %}<h1>{% trans "Account activation" %}</h1>{% endblock %}
 
 {% block content %}
-    <p>{% trans "In order to repeat the account activation fill your email. A letter cointaining an activation link will be sent." %}</p>
-
-    <form action="" method="post">{% csrf_token %}
+    <div class="resend-email-content-block">
+        <div class="info-block">
+            {% trans "In order to repeat the account activation fill your email. A letter cointaining an activation link will be sent." %}
+        </div>
 
         {% include "_form_errors.html" with form=form %}
 
-        {% for field in form %}
-            <p>{{ field.label_tag }}</p> <p>{{ field }}</p>
-        {% endfor %}
+        <form action="" class="resend-email-form" method="post">{% csrf_token %}
+            <div class="form-table">
+                {% for field in form %}
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ field.label_tag }}</div>
+                        <div class="table-cell-L">{{ field }}</div>
+                    </div>
+                {% endfor %}
 
-        <input type="submit" value="{% trans 'Send' %}"/>
-    </form>
+                <div class="table-row">
+                    <div class="table-cell-R"></div>
+                    <div class="table-cell-L">
+                        <input type="submit" value="{% trans 'Send' %}"/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 {% endblock %}

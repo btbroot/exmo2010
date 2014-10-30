@@ -16,6 +16,7 @@
 //    You should have received a copy of the GNU Affero General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 $(document).ready(function() {
     var settings = {append: ''};  // remove new line
 
@@ -108,7 +109,7 @@ $(document).ready(function() {
     addContentListener(CKEDITOR.instances['id_clarification-comment'], ckChangeHandler_simple);
 
     // Clarification/Claim tabs clicking
-    $('.ccc-tabs a').click(function(e) {
+    $('.tabs a').click(function(e) {
         switch (e.target.hash) {
            case '#clarifications':
               $('.tab-content-claims').hide();

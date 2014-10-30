@@ -26,6 +26,7 @@
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/settings.css' %}"/>
+    {#  TODO: replace form_errors.html with _form_errors.html and remove form_errors.css  #}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/form_errors.css' %}"/>
 {% endblock %}
 
@@ -49,33 +50,33 @@
     <form action="" method="post">{% csrf_token %}
         {% include "exmo2010/helpers/form_errors.html" with form=pers_inf_form %}
 
-        <div class="table personal-information-form">
+        <div class="form-table personal-information-form">
             <div class="table-row">
-                <div class="table-cell">
+                <div class="table-cell-R">
                     {% trans 'E-mail' %}
                 </div>
 
-                <div class="table-cell">
+                <div class="table-cell-L">
                     {{ email }}
                 </div>
             </div>
 
             {% for field in pers_inf_form %}
                 <div class="table-row">
-                    <div class="table-cell">
+                    <div class="table-cell-R">
                         {{ field.label_tag }}
                     </div>
 
-                    <div class="table-cell">
+                    <div class="table-cell-L">
                         {{ field }}
                     </div>
                 </div>
             {% endfor %}
 
             <div class="table-row">
-                <div class="table-cell"></div>
+                <div class="table-cell-R"></div>
 
-                <div class="table-cell">
+                <div class="table-cell-L">
                     <input type="submit" value="{% trans 'Save' %}" />
                 </div>
             </div>
@@ -96,23 +97,23 @@
         <form action="" method="post">{% csrf_token %}
             {% include "exmo2010/helpers/form_errors.html" with extra_error=inv_code_form_err %}
 
-            <div class="table invitation-code-form">
+            <div class="form-table invitation-code-form">
                 {% for field in inv_code_form %}
                     <div class="table-row">
-                        <div class="table-cell">
+                        <div class="table-cell-R">
                             {{ field.label_tag }}
                         </div>
 
-                        <div class="table-cell">
+                        <div class="table-cell-L">
                             {{ field }}
                         </div>
                     </div>
                 {% endfor %}
 
                 <div class="table-row">
-                    <div class="table-cell"></div>
+                    <div class="table-cell-R"></div>
 
-                    <div class="table-cell">
+                    <div class="table-cell-L">
                         <input type="submit" value="{% trans 'Send' %}" />
                     </div>
                 </div>
@@ -133,23 +134,23 @@
     <form action="" method="post">{% csrf_token %}
         {% include "exmo2010/helpers/form_errors.html" with form=ch_pass_form %}
 
-        <div class="table change-password-form">
+        <div class="form-table change-password-form">
             {% for field in ch_pass_form %}
                 <div class="table-row">
-                    <div class="table-cell">
+                    <div class="table-cell-R">
                         {{ field.label_tag }}
                     </div>
 
-                    <div class="table-cell">
+                    <div class="table-cell-L">
                         {{ field }}
                     </div>
                 </div>
             {% endfor %}
 
             <div class="table-row">
-                <div class="table-cell"></div>
+                <div class="table-cell-R"></div>
 
-                <div class="table-cell">
+                <div class="table-cell-L">
                     <input type="submit" value="{% trans 'Apply password change' %}" />
                 </div>
             </div>
@@ -167,51 +168,51 @@
     {% endif %}
 
     <form action="" method="post">{% csrf_token %}
-        <div class="table email-notification-form">
+        <div class="form-table email-notification-form">
             {% if is_internal or is_organization %}
                 <div class="table-row">
-                    <div class="table-cell">
+                    <div class="table-cell-R">
                         {{ send_notif_form.notification_type.label }}
                     </div>
 
-                    <div class="table-cell">
+                    <div class="table-cell-L">
                         {{ send_notif_form.notification_type }}
                         {{ send_notif_form.notification_interval }}
                     </div>
                 </div>
 
                 <div class="table-row">
-                    <div class="table-cell"></div>
+                    <div class="table-cell-R"></div>
 
-                    <div class="table-cell text-area">
+                    <div class="table-cell-L">
                         {{ send_notif_form.notification_self }}
-                        {{ send_notif_form.notification_self.label }}
+                        {{ send_notif_form.notification_self.label_tag }}
                     </div>
                 </div>
 
                 <div class="table-row">
-                    <div class="table-cell"></div>
+                    <div class="table-cell-R"></div>
 
-                    <div class="table-cell">
+                    <div class="table-cell-L">
                         {{ send_notif_form.notification_thread }}
-                        {{ send_notif_form.notification_thread.label }}
+                        {{ send_notif_form.notification_thread.label_tag }}
                     </div>
                 </div>
             {% endif %}
 
             <div class="table-row">
-                <div class="table-cell"></div>
+                <div class="table-cell-R"></div>
 
-                <div class="table-cell">
+                <div class="table-cell-L">
                     {{ send_notif_form.subscribe }}
-                    {{ send_notif_form.subscribe.label }}
+                    {{ send_notif_form.subscribe.label_tag }}
                 </div>
             </div>
 
             <div class="table-row">
-                <div class="table-cell"></div>
+                <div class="table-cell-R"></div>
 
-                <div class="table-cell">
+                <div class="table-cell-L">
                     <input type="submit" name="notify_submit" value="{% trans 'Save' %}" />
                 </div>
             </div>

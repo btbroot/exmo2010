@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,156 +20,77 @@
 #
 */
 
-.table-login label
-{
-    font-weight: normal;
+h2 {
+    margin-top: 10px;
+    margin-bottom: 3px;
 }
 
-.table-login td, .table-password-reset td
-{
-    vertical-align: middle;
+input {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0;
 }
 
-.table-login tr td:first-child
-{
-    text-align: right;
+.header-block {
+    margin-bottom: 20px;
 }
 
-.table-login td input[type="text"], .table-login td input[type="password"],
-.table-password-reset td input[type="text"]
-{
+.tabs {
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+/* TODO: remove this block in US #2285 */
+.warning-block {
+    margin-bottom: 20px;
+}
+
+/* overridden like "warning-block" class from base_style.css */
+.warning {
+    margin: 10px 0 0;
+    padding: 5px;
+    border: 1px solid #fe9898;
+    background-color: #fecdcd;
+}
+
+.form-table {
+    margin: 0 auto;
+}
+
+.form-table input[type="text"],
+.form-table input[type="password"] {
     width: 250px;
 }
 
-.table-login td input[type="submit"]
-{
-    width: 85px;
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    height: 24;
+.form-table input[name="notification"] {
+    vertical-align: baseline;
 }
 
-.forgot-password
-{
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    height: 24;
-    padding-left: 18px;
-    position: relative;
-    top: 2px;
-}
-
-.p-required
-{
-    margin-top: 14px;
-}
-
-.login-submit
-{
-
-}
-
-.form-error
-{
-    color: red;
-}
-
-.table-registration td
-{
-    vertical-align: middle;
-    padding: 4px 6px;
-    font-size: 13px;
-    line-height: 18px;
-}
-
-.table-registration td:first-child
-{
-    padding-left: 0px;
-    text-align: right;
-    width: 127px;
-}
-
-.label-registration label
-{
-    color: #333;
-}
-
-td input[type="text"]
-{
-    width: 300px;
-    font-size: 13px;
-}
-
-td select
-{
-    width: 308px;
-    font-size: 13px;
-}
-
-.table-registration ul
-{
-    padding-left: 0;
-}
-
-.table-registration ul > li
-{
-    list-style: none;
-}
-
-td.subscribe
-{
-    padding-top: 9px;
-    padding-bottom: 9px;
-}
-
-.subscribe input
-{
-    position: relative;
-    bottom: 2px;
-}
-
-#help-text {
-    position: absolute;
-    left: 475px;
-    max-width: 450px;
-    min-width: 335px;
+input[type="submit"] {
     margin-right: 20px;
-    padding-left: 9px;
-    background: url(../img/registration-triangle.png) 0 15px no-repeat;
 }
 
-.form-errors
-{
-    margin-left: 5px;
-    padding-left: 28px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    background-color: #fecdcd;
-    border: #fe9898 1px solid;
-    color: #000000;
+.login-form,
+.registration-form,
+.resend-email-form,
+.new-password-form,
+.password-recovery-form {
+    position: relative;
+    margin-top: 10px;
 }
 
-ul.form-errors
-{
-    padding-left: 28px;
+.login-form input[type="submit"] {
+    width: 85px;
 }
 
-ul.form-errors li
-{
-    list-style: disc;
+.password-recovery-form input[type="submit"] {
+    width: 150px;
 }
 
-.form-errors li
-{
-    padding-left: 0px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    font-size: 13px;
-}
-
-span.form-error
-{
-    font-size: 13px;
+.registration-content-block .info-block {
+    position: absolute;
+    display: none;
+    margin: 5px 0 0 5px;
 }

@@ -1,4 +1,4 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,22 +22,17 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
-{% endblock %}
-
 {% block title %}{% trans 'Account activation error' %}{% endblock %}
 
 {% block h1 %}<h1>{% trans 'Account activation error' %}</h1>{% endblock %}
 
 {% block content %}
-
-    <p>{% trans 'Please make sure you properly copied activation link from our email.' %}</p>
-    <p>
-        {% blocktrans with max_days=exmo2010.settings.EMAIL_CONFIRM_TIMEOUT_DAYS %}
-            Also note that the link is alive only for {{ max_days }} days.
-        {% endblocktrans %}
-    </p>
-    {% url 'exmo2010:registration_form' as registration_url %}
-    {% blocktrans %}You also can <a href="{{registration_url}}">try to register again</a>{% endblocktrans %}
+    <div id="activation-error-content-block">
+        <div class="info-block">
+            {% trans 'Please make sure you properly copied activation link from our email.' %}
+            {% blocktrans with max_days=exmo2010.settings.EMAIL_CONFIRM_TIMEOUT_DAYS %}Also note that the link is alive only for {{ max_days }} days.{% endblocktrans %}
+            {% url 'exmo2010:registration_form' as registration_url %}
+            {% blocktrans %}You also can <a href="{{ registration_url }}">try to register again</a>{% endblocktrans %}
+        </div>
+    </div>
 {% endblock %}

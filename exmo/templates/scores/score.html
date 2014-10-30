@@ -157,7 +157,7 @@
     {% if score.pk %}
         {% if interaction or not score.perms.edit_score %}
             <div class="tab-reply-block">
-                <div class="table non-editable-score-table">
+                <div class="table zebra non-editable-score-table">
                     <div class="thead">
                         <div class="table-row">
                             {% for field in score_table %}
@@ -271,7 +271,7 @@
                     {{ form.non_field_errors }}
                 </div>
 
-                <div class="table editable-score-table {{ recommendations_required|yesno:'recommendations_required,' }}">
+                <div class="form-table editable-score-table {{ recommendations_required|yesno:'recommendations_required,' }}">
                     <div class="tbody">
                         {% for field in criteria %}
                             <div class="table-row" data-max="{{ field.field.choices|last|last }}" data-initial="{{ field.initial|default_if_none:'' }}">
@@ -391,7 +391,7 @@
     {% endif %}
 
     {% if score.pk and score.perms.view_claim %}
-        <div class="ccc-tabs">
+        <div class="tabs h2">
             <span> <a href="#clarifications" class="pseudo"> {% trans 'Clarifications' %} </a> </span>
             <span> <a href="#claims" class="pseudo">  {% trans 'Claims' %} </a> </span>
         </div>

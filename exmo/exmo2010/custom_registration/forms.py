@@ -23,11 +23,13 @@ import string
 from annoying.decorators import autostrip
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
+from django.utils.safestring import mark_safe
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from django.utils.decorators import method_decorator
 
@@ -36,41 +38,30 @@ from exmo2010.models import UserProfile
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
 
-STATUS_CHOICES = (
-    ('representative', _('representative')),
-    ('individual', _('private person')),
-)
-
 
 @autostrip
 class RegistrationForm(forms.Form):
-    """
-    Укороченная форма регистрации.
-    Используется, если выбран статус "интересующийся гражданин".
-    На имя и отчество выделено по 15 символов, чтобы они вместе вместились
-    в поле first_name модели User.
-    """
-    first_name = forms.CharField(
-        label=_("First name"), required=False, widget=forms.TextInput(attrs={"maxlength": 14}))
-    patronymic = forms.CharField(
-        label=_("Patronymic"), required=False,  widget=forms.TextInput(attrs={"maxlength": 14}))
-    last_name = forms.CharField(
-        label=_("Last name"), required=False, widget=forms.TextInput(attrs={"maxlength": 30}))
-    email = forms.EmailField(label=_("E-mail"), widget=forms.TextInput({"maxlength": 75}))
-    password = forms.CharField(
-        label=_("Password"), widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}))
-    subscribe = forms.BooleanField(label=_("Subscribe to news"), required=False)
-    position = forms.CharField(label=_("Job title"), required=False, widget=forms.TextInput(attrs={"maxlength": 48}))
-    phone = forms.CharField(label=_("Phone number"), required=False, widget=forms.TextInput(attrs={"maxlength": 30}))
-    invitation_code = forms.CharField(label=_("Invitation code"), required=False, widget=forms.TextInput(attrs={"maxlength": 6}))
-
-    def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
-        fields = 'first_name patronymic last_name position phone email password invitation_code subscribe'
-        self.fields.keyOrder = fields.split()
+    email = forms.EmailField(label=_('E-mail'), max_length=75)
+    password = forms.CharField(label=_('Password'), max_length=24,
+                               widget=forms.TextInput(attrs={"autocomplete": "off"}))
+    # 'maxlength' should be used as widget attribute (NOT form field parameter 'max_length').
+    # It doesn't allow users to enter more than one invitation code and doesn't return error
+    # message when we pass several invitation codes in a hidden field.
+    invitation_code = forms.CharField(label=_("Invitation code"), required=False,
+                                      widget=forms.TextInput(attrs={"maxlength": 6}))
+    # 'first_name' and 'patronymic' fields have a 14 characters length each,
+    # so they will fit together in the 'first_name' field in User model.
+    first_name = forms.CharField(label=_('First name'), max_length=14, required=False)
+    patronymic = forms.CharField(label=_('Patronymic'), max_length=14, required=False)
+    last_name = forms.CharField(label=_('Last name'), max_length=30, required=False)
+    position = forms.CharField(label=_('Job title'), max_length=48, required=False)
+    phone = forms.CharField(label=_('Phone number'), max_length=30, required=False)
+    notification = forms.BooleanField(label=_('Get answers from experts on e-mail'), required=False, initial=True)
 
     def clean_password(self):
-        """Проверка пароля на наличие недопустимых символов."""
+        """
+        Check if a password contains an unallowed characters.
+        """
         password = self.cleaned_data.get('password')
         for char in password:
             if char not in PASSWORD_ALLOWED_CHARS:
@@ -78,23 +69,24 @@ class RegistrationForm(forms.Form):
                     "Password contains unallowed characters. Please use only latin letters and digits."))
         return password
 
-    def clean_email(self):
-        """
-        Validate that the supplied email address is unique for the site.
-
-        """
-        email = self.cleaned_data['email']
-        if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
-            raise forms.ValidationError(_(
-                "This email address is already in use. Please supply a different email address."))
-        return email
-
     def clean_invitation_code(self):
         """
         Return list of invitation codes or empty list.
         TODO: check whether invitation code exists.
         """
         return filter(None, self.cleaned_data.get('invitation_code', '').split(','))
+
+    def clean(self):
+        """
+        Validate that the supplied email address is unique for the site.
+        """
+        email = self.cleaned_data['email']
+        if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
+            raise forms.ValidationError(mark_safe(_(
+                "Account with this email already exists. "
+                "<a href='%s'>Log in</a> or use another email address to register.") %
+                reverse('exmo2010:auth_login')))
+        return self.cleaned_data
 
     @method_decorator(transaction.commit_on_success)
     def save(self, request):
@@ -113,7 +105,7 @@ class RegistrationForm(forms.Form):
         user.save()
 
         profile = UserProfile.objects.get_or_create(user=user)[0]
-        profile.subscribe = data.get("subscribe", False)
+        profile.notification_type = data.get("notification", False)
         profile.position = data.get("position", None)
         profile.phone = data.get("phone", None)
         # Set language preference
@@ -148,11 +140,19 @@ class LoginForm(forms.Form):
         if username and password:
             self.user = authenticate(username=username, password=password)
             if self.user is None:
-                raise forms.ValidationError(_(
-                    "Please enter a correct username and password. Note that both fields are case-sensitive."))
+                if not User.objects.filter(username=username).exists():
+                    raise forms.ValidationError(mark_safe(_(
+                        "This account does not exist. Check the e-mail address or <a href='%s'>register</a>.") %
+                        reverse('exmo2010:registration_form')))
+                else:
+                    raise forms.ValidationError(mark_safe(_(
+                        "You have entered an incorrect password. "
+                        "Try again or use <a href='%s'>the password recovery</a>.") %
+                        reverse('exmo2010:password_reset_request')))
             elif not self.user.profile.email_confirmed:
                 raise forms.ValidationError(_(
-                    "This account is inactive. Did you receive the letter containing a registration confirmation link?"))
+                    "This account is inactive. "
+                    "Did you receive the letter containing a registration confirmation link?"))
             elif not self.user.is_active:
                 # User is banned.
                 raise forms.ValidationError(_("This account is inactive."))
@@ -162,18 +162,19 @@ class LoginForm(forms.Form):
 class ExistingEmailForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=75)
 
-    def clean_email(self):
+    def clean(self):
         """
-        Проверяет присутствие пользователя в базе с этой почтой
+        Check if account with presented email is already exists.
         """
-        email = self.cleaned_data['email']
+        email = self.cleaned_data.get('email')
         if email:
             try:
                 user = User.objects.get(email__iexact=email)
             except ObjectDoesNotExist:
-                raise forms.ValidationError(_(
-                    "That e-mail address doesn't have an associated user account. Are you sure you've registered?"))
+                raise forms.ValidationError(mark_safe(_(
+                    "This account does not exist. Check the e-mail address or <a href='%s'>register</a>.") %
+                    reverse('exmo2010:registration_form')))
             banned = user.profile.email_confirmed and not user.is_active
             if banned or user.password == UNUSABLE_PASSWORD:
                 raise forms.ValidationError(_("The user account associated with this e-mail was suspended."))
-        return email
+        return self.cleaned_data

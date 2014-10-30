@@ -1,4 +1,4 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -22,65 +22,57 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}{% trans 'Login' %}{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/auth.css' %}"/>
 {% endblock %}
 
-{% block title %}{% trans 'Sign in to the system' %}{% endblock %}
+{% block extra_script %}
+    <script type="text/javascript">
+        $(document).ready(function() { $('input[name="username"]').focus(); })
+    </script>
+{% endblock %}
 
-{% block h1 %}<h1>{% trans 'Sign in to the system' %}</h1>{% endblock %}
+{% block h1 %}{% if orgs %}<h1>{% trans 'Get access to scores' %}</h1>{% endif %}{% endblock %}
 
 {% block content %}
-    {% if request.user.is_authenticated %}
-        <p>{% trans 'You are already logged in' %}.</p>
-        {% url 'exmo2010:auth_logout' as auth_logout_url %}
-        <p>{% blocktrans %}If you really want to log in again, please <a href="{{ auth_logout_url }}">log out</a> first{% endblocktrans %}.</p>
-    {% else %}
+    <div class="login-content-block">
+        {% if orgs %}
+            {% include "registration/_auth_content_header.html" %}
+        {% endif %}
+
         <noscript>
-            <ul class="errorlist">
-                <li>{% trans "In order for site to work correctly, turn Javascript in browser's settings." %}</li>
-            </ul>
+            <div class="warning-block">
+                {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
+            </div>
         </noscript>
 
-        <div id="content-main">
-            <form action="" method="post">
-                {% csrf_token %}
-
-                {% include "_form_errors.html" with form=form %}
-
-                <table class="table-login table-implicit">
-                    <tbody>
-                    {% if form.user and not form.user.profile.email_confirmed %}
-                        <tr>
-                            <td colspan="2">
-                                <a href="{% url 'exmo2010:auth_resend_email' %}">
-                                    {% trans 'Send the activation letter again' %}?
-                                </a>
-                            </td>
-                        </tr>
-                    {% endif %}
-
-                    {% for field in form %}
-                        <tr>
-                            <td> <label> {{ field.label }} </label> </td>
-                            <td> {{ field }} </td>
-                        </tr>
-                    {% endfor %}
-                    <tr>
-                        <td>
-                        </td>
-                        <td class="login-submit">
-                            <input type="submit" value="{% trans 'Log in' %}"/>
-                            <a href="{% url 'exmo2010:password_reset_request' %}" class="forgot-password">{% trans 'Forgot your password' %}?</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-            </form>
+        <div class="tabs h2">
+            <span class="active">{% trans 'Login' %}</span>
+            <span><a href="{% url 'exmo2010:registration_form' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Registration' %}</a></span>
+            <span><a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Password recovery' %}</a></span>
         </div>
-        <script type="text/javascript">
-            document.getElementById('id_username').focus()
-        </script>
-    {% endif %}
+
+        {% include "_form_errors.html" with form=form %}
+
+        <form action="" class="login-form" method="post">{% csrf_token %}
+            <div class="form-table">
+                {% for field in form %}
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ field.label_tag }}</div>
+                        <div class="table-cell-L">{{ field }}</div>
+                    </div>
+                {% endfor %}
+
+                <div class="table-row">
+                    <div class="table-cell-R"></div>
+                    <div class="table-cell-L">
+                        <input type="submit" value="{% trans 'Log in' %}"/>
+                        <a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="forgot-password">{% trans 'Recover the password' %}</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 {% endblock %}

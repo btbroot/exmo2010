@@ -22,9 +22,9 @@ $(document).ready(function () {
     // help text windows handler
     function helptextHandler( e ) {
         var top = $(e.target).position().top;
-        var left = $(e.target).position().left + $(e.target).width() + 15;
+        var left = $(e.target).position().left + $(e.target).width();
         $('.help-text').css('top', top).css('left', left).show();
-        $('.alert-info').hide();
+        $('.info-block').hide();
         $(e.data.p).show();
     }
 

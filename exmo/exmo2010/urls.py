@@ -244,15 +244,15 @@ def crumbs_tree(is_expert=False):
         'monitoring_report_type':     _('Statistics'),
         'monitoring_report_finished': _('Statistics'),
 
-        'auth_login': _('Log in the system'),
-        'password_reset_request':  _('Password reset (step 1 from 3)'),
-        'password_reset_sent':     _('Password reset (step 2 from 3)'),
-        'password_reset_confirm':  _('Password reset (step 3 from 3)'),
-        'registration_form':       _('Registration (step 1 of 2)'),
-        'please_confirm_email':    _('Registration (step 2 of 2)'),
+        'auth_login': _('Login'),
+        'password_reset_request':  _('Password recovery'),
+        'password_reset_sent':     _('Password recovery'),
+        'password_reset_confirm':  _('Password recovery'),
+        'registration_form':       _('Registration'),
+        'please_confirm_email':    _('Registration confirm'),
         'registration_disallowed': _('Registration disallowed'),  # TODO: delete this?
         'auth_resend_email':   _('Resend activation email'),
-        'email_confirm_error': _('Activation link invalid'),
+        'email_confirm_error': _('Account activation error'),
     }
 
     expert_tree = {

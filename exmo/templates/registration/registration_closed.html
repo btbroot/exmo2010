@@ -1,4 +1,4 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,13 +22,14 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
-{% endblock %}
+{% block title %}{% trans 'Registration disallowed' %}{% endblock %}
+
+{% block h1 %}<h1>{% trans 'Registration disallowed' %}</h1>{% endblock %}
 
 {% block content %}
-    {% blocktrans %}
-        <p>Registration is temporary disallowed.</p>
-        <p>Please try to register a bit later.</p>
-    {% endblocktrans %}
+    <div class="registration-closed-content-block">
+        <div class="info-block">
+            {% trans 'Registration is temporary disallowed. Please try to register a bit later.' %}
+        </div>
+    </div>
 {% endblock %}

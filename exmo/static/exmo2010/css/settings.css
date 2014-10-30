@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,7 +28,14 @@ hr {
     margin-top: 12px;
 }
 
-input[type="text"], input[type="password"] {
+input {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+input[type="text"],
+input[type="password"] {
     width: 300px;
     font-size: 13px;
 }
@@ -36,12 +44,6 @@ select {
     margin-right: 10px;
 }
 
-.table-cell {
-    border: none;
-    text-align: left;
-}
-
-.table-cell:first-child {
+.table-cell-R {
     width: 215px;
-    text-align: right;
 }

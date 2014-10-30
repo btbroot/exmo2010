@@ -90,7 +90,6 @@ input[type="text"] {
 .help-text {
     position: absolute;
     display: none;
-    padding-left: 9px;
+    padding-left: 20px;
     width: 450px;
-    background: url(../../../static/exmo2010/img/registration-triangle.png) 0 10px no-repeat;
 }

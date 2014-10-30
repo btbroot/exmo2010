@@ -1,4 +1,4 @@
-{% extends "base_leftaligned.html" %}
+{% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,13 +22,14 @@
 {% endcomment %}
 {% load i18n %}
 
+{% block title %}{% trans 'Registration confirm' %}{% endblock %}
 
-{% block title %}{% trans 'Registration (step 2 of 2)' %}{% endblock %}
-
-{% block h1 %}<h1>{% trans 'Registration (step 2 of 2)' %}</h1>{% endblock %}
+{% block h1 %}<h1>{% trans 'Registration confirm' %}</h1>{% endblock %}
 
 {% block content %}
-    <p class="alert-info">
-        {% trans 'We have sent a message to your e-mail. To confirm your registration, please follow the link in the message. After confirmation you can use full advantage of Infometer system.' %}
-    </p>
+    <div class="registration-confirm-content-block">
+        <div class="info-block">
+            {% blocktrans with email=request.GET.email %}The letter have been sent to {{ email }} e-mail. To confirm registration, please click on the link inside the email. You will then be able to use all functionality of the Infometer system.{% endblocktrans %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,9 +1,5 @@
-{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011, 2013 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -22,21 +18,19 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block title %}
-    {% if task %}
-        {% blocktrans %}Edit task {{task}}{% endblocktrans %}
+<div class="header-block">
+    {% if orgs.count > 1 %}
+        <h2>{% trans 'Organizations' %}</h2>
     {% else %}
-        {% blocktrans %}Add new task for {{view.monitoring}}{% endblocktrans %}
+        <h2>{% trans 'Organization' %}</h2>
     {% endif %}
-{% endblock %}
 
-{% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
-{% endblock %}
+    {% for org in orgs %}
+        {{ org.name }}<br />
+    {% endfor %}
 
-{% block content %}
-    <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-        {{form.as_p}}
-        <p><input type="submit" value="{% trans 'Send' %}"/><input type="reset" value="{% trans 'Reset' %}"/></p>
-    </form>
-{% endblock %}
+    <h2>{% trans 'Rating' %}</h2>
+    {% for mon in monitorings %}
+        {{ mon.name }}<br />
+    {% endfor %}
+</div>

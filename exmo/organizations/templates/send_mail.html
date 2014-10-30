@@ -44,37 +44,37 @@
             {% include "_form_errors.html" with form=form %}
 
             <form action="{% url 'exmo2010:send_mail' monitoring.pk %}" method="post">{% csrf_token %}
-                <div class="table org-email-form">
+                <div class="form-table org-email-form">
                     <div class="table-row">
-                        <div class="table-cell">
+                        <div class="table-cell-R">
                             {{ form.subject.label }} <span class="required">*</span>
                         </div>
 
-                        <div class="table-cell">
+                        <div class="table-cell-L">
                             {{ form.subject }}
                         </div>
                     </div>
 
                     <div class="table-row">
-                        <div class="table-cell">
+                        <div class="table-cell-R">
                             {{ form.comment.label }} <span class="required">*</span>
                         </div>
 
-                        <div class="table-cell text-area">
+                        <div class="table-cell-L text-area">
                             {{ form.comment }}
                         </div>
 
-                        <div class="help-text alert-info">
+                        <div class="help-text info-block">
                             %code% - {% trans 'use this keyword for invitation addition in email.' %}
                         </div>
                     </div>
 
                     <div class="table-row">
-                        <div class="table-cell">
+                        <div class="table-cell-R">
                             {% trans 'To' context 'mail destination' %}
                         </div>
 
-                        <div class="table-cell">
+                        <div class="table-cell-L">
                             <div class="destination">
                                 <div>
                                     <input class='group' type='checkbox' id='all_orgs'/> <label for='all_orgs'>{% trans 'All organizations' %}</label>
@@ -94,9 +94,9 @@
                     </div>
 
                     <div class="table-row">
-                        <div class="table-cell"></div>
+                        <div class="table-cell-R"></div>
 
-                        <div class="table-cell">
+                        <div class="table-cell-L">
                             <input type="submit" value="{% trans 'Send' %}"/>
                         </div>
                     </div>

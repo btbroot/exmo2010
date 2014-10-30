@@ -40,14 +40,8 @@ input[type="text"] {
 
 /* == SEND MAIL == */
 
-.org-email-form .table-cell {
-    border: none;
-    text-align: left;
-}
-
-.org-email-form .table-cell:first-child {
+.org-email-form .table-cell-R {
     vertical-align: top;
-    text-align: right;
     line-height: 22px;
 }
 
@@ -67,7 +61,8 @@ input[type="text"] {
 
 .org-email-form .help-text {
     position: absolute;
-    margin: 5px;
+    margin-top: 5px;
+    margin-left: 10px;
     width: 270px;
 }
 

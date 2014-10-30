@@ -266,6 +266,12 @@ class TaskHistoryView(LoginRequiredMixin, ListView):
         self.task = get_object_or_404(Task, pk=self.kwargs.get('task_pk', None))
         return TaskHistory.objects.filter(task=self.task.id)
 
+    def get_context_data(self, **kwargs):
+        context = super(TaskHistoryView, self).get_context_data(**kwargs)
+        # 'task' variable is needed in sidebar
+        context.update({'task': self.task})
+        return context
+
 
 @login_required
 def tasks_by_monitoring(request, monitoring_pk):

@@ -18,73 +18,18 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function () {
-    if ($("#id_status").val() == 'individual') {
-        $("#id_err_position").hide();
-        $("#id_position").attr('disabled', true);
-        $("#id_row_position").hide();
-        $("#id_err_phone").hide();
-        $("#id_phone").attr('disabled', true);
-        $("#id_row_phone").hide();
-        $("#id_err_invitation_code").hide();
-        $("#id_invitation_code").attr('disabled', true);
-        $("#id_row_invitation_code").hide();
-    }
+    var all_text_inputs = $('input[type="text"]');
 
-    $('#id_status').change(function () {
-        if ($("#id_status").val() == 'representative') {
-            $("#id_row_position").show();
-            $("#id_position").attr('disabled', false);
-            $("#id_row_phone").show();
-            $("#id_phone").attr('disabled', false);
-            $("#id_row_invitation_code").show();
-            $("#id_invitation_code").attr('disabled', false);
-        }
-        else {
-            $("#id_err_position").hide();
-            $("#id_position").attr('disabled', true);
-            $("#id_row_position").hide();
-            $("#id_err_phone").hide();
-            $("#id_phone").attr('disabled', true);
-            $("#id_row_phone").hide();
-            $("#id_err_invitation_code").hide();
-            $("#id_invitation_code").attr('disabled', true);
-            $("#id_row_invitation_code").hide();
-        }
+    // show info block of focused input element
+    all_text_inputs.focusin(function() {
+        $(this).closest('.table-row').find('.info-block').show();
     });
 
-    function helptextHandlerA( e ) {
-        var top = $(e.target).position().top - 8;
-        $('#help-text').show().css('top', top);
-        $('.alert-info').hide();
-        if ($("#id_status").val() == "representative") {
-            $(e.data.o).show();
-        }
-        else {
-            $(e.data.p).show();
-        }
-    }
-
-    function helptextHandlerB( e ) {
-        var top = $(e.target).position().top - 8;
-        $('#help-text').show().css('top', top);
-        $('.alert-info').hide();
-        $(e.data.p).show();
-    }
-
-    $("#id_first_name").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
-    $("#id_patronymic").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
-    $("#id_last_name").focusin({p: '#help-name', o: '#help-name-org'}, helptextHandlerA);
-    $("#id_position").focusin({p: '#help-status'}, helptextHandlerB);
-    $("#id_phone").focusin({p: '#help-phone'}, helptextHandlerB);
-    $("#id_email").focusin({p: '#help-email'}, helptextHandlerB);
-    $("#id_password").focusin({p: '#help-password'}, helptextHandlerB);
-    $("#id_invitation_code").focusin({p: '#help-code'}, helptextHandlerB);
-
-    $("input[type='text']").focusout(function(){
-        $('#help-text').hide();
+    // hide all info blocks
+    all_text_inputs.focusout(function(){
+        $('.info-block').hide();
     });
 
-    document.getElementById('id_first_name').focus();
-
-
+    // set focus on email field by default
+    $('input[name="email"]').focus();
 });
