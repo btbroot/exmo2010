@@ -24,7 +24,7 @@
 
 {% block module_content %}
     <ul>
-        {% if task_id != None %}
+        {% if task_id %}
             <li><a href="{% url 'exmo2010:recommendations' task_id %}">{% trans 'Scores of my organisation' %}</a></li>
         {% endif %}
 

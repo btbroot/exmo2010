@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,26 +20,12 @@
 #
 from ckeditor.widgets import CKEditorWidget
 from django import forms
-from django.conf import settings
-from django.forms.widgets import Textarea
-from django.utils import formats
+from django.contrib.admin import widgets as admin_widgets
+from django.forms.widgets import Textarea, Media
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import clean_message
 from queryform import QueryForm
-
-DATETIME_INPUT_FORMATS = list(formats.get_format('DATETIME_INPUT_FORMATS')) + ['%d.%m.%Y %H:%M:%S']
-
-# основные JS ресурсы для форм с виджетами из админки
-CORE_JS = (
-    settings.STATIC_URL + 'admin/js/core.js',
-    settings.STATIC_URL + 'admin/js/admin/RelatedObjectLookups.js',
-    settings.STATIC_URL + 'exmo2010/js/jquery/jquery.min.js',
-    settings.STATIC_URL + 'admin/js/jquery.init.js',
-    settings.STATIC_URL + 'admin/js/actions.min.js',
-)
-
-CORE_MEDIA = forms.Media(js=CORE_JS)
 
 
 class FeedbackForm(forms.Form):
@@ -90,3 +77,18 @@ class CertificateOrderQueryForm(QueryForm):
         filters = {
             'name_filter': 'name__icontains',
         }
+
+
+class FilteredSelectMultiple(admin_widgets.FilteredSelectMultiple):
+    """
+    Extended widget from contrib.admin.
+    Django admin uses scripts with built-in jquery which is initialized once in admin-related template.
+    Outside of admin templates we have to add this initialization js scripts as media in this extended widget
+    in addition to the original scripts.
+    Plus we have some css customization.
+    """
+    @property
+    def media(self):
+        admin_js = 'jquery.min.js jquery.init.js core.js SelectBox.js SelectFilter2.js'.split()
+        css = {"all": ["admin/css/forms.css", "exmo2010/css/selector.css"]}
+        return Media(css=css, js=["admin/js/%s" % path for path in admin_js])

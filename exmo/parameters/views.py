@@ -21,10 +21,9 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.forms import Media, Form, BooleanField, IntegerField
+from django.forms import Form, BooleanField, IntegerField
 from django.forms.models import modelform_factory
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
@@ -32,7 +31,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, UpdateView, DeleteView
 
 from core.views import LoginRequiredMixin
-from exmo2010.forms import CORE_MEDIA
+from exmo2010.forms import FilteredSelectMultiple
 from exmo2010.mail import mail_param_edited
 from exmo2010.models import Parameter, Task, Score
 from modeltranslation_utils import CurLocaleModelForm
@@ -86,10 +85,6 @@ class ParameterMixin(LoginRequiredMixin):
 
 class ParamEditView(ParameterMixin, UpdateView):
     template_name = "parameter_form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ParamEditView, self).get_context_data(**kwargs)
-        return dict(context, media=CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]}))
 
     def get_object(self, queryset=None):
         self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])

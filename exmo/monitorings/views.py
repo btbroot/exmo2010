@@ -28,7 +28,7 @@ from cStringIO import StringIO
 from operator import attrgetter
 
 from django.conf import settings
-from django.contrib.admin.widgets import FilteredSelectMultiple
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
@@ -39,7 +39,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count, Q
 from django.db import transaction
 from django.db.utils import DEFAULT_DB_ALIAS
-from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField, Media
+from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField
 from django.forms.models import modelformset_factory, modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
@@ -56,16 +56,13 @@ from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import LoginRequiredMixin
 from custom_comments.utils import comment_report
-from exmo2010.forms import CORE_MEDIA
+from exmo2010.forms import FilteredSelectMultiple
 from exmo2010.models import (Claim, Clarification, LicenseTextFragments, Monitoring, ObserversGroup, Organization,
                              Parameter, Questionnaire, Score, Task, UserProfile, generate_inv_code)
 from exmo2010.models.monitoring import MONITORING_PREPARE, MONITORING_PUBLISHED, MONITORING_STATUS, PUB
 from modeltranslation_utils import CurLocaleModelForm
 from parameters.forms import ParamCritScoreFilterForm, ParameterTypeForm
 from perm_utils import annotate_exmo_perms
-
-
-MEDIA = CORE_MEDIA + Media(css={"all": ["exmo2010/css/selector.css"]})
 
 
 def avg(attr, items):
@@ -1363,7 +1360,7 @@ class ObserversGroupView(LoginRequiredMixin, DetailView):
         context['obs_groups'] = obs_groups
         context['queryform'] = queryform
 
-        return dict(context, media=MEDIA)
+        return context
 
 
 class ObserversGroupMixin(LoginRequiredMixin):
@@ -1371,9 +1368,7 @@ class ObserversGroupMixin(LoginRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ObserversGroupMixin, self).get_context_data(**kwargs)
-        context['monitoring'] = self.monitoring
-
-        return dict(context, media=MEDIA)
+        return dict(context, monitoring=self.monitoring)
 
     def get_success_url(self):
         return reverse('exmo2010:observers_groups', args=[self.monitoring.pk])
@@ -1403,7 +1398,9 @@ class ObserversGroupEditView(ObserversGroupMixin, UpdateView):
         }
         form_class = modelform_factory(model=ObserversGroup, widgets=widgets)
         form_class.base_fields['organizations'].queryset = Organization.objects.filter(monitoring=self.monitoring)
-        users = User.objects.filter(is_active=True, is_superuser=False).exclude(groups__name='expertsA')
+        users = User.objects.filter(is_active=True, is_superuser=False)\
+                    .exclude(groups__name='expertsA')\
+                    .select_related('userprofile')
         form_class.base_fields['users'].choices = [(u.id, u"%s — %s" % (u.profile.full_name, u.email)) for u in users]
 
         return form_class
