@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -38,7 +39,7 @@ urlpatterns = patterns('',
 urlpatterns += i18n_patterns('',
     url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^jsi18n/', 'django.views.i18n.javascript_catalog'),
+    url(r'^jsi18n/', 'django.views.i18n.javascript_catalog', {'packages': ['django.conf', 'django.contrib.admin']}),
     url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^ckeditor/upload/', 'exmo2010.views.ckeditor_upload', name='ckeditor_upload'),
     url(r'^ckeditor/', include('ckeditor.urls')),
