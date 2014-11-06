@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -38,13 +39,14 @@ from accounts.forms import SettingsInvCodeForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.response import JSONResponse
-from core.views import LoginRequiredMixin
+from core.views import login_required_on_deny, LoginRequiredMixin
 from core.utils import UnicodeReader, UnicodeWriter
 from exmo2010.models import (Monitoring, Organization, Parameter, Score, Task,
                              TaskHistory, LicenseTextFragments, UserProfile)
 from perm_utils import annotate_exmo_perms
 
 
+@login_required_on_deny
 def task_export(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk)
     if not request.user.has_perm('exmo2010.view_task', task):

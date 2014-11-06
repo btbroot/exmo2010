@@ -38,8 +38,9 @@ from BeautifulSoup import BeautifulSoup
 from .forms import MonitoringCopyForm
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
-from exmo2010.models import *
-from exmo2010.models.monitoring import MONITORING_INTERACTION
+from exmo2010.models import (Claim, Monitoring, ObserversGroup, OpennessExpression,
+                             Organization, Parameter, Task, Score, UserProfile)
+from exmo2010.models.monitoring import INT, PRE, PUB
 
 
 class MonitoringDeleteTestCase(TestCase):
@@ -51,7 +52,7 @@ class MonitoringDeleteTestCase(TestCase):
 
     def setUp(self):
         # GIVEN monitoring, parameter, organization, task, score and claim
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PREPARE)
+        self.monitoring = mommy.make(Monitoring, status=PRE)
         param = mommy.make(Parameter, monitoring=self.monitoring)
         org = mommy.make(Organization, monitoring=self.monitoring)
         task = mommy.make(Task, organization=org)
@@ -89,7 +90,7 @@ class MonitoringEditAccessTestCase(TestCase):
 
     def setUp(self):
         # GIVEN monitoring with organization
-        self.monitoring = mommy.make(Monitoring, name='initial', status=MONITORING_PREPARE)
+        self.monitoring = mommy.make(Monitoring, name='initial', status=PRE)
         organization = mommy.make(Organization, monitoring=self.monitoring)
 
         # AND user without any permissions
@@ -148,7 +149,7 @@ class MonitoringEditAccessTestCase(TestCase):
             'finishing_date': now,
             'publish_date': now,
             'openness_expression': 8,
-            'status': MONITORING_PREPARE,
+            'status': PRE,
             'name': 'forged'})
 
         # THEN monitoring does not get changed in the database
@@ -167,19 +168,19 @@ class RatingsAverageTestCase(TestCase):
         attrs = {a: False for a in 'complete accessible topical hypertext document image npa'.split()}
 
         # GIVEN published monitoring with zero weight parameter (hence zero openness)
-        self.monitoring_zero_weight = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring_zero_weight = mommy.make(Monitoring, status=PUB)
         task = mommy.make(Task, organization__monitoring=self.monitoring_zero_weight, status=Task.TASK_APPROVED)
         parameter = mommy.make(Parameter, monitoring=self.monitoring_zero_weight, weight=0, **attrs)
         mommy.make(Score, task=task, parameter=parameter, found=1)
 
         # AND published monitoring with zero score (score found === 0)
-        self.monitoring_zero_score = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring_zero_score = mommy.make(Monitoring, status=PUB)
         task = mommy.make(Task, organization__monitoring=self.monitoring_zero_score, status=Task.TASK_APPROVED)
         parameter = mommy.make(Parameter, monitoring=self.monitoring_zero_score, weight=1, **attrs)
         mommy.make(Score, task=task, parameter=parameter, found=0)
 
         # AND published monitoring with nonzero score (score found === 1)
-        self.monitoring_nonzero_score = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring_nonzero_score = mommy.make(Monitoring, status=PUB)
         task = mommy.make(Task, organization__monitoring=self.monitoring_nonzero_score, status=Task.TASK_APPROVED)
         parameter = mommy.make(Parameter, monitoring=self.monitoring_nonzero_score, weight=1, **attrs)
         mommy.make(Score, task=task, parameter=parameter, found=1)
@@ -212,13 +213,13 @@ class ExpertARatingsTableVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.mon_published = mommy.make(Monitoring, status=PUB)
         # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
 
         # AND expert A account
         expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
@@ -247,19 +248,19 @@ class ExpertBRatingsTableVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.mon_published = mommy.make(Monitoring, status=PUB)
         # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND published hidden monitoring with expert B task
-        self.mon_published_hidden_with_task = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden_with_task = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
         # AND interaction monitoring with expert B task
-        self.mon_interaction_with_task = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction_with_task = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring with expert B task
-        self.mon_interaction_hidden_with_task = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden_with_task = mommy.make(Monitoring, status=INT, hidden=True)
         # AND 1 organization in published hidden monitoring
         organization_1 = mommy.make(Organization, monitoring=self.mon_published_hidden_with_task)
         # AND 1 organization in interaction monitoring
@@ -297,17 +298,17 @@ class OrgUserRatingsTableVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.mon_published = mommy.make(Monitoring, status=PUB)
         # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
         # AND interaction monitoring with representative
-        self.mon_interaction_with_representative = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction_with_representative = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring with representative
-        self.mon_interaction_hidden_with_representative = mommy.make(Monitoring, status=MONITORING_INTERACTION,
+        self.mon_interaction_hidden_with_representative = mommy.make(Monitoring, status=INT,
                                                                      hidden=True)
         # AND 1 organization in interaction monitoring with representative
         organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_representative)
@@ -344,17 +345,17 @@ class ObserversGroupRatingsTableVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.mon_published = mommy.make(Monitoring, status=PUB)
         # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
         # AND interaction monitoring with observed organizations
-        self.mon_interaction_with_observed_orgs = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction_with_observed_orgs = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring with observed organizations
-        self.mon_interaction_hidden_with_observed_orgs = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden_with_observed_orgs = mommy.make(Monitoring, status=INT, hidden=True)
 
         # AND 1 organization in interaction monitoring with observed organizations
         organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_observed_orgs)
@@ -397,13 +398,13 @@ class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.mon_published = mommy.make(Monitoring, status=PUB)
         # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
         # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.mon_interaction = mommy.make(Monitoring, status=INT)
         # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=MONITORING_INTERACTION, hidden=True)
+        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
 
     def test_visible_monitorings(self):
         # WHEN I get ratings page
@@ -432,7 +433,7 @@ class RatingTableColumnOptionsTestCase(TestCase):
         self.expertA.profile.is_expertA = True
         self.user = User.objects.create_user('nonexpert', 'usr@svobodainfo.org', 'password')
         # AND a Score for a Parameter in an APPROVED Task for an Organization in a PUBLISHED Monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, status=PUB)
         organization = mommy.make(Organization, monitoring=self.monitoring)
         parameter = mommy.make(Parameter, monitoring=self.monitoring)
         task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
@@ -517,7 +518,7 @@ class RatingTableValuesTestCase(TestCase):
     # Scenario: Output to Rating Table
     def setUp(self):
         # GIVEN published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, status=PUB)
         self.monitoring_id = self.monitoring.pk
         self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_id])
         organization = mommy.make(Organization, monitoring=self.monitoring)
@@ -559,7 +560,7 @@ class NameFilterRatingTestCase(TestCase):
 
     def setUp(self):
         # GIVEN monitoring with 2 organizations
-        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        monitoring = mommy.make(Monitoring, status=PUB)
         monitoring_id = monitoring.pk
         organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=monitoring)
@@ -593,7 +594,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
     def setUp(self):
         # GIVEN User instance and two connected organizations to it
-        monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        monitoring = mommy.make(Monitoring, status=PUB)
         monitoring_id = monitoring.pk
         organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=monitoring)
@@ -691,7 +692,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN hidden and published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, hidden=True)
+        self.monitoring = mommy.make(Monitoring, status=PUB, hidden=True)
         self.monitoring_id = self.monitoring.pk
 
         # AND organization connected to monitoring
@@ -766,7 +767,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertEqual(len(response_monitoring_list), 0)
 
     # TODO: move out into new testcase
-    @parameterized.expand(zip([None, 'usr', 'expertB_out', 'orguser_out']))
+    @parameterized.expand(zip(['usr', 'expertB_out', 'orguser_out']))
     def test_forbid_hidden_score_page(self, username):
         # WHEN i log in
         self.client.login(username=username, password='password')
@@ -778,7 +779,17 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
     # TODO: move out into new testcase
-    @parameterized.expand(zip([None, 'usr', 'expertB_out', 'orguser_out']))
+    def test_redirect_anonymous_task_page(self):
+        url = reverse('exmo2010:task_scores', args=[self.task.pk])
+        # WHEN anonymous get task page
+        response = self.client.get(url)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, url))
+
+    # TODO: move out into new testcase
+    @parameterized.expand(zip(['usr', 'expertB_out', 'orguser_out']))
     def test_forbid_hidden_task_page(self, username):
         # WHEN i log in
         self.client.login(username=username, password='password')
@@ -789,6 +800,17 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         # THEN response status_code is 403 (forbidden)
         self.assertEqual(response.status_code, 403)
 
+    # TODO: move out into new testcase
+    def test_redirect_anonymous_score_page(self):
+        url = reverse('exmo2010:score', args=[self.score.pk])
+        # WHEN anonymous get score page
+        response = self.client.get(url)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, url))
+
+
 
 class TestMonitoringExport(TestCase):
     # Scenario: Экспорт данных мониторинга
@@ -796,7 +818,7 @@ class TestMonitoringExport(TestCase):
         # GIVEN предопределены все code OPENNESS_EXPRESSION
         for code in OpennessExpression.OPENNESS_EXPRESSIONS:
             # AND для каждого code есть опубликованный мониторинг
-            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=MONITORING_PUBLISHED)
+            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=PUB)
             # AND в каждом мониторинге есть организация
             org = mommy.make(Organization, monitoring=monitoring)
             # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
@@ -918,7 +940,7 @@ class TestMonitoringExportApproved(TestCase):
     # Scenario: Экспорт данных мониторинга
     def setUp(self):
         # GIVEN published monitoring with 1 organization
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, status=PUB)
         organization = mommy.make(Organization, monitoring=self.monitoring)
         # AND 2 experts B
         expertB_1 = User.objects.create_user('expertB_1', 'expertB_1@svobodainfo.org', 'password')
@@ -979,7 +1001,7 @@ class UploadParametersCSVTest(TestCase):
 
     def setUp(self):
         # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.monitoring = mommy.make(Monitoring, status=INT)
         # AND expert A account
         self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         self.expertA.profile.is_expertA = True
@@ -1008,7 +1030,7 @@ class TranslatedMonitoringScoresDataExportTestCase(TestCase):
 
     def setUp(self):
         # GIVEN published monitoring with 1 organization
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED, name_en='monitoring', name_ru=u'мониторинг')
+        self.monitoring = mommy.make(Monitoring, status=PUB, name_en='monitoring', name_ru=u'мониторинг')
         self.organization = mommy.make(Organization, monitoring=self.monitoring, name_en='organization', name_ru=u'организация')
         # AND expert B account
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
@@ -1069,8 +1091,8 @@ class OrgUserRatingAccessTestCase(TestCase):
 
     def setUp(self):
 
-        # GIVEN MONITORING_INTERACTION monitoring with 2 organizations
-        self.monitoring_related = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # GIVEN INT monitoring with 2 organizations
+        self.monitoring_related = mommy.make(Monitoring, status=INT)
         organization = mommy.make(Organization, monitoring=self.monitoring_related)
         organization_unrelated = mommy.make(Organization, monitoring=self.monitoring_related)
 
@@ -1079,8 +1101,8 @@ class OrgUserRatingAccessTestCase(TestCase):
         user.groups.add(Group.objects.get(name=user.profile.organization_group))
         user.profile.organization = [organization]
 
-        # AND MONITORING_INTERACTION monitoring with organization, not connected to representative user
-        self.monitoring_unrelated = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        # AND INT monitoring with organization, not connected to representative user
+        self.monitoring_unrelated = mommy.make(Monitoring, status=INT)
         organization_unrelated2 = mommy.make(Organization, monitoring=self.monitoring_unrelated)
 
         # AND approved task for each organization
@@ -1118,7 +1140,7 @@ class RatingStatsTestCase(TestCase):
 
     def setUp(self):
         # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring, openness_expression__code=8, status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, openness_expression__code=8, status=PUB)
         # AND 1 organization in this monitoring
         self.organization = mommy.make(Organization, monitoring=self.monitoring)
         # AND 2 approved tasks
@@ -1171,7 +1193,7 @@ class RatingStatsOrgCountTestCase(TestCase):
 
     def setUp(self):
         # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.monitoring = mommy.make(Monitoring, status=INT)
         # AND 2 organizations
         organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
@@ -1216,7 +1238,7 @@ class SuperuserRatingOrgsVisibilityTestCase(TestCase):
 
     def setUp(self):
         # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.monitoring = mommy.make(Monitoring, status=INT)
         # AND 2 organizations connected to monitoring
         organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
@@ -1249,7 +1271,7 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
 
     def setUp(self):
         # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        self.monitoring = mommy.make(Monitoring, status=INT)
         # AND 2 organizations connected to monitoring
         organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
@@ -1358,7 +1380,7 @@ class MonitoringCopyAccessTestCase(TestCase):
         # AND I forge and POST monitoring copy form
         self.client.post(self.url, {
             'name_%s' % get_language(): 'monitoring name',
-            'status': MONITORING_PREPARE,
+            'status': PRE,
             'openness_expression': 8,
             'donors': ['all'],
             'rate_date': now,
@@ -1391,7 +1413,7 @@ class MonitoringCopyFormTestCase(TestCase):
         now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
         form_data = {
             'name_%s' % get_language(): 'monitoring name',
-            'status': MONITORING_PREPARE,
+            'status': PRE,
             'openness_expression': 8,
             'donors': donors_list,
             'rate_date': now,
@@ -1444,7 +1466,7 @@ class CopyMonitoringViewTestCase(TestCase):
         now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
         self.client.post(self.url, {
             'name_%s' % get_language(): 'monitoring name',
-            'status': MONITORING_PREPARE,
+            'status': PRE,
             'openness_expression': 8,
             'donors': ['parameters', 'tasks', 'all_scores', 'representatives'],
             'rate_date': now,
@@ -1461,7 +1483,7 @@ class CopyMonitoringViewTestCase(TestCase):
         # THEN monitorings fields should be equal
         # FIXME: modeltranslated fields doesn`t exists in post request
         # self.assertEqual(getattr(copied_monitoring, 'name_%s' % get_language()), 'monitoring name')
-        self.assertEqual(copied_monitoring.status, MONITORING_PREPARE)
+        self.assertEqual(copied_monitoring.status, PRE)
         # AND organizations names should be equal
         self.assertEqual(set(self.monitoring.organization_set.values_list('name', flat=True)),
                          set(copied_monitoring.organization_set.values_list('name', flat=True)))

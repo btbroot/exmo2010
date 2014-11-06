@@ -20,6 +20,8 @@
 import json
 from contextlib import contextmanager
 
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -32,8 +34,8 @@ from nose_parameterized import parameterized
 
 from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
-from exmo2010.models import *
-from exmo2010.models.monitoring import Monitoring, RATE, MONITORING_INTERACTION
+from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Task, Score, UserProfile
+from exmo2010.models.monitoring import INT, PUB, RATE
 from scores.views import rating_update, post_task_scores_table_settings
 
 
@@ -42,7 +44,7 @@ class ScoreAddAccessTestCase(TestCase):
 
     def setUp(self):
         # GIVEN organization, parameter and task in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        org = mommy.make(Organization, monitoring__status=RATE)
         param = mommy.make(Parameter, monitoring=org.monitoring)
         task = mommy.make(Task, organization=org)
 
@@ -69,7 +71,7 @@ class ScoreAddAccessTestCase(TestCase):
         self.url = reverse('exmo2010:score_add', args=[task.pk, param.pk])
 
     @parameterized.expand([
-        (None, 403),
+        (None, 302),
         ('user', 403),
         ('orguser', 403),
         ('observer', 403),
@@ -86,7 +88,7 @@ class ScoreAddAccessTestCase(TestCase):
         # THEN response status_code equals expected
         self.assertEqual(response.status_code, expected_response_code)
 
-    @parameterized.expand(zip([None, 'user', 'org', 'observer', 'other_expertB']))
+    @parameterized.expand(zip(['user', 'orguser', 'observer', 'other_expertB']))
     def test_forbid_unauthorized_score_creation(self, username):
         self.client.login(username=username, password='password')
 
@@ -98,6 +100,14 @@ class ScoreAddAccessTestCase(TestCase):
 
         # AND score does not get created
         self.assertEqual(0, Score.objects.count())
+
+    def test_redirect_anonymous_post(self):
+        # WHEN anonymous POSTs score creation form
+        response = self.client.post(self.url, {'found': 0})
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, self.url))
 
 
 class ScoreAddTestCase(TestCase):
@@ -111,10 +121,10 @@ class ScoreAddTestCase(TestCase):
         expertB.profile.is_expertB = True
 
         # AND organization and parameter in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        org = mommy.make(Organization, monitoring__status=RATE)
         self.param = mommy.make(Parameter, monitoring=org.monitoring)
         # AND organization and parameter in MONITORING_INTERACTION monitoring
-        org_interact = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org_interact = mommy.make(Organization, monitoring__status=INT)
         self.param_interact = mommy.make(Parameter, monitoring=org_interact.monitoring)
         # AND 2 tasks assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
@@ -174,7 +184,7 @@ class ScoreEditInitialTestCase(TestCase):
         expertB.profile.is_expertB = True
 
         # AND organization and parameter in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        org = mommy.make(Organization, monitoring__status=RATE)
         self.param = mommy.make(Parameter, monitoring=org.monitoring)
         # AND task assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
@@ -217,7 +227,7 @@ class ScoreEditInteractionTestCase(TestCase):
         expertB.profile.is_expertB = True
 
         # AND organization and parameter in MONITORING_INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         self.param = mommy.make(Parameter, monitoring=org.monitoring)
         # AND task assigned to expertB
         self.task = mommy.make(Task, organization=org, user=expertB)
@@ -272,7 +282,7 @@ class ScoreRecommendationsShouldChangeTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
         # AND organization  in MONITORING_INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         # AND parameter with no optional criteria
         kwargs = dict(complete=0, topical=0, accessible=0, hypertext=0, document=0, image=0)
         self.param = mommy.make(Parameter, monitoring=org.monitoring, **kwargs)
@@ -354,7 +364,7 @@ class ScoreRecommendationsShouldExistTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
         # AND organization  in MONITORING_INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         # AND parameter with no optional criteria
         kwargs = dict(complete=0, topical=0, accessible=0, hypertext=0, document=0, image=0)
         self.param = mommy.make(Parameter, monitoring=org.monitoring, **kwargs)
@@ -414,7 +424,7 @@ class AjaxGetRatingPlacesTestCase(TestCase):
 
     def setUp(self):
         # GIVEN interaction monitoring
-        monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        monitoring = mommy.make(Monitoring, status=INT)
         # AND there are 2 approved tasks with organizations
         self.task1 = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
         self.task2 = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
@@ -454,9 +464,9 @@ class AjaxOpennessAccessTestCase(OptimizedTestCase):
         super(AjaxOpennessAccessTestCase, cls).setUpClass()
         cls.users = {}
         # GIVEN interaction monitoring
-        monitoring1 = mommy.make(Monitoring, status=MONITORING_INTERACTION)
+        monitoring1 = mommy.make(Monitoring, status=INT)
         # AND published monitoring
-        monitoring2 = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        monitoring2 = mommy.make(Monitoring, status=PUB)
         # AND there are 3 organizations in interaction monitoring
         org1 = mommy.make(Organization, monitoring=monitoring1, name='org1')
         org2 = mommy.make(Organization, monitoring=monitoring1, name='org2')
@@ -532,7 +542,7 @@ class AddExistingScoreRedirectTestCase(TestCase):
 
     def setUp(self):
         # GIVEN organization and parameter in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        org = mommy.make(Organization, monitoring__status=RATE)
         param = mommy.make(Parameter, monitoring=org.monitoring)
         # AND expert B account
         expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
@@ -569,7 +579,7 @@ class AjaxPostScoreLinksTestCase(TestCase):
         self.client.login(username='expertB', password='password')
 
         # AND organization and parameter in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_RATE)
+        org = mommy.make(Organization, monitoring__status=RATE)
         param = mommy.make(Parameter, monitoring=org.monitoring)
 
         # AND open task assigned to expert B
@@ -616,7 +626,7 @@ class ForbidAjaxPostNonMaxScoreEmptyRecommandationsTestCase(TestCase):
         self.client.login(username='expertB', password='password')
 
         # AND organization and parameter in MONITORING_RATE monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         param = mommy.make(Parameter, monitoring=org.monitoring)
 
         # AND open task assigned to expert B
@@ -641,7 +651,7 @@ class AjaxSetPofileSettingTestCase(TestCase):
 
     def setUp(self):
         # GIVEN organization in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         # AND organization representative with 'show_interim_score' setting turned on
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.show_interim_score = True
@@ -673,7 +683,7 @@ class RecommendationsTotalCostTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
         # AND task in INTERACTION monitoring
-        self.task = mommy.make(Task, organization__monitoring__status=MONITORING_INTERACTION)
+        self.task = mommy.make(Task, organization__monitoring__status=INT)
         # AND 2 parameters of weight 1
         self.param1 = mommy.make(Parameter, monitoring=self.task.organization.monitoring, weight=1)
         self.param2 = mommy.make(Parameter, monitoring=self.task.organization.monitoring, weight=1)
@@ -743,7 +753,7 @@ class RecommendationsVisibilityNonrelevantTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
         # AND organization in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         task = mommy.make(Task, organization=org)
 
         # AND score to nonrelevant parameter
@@ -791,7 +801,7 @@ class RecommendationsVisibilityRelevantTestCase(TestCase):
         self.client.login(username='expertA', password='password')
 
         # AND organization in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+        org = mommy.make(Organization, monitoring__status=INT)
         self.task = mommy.make(Task, organization=org)
 
         # AND 0% score with recommendations

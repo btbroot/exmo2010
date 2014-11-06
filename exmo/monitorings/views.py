@@ -54,7 +54,7 @@ from .forms import MonitoringCopyForm, RatingsQueryForm, RatingQueryForm, Observ
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
-from core.views import LoginRequiredMixin
+from core.views import login_required_on_deny, LoginRequiredMixin
 from custom_comments.utils import comment_report
 from exmo2010.forms import FilteredSelectMultiple
 from exmo2010.models import (Claim, Clarification, LicenseTextFragments, Monitoring, ObserversGroup, Organization,
@@ -331,6 +331,7 @@ class MonitoringCopyView(LoginRequiredMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
+@login_required_on_deny
 def monitoring_rating(request, monitoring_pk):
     """
     Return a response containing the rating table,
@@ -1313,6 +1314,7 @@ class MonitoringExport(object):
         return response
 
 
+@login_required_on_deny
 def monitoring_export(request, monitoring_pk):
     """
     :param request:

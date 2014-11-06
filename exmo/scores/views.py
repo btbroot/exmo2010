@@ -44,6 +44,7 @@ from accounts.forms import SettingsInvCodeForm
 from core.response import JSONResponse
 from core.templatetags.target_blank import target_blank
 from core.utils import clean_message, round_ex
+from core.views import login_required_on_deny, LoginRequiredOnDeny
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
 from exmo2010.models import Organization, Score, Task, Parameter, QAnswer, QQuestion, UserProfile
@@ -57,6 +58,7 @@ from questionnaire.forms import QuestionnaireDynForm
 # button after add new Score. BUT, not working in Opera browser:
 # (http://my.opera.com/yngve/blog/2007/02/27/introducing-cache-contexts-or-why-the).
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required_on_deny
 def score_view(request, **kwargs):
     if request.method not in ['POST', 'GET']:
         return HttpResponseNotAllowed(permitted_methods=['POST', 'GET'])
@@ -314,7 +316,7 @@ def toggle_comment(request):
     raise Http404
 
 
-class TaskScoresMixin(object):
+class TaskScoresMixin(LoginRequiredOnDeny):
     pk_url_kwarg = 'task_pk'
     model = Task
 

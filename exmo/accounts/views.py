@@ -18,23 +18,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from .forms import *
+from . forms import (SettingsChPassForm, SettingsInvCodeForm, SettingsPersInfForm,
+                     SettingsPersInfFormFull, SubscribeAndNotifyForm, SubscribeForm)
 from exmo2010.models import Organization, UserProfile
 
 
+@login_required
 def settings(request):
     """
-    Страница настроек пользователя.
-
+    User settings page.
     """
-    if not request.user.is_authenticated():
-        raise Http404
-
     user = request.user
     profile = user.profile
     is_organization = profile.is_organization
@@ -42,8 +40,7 @@ def settings(request):
     subscribe_form = SubscribeAndNotifyForm if is_internal or is_organization else SubscribeForm
 
     # Маркеры того, что форма уже создана.
-    pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = \
-    send_notif_form_ready = False
+    pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = send_notif_form_ready = False
     # Ошибки и сообщения об успехе операций.
     # Сообщение об успехе при сабмите формы с личными данными.
     pers_inf_form_mess = False
@@ -85,7 +82,7 @@ def settings(request):
                 pers_inf_form_mess = True
             pers_inf_form_ready = True
         # Засабмитили форму с кодом приглашения.
-        elif request.POST.has_key("invitation_code"):
+        elif "invitation_code" in request.POST:
             if not is_internal:
                 inv_code_form = SettingsInvCodeForm(request.POST)
                 if inv_code_form.is_valid():
@@ -105,7 +102,7 @@ def settings(request):
                                           "exist.")
                     inv_code_form_ready = True
         # Засабмитили форму смены пароля.
-        elif request.POST.has_key("old_password"):
+        elif "old_password" in request.POST:
             ch_pass_form = SettingsChPassForm(request.POST, user=user)
             if ch_pass_form.is_valid():
                 ch_pass_form_cd = ch_pass_form.cleaned_data
