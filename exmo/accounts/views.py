@@ -23,8 +23,8 @@ from django.contrib.auth.models import Group
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 
-from . forms import (SettingsChPassForm, SettingsInvCodeForm, SettingsPersInfForm,
-                     SettingsPersInfFormFull, SubscribeAndNotifyForm, SubscribeForm)
+from .forms import (SettingsChPassForm, SettingsInvCodeForm, SettingsPersInfForm,
+                    SettingsPersInfFormFull, SubscribeAndNotifyForm, SubscribeForm)
 from exmo2010.models import Organization, UserProfile
 
 

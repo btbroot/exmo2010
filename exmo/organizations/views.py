@@ -136,10 +136,11 @@ class SendMailView(SendMailMixin, UpdateView):
         kwargs.update({'instance': InviteOrgs(monitoring=self.monitoring)})
         return kwargs
 
-    def replace_keywords(self, text, user_email, org):
-        params = {'code': org.inv_code, 'email': user_email}
-        url = reverse('exmo2010:auth_orguser') + '?' + urlencode(params)
-        return text.replace('%code%', org.inv_code).replace('%link%', self.request.build_absolute_uri(url))
+    def replace_link(self, text, email, orgs):
+        inv_codes = [org.inv_code for org in orgs]
+        params = {'code': inv_codes, 'email': email}
+        url = reverse('exmo2010:auth_orguser') + '?' + urlencode(params, True)
+        return text.replace('%link%', self.request.build_absolute_uri(url))
 
     def form_valid(self, form):
         self.object = form.save()
@@ -154,8 +155,9 @@ class SendMailView(SendMailMixin, UpdateView):
             orgs += self.monitoring.organization_set.filter(inv_status='ACT')
 
         for org in orgs:
+            comment_text = formdata['comment'].replace('%code%', org.inv_code)
             for addr in org.email_iter():
-                text = self.replace_keywords(formdata['comment'], addr, org)
+                text = self.replace_link(comment_text, addr, [org])
                 mail_organization(addr, org, formdata['subject'], text)
 
         orgs = set(self.monitoring.organization_set.all())
@@ -172,13 +174,20 @@ class SendMailView(SendMailMixin, UpdateView):
             mailto += list(active)
 
         for user in mailto:
-            if '%code%' in formdata['comment'] or '%link%' in formdata['comment']:
-                # Send email to this user for every related org in this monitoring, expanding %code% and %link%
-                for org in filter(orgs.__contains__, user.organization.all()):
-                    text = self.replace_keywords(formdata['comment'], user.user.email, org)
+            user_orgs = filter(orgs.__contains__, user.organization.all())
+            if '%code%' in formdata['comment']:
+                # If %code% keyword in comment send email to this user for every related organization
+                # in this monitoring, expanding %code% and %link%
+                comment_text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
+                for org in user_orgs:
+                    text = comment_text.replace('%code%', org.inv_code)
                     mail_orguser(user.user.email, formdata['subject'], text)
+            elif '%link%' in formdata['comment']:
+                # Send single email to this user with all related organizations in link parameters.
+                text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
+                mail_orguser(user.user.email, formdata['subject'], text)
             else:
-                # Send single email to this user.
+                # Send single email to this user without any replacement in email.
                 mail_orguser(user.user.email, formdata['subject'], formdata['comment'])
 
         messages.success(self.request, _('Mails sent.'))

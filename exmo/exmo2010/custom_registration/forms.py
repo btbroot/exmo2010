@@ -43,15 +43,13 @@ STATUS_CHOICES = (
 
 
 @autostrip
-class RegistrationFormShort(forms.Form):
+class RegistrationForm(forms.Form):
     """
     Укороченная форма регистрации.
     Используется, если выбран статус "интересующийся гражданин".
     На имя и отчество выделено по 15 символов, чтобы они вместе вместились
     в поле first_name модели User.
     """
-
-    status = forms.ChoiceField(label=_("Status"), choices=STATUS_CHOICES)
     first_name = forms.CharField(
         label=_("First name"), required=False, widget=forms.TextInput(attrs={"maxlength": 14}))
     patronymic = forms.CharField(
@@ -62,6 +60,14 @@ class RegistrationFormShort(forms.Form):
     password = forms.CharField(
         label=_("Password"), widget=forms.TextInput(attrs={"maxlength": 24, "autocomplete": "off"}))
     subscribe = forms.BooleanField(label=_("Subscribe to news"), required=False)
+    position = forms.CharField(label=_("Job title"), required=False, widget=forms.TextInput(attrs={"maxlength": 48}))
+    phone = forms.CharField(label=_("Phone number"), required=False, widget=forms.TextInput(attrs={"maxlength": 30}))
+    invitation_code = forms.CharField(label=_("Invitation code"), required=False, widget=forms.TextInput(attrs={"maxlength": 6}))
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationForm, self).__init__(*args, **kwargs)
+        fields = 'first_name patronymic last_name position phone email password invitation_code subscribe'
+        self.fields.keyOrder = fields.split()
 
     def clean_password(self):
         """Проверка пароля на наличие недопустимых символов."""
@@ -83,6 +89,13 @@ class RegistrationFormShort(forms.Form):
                 "This email address is already in use. Please supply a different email address."))
         return email
 
+    def clean_invitation_code(self):
+        """
+        Return list of invitation codes or empty list.
+        TODO: check whether invitation code exists.
+        """
+        return filter(None, self.cleaned_data.get('invitation_code', '').split(','))
+
     @method_decorator(transaction.commit_on_success)
     def save(self, request):
         data = self.cleaned_data
@@ -101,55 +114,14 @@ class RegistrationFormShort(forms.Form):
 
         profile = UserProfile.objects.get_or_create(user=user)[0]
         profile.subscribe = data.get("subscribe", False)
-        self.orgs = []
-        if data.get("status") == 'representative':
-            profile.position = data.get("position", None)
-            profile.phone = data.get("phone", None)
-            invitation_code = data.get("invitation_code")
-            if invitation_code:
-                try:
-                    org = Organization.objects.get(inv_code=invitation_code)
-                except ObjectDoesNotExist:
-                    pass
-                else:
-                    self.orgs = [org]
-                    org_group = Group.objects.get(name=UserProfile.organization_group)
-                    user.groups.add(org_group)
-                    profile.organization.add(org)
+        profile.position = data.get("position", None)
+        profile.phone = data.get("phone", None)
         # Set language preference
         profile.language = get_language_from_request(request, check_path=True)
         profile.email_confirmed = False
         profile.save()
 
         return user
-
-
-@autostrip
-class RegistrationFormFull(RegistrationFormShort):
-    """
-    Полная форма регистрации.
-    Используется, если выбран статус "представитель организации".
-    На имя и отчество выделено по 15 символов, чтобы они вместе вместились
-    в поле first_name модели User.
-    """
-    position = forms.CharField(label=_("Job title"), required=False, widget=forms.TextInput(attrs={"maxlength": 48}))
-    phone = forms.CharField(label=_("Phone number"), required=False, widget=forms.TextInput(attrs={"maxlength": 30}))
-    invitation_code = forms.CharField(label=_("Invitation code"), widget=forms.TextInput(attrs={"maxlength": 6}))
-
-    def clean_invitation_code(self):
-        """
-        Проверить, что код приглашения существует.
-        """
-        invitation_code = self.cleaned_data.get('invitation_code')
-        if not Organization.objects.filter(inv_code=invitation_code).exists():
-            raise forms.ValidationError(_("Submitted invitation code does not exist. Please enter correct one."))
-        else:
-            return invitation_code
-
-    def __init__(self, *args, **kwargs):
-        super(RegistrationFormFull, self).__init__(*args, **kwargs)
-        fields = 'status first_name patronymic last_name position phone email password invitation_code subscribe'
-        self.fields.keyOrder = fields.split()
 
 
 @autostrip

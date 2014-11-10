@@ -59,7 +59,7 @@
                     <tbody>
                     {% for field in form %}
 
-                        {% if field.field != form.fields.subscribe %}
+                        {% if field.field != form.fields.subscribe and field.field != form.fields.invitation_code %}
                         <tr id="id_row_{{ field.name }}">
                             <td class="label-registration">
                                 <label>
@@ -72,6 +72,21 @@
                         </tr>
                         {% endif %}
                     {% endfor %}
+                        {% if orgs %}
+                            {{ form.invitation_code.as_hidden }}
+                        {% else %}
+                            <tr id="id_row_{{ form.invitation_code.name }}">
+                                <td class="label-registration">
+                                    <label>
+                                        {{ form.invitation_code.label }}
+                                    </label>
+                                </td>
+                                <td>
+                                    {{ form.invitation_code }}
+                                </td>
+                            </tr>
+                        {% endif %}
+
                         <tr>
                             <td></td>
                             <td>
