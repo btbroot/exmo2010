@@ -25,13 +25,13 @@ from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import UNUSABLE_PASSWORD
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db import transaction
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from django.utils.decorators import method_decorator
 
-from exmo2010.models import Organization, UserProfile
+from exmo2010.models import UserProfile
 
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
