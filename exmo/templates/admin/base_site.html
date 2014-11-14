@@ -4,6 +4,7 @@
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,15 +20,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n future %}
+{% load i18n static %}
 
-{% block title %}{{ title }} | {% trans 'Infometer admin' %}{% endblock %}
+{% block title %}{{ title }} | {% trans 'AIS Infometer' %}{% endblock %}
+
+{% block extrahead %}
+    {# Django-ckeditor uses jQuery in ckeditor-init.js file #}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
+{% endblock %}
 
 {% block branding %}
-<h1 id="site-name">
-    {% trans 'Infometer administration' %}
-    <a href="{% url 'satchmo_site_settings' %}">{% trans 'Settings' %}</a>
-</h1>
+    <h1 id="site-name">
+        {% trans 'Infometer administration' %}
+        {% if request.user.is_superuser %}
+            <a href="{% url 'satchmo_site_settings' %}">{% trans 'Settings' %}</a>
+        {% endif %}
+    </h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
