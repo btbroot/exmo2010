@@ -36,7 +36,7 @@
 
 {% block content %}
     <div class="organizations-content-block">
-        {% if org %}
+        {% if org.id %}
             <h2>{% trans "Organization editing" %}</h2>
         {% else %}
             <h2>{% trans "Organizations" %}</h2>
@@ -67,7 +67,7 @@
                     <tr>
                         <td></td>
                         <td class="field">
-                            <input type="submit" value="{% if org %}{% trans "Save" %}{% else %}{% trans "Add" %}{% endif %}"/>
+                            <input type="submit" value="{% if org.id %}{% trans "Save" %}{% else %}{% trans "Add" %}{% endif %}"/>
                         </td>
                     </tr>
                 </table>
