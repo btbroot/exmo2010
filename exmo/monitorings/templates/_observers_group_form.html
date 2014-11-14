@@ -1,6 +1,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,25 +19,36 @@
 {% endcomment %}
 {% load i18n widget_tweaks %}
 
-<p>{{ form.non_field_errors }}</p>
+{% include "_form_errors.html" with form=form %}
 
 <form method="post" action="">{% csrf_token %}
     {{ form.monitoring.as_hidden }}
-    <table id="observers_form">
-        {% include "_form_field.html" with field=form.name|add_class:"name_input" %}
-        {% include "_form_field.html" with field=form.organizations %}
-        {% include "_form_field.html" with field=form.users %}
+    <div class="form-table">
+        <div class="table-row">
+            <div class="table-cell-R">{{ form.name.label_tag }}<span class="required">*</span></div>
+            <div class="table-cell-L">{{ form.name|add_class:"name_input" }}</div>
+        </div>
 
-        <tr>
-            <td></td>
-            <td class="field">
-                {% if object %}
+        <div class="table-row">
+            <div class="table-cell-R">{{ form.organizations.label_tag }}</div>
+            <div class="table-cell-L">{{ form.organizations }}</div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell-R">{{ form.users.label_tag }}</div>
+            <div class="table-cell-L">{{ form.users }}</div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell-R"></div>
+            <div class="table-cell-L">
+                {% if obs_group %}
                     <input type="submit" id="edit_btn" value="{% trans 'Edit' %}" />
-                    <a href="{% url 'exmo2010:observers_group_delete' object.monitoring.pk object.pk %}">{% trans 'Delete' %}</a>
+                    <a href="{% url 'exmo2010:observers_group_delete' obs_group.monitoring.pk obs_group.pk %}">{% trans 'Delete' %}</a>
                 {% else %}
                     <input type="submit" id="add_btn" value="{% trans 'Add' %}" />
                 {% endif %}
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 </form>

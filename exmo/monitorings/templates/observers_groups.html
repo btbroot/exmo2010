@@ -20,8 +20,9 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}{% trans "Observers" %}{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/observers.css' %}"/>
 {% endblock %}
 

@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-13 16:25+0300\n"
+"POT-Creation-Date: 2014-11-14 10:58+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -1582,7 +1582,7 @@ msgstr ""
 msgid "What to copy?"
 msgstr ""
 
-#: monitorings/forms.py:78 monitorings/templates/observers_groups.html:64
+#: monitorings/forms.py:78 monitorings/templates/observers_groups.html:65
 msgid "Group name"
 msgstr ""
 
@@ -1658,16 +1658,16 @@ msgstr ""
 msgid "Monitoring statistics"
 msgstr ""
 
-#: monitorings/templates/_observers_group_form.html:34
+#: monitorings/templates/_observers_group_form.html:46
 msgid "Edit"
 msgstr ""
 
-#: monitorings/templates/_observers_group_form.html:35
+#: monitorings/templates/_observers_group_form.html:47
 #: parameters/templates/parameter_form.html:53
 msgid "Delete"
 msgstr ""
 
-#: monitorings/templates/_observers_group_form.html:37
+#: monitorings/templates/_observers_group_form.html:49
 #: organizations/templates/organizations_edit.html:70
 msgid "Add"
 msgstr ""
@@ -1907,30 +1907,37 @@ msgstr ""
 msgid "There's no any finished monitoring."
 msgstr ""
 
-#: monitorings/templates/observers_group_confirm_delete.html:30
+#: monitorings/templates/observers_group_confirm_delete.html:23
+#: monitorings/templates/observers_group_confirm_delete.html:33
 msgid "Observers group deleting"
 msgstr ""
 
-#: monitorings/templates/observers_group_confirm_delete.html:35
+#: monitorings/templates/observers_group_confirm_delete.html:38
 #, python-format
 msgid "The <a href=\"%(url)s\">%(group_name)s</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?"
 msgstr ""
 
-#: monitorings/templates/observers_group_confirm_delete.html:36
+#: monitorings/templates/observers_group_confirm_delete.html:39
 msgid "Yes, delete fully"
 msgstr ""
 
-#: monitorings/templates/observers_group_edit.html:36
+#: monitorings/templates/observers_group_edit.html:25
+#: monitorings/templates/observers_group_edit.html:44
 msgid "Observers group editing"
 msgstr ""
 
-#: monitorings/templates/observers_group_edit.html:38
-#: monitorings/templates/observers_groups.html:41
+#: monitorings/templates/observers_group_edit.html:27
+msgid "Observers group adding"
+msgstr ""
+
+#: monitorings/templates/observers_group_edit.html:46
+#: monitorings/templates/observers_groups.html:23
+#: monitorings/templates/observers_groups.html:42
 #: templates/exmo2010/sidebar/_sidebar.html:56
 msgid "Observers"
 msgstr ""
 
-#: monitorings/templates/observers_groups.html:56
+#: monitorings/templates/observers_groups.html:57
 #: monitorings/templates/rating.html:96 monitorings/templates/ratings.html:42
 #: organizations/templates/organizations.html:63
 #: organizations/templates/representatives.html:55
@@ -1940,17 +1947,17 @@ msgstr ""
 msgid "Find"
 msgstr ""
 
-#: monitorings/templates/observers_groups.html:65
+#: monitorings/templates/observers_groups.html:66
 msgctxt "number of organizations"
 msgid "Organizations"
 msgstr ""
 
-#: monitorings/templates/observers_groups.html:66
+#: monitorings/templates/observers_groups.html:67
 msgctxt "number of users"
 msgid "Users"
 msgstr ""
 
-#: monitorings/templates/observers_groups.html:85
+#: monitorings/templates/observers_groups.html:86
 msgid "No observers"
 msgstr ""
 

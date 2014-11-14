@@ -22,6 +22,13 @@ h2 {
     margin: 0;
 }
 
+input {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0;
+}
+
 .observers-content-block > h2 {
     display: inline;
     margin-right: 12px;
@@ -36,13 +43,8 @@ h2 {
     margin-bottom: 15px;
 }
 
-#observers_form td {
-    border: none;
-    text-align: right;
-}
-
-#observers_form td.field {
-    text-align: left;
+.table-cell-R {
+    vertical-align: top;
 }
 
 #edit_btn {

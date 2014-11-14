@@ -18,7 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static widget_tweaks %}
+{% load i18n static %}
+
+{% block title %}
+    {% if obs_group %}
+        {% trans "Observers group editing" %}
+    {% else %}
+        {% trans "Observers group adding" %}
+    {% endif %}
+{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/observers.css' %}"/>
@@ -32,7 +40,7 @@
 
 {% block content %}
     <div class="observers-content-block">
-        {% if object %}
+        {% if obs_group %}
             <h2>{% trans "Observers group editing" %}</h2>
         {% else %}
             <h2>{% trans "Observers" %}</h2>

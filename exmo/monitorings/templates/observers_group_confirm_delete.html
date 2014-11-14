@@ -2,6 +2,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,6 +20,8 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}{% trans "Observers group deleting" %}{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/observers.css' %}"/>
 {% endblock %}
@@ -32,7 +35,7 @@
         <div class="delete-form">
             <form method="post" action="">{% csrf_token %}
                 {% url 'exmo2010:observers_group_update' monitoring.pk object.pk as url %}
-                <p>{% blocktrans with group_name=object.name %}The <a href="{{ url }}">{{ group_name }}</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?{% endblocktrans %}</p>
+                <p>{% blocktrans with group_name=obs_group.name %}The <a href="{{ url }}">{{ group_name }}</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?{% endblocktrans %}</p>
                 <p><input type="submit" value="{% trans 'Yes, delete fully' %}" /></p>
             </form>
         </div>
