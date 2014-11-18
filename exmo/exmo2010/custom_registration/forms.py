@@ -133,6 +133,14 @@ class LoginForm(forms.Form):
     username = forms.CharField(label=_("E-mail"), max_length=30)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
 
+    def __init__(self, *args, **kwargs):
+        getparams = kwargs.pop('getparams', None)
+        url = reverse('exmo2010:password_reset_request')
+        url += '?{}'.format(getparams) if getparams else ''
+        self.wrong_password_message = mark_safe(_("You have entered an incorrect password. "
+                                                  "Try again or use <a href='%s'>the password recovery</a>.") % url)
+        super(LoginForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
@@ -145,10 +153,7 @@ class LoginForm(forms.Form):
                         "This account does not exist. Check the e-mail address or <a href='%s'>register</a>.") %
                         reverse('exmo2010:registration_form')))
                 else:
-                    raise forms.ValidationError(mark_safe(_(
-                        "You have entered an incorrect password. "
-                        "Try again or use <a href='%s'>the password recovery</a>.") %
-                        reverse('exmo2010:password_reset_request')))
+                    raise forms.ValidationError(self.wrong_password_message)
             elif not self.user.profile.email_confirmed:
                 raise forms.ValidationError(_(
                     "This account is inactive. "

@@ -45,6 +45,8 @@ from exmo2010.models import Monitoring, Organization, Task, UserProfile
 @csrf_protect
 def password_reset_request(request, **kwargs):
     # TODO: Rate limit sending email to prevent flooding from our address.
+    if request.method not in ['POST', 'GET']:
+        return HttpResponseNotAllowed(permitted_methods=['POST', 'GET'])
 
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
@@ -54,12 +56,16 @@ def password_reset_request(request, **kwargs):
 
     if request.method == "GET":
         form = ExistingEmailForm(initial={'email': request.GET.get('email')})
-    elif request.method == "POST":
+    else:  # POST
         form = ExistingEmailForm(request.POST)
         if form.is_valid():
             user = User.objects.get(email__iexact=form.cleaned_data["email"])
             token = tokens.PasswordResetTokenGenerator().make_token(user)
             url = reverse('exmo2010:password_reset_confirm', args=(user.pk, token))
+            if request.GET:
+                inv_codes = request.GET.getlist('code', [])
+                params = {'code': inv_codes}
+                url += '?{}'.format(urlencode(params, True))
             mail_password_reset(request, user, url)
             return redirect('{}?{}'.format(reverse('exmo2010:password_reset_sent'),
                                            urlencode({'email': form.cleaned_data['email']})))
@@ -71,6 +77,9 @@ def password_reset_request(request, **kwargs):
 
 @never_cache
 def password_reset_confirm(request, user_pk, token):
+    if request.method not in ['POST', 'GET']:
+        return HttpResponseNotAllowed(permitted_methods=['POST', 'GET'])
+
     try:
         user = User.objects.get(pk=user_pk)
     except User.DoesNotExist:
@@ -80,9 +89,12 @@ def password_reset_confirm(request, user_pk, token):
     if user is None or not token_generator.check_token(user, token):
         return TemplateResponse(request, 'registration/password_reset_confirm.html', {'link_invalid': True})
 
+    codes = request.GET.getlist('code', [])
+    orgs = Organization.objects.filter(inv_code__in=codes) if codes else []
+
     if request.method == 'GET':
         form = SetPasswordForm()
-    elif request.method == 'POST':
+    else:  # POST
         form = SetPasswordForm(request.POST)
         if form.is_valid():
             user.set_password(form.cleaned_data['new_password'])
@@ -90,6 +102,10 @@ def password_reset_confirm(request, user_pk, token):
             # We have to call authenticate() to properly annotate user authentication backend before login
             user = authenticate(username=user.username, password=form.cleaned_data['new_password'])
             auth_login(request, user)
+
+            if orgs and not user.is_expert:
+                return set_orguser_perms_and_redirect(user, orgs)
+
             return HttpResponseRedirect(reverse('exmo2010:index'))
 
     return TemplateResponse(request, 'registration/password_reset_confirm.html', {'form': form})
@@ -208,14 +224,14 @@ def login(request):
     orgs = Organization.objects.filter(inv_code__in=codes) if codes else []
 
     if request.method == 'GET':
-        form = LoginForm(initial={'username': request.GET.get('email')})
+        form = LoginForm(initial={'username': request.GET.get('email')}, getparams=request.GET.urlencode())
     else:  # POST
         if not request.session.test_cookie_worked():
             return TemplateResponse(request, 'cookies.html')
         else:
             request.session.delete_test_cookie()
 
-        form = LoginForm(request.POST)
+        form = LoginForm(request.POST, getparams=request.GET.urlencode())
         if form.is_valid():
             user = form.user
             auth_login(request, user)

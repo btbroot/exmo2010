@@ -333,15 +333,23 @@ class PasswordResetConfirmTestCase(TestCase):
 
     #TODO: move this testcase to general logic tests directory
 
-    # Valid reset url should show password reset form, which should allow to update password.
+    # Valid reset url should show password reset form, which should allow to
+    # update password. After updating user should be connected to organizations
+    # if confirmation link in email contains invitation codes.
 
     def setUp(self):
         # GIVEN existing user
         self.user = User.objects.create_user('user', 'test@mail.com', 'password')
+        # AND two organizations
+        orgs = mommy.make(Organization, _quantity=2)
+        # AND list of organization codes
+        self.codes = [orgs[0].inv_code, orgs[1].inv_code]
+        # AND password reset url
+        self.url = reverse('exmo2010:password_reset_request')
 
-    def test_password_reset(self):
+    def test_password_reset_and_redirect(self):
         # WHEN i submit reset password form
-        response = self.client.post(reverse('exmo2010:password_reset_request'), {'email': 'test@mail.com'})
+        response = self.client.post(self.url, {'email': 'test@mail.com'})
         # THEN i should be redirected to the password_reset_sent page
         self.assertRedirects(response,
                              reverse('exmo2010:password_reset_sent') + '?' + urlencode({'email': self.user.email}))
@@ -365,3 +373,17 @@ class PasswordResetConfirmTestCase(TestCase):
         # AND user password should change
         user = authenticate(username='user', password='new')
         self.assertEqual(self.user, user)
+
+    def test_password_reset_and_connect_to_orgs(self):
+        # WHEN I submit reset password form with GET parameters in url
+        self.client.post(self.url + '?' + urlencode({'code': self.codes}, True), {'email': self.user.email})
+        # THEN one email message should be sent
+        self.assertEqual(len(mail.outbox), 1)
+
+        # WHEN I get confirmation link from email
+        confirmation_url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
+        # AND submit new_password form with new password
+        self.client.post(confirmation_url, {'new_password': 'new'})
+        # THEN I should be connected to 2 organizations from url
+        user = User.objects.get(pk=self.user.pk)
+        self.assertEqual(set(user.profile.organization.values_list('inv_code', flat=True)), set(self.codes))
