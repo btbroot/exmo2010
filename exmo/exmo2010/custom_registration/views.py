@@ -49,8 +49,11 @@ def password_reset_request(request, **kwargs):
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
 
+    codes = request.GET.getlist('code', [])
+    orgs = Organization.objects.filter(inv_code__in=codes) if codes else []
+
     if request.method == "GET":
-        form = ExistingEmailForm()
+        form = ExistingEmailForm(initial={'email': request.GET.get('email')})
     elif request.method == "POST":
         form = ExistingEmailForm(request.POST)
         if form.is_valid():
@@ -60,8 +63,10 @@ def password_reset_request(request, **kwargs):
             mail_password_reset(request, user, url)
             return redirect('{}?{}'.format(reverse('exmo2010:password_reset_sent'),
                                            urlencode({'email': form.cleaned_data['email']})))
-    context = dict(form=form, required_error=Field.default_error_messages['required'])
-    return TemplateResponse(request, 'registration/password_reset_request.html', context)
+    data = {'form': form, 'orgs': orgs, 'required_error': Field.default_error_messages['required'],
+            'monitorings': Monitoring.objects.filter(organization__in=orgs).distinct()}
+
+    return TemplateResponse(request, 'registration/password_reset_request.html', data)
 
 
 @never_cache
