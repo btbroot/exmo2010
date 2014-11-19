@@ -842,6 +842,8 @@ def monitoring_organization_export(request, monitoring_pk):
         'Url',
         'Email',
         'Phone',
+        'Code',
+        'Invitation link',
     ])
     for o in organizations:
         out = (
@@ -849,6 +851,8 @@ def monitoring_organization_export(request, monitoring_pk):
             o.url,
             o.email,
             o.phone,
+            o.inv_code,
+            request.build_absolute_uri(reverse('exmo2010:auth_orguser') + '?code={}'.format(o.inv_code)),
         )
         writer.writerow(out)
     license = LicenseTextFragments.objects.filter(pk='license')

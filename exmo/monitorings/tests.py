@@ -23,20 +23,24 @@ import unittest
 from cStringIO import StringIO
 
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import AnonymousUser, Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.formats import get_format
 from django.utils.translation import get_language
+from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 from BeautifulSoup import BeautifulSoup
 
 from .forms import MonitoringCopyForm
+from .views import monitoring_organization_export
 from core.utils import UnicodeReader
+from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import (Claim, Monitoring, ObserversGroup, OpennessExpression,
                              Organization, Parameter, Task, Score, UserProfile)
@@ -996,6 +1000,125 @@ class TestMonitoringExportApproved(TestCase):
         self.assertEqual(len(csv), 3)
 
 
+class OrganizationExportAccessTestCase(OptimizedTestCase):
+    # exmo2010:monitoring_organization_export
+
+    # Should allow experts A and superusers download csv-file.
+    # Should redirect anonymous to login page.
+    # Should forbid all other users to download csv-file.
+
+    @classmethod
+    def setUpClass(cls):
+        super(OrganizationExportAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND translator
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+        # AND url
+        cls.url = reverse('exmo2010:monitoring_organization_export', args=[cls.monitoring.pk])
+
+    @parameterized.expand(zip(['admin', 'expertA']))
+    def test_allow_csv(self, username, *args):
+        # WHEN privileged user download file
+        request = Mock(user=self.users[username], method='GET')
+        response = monitoring_organization_export(request, self.monitoring.pk)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+    @parameterized.expand(zip(['expertB', 'orguser', 'translator', 'observer', 'user']))
+    def test_forbid_csv(self, username, *args):
+        # WHEN authenticated user without permissions download file
+        request = Mock(user=self.users[username], method='GET')
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, monitoring_organization_export, request, self.monitoring.pk)
+
+    def test_redirect_anonymous(self):
+        # WHEN anonymous user download file
+        request = MagicMock(user=self.users['anonymous'], method='GET')
+        request.get_full_path.return_value = self.url
+        response = monitoring_organization_export(request, self.monitoring.pk)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+
+class OrganizationExportTestCase(TestCase):
+    # exmo2010:monitoring_organization_export
+
+    # Organizations export response should contain properly generated csv-file content.
+
+    def setUp(self):
+        # GIVEN published monitoring with 1 organization
+        monitoring = mommy.make(Monitoring)
+        # AND organization with email, url and phone
+        self.org = mommy.make(Organization, monitoring=monitoring,
+                              email='org@test.com', url='http://org.ru', phone='1234567')
+        # AND expert A account
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        # AND organization export url
+        self.url = reverse('exmo2010:monitoring_organization_export', args=[monitoring.pk])
+
+    def test_organization_csv(self):
+        # WHEN I am logged in as expert A
+        self.client.login(username='expertA', password='password')
+        # AND download csv
+        hostname = 'test.host.com'
+        response = self.client.get(self.url, HTTP_HOST=hostname)
+        # THEN status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND file should be csv-file
+        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+        csv = [line for line in UnicodeReader(StringIO(response.content))]
+        # AND file should contain 3 lines (header, 1 string of content and license)
+        self.assertEqual(len(csv), 3)
+        for row in csv:
+            if not row[0].startswith('#'):
+                # AND length of content line should equal 6
+                self.assertEqual(len(row), 6)
+                org_data = [
+                    self.org.name,
+                    self.org.url,
+                    self.org.email,
+                    self.org.phone,
+                    self.org.inv_code,
+                    'http://' + hostname + reverse('exmo2010:auth_orguser') + '?code={}'.format(self.org.inv_code)
+                ]
+                # AND content should describe existing organization
+                self.assertEqual(row, org_data)
+
+
 class UploadParametersCSVTest(TestCase):
     # Upload parameters.
 
@@ -1090,45 +1213,46 @@ class OrgUserRatingAccessTestCase(TestCase):
     # Should allow org representatives to see only related orgs in unpublished ratings
 
     def setUp(self):
-
-        # GIVEN INT monitoring with 2 organizations
+        # GIVEN INT monitoring with 2 organizations and parameter
         self.monitoring_related = mommy.make(Monitoring, status=INT)
         organization = mommy.make(Organization, monitoring=self.monitoring_related)
         organization_unrelated = mommy.make(Organization, monitoring=self.monitoring_related)
-
+        parameter = mommy.make(Parameter, monitoring=self.monitoring_related, weight=1)
         # AND representative user for one organization
         user = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
         user.groups.add(Group.objects.get(name=user.profile.organization_group))
         user.profile.organization = [organization]
-
-        # AND INT monitoring with organization, not connected to representative user
+        # AND INT monitoring with organization, not connected to representative user and parameter
         self.monitoring_unrelated = mommy.make(Monitoring, status=INT)
         organization_unrelated2 = mommy.make(Organization, monitoring=self.monitoring_unrelated)
-
+        parameter_unrelated = mommy.make(Parameter, monitoring=self.monitoring_unrelated, weight=1)
         # AND approved task for each organization
         self.task_related = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        mommy.make(Task, organization=organization_unrelated, status=Task.TASK_APPROVED)
-        mommy.make(Task, organization=organization_unrelated2, status=Task.TASK_APPROVED)
-
-        # AND i am logged in as orguser
+        task_unrelated = mommy.make(Task, organization=organization_unrelated, status=Task.TASK_APPROVED)
+        task_unrelated2 = mommy.make(Task, organization=organization_unrelated2, status=Task.TASK_APPROVED)
+        # AND score for each task
+        mommy.make(Score, task=self.task_related, parameter=parameter)
+        mommy.make(Score, task=task_unrelated, parameter=parameter)
+        mommy.make(Score, task=task_unrelated2, parameter=parameter_unrelated)
+        # AND I am logged in as orguser
         self.client.login(username='orguser', password='password')
 
-        def test_forbid_org_access_to_unrelated_unpublished_rating(self):
-            url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_unrelated.pk])
-            # WHEN i get unrelated unpublished rating page
-            response = self.client.get(url)
-            # THEN response status_code is 403 (forbidden)
-            self.assertEqual(response.status_code, 403)
+    def test_forbid_org_access_to_unrelated_unpublished_rating(self):
+        url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_unrelated.pk])
+        # WHEN I get unrelated unpublished rating page
+        response = self.client.get(url)
+        # THEN response status_code should be 403 (forbidden)
+        self.assertEqual(response.status_code, 403)
 
-        def test_allow_org_see_related_org_unpublished_rating(self):
-            url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_related.pk])
-            # WHEN i get related unpublished rating page
-            response = self.client.get(url)
-            # THEN response status_code is 200 (OK)
-            self.assertEqual(response.status_code, 200)
-            tasks = [task.pk for task in response.context['rating_list']]
-            # AND i see only my own task in the list
-            self.assertEqual(tasks, [self.task_related.pk])
+    def test_allow_org_see_related_org_unpublished_rating(self):
+        url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_related.pk])
+        # WHEN I get related unpublished rating page
+        response = self.client.get(url)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        tasks = [task.pk for task in response.context['rating_list']]
+        # AND I see only my own task in the list
+        self.assertEqual(tasks, [self.task_related.pk])
 
 
 class RatingStatsTestCase(TestCase):
