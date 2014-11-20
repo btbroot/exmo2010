@@ -143,16 +143,9 @@ def registration_form(request):
                     return set_orguser_perms_and_redirect(user, orgs)
             else:
                 # User email does not match any org email, send him activation email message.
-                token = tokens.EmailConfirmTokenGenerator().make_token(user)
-                url = reverse('exmo2010:confirm_email', args=(user.pk, token))
-                inv_codes = form.cleaned_data['invitation_code']
-                if inv_codes:
-                    params = {'code': inv_codes}
-                    url += '?{}'.format(urlencode(params, True))
-                mail_register_activation(request, user, url)
+                params = {'code': form.cleaned_data['invitation_code'], 'email': form.cleaned_data['email']}
 
-                return redirect('{}?{}'.format(reverse('exmo2010:please_confirm_email'),
-                                               urlencode({'email': form.cleaned_data['email']})))
+                return redirect('{}?{}'.format(reverse('exmo2010:auth_send_email'), urlencode(params, True)))
 
     request.session.set_test_cookie()
     data = {'form': form, 'orgs': orgs, 'monitorings': Monitoring.objects.filter(organization__in=orgs).distinct()}
@@ -160,25 +153,28 @@ def registration_form(request):
     return TemplateResponse(request, 'registration/registration_form.html', data)
 
 
-def resend_email(request):
+def send_activation_email(request):
     # TODO: Rate limit sending email to prevent flooding from our address.
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
 
     if request.user.is_authenticated():
         return redirect('exmo2010:index')
 
-    form = ExistingEmailForm()
-    if request.method == "POST":
-        form = ExistingEmailForm(request.POST)
-        if form.is_valid():
-            user = User.objects.get(email=form.cleaned_data['email'])
+    try:
+        user = User.objects.get(email=request.GET.get('email'))
+    except User.DoesNotExist:
+        return redirect('exmo2010:index')
+    else:
+        token = tokens.EmailConfirmTokenGenerator().make_token(user)
+        url = reverse('exmo2010:confirm_email', args=(user.pk, token))
+        inv_codes = request.GET.getlist('code', [])
+        if inv_codes:
+            url += '?{}'.format(urlencode({'code': inv_codes}, True))
+        mail_register_activation(request, user, url)
 
-            token = tokens.EmailConfirmTokenGenerator().make_token(user)
-            url = reverse('exmo2010:confirm_email', args=(user.pk, token))
-            mail_register_activation(request, user, url)
-            return redirect('{}?{}'.format(reverse('exmo2010:please_confirm_email'),
-                                           urlencode({'email': form.cleaned_data['email']})))
-
-    return TemplateResponse(request, 'registration/resend_email_form.html', {'form': form})
+        return redirect('{}?{}'.format(reverse('exmo2010:please_confirm_email'),
+                                       urlencode({'email': request.GET.get('email')})))
 
 
 def confirm_email(request, user_pk, token):
@@ -188,7 +184,10 @@ def confirm_email(request, user_pk, token):
         user = None
 
     if user and user.profile.email_confirmed:
-        return redirect('exmo2010:index')
+        if request.user.is_anonymous():
+            return redirect(settings.LOGIN_URL)
+        else:
+            return redirect('exmo2010:index')
 
     token_generator = tokens.EmailConfirmTokenGenerator()
     if user is None or not token_generator.check_token(user, token):
@@ -224,7 +223,7 @@ def login(request):
     orgs = Organization.objects.filter(inv_code__in=codes) if codes else []
 
     if request.method == 'GET':
-        form = LoginForm(initial={'username': request.GET.get('email')}, getparams=request.GET.urlencode())
+        form = LoginForm(initial={'email': request.GET.get('email')}, getparams=request.GET.urlencode())
     else:  # POST
         if not request.session.test_cookie_worked():
             return TemplateResponse(request, 'cookies.html')

@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 10:58+0300\n"
+"POT-Creation-Date: 2014-11-24 20:13+0300\n"
 "PO-Revision-Date: 2014-10-24 18:55+0400\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -33,26 +33,26 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: accounts/forms.py:43 exmo2010/custom_registration/forms.py:54
+#: accounts/forms.py:43 exmo2010/custom_registration/forms.py:56
 msgid "First name"
 msgstr "Имя"
 
-#: accounts/forms.py:46 exmo2010/custom_registration/forms.py:55
+#: accounts/forms.py:46 exmo2010/custom_registration/forms.py:57
 msgid "Patronymic"
 msgstr "Отчество"
 
-#: accounts/forms.py:49 exmo2010/custom_registration/forms.py:56
+#: accounts/forms.py:49 exmo2010/custom_registration/forms.py:58
 msgid "Last name"
 msgstr "Фамилия"
 
-#: accounts/forms.py:61 exmo2010/custom_registration/forms.py:57
+#: accounts/forms.py:61 exmo2010/custom_registration/forms.py:59
 #: exmo2010/models/userprofile.py:101
 #: organizations/templates/representatives.html:67
 #: organizations/templates/representatives.html:85
 msgid "Job title"
 msgstr "Должность"
 
-#: accounts/forms.py:64 exmo2010/custom_registration/forms.py:58
+#: accounts/forms.py:64 exmo2010/custom_registration/forms.py:60
 #: exmo2010/models/userprofile.py:102
 msgid "Phone number"
 msgstr "Контактный телефон"
@@ -65,7 +65,7 @@ msgstr "Новый код"
 msgid "Old password"
 msgstr "Старый пароль"
 
-#: accounts/forms.py:98 exmo2010/custom_registration/forms.py:121
+#: accounts/forms.py:98 exmo2010/custom_registration/forms.py:123
 msgid "New password"
 msgstr "Новый пароль"
 
@@ -112,9 +112,9 @@ msgid "Personal information successfully changed"
 msgstr "Изменения личной информации сохранены"
 
 #: accounts/templates/user_settings.html:56 exmo2010/forms.py:32
-#: exmo2010/custom_registration/forms.py:44
-#: exmo2010/custom_registration/forms.py:133
-#: exmo2010/custom_registration/forms.py:163
+#: exmo2010/custom_registration/forms.py:46
+#: exmo2010/custom_registration/forms.py:135
+#: exmo2010/custom_registration/forms.py:173
 msgid "E-mail"
 msgstr "Электронная почта"
 
@@ -131,7 +131,7 @@ msgid "Save"
 msgstr "Сохранить"
 
 #: accounts/templates/user_settings.html:89
-#: exmo2010/custom_registration/forms.py:50
+#: exmo2010/custom_registration/forms.py:52
 #: exmo2010/models/organization.py:138
 #: organizations/templates/organizations.html:74
 #: templates/exmo2010/helpers/inv_code_bubble.html:38
@@ -148,7 +148,6 @@ msgstr "Код приглашения"
 #: templates/exmo2010/parameter_confirm_delete.html:41
 #: templates/exmo2010/task_form.html:40
 #: templates/exmo2010/helpers/inv_code_bubble.html:40
-#: templates/registration/resend_email_form.html:59
 msgid "Send"
 msgstr "Отправить"
 
@@ -164,13 +163,13 @@ msgstr "Изменить пароль"
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
-#: bread_crumbs/tests.py:35 dashboard/menu.py:83 exmo2010/urls.py:262
-#: exmo2010/urls.py:327 monitorings/views.py:1121
+#: bread_crumbs/tests.py:35 dashboard/menu.py:83 exmo2010/urls.py:261
+#: exmo2010/urls.py:326 monitorings/views.py:1125
 #: monitorings/templates/ratings.html:33
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: bread_crumbs/tests.py:36 exmo2010/urls.py:328
+#: bread_crumbs/tests.py:36 exmo2010/urls.py:327
 #: monitorings/templates/rating.html:42 templates/_errors_header.html:34
 #: templates/certificate_order_form.html:68
 #: templates/exmo2010/sidebar/_sidebar.html:110
@@ -182,8 +181,8 @@ msgstr "Рейтинг"
 #: claims/templates/claim_list.html:43
 #: clarifications/templates/clarification_list.html:43
 #: custom_comments/templates/comment_list.html:43 exmo2010/forms.py:74
-#: exmo2010/urls.py:307 exmo2010/urls.py:308 exmo2010/urls.py:313
-#: exmo2010/urls.py:329 exmo2010/urls.py:330 monitorings/forms.py:69
+#: exmo2010/urls.py:306 exmo2010/urls.py:307 exmo2010/urls.py:312
+#: exmo2010/urls.py:328 exmo2010/urls.py:329 monitorings/forms.py:69
 #: monitorings/templates/rating.html:109 organizations/forms.py:29
 #: organizations/templates/organizations.html:71
 #: templates/certificate_order_form.html:98
@@ -196,19 +195,19 @@ msgstr "Рейтинг"
 msgid "Organization"
 msgstr "Организация"
 
-#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:264
+#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:263
 #: templates/exmo2010/monitoring_list.html:28
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
 
-#: bread_crumbs/tests.py:42 exmo2010/urls.py:272 exmo2010/urls.py:273
-#: exmo2010/urls.py:275 exmo2010/urls.py:276 exmo2010/urls.py:278
-#: exmo2010/urls.py:279 exmo2010/urls.py:284 exmo2010/urls.py:285
-#: exmo2010/urls.py:286 exmo2010/urls.py:287 exmo2010/urls.py:289
-#: exmo2010/urls.py:290 exmo2010/urls.py:292 exmo2010/urls.py:294
-#: exmo2010/urls.py:295 exmo2010/urls.py:296 exmo2010/urls.py:297
-#: exmo2010/urls.py:299 exmo2010/urls.py:301 exmo2010/urls.py:303
-#: exmo2010/urls.py:305 exmo2010/models/questionnaire.py:36
+#: bread_crumbs/tests.py:42 exmo2010/urls.py:271 exmo2010/urls.py:272
+#: exmo2010/urls.py:274 exmo2010/urls.py:275 exmo2010/urls.py:277
+#: exmo2010/urls.py:278 exmo2010/urls.py:283 exmo2010/urls.py:284
+#: exmo2010/urls.py:285 exmo2010/urls.py:286 exmo2010/urls.py:288
+#: exmo2010/urls.py:289 exmo2010/urls.py:291 exmo2010/urls.py:293
+#: exmo2010/urls.py:294 exmo2010/urls.py:295 exmo2010/urls.py:296
+#: exmo2010/urls.py:298 exmo2010/urls.py:300 exmo2010/urls.py:302
+#: exmo2010/urls.py:304 exmo2010/models/questionnaire.py:36
 #: monitorings/forms.py:60 monitorings/templates/monitoring_copy.html:65
 #: monitorings/templates/monitoring_form.html:90
 #: monitorings/templates/ratings.html:51 templates/exmo2010/opendata.html:59
@@ -233,7 +232,7 @@ msgid "Claims report for \"%s\""
 msgstr "Отчет по претензиям для \"%s\""
 
 #: claims/views.py:169 dashboard/dashboard.py:116 dashboard/menu.py:77
-#: exmo2010/urls.py:260 templates/exmo2010/sidebar/_sidebar.html:96
+#: exmo2010/urls.py:259 templates/exmo2010/sidebar/_sidebar.html:96
 #: templates/scores/score.html:396
 msgid "Claims"
 msgstr "Претензии"
@@ -318,7 +317,7 @@ msgid "Clarifications report for \"%s\""
 msgstr "Отчет по уточнениям для \"%s\""
 
 #: clarifications/views.py:157 dashboard/dashboard.py:112 dashboard/menu.py:76
-#: exmo2010/urls.py:261 templates/exmo2010/sidebar/_sidebar.html:92
+#: exmo2010/urls.py:260 templates/exmo2010/sidebar/_sidebar.html:92
 #: templates/scores/score.html:395
 msgid "Clarifications"
 msgstr "Уточнения"
@@ -385,7 +384,7 @@ msgid "posted by expert"
 msgstr ""
 
 #: custom_comments/views.py:45 dashboard/dashboard.py:108 dashboard/menu.py:75
-#: exmo2010/urls.py:259 templates/exmo2010/sidebar/_sidebar.html:84
+#: exmo2010/urls.py:258 templates/exmo2010/sidebar/_sidebar.html:84
 #: templates/scores/score.html:308
 msgid "Comments"
 msgstr "Комментарии"
@@ -442,15 +441,15 @@ msgid "Log out"
 msgstr "Выйти"
 
 #: dashboard/menu.py:93 exmo2010/urls.py:251
-#: templates/registration/login.html:53
-#: templates/registration/password_reset_request.html:49
+#: templates/registration/login.html:51
+#: templates/registration/password_reset_request.html:52
 #: templates/registration/registration_form.html:25
 #: templates/registration/registration_form.html:51
 #: templates/user_dashboard/modules/quicklinks.html:37
 msgid "Registration"
 msgstr "Регистрация"
 
-#: dashboard/menu.py:94 templates/registration/login.html:71
+#: dashboard/menu.py:94 templates/registration/login.html:69
 #: templates/user_dashboard/modules/quicklinks.html:38
 msgid "Log in"
 msgstr "Войти"
@@ -656,23 +655,23 @@ msgstr "О проекте"
 msgid "Open data"
 msgstr "Открытые данные"
 
-#: exmo2010/urls.py:242 templates/admin/base_site.html:29
+#: exmo2010/urls.py:242 templates/admin/base_site.html:36
 msgid "Settings"
 msgstr "Настройки"
 
 #: exmo2010/urls.py:247 templates/registration/login.html:25
-#: templates/registration/login.html:52
-#: templates/registration/password_reset_request.html:48
+#: templates/registration/login.html:50
+#: templates/registration/password_reset_request.html:51
 #: templates/registration/registration_form.html:50
 msgid "Login"
 msgstr "Вход в систему"
 
 #: exmo2010/urls.py:248 exmo2010/urls.py:249 exmo2010/urls.py:250
-#: templates/registration/login.html:54
+#: templates/registration/login.html:52
 #: templates/registration/password_reset_confirm.html:25
 #: templates/registration/password_reset_confirm.html:37
 #: templates/registration/password_reset_request.html:26
-#: templates/registration/password_reset_request.html:50
+#: templates/registration/password_reset_request.html:53
 #: templates/registration/password_reset_sent.html:25
 #: templates/registration/password_reset_sent.html:27
 #: templates/registration/registration_form.html:52
@@ -689,61 +688,57 @@ msgstr "Подтверждение регистрации"
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
 
-#: exmo2010/urls.py:254
-msgid "Resend activation email"
-msgstr "Выслать письмо подтверждения повторно"
-
-#: exmo2010/urls.py:255 templates/registration/email_confirm_error.html:25
+#: exmo2010/urls.py:254 templates/registration/email_confirm_error.html:25
 #: templates/registration/email_confirm_error.html:27
 msgid "Account activation error"
 msgstr "Ошибка активации аккаунта"
 
-#: exmo2010/urls.py:265
+#: exmo2010/urls.py:264
 msgid "Add monitoring cycle"
 msgstr "Добавить цикл мониторинга"
 
-#: exmo2010/urls.py:266
+#: exmo2010/urls.py:265
 msgid "Delete monitoring cycle"
 msgstr "Удалить цикл мониторинга"
 
-#: exmo2010/urls.py:267
+#: exmo2010/urls.py:266
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo2010/urls.py:268 monitorings/templates/monitoring_copy.html:22
+#: exmo2010/urls.py:267 monitorings/templates/monitoring_copy.html:22
 #: monitorings/templates/monitoring_copy.html:33
 msgid "Copy monitoring cycle"
 msgstr "Копировать цикл мониторинга"
 
-#: exmo2010/urls.py:270
+#: exmo2010/urls.py:269
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: exmo2010/urls.py:281
+#: exmo2010/urls.py:280
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: exmo2010/urls.py:282
+#: exmo2010/urls.py:281
 msgid "Import organizations"
 msgstr "Импортировать организации"
 
-#: exmo2010/urls.py:306
+#: exmo2010/urls.py:305
 msgid "Add task"
 msgstr "Добавить задачу"
 
-#: exmo2010/urls.py:310
+#: exmo2010/urls.py:309
 msgid "Edit task"
 msgstr "Редактировать задачу"
 
-#: exmo2010/urls.py:311
+#: exmo2010/urls.py:310
 msgid "Delete task"
 msgstr "Удалить задачу"
 
-#: exmo2010/urls.py:312 templates/scores/task_scores.html:62
+#: exmo2010/urls.py:311 templates/scores/task_scores.html:62
 msgid "Import task"
 msgstr "Импортировать задачу"
 
-#: exmo2010/urls.py:315 exmo2010/urls.py:316 exmo2010/urls.py:331
+#: exmo2010/urls.py:314 exmo2010/urls.py:315 exmo2010/urls.py:330
 #: exmo2010/models/parameter.py:34
 #: monitorings/templates/monitoring_parameter_filter.html:171
 #: monitorings/templates/monitoring_parameter_found_report.html:41
@@ -752,20 +747,20 @@ msgstr "Импортировать задачу"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo2010/urls.py:318
+#: exmo2010/urls.py:317
 msgid "Add parameter"
 msgstr "Добавить параметр"
 
-#: exmo2010/urls.py:319 parameters/templates/parameter_form.html:27
+#: exmo2010/urls.py:318 parameters/templates/parameter_form.html:27
 #: parameters/templates/parameter_form.html:44 templates/scores/score.html:60
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: exmo2010/urls.py:320
+#: exmo2010/urls.py:319
 msgid "Delete parameter"
 msgstr "Удалить параметр"
 
-#: exmo2010/urls.py:335 templates/certificate_order_form.html:24
+#: exmo2010/urls.py:334 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:37
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
@@ -807,45 +802,46 @@ msgstr "На адрес электронной почты %s."
 msgid "Prepare a certificate in the name of %s."
 msgstr "Подготовить диплом на имя %s."
 
-#: exmo2010/custom_registration/forms.py:45
-#: exmo2010/custom_registration/forms.py:134
+#: exmo2010/custom_registration/forms.py:47
+#: exmo2010/custom_registration/forms.py:136
 msgid "Password"
 msgstr "Пароль"
 
-#: exmo2010/custom_registration/forms.py:59
+#: exmo2010/custom_registration/forms.py:61
 msgid "Get answers from experts on e-mail"
 msgstr "Получать ответы экспертов на эл. почту"
 
-#: exmo2010/custom_registration/forms.py:69
-#: exmo2010/custom_registration/forms.py:128
+#: exmo2010/custom_registration/forms.py:71
+#: exmo2010/custom_registration/forms.py:130
 msgid "Password contains unallowed characters. Please use only latin letters and digits."
 msgstr "Пароль содержит недопустимые символы. Разрешены только латинские буквы (A-Z, a-z) и цифры (0-9)."
 
-#: exmo2010/custom_registration/forms.py:86
+#: exmo2010/custom_registration/forms.py:88
 #, python-format
 msgid "Account with this email already exists. <a href='%s'>Log in</a> or use another email address to register."
 msgstr "Аккаунт с такой электронной почтой уже существует. <a href='%s'>Войдите</a> в систему или используйте для регистрации другой адрес."
 
-#: exmo2010/custom_registration/forms.py:145
-#: exmo2010/custom_registration/forms.py:175
+#: exmo2010/custom_registration/forms.py:152
+#: exmo2010/custom_registration/forms.py:185
 #, python-format
 msgid "This account does not exist. Check the e-mail address or <a href='%s'>register</a>."
 msgstr "Такого аккаунта не существует. Проверьте адрес электронной почты или <a href='%s'>зарегистрируйтесь</a>."
 
-#: exmo2010/custom_registration/forms.py:149
+#: exmo2010/custom_registration/forms.py:158
 #, python-format
 msgid "You have entered an incorrect password. Try again or use <a href='%s'>the password recovery</a>."
 msgstr "Введен неверный пароль. Попробуйте еще раз или воспользуйтесь <a href='%s'>восстановлением пароля</a>."
 
-#: exmo2010/custom_registration/forms.py:154
-msgid "This account is inactive. Did you receive the letter containing a registration confirmation link?"
-msgstr "Эта учетная запись не активирована. Вы получили письмо со ссылкой для подтверждения регистрации?"
+#: exmo2010/custom_registration/forms.py:164
+#, python-format
+msgid "Click on the link inside the activation email. If you have not received it, we can <a href='%s'>send the email again</a>."
+msgstr "Перейдите по ссылке внутри письма активации. Если вы не получили его, мы можем <a href='%s'>выслать письмо повторно</a>."
 
-#: exmo2010/custom_registration/forms.py:158
+#: exmo2010/custom_registration/forms.py:168
 msgid "This account is inactive."
 msgstr "Пользователь не активен"
 
-#: exmo2010/custom_registration/forms.py:179
+#: exmo2010/custom_registration/forms.py:189
 msgid "The user account associated with this e-mail was suspended."
 msgstr "Учетная запись с таким email адресом заблокирована."
 
@@ -1624,40 +1620,40 @@ msgstr "Все задачи"
 msgid "Parameter found report of %(monitoring)s"
 msgstr "Отчёт по наличию параметра для %(monitoring)s"
 
-#: monitorings/views.py:926 monitorings/views.py:1013 tasks/views.py:154
+#: monitorings/views.py:930 monitorings/views.py:1017 tasks/views.py:154
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "строка %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:928 monitorings/views.py:1015 tasks/views.py:156
+#: monitorings/views.py:932 monitorings/views.py:1019 tasks/views.py:156
 msgid "File, you are loading is not valid CSV."
 msgstr "Файл, который Вы загружаете не валиден или не является CSV-файлом."
 
-#: monitorings/views.py:930 monitorings/views.py:1017 tasks/views.py:158
+#: monitorings/views.py:934 monitorings/views.py:1021 tasks/views.py:158
 #, python-format
 msgid "Import error: %s."
 msgstr "Ошибка импорта: %s."
 
-#: monitorings/views.py:931
+#: monitorings/views.py:935
 #, python-format
 msgid "Import organizations from CSV for monitoring %s"
 msgstr "Импортировать организации из CSV для %s"
 
-#: monitorings/views.py:942 monitorings/views.py:1029
+#: monitorings/views.py:946 monitorings/views.py:1033
 msgid "Back to the monitoring"
 msgstr "Вернуться в цикл мониторинга "
 
-#: monitorings/views.py:1018
+#: monitorings/views.py:1022
 #, python-format
 msgid "Import parameters from CSV for monitoring %s"
 msgstr "Импортировать параметры из CSV для %s"
 
-#: monitorings/views.py:1054
+#: monitorings/views.py:1058
 #, python-format
 msgid "Comment report for %s"
 msgstr "Отчет по комментариям для %s"
 
-#: monitorings/views.py:1069 monitorings/templates/monitoring_report.html:39
+#: monitorings/views.py:1073 monitorings/templates/monitoring_report.html:39
 #: templates/user_dashboard/modules/quicklinks.html:31
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
@@ -2407,6 +2403,7 @@ msgid "Change"
 msgstr "Изменить"
 
 #: templates/base.html:28 templates/base_print.html:25
+#: templates/admin/base_site.html:25
 msgid "AIS Infometer"
 msgstr "АИС Инфометр"
 
@@ -2480,11 +2477,7 @@ msgctxt "Front page"
 msgid "Home"
 msgstr "Главная"
 
-#: templates/admin/base_site.html:24
-msgid "Infometer admin"
-msgstr "Администрирование АИС Инфометр"
-
-#: templates/admin/base_site.html:28
+#: templates/admin/base_site.html:34
 msgid "Infometer administration"
 msgstr "Администрирование АИС Инфометр"
 
@@ -3009,19 +3002,20 @@ msgstr "Также, имейте ввиду, что эта ссылка дейс
 msgid "You also can <a href=\"%(registration_url)s\">try to register again</a>"
 msgstr "Вы также можете <a href=\"%(registration_url)s\">зарегистрироваться снова</a>"
 
-#: templates/registration/login.html:37
-#: templates/registration/password_reset_request.html:38
+#: templates/registration/login.html:35
+#: templates/registration/password_reset_request.html:36
 #: templates/registration/registration_form.html:35
 msgid "Get access to scores"
 msgstr "Получить доступ к оценкам"
 
-#: templates/registration/login.html:47
-#: templates/registration/registration_form.html:45
+#: templates/registration/login.html:40
+#: templates/registration/password_reset_request.html:41
+#: templates/registration/registration_form.html:40
 msgid "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page."
 msgstr "Для правильной работы сайта включите JavaScript в настройках браузера. После этого обновите страницу."
 
-#: templates/registration/login.html:72
-#: templates/registration/password_reset_request.html:67
+#: templates/registration/login.html:70
+#: templates/registration/password_reset_request.html:70
 msgid "Recover the password"
 msgstr "Восстановить пароль"
 
@@ -3080,15 +3074,6 @@ msgstr "обязательны для заполнения"
 #: templates/registration/registration_form.html:142
 msgid "Register"
 msgstr "Зарегистрироваться"
-
-#: templates/registration/resend_email_form.html:25
-#: templates/registration/resend_email_form.html:37
-msgid "Account activation"
-msgstr "Активация учетной записи"
-
-#: templates/registration/resend_email_form.html:42
-msgid "In order to repeat the account activation fill your email. A letter cointaining an activation link will be sent."
-msgstr "Для повторной активации учетной записи введите ваш e-mail. Вам будет отправлено письмо со ссылкой, по которой нужно перейти для завершения активации."
 
 #: templates/scores/_recomm_comments.html:26
 #, python-format

@@ -19,6 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import string
+from urllib import urlencode
+from urlparse import parse_qs
 
 from annoying.decorators import autostrip
 from django import forms
@@ -130,19 +132,16 @@ class SetPasswordForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label=_("E-mail"), max_length=30)
+    email = forms.CharField(label=_("E-mail"), max_length=30)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
         getparams = kwargs.pop('getparams', None)
-        url = reverse('exmo2010:password_reset_request')
-        url += '?{}'.format(getparams) if getparams else ''
-        self.wrong_password_message = mark_safe(_("You have entered an incorrect password. "
-                                                  "Try again or use <a href='%s'>the password recovery</a>.") % url)
+        self.inv_codes = parse_qs(getparams).get('code', []) if getparams else []
         super(LoginForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('username')
+        username = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
 
         if username and password:
@@ -153,11 +152,17 @@ class LoginForm(forms.Form):
                         "This account does not exist. Check the e-mail address or <a href='%s'>register</a>.") %
                         reverse('exmo2010:registration_form')))
                 else:
-                    raise forms.ValidationError(self.wrong_password_message)
+                    url = reverse('exmo2010:password_reset_request')
+                    url += '?{}'.format(urlencode({'code': self.inv_codes, 'email': username}, True))
+                    raise forms.ValidationError(mark_safe(_(
+                        "You have entered an incorrect password. "
+                        "Try again or use <a href='%s'>the password recovery</a>.") % url))
             elif not self.user.profile.email_confirmed:
-                raise forms.ValidationError(_(
-                    "This account is inactive. "
-                    "Did you receive the letter containing a registration confirmation link?"))
+                url = reverse('exmo2010:auth_send_email')
+                url += '?{}'.format(urlencode({'code': self.inv_codes, 'email': username}, True))
+                raise forms.ValidationError(mark_safe(_(
+                    "Click on the link inside the activation email. "
+                    "If you have not received it, we can <a href='%s'>send the email again</a>.") % url))
             elif not self.user.is_active:
                 # User is banned.
                 raise forms.ValidationError(_("This account is inactive."))

@@ -179,7 +179,7 @@ auth_patterns = named_urls('exmo2010.custom_registration.views',
     (r'^activate/error/$', view('registration/email_confirm_error.html'), 'email_confirm_error'),
     (r'^register/$', 'registration_form'),
     (r'^register/complete/$', view('registration/please_confirm_email.html'), 'please_confirm_email'),
-    (r'^resend_activation_email/$', 'resend_email', 'auth_resend_email'),
+    (r'^send_activation_email/$', 'send_activation_email', 'auth_send_email'),
     (r'^password/reset/$', 'password_reset_request'),
     (r'^password/reset/confirm/(?P<user_pk>\d+)-(?P<token>.+)/$', 'password_reset_confirm'),
     (r'^password/reset/done/$', view('registration/password_reset_sent.html'), 'password_reset_sent'),
@@ -251,7 +251,6 @@ def crumbs_tree(is_expert=False):
         'registration_form':       _('Registration'),
         'please_confirm_email':    _('Registration confirm'),
         'registration_disallowed': _('Registration disallowed'),  # TODO: delete this?
-        'auth_resend_email':   _('Resend activation email'),
         'email_confirm_error': _('Account activation error'),
     }
 

@@ -22,13 +22,14 @@ from urllib import urlencode
 from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.auth import authenticate
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import resolve, reverse
 from django.http.request import QueryDict
 from django.test import TestCase
-from mock import MagicMock, Mock
+from mock import MagicMock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from . import tokens
 from .views import registration_form
 from core.test_utils import OptimizedTestCase
 from exmo2010.models import Monitoring, Organization, Task, MONITORING_INTERACTION
@@ -46,15 +47,19 @@ class EmailConfirmationTestCase(TestCase):
 
     def test_after_registration(self):
         user_email = 'test@mail.com'
-        # WHEN i visit registration page (to enable test_cookie)
+        # WHEN I visit registration page (to enable test_cookie)
         self.client.get(reverse('exmo2010:registration_form'))
-        # AND i submit registration form
-        data = ('first_name', 'patronymic', 'last_name', user_email, 'password', '')
-        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
-
-        # THEN i should be redirected to the please_confirm_email page
-        self.assertRedirects(response,
-                             reverse('exmo2010:please_confirm_email') + '?' + urlencode({'email': user_email}))
+        # AND I submit registration form
+        hostname = 'test.host.com'
+        form_data = dict(zip(self.fields, ('first_name', 'patronymic', 'last_name', user_email, 'password', '')))
+        response = self.client.post(reverse('exmo2010:registration_form'), form_data, HTTP_HOST=hostname, follow=True)
+        # THEN I should be redirected to auth_send_email page and then to please_confirm_email page
+        self.assertEqual(response.redirect_chain[0],
+                         ('http://' + hostname + reverse('exmo2010:auth_send_email') + '?' +
+                         urlencode({'email': form_data['email']}), 302))
+        self.assertEqual(response.redirect_chain[1],
+                         ('http://' + hostname + reverse('exmo2010:please_confirm_email') + '?' +
+                          urlencode({'email': form_data['email']}), 302))
         # AND one user should be created with email_confirmed=False and is_active=False
         all_confirmed = [u.profile.email_confirmed for u in User.objects.all()]
         all_active = [u.is_active for u in User.objects.all()]
@@ -83,10 +88,11 @@ class EmailConfirmationTestCase(TestCase):
         user.profile.email_confirmed = False
         user.profile.save()
 
-        # WHEN i submit resend confirmation email form
-        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': 'test@mail.com'})
-
-        # THEN i should be redirected to the please_confirm_email page
+        # WHEN I visit registration page (to enable test_cookie)
+        # self.client.get(reverse('exmo2010:registration_form'))
+        # AND I submit resend confirmation email form
+        response = self.client.get(reverse('exmo2010:auth_send_email') + '?' + urlencode({'email': 'test@mail.com'}))
+        # THEN I should be redirected to the please_confirm_email page
         self.assertRedirects(response,
                              reverse('exmo2010:please_confirm_email') + '?' + urlencode({'email': user.email}))
         # AND one user should be created with email_confirmed=False and is_active=False
@@ -100,7 +106,6 @@ class EmailConfirmationTestCase(TestCase):
         # WHEN i visit confirmation link
         url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
         response = self.client.get(url)
-
         # THEN i should be redirected to the index page
         self.assertRedirects(response, reverse('exmo2010:index'))
         # AND user should be activated with email_confirmed=True and is_active=True
@@ -114,7 +119,7 @@ class EmailConfirmationTestCase(TestCase):
         self.client.get(reverse('exmo2010:registration_form'))
         # AND i submit registration form
         data = ('first_name', 'patronymic', 'last_name', 'test@mail.com', 'password', '')
-        response = self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
+        self.client.post(reverse('exmo2010:registration_form'), dict(zip(self.fields, data)))
 
         # WHEN i visit forged confirm_email url
         url = reverse('exmo2010:confirm_email', args=[User.objects.all()[0].pk, '122-2342262654'])
@@ -197,17 +202,28 @@ class RegistrationEmailTestCase(TestCase):
     # email message with activation url should be sent when registration form is submitted.
 
     def test_registration(self):
-        # WHEN i visit registration page (to enable test_cookie)
+        # WHEN I visit registration page (to enable test_cookie)
         self.client.get(reverse('exmo2010:registration_form'))
-        # AND i submit registration form
+        # AND I submit registration form
+        hostname = 'test.host.com'
         form_data = {'status': 'representative', 'email': 'test@mail.com', 'password': '123'}
-        response = self.client.post(reverse('exmo2010:registration_form'), form_data)
+        response = self.client.post(reverse('exmo2010:registration_form'), form_data, HTTP_HOST=hostname, follow=True)
 
-        # THEN i should be redirected to the please_confirm_email page
-        self.assertRedirects(response,
-                             reverse('exmo2010:please_confirm_email') + '?' + urlencode({'email': form_data['email']}))
+        # THEN I should be redirected to auth_send_email page and then to please_confirm_email page
+        self.assertEqual(response.redirect_chain[0],
+                         ('http://' + hostname + reverse('exmo2010:auth_send_email') + '?' +
+                         urlencode({'email': form_data['email']}), 302))
+        self.assertEqual(response.redirect_chain[1],
+                         ('http://' + hostname + reverse('exmo2010:please_confirm_email') + '?' +
+                          urlencode({'email': form_data['email']}), 302))
         # AND one email message should be sent
         self.assertEqual(len(mail.outbox), 1)
+        # AND message contain valid link with email confirmation token
+        url = re.search('http://(?P<host>[^/]+)(?P<rel_url>[^\s]+)', mail.outbox[0].body).group('rel_url')
+        urlkwargs = resolve(url).kwargs
+        user = User.objects.get(pk=urlkwargs['user_pk'])
+        token_generator = tokens.EmailConfirmTokenGenerator()
+        self.assertTrue(token_generator.check_token(user, urlkwargs['token']))
 
 
 class RegistrationWithInvCodesAndRedirectTestCase(TestCase):
@@ -240,13 +256,18 @@ class RegistrationWithInvCodesAndRedirectTestCase(TestCase):
         self.assertEqual(response_get.status_code, 200)
 
         # WHEN I get all initial values and add value for password field
-        data = response_get.context['form'].initial
-        data.update({'password': 'password'})
+        hostname = 'test.host.com'
+        form_data = response_get.context['form'].initial
+        form_data.update({'password': 'password'})
         # AND submit form
-        response_post = self.client.post(url, data)
-        # THEN I should be redirected to the please_confirm_email page
-        self.assertRedirects(response_post,
-                             reverse('exmo2010:please_confirm_email') + '?' + urlencode({'email': user_email}))
+        response_post = self.client.post(url, form_data, HTTP_HOST=hostname, follow=True)
+        # THEN I should be redirected to the auth_send_email page and then to please_confirm_email page
+        self.assertEqual(response_post.redirect_chain[0],
+                         ('http://' + hostname + reverse('exmo2010:auth_send_email') + '?' +
+                         urlencode(params, True), 302))
+        self.assertEqual(response_post.redirect_chain[1],
+                         ('http://' + hostname + reverse('exmo2010:please_confirm_email') + '?' +
+                          urlencode({'email': form_data['email']}), 302))
         # AND I shouldn't be connected to any organizations from url
         user = User.objects.get(email=user_email)
         self.assertEqual(set(user.profile.organization.values_list('inv_code', flat=True)), set([]))
@@ -337,7 +358,7 @@ class RegistrationFormValidationTestCase(OptimizedTestCase):
 
 
 class ResendConfirmationEmailTestCase(TestCase):
-    # exmo2010:auth_resend_email
+    # exmo2010:auth_send_email
 
     #TODO: move this testcase to email tests directory
 
@@ -348,9 +369,9 @@ class ResendConfirmationEmailTestCase(TestCase):
         self.user = User.objects.create_user('user', 'test@mail.com', 'password')
 
     def test_resend(self):
-        # WHEN i submit resend email form
-        response = self.client.post(reverse('exmo2010:auth_resend_email'), {'email': self.user.email})
-        # THEN i should be redirected to the please_confirm_email page
+        # WHEN I get resend email url with email in GET parameters
+        response = self.client.get(reverse('exmo2010:auth_send_email') + '?' + urlencode({'email': self.user.email}))
+        # THEN I should be redirected to the please_confirm_email page
         self.assertRedirects(response,
                              reverse('exmo2010:please_confirm_email') + '?' + urlencode({'email': self.user.email}))
         # AND one email message should be sent

@@ -124,7 +124,7 @@ class BaseSeleniumTestCase(LiveServerTestCase):
 
     def login(self, username, password):
         self.get(settings.LOGIN_URL)
-        self.find("#id_username").send_keys(username)
+        self.find("#id_email").send_keys(username)
         self.find('#id_password').send_keys(password)
         self.find('input[type=submit]').click()
         self.assertEqual(self.webdrv.current_url, self.live_server_url + str(settings.LOGIN_REDIRECT_URL))
