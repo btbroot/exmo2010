@@ -29,22 +29,22 @@
 {% endblock %}
 
 {% block extra_script %}
-    <script src="{% static 'exmo2010/js/registration.js' %}"></script>
+    <script src="{% static 'exmo2010/js/auth.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}{% if orgs %}<h1>{% trans 'Get access to scores' %}</h1>{% endif %}{% endblock %}
+{% block h1 %}{% if orgs %}<h1 class="hidden">{% trans 'Get access to scores' %}</h1>{% endif %}{% endblock %}
 
 {% block content %}
-    <div class="registration-content-block">
+    <noscript>
+        <div class="warning-block">
+            {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
+        </div>
+    </noscript>
+
+    <div class="auth-content-block hidden">
         {% if orgs %}
             {% include "registration/_auth_content_header.html" %}
         {% endif %}
-
-        <noscript>
-            <div class="warning-block">
-                {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
-            </div>
-        </noscript>
 
         <div class="tabs h2">
             <span><a href="{% url 'exmo2010:auth_login' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Login' %}</a></span>

@@ -18,17 +18,24 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 $(document).ready(function () {
-    var all_text_inputs = $('input[type="text"]');
+    // if JS is available show login/registration/password recovery form
+    // else 'noscript' tag will show warning message
+    $('.auth-content-block').show();
+    $('h1').show();
 
-    // show info block of focused input element
-    all_text_inputs.focusin(function() {
-        $(this).closest('.table-row').find('.info-block').show();
-    });
+    if($('.auth-content-block form').hasClass('registration-form')) {
+        var all_text_inputs = $('input[type="text"]');
 
-    // hide all info blocks
-    all_text_inputs.focusout(function(){
-        $('.info-block').hide();
-    });
+        // show info block of focused input element
+        all_text_inputs.focusin(function() {
+            $(this).closest('.table-row').find('.info-block').show();
+        });
+
+        // hide all info blocks
+        all_text_inputs.focusout(function(){
+            $('.info-block').hide();
+        });
+    }
 
     // set focus on email field by default
     $('input[name="email"]').focus();

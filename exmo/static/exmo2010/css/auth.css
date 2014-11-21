@@ -42,11 +42,6 @@ input {
     text-align: center;
 }
 
-/* TODO: remove this block in US #2285 */
-.warning-block {
-    margin-bottom: 20px;
-}
-
 /* overridden like "warning-block" class from base_style.css */
 .warning {
     margin: 10px 0 0;
@@ -89,7 +84,7 @@ input[type="submit"] {
     width: 150px;
 }
 
-.registration-content-block .info-block {
+.registration-form .info-block {
     position: absolute;
     display: none;
     margin: 5px 0 0 5px;
