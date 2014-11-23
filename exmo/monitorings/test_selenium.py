@@ -78,7 +78,7 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         # WHEN I click initial openness checkbox
         self.find('#id_rt_initial_openness').click()
         # AND submit my changes
-        self.find('#modal_window input[type="submit"]').click()
+        self.find('#columns_settings_window input[type="submit"]').click()
         # THEN initial openness column should be displayed
         self.assertVisible(self.init_openness)
 

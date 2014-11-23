@@ -23,6 +23,7 @@ from django.conf import settings
 from django.core import mail
 from django.db import transaction
 from django.test import LiveServerTestCase, SimpleTestCase, Client
+from django.test.client import RequestFactory
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
@@ -43,6 +44,22 @@ else:
 
 
 TIMEOUT = getattr(settings, 'SELENIUM_TEST_TIMEOUT', 6)
+
+
+def _find(self, selector):
+    try:
+        return self.find_element_by_css_selector(selector)
+    except Exception:
+        return None
+
+
+def _findall(self, selector):
+    return self.find_elements_by_css_selector(selector)
+
+
+# Monkey-patch selenium WebElement to have convenient find and findall methods to search children.
+WebElement.find = _find
+WebElement.findall = _findall
 
 
 class BaseSeleniumTestCase(LiveServerTestCase):
@@ -70,7 +87,9 @@ class BaseSeleniumTestCase(LiveServerTestCase):
             else:
                 cls.webdrv = getattr(webdriver, webdriver_type)()
         translation.activate(settings.LANGUAGE_CODE)
+
         super(BaseSeleniumTestCase, cls).setUpClass()
+        cls.requestfactory = RequestFactory(SERVER_NAME=cls.server_thread.host, SERVER_PORT=cls.server_thread.port)
 
     @classmethod
     def tearDownClass(cls):

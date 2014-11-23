@@ -42,17 +42,14 @@ $(document).ready(function() {
         return false;
     });
 
-    $(".modal-open").click(function(e) {
-        $("#modal_window").modal({
-            overlayClose: true,
-            onClose: $.modal.close()
-        });
-        e.preventDefault();
+    $(".modal-open").click(function() {
+        $("#columns_settings_window").modal({overlayClose: true});
+        return false;
     });
 
-    $("#cancel_link").click(function(e) {
+    $(".modal a.close_window").click(function() {
         $.modal.close();
-        e.preventDefault();
+        return false;
     });
 
     /* Active tabs */

@@ -137,12 +137,16 @@ class SendMailView(SendMailMixin, UpdateView):
         return kwargs
 
     def replace_link(self, text, email, orgs):
-        inv_codes = [org.inv_code for org in orgs]
-        params = {'code': inv_codes, 'email': email}
+        params = {'code': [org.inv_code for org in orgs]}
+        if email:
+            params['email'] = email
         url = reverse('exmo2010:auth_orguser') + '?' + urlencode(params, True)
         return text.replace('%link%', self.request.build_absolute_uri(url))
 
     def form_valid(self, form):
+        """
+        Send email messages to selected recipients, expanding magic words %code% and %link%.
+        """
         self.object = form.save()
         formdata = form.cleaned_data
 
@@ -176,18 +180,17 @@ class SendMailView(SendMailMixin, UpdateView):
         for user in mailto:
             user_orgs = filter(orgs.__contains__, user.organization.all())
             if '%code%' in formdata['comment']:
-                # If %code% keyword in comment send email to this user for every related organization
-                # in this monitoring, expanding %code% and %link%
+                # Send email to this user for every related organization in this monitoring.
                 comment_text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
                 for org in user_orgs:
                     text = comment_text.replace('%code%', org.inv_code)
                     mail_orguser(user.user.email, formdata['subject'], text)
             elif '%link%' in formdata['comment']:
-                # Send single email to this user with all related organizations in link parameters.
+                # Send single email to this user with all related organizations in one link.
                 text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
                 mail_orguser(user.user.email, formdata['subject'], text)
             else:
-                # Send single email to this user without any replacement in email.
+                # Send single email to this user without any magic words.
                 mail_orguser(user.user.email, formdata['subject'], formdata['comment'])
 
         messages.success(self.request, _('Mails sent.'))

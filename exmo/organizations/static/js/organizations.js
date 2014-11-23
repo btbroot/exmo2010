@@ -1,7 +1,4 @@
 // This file is part of EXMO2010 software.
-// Copyright 2010, 2011, 2013 Al Nikolov
-// Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-// Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 // Copyright 2014 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -19,32 +16,155 @@
 //
 
 $(document).ready(function () {
-    // help text windows handler
-    function helptextHandler( e ) {
-        var top = $(e.target).position().top;
-        var left = $(e.target).position().left + $(e.target).width();
-        $('.help-text').css('top', top).css('left', left).show();
-        $('.info-block').hide();
-        $(e.data.p).show();
-    }
+    $('input[placeholder], textarea[placeholder]').placeholder();
+    $(".base-table").tablesorter({sortList: [[1, 0]], headers: {0: {sorter: false}}});
 
-    $("#id_email").focusin({p: '#help-emails'}, helptextHandler);
-    $("#id_phone").focusin({p: '#help-phones'}, helptextHandler);
-    $("textarea").focusout(function(){$('.help-text').hide();});
 
-    // allowed keys: numbers, +, -, (, ), whitespace, comma
-    function phone_validate(e) {
-        var theEvent = e || window.event;
-        var key = theEvent.keyCode || theEvent.which;
-        key = String.fromCharCode(key);
-        var regex = /[0-9]|\+|\-|\(|\)|\s|\,/;
-        if( !regex.test(key) ) {
-            theEvent.returnValue = false;
-            if(theEvent.preventDefault) theEvent.preventDefault();
+    $(".modal a.close_window").click(function() {
+        $.modal.close();
+        return false;
+    });
+
+
+    // Clicking 'select all' checkbox should toggle all checkboxes.
+    $('input[type="checkbox"].group_actions.toggle_all').click(function(){
+        if ($(this).prop('checked')){
+            $('input[type="checkbox"].group_actions').prop('checked', true);
+        }
+        else {
+            $('input[type="checkbox"].group_actions').prop('checked', false);
+        }
+    })
+
+    // Disable group action button if no checkbox is checked.
+    var group_action_checkup = function() {
+        if ($('input[type="checkbox"].group_actions:checked').length > 0) {
+            $('#group_actions input.action').prop('disabled', false);
+        }
+        else {
+            $('#group_actions input.action').prop('disabled', true);
         }
     }
 
-    $('#id_phone').keypress(function(e) {
-        phone_validate(e);
-    });
+    // Perform group action checkup on page load.
+    group_action_checkup();
+
+    // Perform group action checkup when checkbox clicked.
+    $('input[type="checkbox"].group_actions').click(group_action_checkup);
+
+
+    // Show invite_links modal window when group action button clicked.
+    $('#group_actions input.action').click(function(){
+        var checked = $('input[type="checkbox"].group_actions:checked').not('.toggle_all');
+        if (checked.length == 1) {
+            // Only one organization selected.
+            show_single_org_modal(checked.closest('tr').data())
+        } else {
+            // More than one organization selected.
+            $('.single_org_digest').hide();
+            $('.multi_org_digest').show();
+
+            var codes = [];
+            var names = [];
+            for (var i=0; i<checked.length; i++) {
+                var org_data = $(checked[i]).closest('tr').data();
+                codes.push(org_data.code)
+                names.push(org_data.name)
+            }
+
+            // Show digest of all organization names. (max of 3)
+            if (names.length <= 3) {
+                var digest = names.join('<br/>');
+            } else {
+                var digest = names.slice(0, 3).join('<br/>');
+                var _andmore = gettext('and %(num_not_shown_orgs)s more');
+                digest += '<br/>' + interpolate(_andmore, {num_not_shown_orgs: names.length - 3}, true);
+            }
+            $('#invite_links_window td.names').html(digest);
+
+            // Store invite codes of all currently selected orgs.
+            $('#invite_links_window').data('inv_codes', codes.join(','));
+
+            // Delete existing widgets, except prototype.
+            $('.invite_widgets tr').not('.hidden').remove();
+
+            // Create one new widget with empty email.
+            add_inv_widget();
+
+            // Show modal window.
+            $('#invite_links_window').modal({overlayClose: true});
+        }
+        return false;
+    })
+
+    var show_single_org_modal = function(org_data){
+        $('.single_org_digest').show();
+        $('.multi_org_digest').hide();
+
+        // Store invite code of selected org.
+        $('#invite_links_window').data('inv_codes', org_data.code)
+
+        // Delete existing widgets, except prototype.
+        $('.invite_widgets tr').not('.hidden').remove();
+
+        // Create invite widgets for every email of this organization.
+        var emails = org_data.email.split(', ');
+        for (var i=0; i<emails.length; i++) {
+            if (emails[i].trim().length > 0) {
+                add_inv_widget(emails[i]);
+            }
+        }
+
+        // Create one new widget with empty email.
+        add_inv_widget();
+
+        // Show org name in modal window.
+        $('#invite_links_window td.name').html(org_data.name);
+
+        // Show modal window.
+        $('#invite_links_window').modal({overlayClose: true});
+    }
+
+    $('a.org_invite_link').click(function(){
+        show_single_org_modal($(this).closest('tr').data())
+        return false;
+    })
+
+    var generate_invite_link = function(tr_widget) {
+        var data = $('#invite_links_window').data()
+        var query = {code: data.inv_codes.split(',')}
+        var email = tr_widget.find('input.email').val().trim();
+        if (email != '') {
+            query.email = email;
+        }
+        tr_widget.find('input.invite_link').val(data.baselink + '?' + $.param(query, true))
+    }
+
+    // Regenerate invite_link when email input is changed.
+    $('.invite_widgets').on('keyup', 'input.email', function(){
+        generate_invite_link($(this).closest('tr'))
+    })
+
+    var add_inv_widget = function(email) {
+        var tr_widget = $('.invite_widgets tr.hidden').clone().removeClass('hidden');
+        if (email != undefined) {
+            tr_widget.find('input.email').val(email.trim());
+        }
+        generate_invite_link(tr_widget);
+        tr_widget.appendTo('.invite_widgets');
+    }
+
+    // Add new invite widget when last widget's email input become filled and loses focus.
+    $('.invite_widgets').on('focusout', 'input.email:last', function(){
+        if ($(this).val().trim() != '') {
+            add_inv_widget()
+        }
+    })
+
+    // On click select all invite_link text inside input.
+    $('.invite_widgets').on('click', 'input.invite_link', function(){ this.select(); });
+
+    // Forbid manual editing invite_link input.
+    $('.invite_widgets').on('keypress', 'input.invite_link', function(){ return false; })
+
 });

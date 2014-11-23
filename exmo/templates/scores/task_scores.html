@@ -506,7 +506,7 @@
 
     <!-- Modal window -->
     {% if is_expert %}
-        {% url 'exmo2010:post_task_scores_table_settings' task.pk as url %}
-        {% include "_modal_window.html" with url=url form=columns_form %}
+        {% url 'exmo2010:post_task_scores_table_settings' task.pk as column_settings_url %}
+        {% include "_column_settings_modal_window.html" with url=column_settings_url form=columns_form %}
     {% endif %}
 {% endblock %}

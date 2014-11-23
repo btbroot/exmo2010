@@ -65,15 +65,12 @@ $(document).ready(function() {
     });
 
     $(".modal-open").click(function(e) {
-        $("#modal_window").modal({
-            overlayClose: true,
-            onClose: $.modal.close()
-        });
-        e.preventDefault();
+        $("#columns_settings_window").modal({overlayClose: true});
+        return false;
     });
 
-    $("#cancel_link").click(function(e) {
+    $(".modal a.close_window").click(function(e) {
         $.modal.close();
-        e.preventDefault();
+        return false;
     });
 });

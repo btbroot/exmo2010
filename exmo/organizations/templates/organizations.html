@@ -30,13 +30,9 @@
 
 {% block extra_script %}
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.placeholder.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('input[placeholder], textarea[placeholder]').placeholder();
-            $(".base-table").tablesorter({sortList: [[0, 0]]});
-        })
-    </script>
+    <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
 {% endblock %}
 
 {% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
@@ -68,10 +64,12 @@
 
                     <thead>
                         <tr>
+                            <th><input class="group_actions toggle_all" type="checkbox"/></th>
                             <th><span>{% trans 'Organization' %}</span><span class="arrow"></span></th>
                             <th><span>{% trans 'Email' %}</span><span class="arrow"></span></th>
                             <th><span>{% trans 'Phone' %}</span><span class="arrow"></span></th>
                             <th><span>{% trans 'Invitation code' %}</span><span class="arrow"></span></th>
+                            <th></th>
                             <th><span>{% trans 'Tasks' %}</span><span class="arrow"></span></th>
                             <th><span>{% trans 'Status' %}</span><span class="arrow"></span></th>
                         </tr>
@@ -79,7 +77,9 @@
 
                     <tbody>
                         {% for org in organizations %}
-                            <tr>
+                            {% comment %} row id for testing {% endcomment %}
+                            <tr id="org_row_{{ org.pk }}" data-name="{{ org.name }}" data-code="{{ org.inv_code }}" data-email="{{ org.email }}">
+                                <td><input class="group_actions" type="checkbox"/></td>
                                 <td>
                                     <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name|urlencode }}">{{ org.name|truncatechars:"123" }}</a>
                                     &nbsp;<a href="{% url 'exmo2010:organizations_update' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
@@ -90,6 +90,7 @@
                                 <td>{{ org.email|default_if_none:""|truncatewords:1 }}</td>
                                 <td>{{ org.phone|default_if_none:""|truncatewords:1 }}</td>
                                 <td>{{ org.inv_code|default_if_none:'' }}</td>
+                                <td><a class="org_invite_link" href=# ><img src="{% static 'exmo2010/img/link.svg' %}"></a></td>
                                 <td>{{ org.tasks_count }}</td>
                                 {% with org.inv_status as status %}
                                     <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
@@ -101,6 +102,10 @@
                     </tbody>
                 </table>
 
+                <div id="group_actions">
+                    {% trans 'For selected' %} <input class="action" type="button" value="{% trans 'Create invite link' %}" disabled="disabled"/>
+                </div>
+
                 {% include "exmo2010/_paginator.html" with queryset=orgs %}
 
                 {% monitoring_stats monitoring %}
@@ -109,4 +114,33 @@
             {% endif %}
         </div>
     </div>
+
+    <div id="invite_links_window" class="modal hidden" data-baselink="http://{{ request.get_host }}{% url 'exmo2010:auth_orguser' %}">
+        <h2>{% trans "Invite links" %}</h2>
+        <a href="#" class="close_window">{% trans "Close" %}</a>
+        <table class="digest">
+            <tbody>
+                <tr class="single_org_digest">
+                    <td>{% trans "Organization" %}</td> <td class="name"></td>
+                </tr>
+                <tr class="multi_org_digest hidden">
+                    <td>{% trans "Organizations" %}</td> <td class="names"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans 'Email' context 'short column title' %}</th> <th>{% trans 'Link' %}</th>
+                </tr>
+            </thead>
+            <tbody class="invite_widgets">
+                <tr class="hidden">  <!-- Prototype -->
+                    <td><input type="text" class="email"/></td> <td class="invite_link"><input type="text" class="invite_link"/></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 {%endblock%}

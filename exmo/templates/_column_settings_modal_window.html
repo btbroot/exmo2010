@@ -21,7 +21,7 @@
 {% endcomment %}
 {% load i18n %}
 
-<div id="modal_window" class="hidden">
+<div id="columns_settings_window" class="modal hidden">
     <h2>{% trans "Table settings" %}</h2>
     <form action="{{ url }}" method="post">{% csrf_token %}
         {% for field in form %}
@@ -29,7 +29,7 @@
         {% endfor %}
         <div>
             <input type="submit" name="settings_submit" value="{% trans "Change" %}">
-            <a href="#" id="cancel_link" class="pseudo">{% trans "Cancel" %}</a>
+            <a href="#" class="close_window pseudo">{% trans "Cancel" %}</a>
         </div>
     </form>
 </div>
