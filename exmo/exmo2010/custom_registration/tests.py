@@ -19,13 +19,18 @@
 import re
 from urllib import urlencode
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser, User
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.http.request import QueryDict
 from django.test import TestCase
+from mock import MagicMock, Mock
 from model_mommy import mommy
+from nose_parameterized import parameterized
 
+from .views import registration_form
+from core.test_utils import OptimizedTestCase
 from exmo2010.models import Monitoring, Organization, Task, MONITORING_INTERACTION
 
 
@@ -284,6 +289,51 @@ class RegistrationWithInvCodesAndRedirectTestCase(TestCase):
         # AND I should be connected to 1 organization from url
         user = User.objects.get(email=self.org1.email)
         self.assertEqual(set(user.profile.organization.values_list('inv_code', flat=True)), {self.org1.inv_code})
+
+
+class RegistrationFormValidationTestCase(OptimizedTestCase):
+    # TODO: move this testcase to *validation* tests directory
+
+    # exmo2010:registration_form
+
+    # RegistrationForm should properly validate input data
+
+    @classmethod
+    def setUpClass(cls):
+        super(RegistrationFormValidationTestCase, cls).setUpClass()
+        cls.url = reverse('exmo2010:registration_form')
+
+    @parameterized.expand([
+        ('email@test.com', 'password'),
+    ])
+    def test_valid_form(self, email, password):
+        # WHEN anonymous submits request with valid data
+        data = {'email': email, 'password': password}
+        request = MagicMock(user=AnonymousUser(), method='POST', POST=data, GET=QueryDict(''))
+        request.path_info = self.url
+        response = registration_form(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND user should be registered
+        self.assertEqual(User.objects.filter(email=email).count(), 1)
+
+    @parameterized.expand([
+        ('', 'password'),  # missing email
+        ('invalid_email.com', 'password'),  # incorrect email
+        ('valid_email@test.com', ''),  # missing password
+    ])
+    def test_invalid_form(self, email, password):
+        # WHEN anonymous submits request with invalid data
+        data = {'email': email, 'password': password}
+        request = MagicMock(user=AnonymousUser(), method='POST', POST=data)
+        request.path_info = self.url
+        response = registration_form(request)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND form validation should fail
+        self.assertEqual(response.context_data['form'].is_valid(), False)
+        # AND user shouldn't be registered
+        self.assertEqual(User.objects.filter(email=email).count(), 0)
 
 
 class ResendConfirmationEmailTestCase(TestCase):

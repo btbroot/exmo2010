@@ -80,8 +80,8 @@ class RegistrationForm(forms.Form):
         """
         Validate that the supplied email address is unique for the site.
         """
-        email = self.cleaned_data['email']
-        if User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).exists():
             raise forms.ValidationError(mark_safe(_(
                 "Account with this email already exists. "
                 "<a href='%s'>Log in</a> or use another email address to register.") %
