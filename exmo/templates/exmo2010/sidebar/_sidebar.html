@@ -40,10 +40,8 @@
                 {% url 'exmo2010:organizations_add' monitoring.pk as url2 %}
                 {% url 'exmo2010:organizations_update' monitoring.pk org.pk as url3 %}
                 {% url 'exmo2010:organizations_delete' monitoring.pk org.pk as url4 %}
-                {% url 'exmo2010:send_mail' monitoring.pk as url5 %}
-                {% url 'exmo2010:send_mail_history' monitoring.pk as url6 %}
                 <!-- {% trans "Organizations" %} -->
-                {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 url3=url3 url4=url4 url5=url5 url6=url6 title="Organizations" only %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 url3=url3 url4=url4 title="Organizations" only %}
 
                 {% url 'exmo2010:representatives' monitoring.pk as url %}
                 <!-- {% trans "Representatives" %} -->
@@ -55,6 +53,10 @@
                 {% url 'exmo2010:observers_group_delete' monitoring.pk obs_group.pk as url4 %}
                 <!-- {% trans "Observers" %} -->
                 {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 url3=url3 url4=url4 title="Observers" only %}
+
+                {% url 'exmo2010:send_mail' monitoring.pk as url %}
+                {% url 'exmo2010:send_mail_history' monitoring.pk as url2 %}
+                {% include "exmo2010/sidebar/_item.html" with request=request url=url url2=url2 title="Mail" only %}
             {% endif %}
 
             {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}

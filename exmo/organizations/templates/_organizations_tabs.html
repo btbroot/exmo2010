@@ -19,9 +19,13 @@
 {% endcomment %}
 {% load i18n %}
 
+<script>
+    $(function(){
+        // Stylize active tab, prevent reloaing page on click.
+        $('#tab_{{ tab }}').addClass('active').find('a').click(function(){ return false; });
+    });
+</script>
 <div class="tabs">
-    <span {% if tab == 'all' %}class="active"{% endif %}><a href="{% url 'exmo2010:organizations' monitoring.pk %}">{% trans 'all' %}</a></span>
-    <span {% if tab == 'send_mail' %}class="active"{% endif %}><a href="{% url 'exmo2010:send_mail' monitoring.pk %}">{% trans 'send mail' %}</a></span>
-    <span {% if tab == 'mail_history' %}class="active"{% endif %}><a href="{% url 'exmo2010:send_mail_history' monitoring.pk %}">{% trans 'mail history' %}</a></span>
-    <span {% if tab == 'add' %}class="active"{% endif %}><a href="{% url 'exmo2010:organizations_add' monitoring.pk %}">{% trans 'add' %}</a></span>
+    <span id='tab_all'><a href="{% url 'exmo2010:organizations' monitoring.pk %}">{% trans 'all' %}</a></span>
+    <span id='tab_add'><a href="{% url 'exmo2010:organizations_add' monitoring.pk %}">{% trans 'add' %}</a></span>
 </div>

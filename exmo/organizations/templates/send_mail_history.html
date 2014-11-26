@@ -37,9 +37,9 @@
 
 {% block content %}
     <div class="send-mail-content-block">
-        <h2>{% trans "Organizations" %}</h2>
+        <h2>{% trans "Mail" %}</h2>
 
-        {% include "_organizations_tabs.html" with tab='mail_history' %}
+        {% include "_sendmail_tabs.html" with tab='mail_history' %}
 
         <div class="tab-content">
             {% if is_mail_history_exist %}

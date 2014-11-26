@@ -1,9 +1,7 @@
-{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
-# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,23 +17,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static %}
+{% load i18n %}
 
-{% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}" />
-{% endblock %}
-
-{% block content %}
-    <form action="." method="GET">
-        <table>
-            {{form.as_table}}
-            <tr><td><input type="submit" /></td></tr>
-        </table>
-    </form>
-
-    <div id=organization_list>
-        {% if object_list %}
-            {% include "exmo2010/rating_common.html" %}
-        {% endif %}
-    </div>
-{% endblock %}
+<script>
+    $(function(){
+        // Stylize active tab, prevent reloaing page on click.
+        $('#tab_{{ tab }}').addClass('active').find('a').click(function(){ return false; });
+    });
+</script>
+<div class="tabs">
+    <span id='tab_send_mail'><a href="{% url 'exmo2010:send_mail' monitoring.pk %}">{% trans 'send mail' %}</a></span>
+    <span id='tab_mail_history'><a href="{% url 'exmo2010:send_mail_history' monitoring.pk %}">{% trans 'mail history' %}</a></span>
+</div>
