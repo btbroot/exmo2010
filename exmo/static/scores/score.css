@@ -357,7 +357,7 @@ span.score-interim {
 
 /* Claims & Clarifications */
 
-.tabs {
+.tabs.h2 {
     display: block;
     margin-top: 20px;
     margin-bottom: 6px;

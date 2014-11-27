@@ -22,7 +22,8 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-from BeautifulSoup import BeautifulSoup
+from bleach import clean
+from bs4 import BeautifulSoup
 from ckeditor.fields import RichTextFormField
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -34,7 +35,6 @@ from django.forms.models import modelform_factory
 from django.http import HttpResponseRedirect, Http404, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.utils.html import escape, urlize
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import cache_control
 from django.views.generic import DetailView
@@ -42,13 +42,13 @@ from livesettings import config_value
 
 from accounts.forms import SettingsInvCodeForm
 from core.response import JSONResponse
-from core.templatetags.target_blank import target_blank
 from core.utils import clean_message, round_ex
 from core.views import login_required_on_deny, LoginRequiredOnDeny
 from custom_comments.models import CommentExmo
 from exmo2010.mail import mail_comment
 from exmo2010.models import Organization, Score, Task, Parameter, QAnswer, QQuestion, UserProfile
 from exmo2010.models.monitoring import Monitoring
+from exmo2010.templatetags.exmo2010_filters import linkify, strict_bleach
 from parameters.forms import ParametersQueryForm
 from perm_utils import annotate_exmo_perms
 from questionnaire.forms import QuestionnaireDynForm
@@ -132,7 +132,7 @@ def score_view(request, **kwargs):
                     # Restore last_modified field, that was overwritten by save()
                     Score.objects.filter(pk=interim_score.pk).update(last_modified=last_modified)
 
-                _add_comment(request, score, with_autoscore=True)
+                _add_comment(request, score)
             score = form.save(commit=False)
             score.editor = request.user
             score.save()
@@ -211,14 +211,10 @@ def post_score_comment(request, score_pk):
     return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:score', args=[score.pk]))
 
 
-# TODO: maybe get rid of with_autoscore argument, but instead update BeautifulSoup to version 4
-def _add_comment(request, score, with_autoscore=False):
+def _add_comment(request, score):
     """
     Handle new comment adding from POST data.
-    If with_autoscore is True, process autoscore bricks in comment.
-    For browsers incompatible with CKEditor, input is not escaped before submission and
-    autoscore processing with BeautifulSoup will break some text and should be disabled.
-    (see BUG 2230. Improper handling of ampersand in comments.)
+    Process autoscore bricks in comment.
 
     """
     comment_form = score.comment_form(request.POST)
@@ -231,12 +227,12 @@ def _add_comment(request, score, with_autoscore=False):
     # BUG 2174 Replace &nbsp; with regular space to fix urlization.
     message = re.sub('&nbsp;', ' ', message)
 
-    if with_autoscore:
-        # Replace all autoscore bricks with normal text.
-        soup = BeautifulSoup(message)
-        for input_node in soup.findAll('input'):
-            input_node.replaceWith(BeautifulSoup(input_node['value']))
-        message = unicode(soup)
+    # Replace all autoscore bricks with normal text.
+    soup = BeautifulSoup(message)
+    for input_node in soup.findAll('input'):
+        input_node.replaceWith(input_node['value'])
+
+    message = ''.join(map(unicode, soup.body.contents))
 
     comment = CommentExmo.objects.create(
         object_pk=score.pk,
@@ -264,7 +260,7 @@ def _add_comment(request, score, with_autoscore=False):
     mail_comment(request, comment)
 
 
-ajax_soup = lambda txt: target_blank(urlize(escape(txt), 70)).replace('\n', '<br />')
+linkify_br = lambda txt: strict_bleach(linkify(txt), 'a').replace('\n', '<br />')
 
 
 @login_required
@@ -282,7 +278,7 @@ def post_recommendations(request, score_pk):
     except ValidationError:
         return HttpResponseBadRequest()
     score.save()
-    return JSONResponse({'data': ajax_soup(score.recommendations)})
+    return JSONResponse({'data': linkify_br(score.recommendations)})
 
 
 @login_required
@@ -296,7 +292,7 @@ def post_score_links(request, score_pk):
 
     score.links = request.POST['links']
     score.save()
-    return JSONResponse({'data': ajax_soup(score.links)})
+    return JSONResponse({'data': linkify_br(score.links)})
 
 
 @login_required

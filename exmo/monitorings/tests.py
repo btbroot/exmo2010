@@ -22,6 +22,7 @@ import json
 import unittest
 from cStringIO import StringIO
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, User
 from django.contrib.contenttypes.models import ContentType
@@ -35,7 +36,6 @@ from django.utils.translation import get_language
 from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
-from BeautifulSoup import BeautifulSoup
 
 from .forms import MonitoringCopyForm
 from .views import monitoring_organization_export

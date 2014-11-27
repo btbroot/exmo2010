@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import json
+from bs4 import BeautifulSoup
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -570,7 +571,7 @@ class AddExistingScoreRedirectTestCase(TestCase):
 
 class AjaxPostScoreLinksTestCase(TestCase):
     # Posting score links should update score links field in database.
-    # Response should contain properly escaped and urlized new value
+    # Response should contain properly cleaned and urlized new value
 
     def setUp(self):
         # GIVEN I am logged in as expert B
@@ -589,19 +590,21 @@ class AjaxPostScoreLinksTestCase(TestCase):
 
     def test_post(self):
         url = reverse('exmo2010:post_score_links', args=(self.score.pk,))
+        link_string = '<p>123</p>\nhttp://123.ru\nhttp://456.ru'
 
         # WHEN I post score links with non-empty string
-        response = self.client.post(url, {'links': '<p>123</p>\nhttp://123.ru\nhttp://123.ru'})
+        response = self.client.post(url, {'links': link_string})
 
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
 
-        # AND response should contain properly escaped and urlized new value
-        escaped = '&lt;p&gt;123&lt;/p&gt;<br /><a target="_blank" href="http://123.ru">http://123.ru</a><br /><a target="_blank" href="http://123.ru">http://123.ru</a>'
-        self.assertEqual(json.loads(response.content)['data'], escaped)
+        # AND response should contain properly cleaned and urlized new value
+        cleaned = BeautifulSoup('123<br/><a target="_blank" rel="nofollow" href="http://123.ru">http://123.ru</a>'
+                                '<br/><a target="_blank" rel="nofollow" href="http://456.ru">http://456.ru</a>')
+        self.assertEqual(BeautifulSoup(json.loads(response.content)['data']), cleaned)
 
         # AND score links should be updated in DB
-        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '<p>123</p>\nhttp://123.ru\nhttp://123.ru')
+        self.assertEqual(Score.objects.get(pk=self.score.pk).links, '<p>123</p>\nhttp://123.ru\nhttp://456.ru')
 
         # WHEN I post score links with empty string
         response = self.client.post(url, {'links': ''})

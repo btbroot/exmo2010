@@ -18,7 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static trim_links target_blank bleach_tags %}
+{% load i18n static %}
+{% load bleach from bleach_tags %}
+{% load linkify from exmo2010_filters %}
 
 {% block title %}{{ task.organization.name }}{% endblock %}
 
@@ -82,13 +84,15 @@
                     {% url 'exmo2010:monitoring_rating' mon.pk as url %}
                 {% endif %}
 
-                {% if orgs_count > 1 %}
-                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                {% else %}
-                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                {% endif %}
+                {% filter linkify|bleach %}
+                    {% if orgs_count > 1 %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endfilter %}
             {% else %}
-                &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a>.{% endblocktrans %}<br/>
+                &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
             {% endif %}
 
             {% ifnotequal openness None %}
@@ -158,7 +162,7 @@
                             <td class="code"><a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
                             <td class="center">
                                 <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
-                                <p>{{ score.recommendations|default_if_none:""|escape|urlizetrunc:70|target_blank|linebreaksbr }}</p>
+                                <p>{{ score.recommendations|default_if_none:""|linkify|bleach|linebreaksbr }}</p>
                                 {% if score.parameter.grounds and not score.is_finished %}
                                     <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
                                     <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>

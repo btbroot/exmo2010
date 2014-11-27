@@ -18,7 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static bleach_tags date_utils comments %}
+{% load i18n static comments %}
+{% load bleach from bleach_tags %}
 
 {% block title %}{{ task.organization.name }}{% endblock %}
 

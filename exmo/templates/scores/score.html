@@ -20,7 +20,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n target_blank urlize_soup widget_tweaks static comments date_utils trim_links bleach_tags %}
+{% load i18n static comments %}
+{% load bleach from bleach_tags %}
+{% load strict_bleach date_until linkify workdays_still_left from exmo2010_filters %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
@@ -69,7 +71,7 @@
         <p>
             {% url 'exmo2010:monitoring_rating' param.monitoring.pk as rating_url %}
             {% url 'exmo2010:task_scores' task.pk as task_url %}
-            &mdash; {% blocktrans with org_url=org.url org_name=org.name monitoring=param.monitoring.name %}The parameter is evaluated for the website <a href="{{ org_url }}" target="_blank">{{ org_url }}</a> of the <a href="{{ task_url }}">{{ org_name }}</a> within the rating <a href="{{ rating_url }}">{{ monitoring }}</a>.{% endblocktrans %}<br />
+            &mdash; {% blocktrans with org_url=org.url|linkify|bleach org_name=org.name monitoring=param.monitoring.name %}The parameter is evaluated for the website {{ org_url }} of the <a href="{{ task_url }}">{{ org_name }}</a> within the rating <a href="{{ rating_url }}">{{ monitoring }}</a>.{% endblocktrans %}<br />
             &mdash; {% trans 'Social significance coefficient equals' %} {{ param.weight }}.<br />
             {% if param.monitoring.has_npa %}
                 &mdash; {% trans 'Parameter type' %}: {{ param.npa_display }}.
@@ -223,7 +225,7 @@
                         {% endif %}
                         <div class="read" data-empty_text="{% trans 'No links' %}">
                             {% if score.links %}
-                                {{ score.links|escape|urlizetrunc:70|target_blank|linebreaksbr }}
+                                {{ score.links|linkify|strict_bleach:'a'|linebreaksbr }}
                             {% else %}
                                 {% trans 'No links' %}
                             {% endif %}
@@ -249,7 +251,7 @@
                             {% endif %}
                             <div class="read" data-empty_text="{% trans 'No recommendations' %}">
                                 {% if score.recommendations %}
-                                    {{ score.recommendations|escape|urlizetrunc:70|target_blank|linebreaksbr }}
+                                    {{ score.recommendations|linkify|strict_bleach:'a'|linebreaksbr }}
                                 {% else %}
                                     {% trans 'No recommendations' %}
                                 {% endif %}
@@ -332,7 +334,7 @@
                                     {{ comment.submit_date|date:"DATETIME_FORMAT" }}
                                 </span>
 
-                                <div class="messages-content">{{ comment.comment|safe|urlize_soup|trim_links|target_blank }}</div>
+                                <div class="messages-content">{{ comment.comment|linkify|bleach }}</div>
 
                                 {% if request.user.is_expertA and not comment.posted_by_expert and comment.status != comment.ANSWERED %}
                                     <div class="toggle-comment-container">

@@ -17,6 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import datetime
+
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core import mail
@@ -29,14 +32,13 @@ from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+from .middleware import CustomLocaleMiddleware
+from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter,
+                     Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED)
+from .templatetags.exmo2010_filters import linkify
+from .views import CertificateOrderView, ckeditor_upload
 from core.test_utils import OptimizedTestCase
-from core.utils import get_named_patterns
-from exmo2010.middleware import CustomLocaleMiddleware
-from exmo2010.models import (
-    Group, Monitoring, ObserversGroup, Organization, Parameter,
-    Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED
-)
-from exmo2010.views import CertificateOrderView, ckeditor_upload
+from core.utils import get_named_patterns, workday_count
 
 
 class TestPhonesFieldValidation(TestCase):
@@ -439,3 +441,54 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         request = MagicMock(user=self.users[username], method='POST', FILES={'upload': Mock()})
         # THEN response status_code should be 200 (OK)
         self.assertEqual(ckeditor_upload(request).status_code, 200)
+
+
+class LinkifyTestCase(TestCase):
+    # Should convert plain urls to anchor tags, leaving existing anchors untouched.
+    # Should add target="_blank" to anchor tags.
+    # Should truncate urls longer than 70 characters.
+
+    @parameterized.expand([
+        ('<a><span>X</span>Y</a>Z', '<a><span>X</span>Y</a>Z'),
+        ('text test.ru text', 'text <a target="_blank" rel="nofollow" href="http://test.ru">test.ru</a> text'),
+        ('http://test.ru', '<a target="_blank" rel="nofollow" href="http://test.ru">http://test.ru</a>'),
+        ('<p>http://test.ru/?code=J6VLRH&email=org5%40test.ru</p>',
+         '<p><a target="_blank" rel="nofollow" href="http://test.ru/?code=J6VLRH&amp;email=org5%40test.ru">'
+         'http://test.ru/?code=J6VLRH&amp;email=org5%40test.ru</a></p>'),
+        ('<a href="http://test.ru/"><span>X</span>Y</a>Z',
+         '<a target="_blank" rel="nofollow" href="http://test.ru/"><span>X</span>Y</a>Z'),
+        ('text &lt;h2&gt;TTT&lt;/h2&gt; text', 'text &lt;h2&gt;TTT&lt;/h2&gt; text'),
+        ('text &lt;h2&gt;TTT&lt;/h2&gt; text <a href="http://test.ru/"><span>X</span>Y</a> text',
+         'text &lt;h2&gt;TTT&lt;/h2&gt; text <a target="_blank" rel="nofollow" href="http://test.ru/">'
+         '<span>X</span>Y</a> text'),
+        ('https://www.google.ru/webhp?ion=1&espv=2&ie=UTF-8#newwindow=1&q=%D1%82%D0%B5%D1%81%D1%82',
+         '<a target="_blank" rel="nofollow" href="https://www.google.ru/webhp?'
+         'ion=1&amp;espv=2&amp;ie=UTF-8#newwindow=1&amp;q=%D1%82%D0%B5%D1%81%D1%82">'
+         'https://www.google.ru/webhp?ion=1&amp;espv=2&amp;ie=UTF-8#newwindow=1&amp;q=%D1...</a>'),
+    ])
+    def test_linkify(self, data, expected_result):
+        self.assertEqual(BeautifulSoup(linkify(data)), BeautifulSoup(expected_result))
+
+
+class WorkdayCountTestCase(TestCase):
+    # Should calculate number of days between two dates, excluding weekends.
+
+    @parameterized.expand([
+        # BUG 2178. Thursday evening to next Thursday morning, should ignore hours, use date only.
+        ('2014.08.07 18:31', '2014.08.14 10:08', 5),
+
+        ('2014.08.08 18:31', '2014.08.14 00:00', 4),   # Friday to Thursday, 2 weekends
+        ('2014.08.08 00:00', '2014.08.08 00:00', 0),   # same day, zero hours
+        ('2014.08.08 17:14', '2014.08.08 18:10', 0),   # same day
+
+        ('2014.08.09 18:31', '2014.08.11 00:00', 0),   # Saturday to Monday -> same day
+        ('2014.08.10 18:31', '2014.08.11 00:00', 0),   # Sunday to Monday -> same day
+
+        ('2014.08.08 17:14', '2014.08.09 18:10', 0),   # Friday to Saturday -> same day
+        ('2014.08.08 17:14', '2014.08.10 18:10', 0),   # Friday to Sunday -> same day
+        ('2014.08.08 17:14', '2014.08.11 14:05', 1),   # Friday to Monday
+    ])
+    def test_workday_count(self, start, end, expected_result):
+        fmt = '%Y.%m.%d %H:%M'
+        result = workday_count(datetime.strptime(start, fmt), datetime.strptime(end, fmt))
+        self.assertEqual(result, expected_result)

@@ -20,7 +20,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static trim_links %}
+{% load i18n static %}
+{% load bleach from bleach_tags %}
+{% load linkify from exmo2010_filters %}
 
 {% block title %}{{ task.organization.name }}{% endblock %}
 
@@ -79,14 +81,16 @@
                     {% url 'exmo2010:monitoring_rating' mon.pk as url %}
                 {% endif %}
 
-                {% if orgs_count > 1 %}
-                    <span id="rating_data" data-url="{% url 'exmo2010:rating_update' %}" data-task_id="{{ task.pk }}"></span>
-                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> has <span id="rating_place"></span> in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                {% else %}
-                    &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links monitoring_name=mon.name %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a> is the only one in the rating <a href="{{ url }}" target="_blank">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                {% endif %}
+                <span id="rating_data" data-url="{% url 'exmo2010:rating_update' %}" data-task_id="{{ task.pk }}"></span>
+                {% filter linkify|bleach %}
+                    {% if orgs_count > 1 %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endfilter %}
             {% else %}
-                &mdash; {% blocktrans with org_url=task.organization.url trim_org_url=task.organization.url|trim_links %}Site <a href="{{ org_url }}" target="_blank">{{ trim_org_url }}</a>.{% endblocktrans %}<br/>
+                &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
             {% endif %}
 
             {% ifnotequal openness None %}

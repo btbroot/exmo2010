@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n urlize_soup %}
+{% load i18n %}
+{% load linkify from exmo2010_filters %}
 
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -120,7 +121,7 @@
 
     <body>
         {% block content %}
-            <p>{{ body|safe|urlize_soup }}</p>
+            <p>{{ body|linkify|safe }}</p>
         {% endblock %}
 
         <div style="color: #999">

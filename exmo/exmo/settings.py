@@ -322,7 +322,10 @@ BLEACH_ALLOWED_TAGS = ['div', 'span', 'p', 'h2', 'h3', 'h4', 'h5', 'h6', 'b', 'i
                        'strong', 'a', 's', 'sub', 'sup', 'ol', 'ul', 'li', 'blockquote', 'br']
 
 # Which HTML attributes are allowed
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style']
+BLEACH_ALLOWED_ATTRIBUTES = {
+    '*': ['id', 'title', 'style'],
+    'a': ['href', 'target', 'rel'],
+}
 
 # Which CSS properties are allowed in 'style' attributes (assuming style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = ['font-family', 'font-weight', 'text-decoration', 'font-variant']

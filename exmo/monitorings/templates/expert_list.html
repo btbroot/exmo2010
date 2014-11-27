@@ -20,7 +20,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n monitoring_stats check_object_permission %}
+{% load i18n %}
+{% load check_object_permission monitoring_stats from exmo2010_tags %}
 
 {% block title %}{{ monitoring.name }}{% endblock %}
 

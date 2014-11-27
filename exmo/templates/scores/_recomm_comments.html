@@ -1,6 +1,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,8 +17,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n target_blank urlize_soup date_utils trim_links comments %}
-
+{% load i18n comments %}
+{% load bleach from bleach_tags %}
+{% load date_until linkify from exmo2010_filters %}
 
 {% for comment in score.comments %}
     {% if forloop.first %}
@@ -41,7 +43,7 @@
             {% endif %}
         </span>
         <span class="date"> {{ comment.submit_date|date:"DATETIME_FORMAT" }} </span>
-        <div class="body"> {{ comment.comment|safe|urlize_soup|trim_links|target_blank }} </div>
+        <div class="body"> {{ comment.comment|linkify|bleach }} </div>
         {% if request.user.is_organization and not comment.posted_by_expert and comment.status == comment.OPEN %}
             <div class="comment_deadline">
                     {% trans 'Deadline for answer to your comment is' %}
