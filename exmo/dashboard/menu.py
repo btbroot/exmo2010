@@ -91,4 +91,4 @@ class CustomMenu(Menu):
             self.auth.append(items.MenuItem(_('Log out'), settings.LOGOUT_URL, css_classes=['logout-icon']))
         else:
             self.auth.append(items.MenuItem(_('Registration'), reverse('exmo2010:registration_form')))
-            self.auth.append(items.MenuItem(_('Log in'), settings.LOGIN_URL))
+            self.auth.append(items.MenuItem(_('Login'), settings.LOGIN_URL))

@@ -67,6 +67,7 @@
                             <th>{% trans 'Job title' %}</th>
                             <th class="align-right">{% trans 'Comm.' %}</th>
                             <th class="align-right">{% trans 'Date joined' %}</th>
+                            <th class="align-right">{% trans 'Last login' %}</th>
                         </tr>
                     {% else %}
                         {% for org in orgs %}
@@ -85,6 +86,7 @@
                                     <th>{% trans 'Job title' %}</th>
                                     <th class="align-right">{% trans 'Comm.' %}</th>
                                     <th class="align-right">{% trans 'Date joined' %}</th>
+                                    <th class="align-right">{% trans 'Last login' %}</th>
                                 </tr>
                             {% endif %}
 
@@ -102,6 +104,7 @@
                                         <td>{{ user.position }}</td>
                                         <td class="align-right">{{ user.comments.count }}</td>
                                         <td class="align-right">{{ user.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
+                                        <td class="align-right">{{ user.user.last_login|date:"SHORT_DATE_FORMAT" }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

@@ -401,6 +401,8 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
 
 
 class RepresentativesExportTestCase(TestCase):
+    # exmo2010:representatives_export
+
     def setUp(self):
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
@@ -440,8 +442,8 @@ class RepresentativesExportTestCase(TestCase):
         for row in csv:
             if row[0].startswith('#'):
                 continue
-            # AND length of row should be 9
-            self.assertEqual(len(row), 9)
+            # AND length of row should be 10
+            self.assertEqual(len(row), 10)
             # AND row 1 should contain user activation status
             self.assertEqual(int(row[0]), int(user.user.is_active))
             # AND row 2 should contain organization name
@@ -460,6 +462,8 @@ class RepresentativesExportTestCase(TestCase):
             self.assertEqual(int(row[7]), 1)
             # AND row 9 should contain date of user registration
             self.assertEqual(row[8], user.user.date_joined.date().isoformat())
+            # AND row 10 should contain date of user last login
+            self.assertEqual(row[9], user.user.last_login.date().isoformat())
 
 
 class RepresentativesFilterByOrganizationsTestCase(TestCase):

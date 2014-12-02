@@ -292,6 +292,7 @@ def representatives_export(request, monitoring_pk):
         'Job title',
         'Comments count',
         'Date joined',
+        'Last login',
     ])
 
     for org in orgs:
@@ -306,6 +307,7 @@ def representatives_export(request, monitoring_pk):
                 user.position,
                 user.comments.count(),
                 user.user.date_joined.date().isoformat(),
+                user.user.last_login.date().isoformat(),
             ]
             writer.writerow(row)
 
