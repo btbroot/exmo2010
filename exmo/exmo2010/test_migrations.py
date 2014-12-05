@@ -66,3 +66,35 @@ class Exmo2010MigrationsTestCase(MigrationTestCase):
         # All "*Comment" score fields should be concatenated with newlines and stored in "foundComment" field
         scores = orm.Score.objects.values_list('foundComment', 'accessibleComment', 'completeComment')
         self.assertEqual(set(scores), set([('lol\nya', 'ya', None), ('\n123\nya', 'ya', '123')]))
+
+    def test_0039_fix_email_confirmed_status_data_migration(self):
+        # Migrate back to migration 0038.
+        orm = self.migrate('0038')
+
+        Group = orm['auth.Group']
+        UserProfile = orm['exmo2010.UserProfile']
+
+        # GIVEN confirmed email active user
+        mommy.make(UserProfile, user__is_active=True, user__username='active_user')
+        # AND confirmed email inactive user
+        mommy.make(UserProfile, user__is_active=False, user__username='inactive_user')
+        # AND confirmed email active expert
+        mommy.make(UserProfile, user__is_active=True, user__username='active_expert',
+                   user__groups=[Group.objects.get(name='expertsA')])
+        # AND confirmed email inactive expert
+        mommy.make(UserProfile, user__is_active=False, user__username='inactive_expert',
+                   user__groups=[Group.objects.get(name='expertsB')])
+
+        # Apply datamigration
+        orm = self.migrate('0039_fix_email_confirmed_status_data_migration')
+
+        UserProfile = orm['exmo2010.UserProfile']
+
+        # Users who confirmed email should be active user and both experts
+        email_confirmed_users = UserProfile.objects.filter(email_confirmed=True)
+        self.assertEqual(set(email_confirmed_users.values_list('user__username', flat=True)),
+                         {'active_user', 'active_expert', 'inactive_expert'})
+        # User who not confirmed email should be inactive user
+        email_not_confirmed_users = UserProfile.objects.filter(email_confirmed=False)
+        self.assertEqual(set(email_not_confirmed_users.values_list('user__username', flat=True)),
+                         {'inactive_user'})
