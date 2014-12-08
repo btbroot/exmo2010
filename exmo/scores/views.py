@@ -22,7 +22,6 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-from bleach import clean
 from bs4 import BeautifulSoup
 from ckeditor.fields import RichTextFormField
 from django.contrib.auth.decorators import login_required
@@ -399,6 +398,7 @@ class TaskScoresView(TaskScoresMixin, DetailView):
             'openness': self.task.openness,
             'delta': self.task.openness - self.task.openness_initial if self.task.openness is not None else None,
             'columns_form': columns_form,
+            'is_representative': self.request.user.represents(self.task.organization),
         })
 
         return context
@@ -514,6 +514,7 @@ class RecommendationsView(TaskScoresMixin, DetailView):
             'registered_count': monitoring.organization_set.filter(inv_status__in=('RGS', 'ACT')).count(),
             'openness': self.task.openness,
             'masked_expert_name': _(config_value('GlobalParameters', 'EXPERT')),
+            'is_representative': self.request.user.represents(self.task.organization),
         })
 
         if context['openness'] is None:
@@ -544,6 +545,7 @@ class RecommendationsPrint(RecommendationsView):
         context.update({
             'rating_place': rating_place,
             'recommendations_url': self.request.build_absolute_uri(recommendations_url),
+            'is_representative': self.request.user.represents(self.task.organization),
         })
 
         return context

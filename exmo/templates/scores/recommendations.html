@@ -20,7 +20,7 @@
 {% endcomment %}
 {% load i18n static %}
 {% load bleach from bleach_tags %}
-{% load linkify from exmo2010_filters %}
+{% load linkify remove_extra_dot from exmo2010_filters %}
 
 {% block title %}{{ task.organization.name }}{% endblock %}
 
@@ -119,17 +119,21 @@
                 <br />
             {% endif %}
 
-            {% if is_organization %}
-                {% if mon.is_published %}
+            {% if mon.is_published %}
+                {% if is_representative %}
                     {% url 'exmo2010:certificate_order' as certificate_order_url %}
-                    &mdash; {% blocktrans %}<a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
+                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. <a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
                 {% else %}
+                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
+                {% endif %}
+            {% else %}
+                {% if is_representative %}
                     &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
                 {% endif %}
             {% endif %}
         </p>
 
-        {% if is_organization %}
+        {% if is_representative %}
             <p>
                 {% if mon.is_interact %}
                     {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}

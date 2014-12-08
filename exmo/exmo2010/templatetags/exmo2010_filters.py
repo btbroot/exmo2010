@@ -117,3 +117,12 @@ def _next_date_generator(start, limit):
     next_date = workdays_generator[limit]
 
     return next_date
+
+
+@register.filter
+def remove_extra_dot(value):
+    """
+    Remove dot if date string ends with dot.
+    Used for date ending sentences to avoid dot duplication.
+    """
+    return value[:-1] if value.endswith('.') else value

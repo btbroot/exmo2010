@@ -22,7 +22,7 @@
 {% endcomment %}
 {% load i18n static comments %}
 {% load bleach from bleach_tags %}
-{% load strict_bleach date_until linkify workdays_still_left from exmo2010_filters %}
+{% load date_until linkify remove_extra_dot strict_bleach workdays_still_left from exmo2010_filters %}
 
 {% block title %}{{ param.code }} &mdash; {{ param.name }}{% endblock %}
 
@@ -352,8 +352,7 @@
                         {% if request.user.is_organization and not comment.posted_by_expert and comment.status == comment.OPEN %}
                             <tr class="orguser-notification">
                                 <td>
-                                    {% trans 'Deadline for answer to your comment is' %}
-                                    {{ comment.submit_date|date_until:param.monitoring.time_to_answer|date:"DATE_FORMAT" }}
+                                    {% blocktrans with deadline_date=comment.submit_date|date_until:score.parameter.monitoring.time_to_answer|date:"DATE_FORMAT"|remove_extra_dot %}Deadline for answer to your comment is {{ deadline_date }}.{% endblocktrans %}
                                 </td>
                             </tr>
                         {% endif %}

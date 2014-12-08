@@ -20,6 +20,7 @@
 {% endcomment %}
 {% load i18n static comments %}
 {% load bleach from bleach_tags %}
+{% load remove_extra_dot from exmo2010_filters %}
 
 {% block title %}{{ task.organization.name }}{% endblock %}
 
@@ -68,16 +69,20 @@
                     <br />
                 {% endif %}
 
-                {% if is_organization %}
-                    {% if mon.is_published %}
-                        &mdash; {% blocktrans %}Order Certificate with rating position of the website and its openness value.{% endblocktrans %}<br />
+                {% if mon.is_published %}
+                    {% if is_representative %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. Order Certificate with rating position of the website and its openness value.{% endblocktrans %}<br />
                     {% else %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
+                    {% endif %}
+                {% else %}
+                    {% if is_representative %}
                         &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
                     {% endif %}
                 {% endif %}
             </p>
 
-            {% if is_organization %}
+            {% if is_representative %}
                 <p>
                     {% if mon.is_interact %}
                         {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}
