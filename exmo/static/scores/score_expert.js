@@ -122,9 +122,7 @@ $(document).ready(function() {
         }
 
         // BUG 1516: inactive CKEditor.
-        // TODO: rewrite for new ckeditor version.
-        // $('#cke_contents_id_clarification-comment').children()[1].style.width = '100%';
-        // $('#cke_contents_id_claim-comment').children()[1].style.width = '100%';
+        $('.cke_contents.cke_reset').each(function(){ this.style.width = '100%'; });
 
         $('a[href="' + e.target.hash + '"]').parent().addClass('active').siblings().removeClass('active');
         return false;
@@ -386,8 +384,7 @@ $(document).ready(function() {
                 }
 
                 // BUG 1516: inactive CKEditor.
-                // TODO: rewrite for new ckeditor version.
-                // $('#cke_contents_id_comment').children()[1].style.width = '100%';
+                $('.cke_contents.cke_reset').each(function(){ this.style.width = '100%'; });
 
                 $('a[href="' + e.target.hash + '"]').parent().addClass('active').siblings().removeClass('active');
                 $(window).resize();
