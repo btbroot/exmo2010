@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -15,13 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import sys
 import getpass
+import sys
 
 import MySQLdb
-from django.contrib.auth import models as auth_app
-from django.core.management import call_command
-from django.core.management.sql import emit_post_sync_signal
 from south.management.commands.syncdb import Command as SouthSyncdb
 
 
