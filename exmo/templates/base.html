@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static admin_tools_menu_tags theming_tags %}
+{% load i18n admin_tools_menu_tags theming_tags %}
+{% load static from staticfiles %}
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -41,14 +42,16 @@
         {% admin_tools_render_menu_css %}
         {% render_theming_css %}
         {% block extra_css %}{% endblock %}
-        
+
         <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
-        <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
-        <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
+        {# Do not rename ckeditor.js file, otherwise we will have to define CKEDITOR_BASEPATH variable. #}
+        {# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Specifying_the_Editor_Path #}
+        <script type="text/javascript" src="{{ STATIC_URL }}ckeditor/ckeditor/ckeditor.js"></script>
+        <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
         {% block extra_script %}{% endblock %}
 
         {% include "analytics.html" %}

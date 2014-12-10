@@ -40,7 +40,7 @@ django-annoying==0.8.0
 django-bleach
 django-celery==3.1.16
 django-celery-with-mongodb==3.0
-django-ckeditor==4.4.6
+django-ckeditor==4.4.7
 django-keyedcache==1.5.1
 django-livesettings==1.4-14
 django-modeltranslation==0.8

@@ -95,7 +95,7 @@ input[type="text"] {
 
 .datepicker input {
     width: 140px;
-    background: url(../../../static/exmo2010/img/calendar.png) 119px 1px no-repeat;
+    background: url("/static/exmo2010/img/calendar.png") 119px 1px no-repeat;
 }
 
 /* Mail history table */

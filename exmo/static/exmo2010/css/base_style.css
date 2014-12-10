@@ -799,40 +799,40 @@ i.add {
     background: url("../img/add.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/add.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/add.png', sizingMethod='scale')";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/add.png', sizingMethod=scale);
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/add.png', sizingMethod=scale)";
 }
 
 i.download {
     background: url("../img/download.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/download.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/download.png', sizingMethod='scale')";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/download.png', sizingMethod=scale);
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/download.png', sizingMethod=scale)";
 }
 
 i.map {
     background: url("../img/earth.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/earth.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/earth.png', sizingMethod='scale')";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/earth.png', sizingMethod=scale);
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/earth.png', sizingMethod=scale)";
 }
 
 i.print {
     background: url("../img/print.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/print.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/print.png', sizingMethod='scale')";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/print.png', sizingMethod=scale);
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/print.png', sizingMethod=scale)";
 }
 
 i.upload {
     background: url("../img/upload.png") no-repeat;
     background-size: 16px 16px;
     /* AlphaImageLoader is background-size property for IE8 and below */
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/upload.png', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader( src='../img/upload.png', sizingMethod='scale')";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/upload.png', sizingMethod=scale);
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/upload.png', sizingMethod=scale)";
 }
 
 /* Ajax */

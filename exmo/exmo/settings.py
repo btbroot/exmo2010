@@ -136,6 +136,9 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+if not TEST:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
+
 # Cache
 CACHE_PATH = '/var/cache/exmo2010/'
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
@@ -145,6 +148,12 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'KEY_PREFIX': str(SITE_ID),
         'TIMEOUT': 300,
+    },
+    'staticfiles': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'staticfiles',
+        'TIMEOUT': 3600 * 24 * 7,
+        'MAX_ENTRIES': 1000,
     }
 }
 
