@@ -183,20 +183,8 @@ def confirm_email(request, user_pk, token):
     except User.DoesNotExist:
         user = None
 
-    if user and user.profile.email_confirmed:
-        if request.user.is_anonymous():
-            return redirect(settings.LOGIN_URL)
-        else:
-            return redirect('exmo2010:index')
-
     token_generator = tokens.EmailConfirmTokenGenerator()
-    if user is None or not token_generator.check_token(user, token):
-        return redirect('exmo2010:email_confirm_error')
-
-    if user.profile.email_confirmed:
-        # Already confirmed.
-        return HttpResponseRedirect(settings.LOGIN_URL)
-    else:
+    if user and not user.profile.email_confirmed and token_generator.check_token(user, token):
         codes = request.GET.getlist('code', [])
         orgs = Organization.objects.filter(inv_code__in=codes) if codes else []
 
@@ -208,6 +196,11 @@ def confirm_email(request, user_pk, token):
         auth_login(request, user)
 
         return set_orguser_perms_and_redirect(user, orgs)
+    else:
+        if request.user.is_anonymous():
+            return redirect(settings.LOGIN_URL)
+        else:
+            return redirect('exmo2010:index')
 
 
 @csrf_protect

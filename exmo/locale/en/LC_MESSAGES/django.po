@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-08 17:34+0300\n"
+"POT-Creation-Date: 2014-12-10 11:32+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -160,13 +160,13 @@ msgstr ""
 msgid "E-mail notifications"
 msgstr ""
 
-#: bread_crumbs/tests.py:35 dashboard/menu.py:83 exmo2010/urls.py:261
-#: exmo2010/urls.py:326 monitorings/views.py:1125
+#: bread_crumbs/tests.py:35 dashboard/menu.py:83 exmo2010/urls.py:259
+#: exmo2010/urls.py:324 monitorings/views.py:1125
 #: monitorings/templates/ratings.html:34
 msgid "Ratings"
 msgstr ""
 
-#: bread_crumbs/tests.py:36 exmo2010/urls.py:327
+#: bread_crumbs/tests.py:36 exmo2010/urls.py:325
 #: monitorings/templates/rating.html:44 templates/_errors_header.html:34
 #: templates/certificate_order_form.html:68
 #: templates/exmo2010/sidebar/_sidebar.html:113
@@ -178,8 +178,8 @@ msgstr ""
 #: claims/templates/claim_list.html:43
 #: clarifications/templates/clarification_list.html:43
 #: custom_comments/templates/comment_list.html:43 exmo2010/forms.py:74
-#: exmo2010/urls.py:306 exmo2010/urls.py:307 exmo2010/urls.py:312
-#: exmo2010/urls.py:328 exmo2010/urls.py:329 monitorings/forms.py:69
+#: exmo2010/urls.py:304 exmo2010/urls.py:305 exmo2010/urls.py:310
+#: exmo2010/urls.py:326 exmo2010/urls.py:327 monitorings/forms.py:69
 #: monitorings/templates/rating.html:111 organizations/forms.py:29
 #: organizations/templates/organizations.html:69
 #: organizations/templates/organizations.html:126
@@ -192,19 +192,19 @@ msgstr ""
 msgid "Organization"
 msgstr ""
 
-#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:263
+#: bread_crumbs/tests.py:41 dashboard/dashboard.py:92 exmo2010/urls.py:261
 #: templates/exmo2010/monitoring_list.html:28
 msgid "Monitoring cycles"
 msgstr ""
 
-#: bread_crumbs/tests.py:42 exmo2010/urls.py:271 exmo2010/urls.py:272
-#: exmo2010/urls.py:274 exmo2010/urls.py:275 exmo2010/urls.py:277
-#: exmo2010/urls.py:278 exmo2010/urls.py:283 exmo2010/urls.py:284
-#: exmo2010/urls.py:285 exmo2010/urls.py:286 exmo2010/urls.py:288
-#: exmo2010/urls.py:289 exmo2010/urls.py:291 exmo2010/urls.py:293
-#: exmo2010/urls.py:294 exmo2010/urls.py:295 exmo2010/urls.py:296
-#: exmo2010/urls.py:298 exmo2010/urls.py:300 exmo2010/urls.py:302
-#: exmo2010/urls.py:304 exmo2010/models/questionnaire.py:36
+#: bread_crumbs/tests.py:42 exmo2010/urls.py:269 exmo2010/urls.py:270
+#: exmo2010/urls.py:272 exmo2010/urls.py:273 exmo2010/urls.py:275
+#: exmo2010/urls.py:276 exmo2010/urls.py:281 exmo2010/urls.py:282
+#: exmo2010/urls.py:283 exmo2010/urls.py:284 exmo2010/urls.py:286
+#: exmo2010/urls.py:287 exmo2010/urls.py:289 exmo2010/urls.py:291
+#: exmo2010/urls.py:292 exmo2010/urls.py:293 exmo2010/urls.py:294
+#: exmo2010/urls.py:296 exmo2010/urls.py:298 exmo2010/urls.py:300
+#: exmo2010/urls.py:302 exmo2010/models/questionnaire.py:36
 #: monitorings/forms.py:60 monitorings/templates/monitoring_copy.html:65
 #: monitorings/templates/monitoring_form.html:90
 #: monitorings/templates/ratings.html:52 templates/exmo2010/opendata.html:59
@@ -229,7 +229,7 @@ msgid "Claims report for \"%s\""
 msgstr ""
 
 #: claims/views.py:169 dashboard/dashboard.py:116 dashboard/menu.py:77
-#: exmo2010/urls.py:259 templates/exmo2010/sidebar/_sidebar.html:99
+#: exmo2010/urls.py:257 templates/exmo2010/sidebar/_sidebar.html:99
 #: templates/scores/score.html:397
 msgid "Claims"
 msgstr ""
@@ -314,7 +314,7 @@ msgid "Clarifications report for \"%s\""
 msgstr ""
 
 #: clarifications/views.py:157 dashboard/dashboard.py:112 dashboard/menu.py:76
-#: exmo2010/urls.py:260 templates/exmo2010/sidebar/_sidebar.html:95
+#: exmo2010/urls.py:258 templates/exmo2010/sidebar/_sidebar.html:95
 #: templates/scores/score.html:396
 msgid "Clarifications"
 msgstr ""
@@ -381,7 +381,7 @@ msgid "posted by expert"
 msgstr ""
 
 #: custom_comments/views.py:45 dashboard/dashboard.py:108 dashboard/menu.py:75
-#: exmo2010/urls.py:258 templates/exmo2010/sidebar/_sidebar.html:87
+#: exmo2010/urls.py:256 templates/exmo2010/sidebar/_sidebar.html:87
 #: templates/scores/score.html:310
 msgid "Comments"
 msgstr ""
@@ -422,14 +422,14 @@ msgstr ""
 msgid "Scores of my organisation"
 msgstr ""
 
-#: dashboard/menu.py:84 exmo2010/urls.py:243 exmo2010/urls.py:244
-#: exmo2010/urls.py:245
+#: dashboard/menu.py:84 exmo2010/urls.py:242 exmo2010/urls.py:243
+#: exmo2010/urls.py:244
 #: monitorings/templates/monitoring_comment_report.html:58
 #: templates/_errors_header.html:39
 msgid "Statistics"
 msgstr ""
 
-#: dashboard/menu.py:85 exmo2010/urls.py:239 templates/_errors_header.html:44
+#: dashboard/menu.py:85 exmo2010/urls.py:238 templates/_errors_header.html:44
 msgid "Help"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-#: dashboard/menu.py:93 exmo2010/urls.py:251
+#: dashboard/menu.py:93 exmo2010/urls.py:250
 #: templates/registration/login.html:51
 #: templates/registration/password_reset_request.html:52
 #: templates/registration/registration_form.html:25
@@ -446,7 +446,7 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-#: dashboard/menu.py:94 exmo2010/urls.py:247
+#: dashboard/menu.py:94 exmo2010/urls.py:246
 #: templates/registration/login.html:25 templates/registration/login.html:50
 #: templates/registration/password_reset_request.html:51
 #: templates/registration/registration_form.html:50
@@ -630,7 +630,7 @@ msgstr ""
 msgid "You have an assigned task"
 msgstr ""
 
-#: exmo2010/mail.py:276 exmo2010/mail.py:283 exmo2010/urls.py:240
+#: exmo2010/mail.py:276 exmo2010/mail.py:283 exmo2010/urls.py:239
 #: exmo2010/views.py:63 templates/_footer.html:30
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
@@ -646,20 +646,20 @@ msgstr ""
 msgid "Registration on %s"
 msgstr ""
 
-#: exmo2010/urls.py:238 templates/_footer.html:27
+#: exmo2010/urls.py:237 templates/_footer.html:27
 msgid "About"
 msgstr ""
 
-#: exmo2010/urls.py:241 templates/_footer.html:29
+#: exmo2010/urls.py:240 templates/_footer.html:29
 #: templates/exmo2010/opendata.html:28 templates/exmo2010/opendata.html:30
 msgid "Open data"
 msgstr ""
 
-#: exmo2010/urls.py:242 templates/admin/base_site.html:36
+#: exmo2010/urls.py:241 templates/admin/base_site.html:36
 msgid "Settings"
 msgstr ""
 
-#: exmo2010/urls.py:248 exmo2010/urls.py:249 exmo2010/urls.py:250
+#: exmo2010/urls.py:247 exmo2010/urls.py:248 exmo2010/urls.py:249
 #: templates/registration/login.html:52
 #: templates/registration/password_reset_confirm.html:25
 #: templates/registration/password_reset_confirm.html:37
@@ -671,67 +671,62 @@ msgstr ""
 msgid "Password recovery"
 msgstr ""
 
-#: exmo2010/urls.py:252 templates/registration/please_confirm_email.html:25
+#: exmo2010/urls.py:251 templates/registration/please_confirm_email.html:25
 #: templates/registration/please_confirm_email.html:27
 msgid "Registration confirm"
 msgstr ""
 
-#: exmo2010/urls.py:253 templates/registration/registration_closed.html:25
+#: exmo2010/urls.py:252 templates/registration/registration_closed.html:25
 #: templates/registration/registration_closed.html:27
 msgid "Registration disallowed"
 msgstr ""
 
-#: exmo2010/urls.py:254 templates/registration/email_confirm_error.html:25
-#: templates/registration/email_confirm_error.html:27
-msgid "Account activation error"
-msgstr ""
-
-#: exmo2010/urls.py:264
+#: exmo2010/urls.py:262
 msgid "Add monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:265
+#: exmo2010/urls.py:263
 msgid "Delete monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:266
+#: exmo2010/urls.py:264
 msgid "Edit monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:267 monitorings/templates/monitoring_copy.html:22
+#: exmo2010/urls.py:265 monitorings/templates/monitoring_copy.html:22
 #: monitorings/templates/monitoring_copy.html:33
 msgid "Copy monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:269
+#: exmo2010/urls.py:267
 msgid "Add questionnaire"
 msgstr ""
 
-#: exmo2010/urls.py:280
+#: exmo2010/urls.py:278
 msgid "Import parameter"
 msgstr ""
 
-#: exmo2010/urls.py:281
+#: exmo2010/urls.py:279
 msgid "Import organizations"
 msgstr ""
 
-#: exmo2010/urls.py:305
+#: exmo2010/urls.py:303
 msgid "Add task"
 msgstr ""
 
-#: exmo2010/urls.py:309
+#: exmo2010/urls.py:307
 msgid "Edit task"
 msgstr ""
 
-#: exmo2010/urls.py:310
+#: exmo2010/urls.py:308
 msgid "Delete task"
 msgstr ""
 
-#: exmo2010/urls.py:311 templates/scores/task_scores.html:64
+#: exmo2010/urls.py:309 templates/scores/task_scores.html:64
 msgid "Import task"
 msgstr ""
 
-#: exmo2010/urls.py:314 exmo2010/urls.py:315 exmo2010/urls.py:330
+#: exmo2010/urls.py:312 exmo2010/urls.py:313 exmo2010/urls.py:328
 #: exmo2010/models/parameter.py:34
 #: monitorings/templates/monitoring_parameter_filter.html:171
 #: monitorings/templates/monitoring_parameter_found_report.html:42
@@ -740,20 +735,20 @@ msgstr ""
 msgid "Parameter"
 msgstr ""
 
-#: exmo2010/urls.py:317
+#: exmo2010/urls.py:315
 msgid "Add parameter"
 msgstr ""
 
-#: exmo2010/urls.py:318 parameters/templates/parameter_form.html:27
+#: exmo2010/urls.py:316 parameters/templates/parameter_form.html:27
 #: parameters/templates/parameter_form.html:44 templates/scores/score.html:62
 msgid "Edit parameter"
 msgstr ""
 
-#: exmo2010/urls.py:319
+#: exmo2010/urls.py:317
 msgid "Delete parameter"
 msgstr ""
 
-#: exmo2010/urls.py:334 templates/certificate_order_form.html:24
+#: exmo2010/urls.py:332 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:37
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
@@ -2965,20 +2960,6 @@ msgstr ""
 #: templates/mail/score_clarification.html:36
 #: templates/mail/score_clarification.txt:31
 msgid "Clarification"
-msgstr ""
-
-#: templates/registration/email_confirm_error.html:32
-msgid "Please make sure you properly copied activation link from our email."
-msgstr ""
-
-#: templates/registration/email_confirm_error.html:33
-#, python-format
-msgid "Also note that the link is alive only for %(max_days)s days."
-msgstr ""
-
-#: templates/registration/email_confirm_error.html:35
-#, python-format
-msgid "You also can <a href=\"%(registration_url)s\">try to register again</a>"
 msgstr ""
 
 #: templates/registration/login.html:35
