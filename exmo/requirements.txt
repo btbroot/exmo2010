@@ -60,3 +60,9 @@ nose-parameterized
 mock
 model-mommy
 selenium
+
+coverage==3.7.1
+pylint==1.4.0
+django-jenkins==0.14.1
+pep8==1.5.7
+pyflakes==0.8.1

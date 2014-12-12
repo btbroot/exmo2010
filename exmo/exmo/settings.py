@@ -69,7 +69,7 @@ DATABASES = {
 }
 
 # Tests
-TEST = 'test' in sys.argv
+TEST = 'test' in sys.argv or 'jenkins' in sys.argv
 if TEST:
     SOUTH_TESTS_MIGRATE = False
     # execute celery tasks immediately
@@ -282,6 +282,14 @@ INSTALLED_APPS = (
     'tasks',
     'questionnaire',
 )
+
+PROJECT_APPS = ('exmo2010',)
+INSTALLED_APPS += ('django_jenkins',)
+JENKINS_TASKS = ('django_jenkins.tasks.run_pylint',
+                 'django_jenkins.tasks.run_pep8',
+                 'django_jenkins.tasks.run_pyflakes',
+                 'django_jenkins.tasks.with_coverage',
+                 'django_jenkins.tasks.django_tests',)
 
 if TEST:
     INSTALLED_APPS += ('django_nose',)
