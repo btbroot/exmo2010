@@ -121,7 +121,7 @@
 
     <body>
         {% block content %}
-            <p>{{ body|linkify|safe }}</p>
+            <p>{{ body|linkify:0|safe }}</p>
         {% endblock %}
 
         <div style="color: #999">

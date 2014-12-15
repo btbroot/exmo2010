@@ -70,15 +70,16 @@ def linkify(value, trim_url_limit=70):
 
 def trim_links_callback(limit):
     """
-    Trim text inside anchor tags.
+    Trim text inside anchor tags if limit is not equal 0. Otherwise, do nothing.
     """
     def trim_links(attrs, new=False):
         if attrs['href'].startswith('mailto:'):
             return attrs
 
-        text = attrs['_text']
-        if len(text) > limit:
-            attrs['_text'] = text[:limit-3] + '...'
+        if limit != 0:
+            text = attrs['_text']
+            if len(text) > limit:
+                attrs['_text'] = text[:limit-3] + '...'
         return attrs
     return trim_links
 
