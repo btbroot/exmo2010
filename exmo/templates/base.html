@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n static admin_tools_menu_tags theming_tags %}
+{% load i18n static %}
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
@@ -38,8 +38,6 @@
         {% if LANGUAGE_BIDI %}
             <link rel="stylesheet" type="text/css" href="{% static 'admin/css/rtl.css' %}" />
         {% endif %}
-        {% admin_tools_render_menu_css %}
-        {% render_theming_css %}
         {% block extra_css %}{% endblock %}
         
         <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
@@ -49,6 +47,18 @@
         <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
         <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/csrf.js' %}"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // select item in navigation menu
+                $('#navigation_menu a[href="' + window.location.pathname + '"]').closest('li.menu-item').addClass('selected');
+
+                // set language forms handlers
+                $('form[name="switch_lang"] a').click(function() {
+                    $(this).closest('form').submit();
+                    return false;
+                });
+            });
+        </script>
         {% block extra_script %}{% endblock %}
 
         {% include "analytics.html" %}

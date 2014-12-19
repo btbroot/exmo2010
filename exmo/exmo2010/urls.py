@@ -188,7 +188,7 @@ auth_patterns = named_urls('exmo2010.custom_registration.views',
 
 
 urlpatterns = named_urls('',
-    (r'^$', view('index.html'), 'index'),
+    (r'^$', 'exmo2010.views.index'),
     (r'^settings/$', 'accounts.views.settings'),
     (r'^accounts/', include(auth_patterns)),
 

@@ -21,7 +21,7 @@
 {% endcomment %}
 {% load i18n %}
 
-{% if request.user.profile.is_organization %}
+{% if request.user.is_organization %}
     {% with request.user.profile.bubble_info as bubble_info %}
         {% if bubble_info.0 %}
             <div class="bubble">
@@ -29,8 +29,7 @@
                     <p>{% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" haven't started yet. You cannot leave comments.{% endblocktrans %}</p>
                 {% else %}
                     <p>
-                        {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" is finished and published. You can watch it but cannot leave comments.{% endblocktrans %}
-                        <br />
+                        {% blocktrans with bubble_info.2 as mname %}Monitoring "{{ mname }}" is finished and published. You can watch it but cannot leave comments.{% endblocktrans %}<br/>
                         {% trans "When new monitoring will start, you'll receive invitation code which is needed to be entered here." %}
                     </p>
                     <form action="{% url 'exmo2010:settings' %}" method="post">

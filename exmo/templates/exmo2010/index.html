@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
+
+{% block extra_css %}
+    <style>div.table {margin: 0 auto;}</style>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="index">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content">
+            {% include '_messages.html' %}
+
+            {% include "exmo2010/helpers/inv_code_bubble.html" %}
+
+            <div class="table zebra">
+                <div class="thead">
+                    <div class="table-row">
+                        <div class="table-cell-L">
+                            {% if perms.create_monitoring %}
+                                <a href="{% url 'exmo2010:monitoring_add' %}">
+                                    {% trans 'Add new monitoring' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tbody">
+                    {% for monitoring in monitorings %}
+                        <div class="table-row">
+                            <div class="table-cell-L">
+                                {% if request.user.is_expert %}
+                                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring }}</a>
+                                    {% if monitoring.perms.edit_monitoring %}
+                                        &nbsp;
+                                        <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">
+                                            <img src="{% static 'admin/img/icon_changelink.gif' %}" >
+                                        </a>
+                                    {% endif %}
+                                    {% if monitoring.perms.delete_monitoring %}
+                                        &nbsp;
+                                        <a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}">
+                                            <img src="{% static 'admin/img/icon_deletelink.gif' %}" >
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

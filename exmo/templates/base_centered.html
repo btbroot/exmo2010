@@ -2,6 +2,7 @@
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,13 +18,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load admin_tools_menu_tags %}
 
 {% block main %}
     <div id="main" class="fixed-width">
 
         <div id="header">
-            {% admin_tools_render_menu %}
+            {% include '_header.html' %}
 
             {% include '_breadcrumbs.html' %}
         </div>

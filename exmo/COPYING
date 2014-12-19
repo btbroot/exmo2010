@@ -65,15 +65,13 @@ http://www.ineversay.com/my-works/xiao-icon.html:
 
 --
 
-exmo/exmo2010/static/dashboard/img/menu_arrow_down.png
-exmo/exmo2010/static/dashboard/img/menu_arrow_up.png
-exmo/exmo2010/static/dashboard/img/settings.png
-exmo/exmo2010/static/dashboard/img/exit.png
-exmo/exmo2010/static/exmo2010/img/earth.png
-exmo/exmo2010/static/exmo2010/img/add.png
-exmo/exmo2010/static/exmo2010/img/download.png
-exmo/exmo2010/static/exmo2010/img/print.png
-exmo/exmo2010/static/exmo2010/img/upload.png
+exmo/static/exmo2010/img/settings.png
+exmo/static/exmo2010/img/exit.png
+exmo/static/exmo2010/img/earth.png
+exmo/static/exmo2010/img/add.png
+exmo/static/exmo2010/img/download.png
+exmo/static/exmo2010/img/print.png
+exmo/static/exmo2010/img/upload.png
 
 Copyright (c) 2005-2014 Aha-Soft.
 http://www.small-icons.com/stock-icons/16x16-free-application-icons.htm
@@ -84,9 +82,9 @@ http://creativecommons.org/licenses/by-sa/3.0/
 
 --
 
-exmo/exmo2010/static/dashboard/img/breadcrumb_arrow.png
-exmo/exmo2010/static/dashboard/img/home_in.gif
-exmo/exmo2010/static/dashboard/img/home_out.gif
+exmo/static/exmo2010/img/breadcrumb_arrow.png
+exmo/static/exmo2010/img/home_in.gif
+exmo/static/exmo2010/img/home_out.gif
 
 Copyright (c) 2008 CompareNetworks Inc.
 http://www.comparenetworks.com/developers/jqueryplugins/jbreadcrumb.html
@@ -96,7 +94,7 @@ http://www.opensource.org/licenses/mit-license.php
 
 --
 
-exmo/exmo2010/static/jquery-ui/
+exmo/static/jquery-ui/
 
 Copyright 2014 jQuery Foundation and other contributors,
 http://jqueryui.com/
@@ -111,9 +109,7 @@ exmo/exmo2010/static/jquery-ui/MIT-LICENSE.txt
 
 --
 
-exmo/exmo2010/static/exmo2010/js/jquery/jquery.min.js
-
-js_tests/vendor/qunit-1.12.0.css
+exmo/static/exmo2010/js/jquery/jquery.min.js
 
 Copyright 2012 jQuery Foundation and other contributors
 http://jquery.com/
@@ -139,33 +135,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 --
 
-js_tests/vendor/qunit-1.12.0.js
-
-Copyright 2013 jQuery Foundation and other contributors
-http://jquery.com/
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
---
-
-exmo/exmo2010/static/exmo2010/img/calendar.png
+exmo/static/exmo2010/img/calendar.png
 
 Copyright (c) Andrew Zhebrakov
 http://www.icojam.com/blog/?p=139
@@ -175,7 +145,7 @@ non-commercial project unlimited times.
 
 --
 
-exmo/exmo2010/static/exmo2010/img/ajax-loader.gif
+exmo/static/exmo2010/img/ajax-loader.gif
 
 Copyright (c) Yannick Croissant, Kath
 http://www.ajaxload.info/
@@ -183,36 +153,7 @@ http://www.ajaxload.info/
 
 --
 
-exmo/exmo2010/static/dashboard/js/dashboard-cookie.js
-
-Copyright (c) 2010 David Jean Louis <izimobil@gmail.com>
-
-Dashboard plugin.
-This plugin is not yet released, but should be when it will be finished.
-
-copyright (c) 2010 David Jean Louis <izimobil@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
---
-
-exmo/exmo2010/static/exmo2010/js/jquery/jquery.json-2.3.min.js
+exmo/static/exmo2010/js/jquery/jquery.json-2.3.min.js
 
 The MIT License (MIT)
 
@@ -253,7 +194,8 @@ jQuery JSON plugin 2.3.0
 
 --
 
-exmo/exmo2010/static/exmo2010/jquery.autocomplete.css
+exmo/static/exmo2010/jquery.autocomplete.css
+exmo/static/exmo2010/jquery.autocomplete.js
 
 Copyright (c) 2009 Jörn Zaefferer
 
@@ -336,7 +278,7 @@ THE SOFTWARE.
 
 --
 
-exmo/exmo2010/static/exmo2010/js/jquery/jquery.placeholder.min.js
+exmo/static/exmo2010/js/jquery/jquery.placeholder.min.js
 
 Copyright 2010, Daniel Stocks
 
@@ -365,15 +307,7 @@ SUCH DAMAGE.
 
 --
 
-exmo/exmo2010/static/dashboard/js/jquery.dashboard.js
-
-Copyright (c) 2010, David Jean Louis <izimobil@gmail.com>
-
-Code licensed under the MIT License
-
---
-
-exmo/exmo2010/static/img/glyphicons-halflings.png
+exmo/static/img/glyphicons-halflings.png
 
 Glyphicons Halflings are also a part of Bootstrap by Twitter, and are released under the same Apache 2.0 license as Bootstrap.
 While you are not required to include attribution on your Bootstrap-based projects,
@@ -383,7 +317,7 @@ Apache 2.0 license
 
 --
 
-exmo/exmo2010/static/exmo2010/js/jquery.simplemodal-1.4.4.js
+exmo/static/exmo2010/js/jquery.simplemodal-1.4.4.js
 
 Copyright (c) 2013, Eric Martin <http://simplemodal.com>
 
@@ -391,7 +325,7 @@ Code licensed under MIT and GPL License
 
 --
 
-exmo/exmo2010/static/exmo2010/js/jquery.tablesorter.js
+exmo/static/exmo2010/js/jquery.tablesorter.js
 
 Copyright (c) 2007, Christian Bach <http://tablesorter.com>
 

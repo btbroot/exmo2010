@@ -209,7 +209,7 @@ MIDDLEWARE_CLASSES += (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    'bread_crumbs.middleware_exmo.ExmoBreadcrumbsMiddleware',
+    'breadcrumbs.middleware_exmo.ExmoBreadcrumbsMiddleware',
 )
 
 if not DEBUG:
@@ -252,10 +252,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.formtools',
     # External apps:
-    'admin_tools',
-    'admin_tools.theming',
-    'admin_tools.menu',
-    'admin_tools.dashboard',
     'livesettings',
     'keyedcache',
     'reversion',
@@ -272,10 +268,8 @@ INSTALLED_APPS = (
     'clarifications',
     'core',
     'custom_comments',
-    'dashboard',
     'exmo2010',
     'monitorings',
-    #'registration',
     'organizations',
     'parameters',
     'scores',
@@ -285,11 +279,6 @@ INSTALLED_APPS = (
 
 if TEST:
     INSTALLED_APPS += ('django_nose',)
-
-# Admin tools
-ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.dashboard.CustomIndexDashboard'
-ADMIN_TOOLS_MENU = 'dashboard.menu.CustomMenu'
-ADMIN_TOOLS_THEMING_CSS = 'dashboard/css/theming.css'
 
 # Customization
 COMMENTS_APP = 'custom_comments'

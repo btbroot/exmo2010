@@ -40,9 +40,21 @@ from livesettings import config_value
 
 from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm
 from .mail import mail_certificate_order, mail_feedback
+from .models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
+from accounts.forms import SettingsInvCodeForm
+from auth.helpers import perm_filter
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
-from exmo2010.models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
+from perm_utils import annotate_exmo_perms
+
+
+def index(request):
+    monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
+    context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user)}
+    if request.user.is_organization:
+        context.update({'invcodeform': SettingsInvCodeForm()})
+
+    return TemplateResponse(request, 'exmo2010/index.html', context)
 
 
 def feedback(request):

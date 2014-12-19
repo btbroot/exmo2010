@@ -26,55 +26,52 @@
     padding: 0;
 }
 
-html, body {
-    height: 100%;
+html,
+body {
     min-width: 830px;
+    height: 100%;
     background-color: #f8f8f8;
 }
 
 body {
-    font-family: Arial, "Helvetica Neue", Helvetica, Verdana, sans-serif;
-    font-size: 13px;
     color: #222222;
+    font-size: 13px;
+    font-family: Arial, "Helvetica Neue", Helvetica, Verdana, sans-serif;
 }
 
 /*Opera Fix*/
 body:before {
-    content: "";
-    height: 100%;
     float: left;
-    width: 0;
     margin-top: -32767px; /* negate effect of float */
+    width: 0;
+    height: 100%;
+    content: "";
 }
 
 #main {
-    min-height: 100%;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    background-color: #ffffff;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    min-height: 100%;
     border: 1px solid #d7d7d7;  /* webkit fix */
+    background-color: #ffffff;
 }
 
-#main.dashboard {
-    border-bottom: none;
-}
-
-#main.dashboard #content {
-    margin-top: 60px;
+#main.index #content {
+    margin-top: 72px;  /* header height without breadcrumbs */
 }
 
 #main.fixed-width {
-    max-width: 950px;
-    min-width: 770px;
     margin: 0 auto;
+    min-width: 770px;
+    max-width: 950px;
 }
 
 #main.fixed-width .table,
 #main.fixed-width .base-table {
-    max-width: 920px;
-    margin-left: -5px;
     margin-right: -5px;
+    margin-left: -5px;
+    max-width: 920px;
 }
 
 #main.sidebar {
@@ -104,8 +101,8 @@ body:before {
     top: 0;
     left: 0;
     z-index: 1000;
-    width: 100%;
     min-width: 830px;
+    width: 100%;
     background-color: #ffffff;
 }
 
@@ -113,9 +110,9 @@ body:before {
     position: relative;
     top: 0;
     left: 0;
+    z-index: 100;
     margin-top: 103px;  /* 105px header - 2*1px boarder */
     background-color: #f8f8f8;
-    z-index: 100;
 }
 
 #sidebar h1 {
@@ -130,30 +127,30 @@ body:before {
 }
 
 #content {
-    margin-top: 103px;
+    margin-top: 102px;  /* header height with breadcrumbs */
     padding: 15px 20px 115px 20px;  /* bottom = footer height + common padding */
-    background-color: #ffffff;
     border-top: 1px solid #d7d7d7;
+    background-color: #ffffff;
 }
 
 #footer {
     position: relative;
-    height: 100px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    margin-top: -100px; /* negative value of footer height */
-    background-color: #eeeeee;
-    border-top: 1px solid #d6d6d6;
     clear: both;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin-top: -100px; /* negative value of footer height */
+    height: 100px;
+    border-top: 1px solid #d6d6d6;
+    background-color: #eeeeee;
 }
 
 .clearfix:after {
-    content: ".";
     display: block;
-    height: 0;
     visibility: hidden;
     clear: both;
+    height: 0;
+    content: ".";
 }
 
 * html .clearfix {

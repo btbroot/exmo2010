@@ -29,6 +29,7 @@ def exmo2010(request):
         'models': models,
         'settings': settings,
         'livesettings': {
+            'link_to_portal': config_value('Links', 'LINK_TO_PORTAL'),
             'link_to_methodology': config_value('Links', 'LINK_TO_METHODOLOGY'),
             'og_description': config_value('GlobalParameters', 'OG:DESCRIPTION')
         },

@@ -28,7 +28,6 @@
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'scores/task_scores.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/bubble.css' %}"/>
 {% endblock %}
 
 {% block extra_script %}
@@ -172,7 +171,7 @@
                         {% endif %}
                         {% if is_expert %}
                             <th class="icons-column settings" data-sorter="false">
-                                <a href="#" class="modal-open"><img src="{% static 'dashboard/img/settings.png' %}" /></a>
+                                <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
                             </th>
                         {% endif %}
                     </tr>
@@ -373,7 +372,7 @@
                             <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
                         {% endif %}
                         <th class="icons-column settings" data-sorter="false">
-                            <a href="#" class="modal-open"><img src="{% static 'dashboard/img/settings.png' %}" /></a>
+                            <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
                         </th>
                     </tr>
                 </thead>

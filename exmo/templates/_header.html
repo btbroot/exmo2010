@@ -1,0 +1,73 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+
+<ul id="language_menu">
+    {% for language_code, language_name in LANGUAGES %}
+        <li>
+            <form name="switch_lang" action="{% url 'exmo2010:change_language' %}" method="POST">{% csrf_token %}
+                <input name="next" type="hidden" value="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}" />
+                <input name="language" type="hidden" value="{{ language_code }}" />
+                <a href="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}">{{ language_name }}</a>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+
+<ul id="account_menu">
+    {% if request.user.is_authenticated %}
+        <li>{{ request.user.userprofile.legal_name }}</li>
+        <li class="pref-icon"><a href="{% url 'exmo2010:settings' %}">{% trans 'Preferences' %}</a></li>
+        <li class="logout-icon"><a href="{% url 'exmo2010:auth_logout' %}">{% trans 'Log out' %}</a></li>
+    {% else %}
+        <li><a href="{% url 'exmo2010:registration_form' %}">{% trans 'Registration' %}</a></li>
+        <li><a href="{% url 'exmo2010:auth_login' %}">{% trans 'Login' %}</a></li>
+    {% endif %}
+</ul>
+
+<ul id="navigation_menu">
+    <li class="brand">
+        <a class="logo_{{ LANGUAGE_CODE }}" href="{% url 'exmo2010:index' %}"></a>
+    </li>
+    <li class="menu-item">
+        <a href="{% url 'exmo2010:index' %}">{% trans 'Main' %}</a>
+    </li>
+    {% if request.user.is_organization %}
+        <li class="menu-item">
+            <a href="{% url 'exmo2010:certificate_order' %}">{% trans 'Order certificate' %}</a>
+        </li>
+    {% endif %}
+    <li class="menu-item">
+        <a href="{% url 'exmo2010:ratings' %}">{% trans 'Ratings' %}</a>
+    </li>
+    <li class="menu-item">
+        <a href="{% url 'exmo2010:help' %}">{% trans 'Help' %}</a>
+    </li>
+    {% if request.user.is_superuser or request.user.is_staff %}
+        <li class="menu-item">
+            <a href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
+        </li>
+    {% endif %}
+    <li class="portal">
+        <a href="{{ exmo2010.livesettings.link_to_portal }}" target="_blank">{% trans 'To portal' %}</a>
+    </li>
+</ul>

@@ -302,22 +302,6 @@ class UserProfile(BaseModel):
             close_date__isnull=True).order_by('open_date')
         return claims
 
-    def get_task_review_id(self):
-        from .task import Task
-        organizations = self.organization.filter(
-            monitoring__status__in=[MONITORING_INTERACTION,
-                                    MONITORING_FINALIZING,
-                                    MONITORING_PUBLISHED])\
-            .order_by("-id")
-        if organizations:
-            organization = organizations[0]
-            tasks = Task.objects.filter(
-                organization=organization, status=Task.TASK_APPROVED
-            )
-            if tasks:
-                task = tasks[0]
-                return task.id
-
     def _get_full_name(self, first_name_first=False):
         name_list = filter(None, [self.user.last_name.strip(), self.user.first_name.strip()])
         if name_list:
