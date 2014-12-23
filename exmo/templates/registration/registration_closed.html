@@ -24,12 +24,14 @@
 
 {% block title %}{% trans 'Registration disallowed' %}{% endblock %}
 
-{% block h1 %}<h1>{% trans 'Registration disallowed' %}</h1>{% endblock %}
-
 {% block content %}
-    <div class="registration-closed-content-block">
-        <div class="info-block">
-            {% trans 'Registration is temporary disallowed. Please try to register a bit later.' %}
+    <h1>{% trans 'Registration disallowed' %}</h1>
+
+    <div class="content">
+        <div class="registration-closed-content-block">
+            <div class="info-block">
+                {% trans 'Registration is temporary disallowed. Please try to register a bit later.' %}
+            </div>
         </div>
     </div>
 {% endblock %}

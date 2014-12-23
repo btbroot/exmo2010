@@ -26,14 +26,18 @@
 {% endblock %}
 
 {% block content %}
-    {% if tasks %}
-        {% trans 'When you delete monitoring you also delete this tasks:'%}<br>
-            {% for task in tasks %}
-                <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task }}</a><br>
-            {% endfor %}
-    {% endif %}
-    <form method="post" action="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{request.GET.urlencode}}">{% csrf_token %}
-        <p>{% trans 'Delete this monitoring?' %}</p>
-        <p><input type="submit" value="{% trans 'Send' %}"/></p>
-    </form>
+
+    <div class="content">
+
+        {% if tasks %}
+            {% trans 'When you delete monitoring you also delete this tasks:'%}<br>
+                {% for task in tasks %}
+                    <a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task }}</a><br>
+                {% endfor %}
+        {% endif %}
+        <form method="post" action="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{request.GET.urlencode}}">{% csrf_token %}
+            <p>{% trans 'Delete this monitoring?' %}</p>
+            <p><input type="submit" value="{% trans 'Send' %}"/></p>
+        </form>
+    </div>
 {% endblock %}

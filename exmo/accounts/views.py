@@ -37,7 +37,7 @@ def settings(request):
     profile = user.profile
     is_organization = profile.is_organization
     is_internal = profile.is_internal()
-    subscribe_form = SubscribeAndNotifyForm if is_internal or is_organization else SubscribeForm
+    subscribe_form = SubscribeAndNotifyForm if (is_internal or is_organization) else SubscribeForm
 
     # Маркеры того, что форма уже создана.
     pers_inf_form_ready = inv_code_form_ready = ch_pass_form_ready = send_notif_form_ready = False
@@ -88,8 +88,7 @@ def settings(request):
                 if inv_code_form.is_valid():
                     inv_code_form_cd = inv_code_form.cleaned_data
                     invitation_code = inv_code_form_cd.get("invitation_code")
-                    organization = Organization.objects.get(
-                        inv_code=invitation_code)
+                    organization = Organization.objects.get(inv_code=invitation_code)
                     og = Group.objects.get(name=UserProfile.organization_group)
                     # Безопасно так делать, даже если он уже там.
                     user.groups.add(og)
@@ -97,9 +96,9 @@ def settings(request):
                     inv_code_form_mess = "%s: %s" % (_("You are associated with the organization with"),
                                                      organization.name)
                     is_organization = True
+                    subscribe_form = SubscribeAndNotifyForm
                 else:
-                    inv_code_form_err = _("Submitted invitation code does not "
-                                          "exist.")
+                    inv_code_form_err = _("Submitted invitation code does not exist.")
                     inv_code_form_ready = True
         # Засабмитили форму смены пароля.
         elif "old_password" in request.POST:
@@ -156,9 +155,12 @@ def settings(request):
 
     return TemplateResponse(request, 'user_settings.html', {
         "email": user.email,
-        "is_organization": is_organization, "is_internal": is_internal,
-        "pers_inf_form": pers_inf_form, "inv_code_form": inv_code_form,
-        "ch_pass_form": ch_pass_form, "send_notif_form": send_notif_form,
+        "is_organization": is_organization,
+        "is_internal": is_internal,
+        "pers_inf_form": pers_inf_form,
+        "inv_code_form": inv_code_form,
+        "ch_pass_form": ch_pass_form,
+        "send_notif_form": send_notif_form,
         "pers_inf_form_mess": pers_inf_form_mess,
         "inv_code_form_mess": inv_code_form_mess,
         "ch_pass_form_mess": ch_pass_form_mess,

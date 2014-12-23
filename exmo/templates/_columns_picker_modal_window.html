@@ -1,7 +1,8 @@
-{% extends "base.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2010, 2011, 2013 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,28 +19,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
+{% load i18n %}
 
-{% block main %}
-    <div id="main" class="sidebar">
-
-        <div id="header">
-            {% include '_header.html' %}
-
-            {% include '_breadcrumbs.html' %}
+<div id="columns_settings_window" class="modal hidden">
+    <h2>{% trans "Table settings" %}</h2>
+    <form action="" method="post">{% csrf_token %}
+        {% for field in form %}
+            <p>{{ field }}{{ field.label_tag }}</p>
+        {% endfor %}
+        <div>
+            <input type="submit" name="columns_picker_submit" value="{% trans "Change" %}">
+            <a href="#" class="close_window pseudo">{% trans "Cancel" %}</a>
         </div>
-
-        <div id="sidebar">
-            {% block h1 %}{% endblock %}
-
-            {% include "exmo2010/sidebar/_sidebar.html" %}
-        </div>
-
-        <div id="content">
-            {% include '_messages.html' %}
-
-            {% block bubble %}{% endblock %}
-            {% block content %}{% endblock content %}
-        </div>
-
-    </div>
-{% endblock %}
+    </form>
+</div>

@@ -1,4 +1,4 @@
-{% extends request.user.is_expert|yesno:"base_sidebar.html,base_centered.html" %}
+{% extends request.user.is_expert|yesno:"base_leftaligned.html,base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -36,489 +36,493 @@
     <script type="text/javascript" src="{% static 'scores/task_scores.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ task.organization.name }}</h1>{% endblock %}
-
-{% block bubble %}
-    {% include "exmo2010/helpers/inv_code_bubble.html" %}
-{% endblock %}
 
 {% block content %}
-    <div class="task-scores-header-block">
-        {% if is_expert %}
-            <h2>{% trans "Scores table" %}</h2>
-        {% else %}
-            <h2>{% trans "View" %}</h2>
+    {% include "exmo2010/helpers/inv_code_bubble.html" %}
 
-            <div class="tabs">
-                <span><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
-                <span class="active"><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
-            </div>
-        {% endif %}
+    <h1 class='{{ request.user.is_expert|yesno:"sidebar," }}'>{{ task.organization.name }}</h1>
 
-        <div class="utils">
-            {% if is_expertA %}
-                <i class="icon add"></i>
-                <a href="{% url 'exmo2010:parameter_add' task.pk %}">{% trans 'Add new parameter' %}</a>
-                <i class="icon upload"></i>
-                <a href="#" id="upload_link" class="pseudo">{% trans 'Import task' %}</a>
-                <form id="upload_form" action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" class="hidden">{% csrf_token %}
-                    <input type="file" accept=".csv" name="taskfile">
-                    <input type="submit" value="{% trans 'Import' %}" />
-                </form>
+    {% if request.user.is_expert %}
+        {% include "_sidebar_task.html" %}
+    {% endif %}
+
+    <div class="content {{ request.user.is_expert|yesno:"cell," }}">
+        <div class="task-scores-header-block">
+            {% if request.user.is_expert %}
+                <h2>{% trans "Scores table" %}</h2>
+            {% else %}
+                <h2>{% trans "View" %}</h2>
+
+                <div class="tabs">
+                    <span><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
+                    <span class="active"><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
+                </div>
             {% endif %}
-            <i class="icon print"></i>
-            <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
-            <i class="icon download"></i>
-            <a href="{% url 'exmo2010:task_export' task.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
+
+            <div class="utils">
+                {% if request.user.is_expertA %}
+                    <i class="icon add"></i>
+                    <a href="{% url 'exmo2010:parameter_add' task.pk %}">{% trans 'Add new parameter' %}</a>
+                    <i class="icon upload"></i>
+                    <a href="#" id="upload_link" class="pseudo">{% trans 'Import task' %}</a>
+                    <form id="upload_form" action="{% url 'exmo2010:task_import' task.pk %}" method="post" enctype="multipart/form-data" class="hidden">{% csrf_token %}
+                        <input type="file" accept=".csv" name="taskfile">
+                        <input type="submit" value="{% trans 'Import' %}" />
+                    </form>
+                {% endif %}
+                <i class="icon print"></i>
+                <a href="{% url 'exmo2010:task_scores_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
+                <i class="icon download"></i>
+                <a href="{% url 'exmo2010:task_export' task.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
+            </div>
+
+            <p>
+                {% if task.approved %}
+                    {% if request.user.is_expert and not mon.is_published %}
+                        {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
+                    {% else %}
+                        {% url 'exmo2010:monitoring_rating' mon.pk as url %}
+                    {% endif %}
+
+                    <span id="rating_data" data-url="{% url 'exmo2010:rating_update' %}" data-task_id="{{ task.pk }}"></span>
+                    {% filter linkify|bleach %}
+                        {% if orgs_count > 1 %}
+                            &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                        {% else %}
+                            &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                        {% endif %}
+                    {% endfilter %}
+                {% else %}
+                    &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
+                {% endif %}
+
+                {% ifnotequal openness None %}
+                    &mdash;
+                    {% if delta > 0 %}
+                        {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
+                    {% endif %}
+                    {% if mon.is_published %}
+                        {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% else %}
+                        {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endifnotequal %}
+
+                {% if orgs_count > 1 %}
+                    &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
+                {% endif %}
+
+                {% if mon.is_published %}
+                    {% if is_representative %}
+                        {% url 'exmo2010:certificate_order' as certificate_order_url %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. <a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endif %}
+            </p>
         </div>
 
-        <p>
-            {% if task.approved %}
-                {% if is_expert and not mon.is_published %}
-                    {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
-                {% else %}
-                    {% url 'exmo2010:monitoring_rating' mon.pk as url %}
-                {% endif %}
+        {% if relevant_parameters_exist or nonrelevant_parameters_exist %}
+            <form class="filter" action="" method="GET">
+                <div class="table">
+                    <div class="table-cell">
+                        {{ view.queryform.name }}
+                    </div>
+                    <div class="table-cell submit-cell">
+                        <input type="submit" value="{% trans 'Find' %}" />
+                    </div>
+                </div>
+            </form>
 
-                <span id="rating_data" data-url="{% url 'exmo2010:rating_update' %}" data-task_id="{{ task.pk }}"></span>
-                {% filter linkify|bleach %}
-                    {% if orgs_count > 1 %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                    {% else %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+            {% if relevant_parameters_exist %}
+                <table class="base-table relevant-params-table">
+                    <thead>
+                        <tr>
+                            {% if request.user.is_expert %}
+                                <th class="icons-column" data-sorter="false"></th>
+                                <th class="icons-column" data-sorter="false"></th>
+                            {% endif %}
+                            <th class="code">
+                                <span>{% trans 'Code' %}</span><span class="arrow"></span>
+                            </th>
+                            <th class="parameter">
+                                <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
+                            </th>
+                            {% if request.user.is_expertA %}
+                                <th class="icons-column" data-sorter="false"></th>
+                            {% endif %}
+                            {% if columns_form.st_criteria.value %}
+                                <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Com' context 'Complete abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Top' context 'Topical abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Acc' context 'Accessible abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'HTML' context 'Hypertext abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Doc' context 'Document abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Img' context 'Image abbreviation' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_score.value %}
+                                <th class="score"><span>{% trans 'Score' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_difference.value %}
+                                <th class="difference"><span>{% trans 'Difference' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_weight.value %}
+                                <th class="weight"><span>{% trans 'Weight' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if mon.has_npa and columns_form.st_type.value %}
+                                <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if request.user.is_expert %}
+                                <th class="icons-column settings" data-sorter="false">
+                                    <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
+                                </th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+
+                    {% if relevant_parameters %}
+                        <tbody>
+                            {% for parameter in relevant_parameters %}
+                                <tr id="parameter_{{ parameter.code }}">
+                                    {% if request.user.is_expert %}
+                                        <td class="icons-column">
+                                            {% if not parameter.score_accomplished %}
+                                                <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                            {% endif %}
+                                        </td>
+                                        <td class="icons-column">
+                                            {% if parameter.comment_url %}
+                                                <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                    <td class="code">
+                                        {% if parameter.score_pk %}
+                                            <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
+                                        {% else %}
+                                            {% if task.perms.fill_task %}
+                                                <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
+                                            {% else %}
+                                                {{ parameter.code }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="parameter">
+                                        {% if parameter.score_pk %}
+                                            <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
+                                        {% else %}
+                                            {% if task.perms.fill_task %}
+                                                <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
+                                            {% else %}
+                                                {{ parameter.name }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    {% if request.user.is_expertA %}
+                                        <td class="icons-column">
+                                            <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
+                                                <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_criteria.value %}
+                                        {% if parameter.score_table %}
+                                            {% for score in parameter.score_table %}
+                                                {% if score %}
+                                                    <td class="scores-column {% if not score.max_score %}text-color-red{% endif %}">
+                                                        {{ score.score_final|default_if_none:"–" }}
+                                                        {% if score.score_interim != '' and score.score_interim != score.score_final %}
+                                                            <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
+                                                        {% endif %}
+                                                        {% if score and not score.max_score %}<div class="underline"></div>{% endif %}
+                                                    </td>
+                                                {% else %}
+                                                    <td class="scores-column text-color-grey">–</td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <td colspan="7"></td>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if columns_form.st_score.value %}
+                                        <td class="score {% if parameter.score_openness != 100 %}text-color-red{% endif %}">
+                                            {% ifnotequal parameter.score_openness None %}
+                                                {{ parameter.score_openness|floatformat }}%
+                                                {% if parameter.score_openness != 100 %}
+                                                    <div class="progressbar">
+                                                        <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_difference.value %}
+                                        <td class="difference">
+                                            {% ifnotequal parameter.score_openness_delta None %}
+                                                <span>{{ parameter.score_openness_delta|floatformat }}%</span>
+                                                {% if parameter.score_openness_delta > 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
+                                                {% elif parameter.score_openness_delta < 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_weight.value %}
+                                        <td class="weight">{{ parameter.weight }}</td>
+                                    {% endif %}
+                                    {% if mon.has_npa and columns_form.st_type.value %}
+                                        <td class="type">{{ parameter.npa_display }}</td>
+                                    {% endif %}
+                                    {% if request.user.is_expert %}
+                                        <td class="icons-column"></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                        {% if columns_form.st_score.value or columns_form.st_difference.value %}
+                            <tfoot>
+                                <tr>
+                                    {% if request.user.is_expertA and columns_form.st_criteria.value %}
+                                        <td colspan="12">
+                                    {% elif request.user.is_expertA %}
+                                        <td colspan="5">
+                                    {% elif request.user.is_expert and columns_form.st_criteria.value %}
+                                        <td colspan="11">
+                                    {% elif request.user.is_expert %}
+                                        <td colspan="4">
+                                    {% else %}
+                                        <td colspan="2">
+                                    {% endif %}
+                                        {% trans 'Total score openness' %}
+                                    </td>
+                                    {% if columns_form.st_score.value %}
+                                        <td class="score {% if openness != 100 %}text-color-red{% endif %}">
+                                            {% ifnotequal openness None %}
+                                                {{ openness|floatformat }}%
+                                                {% if openness != 100 %}
+                                                    <div class="progressbar">
+                                                        <div style="width: {{ openness|floatformat:"0" }}%;"></div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_difference.value %}
+                                        <td class="difference">
+                                            {% ifnotequal delta None %}
+                                                <span>{{ delta|floatformat }}%</span>
+                                                {% if delta > 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
+                                                {% elif delta < 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_weight.value %}
+                                        <td class="weight"></td>
+                                    {% endif %}
+                                    {% if mon.has_npa and columns_form.st_type.value %}
+                                        <td class="type"></td>
+                                    {% endif %}
+                                    {% if request.user.is_expert %}
+                                        <td class="icons-column"></td>
+                                    {% endif %}
+                                </tr>
+                            </tfoot>
+                        {% endif %}
                     {% endif %}
-                {% endfilter %}
-            {% else %}
-                &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
+                </table>
             {% endif %}
 
-            {% ifnotequal openness None %}
-                &mdash;
-                {% if delta > 0 %}
-                    {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
-                {% endif %}
-                {% if mon.is_published %}
-                    {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
-                {% else %}
-                    {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
-                {% endif %}
-            {% endifnotequal %}
+            {% if nonrelevant_parameters_exist %}
+                <h2>{% trans 'Non relevant parameters' %}</h2>
 
-            {% if orgs_count > 1 %}
-                &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
-            {% endif %}
-
-            {% if mon.is_published %}
-                {% if is_representative %}
-                    {% url 'exmo2010:certificate_order' as certificate_order_url %}
-                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. <a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
-                {% else %}
-                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
-                {% endif %}
-            {% endif %}
-        </p>
-    </div>
-
-    {% if relevant_parameters_exist or nonrelevant_parameters_exist %}
-        <form class="filter" action="" method="GET">
-            <div class="table">
-                <div class="table-cell">
-                    {{ view.queryform.name }}
-                </div>
-                <div class="table-cell submit-cell">
-                    <input type="submit" value="{% trans 'Find' %}" />
-                </div>
-            </div>
-        </form>
-
-        {% if relevant_parameters_exist %}
-            <table class="base-table relevant-params-table">
-                <thead>
-                    <tr>
-                        {% if is_expert %}
+                <table class="base-table nonrelevant-params-table">
+                    <thead>
+                        <tr>
                             <th class="icons-column" data-sorter="false"></th>
-                            <th class="icons-column" data-sorter="false"></th>
-                        {% endif %}
-                        <th class="code">
-                            <span>{% trans 'Code' %}</span><span class="arrow"></span>
-                        </th>
-                        <th class="parameter">
-                            <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
-                        </th>
-                        {% if is_expertA %}
-                            <th class="icons-column" data-sorter="false"></th>
-                        {% endif %}
-                        {% if columns_form.st_criteria.value %}
-                            <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Com' context 'Complete abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Top' context 'Topical abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Acc' context 'Accessible abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'HTML' context 'Hypertext abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Doc' context 'Document abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Img' context 'Image abbreviation' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_score.value %}
-                            <th class="score"><span>{% trans 'Score' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_difference.value %}
-                            <th class="difference"><span>{% trans 'Difference' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_weight.value %}
-                            <th class="weight"><span>{% trans 'Weight' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if mon.has_npa and columns_form.st_type.value %}
-                            <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if is_expert %}
+                            <th class="code">
+                                <span>{% trans 'Code' %}</span><span class="arrow"></span>
+                            </th>
+                            <th class="parameter">
+                                <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
+                            </th>
+                            {% if request.user.is_expertA %}
+                                <th class="icons-column" data-sorter="false"></th>
+                            {% endif %}
+                            {% if columns_form.st_criteria.value %}
+                                <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Com' context 'Complete abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Top' context 'Topical abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Acc' context 'Accessible abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'HTML' context 'Hypertext abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Doc' context 'Document abbreviation' %}</span><span class="arrow"></span></th>
+                                <th class="scores-column"><span>{% trans 'Img' context 'Image abbreviation' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_score.value %}
+                                <th class="score"><span>{% trans 'Score' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_difference.value %}
+                                <th class="difference"><span>{% trans 'Difference' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if columns_form.st_weight.value %}
+                                <th class="weight"><span>{% trans 'Weight' %}</span><span class="arrow"></span></th>
+                            {% endif %}
+                            {% if mon.has_npa and columns_form.st_type.value %}
+                                <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
+                            {% endif %}
                             <th class="icons-column settings" data-sorter="false">
                                 <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
                             </th>
-                        {% endif %}
-                    </tr>
-                </thead>
+                        </tr>
+                    </thead>
 
-                {% if relevant_parameters %}
-                    <tbody>
-                        {% for parameter in relevant_parameters %}
-                            <tr id="parameter_{{ parameter.code }}">
-                                {% if is_expert %}
+                    {% if nonrelevant_parameters %}
+                        <tbody>
+                            {% for parameter in nonrelevant_parameters %}
+                                <tr id="parameter_{{ parameter.code }}">
                                     <td class="icons-column">
-                                        {% if not parameter.score_accomplished %}
-                                            <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
-                                        {% endif %}
-                                    </td>
-                                    <td class="icons-column">
-                                        {% if parameter.comment_url %}
+                                        {% if request.user.is_expert and parameter.comment_url %}
                                             <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
                                         {% endif %}
                                     </td>
-                                {% endif %}
-                                <td class="code">
-                                    {% if parameter.score_pk %}
-                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
-                                    {% else %}
-                                        {% if task.perms.fill_task %}
-                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
+                                    <td class="code">
+                                        {% if parameter.score_pk %}
+                                            <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
                                         {% else %}
-                                            {{ parameter.code }}
-                                        {% endif %}
-                                    {% endif %}
-                                </td>
-                                <td class="parameter">
-                                    {% if parameter.score_pk %}
-                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
-                                    {% else %}
-                                        {% if task.perms.fill_task %}
-                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
-                                        {% else %}
-                                            {{ parameter.name }}
-                                        {% endif %}
-                                    {% endif %}
-                                </td>
-                                {% if is_expertA %}
-                                    <td class="icons-column">
-                                        <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
-                                            <img src="{% static 'admin/img/icon_changelink.gif' %}" />
-                                        </a>
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_criteria.value %}
-                                    {% if parameter.score_table %}
-                                        {% for score in parameter.score_table %}
-                                            {% if score %}
-                                                <td class="scores-column {% if not score.max_score %}text-color-red{% endif %}">
-                                                    {{ score.score_final|default_if_none:"–" }}
-                                                    {% if score.score_interim != '' and score.score_interim != score.score_final %}
-                                                        <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
-                                                    {% endif %}
-                                                    {% if score and not score.max_score %}<div class="underline"></div>{% endif %}
-                                                </td>
+                                            {% if task.perms.fill_task %}
+                                                <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
                                             {% else %}
-                                                <td class="scores-column text-color-grey">–</td>
+                                                {{ parameter.code }}
                                             {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <td colspan="7"></td>
+                                        {% endif %}
+                                    </td>
+                                    <td class="parameter">
+                                        {% if parameter.score_pk %}
+                                            <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
+                                        {% else %}
+                                            {% if task.perms.fill_task %}
+                                                <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
+                                            {% else %}
+                                                {{ parameter.name }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    {% if request.user.is_expertA %}
+                                        <td class="icons-column">
+                                            <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
+                                                <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                            </a>
+                                        </td>
                                     {% endif %}
-                                {% endif %}
-                                {% if columns_form.st_score.value %}
-                                    <td class="score {% if parameter.score_openness != 100 %}text-color-red{% endif %}">
-                                        {% ifnotequal parameter.score_openness None %}
-                                            {{ parameter.score_openness|floatformat }}%
-                                            {% if parameter.score_openness != 100 %}
-                                                <div class="progressbar">
-                                                    <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
-                                                </div>
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_difference.value %}
-                                    <td class="difference">
-                                        {% ifnotequal parameter.score_openness_delta None %}
-                                            <span>{{ parameter.score_openness_delta|floatformat }}%</span>
-                                            {% if parameter.score_openness_delta > 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
-                                            {% elif parameter.score_openness_delta < 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_weight.value %}
-                                    <td class="weight">{{ parameter.weight }}</td>
-                                {% endif %}
-                                {% if mon.has_npa and columns_form.st_type.value %}
-                                    <td class="type">{{ parameter.npa_display }}</td>
-                                {% endif %}
-                                {% if is_expert %}
+                                    {% if columns_form.st_criteria.value %}
+                                        {% if parameter.score_table %}
+                                            {% for score in parameter.score_table %}
+                                                {% if score %}
+                                                    <td class="scores-column">
+                                                        {{ score.score_final|default_if_none:"–" }}
+                                                        {% if score.score_interim != '' and score.score_interim != score.score_final %}
+                                                            <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
+                                                        {% endif %}
+                                                        {% if score and not score.max_score %}<div class="underline inactive"></div>{% endif %}
+                                                    </td>
+                                                {% else %}
+                                                    <td class="scores-column">–</td>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <td colspan="7"></td>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if columns_form.st_score.value %}
+                                        <td class="score">
+                                            {% ifnotequal parameter.score_openness None %}
+                                                {{ parameter.score_openness|floatformat }}%
+                                                {% if parameter.score_openness != 100 %}
+                                                    <div class="progressbar inactive">
+                                                        <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_difference.value %}
+                                        <td class="difference">
+                                            {% ifnotequal parameter.score_openness_delta None %}
+                                                <span>{{ parameter.score_openness_delta|floatformat }}%</span>
+                                                {% if parameter.score_openness_delta > 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_up_gray_8x5.svg' %}">
+                                                {% elif parameter.score_openness_delta < 0 %}
+                                                    <img src="{% static 'exmo2010/img/rate_down_gray_8x5.svg' %}">
+                                                {% endif %}
+                                            {% endifnotequal %}
+                                        </td>
+                                    {% endif %}
+                                    {% if columns_form.st_weight.value %}
+                                        <td class="weight">{{ parameter.weight }}</td>
+                                    {% endif %}
+                                    {% if mon.has_npa and columns_form.st_type.value %}
+                                        <td class="type">{{ parameter.npa_display }}</td>
+                                    {% endif %}
                                     <td class="icons-column"></td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-
-                    {% if columns_form.st_score.value or columns_form.st_difference.value %}
-                        <tfoot>
-                            <tr>
-                                {% if is_expertA and columns_form.st_criteria.value %}
-                                    <td colspan="12">
-                                {% elif is_expertA %}
-                                    <td colspan="5">
-                                {% elif is_expert and columns_form.st_criteria.value %}
-                                    <td colspan="11">
-                                {% elif is_expert %}
-                                    <td colspan="4">
-                                {% else %}
-                                    <td colspan="2">
-                                {% endif %}
-                                    {% trans 'Total score openness' %}
-                                </td>
-                                {% if columns_form.st_score.value %}
-                                    <td class="score {% if openness != 100 %}text-color-red{% endif %}">
-                                        {% ifnotequal openness None %}
-                                            {{ openness|floatformat }}%
-                                            {% if openness != 100 %}
-                                                <div class="progressbar">
-                                                    <div style="width: {{ openness|floatformat:"0" }}%;"></div>
-                                                </div>
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_difference.value %}
-                                    <td class="difference">
-                                        {% ifnotequal delta None %}
-                                            <span>{{ delta|floatformat }}%</span>
-                                            {% if delta > 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_up_8x5.svg' %}">
-                                            {% elif delta < 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_down_8x5.svg' %}">
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_weight.value %}
-                                    <td class="weight"></td>
-                                {% endif %}
-                                {% if mon.has_npa and columns_form.st_type.value %}
-                                    <td class="type"></td>
-                                {% endif %}
-                                {% if is_expert %}
-                                    <td class="icons-column"></td>
-                                {% endif %}
-                            </tr>
-                        </tfoot>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
                     {% endif %}
-                {% endif %}
-            </table>
-        {% endif %}
-
-        {% if nonrelevant_parameters_exist %}
-            <h2>{% trans 'Non relevant parameters' %}</h2>
-
-            <table class="base-table nonrelevant-params-table">
-                <thead>
-                    <tr>
-                        <th class="icons-column" data-sorter="false"></th>
-                        <th class="code">
-                            <span>{% trans 'Code' %}</span><span class="arrow"></span>
-                        </th>
-                        <th class="parameter">
-                            <span>{% trans 'Parameter' %}</span><span class="arrow"></span>
-                        </th>
-                        {% if is_expertA %}
-                            <th class="icons-column" data-sorter="false"></th>
-                        {% endif %}
-                        {% if columns_form.st_criteria.value %}
-                            <th class="scores-column"><span>{% trans 'Fnd' context 'Found abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Com' context 'Complete abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Top' context 'Topical abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Acc' context 'Accessible abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'HTML' context 'Hypertext abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Doc' context 'Document abbreviation' %}</span><span class="arrow"></span></th>
-                            <th class="scores-column"><span>{% trans 'Img' context 'Image abbreviation' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_score.value %}
-                            <th class="score"><span>{% trans 'Score' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_difference.value %}
-                            <th class="difference"><span>{% trans 'Difference' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if columns_form.st_weight.value %}
-                            <th class="weight"><span>{% trans 'Weight' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        {% if mon.has_npa and columns_form.st_type.value %}
-                            <th class="type"><span>{% trans 'Type' %}</span><span class="arrow"></span></th>
-                        {% endif %}
-                        <th class="icons-column settings" data-sorter="false">
-                            <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
-                        </th>
-                    </tr>
-                </thead>
-
-                {% if nonrelevant_parameters %}
-                    <tbody>
-                        {% for parameter in nonrelevant_parameters %}
-                            <tr id="parameter_{{ parameter.code }}">
-                                <td class="icons-column">
-                                    {% if parameter.comment_url %}
-                                        <a href="{{ parameter.comment_url }}"><img src="{% static 'exmo2010/img/icon_newcomment.png' %}" /></a>
-                                    {% endif %}
-                                </td>
-                                <td class="code">
-                                    {% if parameter.score_pk %}
-                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.code }}</a>
-                                    {% else %}
-                                        {% if task.perms.fill_task %}
-                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.code }}</a>
-                                        {% else %}
-                                            {{ parameter.code }}
-                                        {% endif %}
-                                    {% endif %}
-                                </td>
-                                <td class="parameter">
-                                    {% if parameter.score_pk %}
-                                        <a href="{% url 'exmo2010:score' parameter.score_pk %}">{{ parameter.name }}</a>
-                                    {% else %}
-                                        {% if task.perms.fill_task %}
-                                            <a href="{% url 'exmo2010:score_add' task.pk parameter.pk %}">{{ parameter.name }}</a>
-                                        {% else %}
-                                            {{ parameter.name }}
-                                        {% endif %}
-                                    {% endif %}
-                                </td>
-                                {% if is_expertA %}
-                                    <td class="icons-column">
-                                        <a href="{% url 'exmo2010:parameter_update' task.pk parameter.pk %}">
-                                            <img src="{% static 'admin/img/icon_changelink.gif' %}" />
-                                        </a>
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_criteria.value %}
-                                    {% if parameter.score_table %}
-                                        {% for score in parameter.score_table %}
-                                            {% if score %}
-                                                <td class="scores-column">
-                                                    {{ score.score_final|default_if_none:"–" }}
-                                                    {% if score.score_interim != '' and score.score_interim != score.score_final %}
-                                                        <span class="score-interim">({{ score.score_interim|default_if_none:"–" }})</span>
-                                                    {% endif %}
-                                                    {% if score and not score.max_score %}<div class="underline inactive"></div>{% endif %}
-                                                </td>
-                                            {% else %}
-                                                <td class="scores-column">–</td>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <td colspan="7"></td>
-                                    {% endif %}
-                                {% endif %}
-                                {% if columns_form.st_score.value %}
-                                    <td class="score">
-                                        {% ifnotequal parameter.score_openness None %}
-                                            {{ parameter.score_openness|floatformat }}%
-                                            {% if parameter.score_openness != 100 %}
-                                                <div class="progressbar inactive">
-                                                    <div style="width: {{ parameter.score_openness|floatformat:"0" }}%;"></div>
-                                                </div>
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_difference.value %}
-                                    <td class="difference">
-                                        {% ifnotequal parameter.score_openness_delta None %}
-                                            <span>{{ parameter.score_openness_delta|floatformat }}%</span>
-                                            {% if parameter.score_openness_delta > 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_up_gray_8x5.svg' %}">
-                                            {% elif parameter.score_openness_delta < 0 %}
-                                                <img src="{% static 'exmo2010/img/rate_down_gray_8x5.svg' %}">
-                                            {% endif %}
-                                        {% endifnotequal %}
-                                    </td>
-                                {% endif %}
-                                {% if columns_form.st_weight.value %}
-                                    <td class="weight">{{ parameter.weight }}</td>
-                                {% endif %}
-                                {% if mon.has_npa and columns_form.st_type.value %}
-                                    <td class="type">{{ parameter.npa_display }}</td>
-                                {% endif %}
-                                <td class="icons-column"></td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                {% endif %}
-            </table>
-        {% endif %}
-    {% else %}
-        <div class="noparameters">{% trans 'No parameters' %}</div>
-    {% endif %}
-
-    <!-- Questionnaire -->
-    {% if questionnaire_form %}
-        <div id="questionnaire">
-            <h1>{{ mon.get_questionnaire.title }}</h1>
-            {% if mon.get_questionnaire.comment %}
-                <h2>{{ mon.get_questionnaire.comment|linebreaksbr }}</h2>
+                </table>
             {% endif %}
-            <form action="{% url 'exmo2010:post_questionnaire' task.pk %}#questionnaire" method="post">{% csrf_token %}
-                <div>
-                    {% if questionnaire_form.non_field_errors %}
-                        <ul class="errorlist">
-                        {% for error in questionnaire_form.non_field_errors %}
-                            <li>{{ error }}</li>
+        {% else %}
+            <div class="noparameters">{% trans 'No parameters' %}</div>
+        {% endif %}
+
+        <!-- Questionnaire -->
+        {% if questionnaire_form %}
+            <div id="questionnaire">
+                <h1>{{ mon.get_questionnaire.title }}</h1>
+                {% if mon.get_questionnaire.comment %}
+                    <h2>{{ mon.get_questionnaire.comment|linebreaksbr }}</h2>
+                {% endif %}
+                <form action="{% url 'exmo2010:post_questionnaire' task.pk %}#questionnaire" method="post">{% csrf_token %}
+                    <div>
+                        {% if questionnaire_form.non_field_errors %}
+                            <ul class="errorlist">
+                            {% for error in questionnaire_form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% for field in questionnaire_form %}
+                            <span class="questionnaire-field-header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
+                                <div>
+                                    {% if field.errors %}
+                                        <ul class="errorlist">
+                                            {% for error in field.errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+
+                                    {% if field.help_text %}
+                                        <span>{{ field.help_text }}</span><br>
+                                    {% endif %}
+
+                                    <div class="questionnaire-field">{{ field }}</div>
+                                </div>
                         {% endfor %}
-                        </ul>
-                    {% endif %}
-
-                    {% for field in questionnaire_form %}
-                        <span class="questionnaire-field-header">{{ forloop.counter }}.&nbsp;{{ field.label_tag }}</span>
-                            <div>
-                                {% if field.errors %}
-                                    <ul class="errorlist">
-                                        {% for error in field.errors %}
-                                            <li>{{ error }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-
-                                {% if field.help_text %}
-                                    <span>{{ field.help_text }}</span><br>
-                                {% endif %}
-
-                                <div class="questionnaire-field">{{ field }}</div>
-                            </div>
-                    {% endfor %}
-                </div>
-                <input type="submit" value="{% trans 'Save' %}" {% if not task.perms.fill_task %}disabled="disabled"{% endif %}>
-            </form>
-        </div>
-    {% endif %}
+                    </div>
+                    <input type="submit" value="{% trans 'Save' %}" {% if not task.perms.fill_task %}disabled="disabled"{% endif %}>
+                </form>
+            </div>
+        {% endif %}
+    </div>
 
     <!-- Modal window -->
-    {% if is_expert %}
-        {% url 'exmo2010:post_task_scores_table_settings' task.pk as column_settings_url %}
-        {% include "_column_settings_modal_window.html" with url=column_settings_url form=columns_form %}
+    {% if request.user.is_expert %}
+        {% include "_columns_picker_modal_window.html" with form=columns_form %}
     {% endif %}
 {% endblock %}

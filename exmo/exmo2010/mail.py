@@ -41,7 +41,7 @@ from .models import UserProfile, Organization, MONITORING_INTERACTION, MONITORIN
 class ExmoEmail(EmailMultiAlternatives):
     def __init__(self, *args, **kwargs):
         template_basename = kwargs.pop('template_basename')
-        context = Context(kwargs.pop('context'))
+        context = Context(dict(kwargs.pop('context'), subject=kwargs['subject']))
 
         body_txt = loader.get_template(template_basename + '.txt').render(context)
         body_html = loader.get_template(template_basename + '.html').render(context)
@@ -298,7 +298,7 @@ def mail_register_activation(request, user, activation_url):
     context = {
         'activation_url': request.build_absolute_uri(activation_url),
         'login_url': request.build_absolute_uri(unicode(settings.LOGIN_URL)),
-        'subject': subject}
+    }
 
     send_email.delay(ExmoEmail(template_basename='mail/activation_email',
                                context=context, subject=subject, to=[user.email]))

@@ -1,7 +1,5 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2010, 2011 Al Nikolov
-# Copyright 2010, 2011 Institute for Information Freedom Development
 # Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -18,28 +16,27 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n static %}
 
-{% if form.non_field_errors %}
-    <ul class="form-errors">
-        {% for error in form.non_field_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+<script type="text/javascript" src="{% static 'exmo2010/js/sidebar.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/sidebar.css' %}" />
 
-{% if form.errors %}
-    <ul class="form-errors">
-    {% for field in form %}
-        {% if field.errors %}
-            <li id="id_err_{{ field.name }}">
-            {% for error in field.errors %}
-                <span class="form-error">
-                    {{ error }}
-                </span>
-            {% endfor %}
+<div id="sidebar_pad"> </div>
+
+<div id="sidebar" class="task" data-urlname="{{ request.resolver_match.url_name }}">
+    <ul>
+        <li data-urls="task_scores">
+            <a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans "Scores table" %}</a>
+        </li>
+
+        <li data-urls="recommendations">
+            <a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans "Recommendations list" %}</a>
+        </li>
+
+        {% if request.user.profile.is_expertA %}
+            <li data-urls="task_history">
+                <a href="{% url 'exmo2010:task_history' task.pk %}">{% trans "History" %}</a>
             </li>
         {% endif %}
-    {% endfor %}
     </ul>
-{% endif %}
+</div>

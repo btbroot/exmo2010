@@ -23,7 +23,6 @@
 
 {% block extra_css %}
     <style>
-        h2 {margin-top: 10px;}
         table.base-table {margin-bottom: 10px;}
         th {vertical-align: bottom;}
         tbody tr td:first-child {white-space: nowrap;}
@@ -47,126 +46,129 @@
             {% include '_header.html' %}
         </div>
 
-        <div id="content">
+
+        <div id="content_outer">
             {% include '_messages.html' %}
 
             {% include "exmo2010/helpers/inv_code_bubble.html" %}
 
             <h1>{% trans 'My scores' %}</h1>
 
-            {% if int_tasks or fin_tasks %}
-                <div class="inprogress-area">
-                    <h2>{% trans 'Ratings in progress' %}</h2>
+            <div class="content">
+                {% if int_tasks or fin_tasks %}
+                    <div class="inprogress-area">
+                        <h2>{% trans 'Ratings in progress' %}</h2>
 
-                    {% if int_tasks %}
-                        <table class="base-table">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <span>{% trans 'Date of the end of the interaction' %}</span><span class="arrow"></span>
-                                    </th>
-                                    <th>
-                                        <span>{% trans 'Rating' %}</span><span class="arrow"></span>
-                                    </th>
-                                    <th>
-                                        <span>{% trans 'Organization' %}</span><span class="arrow"></span>
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% for task in int_tasks %}
+                        {% if int_tasks %}
+                            <table class="base-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            {{ task.organization.monitoring.publish_date }}
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
-                                        </td>
+                                        <th>
+                                            <span>{% trans 'Date of the end of the interaction' %}</span><span class="arrow"></span>
+                                        </th>
+                                        <th>
+                                            <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                                        </th>
+                                        <th>
+                                            <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                                        </th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
+                                </thead>
 
-                    {% if fin_tasks %}
-                        <table class="base-table">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
-                                    </th>
-                                    <th>
-                                        <span>{% trans 'Rating' %}</span><span class="arrow"></span>
-                                    </th>
-                                    <th>
-                                        <span>{% trans 'Organization' %}</span><span class="arrow"></span>
-                                    </th>
-                                </tr>
-                            </thead>
+                                <tbody>
+                                    {% for task in int_tasks %}
+                                        <tr>
+                                            <td>
+                                                {{ task.organization.monitoring.publish_date }}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
 
-                            <tbody>
-                                {% for task in fin_tasks %}
+                        {% if fin_tasks %}
+                            <table class="base-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            {{ task.organization.monitoring.publish_date }}
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
-                                        </td>
+                                        <th>
+                                            <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
+                                        </th>
+                                        <th>
+                                            <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                                        </th>
+                                        <th>
+                                            <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                                        </th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                </div>
-            {% endif %}
+                                </thead>
 
-            {% if pub_tasks %}
-                <h2>{% trans 'Published ratings' %}</h2>
+                                <tbody>
+                                    {% for task in fin_tasks %}
+                                        <tr>
+                                            <td>
+                                                {{ task.organization.monitoring.publish_date }}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                {% endif %}
 
-                <table class="base-table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
-                            </th>
-                            <th>
-                                <span>{% trans 'Rating' %}</span><span class="arrow"></span>
-                            </th>
-                            <th>
-                                <span>{% trans 'Organization' %}</span><span class="arrow"></span>
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
+                {% if pub_tasks %}
+                    <h2>{% trans 'Published ratings' %}</h2>
 
-                    <tbody>
-                        {% for task in pub_tasks %}
+                    <table class="base-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    {{ task.organization.monitoring.publish_date }}
-                                </td>
-                                <td>
-                                    <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
-                                </td>
-                                <td>
-                                    <a href="{% url 'exmo2010:certificate_order' %}"><i class="icon script"></i></a>
-                                </td>
+                                <th>
+                                    <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
+                                </th>
+                                <th>
+                                    <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                                </th>
+                                <th>
+                                    <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                                </th>
+                                <th></th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
+                        </thead>
+
+                        <tbody>
+                            {% for task in pub_tasks %}
+                                <tr>
+                                    <td>
+                                        {{ task.organization.monitoring.publish_date }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'exmo2010:certificate_order' %}"><i class="icon script"></i></a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

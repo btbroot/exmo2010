@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -22,41 +22,48 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
-{% block bubble %}
-    {% include "exmo2010/helpers/inv_code_bubble.html" %}
+{% block title %}
+    {% blocktrans with monitoring=monitoring.name %} Parameter found report of {{monitoring}} {% endblocktrans %}
 {% endblock %}
 
-{% block content %}
-    <h2>{{ title }}</h2>
 
-    <div id=organization_list>
-        <table class="base-table">
-            <thead>
-            <tr>
-                <td>{% trans 'Parameter' %}</td>
-                <td>{% trans 'Organizations' %}</td>
-                <td>{% trans 'Organizations with found parameters' %}</td>
-                <td>%</td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for object in object_list %}
+{% block content %}
+
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
+
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+
+        <h2>{% blocktrans with monitoring=monitoring.name %} Parameter found report of {{monitoring}} {% endblocktrans %}</h2>
+
+        <div id=organization_list>
+            <table class="base-table">
+                <thead>
                 <tr>
-                    <td>{{ object.parameter }}</td>
-                    <td>{{ object.organization_count }}</td>
-                    <td>{{ object.score_count }}</td>
-                    <td>{{ object.score_per_organization|floatformat:3 }}</td>
+                    <td>{% trans 'Parameter' %}</td>
+                    <td>{% trans 'Organizations' %}</td>
+                    <td>{% trans 'Organizations with found parameters' %}</td>
+                    <td>%</td>
                 </tr>
-            {% endfor %}
-            <tr class='parameter_found_report_total_tr'>
-                <td><b>{% trans 'Total' %}:</b></td>
-                <td>{{ organization_count_total }}</td>
-                <td>{{ score_count_total }}</td>
-                <td>{{ score_per_organization_total|floatformat:3 }}</td>
-            </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <td>{{ object.parameter }}</td>
+                        <td>{{ object.organization_count }}</td>
+                        <td>{{ object.score_count }}</td>
+                        <td>{{ object.score_per_organization|floatformat:3 }}</td>
+                    </tr>
+                {% endfor %}
+                <tr class='parameter_found_report_total_tr'>
+                    <td><b>{% trans 'Total' %}:</b></td>
+                    <td>{{ organization_count_total }}</td>
+                    <td>{{ score_count_total }}</td>
+                    <td>{{ score_per_organization_total|floatformat:3 }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

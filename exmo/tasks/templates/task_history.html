@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -28,30 +28,31 @@
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
 {% endblock %}
 
-{% block h1 %}<h1>{{ view.task.organization.name }}</h1>{% endblock %}
-
-{% block bubble %}
-    {% include "exmo2010/helpers/inv_code_bubble.html" %}
-{% endblock %}
-
 {% block content %}
-    <h2>{% trans 'History' %}</h2>
+    <h1 class="sidebar">{{ view.task.organization.name }}</h1>
 
-    <table class="base-table">
-        <tbody>
-            <tr>
-                <th>{% trans 'Time and date' %} <span class="arrow">↓</span></th>
-                <th>{% trans 'Expert' %}</th>
-                <th>{% trans 'Stage' %}</th>
-            </tr>
+    {% include "_sidebar_task.html" %}
 
-            {% for item in history %}
+    <div class="content cell">
+
+        <h2>{% trans 'History' %}</h2>
+
+        <table class="base-table">
+            <tbody>
                 <tr>
-                    <td>{{ item.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
-                    <td>{{ item.user.userprofile.legal_name }}</td>
-                    <td>{{ item.get_status_display }}</td>
+                    <th>{% trans 'Time and date' %} <span class="arrow">↓</span></th>
+                    <th>{% trans 'Expert' %}</th>
+                    <th>{% trans 'Stage' %}</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+                {% for item in history %}
+                    <tr>
+                        <td>{{ item.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
+                        <td>{{ item.user.userprofile.legal_name }}</td>
+                        <td>{{ item.get_status_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
@@ -26,18 +26,24 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/observers.css' %}"/>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="observers-content-block">
-        <h2>{% trans 'Observers group deleting' %}</h2>
 
-        <div class="delete-form">
-            <form method="post" action="">{% csrf_token %}
-                {% url 'exmo2010:observers_group_update' monitoring.pk object.pk as url %}
-                <p>{% blocktrans with group_name=obs_group.name %}The <a href="{{ url }}">{{ group_name }}</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?{% endblocktrans %}</p>
-                <p><input type="submit" value="{% trans 'Yes, delete fully' %}" /></p>
-            </form>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
+
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+
+        <div class="observers-content-block">
+            <h2>{% trans 'Observers group deleting' %}</h2>
+
+            <div class="delete-form">
+                <form method="post" action="">{% csrf_token %}
+                    {% url 'exmo2010:observers_group_update' monitoring.pk object.pk as url %}
+                    <p>{% blocktrans with group_name=obs_group.name %}The <a href="{{ url }}">{{ group_name }}</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?{% endblocktrans %}</p>
+                    <p><input type="submit" value="{% trans 'Yes, delete fully' %}" /></p>
+                </form>
+            </div>
         </div>
     </div>
 {%endblock%}

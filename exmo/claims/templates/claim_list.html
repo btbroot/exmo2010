@@ -21,6 +21,8 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %} {% trans 'Claims' %} {% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
 {% endblock %}
@@ -29,53 +31,53 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/reports_analyst.js' %}"></script>
 {% endblock %}
 
-{% block pretitle %}
-    {% include "menu_interaction.html" with active_item="3" %}
-{% endblock %}
-
-{% block h1 %}<h1>{{ title }}</h1>{% endblock %}
-
 {% block content %}
-    <table class="base-table">
-        <tbody>
-            <tr>
-                <th>{% trans 'Time and date' %}</th>
-                <th>{% trans 'Organization' %}</th>
-                <th>{% trans 'Link to claim' %}</th>
-            </tr>
-        </tbody>
-    </table>
+    {% include "_menu_interaction.html" with active_item="3" %}
 
-    {% if claims %}
+    <h1>{% trans 'Claims' %}</h1>
+
+    <div class="content">
         <table class="base-table">
             <tbody>
-            <tr>
-                <td colspan="3" class="report-title open">
-                    <span>{% trans 'Without answer' %}</span> ({{ claims|length }})
-                </td>
-            </tr>
+                <tr>
+                    <th>{% trans 'Time and date' %}</th>
+                    <th>{% trans 'Organization' %}</th>
+                    <th>{% trans 'Link to claim' %}</th>
+                </tr>
             </tbody>
         </table>
 
-        <table class="base-table open">
+        {% if claims %}
+            <table class="base-table">
+                <tbody>
+                <tr>
+                    <td colspan="3" class="report-title open">
+                        <span>{% trans 'Without answer' %}</span> ({{ claims|length }})
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="base-table open">
+                <tbody>
+                    {% include "claim_list_table.html" %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <table class="base-table">
             <tbody>
-                {% include "claim_list_table.html" %}
+                <tr>
+                    <td colspan="3" class="report-title closed" rel="{% url 'exmo2010:claim_list' %}">
+                        <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
+                    </td>
+                </tr>
             </tbody>
         </table>
-    {% endif %}
 
-    <table class="base-table">
-        <tbody>
-            <tr>
-                <td colspan="3" class="report-title closed" rel="{% url 'exmo2010:claim_list' %}">
-                    <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <table class="base-table closed">
-        <tbody>
-        </tbody>
-    </table>
+        <table class="base-table closed">
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

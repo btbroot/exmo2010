@@ -28,32 +28,6 @@ from exmo2010.models import Organization, Task
 register = Library()
 
 
-class CheckPerm(Node):
-    def __init__(self, priv, obj, varname):
-        self.priv = priv
-        self.obj = obj
-        self.varname = varname
-
-    def render(self, context):
-        request = context['request']
-        obj = context[self.obj]
-        context[self.varname] = request.user.has_perm(self.priv, obj)
-        return ''
-
-
-@register.tag
-def check_object_permission(parser, token):
-    """
-    Добавляет тег check_object_permission для проверки прав на объект
-    """
-    bits = token.contents.split()
-    if len(bits) != 5:
-        raise template.TemplateSyntaxError, "check_object_permission tag takes exactly four arguments"
-    if bits[3] != 'as':
-        raise template.TemplateSyntaxError, "third argument to check_object_permission tag must be 'as'"
-    return CheckPerm(bits[1], bits[2], bits[4])
-
-
 class ObjectByPk(Node):
     def __init__(self, model, pk, varname):
         self.pk, self.varname = pk, varname
@@ -79,26 +53,3 @@ def get_object_by_pk(parser, token):
     if bits[3] != 'as':
         raise template.TemplateSyntaxError, "third argument to get_object_by_pk tag must be 'as'"
     return ObjectByPk(bits[1], bits[2], bits[4])
-
-
-# TODO: выкинуть и заменить
-@register.inclusion_tag('exmo2010/monitoring_stats.html', takes_context=True)
-def monitoring_stats(context, monitoring):
-    """
-    Тег аггрегации оперативной статистики по мониторингу
-    """
-    approved_organizations = Organization.objects.filter(monitoring=monitoring, task__status=Task.TASK_APPROVED)\
-                                                 .distinct()
-    organization_all_count = Organization.objects.filter(monitoring=monitoring).distinct().count()
-    organization_ready_count = Organization.objects.filter(monitoring=monitoring, task__status=Task.TASK_READY)\
-                                                   .exclude(pk__in=approved_organizations).distinct().count()
-    organization_approved_count = approved_organizations.count()
-    organization_with_task_count = Organization.objects.filter(monitoring=monitoring, task__status__isnull=False)\
-                                                       .distinct().count()
-    return {
-        'organization_all_count': organization_all_count,
-        'organization_ready_count': organization_ready_count,
-        'organization_approved_count': organization_approved_count,
-        'organization_with_task_count': organization_with_task_count,
-        'monitoring': monitoring,
-    }

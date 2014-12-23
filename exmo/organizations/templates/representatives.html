@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
@@ -30,90 +30,95 @@
 
 {% block title %}{{ monitoring.name }}{% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="representatives-content-block">
-        <h2>{% trans "Representatives" %}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-        <div class="float-right">
-            <i class="icon download"></i>
-            <a href="{% url 'exmo2010:representatives_export' monitoring.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
-        </div>
+    {% include "_sidebar_monitoring.html" %}
 
-        <div class="representatives-table">
-            {% if representatives_exist %}
-                <table>
-                    <caption>
-                        <form class="filter" action="" method="GET">
-                            <div class="table">
-                                <div class="table-cell">
-                                    {{ queryform.full_name_or_email }}
-                                    {{ queryform.organization }}
+    <div class="content cell">
+
+        <div class="representatives-content-block">
+            <h2>{% trans "Representatives" %}</h2>
+
+            <div class="float-right">
+                <i class="icon download"></i>
+                <a href="{% url 'exmo2010:representatives_export' monitoring.pk %}" class="pseudo">{% trans 'Save as CSV' %}</a>
+            </div>
+
+            <div class="representatives-table">
+                {% if representatives_exist %}
+                    <table>
+                        <caption>
+                            <form class="filter" action="" method="GET">
+                                <div class="table">
+                                    <div class="table-cell">
+                                        {{ queryform.full_name_or_email }}
+                                        {{ queryform.organization }}
+                                    </div>
+                                    <div class="table-cell submit-cell">
+                                        <input type="submit" value="{% trans 'Find' %}" />
+                                    </div>
                                 </div>
-                                <div class="table-cell submit-cell">
-                                    <input type="submit" value="{% trans 'Find' %}" />
-                                </div>
-                            </div>
-                        </form>
-                    </caption>
+                            </form>
+                        </caption>
 
-                    {% if not orgs %}
-                        <tr class="table-header">
-                            <th></th>
-                            <th>{% trans 'Full name' %}</th>
-                            <th>{% trans "E-mail" context "short spelling" %}</th>
-                            <th>{% trans 'Phone' %}</th>
-                            <th>{% trans 'Job title' %}</th>
-                            <th class="align-right">{% trans 'Comm.' %}</th>
-                            <th class="align-right">{% trans 'Date joined' %}</th>
-                            <th class="align-right">{% trans 'Last login' %}</th>
-                        </tr>
-                    {% else %}
-                        {% for org in orgs %}
-                            <tr>
-                                <td colspan="5" class="table-name">
-                                    <h3><a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name }}">{{ org.name }}</a></h3>
-                                </td>
+                        {% if not orgs %}
+                            <tr class="table-header">
+                                <th></th>
+                                <th>{% trans 'Full name' %}</th>
+                                <th>{% trans "E-mail" context "short spelling" %}</th>
+                                <th>{% trans 'Phone' %}</th>
+                                <th>{% trans 'Job title' %}</th>
+                                <th class="align-right">{% trans 'Comm.' %}</th>
+                                <th class="align-right">{% trans 'Date joined' %}</th>
+                                <th class="align-right">{% trans 'Last login' %}</th>
                             </tr>
-
-                            {% if forloop.first %}
+                        {% else %}
+                            {% for org in orgs %}
                                 <tr>
-                                    <th></th>
-                                    <th>{% trans 'Full name' %}</th>
-                                    <th>{% trans "E-mail" context "short spelling" %}</th>
-                                    <th>{% trans 'Phone' %}</th>
-                                    <th>{% trans 'Job title' %}</th>
-                                    <th class="align-right">{% trans 'Comm.' %}</th>
-                                    <th class="align-right">{% trans 'Date joined' %}</th>
-                                    <th class="align-right">{% trans 'Last login' %}</th>
+                                    <td colspan="5" class="table-name">
+                                        <h3><a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name }}">{{ org.name }}</a></h3>
+                                    </td>
                                 </tr>
-                            {% endif %}
 
-                            <tbody>
-                                {% for user in org.users %}
-                                    <tr class="zebra">
-                                        <td class="collapsible">
-                                            {% if not user.user.is_active %}
-                                                <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ user.full_name }}</td>
-                                        <td>{{ user.user.email }}</td>
-                                        <td>{{ user.phone }}</td>
-                                        <td>{{ user.position }}</td>
-                                        <td class="align-right">{{ user.comments.count }}</td>
-                                        <td class="align-right">{{ user.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
-                                        <td class="align-right">{{ user.user.last_login|date:"SHORT_DATE_FORMAT" }}</td>
+                                {% if forloop.first %}
+                                    <tr>
+                                        <th></th>
+                                        <th>{% trans 'Full name' %}</th>
+                                        <th>{% trans "E-mail" context "short spelling" %}</th>
+                                        <th>{% trans 'Phone' %}</th>
+                                        <th>{% trans 'Job title' %}</th>
+                                        <th class="align-right">{% trans 'Comm.' %}</th>
+                                        <th class="align-right">{% trans 'Date joined' %}</th>
+                                        <th class="align-right">{% trans 'Last login' %}</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        {% endfor %}
-                    {% endif %}
-                </table>
-            {% else %}
-                {% trans 'No representatives' %}
-            {% endif %}
+                                {% endif %}
+
+                                <tbody>
+                                    {% for user in org.users %}
+                                        <tr class="zebra">
+                                            <td class="collapsible">
+                                                {% if not user.user.is_active %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user.full_name }}</td>
+                                            <td>{{ user.user.email }}</td>
+                                            <td>{{ user.phone }}</td>
+                                            <td>{{ user.position }}</td>
+                                            <td class="align-right">{{ user.comments.count }}</td>
+                                            <td class="align-right">{{ user.user.date_joined|date:"SHORT_DATE_FORMAT" }}</td>
+                                            <td class="align-right">{{ user.user.last_login|date:"SHORT_DATE_FORMAT" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            {% endfor %}
+                        {% endif %}
+                    </table>
+                {% else %}
+                    {% trans 'No representatives' %}
+                {% endif %}
+            </div>
         </div>
     </div>
 {%endblock%}

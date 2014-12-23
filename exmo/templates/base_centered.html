@@ -28,11 +28,9 @@
             {% include '_breadcrumbs.html' %}
         </div>
 
-        <div id="content">
+        <div id="content_outer">
             {% include '_messages.html' %}
 
-            {% block bubble %}{% endblock %}
-            {% block h1 %}{% endblock %}
             {% block content %}{% endblock content %}
         </div>
 

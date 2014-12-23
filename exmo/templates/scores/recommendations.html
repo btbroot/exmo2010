@@ -1,4 +1,4 @@
-{% extends request.user.is_expert|yesno:"base_sidebar.html,base_centered.html" %}
+{% extends request.user.is_expert|yesno:"base_leftaligned.html,base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
@@ -50,156 +50,163 @@
     {% endif %}
 {% endblock %}
 
-{% block h1 %}<h1>{{ task.organization.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="recommendations-header-block">
-        {% if is_expert %}
-            <h2>{% trans "Recommendations list" %}</h2>
-        {% else %}
-            <h2>{% trans "View" %}</h2>
-        {% endif %}
+    <h1 class='{{ request.user.is_expert|yesno:"sidebar," }}'>{{ task.organization.name }}</h1>
 
-        {% if not is_expert %}
-            <div class="tabs">
-                <span class="active"><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
-                <span><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
-            </div>
-        {% endif %}
+    {% if request.user.is_expert %}
+        {% include "_sidebar_task.html" %}
+    {% endif %}
 
-        <div class="utils">
-            <i class="icon print"></i>
-            <a href="{% url 'exmo2010:recommendations_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
-            {% if task.perms.view_comments %}
+    <div class="content {{ request.user.is_expert|yesno:"cell," }}">
+
+        <div class="recommendations-header-block">
+            {% if is_expert %}
+                <h2>{% trans "Recommendations list" %}</h2>
+            {% else %}
+                <h2>{% trans "View" %}</h2>
+            {% endif %}
+
+            {% if not is_expert %}
+                <div class="tabs">
+                    <span class="active"><a href="{% url 'exmo2010:recommendations' task.pk %}">{% trans 'recommendations list' %}</a></span>
+                    <span><a href="{% url 'exmo2010:task_scores' task.pk %}">{% trans 'scores table' %}</a></span>
+                </div>
+            {% endif %}
+
+            <div class="utils">
                 <i class="icon print"></i>
-                <a href="{% url 'exmo2010:recommendations_print_with_comments' task.pk %}" target="_blank">{% trans 'Print with comments' %}</a>
+                <a href="{% url 'exmo2010:recommendations_print' task.pk %}" target="_blank">{% trans 'Print' %}</a>
+                {% if task.perms.view_comments %}
+                    <i class="icon print"></i>
+                    <a href="{% url 'exmo2010:recommendations_print_with_comments' task.pk %}" target="_blank">{% trans 'Print with comments' %}</a>
+                {% endif %}
+            </div>
+
+            <p>
+                {% if task.approved %}
+                    {% if is_expert and not mon.is_published %}
+                        {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
+                    {% else %}
+                        {% url 'exmo2010:monitoring_rating' mon.pk as url %}
+                    {% endif %}
+
+                    {% filter linkify|bleach %}
+                        {% if orgs_count > 1 %}
+                            &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                        {% else %}
+                            &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+                        {% endif %}
+                    {% endfilter %}
+                {% else %}
+                    &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
+                {% endif %}
+
+                {% ifnotequal openness None %}
+                    &mdash;
+                    {% if delta > 0 %}
+                        {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
+                    {% endif %}
+                    {% if mon.is_published %}
+                        {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% else %}
+                        {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
+                    {% endif %}
+                {% endifnotequal %}
+
+                {% if orgs_count > 1 %}
+                    &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
+                {% endif %}
+
+                {% if mon.is_interact and registered_count > 1 %}
+                    &mdash; {% blocktrans %}{{ registered_count }} organizations are working to increase their websites openness.{% endblocktrans %}
+                    {% if is_organization %}
+                        {% blocktrans %}Your rating position will decrease as their openness increases.{% endblocktrans %}
+                    {% endif %}
+                    <br />
+                {% endif %}
+
+                {% if mon.is_published %}
+                    {% if is_representative %}
+                        {% url 'exmo2010:certificate_order' as certificate_order_url %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. <a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
+                    {% else %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
+                    {% endif %}
+                {% else %}
+                    {% if is_representative %}
+                        &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
+                    {% endif %}
+                {% endif %}
+            </p>
+
+            {% if is_representative %}
+                <p>
+                    {% if mon.is_interact %}
+                        {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}
+                    {% endif %}
+
+                    {% if mon.is_finishing %}
+                        {% blocktrans with publish_date=mon.publish_date %}You can not leave new comments. We are answering the latest comments and correct assessments. Please wait till rating is published {{ publish_date }}.{% endblocktrans %}
+                    {% endif %}
+                </p>
             {% endif %}
         </div>
 
-        <p>
-            {% if task.approved %}
-                {% if is_expert and not mon.is_published %}
-                    {% url 'exmo2010:tasks_by_monitoring' mon.pk as url %}
-                {% else %}
-                    {% url 'exmo2010:monitoring_rating' mon.pk as url %}
-                {% endif %}
-
-                {% filter linkify|bleach %}
-                    {% if orgs_count > 1 %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} has <span id="rating_place"></span> in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
-                    {% else %}
-                        &mdash; {% blocktrans with org_url=task.organization.url monitoring_name=mon.name %}Site {{ org_url }} is the only one in the rating <a href="{{ url }}">{{ monitoring_name }}</a>.{% endblocktrans %}<br />
+        <div class="recommendations-block">
+            <table>
+                <caption>
+                    {% if not request.user.is_expert %}
+                        <h2 class="float-left">{% trans 'Recommendations list' %}</h2>
                     {% endif %}
-                {% endfilter %}
-            {% else %}
-                &mdash; {% blocktrans with org_url=task.organization.url|linkify|bleach %}Site {{ org_url }}.{% endblocktrans %}<br/>
-            {% endif %}
-
-            {% ifnotequal openness None %}
-                &mdash;
-                {% if delta > 0 %}
-                    {% blocktrans with delta=delta|floatformat %}Fulfilled recommendations make up {{ delta }}% website openness increase.{% endblocktrans %}
-                {% endif %}
-                {% if mon.is_published %}
-                    {% blocktrans with openness=openness|floatformat %}Final openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
-                {% else %}
-                    {% blocktrans with openness=openness|floatformat %}Current openness <span>{{ openness }}%</span>.{% endblocktrans %}<br />
-                {% endif %}
-            {% endifnotequal %}
-
-            {% if orgs_count > 1 %}
-                &mdash; {% blocktrans count orgs_count=orgs_count %}Total amount of organizations {{ orgs_count }}. {% plural %} Total amount of organizations {{ orgs_count }}. {% endblocktrans %}<br />
-            {% endif %}
-
-            {% if mon.is_interact and registered_count > 1 %}
-                &mdash; {% blocktrans %}{{ registered_count }} organizations are working to increase their websites openness.{% endblocktrans %}
-                {% if is_organization %}
-                    {% blocktrans %}Your rating position will decrease as their openness increases.{% endblocktrans %}
-                {% endif %}
-                <br />
-            {% endif %}
-
-            {% if mon.is_published %}
-                {% if is_representative %}
-                    {% url 'exmo2010:certificate_order' as certificate_order_url %}
-                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}. <a href="{{ certificate_order_url }}" target="_blank">Order Certificate</a> with rating position of the website and its openness value.{% endblocktrans %}<br />
-                {% else %}
-                    &mdash; {% blocktrans with publish_date=mon.publish_date|date:"DATE_FORMAT"|remove_extra_dot %}Rating was published {{ publish_date }}.{% endblocktrans %}<br />
-                {% endif %}
-            {% else %}
-                {% if is_representative %}
-                    &mdash; {% blocktrans with publish_date=mon.publish_date %}Order Certificate reflecting your website rating position and openness value after publication of the rating ({{ publish_date }}).{% endblocktrans %}<br />
-                {% endif %}
-            {% endif %}
-        </p>
-
-        {% if is_representative %}
-            <p>
-                {% if mon.is_interact %}
-                    {% blocktrans %}We will change assessments in case you inform us that recommendations are fulfilled. To do it, please leave a comment under this recommendation.{% endblocktrans %}
-                {% endif %}
-
-                {% if mon.is_finishing %}
-                    {% blocktrans with publish_date=mon.publish_date %}You can not leave new comments. We are answering the latest comments and correct assessments. Please wait till rating is published {{ publish_date }}.{% endblocktrans %}
-                {% endif %}
-            </p>
-        {% endif %}
-    </div>
-
-    <div class="recommendations-block">
-        <table>
-            <caption>
-                {% if not request.user.is_expert %}
-                    <h2 class="float-left">{% trans 'Recommendations list' %}</h2>
-                {% endif %}
-                {% if total_cost and scores|length != 0 %}
-                    <span class="cost float-right">{{ total_cost|floatformat }}%</span>
-                {% endif %}
-            </caption>
-
-            {% if scores|length == 0 %}
-                <p>{% trans 'No recommendations' %}</p>
-            {% else %}
-                {% for score in scores %}
-                    {% if score.is_relevant %}
-                        <tr id="param{{ score.parameter.pk }}" class="{% if score.is_finished %} finished {% endif %}">
-                            <td class="code"><a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
-                            <td class="center">
-                                <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
-                                <p>{{ score.recommendations|default_if_none:""|linkify|bleach|linebreaksbr }}</p>
-                                {% if score.parameter.grounds and not score.is_finished %}
-                                    <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
-                                    <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>
-                                    <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
-                                {% endif %}
-                                {% if task.perms.view_comments %}
-                                    <div class="comments">
-                                        {% include 'scores/_recomm_comments.html' with score=score %}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            {% if score.is_finished %}
-                                <td class="cost complete">{% trans 'Ready' %}</td>
-                            {% else %}
-                                <td class="cost">{% if score.cost != 0 %}+{{ score.cost|floatformat }}%{% endif %}</td>
-                            {% endif %}
-                        </tr>
-                    {% else %}
-                        <tr id="param{{ score.parameter.pk }}" class="nonrelevant">
-                            <td class="code">{{ score.parameter.code }}</td>
-                            <td class="center">
-                                <div class="param">{{ score.parameter.name }}</div>
-                                {% if task.perms.view_comments %}
-                                    <div class="comments">
-                                        {% include 'scores/_recomm_comments.html' with score=score %}
-                                    </div>
-                                {% endif %}
-                            </td>
-                            <td class="cost">{% trans 'Deleted' %}</td>
-                        </tr>
+                    {% if total_cost and scores|length != 0 %}
+                        <span class="cost float-right">{{ total_cost|floatformat }}%</span>
                     {% endif %}
-                {% endfor %}
-            {% endif %}
-        </table>
+                </caption>
+
+                {% if scores|length == 0 %}
+                    <p>{% trans 'No recommendations' %}</p>
+                {% else %}
+                    {% for score in scores %}
+                        {% if score.is_relevant %}
+                            <tr id="param{{ score.parameter.pk }}" class="{% if score.is_finished %} finished {% endif %}">
+                                <td class="code"><a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.code }}</a></td>
+                                <td class="center">
+                                    <a target="_blank" href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter.name }}</a>
+                                    <p>{{ score.recommendations|default_if_none:""|linkify|bleach|linebreaksbr }}</p>
+                                    {% if score.parameter.grounds and not score.is_finished %}
+                                        <a href="#show_grounds" class="pseudo grounds_toggle">{% trans 'Show grounds' %}</a>
+                                        <a href="#hide_grounds" class="pseudo grounds_toggle" style="display:none;">{% trans 'Hide grounds' %}</a>
+                                        <div class="grounds" style="display:none;" >{{ score.parameter.grounds|bleach }}</div>
+                                    {% endif %}
+                                    {% if task.perms.view_comments %}
+                                        <div class="comments">
+                                            {% include 'scores/_recomm_comments.html' with score=score %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                {% if score.is_finished %}
+                                    <td class="cost complete">{% trans 'Ready' %}</td>
+                                {% else %}
+                                    <td class="cost">{% if score.cost != 0 %}+{{ score.cost|floatformat }}%{% endif %}</td>
+                                {% endif %}
+                            </tr>
+                        {% else %}
+                            <tr id="param{{ score.parameter.pk }}" class="nonrelevant">
+                                <td class="code">{{ score.parameter.code }}</td>
+                                <td class="center">
+                                    <div class="param">{{ score.parameter.name }}</div>
+                                    {% if task.perms.view_comments %}
+                                        <div class="comments">
+                                            {% include 'scores/_recomm_comments.html' with score=score %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="cost">{% trans 'Deleted' %}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
     </div>
 {% endblock %}

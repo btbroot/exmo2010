@@ -39,8 +39,9 @@
             <link rel="stylesheet" type="text/css" href="{% static 'admin/css/rtl.css' %}" />
         {% endif %}
         {% block extra_css %}{% endblock %}
-        
+
         <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+        <script type="text/javascript" src="{% static 'compat.js' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>

@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -32,76 +32,84 @@
     <script type="text/javascript" src="{% static 'js/send_mail.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="send-mail-content-block">
-        <h2>{% trans "Mail" %}</h2>
 
-        {% include "_sendmail_tabs.html" with tab='send_mail' %}
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-        <div class="tab-content">
-            {% include "_form_errors.html" with form=form %}
+    {% include "_sidebar_monitoring.html" %}
 
-            <form action="{% url 'exmo2010:send_mail' monitoring.pk %}" method="post">{% csrf_token %}
-                <div class="form-table org-email-form">
-                    <div class="table-row">
-                        <div class="table-cell-R">
-                            {{ form.subject.label }} <span class="required">*</span>
-                        </div>
+    <div class="content cell">
 
-                        <div class="table-cell-L">
-                            {{ form.subject }}
-                        </div>
-                    </div>
+        <div class="send-mail-content-block">
+            <h2>{% trans "Mail" %}</h2>
 
-                    <div class="table-row">
-                        <div class="table-cell-R">
-                            {{ form.comment.label }} <span class="required">*</span>
-                        </div>
+            {% include "_sendmail_tabs.html" with tab='send_mail' %}
 
-                        <div class="table-cell-L text-area">
-                            {{ form.comment }}
-                        </div>
+            <div class="tab-content">
+                {% include "_form_errors.html" with form=form %}
 
-                        <div class="help-text info-block">
-                            %code% - {% trans 'use this keyword for invitation addition in email.' %}
-                        </div>
-                    </div>
-
-                    <div class="table-row">
-                        <div class="table-cell-R">
-                            {% trans 'To' context 'mail destination' %}
-                        </div>
-
-                        <div class="table-cell-L">
-                            <div class="destination">
-                                <div>
-                                    <input class='group' type='checkbox' id='all_orgs'/> <label for='all_orgs'>{% trans 'All organizations' %}</label>
-                                </div>
-                                <div>{{ form.dst_orgs_noreg }} {{ form.dst_orgs_noreg.label_tag }}</div>
-                                <div>{{ form.dst_orgs_inact }} {{ form.dst_orgs_inact.label_tag }}</div>
-                                <div>{{ form.dst_orgs_activ }} {{ form.dst_orgs_activ.label_tag }}</div>
+                <form action="{% url 'exmo2010:send_mail' monitoring.pk %}" method="post">{% csrf_token %}
+                    <div class="form-table org-email-form">
+                        <div class="table-row">
+                            <div class="table-cell-R">
+                                {{ form.subject.label }} <span class="required">*</span>
                             </div>
-                            <div class="destination">
-                                <div>
-                                    <input class='group' type='checkbox' id='all_orgusers'/> <label for='all_orgusers'>{% trans 'All representatives' %}</label>
-                                </div>
-                                <div>{{ form.dst_orgusers_inact }} {{ form.dst_orgusers_inact.label_tag }}</div>
-                                <div>{{ form.dst_orgusers_activ }} {{ form.dst_orgusers_activ.label_tag }}</div>
+
+                            <div class="table-cell-L">
+                                {{ form.subject }}
                             </div>
                         </div>
-                    </div>
 
-                    <div class="table-row">
-                        <div class="table-cell-R"></div>
+                        <div class="table-row">
+                            <div class="table-cell-R">
+                                {{ form.comment.label }} <span class="required">*</span>
+                            </div>
 
-                        <div class="table-cell-L">
-                            <input type="submit" value="{% trans 'Send' %}"/>
+                            <div class="table-cell-L text-area">
+                                {{ form.comment }}
+                            </div>
+
+                            <div class="help-text info-block">
+                                %code% - {% trans 'use this keyword for invitation addition in email.' %}
+                            </div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-cell-R">
+                                {% trans 'To' context 'mail destination' %}
+                            </div>
+
+                            <div class="table-cell-L">
+                                <div class="destination">
+                                    <div>
+                                        <input class='group' type='checkbox' id='all_orgs'/>
+                                        <label for='all_orgs'>{% trans 'All organizations' %}</label>
+                                    </div>
+                                    <div>{{ form.dst_orgs_noreg }} {{ form.dst_orgs_noreg.label_tag }}</div>
+                                    <div>{{ form.dst_orgs_inact }} {{ form.dst_orgs_inact.label_tag }}</div>
+                                    <div>{{ form.dst_orgs_activ }} {{ form.dst_orgs_activ.label_tag }}</div>
+                                </div>
+                                <div class="destination">
+                                    <div>
+                                        <input class='group' type='checkbox' id='all_orgusers'/>
+                                        <label for='all_orgusers'>{% trans 'All representatives' %}</label>
+                                    </div>
+                                    <div>{{ form.dst_orgusers_inact }} {{ form.dst_orgusers_inact.label_tag }}</div>
+                                    <div>{{ form.dst_orgusers_activ }} {{ form.dst_orgusers_activ.label_tag }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-row">
+                            <div class="table-cell-R"></div>
+
+                            <div class="table-cell-L">
+                                <input type="submit" value="{% trans 'Send' %}"/>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 {%endblock%}

@@ -37,11 +37,6 @@ def comment_list(request):
     if request.is_ajax():
         comments = user.profile.get_answered_comments()
         return TemplateResponse(request, 'comment_list_table.html', {'comments': comments})
-
     else:
         comments = user.profile.get_filtered_not_answered_comments()
-
-        return TemplateResponse(request, 'comment_list.html', {
-            'title': _('Comments'),
-            'comments': comments,
-        })
+        return TemplateResponse(request, 'comment_list.html', {'comments': comments})

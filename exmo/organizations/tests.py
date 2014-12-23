@@ -169,13 +169,13 @@ class OrganizationEditAccessTestCase(TestCase):
         self.assertEqual(new_org_fields, initial_fields)
 
 
-class TestOrganizationsPage(TestCase):
+class OrganizationsPageAccessTestCase(TestCase):
+    # exmo2010:organizations
+
     # Scenario: try to get organizations page by any users
     def setUp(self):
-        # GIVEN published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_INTERACTION)
-        # AND organization for this monitoring
-        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        # GIVEN organization in INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
         # AND user without any permissions
         self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
         # AND superuser
@@ -188,14 +188,15 @@ class TestOrganizationsPage(TestCase):
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
         # AND organizations representative
         self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        self.orguser.get_profile().organization = [self.organization]
+        self.orguser.get_profile().organization = [org]
+
+        self.url = reverse('exmo2010:organizations', args=[org.monitoring.pk])
 
     def test_anonymous_organizations_page_access(self):
-        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
         # WHEN anonymous user get organizations page
-        resp = self.client.get(url, follow=True)
+        resp = self.client.get(self.url, follow=True)
         # THEN redirect to login page
-        self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + url)
+        self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + self.url)
 
     @parameterized.expand([
         ('user', 403),
@@ -205,10 +206,9 @@ class TestOrganizationsPage(TestCase):
         ('admin', 200),
     ])
     def test_authenticated__user_organizations_page_access(self, username, response_code):
-        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
         # WHEN user get organizations page
         self.client.login(username=username, password='password')
-        resp = self.client.get(url)
+        resp = self.client.get(self.url)
         # THEN only admin and expert A have access
         self.assertEqual(resp.status_code, response_code)
 

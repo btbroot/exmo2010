@@ -147,16 +147,9 @@ def clarification_list(request):
         raise PermissionDenied
 
     if request.is_ajax():
-        clarifications = user.profile.get_closed_clarifications()
-        return TemplateResponse(request, 'clarification_list_table.html', {
-            'clarifications': clarifications
-        })
+        context = {'clarifications': user.profile.get_closed_clarifications()}
+        return TemplateResponse(request, 'clarification_list_table.html', context)
 
     else:
-        clarifications = user.profile.get_filtered_opened_clarifications()
-        title = _('Clarifications')
-
-        return TemplateResponse(request, 'clarification_list.html', {
-            'title': title,
-            'clarifications': clarifications
-        })
+        context = {'clarifications': user.profile.get_filtered_opened_clarifications()}
+        return TemplateResponse(request, 'clarification_list.html', context)

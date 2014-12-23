@@ -4,6 +4,7 @@
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -23,11 +24,14 @@
 
 {% block title %}{% trans 'Page not found' %}{% endblock %}
 
-{% block h1 %}<h1>{% trans 'Page not found' %}</h1>{% endblock %}
-
 {% block content %}
-    <div>
-        <p>{% trans "We're sorry, but the requested page could not be found." %}</p>
-        <p>{% trans "Go back or use navigation menu at the top." %}</p>
+
+    <h1>{% trans 'Page not found' %}</h1>
+
+    <div class="content">
+        <div>
+            <p>{% trans "We're sorry, but the requested page could not be found." %}</p>
+            <p>{% trans "Go back or use navigation menu at the top." %}</p>
+        </div>
     </div>
 {% endblock %}

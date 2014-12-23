@@ -35,8 +35,22 @@
 {% endblock %}
 
 {% block content %}
-    <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
-        {{form.as_p}}
-        <p><input type="submit" value="{% trans 'Send' %}"/><input type="reset" value="{% trans 'Reset' %}"/></p>
-    </form>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
+
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+        <h2>
+            {% if task %}
+                {% blocktrans %}Edit task {{task}}{% endblocktrans %}
+            {% else %}
+                {% blocktrans %}Add new task for {{view.monitoring}}{% endblocktrans %}
+            {% endif %}
+        </h2>
+
+        <form method="post" action="?{{request.GET.urlencode}}">{% csrf_token %}
+            {{form.as_p}}
+            <p><input type="submit" value="{% trans 'Send' %}"/><input type="reset" value="{% trans 'Reset' %}"/></p>
+        </form>
+    </div>
 {% endblock %}

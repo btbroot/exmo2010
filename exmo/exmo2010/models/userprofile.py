@@ -22,7 +22,6 @@ from django.contrib import auth
 from django.contrib.auth.models import Group, User, AnonymousUser
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
-from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from .base import BaseModel
@@ -33,6 +32,8 @@ from .monitoring import (
     MONITORING_FINALIZING, MONITORING_RATE, MONITORING_RESULT)
 from .organization import Organization
 from .score import Score
+
+from ..columns_picker import ColumnsPickerModel
 
 
 def check_role(user, groups):
@@ -54,7 +55,7 @@ def group_property(group):
     return property(_getter, _setter)
 
 
-class UserProfile(BaseModel):
+class UserProfile(BaseModel, ColumnsPickerModel):
     """
     Custom user profile model.
 
@@ -100,22 +101,6 @@ class UserProfile(BaseModel):
     subscribe = models.BooleanField(verbose_name=_("Subscribe to news"), default=False)
     position = models.CharField(verbose_name=_("Job title"), max_length=48, null=True, blank=True)
     phone = models.CharField(verbose_name=_("Phone number"), max_length=30, null=True, blank=True)
-
-    # Rating table settings
-    rt_representatives = models.BooleanField(verbose_name=pgettext_lazy(u'number of representatives', u'Representatives'), default=True)
-    rt_comment_quantity = models.BooleanField(verbose_name=_("Comment quantity"), default=True)
-    rt_initial_openness = models.BooleanField(verbose_name=_("Initial Openness"), default=False)
-    rt_final_openness = models.BooleanField(verbose_name=_("Final Openness"), default=True)
-    rt_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
-
-    # Scores table settings
-    st_criteria = models.BooleanField(verbose_name=_("Criteria"), default=True)
-    st_score = models.BooleanField(verbose_name=_("Score"), default=True)
-    st_difference = models.BooleanField(verbose_name=_("Difference"), default=True)
-    st_weight = models.BooleanField(verbose_name=_("Weight"), default=False)
-    st_type = models.BooleanField(verbose_name=_("Type"), default=False)
-
-    SCORES_TABLE_FIELDS = 'st_criteria st_score st_difference st_weight st_type'.split()
 
     # Change notification settings
     notification_type = models.PositiveSmallIntegerField(verbose_name=_("Notification about changes"),

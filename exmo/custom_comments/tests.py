@@ -313,14 +313,15 @@ class CommentsDigestTestCase(TestCase):
 
     def setUp(self):
         # GIVEN expertA with NOTIFICATION_DIGEST setting enabled
-        expertA = User.objects.create_user('expertA', 'user@svobodainfo.org', 'password')
+        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         expertA.profile.is_expertA = True
         expertA.profile.notification_type = UserProfile.NOTIFICATION_DIGEST
         expertA.profile.save()
 
         # AND score with comment
         score = mommy.make(Score)
-        mommy.make(CommentExmo, object_pk=score.pk, content_type=ContentType.objects.get_for_model(Score))
+        user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
+        mommy.make(CommentExmo, user=user, object_pk=score.pk, content_type=ContentType.objects.get_for_model(Score))
 
     def test(self):
         # WHEN send_digest task is executed

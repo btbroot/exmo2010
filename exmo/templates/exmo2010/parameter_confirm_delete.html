@@ -30,14 +30,17 @@
 {% endblock %}
 
 {% block content %}
-    {% if param.score_set.all %}
-        {% trans 'When you delete parameter you also delete this scores:'%}<br>
-        {% for score in param.score_set.all %}
-            <a href="{% url 'exmo2010:score' score.pk %}">{{ score }}</a><br>
-        {% endfor %}
-    {% endif %}
-    <form method="post">{% csrf_token %}
-        <p>{% trans 'Delete this parameter?' %}</p>
-        <p><input type="submit" value="{% trans 'Send' %}" /></p>
-    </form>
+
+    <div class="content">
+        {% if param.score_set.all %}
+            {% trans 'When you delete parameter you also delete this scores:'%}<br>
+            {% for score in param.score_set.all %}
+                <a href="{% url 'exmo2010:score' score.pk %}">{{ score }}</a><br>
+            {% endfor %}
+        {% endif %}
+        <form method="post">{% csrf_token %}
+            <p>{% trans 'Delete this parameter?' %}</p>
+            <p><input type="submit" value="{% trans 'Send' %}" /></p>
+        </form>
+    </div>
 {% endblock %}

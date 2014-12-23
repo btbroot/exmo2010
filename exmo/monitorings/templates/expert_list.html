@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011 Al Nikolov
@@ -21,47 +21,50 @@
 #
 {% endcomment %}
 {% load i18n %}
-{% load check_object_permission monitoring_stats from exmo2010_tags %}
 
 {% block title %}{{ monitoring.name }}{% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <h2>{{ title }}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-    <div id=expert_list>
-        <table>
-            {% include 'exmo2010/table_header.html' with headers=headers %}
+    {% include "_sidebar_monitoring.html" %}
 
-            <tbody>
-            <tr><td>
-                {% for object in object_list %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}">{{ object.userprofile.legal_name }}</a>
-                        </td>
-                        <td>
-                            <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_OPEN }}">{{ object.open_tasks }}</a>
-                        </td>
-                        <td>
-                            <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_CLOSED }}">{{ object.ready_tasks }}</a>
-                        </td>
-                        <td>
-                            <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_APPROVED }}">{{ object.approved_tasks }}</a>
-                        </td>
-                        <td>
-                            <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% include "exmo2010/_paginator.html" with queryset=object_list %}
+    <div class="content cell">
+
+        <h2>{% blocktrans with monitoring=monitoring.name %} Experts of monitoring {{monitoring}} {% endblocktrans %}</h2>
+
+        <div id=expert_list>
+            <table>
+                {% include 'exmo2010/table_header.html' with headers=headers %}
+
+                <tbody>
+                <tr><td>
+                    {% for object in object_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}">{{ object.userprofile.legal_name }}</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_OPEN }}">{{ object.open_tasks }}</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_CLOSED }}">{{ object.ready_tasks }}</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}&filter2={{ exmo2010.models.Task.TASK_APPROVED }}">{{ object.approved_tasks }}</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter1={{ object.username }}">{{ object.all_tasks }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include "exmo2010/_paginator.html" with queryset=object_list %}
+        </div>
+        {% if monitoring.perms.admin_monitoring %}
+            <br />
+            {% include "_tasks_stats.html" %}
+        {% endif %}
     </div>
-    {% check_object_permission exmo2010.admin_monitoring monitoring as perm %}
-    {% if perm %}
-        <br />
-        {% monitoring_stats monitoring %}
-    {% endif %}
 {%endblock%}

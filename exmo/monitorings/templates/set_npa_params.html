@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -33,19 +33,23 @@
     </script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <h2>{% trans 'Choose normative parameters' %}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ formset.management_form }}
-        {% for form in formset %}
-            {{ form.id }}
-            <p>{{ form.npa }} {{ form.npa.label_tag }}</p>
-        {% endfor %}
-        <input type="submit" value="{% trans 'Save' %}">&nbsp;
-        <input type="reset" value="{% trans 'Reset Selection' %}">
-    </form>
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+        <h2>{% trans 'Choose normative parameters' %}</h2>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                {{ form.id }}
+                <p>{{ form.npa }} {{ form.npa.label_tag }}</p>
+            {% endfor %}
+            <input type="submit" value="{% trans 'Save' %}">&nbsp;
+            <input type="reset" value="{% trans 'Reset Selection' %}">
+        </form>
+    </div>
 {% endblock %}

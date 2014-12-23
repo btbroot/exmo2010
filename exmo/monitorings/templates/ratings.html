@@ -21,6 +21,8 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %} {% trans 'Ratings' %} {% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/ratings.css' %}" />
 {% endblock %}
@@ -31,68 +33,68 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/rating.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{% trans 'Ratings' %}</h1>{% endblock %}
-
 {% block content %}
-    <form class="filter" action="" method="GET">
-        <div class="table">
-            <div class="table-cell">
-                {{ queryform.name }}
+    <h1>{% trans 'Ratings' %}</h1>
+
+    <div class="content">
+        <form class="filter" action="" method="GET">
+            <div class="table">
+                <div class="table-cell">
+                    {{ queryform.name }}
+                </div>
+                <div class="table-cell submit-cell">
+                    <input type="submit" value="{% trans 'Find' %}" />
+                </div>
             </div>
-            <div class="table-cell submit-cell">
-                <input type="submit" value="{% trans 'Find' %}" />
-            </div>
-        </div>
-    </form>
+        </form>
 
-    <table id="ratings-data" class="base-table">
-        <thead>
-            <tr>
-                <th class="monitoring">
-                    <span>{% trans "Monitoring cycle" %}</span>&nbsp;<span class="arrow"></span>
-                </th>
+        <table id="ratings-data" class="base-table">
+            <thead>
+                <tr>
+                    <th class="monitoring">
+                        <span>{% trans "Monitoring cycle" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
 
-                <th class="map">
-                </th>
+                    <th class="map">
+                    </th>
 
-                <th class="published">
-                    <span>{% trans "Published" %}</span>&nbsp;<span class="arrow"></span>
-                </th>
+                    <th class="published">
+                        <span>{% trans "Published" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
 
-                <th class="sites">
-                    <span>{% trans "Sites" context "genetivus" %}</span>&nbsp;<span class="arrow"></span>
-                </th>
+                    <th class="sites">
+                        <span>{% trans "Sites" context "genetivus" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
 
-                <th class="average sorter-text">
-                    <span>{% trans "Average openness" context "literally" %}</span>&nbsp;<span class="arrow"></span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for monitoring in monitoring_list %}
-            <tr>
-                <td>
-                    <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
-                </td>
+                    <th class="average sorter-text">
+                        <span>{% trans "Average openness" context "literally" %}</span>&nbsp;<span class="arrow"></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for monitoring in monitoring_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
+                    </td>
 
-                <td class="map">
-                    {% if monitoring.map_link %}
-                        <a href="{{ monitoring.map_link }}" target="_blank"><i class="icon map"></i></a>
-                    {% endif %}
-                </td>
+                    <td class="map">
+                        {% if monitoring.map_link %}
+                            <a href="{{ monitoring.map_link }}" target="_blank"><i class="icon map"></i></a>
+                        {% endif %}
+                    </td>
 
-                <td class="published">
-                    <span class="machine">{{ monitoring.publish_date|date:"d/m/Y" }}</span>
-                    <span class="verbose">{{ monitoring.publish_date }}</span>
-                </td>
+                    <td class="published">
+                        <span class="machine">{{ monitoring.publish_date|date:"d/m/Y" }}</span>
+                        <span class="verbose">{{ monitoring.publish_date }}</span>
+                    </td>
 
-                <td class="sites">{{ monitoring.org_count }}</td>
+                    <td class="sites">{{ monitoring.org_count }}</td>
 
-                <td>{% if monitoring.average %}{{ monitoring.average }}&nbsp;%{% endif %}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% include "exmo2010/_paginator.html" with queryset=monitoring_list %}
+                    <td>{% if monitoring.avg_openness %}{{ monitoring.avg_openness }}&nbsp;%{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

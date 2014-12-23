@@ -44,6 +44,7 @@ from core.response import JSONResponse
 from core.utils import clean_message, round_ex
 from core.views import login_required_on_deny, LoginRequiredOnDeny
 from custom_comments.models import CommentExmo
+from exmo2010.columns_picker import task_scores_columns_form
 from exmo2010.mail import mail_comment
 from exmo2010.models import Organization, Score, Task, Parameter, QAnswer, QQuestion, UserProfile
 from exmo2010.models.monitoring import Monitoring
@@ -327,6 +328,13 @@ class TaskScoresMixin(LoginRequiredOnDeny):
 class TaskScoresView(TaskScoresMixin, DetailView):
     template_name = "scores/task_scores.html"
 
+    def post(self, request, *args, **kwargs):
+        scores_table_columns_form = task_scores_columns_form(request)
+        if scores_table_columns_form.post_ok(request):
+            return HttpResponseRedirect(request.path)
+        else:
+            return HttpResponseBadRequest()
+
     def get_context_data(self, **kwargs):
         context = super(TaskScoresView, self).get_context_data(**kwargs)
 
@@ -350,8 +358,6 @@ class TaskScoresView(TaskScoresMixin, DetailView):
         self._set_parameters_scores(relevant_parameters, scores_rel)
         self._set_last_comment_url(relevant_parameters, scores_rel)
 
-        ScoresTableColumnsForm = modelform_factory(UserProfile, fields=UserProfile.SCORES_TABLE_FIELDS)
-
         if self.request.user.is_expert:
             # Non relevant parameters
             nonrelevant_parameters = Parameter.objects.filter(monitoring=monitoring, exclude=self.task.organization)\
@@ -367,17 +373,10 @@ class TaskScoresView(TaskScoresMixin, DetailView):
             # Set scores to non relevant parameters list
             self._set_parameters_scores(nonrelevant_parameters, scores_nonrel)
 
-            # Display scores table columns options are saved in UserProfile.st_* fields
-            columns_form = ScoresTableColumnsForm(instance=self.request.user.profile)
-
             context.update({
                 'nonrelevant_parameters': nonrelevant_parameters,
                 'nonrelevant_parameters_exist': nonrelevant_parameters_exist,
             })
-        else:
-            # OrgUsers and AnonymousUsers wll see all permitted scores table columns
-            initial_data = {'initial': dict(zip(UserProfile.SCORES_TABLE_FIELDS, [False, True, True, False, True]))}
-            columns_form = ScoresTableColumnsForm(**initial_data)
 
         # Get questionnaire form
         questionnaire_form = None
@@ -397,7 +396,7 @@ class TaskScoresView(TaskScoresMixin, DetailView):
             'orgs_count': Organization.objects.filter(monitoring=monitoring).count(),
             'openness': self.task.openness,
             'delta': self.task.openness - self.task.openness_initial if self.task.openness is not None else None,
-            'columns_form': columns_form,
+            'columns_form': task_scores_columns_form(self.request),
             'is_representative': self.request.user.represents(self.task.organization),
         })
 
@@ -559,24 +558,6 @@ class RecommendationsPrintWithComments(RecommendationsPrint):
         if not self.request.user.has_perm('exmo2010.view_comments', task):
             raise PermissionDenied
         return task
-
-
-@login_required
-def post_task_scores_table_settings(request, task_pk):
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(permitted_methods=['POST'])
-
-    task = get_object_or_404(Task, pk=task_pk)
-    if not request.user.is_expert:
-        raise PermissionDenied
-
-    ScoresTableColumnsForm = modelform_factory(UserProfile, fields=UserProfile.SCORES_TABLE_FIELDS)
-    scores_table_columns_form = ScoresTableColumnsForm(request.POST, instance=request.user.profile)
-
-    if scores_table_columns_form.is_valid():
-        scores_table_columns_form.save()
-
-    return HttpResponseRedirect(request.POST.get('next') or reverse('exmo2010:task_scores', args=[task.pk]))
 
 
 def rating_update(request):

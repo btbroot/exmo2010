@@ -134,6 +134,16 @@ class Monitoring(BaseModel):
 
         return tasks
 
+    def tasks_stats(self):
+        from .task import Task
+        approved_orgs = self.organization_set.filter(task__status=Task.TASK_APPROVED)
+        ready_orgs = self.organization_set.filter(task__status=Task.TASK_READY).exclude(pk__in=approved_orgs)
+        return {
+            'ready_orgs': ready_orgs.distinct(),
+            'approved_orgs': approved_orgs.distinct(),
+            'assigned_orgs': self.organization_set.filter(task__status__isnull=False).distinct()
+        }
+
     def statistics(self):
         """
         Метод, возвращающий словарь со статистикой по мониторингу.

@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -21,7 +21,6 @@
 #
 {% endcomment %}
 {% load i18n static %}
-{% load monitoring_stats from exmo2010_tags %}
 
 {% block title %}{{ monitoring.name }}{% endblock %}
 
@@ -36,112 +35,115 @@
     <script type="text/javascript" src="{% static 'js/organizations.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="organizations-content-block">
-        <h2>{% trans "Organizations" %}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-        {% include "_organizations_tabs.html" with tab='all' %}
+    {% include "_sidebar_monitoring.html" %}
 
-        <div class="tab-content">
-            {% if is_organizations_exists %}
-                <table class="base-table">
-                    <caption>
-                        <form class="filter" action="" method="GET">
-                            <div class="table">
-                                <div class="table-cell">
-                                    {{ queryform.org_name }}
+    <div class="content cell">
+
+        <div class="organizations-content-block">
+            <h2>{% trans "Organizations" %}</h2>
+
+            {% include "_organizations_tabs.html" with tab='all' %}
+
+            <div class="tab-content">
+                {% if is_organizations_exists %}
+                    <table class="base-table">
+                        <caption>
+                            <form class="filter" action="" method="GET">
+                                <div class="table">
+                                    <div class="table-cell">
+                                        {{ queryform.org_name }}
+                                    </div>
+                                    <div class="table-cell select-cell">
+                                        {{ queryform.inv_status }}
+                                    </div>
+                                    <div class="table-cell submit-cell">
+                                        <input type="submit" value="{% trans 'Find' %}" />
+                                    </div>
                                 </div>
-                                <div class="table-cell select-cell">
-                                    {{ queryform.inv_status }}
-                                </div>
-                                <div class="table-cell submit-cell">
-                                    <input type="submit" value="{% trans 'Find' %}" />
-                                </div>
-                            </div>
-                        </form>
-                    </caption>
+                            </form>
+                        </caption>
 
-                    <thead>
-                        <tr>
-                            <th><input class="group_actions toggle_all" type="checkbox"/></th>
-                            <th><span>{% trans 'Organization' %}</span><span class="arrow"></span></th>
-                            <th><span>{% trans 'Email' %}</span><span class="arrow"></span></th>
-                            <th><span>{% trans 'Phone' %}</span><span class="arrow"></span></th>
-                            <th><span>{% trans 'Invitation code' %}</span><span class="arrow"></span></th>
-                            <th></th>
-                            <th><span>{% trans 'Tasks' %}</span><span class="arrow"></span></th>
-                            <th><span>{% trans 'Status' %}</span><span class="arrow"></span></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for org in organizations %}
-                            {% comment %} row id for testing {% endcomment %}
-                            <tr id="org_row_{{ org.pk }}" data-name="{{ org.name }}" data-code="{{ org.inv_code }}" data-email="{{ org.email }}">
-                                <td><input class="group_actions" type="checkbox"/></td>
-                                <td>
-                                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name|urlencode }}">{{ org.name|truncatechars:"123" }}</a>
-                                    &nbsp;<a href="{% url 'exmo2010:organizations_update' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
-                                    {% if not monitoring.is_published %}
-                                        &nbsp;<a href="{% url 'exmo2010:organizations_delete' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>
-                                    {%endif%}
-                                </td>
-                                <td>{{ org.email|default_if_none:""|truncatewords:1 }}</td>
-                                <td>{{ org.phone|default_if_none:""|truncatewords:1 }}</td>
-                                <td>{{ org.inv_code|default_if_none:'' }}</td>
-                                <td><a class="org_invite_link" href=# ><img src="{% static 'exmo2010/img/link.svg' %}"></a></td>
-                                <td>{{ org.tasks_count }}</td>
-                                {% with org.inv_status as status %}
-                                    <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
-                                        {{ org.get_inv_status_display|default_if_none:'' }}
-                                    </td>
-                                {% endwith %}
+                        <thead>
+                            <tr>
+                                <th><input class="group_actions toggle_all" type="checkbox"/></th>
+                                <th><span>{% trans 'Organization' %}</span><span class="arrow"></span></th>
+                                <th><span>{% trans 'Email' %}</span><span class="arrow"></span></th>
+                                <th><span>{% trans 'Phone' %}</span><span class="arrow"></span></th>
+                                <th><span>{% trans 'Invitation code' %}</span><span class="arrow"></span></th>
+                                <th></th>
+                                <th><span>{% trans 'Tasks' %}</span><span class="arrow"></span></th>
+                                <th><span>{% trans 'Status' %}</span><span class="arrow"></span></th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
 
-                <div id="group_actions">
-                    {% trans 'For selected' %} <input class="action" type="button" value="{% trans 'Create invite link' %}" disabled="disabled"/>
-                </div>
+                        <tbody>
+                            {% for org in organizations %}
+                                {% comment %} row id for testing {% endcomment %}
+                                <tr id="org_row_{{ org.pk }}" data-name="{{ org.name }}" data-code="{{ org.inv_code }}" data-email="{{ org.email }}">
+                                    <td><input class="group_actions" type="checkbox"/></td>
+                                    <td>
+                                        <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name|urlencode }}">{{ org.name|truncatechars:"123" }}</a>
+                                        &nbsp;<a href="{% url 'exmo2010:organizations_update' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>
+                                        {% if not monitoring.is_published %}
+                                            &nbsp;<a href="{% url 'exmo2010:organizations_delete' monitoring.pk org.pk %}?{{ request.GET.urlencode }}"><img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>
+                                        {%endif%}
+                                    </td>
+                                    <td>{{ org.email|default_if_none:""|truncatewords:1 }}</td>
+                                    <td>{{ org.phone|default_if_none:""|truncatewords:1 }}</td>
+                                    <td>{{ org.inv_code|default_if_none:'' }}</td>
+                                    <td><a class="org_invite_link" href=# ><img src="{% static 'exmo2010/img/link.svg' %}"></a></td>
+                                    <td>{{ org.tasks_count }}</td>
+                                    {% with org.inv_status as status %}
+                                        <td style="color: {% if status == 'NTS' %}#FF6262{% elif status == 'RD' %}#FFB76F{% elif status == 'ACT' or status == 'RGS' %}#54A754{% endif %}">
+                                            {{ org.get_inv_status_display|default_if_none:'' }}
+                                        </td>
+                                    {% endwith %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-                {% include "exmo2010/_paginator.html" with queryset=orgs %}
+                    <div id="group_actions">
+                        {% trans 'For selected' %} <input class="action" type="button" value="{% trans 'Create invite link' %}" disabled="disabled"/>
+                    </div>
 
-                {% monitoring_stats monitoring %}
-            {% else %}
-                {% trans 'No organizations' %}
-            {% endif %}
+                    {% include "_tasks_stats.html" %}
+                {% else %}
+                    {% trans 'No organizations' %}
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    <div id="invite_links_window" class="modal hidden" data-baselink="http://{{ request.get_host }}{% url 'exmo2010:auth_orguser' %}">
-        <h2>{% trans "Invite links" %}</h2>
-        <a href="#" class="close_window">{% trans "Close" %}</a>
-        <table class="digest">
-            <tbody>
-                <tr class="single_org_digest">
-                    <td>{% trans "Organization" %}</td> <td class="name"></td>
-                </tr>
-                <tr class="multi_org_digest hidden">
-                    <td>{% trans "Organizations" %}</td> <td class="names"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="invite_links_window" class="modal hidden" data-baselink="http://{{ request.get_host }}{% url 'exmo2010:auth_orguser' %}">
+            <h2>{% trans "Invite links" %}</h2>
+            <a href="#" class="close_window">{% trans "Close" %}</a>
+            <table class="digest">
+                <tbody>
+                    <tr class="single_org_digest">
+                        <td>{% trans "Organization" %}</td> <td class="name"></td>
+                    </tr>
+                    <tr class="multi_org_digest hidden">
+                        <td>{% trans "Organizations" %}</td> <td class="names"></td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>{% trans 'Email' context 'short column title' %}</th> <th>{% trans 'Link' %}</th>
-                </tr>
-            </thead>
-            <tbody class="invite_widgets">
-                <tr class="hidden">  <!-- Prototype -->
-                    <td><input type="text" class="email"/></td> <td class="invite_link"><input type="text" class="invite_link"/></td>
-                </tr>
-            </tbody>
-        </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans 'Email' context 'short column title' %}</th> <th>{% trans 'Link' %}</th>
+                    </tr>
+                </thead>
+                <tbody class="invite_widgets">
+                    <tr class="hidden">  <!-- Prototype -->
+                        <td><input type="text" class="email"/></td> <td class="invite_link"><input type="text" class="invite_link"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 {%endblock%}

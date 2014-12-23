@@ -32,117 +32,119 @@
     <script src="{% static 'exmo2010/js/auth.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}{% if orgs %}<h1 class="hidden">{% trans 'Get access to scores' %}</h1>{% endif %}{% endblock %}
-
 {% block content %}
-    <noscript>
-        <div class="warning-block">
-            {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
-        </div>
-    </noscript>
+    {% if orgs %}<h1 class="hidden">{% trans 'Get access to scores' %}</h1>{% endif %}
 
-    <div class="auth-content-block hidden">
-        {% if orgs %}
-            {% include "registration/_auth_content_header.html" %}
-        {% endif %}
+    <div class="content">
+        <noscript>
+            <div class="warning-block">
+                {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
+            </div>
+        </noscript>
 
-        <div class="tabs h2">
-            <span><a href="{% url 'exmo2010:auth_login' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Login' %}</a></span>
-            <span class="active">{% trans 'Registration' %}</span>
-            <span><a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Password recovery' %}</a></span>
-        </div>
+        <div class="auth-content-block hidden">
+            {% if orgs %}
+                {% include "registration/_auth_content_header.html" %}
+            {% endif %}
 
-        {% include "_form_errors.html" with form=form %}
+            <div class="tabs h2">
+                <span><a href="{% url 'exmo2010:auth_login' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Login' %}</a></span>
+                <span class="active">{% trans 'Registration' %}</span>
+                <span><a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Password recovery' %}</a></span>
+            </div>
 
-        <form action="" class="registration-form" method="post">{% csrf_token %}
-            <div class="form-table">
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.email.label_tag }}<span class="required">*</span></div>
-                    <div class="table-cell-L">{{ form.email }}</div>
-                    <div class="info-block">
-                        {% trans "Used to confirm registration and to login." %}
-                    </div>
-                </div>
+            {% include "_form_errors.html" with form=form %}
 
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.password.label_tag }}<span class="required">*</span></div>
-                    <div class="table-cell-L">{{ form.password }}</div>
-                    <div class="info-block">
-                        {% trans "Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)." %}
-                    </div>
-                </div>
-
-                {# Invitation code form input should be hidden if URL contains at least one invitation code. #}
-                {% if orgs %}
-                    {{ form.invitation_code.as_hidden }}
-                {% else %}
+            <form action="" class="registration-form" method="post">{% csrf_token %}
+                <div class="form-table">
                     <div class="table-row">
-                        <div class="table-cell-R">{{ form.invitation_code.label_tag }}</div>
-                        <div class="table-cell-L">{{ form.invitation_code }}</div>
+                        <div class="table-cell-R">{{ form.email.label_tag }}<span class="required">*</span></div>
+                        <div class="table-cell-L">{{ form.email }}</div>
                         <div class="info-block">
-                            {% trans "Enter the code to get an access to scores of your organisation." %}
+                            {% trans "Used to confirm registration and to login." %}
                         </div>
                     </div>
-                {% endif %}
 
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.first_name.label_tag }}</div>
-                    <div class="table-cell-L">{{ form.first_name }}</div>
-                    <div id="help-name" class="info-block">
-                        {% trans "Please, enter your name for us to know how to address you." %}
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.password.label_tag }}<span class="required">*</span></div>
+                        <div class="table-cell-L">{{ form.password }}</div>
+                        <div class="info-block">
+                            {% trans "Create a complicated password using latin characters (A-Z, a-z) and digits (0-9)." %}
+                        </div>
+                    </div>
+
+                    {# Invitation code form input should be hidden if URL contains at least one invitation code. #}
+                    {% if orgs %}
+                        {{ form.invitation_code.as_hidden }}
+                    {% else %}
+                        <div class="table-row">
+                            <div class="table-cell-R">{{ form.invitation_code.label_tag }}</div>
+                            <div class="table-cell-L">{{ form.invitation_code }}</div>
+                            <div class="info-block">
+                                {% trans "Enter the code to get an access to scores of your organisation." %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.first_name.label_tag }}</div>
+                        <div class="table-cell-L">{{ form.first_name }}</div>
+                        <div id="help-name" class="info-block">
+                            {% trans "Please, enter your name for us to know how to address you." %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.patronymic.label_tag }}</div>
+                        <div class="table-cell-L">{{ form.patronymic }}</div>
+                        <div class="info-block">
+                            {% trans "Please, enter your name for us to know how to address you." %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.last_name.label_tag }}</div>
+                        <div class="table-cell-L">{{ form.last_name }}</div>
+                        <div id="help-name" class="info-block">
+                            {% trans "Please, enter your name for us to know how to address you." %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.position.label_tag }}</div>
+                        <div class="table-cell-L">{{ form.position }}</div>
+                        <div class="info-block">
+                            {% trans "Used to issue certificates to participants." %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">{{ form.phone.label_tag }}</div>
+                        <div class="table-cell-L">{{ form.phone }}</div>
+                        <div class="info-block">
+                            {% trans "Used to resolve potential problems." %}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+                        <div class="table-cell-L"><span class="required">*</span> {% trans "required fields" %}</div>
+                        <div></div><!-- 1px width element. It fixed table width regardless info blocks. -->
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+                        <div class="table-cell-L">{{ form.notification }} {{ form.notification.label_tag }}</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+                        <div class="table-cell-L">
+                            <input type="submit" value="{% trans 'Register' %}"/>
+                        </div>
                     </div>
                 </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.patronymic.label_tag }}</div>
-                    <div class="table-cell-L">{{ form.patronymic }}</div>
-                    <div class="info-block">
-                        {% trans "Please, enter your name for us to know how to address you." %}
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.last_name.label_tag }}</div>
-                    <div class="table-cell-L">{{ form.last_name }}</div>
-                    <div id="help-name" class="info-block">
-                        {% trans "Please, enter your name for us to know how to address you." %}
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.position.label_tag }}</div>
-                    <div class="table-cell-L">{{ form.position }}</div>
-                    <div class="info-block">
-                        {% trans "Used to issue certificates to participants." %}
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.phone.label_tag }}</div>
-                    <div class="table-cell-L">{{ form.phone }}</div>
-                    <div class="info-block">
-                        {% trans "Used to resolve potential problems." %}
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L"><span class="required">*</span> {% trans "required fields" %}</div>
-                    <div></div><!-- 1px width element. It fixed table width regardless info blocks. -->
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">{{ form.notification }} {{ form.notification.label_tag }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">
-                        <input type="submit" value="{% trans 'Register' %}"/>
-                    </div>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 {% endblock %}

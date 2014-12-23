@@ -144,7 +144,6 @@ def claim_report(request, monitoring_pk):
 
     return TemplateResponse(request, 'claim_report.html', {
         'monitoring': monitoring,
-        'title': _('Claims report for "%s"') % monitoring,
         'claims': claims,
         'form': form,
     })
@@ -161,11 +160,8 @@ def claim_list(request):
         raise PermissionDenied
 
     if request.is_ajax():
-        claims = user.profile.get_closed_claims()
-        return TemplateResponse(request, 'claim_list_table.html', {'claims': claims})
+        context = {'claims': user.profile.get_closed_claims()}
+        return TemplateResponse(request, 'claim_list_table.html', context)
     else:
-        claims = user.profile.get_filtered_opened_claims()
-        return TemplateResponse(request, 'claim_list.html', {
-            'title': _('Claims'),
-            'claims': claims,
-        })
+        context = {'claims': user.profile.get_filtered_opened_claims()}
+        return TemplateResponse(request, 'claim_list.html', context)
