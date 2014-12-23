@@ -233,6 +233,10 @@ class CertificateOrderView(FormView):
         else:
             return self.render_to_response(self.get_context_data(form=form, form_hidden='hidden', **email_data))
 
+    def get_context_data(self, **kwargs):
+        kwargs.setdefault('form_hidden', '')
+        return super(CertificateOrderView, self).get_context_data(**kwargs)
+
     def get_initial(self):
         return {
             'name': self.request.user.profile.legal_name,

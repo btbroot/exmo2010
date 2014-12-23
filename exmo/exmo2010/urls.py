@@ -91,7 +91,6 @@ scores_patterns = named_urls('scores.views',
     (r'^post_score_links/(?P<score_pk>\d+)/$', 'post_score_links'),
     (r'^post_recommendations/(?P<score_pk>\d+)/$', 'post_recommendations'),
     (r'^post_score_comment/(?P<score_pk>\d+)/$', 'post_score_comment'),
-    (r'^post_task_scores_table_settings/(?P<task_pk>\d+)/$', 'post_task_scores_table_settings'),
 )
 
 scores_patterns += named_urls('',

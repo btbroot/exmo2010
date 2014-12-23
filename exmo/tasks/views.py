@@ -208,6 +208,11 @@ class TaskMixin(LoginRequiredMixin):
         url = reverse('exmo2010:tasks_by_monitoring', args=[self.monitoring.pk])
         return '%s?%s' % (url, self.request.GET.urlencode())
 
+    def get_context_data(self, **kwargs):
+        context = super(TaskMixin, self).get_context_data(**kwargs)
+        context.update({'task': self.task, 'monitoring': self.monitoring})
+        return context
+
 
 class TaskEditView(TaskMixin, UpdateView):
     ''' View for task editing and creation '''
@@ -232,27 +237,27 @@ class TaskEditView(TaskMixin, UpdateView):
     def get_object(self, queryset=None):
         if 'task_pk' in self.kwargs:
             # Existing task edit page
-            task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
-            self.monitoring = task.organization.monitoring
+            self.task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
+            self.monitoring = self.task.organization.monitoring
         else:
             # New task page
-            task = None
+            self.task = None
             self.monitoring = get_object_or_404(Monitoring, pk=self.kwargs['monitoring_pk'])
 
         if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
             raise PermissionDenied
-        return task
+        return self.task
 
 
 class TaskDeleteView(TaskMixin, DeleteView):
     template_name = "exmo2010/task_confirm_delete.html"
 
     def get_object(self, queryset=None):
-        task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
-        self.monitoring = task.organization.monitoring
+        self.task = get_object_or_404(Task, pk=self.kwargs['task_pk'])
+        self.monitoring = self.task.organization.monitoring
         if not self.request.user.has_perm('exmo2010.admin_monitoring', self.monitoring):
             raise PermissionDenied
-        return task
+        return self.task
 
 
 class TaskHistoryView(LoginRequiredMixin, ListView):

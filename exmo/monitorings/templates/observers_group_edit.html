@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
@@ -36,19 +36,25 @@
     {{ form.media }}
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="observers-content-block">
-        {% if obs_group %}
-            <h2>{% trans "Observers group editing" %}</h2>
-        {% else %}
-            <h2>{% trans "Observers" %}</h2>
-            {% include "_observers_group_tabs.html" %}
-        {% endif %}
 
-        <div class="tab-content">
-            {% include "_observers_group_form.html" %}
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
+
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+
+        <div class="observers-content-block">
+            {% if obs_group %}
+                <h2>{% trans "Observers group editing" %}</h2>
+            {% else %}
+                <h2>{% trans "Observers" %}</h2>
+                {% include "_observers_group_tabs.html" %}
+            {% endif %}
+
+            <div class="tab-content">
+                {% include "_observers_group_form.html" %}
+            </div>
         </div>
     </div>
 {%endblock%}

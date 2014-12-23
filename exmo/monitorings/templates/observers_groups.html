@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
@@ -35,56 +35,62 @@
     </script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="observers-content-block">
-        <h2>{% trans "Observers" %}</h2>
 
-        {% include "_observers_group_tabs.html" %}
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-        <div class="tab-content">
-            <div class="observers-table">
-                {% if is_obs_groups_exists %}
-                    <table class="base-table">
-                        <caption>
-                            <form class="filter" action="" method="GET">
-                                <div class="table">
-                                    <div class="table-cell">
-                                        {{ queryform.name }}
+    {% include "_sidebar_monitoring.html" %}
+
+    <div class="content cell">
+
+        <div class="observers-content-block">
+            <h2>{% trans "Observers" %}</h2>
+
+            {% include "_observers_group_tabs.html" %}
+
+            <div class="tab-content">
+                <div class="observers-table">
+                    {% if is_obs_groups_exists %}
+                        <table class="base-table">
+                            <caption>
+                                <form class="filter" action="" method="GET">
+                                    <div class="table">
+                                        <div class="table-cell">
+                                            {{ queryform.name }}
+                                        </div>
+                                        <div class="table-cell submit-cell">
+                                            <input type="submit" value="{% trans 'Find' %}" />
+                                        </div>
                                     </div>
-                                    <div class="table-cell submit-cell">
-                                        <input type="submit" value="{% trans 'Find' %}" />
-                                    </div>
-                                </div>
-                            </form>
-                        </caption>
+                                </form>
+                            </caption>
 
-                        <thead>
-                            <tr>
-                                <th><span>{% trans 'Group name' %}</span><span class="arrow"></span></th>
-                                <th class="align-right"><span>{% trans 'Organizations' context 'number of organizations' %}</span><span class="arrow"></span></th>
-                                <th class="align-right"><span>{% trans 'Users' context 'number of users' %}</span><span class="arrow"></span></th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for obs_group in obs_groups %}
-                                <tr class="zebra">
-                                    <td>
-                                        <a href="{% url 'exmo2010:observers_group_update' obs_group.monitoring.pk obs_group.pk %}">
-                                            {{ obs_group.name }}
-                                        </a>
-                                    </td>
-                                    <td class="align-right">{{ obs_group.organizations.all.count }}</td>
-                                    <td class="align-right">{{ obs_group.users.all.count }}</td>
+                            <thead>
+                                <tr>
+                                    <th><span>{% trans 'Group name' %}</span><span class="arrow"></span></th>
+                                    <th class="align-right"><span>{% trans 'Organizations' context 'number of organizations' %}</span><span class="arrow"></span></th>
+                                    <th class="align-right"><span>{% trans 'Users' context 'number of users' %}</span><span class="arrow"></span></th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    {% trans 'No observers' %}
-                {% endif %}
+                            </thead>
+
+                            <tbody>
+                                {% for obs_group in obs_groups %}
+                                    <tr class="zebra">
+                                        <td>
+                                            <a href="{% url 'exmo2010:observers_group_update' obs_group.monitoring.pk obs_group.pk %}">
+                                                {{ obs_group.name }}
+                                            </a>
+                                        </td>
+                                        <td class="align-right">{{ obs_group.organizations.all.count }}</td>
+                                        <td class="align-right">{{ obs_group.users.all.count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        {% trans 'No observers' %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

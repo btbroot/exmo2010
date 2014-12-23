@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -22,6 +22,10 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}
+    {% blocktrans with monitoring=monitoring.name %} Claims report for {{monitoring}} {% endblocktrans %}
+{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_manager.css' %}"/>
 {% endblock %}
@@ -30,61 +34,66 @@
     <script type="text/javascript" src="{% static 'exmo2010/js/reports_manager.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <h2>{{ title }}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-    <form action="" method="post" id="cform">
-        {% csrf_token %}
-        <table class="messages-report">
-            <thead>
-            <tr>
-                <th class="date">{% trans 'Date and time' %}</th>
-                <th class="addressee">{% trans 'Claim addressee' %}<br/>{{ form.addressee }}</th>
-                <th class="creator">{% trans 'Claim creator' %}<br/>{{ form.creator }}</th>
-                <th class="link">{% trans 'Link to claim' %}</th>
-            </tr>
-            </thead>
-        </table>
+    {% include "_sidebar_monitoring.html" %}
 
-        {% if claims %}
+    <div class="content cell">
+
+        <h2>{% blocktrans with monitoring=monitoring.name %} Claims report for {{monitoring}} {% endblocktrans %}</h2>
+
+        <form action="" method="post" id="cform">
+            {% csrf_token %}
             <table class="messages-report">
-                <tbody>
+                <thead>
                 <tr>
-                    <td class="title open">
-                        <span>{% trans 'Without answer' %}</span>
-                        ({{ claims.count }})
-                    </td>
+                    <th class="date">{% trans 'Date and time' %}</th>
+                    <th class="addressee">{% trans 'Claim addressee' %}<br/>{{ form.addressee }}</th>
+                    <th class="creator">{% trans 'Claim creator' %}<br/>{{ form.creator }}</th>
+                    <th class="link">{% trans 'Link to claim' %}</th>
                 </tr>
-                </tbody>
+                </thead>
             </table>
 
-            <table class="messages-report open">
-                <tbody>
-                    {% include "claim_report_table.html" %}
-                </tbody>
-            </table>
-        {% endif %}
-
-            <table class="messages-report">
-                <tbody>
-                <tr>
-                    <td class="title closed" rel="{% url 'exmo2010:claim_report' monitoring.pk %}">
-                        <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <table class="messages-report closed">
-                <tbody>
+            {% if claims %}
+                <table class="messages-report">
+                    <tbody>
                     <tr>
-                        <td colspan="4" class="empty" style="display: none">
-                            {% trans 'There are no claims' %}
+                        <td class="title open">
+                            <span>{% trans 'Without answer' %}</span>
+                            ({{ claims.count }})
                         </td>
                     </tr>
-                </tbody>
-            </table>
-    </form>
+                    </tbody>
+                </table>
+
+                <table class="messages-report open">
+                    <tbody>
+                        {% include "claim_report_table.html" %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+                <table class="messages-report">
+                    <tbody>
+                    <tr>
+                        <td class="title closed" rel="{% url 'exmo2010:claim_report' monitoring.pk %}">
+                            <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="messages-report closed">
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="empty" style="display: none">
+                                {% trans 'There are no claims' %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+        </form>
+    </div>
 {% endblock %}

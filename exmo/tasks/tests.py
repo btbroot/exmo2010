@@ -352,6 +352,8 @@ class TaskDeletionTestCase(TestCase):
 
 
 class TaskEditTestCase(TestCase):
+    # exmo2010:task_update
+
     # SHOULD update Task after expertA edits it on edit page
 
     def setUp(self):
@@ -517,7 +519,7 @@ class TaskCompletenessTestCase(TestCase):
         self.parameter = mommy.make(
             Parameter, monitoring=self.monitoring, accessible=True,
             complete=False, topical=False, hypertext=False, document=False, image=False)
-        # AND task which have complete score
+        # AND task which have 100% complete score ('found' and 'accessible' are non-null)
         self.task = mommy.make(Task, organization__monitoring=self.monitoring)
         mommy.make(Score, task=self.task, parameter=self.parameter, found=1, accessible=1)
         # AND parameter edit page url
@@ -533,18 +535,18 @@ class TaskCompletenessTestCase(TestCase):
         # THEN task completeness should be 100%
         self.assertEqual(self.task.completeness, 100)
 
-        # WHEN I add 'complete' criterion to parameter
+        # WHEN I add 'topical' criterion to parameter
         data = self.parameter.__dict__
         data['monitoring'] = self.monitoring.pk
-        data['complete'] = True
+        data['topical'] = True
         response = self.client.post(self.url, data, follow=True)
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
         # AND task completeness should be 0%
         self.assertEqual(self.task.completeness, 0)
 
-        # WHEN I delete 'complete' criterion without score changing
-        data['complete'] = False
+        # WHEN I delete 'topical' criterion without score changing
+        data['topical'] = False
         response = self.client.post(self.url, data, follow=True)
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)

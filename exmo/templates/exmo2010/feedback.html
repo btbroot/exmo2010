@@ -21,49 +21,52 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block h1 %}<h1>{% trans 'Feedback' %}</h1>{% endblock %}
-
 {% block content %}
-    {% if success %}
-        <p class="success">
-            {% trans "You've sent the letter to Infometer maintenance staff. You'll receive an answer in 3 business days." %}
+
+    <h1>{% trans 'Feedback' %}</h1>
+
+    <div class="content">
+        {% if success %}
+            <p class="success">
+                {% trans "You've sent the letter to Infometer maintenance staff. You'll receive an answer in 3 business days." %}
+            </p>
+        {% endif %}
+
+        <p>
+            {% url 'exmo2010:help' as url %}
+            {% blocktrans %}If you've got troubles using system, please, check <a href="{{ url }}">Help page</a> out. If you didn't find an answer for your question, ask our specialists.{% endblocktrans %}
         </p>
-    {% endif %}
+        <p>
+            {% trans "Please, describe your problem with as much detail as possible." %}
+        </p>
 
-    <p>
-        {% url 'exmo2010:help' as url %}
-        {% blocktrans %}If you've got troubles using system, please, check <a href="{{ url }}">Help page</a> out. If you didn't find an answer for your question, ask our specialists.{% endblocktrans %}
-    </p>
-    <p>
-        {% trans "Please, describe your problem with as much detail as possible." %}
-    </p>
+        <form action="" method="post">
+            {% csrf_token %}
 
-    <form action="" method="post">
-        {% csrf_token %}
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
 
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
-
-        {% for field in form %}
-            {% if field.errors %}
-                {{ field.errors }}
-            {% endif %}
-                <div class="feedback{% if field.field == form.fields.email and request.user.is_active %} hidden{% endif %}">
-                    <div class="label">
-                        <label>{{ field.label }}</label>
+            {% for field in form %}
+                {% if field.errors %}
+                    {{ field.errors }}
+                {% endif %}
+                    <div class="feedback{% if field.field == form.fields.email and request.user.is_active %} hidden{% endif %}">
+                        <div class="label">
+                            <label>{{ field.label }}</label>
+                        </div>
+                        <div class="field">
+                            {{ field }}
+                        </div>
                     </div>
-                    <div class="field">
-                        {{ field }}
-                    </div>
+            {% endfor %}
+
+            <div class="feedback">
+                <div></div>
+                <div class="field">
+                    <input type="submit" value="{% trans 'Send' %}"/>
                 </div>
-        {% endfor %}
-
-        <div class="feedback">
-            <div></div>
-            <div class="field">
-                <input type="submit" value="{% trans 'Send' %}"/>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 {% endblock %}

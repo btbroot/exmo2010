@@ -56,6 +56,7 @@ from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import login_required_on_deny, LoginRequiredMixin
 from custom_comments.utils import comment_report
+from exmo2010.columns_picker import rating_columns_form
 from exmo2010.forms import FilteredSelectMultiple
 from exmo2010.models import (Claim, Clarification, LicenseTextFragments, Monitoring, ObserversGroup, Organization,
                              Parameter, Questionnaire, Score, Task, UserProfile, generate_inv_code)
@@ -343,28 +344,10 @@ def monitoring_rating(request, monitoring_pk):
         raise PermissionDenied
 
     # Process rating_columns_form data to know what columns to show in table
-    # Fields are boolean values for every permitted column
-    column_fields = ['rt_initial_openness', 'rt_final_openness', 'rt_difference']
-
-    if user.is_active:
-        if user.profile.is_expert:
-            column_fields += ['rt_representatives', 'rt_comment_quantity']
-
-        # Displayed rating columns options are saved in UserProfile.rt_* fields
-        RatingColumnsForm = modelform_factory(UserProfile, fields=column_fields)
-
-        if request.method == 'POST' and 'settings_submit' in request.POST:
-            # Options was provided in POST request.
-            rating_columns_form = RatingColumnsForm(request.POST, instance=user.profile)
-
-            if rating_columns_form.is_valid():
-                rating_columns_form.save()  # Save changes in UserProfile
-        else:
-            # Use default rating columns options from UserProfile
-            rating_columns_form = RatingColumnsForm(instance=user.profile)
-    else:
-        # Inactive and AnonymousUser wll see all permitted rating columns
-        rating_columns_form = modelform_factory(UserProfile, fields=column_fields)()
+    columns_form = rating_columns_form(request)
+    if columns_form.post_ok(request):
+        # After form submission redirect to the same page.
+        return HttpResponseRedirect(request.path)
 
     # Process params_form - it will contain chosen params if rating_type is 'user'
     params_form = Form(request.GET)
@@ -380,7 +363,7 @@ def monitoring_rating(request, monitoring_pk):
         'monitoring': monitoring,
         'rating_type': rating_type,
         'params_form': params_form,
-        'rating_columns_form': rating_columns_form,
+        'rating_columns_form': columns_form,
     }
 
     orgs = set()
@@ -414,7 +397,10 @@ def monitoring_rating(request, monitoring_pk):
         if user.is_organization:
             orgs = orgs.union(set(user.profile.organization.values_list('pk', flat=True)))
         rating_list = [t for t in rating_list if t.organization.pk in orgs]
-        context.update({'rating_list': rating_list})
+        context.update({
+            'rating_list': rating_list,
+            'rating_stats': None
+        })
 
     return TemplateResponse(request, 'rating.html', context)
 
@@ -445,14 +431,14 @@ def _comments_stats(tasks):
             orgcomments_by_task[tasks_by_scores[int(sid)]].append(uid)
 
     for task in tasks:
-        task.comments = len(orgcomments_by_task[task.pk])
+        task.num_comments = len(orgcomments_by_task[task.pk])
         task.repr_len = len(orgusers_by_task[task.pk])
         task.active_repr_len = len(set(orgcomments_by_task[task.pk]))
 
     return {
         'repr_len': sum(t.repr_len for t in tasks) / ntasks,
         'active_repr_len': sum(t.active_repr_len for t in tasks) / ntasks,
-        'comments': sum(t.comments for t in tasks) / ntasks}
+        'num_comments': sum(t.num_comments for t in tasks) / ntasks}
 
 
 @login_required
@@ -567,7 +553,6 @@ def monitoring_by_experts(request, monitoring_pk):
         raise PermissionDenied
 
     experts = Task.objects.filter(organization__monitoring=monitoring).values('user').annotate(cuser=Count('user'))
-    title = _('Experts of monitoring %s') % monitoring.name
     epk = [e['user'] for e in experts]
     org_list = "( %s )" % " ,".join([str(o.pk) for o in Organization.objects.filter(monitoring=monitoring)])
     queryset = User.objects.filter(pk__in = epk).extra(select = {
@@ -608,10 +593,7 @@ def monitoring_by_experts(request, monitoring_pk):
         headers,
         queryset=queryset,
         paginate_by=15,
-        extra_context={
-            'monitoring': monitoring,
-            'title': title,
-        },
+        extra_context={'monitoring': annotate_exmo_perms(monitoring, request.user)},
         template_name="expert_list.html",
     )
 
@@ -759,11 +741,8 @@ def monitoring_parameter_found_report(request, monitoring_pk):
     if organization_count_total:
         score_per_organization_total = float(score_count_total) / organization_count_total * 100
 
-    title = _('Parameter found report of %(monitoring)s') % {'monitoring': monitoring}
-
     return TemplateResponse(request, 'monitoring_parameter_found_report.html', {
         'monitoring': monitoring,
-        'title': title,
         'object_list': object_list,
         'score_count_total': score_count_total,
         'organization_count_total': organization_count_total,
@@ -1055,8 +1034,6 @@ class MonitoringCommentReportView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(MonitoringCommentReportView, self).get_context_data(**kwargs)
         context.update(comment_report(self.monitoring))
-        context.update({'title': _('Comment report for %s') % self.monitoring.name})
-
         return context
 
 
@@ -1122,7 +1099,6 @@ def ratings(request):
     Returns table of monitorings rating data, optionally filters table by monitoring.
 
     """
-    title = _('Ratings')
     user = request.user
     queryset = Monitoring.objects.all()
 
@@ -1150,7 +1126,7 @@ def ratings(request):
         if m.status == MONITORING_PUBLISHED:
             sql_openness = m.openness_expression.get_sql_openness()
             tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
-            m.average = avg('_openness', tasks)
+            m.avg_openness = avg('_openness', tasks)
 
     queryform = RatingsQueryForm(request.GET)
 
@@ -1158,7 +1134,6 @@ def ratings(request):
         queryset = queryform.apply(queryset)
 
     context = {
-        'title': title,
         'monitoring_list': queryset,
         'queryform': queryform,
     }

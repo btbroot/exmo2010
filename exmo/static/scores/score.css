@@ -38,7 +38,7 @@ div.nonrelevant_notice {
 }
 
 .score-header-block input {
-    margin-right: 20px;
+    margin: -5px 20px 15px 0px;
     vertical-align: baseline;
     cursor: pointer;
 }
@@ -52,7 +52,7 @@ div.nonrelevant_notice {
 }
 
 .score-header-block h2 {
-    margin: 20px 0 3px 0;
+    margin: 5px 0 3px 0;
 }
 
 .score-header-block p {

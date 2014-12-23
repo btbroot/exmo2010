@@ -37,7 +37,7 @@ from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Task, Score, UserProfile
 from exmo2010.models.monitoring import INT, PUB, RATE
-from scores.views import rating_update, post_task_scores_table_settings
+from scores.views import rating_update
 
 
 class ScoreAddAccessTestCase(TestCase):
@@ -862,49 +862,88 @@ class RecommendationsVisibilityRelevantTestCase(TestCase):
         self.assertEqual([s.cost for s in response.context['scores']], expected_cost_list)
 
 
-class TaskScoresSettingsTestCase(OptimizedTestCase):
-    # Should allow to post task scores table settings only if user is expert
+class TaskScoresColumnsPickerTestCase(OptimizedTestCase):
+    # exmo2010:task_scores
+
+    # Should allow to configure and store submitted task-scores columns settings only if user is expert.
+    # Non-experts should always see default columns.
 
     @classmethod
     def setUpClass(cls):
-        super(TaskScoresSettingsTestCase, cls).setUpClass()
-        cls.users = {}
-        # GIVEN organization
-        org = mommy.make(Organization)
-        # AND task
-        cls.task = mommy.make(Task, organization=org)
+        super(TaskScoresColumnsPickerTestCase, cls).setUpClass()
+        # GIVEN organization with task
+        org = mommy.make(Organization, monitoring__status=INT)
+        task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
         # AND expert A
-        cls.users['expertA'] = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        cls.users['expertA'].profile.is_expertA = True
-        # AND expert B
-        cls.users['expertB'] = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
-        cls.users['expertB'].profile.is_expertB = True
+        cls.expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        cls.expertA.profile.is_expertA = True
         # AND org representative
-        cls.users['org_user'] = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
-        cls.users['org_user'].profile.organization = [org]
-        # AND just registered user
-        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        cls.org_user = User.objects.create_user('org_user', 'orguser@svobodainfo.org', 'password')
+        cls.org_user.profile.organization = [org]
+        # AND all users have all columns disabled in database.
+        UserProfile.objects.update(**{
+            'st_criteria': False,
+            'st_score': False,
+            'st_difference': False,
+            'st_weight': False,
+            'st_type': False
+        })
+        cls.url = reverse('exmo2010:task_scores', args=(task.pk,))
 
-        cls.post_data = [False, False, False, True, True]
+    def test__expert(self):
+        # WHEN i login as expertA
+        self.client.login(username='expertA', password='password')
 
-    @method_decorator(contextmanager)
-    def mock_request(self, username, task):
-        """
-        Patch get_object_or_404 to return given task.
-        Yield Mock request as context variable.
-        """
-        patch('scores.views.get_object_or_404', Mock(side_effect=lambda *a, **k: task)).start()
-        yield Mock(user=self.users[username], method='POST', POST=dict(zip(UserProfile.SCORES_TABLE_FIELDS, self.post_data)))
-        patch.stopall()
+        # AND i submit columns-picker form with only "st_criteria" enabled
+        response = self.client.post(self.url, {'st_criteria': 'on', 'columns_picker_submit': True})
 
-    @parameterized.expand(zip(['expertA', 'expertB']))
-    def test_post_task_scores_table_settings_allow(self, username):
-        with self.mock_request(username, self.task) as request:
-            self.assertEqual(post_task_scores_table_settings(request, self.task.pk).status_code, 302)
-        user = UserProfile.objects.get(user__username=username)
-        self.assertEqual([getattr(user, item) for item in UserProfile.SCORES_TABLE_FIELDS], self.post_data)
+        # THEN i should be redirected to same page
+        self.assertEqual(response.status_code, 302)
 
-    @parameterized.expand(zip(['org_user', 'user']))
-    def test_post_task_scores_table_settings_forbid(self, username):
-        with self.mock_request(username, self.task.pk) as request:
-            self.assertRaises(PermissionDenied, post_task_scores_table_settings, request, self.task.pk)
+        # AND column settings should be stored in database
+        expected_data = {
+            'st_criteria': True,
+            'st_score': False,
+            'st_difference': False,
+            'st_weight': False,
+            'st_type': False,
+        }
+        profile = UserProfile.objects.filter(user=self.expertA)
+        self.assertEqual(profile.values(*UserProfile.TASKSCORES_COLUMNS_FIELDS)[0], expected_data)
+
+        # WHEN i get the task-scores page again
+        response = self.client.get(self.url)
+
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND only "st_criteria" column should be visible (as stored in database)
+        visible = {col: response.context['columns_form'][col].value() for col in expected_data}
+        self.assertEqual(visible, expected_data)
+
+    def test__orguser(self):
+        # WHEN i login as organization representative
+        self.client.login(username='org_user', password='password')
+
+        # AND i submit columns-picker form with only "st_criteria" enabled
+        response = self.client.post(self.url, {'st_criteria': 'on', 'columns_picker_submit': True})
+
+        # THEN i should be redirected to same page
+        self.assertEqual(response.status_code, 302)
+
+        # WHEN i get the task-scores page again
+        response = self.client.get(self.url)
+
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND default columns should be visible (ignoring database and submitted settings)
+        expected_data = {
+            'st_criteria': False,
+            'st_score': True,
+            'st_difference': True,
+            'st_weight': False,
+            'st_type': True,
+        }
+        visible = {col: response.context['columns_form'][col].value() for col in expected_data}
+        self.assertEqual(visible, expected_data)

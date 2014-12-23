@@ -1,4 +1,4 @@
-{% extends "base_sidebar.html" %}
+{% extends "base_leftaligned.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
 # Copyright 2010, 2011, 2013 Al Nikolov
@@ -33,69 +33,74 @@
     <script type="text/javascript" src="{% static 'js/send_mail_history.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}<h1>{{ monitoring.name }}</h1>{% endblock %}
-
 {% block content %}
-    <div class="send-mail-content-block">
-        <h2>{% trans "Mail" %}</h2>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
-        {% include "_sendmail_tabs.html" with tab='mail_history' %}
+    {% include "_sidebar_monitoring.html" %}
 
-        <div class="tab-content">
-            {% if is_mail_history_exist %}
-                <table class="base-table">
-                    <caption>
-                        <form class="filter" action="" method="GET">
-                            <div class="table">
-                                <div class="table-cell datepicker">
-                                    {{ view.queryform.timestamp|attr:"maxlength:10" }}
+    <div class="content cell">
+
+        <div class="send-mail-content-block">
+            <h2>{% trans "Mail" %}</h2>
+
+            {% include "_sendmail_tabs.html" with tab='mail_history' %}
+
+            <div class="tab-content">
+                {% if is_mail_history_exist %}
+                    <table class="base-table">
+                        <caption>
+                            <form class="filter" action="" method="GET">
+                                <div class="table">
+                                    <div class="table-cell datepicker">
+                                        {{ view.queryform.timestamp|attr:"maxlength:10" }}
+                                    </div>
+                                    <div class="table-cell submit-cell">
+                                        <input type="submit" value="{% trans 'Find' %}" />
+                                    </div>
                                 </div>
-                                <div class="table-cell submit-cell">
-                                    <input type="submit" value="{% trans 'Find' %}" />
-                                </div>
-                            </div>
-                        </form>
-                    </caption>
+                            </form>
+                        </caption>
 
-                    <thead>
-                        <tr>
-                            <th>{% trans "Date and time" %} <span class="arrow">↓</span></th>
-                            <th>{% trans "Letter subject and content" %}</th>
-                            <th>{% trans 'To' context 'mail destination' %}</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for mail in mail_history %}
+                        <thead>
                             <tr>
-                                <td>{{ mail.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
-                                <td class="pseudo">
-                                    <div class="preview-container">
-                                        <a class="pseudo">{{ mail.subject }}</a>
-                                    </div>
-                                    <div class="hidden">
-                                        <h2>{{ mail.subject }}</h2>{{ mail.comment|safe }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div>
-                                        {% if mail.dst_orgs_display %}
-                                            {% trans "organizations" %} ({{ mail.dst_orgs_display|lower }})
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        {% if mail.dst_orgusers_display %}
-                                            {% trans "representatives" %} ({{ mail.dst_orgusers_display|lower }})
-                                        {% endif %}
-                                    </div>
-                                </td>
+                                <th>{% trans "Date and time" %} <span class="arrow">↓</span></th>
+                                <th>{% trans "Letter subject and content" %}</th>
+                                <th>{% trans 'To' context 'mail destination' %}</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                {% trans 'No mail history' %}
-            {% endif %}
+                        </thead>
+
+                        <tbody>
+                            {% for mail in mail_history %}
+                                <tr>
+                                    <td>{{ mail.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
+                                    <td class="pseudo">
+                                        <div class="preview-container">
+                                            <a class="pseudo">{{ mail.subject }}</a>
+                                        </div>
+                                        <div class="hidden">
+                                            <h2>{{ mail.subject }}</h2>{{ mail.comment|safe }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {% if mail.dst_orgs_display %}
+                                                {% trans "organizations" %} ({{ mail.dst_orgs_display|lower }})
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            {% if mail.dst_orgusers_display %}
+                                                {% trans "representatives" %} ({{ mail.dst_orgusers_display|lower }})
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    {% trans 'No mail history' %}
+                {% endif %}
+            </div>
         </div>
     </div>
 {%endblock%}

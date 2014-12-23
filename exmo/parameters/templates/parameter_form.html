@@ -38,52 +38,49 @@
     {{ form.media }}
 {% endblock %}
 
-{% block h1 %}
-    <h1>
-        {% if param.pk %}
-            {% trans 'Edit parameter' %}
-        {% else %}
-            {% trans 'Add new parameter' %}
-        {% endif %}
-    </h1>
-{% endblock %}
-
 {% block content %}
-    {% if param.pk %}
-        <a class="likeabutton" href="{% url 'exmo2010:parameter_delete' view.task.pk param.pk %}">{% trans 'Delete' %}</a>
-    {% endif %}
+    <h1>
+        {% if param.pk %} {% trans 'Edit parameter' %} {% else %} {% trans 'Add new parameter' %} {% endif %}
+    </h1>
 
-    <p>{{ form.non_field_errors }}</p>
+    <div class="content">
 
-    <form method="post" action="?{{ request.GET.urlencode }}">{% csrf_token %}
-        <table id="param_form">
-            {% include "_form_field.html" with field=form.code %}
-            {% if param.pk %}
-                <tr>
-                    <td><label>{% trans 'name'|capfirst %}</label></td>
-                    <td class="field">{{ param }}</td>
-                </tr>
-            {% endif %}
-            {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
-            {% include "_form_field.html" with field=form.trans_fields.grounds %}
-            {% include "_form_field.html" with field=form.trans_fields.rating_procedure %}
-            {% include "_form_field.html" with field=form.trans_fields.notes %}
-            {% include "_form_field.html" with field=form.exclude %}
-            {% include "_form_field.html" with field=form.weight %}
-            {% include "_form_field.html" with field=form.complete %}
-            {% include "_form_field.html" with field=form.topical %}
-            {% include "_form_field.html" with field=form.accessible %}
-            {% include "_form_field.html" with field=form.hypertext %}
-            {% include "_form_field.html" with field=form.document %}
-            {% include "_form_field.html" with field=form.image %}
-            {% include "_form_field.html" with field=form.npa %}
-        </table>
-
-        <input type="submit" value="{% trans 'Save' %}" />
         {% if param.pk %}
-            <input type="submit" name="submit_and_send" value="{% trans 'Save and send notifications' %}" />
-        {% else %}
-            <input type="reset" value="{% trans 'Reset' %}"/>
+            <a class="likeabutton" href="{% url 'exmo2010:parameter_delete' view.task.pk param.pk %}">{% trans 'Delete' %}</a>
         {% endif %}
-    </form>
+
+        <p>{{ form.non_field_errors }}</p>
+
+        <form method="post" action="?{{ request.GET.urlencode }}">{% csrf_token %}
+            <table id="param_form">
+                {% include "_form_field.html" with field=form.code %}
+                {% if param.pk %}
+                    <tr>
+                        <td><label>{% trans 'name'|capfirst %}</label></td>
+                        <td class="field">{{ param }}</td>
+                    </tr>
+                {% endif %}
+                {% include "_form_field.html" with field=form.trans_fields.name|add_class:"name_input" %}
+                {% include "_form_field.html" with field=form.trans_fields.grounds %}
+                {% include "_form_field.html" with field=form.trans_fields.rating_procedure %}
+                {% include "_form_field.html" with field=form.trans_fields.notes %}
+                {% include "_form_field.html" with field=form.exclude %}
+                {% include "_form_field.html" with field=form.weight %}
+                {% include "_form_field.html" with field=form.complete %}
+                {% include "_form_field.html" with field=form.topical %}
+                {% include "_form_field.html" with field=form.accessible %}
+                {% include "_form_field.html" with field=form.hypertext %}
+                {% include "_form_field.html" with field=form.document %}
+                {% include "_form_field.html" with field=form.image %}
+                {% include "_form_field.html" with field=form.npa %}
+            </table>
+
+            <input type="submit" value="{% trans 'Save' %}" />
+            {% if param.pk %}
+                <input type="submit" name="submit_and_send" value="{% trans 'Save and send notifications' %}" />
+            {% else %}
+                <input type="reset" value="{% trans 'Reset' %}"/>
+            {% endif %}
+        </form>
+    </div>
 {% endblock %}

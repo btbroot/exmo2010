@@ -32,45 +32,47 @@
     <script src="{% static 'exmo2010/js/auth.js' %}"></script>
 {% endblock %}
 
-{% block h1 %}{% if orgs %}<h1 class="hidden">{% trans 'Get access to scores' %}</h1>{% endif %}{% endblock %}
-
 {% block content %}
-    <noscript>
-        <div class="warning-block">
-            {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
-        </div>
-    </noscript>
+    {% if orgs %}<h1 class="hidden">{% trans 'Get access to scores' %}</h1>{% endif %}
 
-    <div class="auth-content-block hidden">
-        {% if orgs %}
-            {% include "registration/_auth_content_header.html" %}
-        {% endif %}
+    <div class="content">
+        <noscript>
+            <div class="warning-block">
+                {% trans "For proper operation of the site please enable JavaScript in your browser settings. After that, refresh the page." %}
+            </div>
+        </noscript>
 
-        <div class="tabs h2">
-            <span class="active">{% trans 'Login' %}</span>
-            <span><a href="{% url 'exmo2010:registration_form' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Registration' %}</a></span>
-            <span><a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Password recovery' %}</a></span>
-        </div>
+        <div class="auth-content-block hidden">
+            {% if orgs %}
+                {% include "registration/_auth_content_header.html" %}
+            {% endif %}
 
-        {% include "_form_errors.html" with form=form %}
+            <div class="tabs h2">
+                <span class="active">{% trans 'Login' %}</span>
+                <span><a href="{% url 'exmo2010:registration_form' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Registration' %}</a></span>
+                <span><a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="pseudo">{% trans 'Password recovery' %}</a></span>
+            </div>
 
-        <form action="" class="login-form" method="post">{% csrf_token %}
-            <div class="form-table">
-                {% for field in form %}
+            {% include "_form_errors.html" with form=form %}
+
+            <form action="" class="login-form" method="post">{% csrf_token %}
+                <div class="form-table">
+                    {% for field in form %}
+                        <div class="table-row">
+                            <div class="table-cell-R">{{ field.label_tag }}</div>
+                            <div class="table-cell-L">{{ field }}</div>
+                        </div>
+                    {% endfor %}
+
                     <div class="table-row">
-                        <div class="table-cell-R">{{ field.label_tag }}</div>
-                        <div class="table-cell-L">{{ field }}</div>
-                    </div>
-                {% endfor %}
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">
-                        <input type="submit" value="{% trans 'Log in' %}"/>
-                        <a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="forgot-password">{% trans 'Recover the password' %}</a>
+                        <div class="table-cell-R"></div>
+                        <div class="table-cell-L">
+                            <input type="submit" value="{% trans 'Log in' %}"/>
+                            <a href="{% url 'exmo2010:password_reset_request' %}?{{ request.GET.urlencode }}" class="forgot-password">{% trans 'Recover the password' %}</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 {% endblock %}

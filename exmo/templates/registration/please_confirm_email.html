@@ -24,12 +24,13 @@
 
 {% block title %}{% trans 'Registration confirm' %}{% endblock %}
 
-{% block h1 %}<h1>{% trans 'Registration confirm' %}</h1>{% endblock %}
-
 {% block content %}
-    <div class="registration-confirm-content-block">
-        <div class="info-block">
-            {% blocktrans with email=request.GET.email %}The letter have been sent to {{ email }} e-mail. To confirm registration, please click on the link inside the email. You will then be able to use all functionality of the Infometer system.{% endblocktrans %}
+    <h1>{% trans 'Registration confirm' %}</h1>
+    <div class="content">
+        <div class="registration-confirm-content-block">
+            <div class="info-block">
+                {% blocktrans with email=request.GET.email %}The letter have been sent to {{ email }} e-mail. To confirm registration, please click on the link inside the email. You will then be able to use all functionality of the Infometer system.{% endblocktrans %}
+            </div>
         </div>
     </div>
 {% endblock %}

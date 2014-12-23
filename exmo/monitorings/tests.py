@@ -201,11 +201,11 @@ class RatingsAverageTestCase(TestCase):
         self.assertEqual(len(monitorings), 3)
 
         # AND monitoring_zero_weight average openness should be None
-        self.assertEqual(monitorings[self.monitoring_zero_weight.pk].average, None)
+        self.assertEqual(monitorings[self.monitoring_zero_weight.pk].avg_openness, None)
         # AND monitoring_zero_score average openness should be 0.0
-        self.assertEqual(monitorings[self.monitoring_zero_score.pk].average, 0.0)
+        self.assertEqual(monitorings[self.monitoring_zero_score.pk].avg_openness, 0.0)
         # AND monitoring_nonzero_score average openness should be 100.0
-        self.assertEqual(monitorings[self.monitoring_nonzero_score.pk].average, 100.0)
+        self.assertEqual(monitorings[self.monitoring_nonzero_score.pk].avg_openness, 100.0)
 
 
 class ExpertARatingsTableVisibilityTestCase(TestCase):
@@ -420,105 +420,140 @@ class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
         self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
 
 
-class RatingTableColumnOptionsTestCase(TestCase):
+class RatingColumnsPickerTestCase(OptimizedTestCase):
     # exmo2010:monitoring_rating
 
     # TODO: move this testcase to *general logic* tests directory
 
-    # Should display only permitted rating table columns for users
-    # AND allow to choose displayed columns for registered users and remember that choice
+    # Should allow registerd users to configure and store submitted rating columns settings.
+    # Non-experts should never see 'rt_representatives' and 'rt_comment_quantity' columns.
+    # Anonymous users should always see default columns.
 
-    rt_fields_nonexpert = ['rt_initial_openness', 'rt_final_openness', 'rt_difference']
-    rt_fields_all = rt_fields_nonexpert + ['rt_representatives', 'rt_comment_quantity']
+    @classmethod
+    def setUpClass(cls):
+        super(RatingColumnsPickerTestCase, cls).setUpClass()
 
-    def setUp(self):
-        # GIVEN expert and regular nonexpert user
-        self.expertA = User.objects.create_user('expert', 'usr@svobodainfo.org', 'password')
-        self.expertA.profile.is_expertA = True
-        self.user = User.objects.create_user('nonexpert', 'usr@svobodainfo.org', 'password')
-        # AND a Score for a Parameter in an APPROVED Task for an Organization in a PUBLISHED Monitoring
-        self.monitoring = mommy.make(Monitoring, status=PUB)
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-        parameter = mommy.make(Parameter, monitoring=self.monitoring)
-        task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        mommy.make(Score, task=task, parameter=parameter)
+        # GIVEN organization and parameter in published monitoring.
+        org = mommy.make(Organization, monitoring__status=PUB)
+        param = mommy.make(Parameter, monitoring=org.monitoring)
 
-        # AND default options values for each user
-        self.default_options = {
-            'expert': {
-                'rt_initial_openness': False,
-                'rt_final_openness': True,
-                'rt_difference': True,
-                'rt_representatives': True,
-                'rt_comment_quantity': True
-            },
-            'nonexpert': {
-                'rt_initial_openness': False,
-                'rt_final_openness': True,
-                'rt_difference': True,
-            }
+        # AND a score in approved task.
+        task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+        mommy.make(Score, task=task, parameter=param)
+
+        # AND expert A
+        cls.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        cls.expertA.profile.is_expertA = True
+        # AND org representative
+        cls.org_user = User.objects.create_user('org_user', 'orguser@svobodainfo.org', 'password')
+        cls.org_user.profile.organization = [org]
+
+        # AND all users have all columns disabled in database.
+        UserProfile.objects.update(**{
+            'rt_initial_openness': False,
+            'rt_final_openness': False,
+            'rt_difference': False,
+            'rt_representatives': False,
+            'rt_comment_quantity': False
+        })
+        cls.url = reverse('exmo2010:monitoring_rating', args=(task.pk,))
+
+    def test__expert(self):
+        # WHEN i login as expertA
+        self.client.login(username='expertA', password='password')
+
+        # AND i submit columns-picker form with only "rt_representatives" enabled
+        response = self.client.post(self.url, {'rt_representatives': 'on', 'columns_picker_submit': True})
+
+        # THEN i should be redirected to same page
+        self.assertEqual(response.status_code, 302)
+
+        # AND column settings should be stored in database
+        expected_data = {
+            'rt_initial_openness': False,
+            'rt_final_openness': False,
+            'rt_difference': False,
+            'rt_representatives': True,
+            'rt_comment_quantity': False
         }
+        profile = UserProfile.objects.filter(user=self.expertA)
+        self.assertEqual(profile.values(*UserProfile.RATING_COLUMNS_FIELDS)[0], expected_data)
 
-    def profile_fields(self, username, fields):
-        """ Get dictionary of field-value from UserProfile for given user """
-        return UserProfile.objects.filter(user__username=username).values(*fields)[0]
+        # WHEN i get the rating page again
+        response = self.client.get(self.url)
 
-    def get_response_columns_options(self, data={}):
-        """ Get dictionary of rt_* field values from response to rating_url with given *args (POST params) """
-        rating_url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
-        data.update({'settings_submit': ''})  # submit button
-        response = self.client.post(rating_url, data)
-        columns_form = response.context['rating_columns_form']
-        return {f: bool(columns_form[f].value()) for f in columns_form.fields}
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
-    @parameterized.expand([
-        ('nonexpert', rt_fields_nonexpert),
-        ('expert', rt_fields_all),
-    ])
-    def test_rt_columns_store(self, username, fields):
-        # WHEN User logs in
-        self.client.login(username=username, password='password')
+        # AND only "rt_representatives" column should be visible (as stored in database)
+        visible = {col: response.context['rating_columns_form'][col].value() for col in expected_data}
+        self.assertEqual(visible, expected_data)
 
-        # AND user requests rating page with only rt_final_openness column (POST parameter "on")
-        changed_options = self.get_response_columns_options({'rt_final_openness': 'on'})
+    def test__orguser(self):
+        # WHEN i login as organization representative
+        self.client.login(username='org_user', password='password')
 
-        # THEN only rt_final_openness column is displayed (only this value is True in columns_form)
-        expected = {f: False for f in fields}
-        expected['rt_final_openness'] = True
-        self.assertEqual(changed_options, expected)
+        # AND i submit columns-picker form with only "rt_representatives" and "rt_initial_openness" enabled
+        post_data = {
+            'rt_representatives': 'on',   # forbidden column
+            'rt_initial_openness': 'on',
+            'columns_picker_submit': True
+        }
+        response = self.client.post(self.url, post_data)
 
-        # AND changes are stored in user's profile
-        self.assertEqual(self.profile_fields(username, fields), changed_options)
+        # THEN i should be redirected to same page
+        self.assertEqual(response.status_code, 302)
 
-        # WHEN user requests rating page again, but without POST parameters
-        requested_again_options = self.get_response_columns_options()
+        # AND only "rt_initial_openness" column should be visible (stored in database), but
+        # forbidden column "rt_representatives" should not be visible.
+        expected_data = {
+            'rt_initial_openness': True,
+            'rt_final_openness': False,
+            'rt_difference': False,
+            'rt_representatives': False,  # forbidden column
+            'rt_comment_quantity': False
+        }
+        profile = UserProfile.objects.filter(user=self.org_user)
+        self.assertEqual(profile.values(*UserProfile.RATING_COLUMNS_FIELDS)[0], expected_data)
 
-        # THEN no one columns should be displayed
-        no_selected_options = {f: False for f in self.default_options[username]}
-        self.assertEqual(requested_again_options, no_selected_options)
+        # WHEN i get the rating page again
+        response = self.client.get(self.url)
 
-        # AND new changes are stored in user's profile
-        self.assertEqual(self.profile_fields(username, no_selected_options), no_selected_options)
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
-    def test_rt_columns_nonexpert_forbidden(self):
-        # WHEN user logs in
-        self.client.login(username='nonexpert', password='password')
+        # AND only "rt_initial_openness" column should be visible
+        visible = {col: response.context['rating_columns_form'][col].value() for col in expected_data}
+        self.assertEqual(visible, expected_data)
 
-        # AND user requests rating page with forbidden rt_representatives column (POST parameter "on")
-        forbidden_options = self.get_response_columns_options({'rt_representatives': 'on'})
+    def test__anonymous(self):
+        # WHEN AnonymousUser submit columns-picker form with only "rt_representatives" enabled
+        response = self.client.post(self.url, {'rt_representatives': 'on', 'columns_picker_submit': True})
 
-        # THEN default columns are displayed, and forbidden column is not
-        self.assertEqual(forbidden_options, {f: False for f in self.default_options['nonexpert']})
+        # THEN i should be redirected to same page
+        self.assertEqual(response.status_code, 302)
 
-    def test_rt_columns_anonymous(self):
-        # WHEN AnonymousUser requests rating page with POST parameter
-        columns_options = self.get_response_columns_options({'rt_comment_quantity': 'on'})
+        # WHEN i get the rating page again
+        response = self.client.get(self.url)
 
-        # THEN default columns are displayed
-        self.assertEqual(columns_options, self.default_options['nonexpert'])
+        # THEN response status_code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND default columns should be visible (ignoring database and submitted settings)
+        expected_data = {
+            'rt_difference': True,
+            'rt_final_openness': True,
+            'rt_representatives': False,
+            'rt_comment_quantity': False,
+            'rt_initial_openness': False
+        }
+        visible = {col: response.context['rating_columns_form'][col].value() for col in expected_data}
+        self.assertEqual(visible, expected_data)
 
 
 class RatingTableValuesTestCase(TestCase):
+    # exmo2010:monitoring_rating
+
     # Scenario: Output to Rating Table
     def setUp(self):
         # GIVEN published monitoring
@@ -528,7 +563,7 @@ class RatingTableValuesTestCase(TestCase):
         organization = mommy.make(Organization, monitoring=self.monitoring)
         self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
         self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
-        score = mommy.make(Score, task=self.task, parameter=self.parameter, found=0)
+        mommy.make(Score, task=self.task, parameter=self.parameter, found=0)
 
     def test_rt_row_output(self):
         # WHEN user requests rating page
@@ -539,7 +574,7 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(o.place, 1)
         self.assertEqual(o.repr_len, 0)
         self.assertEqual(o.active_repr_len, 0)
-        self.assertEqual(o.comments, 0)
+        self.assertEqual(o.num_comments, 0)
         self.assertEqual(o.openness, 0)
         self.assertEqual(o.openness_initial, 0)
         self.assertEqual(o.openness_delta, 0.0)
@@ -553,7 +588,7 @@ class RatingTableValuesTestCase(TestCase):
         self.assertEqual(a['num_rated_tasks'], 1)
         self.assertEqual(a['repr_len'], 0)
         self.assertEqual(a['active_repr_len'], 0)
-        self.assertEqual(a['comments'], 0)
+        self.assertEqual(a['num_comments'], 0)
         self.assertEqual(a['openness'], 0)
         self.assertEqual(a['openness_initial'], 0)
         self.assertEqual(a['openness_delta'], 0.0)

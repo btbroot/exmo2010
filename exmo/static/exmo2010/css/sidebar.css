@@ -1,0 +1,73 @@
+/*
+# This file is part of EXMO2010 software.
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+*/
+
+
+#sidebar_pad {
+    position: absolute;
+    background-color: #f8f8f8;
+    border-right: 1px solid #D7D7D7;
+    margin-bottom: 100px;
+    display: none;
+    width: 240px;
+    bottom: 0;
+    /* top position is adjusted on resize event in sidebar.js */
+}
+
+#sidebar {
+    z-index: 100;
+    margin-top: 103px;
+    background-color: #f8f8f8;
+    display: table-cell;
+    width: 240px;
+    min-width: 240px;
+    vertical-align: top;
+    border-right: 1px solid #D7D7D7;
+}
+
+#sidebar ul {
+    margin: 0 0 0 1px;
+    padding: 0;
+    list-style: none;
+    line-height: 18px;
+    width:239px;
+    background-color: #f8f8f8;
+}
+
+#sidebar ul li {
+    padding: 5px 20px;
+    color: #222222;
+    list-style: none;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+#sidebar ul li.selected {
+    background-color: #ffffd6;
+    font-weight: normal;
+}
+
+#sidebar ul li a {
+    color: #005c9c;
+    font-weight: normal;
+}
+
+#sidebar ul li a:hover {
+    text-decoration: underline;
+}
+
