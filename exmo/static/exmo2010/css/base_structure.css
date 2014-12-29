@@ -57,8 +57,9 @@ body:before {
     background-color: #ffffff;
 }
 
-#main.index #content {
-    margin-top: 72px;  /* header height without breadcrumbs */
+#main.without_breadcrumbs #content {
+    margin-top: 73px;  /* header height without breadcrumbs */
+    border-top: none;
 }
 
 #main.fixed-width {

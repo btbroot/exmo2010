@@ -26,6 +26,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponseNotAllowed
 from django.template import RequestContext, loader
 from django.template.loader import render_to_string
@@ -40,7 +41,8 @@ from livesettings import config_value
 
 from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm
 from .mail import mail_certificate_order, mail_feedback
-from .models import Monitoring, MONITORING_PUBLISHED, Task, StaticPage, LicenseTextFragments
+from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task
+from .models.monitoring import INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
 from auth.helpers import perm_filter
 from core.response import JSONResponse
@@ -49,12 +51,43 @@ from perm_utils import annotate_exmo_perms
 
 
 def index(request):
+    user = request.user
+    if user.is_anonymous():
+        return index_anonymous(request)
+
+    if (user.is_organization or ObserversGroup.objects.filter(users=user).exists()) and not user.is_expert:
+        return index_orgs(request)
+
+    monitorings = perm_filter(user, 'view_monitoring', Monitoring.objects.all())
+    context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), user)}
+
+    return TemplateResponse(request, 'exmo2010/index.html', context)
+
+
+def index_anonymous(request):
     monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
     context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user)}
+
+    return TemplateResponse(request, 'exmo2010/index.html', context)
+
+
+def index_orgs(request):
+    tasks = Task.approved_tasks.filter(Q(organization__observersgroup__users=request.user) |
+                                       Q(organization__userprofile__user=request.user))\
+                               .order_by('-organization__monitoring__publish_date')\
+                               .distinct()
+    int_tasks = tasks.filter(organization__monitoring__status=INT)
+    fin_tasks = tasks.filter(organization__monitoring__status=FIN)
+    pub_tasks = tasks.filter(organization__monitoring__status=PUB)
+    context = {
+        'int_tasks': int_tasks,
+        'fin_tasks': fin_tasks,
+        'pub_tasks': pub_tasks,
+    }
     if request.user.is_organization:
         context.update({'invcodeform': SettingsInvCodeForm()})
 
-    return TemplateResponse(request, 'exmo2010/index.html', context)
+    return TemplateResponse(request, 'exmo2010/index_orgs.html', context)
 
 
 def feedback(request):
@@ -137,7 +170,7 @@ class CertificateOrderView(FormView):
         form = super(CertificateOrderView, self).get_form(form_class)
         self.rating_type = form['rating_type'].value()
 
-        orgs = self.request.user.profile.organization.filter(monitoring__status=MONITORING_PUBLISHED)
+        orgs = self.request.user.profile.organization.filter(monitoring__status=PUB)
         _tasks = Task.objects.filter(organization__in=orgs, status=Task.TASK_APPROVED)
         if not _tasks.exists():
             # User don't have published and approved tasks, certificate order is unavailable

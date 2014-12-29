@@ -1,0 +1,172 @@
+{% extends "base_centered.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        h2 {margin-top: 10px;}
+        table.base-table {margin-bottom: 10px;}
+        th {vertical-align: bottom;}
+        tbody tr td:first-child {white-space: nowrap;}
+        .inprogress-area {margin-bottom: 20px;}
+    </style>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
+    <script>
+        $(document).ready(function () {$(".base-table").tablesorter(
+                {sortList: [[0, 1]], headers: {3: {sorter: false}}}
+        );});
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="fixed-width without_breadcrumbs">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content">
+            {% include '_messages.html' %}
+
+            {% include "exmo2010/helpers/inv_code_bubble.html" %}
+
+            <h1>{% trans 'My scores' %}</h1>
+
+            {% if int_tasks or fin_tasks %}
+                <div class="inprogress-area">
+                    <h2>{% trans 'Ratings in progress' %}</h2>
+
+                    {% if int_tasks %}
+                        <table class="base-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span>{% trans 'Date of the end of the interaction' %}</span><span class="arrow"></span>
+                                    </th>
+                                    <th>
+                                        <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                                    </th>
+                                    <th>
+                                        <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for task in int_tasks %}
+                                    <tr>
+                                        <td>
+                                            {{ task.organization.monitoring.publish_date }}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+
+                    {% if fin_tasks %}
+                        <table class="base-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
+                                    </th>
+                                    <th>
+                                        <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                                    </th>
+                                    <th>
+                                        <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for task in fin_tasks %}
+                                    <tr>
+                                        <td>
+                                            {{ task.organization.monitoring.publish_date }}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if pub_tasks %}
+                <h2>{% trans 'Published ratings' %}</h2>
+
+                <table class="base-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span>{% trans 'Publish date' %}</span><span class="arrow"></span>
+                            </th>
+                            <th>
+                                <span>{% trans 'Rating' %}</span><span class="arrow"></span>
+                            </th>
+                            <th>
+                                <span>{% trans 'Organization' %}</span><span class="arrow"></span>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for task in pub_tasks %}
+                            <tr>
+                                <td>
+                                    {{ task.organization.monitoring.publish_date }}
+                                </td>
+                                <td>
+                                    <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'exmo2010:recommendations' task.pk %}">{{ task.organization.name }}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'exmo2010:certificate_order' %}"><i class="icon script"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

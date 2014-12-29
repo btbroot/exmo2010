@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-19 10:35+0300\n"
+"POT-Creation-Date: 2014-12-29 17:18+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -168,6 +168,9 @@ msgstr ""
 #: breadcrumbs/tests.py:37 exmo2010/urls.py:325
 #: monitorings/templates/rating.html:44 templates/_errors_header.html:32
 #: templates/certificate_order_form.html:68
+#: templates/exmo2010/index_orgs.html:69
+#: templates/exmo2010/index_orgs.html:103
+#: templates/exmo2010/index_orgs.html:141
 #: templates/exmo2010/sidebar/_sidebar.html:113
 #: templates/registration/_auth_content_header.html:32
 msgid "Rating"
@@ -183,6 +186,9 @@ msgstr ""
 #: organizations/templates/organizations.html:69
 #: organizations/templates/organizations.html:126
 #: templates/certificate_order_form.html:98
+#: templates/exmo2010/index_orgs.html:72
+#: templates/exmo2010/index_orgs.html:106
+#: templates/exmo2010/index_orgs.html:144
 #: templates/mail/certificate_order_email.html:31
 #: templates/mail/certificate_order_email.txt:28
 #: templates/mail/feedback_recipient.html:28
@@ -564,7 +570,7 @@ msgid "You have an assigned task"
 msgstr ""
 
 #: exmo2010/mail.py:276 exmo2010/mail.py:283 exmo2010/urls.py:239
-#: exmo2010/views.py:75 templates/_footer.html:31
+#: exmo2010/views.py:108 templates/_footer.html:31
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
 msgstr ""
@@ -713,38 +719,38 @@ msgstr ""
 msgid "Openness certificate"
 msgstr ""
 
-#: exmo2010/views.py:197
+#: exmo2010/views.py:230
 msgid "You ordered an openness certificate. Certificate will be prepared and sent within 5 working days."
 msgstr ""
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by all"
 msgstr ""
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by normative"
 msgstr ""
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by recommendatory"
 msgstr ""
 
-#: exmo2010/views.py:215
+#: exmo2010/views.py:248
 #, no-python-format
 msgid "For {task.organization.name} organization, which took {task.place} place with {task.task_openness:.3f}% openness in rating {rating_type} parameters, which published {date}."
 msgstr ""
 
-#: exmo2010/views.py:223
+#: exmo2010/views.py:256
 #, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr ""
 
-#: exmo2010/views.py:225
+#: exmo2010/views.py:258
 #, python-format
 msgid "On email address %s."
 msgstr ""
 
-#: exmo2010/views.py:235
+#: exmo2010/views.py:268
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr ""
@@ -2481,9 +2487,30 @@ msgstr ""
 msgid "Please, describe your problem with as much detail as possible."
 msgstr ""
 
-#: templates/exmo2010/index.html:25
+#: templates/exmo2010/index.html:25 templates/exmo2010/index_orgs.html:22
 msgctxt "Front page"
 msgid "Home"
+msgstr ""
+
+#: templates/exmo2010/index_orgs.html:55
+msgid "My scores"
+msgstr ""
+
+#: templates/exmo2010/index_orgs.html:59
+msgid "Ratings in progress"
+msgstr ""
+
+#: templates/exmo2010/index_orgs.html:66
+msgid "Date of the end of the interaction"
+msgstr ""
+
+#: templates/exmo2010/index_orgs.html:100
+#: templates/exmo2010/index_orgs.html:138
+msgid "Publish date"
+msgstr ""
+
+#: templates/exmo2010/index_orgs.html:132
+msgid "Published ratings"
 msgstr ""
 
 #: templates/exmo2010/monitoring_confirm_delete.html:25

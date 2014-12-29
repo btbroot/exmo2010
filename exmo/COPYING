@@ -65,12 +65,13 @@ http://www.ineversay.com/my-works/xiao-icon.html:
 
 --
 
-exmo/static/exmo2010/img/settings.png
-exmo/static/exmo2010/img/exit.png
-exmo/static/exmo2010/img/earth.png
 exmo/static/exmo2010/img/add.png
 exmo/static/exmo2010/img/download.png
+exmo/static/exmo2010/img/earth.png
+exmo/static/exmo2010/img/exit.png
 exmo/static/exmo2010/img/print.png
+exmo/static/exmo2010/img/script.png
+exmo/static/exmo2010/img/settings.png
 exmo/static/exmo2010/img/upload.png
 
 Copyright (c) 2005-2014 Aha-Soft.

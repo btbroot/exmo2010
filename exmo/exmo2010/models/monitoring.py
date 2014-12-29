@@ -31,13 +31,13 @@ from .parameter import Parameter
 from .questionnaire import Questionnaire, QAnswer, QQuestion
 
 
-PRE, RATE, INT, RES, PUB, FIN = 0, 1, 3, 4, 5, 7
+PRE, RATE, RES, INT, FIN, PUB = 0, 1, 4, 3, 7, 5
 MONITORING_PREPARE = 0
 MONITORING_RATE = 1
-MONITORING_INTERACTION = 3
 MONITORING_RESULT = 4
-MONITORING_PUBLISHED = 5
+MONITORING_INTERACTION = 3
 MONITORING_FINALIZING = 7
+MONITORING_PUBLISHED = 5
 MONITORING_STATUS = (
     (MONITORING_PREPARE, _('prepare')),
     (MONITORING_RATE, _('initial evaluation')),

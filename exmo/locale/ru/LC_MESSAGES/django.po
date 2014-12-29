@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-19 10:35+0300\n"
+"POT-Creation-Date: 2014-12-29 17:18+0300\n"
 "PO-Revision-Date: 2014-11-26 23:40+0300\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -171,6 +171,9 @@ msgstr "Рейтинги"
 #: breadcrumbs/tests.py:37 exmo2010/urls.py:325
 #: monitorings/templates/rating.html:44 templates/_errors_header.html:32
 #: templates/certificate_order_form.html:68
+#: templates/exmo2010/index_orgs.html:69
+#: templates/exmo2010/index_orgs.html:103
+#: templates/exmo2010/index_orgs.html:141
 #: templates/exmo2010/sidebar/_sidebar.html:113
 #: templates/registration/_auth_content_header.html:32
 msgid "Rating"
@@ -186,6 +189,9 @@ msgstr "Рейтинг"
 #: organizations/templates/organizations.html:69
 #: organizations/templates/organizations.html:126
 #: templates/certificate_order_form.html:98
+#: templates/exmo2010/index_orgs.html:72
+#: templates/exmo2010/index_orgs.html:106
+#: templates/exmo2010/index_orgs.html:144
 #: templates/mail/certificate_order_email.html:31
 #: templates/mail/certificate_order_email.txt:28
 #: templates/mail/feedback_recipient.html:28
@@ -567,7 +573,7 @@ msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
 #: exmo2010/mail.py:276 exmo2010/mail.py:283 exmo2010/urls.py:239
-#: exmo2010/views.py:75 templates/_footer.html:31
+#: exmo2010/views.py:108 templates/_footer.html:31
 #: templates/exmo2010/feedback.html:24
 msgid "Feedback"
 msgstr "Обратная связь"
@@ -716,38 +722,38 @@ msgstr "Удалить параметр"
 msgid "Openness certificate"
 msgstr "Сертификат открытости"
 
-#: exmo2010/views.py:197
+#: exmo2010/views.py:230
 msgid "You ordered an openness certificate. Certificate will be prepared and sent within 5 working days."
 msgstr "Вы заказали сертификат открытости. Сертификат будет подготовлен и отправлен в течение 5 рабочих дней."
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by all"
 msgstr "по всем"
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by normative"
 msgstr "по нормативным"
 
-#: exmo2010/views.py:211
+#: exmo2010/views.py:244
 msgid "by recommendatory"
 msgstr "по рекомендательным"
 
-#: exmo2010/views.py:215
+#: exmo2010/views.py:248
 #, no-python-format
 msgid "For {task.organization.name} organization, which took {task.place} place with {task.task_openness:.3f}% openness in rating {rating_type} parameters, which published {date}."
 msgstr "Для организации {task.organization.name}, занявшей {task.place} место с открытостью {task.task_openness:.3f}% в рейтинге {rating_type} параметрам, опубликованном {date}."
 
-#: exmo2010/views.py:223
+#: exmo2010/views.py:256
 #, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr "На адрес {zip_code}, {address}, {addressee}."
 
-#: exmo2010/views.py:225
+#: exmo2010/views.py:258
 #, python-format
 msgid "On email address %s."
 msgstr "На адрес электронной почты %s."
 
-#: exmo2010/views.py:235
+#: exmo2010/views.py:268
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "Подготовить диплом на имя %s."
@@ -2499,10 +2505,31 @@ msgstr "Если у вас возникли проблемы при исполь
 msgid "Please, describe your problem with as much detail as possible."
 msgstr "Пожалуйста, опишите вашу проблему как можно подробнее."
 
-#: templates/exmo2010/index.html:25
+#: templates/exmo2010/index.html:25 templates/exmo2010/index_orgs.html:22
 msgctxt "Front page"
 msgid "Home"
 msgstr "Главная"
+
+#: templates/exmo2010/index_orgs.html:55
+msgid "My scores"
+msgstr "Мои оценки"
+
+#: templates/exmo2010/index_orgs.html:59
+msgid "Ratings in progress"
+msgstr "Рейтинги в работе"
+
+#: templates/exmo2010/index_orgs.html:66
+msgid "Date of the end of the interaction"
+msgstr "Конец взаимодействия"
+
+#: templates/exmo2010/index_orgs.html:100
+#: templates/exmo2010/index_orgs.html:138
+msgid "Publish date"
+msgstr "Дата публикации"
+
+#: templates/exmo2010/index_orgs.html:132
+msgid "Published ratings"
+msgstr "Опубликованные рейтинги"
 
 #: templates/exmo2010/monitoring_confirm_delete.html:25
 #, python-format
