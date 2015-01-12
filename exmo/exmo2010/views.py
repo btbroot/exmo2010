@@ -27,7 +27,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404, HttpResponseNotAllowed
+from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext, loader
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
@@ -289,9 +289,6 @@ class AjaxSetProfileSettingView(LoginRequiredMixin, View):
 @login_required
 @csrf_exempt
 def ckeditor_upload(request):
-    if request.method != 'POST':
-        return HttpResponseNotAllowed(permitted_methods=['POST'])
-
     if not (request.user.is_expert or request.user.is_translator):
         raise PermissionDenied
     return upload(request)

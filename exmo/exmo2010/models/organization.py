@@ -194,7 +194,7 @@ class InviteOrgs(BaseModel):
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('date and time'), editable=False)
     monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
     subject = models.TextField(verbose_name=_('subject'))
-    comment = RichTextField(config_name='simplified', verbose_name=_('Letter content'))
+    comment = RichTextField(config_name='advanced', verbose_name=_('Letter content'))
     inv_status = models.CharField(max_length=3,
                                   choices=INV_STATUS_ALL, default='ALL',
                                   verbose_name=_('Invitation status'))

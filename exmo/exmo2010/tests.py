@@ -358,7 +358,6 @@ class CustomLocaleMiddlewareTest(TestCase):
 class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
     # ckeditor_upload
 
-    # Should forbid all user to get upload url.
     # Should forbid anonymous or unprivileged user to upload files
 
     @classmethod
@@ -410,13 +409,6 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         self.assertEqual(response.status_code, 302)
         # AND response redirects to login page
         self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
-
-    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'orguser', 'translator', 'observer', 'user']))
-    def test_forbid_get(self, username, *args):
-        # WHEN authenticated user get upload url
-        request = Mock(user=self.users[username], method='GET')
-        # THEN response status_code should be 405 (method not allowed)
-        self.assertEqual(ckeditor_upload(request).status_code, 405)
 
     def test_redirect_post_anonymous(self):
         # WHEN anonymous user upload file
