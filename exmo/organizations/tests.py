@@ -20,25 +20,26 @@
 from cStringIO import StringIO
 
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import AnonymousUser, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core import mail
+from django.core.exceptions import PermissionDenied
 from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from livesettings import config_get, config_value
-from mock import Mock
+from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
-
+from .views import RepresentativesView, ajax_upload_file
+from core.test_utils import OptimizedTestCase
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import (
     Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED
 )
-from .views import RepresentativesView
 
 
 class OrgCreateTestCase(TestCase):
@@ -533,3 +534,91 @@ class OrguserCommentCountTestCase(TestCase):
         self.assertEqual(orgs['org1'].users[0].comments.count(), 2)
         # AND org2 comments count should be 1
         self.assertEqual(orgs['org2'].users[0].comments.count(), 1)
+
+
+class AjaxUploadFileAccessTestCase(OptimizedTestCase):
+    # exmo2010:ajax_upload_file
+
+    # Should forbid anonymous or unprivileged user to upload files
+
+    @classmethod
+    def setUpClass(cls):
+        super(AjaxUploadFileAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND translator
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+        # AND url
+        cls.url = reverse('exmo2010:ajax_upload_file')
+
+    def test_redirect_get_anonymous(self):
+        # WHEN anonymous user get upload url
+        request = MagicMock(user=self.users['anonymous'], method='GET', is_ajax=lambda: True)
+        request.get_full_path.return_value = self.url
+        response = ajax_upload_file(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'translator', 'orguser', 'observer', 'user']))
+    def test_redirect_get(self, username, *args):
+        # WHEN unprivileged user get upload url
+        request = MagicMock(user=self.users[username], method='GET', is_ajax=lambda: True)
+        request.get_full_path.return_value = self.url
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, ajax_upload_file, request)
+
+    def test_redirect_post_anonymous(self):
+        # WHEN anonymous user upload file
+        request = MagicMock(user=self.users['anonymous'], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
+        request.get_full_path.return_value = self.url
+        response = ajax_upload_file(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+    @parameterized.expand(zip(['expertB', 'translator', 'orguser', 'observer', 'user']))
+    def test_forbid_post(self, username, *args):
+        # WHEN unprivileged user upload file
+        request = Mock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, ajax_upload_file, request)
+
+    @parameterized.expand(zip(['admin', 'expertA']))
+    def test_allow_post(self, username, *args):
+        # WHEN privileged user upload file
+        request = MagicMock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(ajax_upload_file(request).status_code, 200)

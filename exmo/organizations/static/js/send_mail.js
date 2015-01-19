@@ -60,4 +60,66 @@ $(document).ready(function () {
 
         editor.fire('change');
     }
+
+
+    $('#email_form').submit(function() {
+        var inputValues = {};
+        $('#attachments div').each(function() {
+            inputValues[$(this).data('filename')] = $(this).text();
+        });
+        $('input[name="attachments_names"]').val(JSON.stringify(inputValues));
+    });
+
+
+    /* One-click upload attachments */
+
+    $('#upload_link').click(function() {
+        if ($('#attachments').children().length < 10) {
+            $('#upload_form input[type="file"]').click();
+        } else {
+            alert(gettext('Too many attachments.'));
+        }
+        return false
+    });
+
+    function beforeSubmit(arr, $form, options) {
+        $('.progressbar').show();
+    }
+
+    function onProgress(event, position, total, percentComplete) {
+        //update progressbar percent complete
+        $('.progressbar div').width(percentComplete + '%');
+    }
+
+    $('#upload_form').change(function () {
+        var form = this;
+
+        $(this).ajaxSubmit({
+            beforeSubmit: beforeSubmit,
+            uploadProgress: onProgress,
+            success: function(data) {
+                $('.progressbar').hide();
+                if (data.error) {
+                    alert(data.error)
+                } else {
+                    var element = $('<div data-filename="' + data["saved_filename"] + '">' +
+                                    data["original_filename"] + '<a><i class="icon delete"></i></a></div>');
+                    $('#attachments').append(element);
+                }
+                form.reset();
+            },
+            error: function(jqXHR, textStatus, errorMessage) {
+                $('.progressbar').hide();
+                alert(errorMessage);
+                form.reset();
+            },
+            resetForm: true
+        });
+
+        return false;
+    });
+
+    $('#attachments').on('click', 'a', function(){
+        $(this).closest('div').remove();
+    });
 });

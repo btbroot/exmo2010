@@ -136,6 +136,32 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+EMAIL_ATTACHMENT_UPLOAD_PATH = 'email_attachments/'
+# A number indicating the maximum file size allowed for upload
+EMAIL_ATTACHMENT_MAX_UPLOAD_SIZE = 15 * 1024 * 1024  # 15MB
+# List containing allowed content types
+EMAIL_ATTACHMENT_CONTENT_TYPES = [
+    'application/msword',  # doc
+    'application/vnd.ms-excel',  # xls
+    'application/vnd.ms-powerpoint',  # ppt, pps
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # docx
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  # xlsx
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',  # pptx
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',  # ppsx
+    'application/vnd.oasis.opendocument.text',  # odt
+    'application/vnd.oasis.opendocument.spreadsheet',  # ods
+    'application/vnd.oasis.opendocument.presentation',  # odp
+    'application/pdf',  # pdf
+    'text/plain',  # txt
+    'image/bmp',  # bmp
+    'image/gif',  # gif
+    'image/jpeg',  # jpeg
+    'image/pjpeg',  # jpe
+    'image/png',  # png
+    'image/svg+xml',  # svg
+    'image/tiff',  # tiff
+]
+
 # Cache
 CACHE_PATH = '/var/cache/exmo2010/'
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True

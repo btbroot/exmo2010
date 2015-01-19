@@ -83,6 +83,18 @@ input[type="text"] {
     width: 100px;
 }
 
+.attachments-block .table-cell div {
+    display: inline-block;
+}
+
+#attachments div {
+    padding-right: 10px;
+}
+
+#attachments i {
+    vertical-align: baseline;
+}
+
 
 /* == SEND MAIL HISTORY == */
 

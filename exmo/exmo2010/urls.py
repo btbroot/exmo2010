@@ -229,6 +229,8 @@ urlpatterns = named_urls('',
     (r'^ajax_get_pc/$', 'parameters.views.ajax_get_pc'),
     (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
     (r'^ajax_get_qqt/$', 'questionnaire.views.ajax_get_qqt'),
+
+    (r'^ajax_upload_file/$', 'organizations.views.ajax_upload_file'),
 )
 
 

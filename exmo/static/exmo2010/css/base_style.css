@@ -946,6 +946,16 @@ i.add {
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/add.png', sizingMethod=scale);
 }
 
+i.delete {
+    background: url("../img/delete.png") no-repeat;
+    background-size: 10px 10px;
+    width: 10px;
+    height: 10px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/delete.png', sizingMethod=scale)";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/delete.png', sizingMethod=scale);
+}
+
 i.download {
     background: url("../img/download.png") no-repeat;
     background-size: 16px 16px;

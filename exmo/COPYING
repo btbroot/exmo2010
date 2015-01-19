@@ -66,6 +66,7 @@ http://www.ineversay.com/my-works/xiao-icon.html:
 --
 
 exmo/static/exmo2010/img/add.png
+exmo/static/exmo2010/img/delete.png
 exmo/static/exmo2010/img/download.png
 exmo/static/exmo2010/img/earth.png
 exmo/static/exmo2010/img/exit.png
@@ -331,5 +332,13 @@ exmo/static/exmo2010/js/jquery.tablesorter.js
 Copyright (c) 2007, Christian Bach <http://tablesorter.com>
 
 Code licensed under MIT and GPL License
+
+--
+
+exmo/static/exmo2010/js/jquery.form.js
+
+Copyright (c) 2014 M. Alsup
+
+Dual licensed under the MIT and GPL licenses.
 
 --

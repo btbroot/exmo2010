@@ -18,21 +18,27 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import json
+import os
 from urllib import urlencode
 
+from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms.models import modelform_factory
-from django.forms import TextInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, DetailView, UpdateView
 
 from .forms import InviteOrgsQueryForm, OrganizationsQueryForm, RepresentativesQueryForm
+from core.response import JSONResponse
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeWriter
 from exmo2010.mail import mail_organization, mail_orguser
@@ -113,6 +119,35 @@ class OrganizationsDeleteView(OrganizationsMixin, DeleteView):
         return org
 
 
+@login_required
+def ajax_upload_file(request):
+    max_upload_size = settings.EMAIL_ATTACHMENT_MAX_UPLOAD_SIZE
+    if request.method == "POST" and request.is_ajax() and request.user.is_expertA:
+        upload_file = request.FILES.get('upload_file')
+        error = None
+        if upload_file:
+            if upload_file.content_type in settings.EMAIL_ATTACHMENT_CONTENT_TYPES:
+                if upload_file._size > max_upload_size:
+                    error = _('Please keep file size under {max_size}. Current file size {size}.').format({
+                        'max_size': filesizeformat(max_upload_size), 'size': filesizeformat(upload_file._size)})
+            else:
+                error = _('This file type is not allowed.')
+        else:
+            error = _('No file.')
+        context = {'error': error}
+
+        if not error:
+            upload_path = settings.EMAIL_ATTACHMENT_UPLOAD_PATH
+            upload_filename = default_storage.get_available_name(os.path.join(upload_path, upload_file.name))
+            saved_path = default_storage.save(upload_filename, upload_file)
+            saved_filename = os.path.basename(saved_path)
+            context = {'saved_filename': saved_filename, 'original_filename': upload_file.name}
+
+        return JSONResponse(context)
+
+    raise PermissionDenied
+
+
 class SendMailMixin(LoginRequiredMixin):
     pk_url_kwarg = 'monitoring_pk'
     context_object_name = 'monitoring'
@@ -129,7 +164,9 @@ class SendMailView(SendMailMixin, UpdateView):
     template_name = "send_mail.html"
 
     def get_form_class(self):
-        return modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': TextInput})
+        form = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': forms.TextInput})
+        form.base_fields.update({'attachments_names': forms.CharField(required=False, widget=forms.Textarea())})
+        return form
 
     def get_form_kwargs(self):
         kwargs = super(SendMailView, self).get_form_kwargs()
@@ -150,6 +187,15 @@ class SendMailView(SendMailMixin, UpdateView):
         self.object = form.save()
         formdata = form.cleaned_data
 
+        attachments = []
+        attachments_names = formdata.get('attachments_names')
+
+        if attachments_names:
+            for saved_filename, original_filename in json.loads(attachments_names).items():
+                saved_file = default_storage.open(os.path.join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, saved_filename))
+                attachments.append((original_filename, saved_file.read()))
+                saved_file.close()
+
         orgs = []
         if formdata.get('dst_orgs_noreg'):
             orgs += self.monitoring.organization_set.filter(inv_status__in=['NTS', 'SNT', 'RD'])
@@ -162,7 +208,7 @@ class SendMailView(SendMailMixin, UpdateView):
             comment_text = formdata['comment'].replace('%code%', org.inv_code)
             for addr in org.email_iter():
                 text = self.replace_link(comment_text, addr, [org])
-                mail_organization(addr, org, formdata['subject'], text)
+                mail_organization(addr, org, formdata['subject'], text, attachments)
 
         orgs = set(self.monitoring.organization_set.all())
 
@@ -184,14 +230,14 @@ class SendMailView(SendMailMixin, UpdateView):
                 comment_text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
                 for org in user_orgs:
                     text = comment_text.replace('%code%', org.inv_code)
-                    mail_orguser(user.user.email, formdata['subject'], text)
+                    mail_orguser(user.user.email, formdata['subject'], text, attachments)
             elif '%link%' in formdata['comment']:
                 # Send single email to this user with all related organizations in one link.
                 text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
-                mail_orguser(user.user.email, formdata['subject'], text)
+                mail_orguser(user.user.email, formdata['subject'], text, attachments)
             else:
                 # Send single email to this user without any magic words.
-                mail_orguser(user.user.email, formdata['subject'], formdata['comment'])
+                mail_orguser(user.user.email, formdata['subject'], formdata['comment'], attachments)
 
         messages.success(self.request, _('Mails sent.'))
         url = reverse('exmo2010:organizations', args=[self.monitoring.pk])

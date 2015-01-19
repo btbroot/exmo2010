@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-21 21:40+0300\n"
+"POT-Creation-Date: 2015-01-20 14:44+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -30,13 +30,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: monitorings/static/js/monitoring.js:55
-msgid ""
-"You've chosen to delete monitoring's questionnaire. This will lead to "
-"removing all its questions and collected answers. Are you sure?"
+msgid "You've chosen to delete monitoring's questionnaire. This will lead to removing all its questions and collected answers. Are you sure?"
 msgstr ""
 
-#: organizations/static/js/organizations.js:71
+#: organizations/static/js/organizations.js:80
 msgid "and %(num_not_shown_orgs)s more"
+msgstr ""
+
+#: organizations/static/js/send_mail.js:80
+msgid "Too many attachments."
 msgstr ""
 
 #: static/exmo2010/js/rating.js:72
@@ -63,27 +65,27 @@ msgstr ""
 msgid "hide initial scores"
 msgstr ""
 
-#: static/scores/score_expert.js:181
+#: static/scores/score_expert.js:179
 msgid "Close without answer"
 msgstr ""
 
-#: static/scores/score_expert.js:186
+#: static/scores/score_expert.js:184
 msgid "Open comment"
 msgstr ""
 
-#: static/scores/score_expert.js:243
+#: static/scores/score_expert.js:241
 msgid "Score is invalid, recommendation can not be changed."
 msgstr ""
 
-#: static/scores/score_expert.js:249
+#: static/scores/score_expert.js:247
 msgid "Your browser is not supported"
 msgstr ""
 
-#: static/scores/score_expert.js:298
+#: static/scores/score_expert.js:296
 msgid "Score changed to maximum"
 msgstr ""
 
-#: static/scores/score_expert.js:300
+#: static/scores/score_expert.js:298
 msgid "Score changed"
 msgstr ""
 

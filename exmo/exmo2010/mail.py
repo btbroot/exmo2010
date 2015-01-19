@@ -109,12 +109,13 @@ def mail_clarification(request, clarification):
                                            context=context, to=[email], subject=subject))
 
 
-def mail_organization(email, org, subject, body):
+def mail_organization(email, org, subject, body, attachments=None):
     message = ExmoEmail(
         template_basename='mail/email_base',
         context={'subject': subject, 'body': body},
         to=[email],
-        subject=subject)
+        subject=subject,
+        attachments=attachments)
 
     match = re.search('([\w.-]+)@([\w.-]+)', message.from_email)
     extra_headers_email = match.group() if match else ''
@@ -128,7 +129,7 @@ def mail_organization(email, org, subject, body):
     send_org_email.delay(message, org.pk)
 
 
-def mail_orguser(email, subject, body):
+def mail_orguser(email, subject, body, attachments=None):
     if not email:
         return
 
@@ -136,7 +137,8 @@ def mail_orguser(email, subject, body):
         template_basename='mail/email_base',
         context={'subject': subject, 'body': body},
         to=[email],
-        subject=subject)
+        subject=subject,
+        attachments=attachments)
 
     send_email.delay(message)
 
