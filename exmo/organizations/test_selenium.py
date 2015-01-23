@@ -30,10 +30,11 @@ from .views import SendMailView
 
 
 @attr('selenium')
-class SendmailDisableSubmitTestCase(BaseSeleniumTestCase):
+class SendmailDisableButtonsTestCase(BaseSeleniumTestCase):
     # exmo2010:send_mail
 
-    # "Submit email" button should be disabled if required inputs are not provided.
+    # "Preview" button should be disabled if required inputs are not provided.
+    # "Submit" button should be disabled and hidden until email preview will not appear.
 
     def setUp(self):
         # GIVEN organization with email
@@ -47,28 +48,54 @@ class SendmailDisableSubmitTestCase(BaseSeleniumTestCase):
         # AND I am on send mail page
         self.get(reverse('exmo2010:send_mail', args=[org.monitoring.pk]))
 
-    def test_sendmail_disable_submit(self):
-        # INITIALLY submit button should be disabled
-        self.assertDisabled('input[type="submit"]')
+    def test_sendmail_disable_preview(self):
+        # INITIALLY preview button should be disabled
+        self.assertDisabled('#preview_btn')
 
         # WHEN I type message subject in form
         self.find('#id_subject').send_keys('Subject')
 
-        # THEN submit button should stay disabled
-        self.assertDisabled('input[type="submit"]')
+        # THEN preview button should stay disabled
+        self.assertDisabled('#preview_btn')
 
         # WHEN I type message body in form
         with self.frame('iframe'):
             self.find('body').send_keys('Content')
 
-        # THEN submit button should stay disabled
-        self.assertDisabled('input[type="submit"]')
+        # THEN preview button should stay disabled
+        self.assertDisabled('#preview_btn')
 
         # WHEN I check destination "inactive orgs" checkbox
         self.find('#id_dst_orgs_inact').click()
 
-        # THEN submit button should become enabled
+        # THEN preview button should become enabled
+        self.assertEnabled('#preview_btn')
+
+    def test_sendmail_disable_submit(self):
+        # INITIALLY submit button should be disabled and hidden
+        self.assertDisabled('input[type="submit"]')
+        self.assertHidden('input[type="submit"]')
+
+        # WHEN I type message subject in form
+        self.find('#id_subject').send_keys('Subject')
+
+        # AND I type message body in form
+        with self.frame('iframe'):
+            self.find('body').send_keys('Content')
+
+        # AND I check destination "not registered orgs" checkbox
+        self.find('#id_dst_orgs_noreg').click()
+
+        # THEN submit button should stay disabled and hidden
+        self.assertDisabled('input[type="submit"]')
+        self.assertHidden('input[type="submit"]')
+
+        # WHEN I click on preview button
+        self.find('#preview_btn').click()
+
+        # THEN submit button should become enabled and visible
         self.assertEnabled('input[type="submit"]')
+        self.assertVisible('input[type="submit"]')
 
 
 @attr('selenium')

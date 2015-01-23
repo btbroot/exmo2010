@@ -34,6 +34,7 @@ from django.forms.models import modelform_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import filesizeformat
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, DetailView, UpdateView
 
@@ -182,19 +183,24 @@ class SendMailView(SendMailMixin, UpdateView):
 
     def form_valid(self, form):
         """
+        Return first email preview instead of sending emails if request is AJAX.
         Send email messages to selected recipients, expanding magic words %code% and %link%.
         """
-        self.object = form.save()
+        preview_only = self.request.is_ajax()
+
+        if not preview_only:
+            self.object = form.save()
         formdata = form.cleaned_data
 
         attachments = []
-        attachments_names = formdata.get('attachments_names')
+        if not preview_only:
+            attachments_names = formdata.get('attachments_names')
 
-        if attachments_names:
-            for saved_filename, original_filename in json.loads(attachments_names).items():
-                saved_file = default_storage.open(os.path.join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, saved_filename))
-                attachments.append((original_filename, saved_file.read()))
-                saved_file.close()
+            if attachments_names:
+                for saved_filename, original_filename in json.loads(attachments_names).items():
+                    saved_file = default_storage.open(os.path.join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, saved_filename))
+                    attachments.append((original_filename, saved_file.read()))
+                    saved_file.close()
 
         orgs = []
         if formdata.get('dst_orgs_noreg'):
@@ -208,7 +214,11 @@ class SendMailView(SendMailMixin, UpdateView):
             comment_text = formdata['comment'].replace('%code%', org.inv_code)
             for addr in org.email_iter():
                 text = self.replace_link(comment_text, addr, [org])
-                mail_organization(addr, org, formdata['subject'], text, attachments)
+                if preview_only:
+                    context = {'email': addr, 'subject': formdata['subject'], 'body': text}
+                    return JSONResponse({'page': render_to_string('mail/email_preview.html', context)})
+                else:
+                    mail_organization(addr, org, formdata['subject'], text, attachments)
 
         orgs = set(self.monitoring.organization_set.all())
 
@@ -228,21 +238,34 @@ class SendMailView(SendMailMixin, UpdateView):
             if '%code%' in formdata['comment']:
                 # Send email to this user for every related organization in this monitoring.
                 comment_text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
-                for org in user_orgs:
-                    text = comment_text.replace('%code%', org.inv_code)
-                    mail_orguser(user.user.email, formdata['subject'], text, attachments)
+                texts = [comment_text.replace('%code%', org.inv_code) for org in user_orgs]
             elif '%link%' in formdata['comment']:
                 # Send single email to this user with all related organizations in one link.
-                text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
-                mail_orguser(user.user.email, formdata['subject'], text, attachments)
+                texts = [self.replace_link(formdata['comment'], user.user.email, user_orgs)]
             else:
                 # Send single email to this user without any magic words.
-                mail_orguser(user.user.email, formdata['subject'], formdata['comment'], attachments)
+                texts = [formdata['comment']]
 
-        messages.success(self.request, _('Mails sent.'))
-        url = reverse('exmo2010:organizations', args=[self.monitoring.pk])
+            for text in texts:
+                if preview_only:
+                    context = {'email': user.user.email, 'subject': formdata['subject'], 'body': text}
+                    return JSONResponse({'page': render_to_string('mail/email_preview.html', context)})
+                else:
+                    mail_orguser(user.user.email, formdata['subject'], text, attachments)
 
-        return HttpResponseRedirect('%s?%s' % (url, self.request.GET.urlencode()))
+        if preview_only:
+            return JSONResponse({'error': True, 'page': _('This email will not be delivered to anyone!')})
+        else:
+            messages.success(self.request, _('Mails sent.'))
+            url = reverse('exmo2010:send_mail_history', args=[self.monitoring.pk])
+
+            return HttpResponseRedirect('%s?%s' % (url, self.request.GET.urlencode()))
+
+    def form_invalid(self, form):
+        if self.request.is_ajax():
+            return JSONResponse({'error': True, 'page': _('Form error!')})
+        else:
+            return super(SendMailView, self).form_invalid(form)
 
 
 class SendMailHistoryView(SendMailMixin, DetailView):

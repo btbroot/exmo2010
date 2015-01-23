@@ -58,16 +58,25 @@
                     </div>
 
                     <div class="table-row">
+                        <div class="table-cell"></div>
+
+                        <div class="table-cell-L">
+                            <a href="#show_keywords" class="pseudo">{% trans 'Keywords' %}</a>
+
+                            <div class="keywords-block hidden">
+                                <p><strong>%link%</strong> &mdash; {% trans 'invitation link' %}</p>
+                                <p><strong>%code%</strong> &mdash; {% trans 'invitation code' %}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
                         <div class="table-cell-R">
                             {{ form.comment.label }} <span class="required">*</span>
                         </div>
 
                         <div class="table-cell-L text-area">
                             {{ form.comment }}
-                        </div>
-
-                        <div class="help-text info-block">
-                            %code% - {% trans 'use this keyword for invitation addition in email.' %}
                         </div>
                     </div>
 
@@ -114,7 +123,12 @@
                         <div class="table-cell-R"></div>
 
                         <div class="table-cell-L">
-                            <input type="submit" value="{% trans 'Send' %}"/>
+                            <input type="button" id="preview_btn" value="{% trans 'Preview' %}"/>
+
+                            <div class="preview-block info-block hidden">
+                                <iframe id="iframe_preview"></iframe>
+                            </div>
+                            <input type="submit" class="hidden" value="{% trans 'Send' %}"/>
                         </div>
                     </div>
                 </div>

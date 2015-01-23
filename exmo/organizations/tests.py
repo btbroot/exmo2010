@@ -269,8 +269,8 @@ class SelectiveOrgEmailTestCase(TestCase):
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
 
-        # AND i should be redirected to the organizations list page
-        self.assertRedirects(response, reverse('exmo2010:organizations', args=[self.monitoring.pk]))
+        # AND i should be redirected to the mail history list page
+        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
 
         # AND email messages should be sent to expected receivers
         receivers = set(tuple(m.to) for m in mail.outbox)
@@ -290,8 +290,8 @@ class SelectiveOrgEmailTestCase(TestCase):
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
 
-        # AND i should be redirected to the organizations list page
-        self.assertRedirects(response, reverse('exmo2010:organizations', args=[self.monitoring.pk]))
+        # AND i should be redirected to the mail history list page
+        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
 
         # AND email messages should be sent to expected receivers
         receivers = set(tuple(m.to) for m in mail.outbox)

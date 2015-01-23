@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-20 14:44+0300\n"
+"POT-Creation-Date: 2015-01-23 10:43+0300\n"
 "PO-Revision-Date: 2014-11-26 23:40+0300\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -140,7 +140,7 @@ msgstr "Код приглашения"
 #: accounts/templates/user_settings.html:117 exmo2010/forms.py:47
 #: monitorings/templates/monitoring_form.html:171
 #: organizations/templates/organizations_delete.html:49
-#: organizations/templates/send_mail.html:117
+#: organizations/templates/send_mail.html:131
 #: tasks/templates/mass_assign_tasks.html:46
 #: templates/exmo2010/feedback.html:65
 #: templates/exmo2010/monitoring_confirm_delete.html:37
@@ -2049,24 +2049,32 @@ msgstr "Сбросить выделение "
 msgid "Full name or e-mail"
 msgstr "ФИО или электронная почта"
 
-#: organizations/views.py:131
+#: organizations/views.py:132
 #, python-brace-format
 msgid "Please keep file size under {max_size}. Current file size {size}."
 msgstr "Размер файла должен быть меньше {max_size}. Текущий размер {size}."
 
-#: organizations/views.py:134
+#: organizations/views.py:135
 msgid "This file type is not allowed."
 msgstr "Недопустимый тип файла."
 
-#: organizations/views.py:136
+#: organizations/views.py:137
 msgid "No file."
 msgstr "Файл не выбран."
 
-#: organizations/views.py:242
+#: organizations/views.py:265
+msgid "This email will not be delivered to anyone!"
+msgstr "Это письмо не будет доставлено никому!"
+
+#: organizations/views.py:267
 msgid "Mails sent."
 msgstr "Письма отправлены."
 
-#: organizations/views.py:283
+#: organizations/views.py:274
+msgid "Form error!"
+msgstr "Ошибка формы!"
+
+#: organizations/views.py:314
 msgid "Organization is not selected"
 msgstr "Организация не выбрана"
 
@@ -2178,27 +2186,40 @@ msgstr "Представителей нет"
 msgid "Mail"
 msgstr "Рассылки"
 
-#: organizations/templates/send_mail.html:70
-msgid "use this keyword for invitation addition in email."
-msgstr "используйте это ключевое слово для автоматического добавления кода приглашения в письмо."
+#: organizations/templates/send_mail.html:64
+msgid "Keywords"
+msgstr "Ключевые слова"
 
-#: organizations/templates/send_mail.html:84
+#: organizations/templates/send_mail.html:67
+msgid "invitation link"
+msgstr "ссылка приглашения"
+
+#: organizations/templates/send_mail.html:68
+msgid "invitation code"
+msgstr "код приглашения"
+
+#: organizations/templates/send_mail.html:93
 msgid "Attach file"
 msgstr "Прикрепить файл"
 
-#: organizations/templates/send_mail.html:91
+#: organizations/templates/send_mail.html:100
 #: organizations/templates/send_mail_history.html:64
+#: templates/mail/email_preview.html:24
 msgctxt "mail destination"
 msgid "To"
 msgstr "Кому"
 
-#: organizations/templates/send_mail.html:97
+#: organizations/templates/send_mail.html:106
 msgid "All organizations"
 msgstr "Все организации"
 
-#: organizations/templates/send_mail.html:105
+#: organizations/templates/send_mail.html:114
 msgid "All representatives"
 msgstr "Все представители"
+
+#: organizations/templates/send_mail.html:126
+msgid "Preview"
+msgstr "Предпросмотр"
 
 #: organizations/templates/send_mail_history.html:63
 msgid "Letter subject and content"

@@ -19,12 +19,20 @@
 //
 
 $(document).ready(function () {
+
+    // Show/hide keywords block
+    $('a[href="#show_keywords"]').click(function(e){
+        $(".keywords-block").slideToggle();
+        e.preventDefault();
+    });
+
     // When group checkbox clicked, toggle all children
     $("div.destination input.group").click(function () {
         $(this).closest('div.destination').find('input').prop('checked', $(this).prop('checked'));
     });
 
     if (CKEDITOR.env.isCompatible) {
+        $('#preview_btn').prop('disabled', true);
         $('input[type="submit"]').prop('disabled', true);
         var editor = CKEDITOR.instances['id_comment'];
 
@@ -33,12 +41,12 @@ $(document).ready(function () {
             if ($(this).prop('checked') == false) {
                 $(this).closest('div.destination').find('input.group').prop('checked', false);
             }
-            // Trigger ckeditor change to handle disabling submit button.
+            // Trigger ckeditor change to handle disabling preview button.
             editor.fire('change');
         });
 
         $("#id_subject").on('keyup', function () {
-            // Trigger ckeditor change to handle disabling submit button.
+            // Trigger ckeditor change to handle disabling preview button.
             editor.fire('change');
         });
 
@@ -46,16 +54,14 @@ $(document).ready(function () {
             // Update original form input when text typed in CKEDITOR
             e.sender.updateElement();
 
-            // Disable submit button if required inputs are not provided.
+            $('.preview-block').hide('slow');
+            $('input[type="submit"]').prop('disabled', true).hide('slow');
+            // Disable preview button if required inputs are not provided.
             var checked = $('div.org-email-form').find('input:checked');
             var body_text = $.trim($("#id_comment").val());
             var subject_text = $.trim($("#id_subject").val());
-            if ((checked.length == 0) || body_text == '' || subject_text == '') {
-                $('input[type="submit"]').prop('disabled', true);
-            }
-            else {
-                $('input[type="submit"]').prop('disabled', false);
-            }
+            var disabled = checked.length == 0 || body_text == '' || subject_text == '';
+            $('#preview_btn').prop('disabled', disabled);
         });
 
         editor.fire('change');
@@ -121,5 +127,28 @@ $(document).ready(function () {
 
     $('#attachments').on('click', 'a', function(){
         $(this).closest('div').remove();
+    });
+
+    // Send ajax-request to get email preview
+    $('#preview_btn').click(function() {
+
+        $('#email_form').ajaxSubmit({
+            dataType: 'json',
+            success: function(data) {
+                var iframe = $('#iframe_preview');
+                iframe.height('auto');
+                iframe.contents().find('html').html(data['page']);
+                $('.preview-block').show();
+                iframe.height(iframe.contents().find('html').height());
+                if (!data.error) {
+                    $('input[type="submit"]').prop('disabled', false).show();
+                }
+            },
+            error: function(jqXHR, textStatus, errorMessage) {
+                alert(errorMessage);
+            }
+        });
+
+        return false
     });
 });
