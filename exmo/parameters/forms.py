@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,6 +20,7 @@
 #
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django_select2.fields import ModelSelect2Field
 
 from exmo2010.models import Parameter
 from queryform import QueryForm
@@ -45,34 +47,23 @@ class ParamCritScoreFilterForm(forms.Form):
     означающий, что ничего не выбрано и фильтрация по этому критерию не нужна.
 
     """
-    parameter = forms.ModelChoiceField(label=_('Parameter'),
-                                       queryset=Parameter.objects.none(), empty_label="")
-    found = forms.ChoiceField(label=_('Found'), choices=SCORE_CHOICES1,
-                              initial=5, widget=forms.RadioSelect)
-    complete = forms.ChoiceField(label=_('Complete'), choices=SCORE_CHOICES2,
-                                 initial=5, widget=forms.RadioSelect)
-    topical = forms.ChoiceField(label=_('Topical'), choices=SCORE_CHOICES2,
-                                initial=5, widget=forms.RadioSelect)
-    accessible = forms.ChoiceField(label=_('Accessible'),
-                                   choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
-    hypertext = forms.ChoiceField(label=_('Hypertext'), choices=SCORE_CHOICES1,
-                                  initial=5, widget=forms.RadioSelect)
-    document = forms.ChoiceField(label=_('Document'), choices=SCORE_CHOICES1,
-                                 initial=5, widget=forms.RadioSelect)
-    image = forms.ChoiceField(label=_('Image'), choices=SCORE_CHOICES1,
-                              initial=5, widget=forms.RadioSelect)
-    t_opened = forms.BooleanField(label=_('opened'), required=False,
-                                  initial=True)
-    t_closed = forms.BooleanField(label=_('closed'), required=False,
-                                  initial=True)
-    t_approved = forms.BooleanField(label=_('approved'), required=False,
-                                    initial=True)
+    parameter = ModelSelect2Field(label=_('Parameter'), queryset=None, empty_label="")
+    found = forms.ChoiceField(label=_('Found'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
+    complete = forms.ChoiceField(label=_('Complete'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
+    topical = forms.ChoiceField(label=_('Topical'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
+    accessible = forms.ChoiceField(label=_('Accessible'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
+    hypertext = forms.ChoiceField(label=_('Hypertext'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
+    document = forms.ChoiceField(label=_('Document'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
+    image = forms.ChoiceField(label=_('Image'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
+    t_opened = forms.BooleanField(label=_('opened'), required=False, initial=True)
+    t_closed = forms.BooleanField(label=_('closed'), required=False, initial=True)
+    t_approved = forms.BooleanField(label=_('approved'), required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
         monitoring = kwargs.pop('monitoring', None)
         super(ParamCritScoreFilterForm, self).__init__(*args, **kwargs)
-        self.fields['parameter'].queryset = Parameter.objects.filter(
-            monitoring=monitoring)
+        self.fields['parameter'].queryset = Parameter.objects.filter(monitoring=monitoring).order_by('code')
+        self.fields['parameter'].label_from_instance = lambda param: u"%s — %s" % (param.code, param.name)
 
 
 class ParameterTypeForm(forms.ModelForm):

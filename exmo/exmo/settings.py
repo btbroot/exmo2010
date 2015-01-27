@@ -287,6 +287,7 @@ INSTALLED_APPS = (
     'modeltranslation',
     'widget_tweaks',
     'django_bleach',
+    'django_select2',
     # Local apps:
     'accounts',
     'auth',

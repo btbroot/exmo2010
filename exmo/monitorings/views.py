@@ -683,7 +683,7 @@ def monitoring_parameter_filter(request, monitoring_pk):
 
     return TemplateResponse(request, 'monitoring_parameter_filter.html', {
         'form': form,
-        'object_list': queryset,
+        'scores': queryset,
         'monitoring': monitoring,
         'hide': hide
     })

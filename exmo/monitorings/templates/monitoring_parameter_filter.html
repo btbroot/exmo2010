@@ -22,6 +22,8 @@
 {% endcomment %}
 {% load i18n static %}
 
+{% block title %}{% trans 'Parameter-criteria filter' %}{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/monitoring_parameter_filter.css' %}" />
 {% endblock %}
@@ -30,58 +32,40 @@
     <script>
         $(function () {
             if ({{ hide }}) {
-                $(".filter-result").hide();
-                $("#fbutton").attr('disabled', 'disabled');
+                $('#filter_params').hide();
+                $('input[type="submit"]').attr('disabled', 'disabled').hide();
             } else {
                 getData();
             }
 
-            $("#id_parameter").live('change', parameterCallBack);
+            $('select').change(function parameterCallBack() {
+                var param_value = $("#id_parameter").val();
+                $("#filter_form").get(0).reset();
+                $("#id_parameter").val(param_value);
 
-            function parameterCallBack() {
-                var par_val = $("#id_parameter").val();
-                $("#form").get(0).reset();
-                $("#id_parameter").val(par_val);
+                var empty_value = (param_value == '');
 
-                if ($("#id_parameter").val()=='') {
-                    $(".filter-result").hide();
-                    $("#fbutton").attr('disabled', 'disabled');
-                } else {
-                    $(".filter-result").show();
-
-                    $("#ftable tr").show();
+                $('#filter_params').toggle(!empty_value);
+                if (!empty_value) {
+                    $("table.criteria tr").show();
                     getData();
-                    $("#fbutton").removeAttr('disabled');
                 }
-            }
+                $('input[type="submit"]').prop('disabled', empty_value).toggle(!empty_value);
+            });
 
             function getData() {
                 $.ajax({
-                    url: "{% url 'exmo2010:ajax_get_pc' %}"
-                    , type: "POST"
-                    , async: false
-                    , data: { p_id: $("#id_parameter").val() }
-                }).done(function (data) {
-                            $.each(data, function(index, value) {
-                                $("#ftable tr.row-"+value).hide();
-                            });
+                    url: "{% url 'exmo2010:ajax_get_pc' %}",
+                    type: "POST",
+                    async: false,
+                    data: { p_id: $("#id_parameter").val() },
+                    success: function(data) {
+                        $.each(data, function(index, value) {
+                            $("table.criteria tr.row-" + value).hide();
                         });
+                    }
+                });
             }
-
-            $.each($('select option'), function(key, optionElement) {
-                var curText = $(optionElement).text();
-                $(this).attr('title', curText);
-
-                var lengthToShortenTo = Math.round((parseInt($(this).parent('select').width(), 10) + 35) / 7.3);
-
-                if (curText.length > lengthToShortenTo) {
-                    $(this).text(curText.substring(0, lengthToShortenTo) + '...');
-                }
-            });
-
-            $('select').change(function() {
-                $(this).attr('title', ($(this).find('option:eq('+$(this).get(0).selectedIndex +')').attr('title')));
-            });
         });
     </script>
 {% endblock %}
@@ -95,95 +79,73 @@
 
         <h2>{% trans 'Parameter-criteria filter' %}</h2>
 
-        <div id=parameter_filter_form>
-            <form id="form" method="post" action="">
-                {{ form.non_field_errors }}
-                {% csrf_token %}
-                <fieldset>
-                    <h6>{{ form.parameter.label }}</h6>
-                    {{ form.parameter }}
-                    {{ form.parameter.errors }}
-                </fieldset>
+        <div class="parameter-filter-content-block">
+            {% include "_form_errors.html" with form=form %}
 
-                <fieldset class="filter-result">
+            <form id="filter_form" method="post" action="">{% csrf_token %}
+                {{ form.parameter }}
 
-                    <table id="ftable" class="criteria">
+                <div id="filter_params">
+                    <table class="criteria">
                         <thead>
-                        <th>
-                            {% trans "Evaluation criterion" %}
-                        </th>
-                        <th>
-                            {% trans "Value" %}
-                        </th>
+                            <tr>
+                                <th>{% trans "Evaluation criterion" %}</th>
+                                <th>{% trans "Value" %}</th>
+                            </tr>
                         </thead>
-                        <tbody>
 
-                        {% for field in form %}
-                            {% if field.field == form.found.field or field.field == form.complete.field or field.field == form.topical.field or field.field == form.accessible.field or field.field == form.hypertext.field or field.field == form.document.field or field.field == form.image.field %}
-                                <tr class="row-{{ forloop.counter0 }}">
-                                    <td>
-                                        {{ field.label }}
-                                    </td>
-                                    <td>
-                                        {{ field }}
-                                    </td>
-                                </tr>
-                                {% if field.errors  %}
+                        <tbody>
+                            {% for field in form %}
+                                {% if field.field == form.found.field or field.field == form.complete.field or field.field == form.topical.field or field.field == form.accessible.field or field.field == form.hypertext.field or field.field == form.document.field or field.field == form.image.field %}
                                     <tr class="row-{{ forloop.counter0 }}">
-                                        <td colspan="2">
-                                            {{ field.errors }}
+                                        <td>
+                                            {{ field.label }}
+                                        </td>
+                                        <td>
+                                            {{ field }}
                                         </td>
                                     </tr>
+                                    {% if field.errors  %}
+                                        <tr class="row-{{ forloop.counter0 }}">
+                                            <td colspan="2">
+                                                {{ field.errors }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
-
-                        {% endfor %}
-
+                            {% endfor %}
                         </tbody>
                     </table>
-                </fieldset>
-                <fieldset class="filter-result status">
-                    <h6>{% trans "Task status" %}</h6>
-                    {{ form.t_opened }}{{ form.t_opened.label_tag }}
-                    {% if form.t_opened.errors %}
-                        {{ form.t_opened.errors }}
-                        <br />
-                    {% endif %}
-                    <br />
-                    {{ form.t_closed }}{{ form.t_closed.label_tag }}
-                    {% if form.t_closed.errors %}
-                        {{ form.t_closed.errors }}
-                        <br />
-                    {% endif %}
-                    <br />
-                    {{ form.t_approved }}{{ form.t_approved.label_tag }}
-                    {% if form.t_approved.errors %}
-                        <br />
-                        {{ form.t_approved.errors }}
-                    {% endif %}
-                </fieldset>
-                <fieldset>
-                    <input id="fbutton" type="submit" value="{% trans 'Filter' %}"/>
-                </fieldset>
-            </form>
-        </div>
 
-        {% if object_list %}
-            <div id=parameter_filter_result>
-                <table>
+                    <div class="task-statuses">
+                        <h4>{% trans "Task status" %}</h4>
+                        {{ form.t_opened }}{{ form.t_opened.label_tag }}<br />
+                        {{ form.t_closed }}{{ form.t_closed.label_tag }}<br />
+                        {{ form.t_approved }}{{ form.t_approved.label_tag }}
+                    </div>
+                </div>
+
+                <input type="submit" value="{% trans 'Filter' %}"/>
+            </form>
+
+            {% if scores %}
+                <table class="criteria">
                     <thead>
-                    <tr><td>{% trans 'Task' %}</td><td>{% trans 'Parameter' %}</td></tr>
-                    </thead>
-                    {% for object in object_list %}
-                        <tbody>
                         <tr>
-                            <td><a href="{% url 'exmo2010:task_scores' object.task.pk %}">{{ object.task }}</a></td>
-                            <td><a href="{% url 'exmo2010:score' object.pk %}">{{ object.parameter }}</a></td>
+                            <th>{% trans 'Task' %}</th>
+                            <th>{% trans 'Parameter' %}</th>
                         </tr>
-                    {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for score in scores %}
+                            <tr>
+                                <td><a href="{% url 'exmo2010:task_scores' score.task.pk %}">{{ score.task }}</a></td>
+                                <td><a href="{% url 'exmo2010:score' score.pk %}">{{ score.parameter }}</a></td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
-            </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
