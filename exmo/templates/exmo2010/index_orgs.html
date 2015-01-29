@@ -1,7 +1,7 @@
 {% extends "base_centered.html" %}
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -48,13 +48,13 @@
 
 
         <div id="content_outer">
-            {% include '_messages.html' %}
-
-            {% include "exmo2010/helpers/inv_code_bubble.html" %}
-
-            <h1>{% trans 'My scores' %}</h1>
-
             <div class="content">
+                {% include '_messages.html' %}
+
+                {% include "exmo2010/helpers/inv_code_bubble.html" %}
+
+                <h1>{% trans 'My scores' %}</h1>
+
                 {% if int_tasks or fin_tasks %}
                     <div class="inprogress-area">
                         <h2>{% trans 'Ratings in progress' %}</h2>

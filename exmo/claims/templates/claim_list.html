@@ -4,6 +4,7 @@
 # Copyright 2010, 2011 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -34,9 +35,12 @@
 {% block content %}
     {% include "_menu_interaction.html" with active_item="3" %}
 
-    <h1>{% trans 'Claims' %}</h1>
 
     <div class="content">
+        {% include '_messages.html' %}
+
+        <h1>{% trans 'Claims' %}</h1>
+
         <table class="base-table">
             <tbody>
                 <tr>
