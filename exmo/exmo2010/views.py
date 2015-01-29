@@ -58,6 +58,12 @@ def index(request):
     if (user.is_organization or ObserversGroup.objects.filter(users=user).exists()) and not user.is_expert:
         return index_orgs(request)
 
+    if user.is_expertA:
+        return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
+
+    if user.is_expertB:
+        pass
+
     monitorings = perm_filter(user, 'view_monitoring', Monitoring.objects.all())
     context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), user)}
 

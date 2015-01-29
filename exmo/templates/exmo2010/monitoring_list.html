@@ -4,6 +4,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2014 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,44 +22,59 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Monitoring cycles list' %}{% endblock %}
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
 
-{% block content %}
-    <div class="content">
-        <h2>{% trans 'Monitoring cycles' %}</h2>
-        <table>
-            {% include 'exmo2010/table_header.html' with headers=headers %}
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
 
-            <tbody>
-            <tr>
-                <td colspan=2>
-                    {% if request.user.is_expertA %}
-                        <a href="{% url 'exmo2010:monitoring_add' %}?{{ request.GET.urlencode }}">
-                            {% trans 'Add new monitoring' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
-                        </a>&nbsp;
-                    {% endif %}
-                </td>
-            </tr>
-            {% for monitoring in object_list %}
-                <tr>
-                    <td>
-                        <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring.name }}</a>
-                        {% if monitoring.perms.edit_monitoring %}
-                            &nbsp;<a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}?{{ request.GET.urlencode }}">
-                                <img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
-                        {% endif %}
-                        {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
-                            &nbsp;<a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{ request.GET.urlencode }}">
-                                <img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>&nbsp;
-                        {% endif %}
-                    </td>
-                    <td>
-                        {{ monitoring.get_status_display }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% include "exmo2010/_paginator.html" with queryset=object_list %}
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content_outer">
+            {% include '_messages.html' %}
+
+            <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                <h2>{% trans 'Monitoring cycles' %}</h2>
+                <table>
+                    {% include 'exmo2010/table_header.html' with headers=headers %}
+
+                    <tbody>
+                    <tr>
+                        <td colspan=2>
+                            {% if request.user.is_expertA %}
+                                <a href="{% url 'exmo2010:monitoring_add' %}?{{ request.GET.urlencode }}">
+                                    {% trans 'Add new monitoring' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
+                                </a>&nbsp;
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% for monitoring in object_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring.name }}</a>
+                                {% if monitoring.perms.edit_monitoring %}
+                                    &nbsp;<a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}?{{ request.GET.urlencode }}">
+                                        <img src="{% static 'admin/img/icon_changelink.gif' %}" ></a>&nbsp;
+                                {% endif %}
+                                {% if monitoring.perms.admin_monitoring and not monitoring.is_published %}
+                                    &nbsp;<a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}?{{ request.GET.urlencode }}">
+                                        <img src="{% static 'admin/img/icon_deletelink.gif' %}" ></a>&nbsp;
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ monitoring.get_status_display }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% include "exmo2010/_paginator.html" with queryset=object_list %}
+            </div>
+        </div>
     </div>
 {%endblock%}
