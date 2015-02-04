@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.test import TestCase
 from django.utils.formats import get_format
 from django.utils.translation import get_language
@@ -38,13 +39,96 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from .forms import MonitoringCopyForm
-from .views import monitoring_organization_export
+from .views import monitorings_list, monitoring_organization_export
 from core.utils import UnicodeReader
 from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import (Claim, Monitoring, ObserversGroup, OpennessExpression,
                              Organization, Parameter, Task, Score, UserProfile)
 from exmo2010.models.monitoring import INT, PRE, PUB
+
+
+class MonitoringsAccessTestCase(OptimizedTestCase):
+    # exmo2010:monitorings_list
+
+    # Should always redirect anonymous to login page.
+    # Should forbid get requests for non-experts.
+    # Should forbid get requests with incorrect parameters for experts.
+    # Should allow get requests with correct parameters for experts.
+
+    @classmethod
+    def setUpClass(cls):
+        super(MonitoringsAccessTestCase, cls).setUpClass()
+
+        cls.users = {}
+        # GIVEN monitoring with organization
+        cls.monitoring = mommy.make(Monitoring)
+        organization = mommy.make(Organization, monitoring=cls.monitoring)
+        # AND anonymous user
+        cls.users['anonymous'] = AnonymousUser()
+        # AND user without any permissions
+        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
+        # AND superuser
+        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
+        # AND expert B
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        cls.users['expertB'] = expertB
+        # AND expert A
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        cls.users['expertA'] = expertA
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        orguser.profile.organization = [organization]
+        cls.users['orguser'] = orguser
+        # AND translator
+        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
+        translator.profile.is_translator = True
+        cls.users['translator'] = translator
+        # AND observer user
+        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
+        # AND observers group for monitoring
+        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
+        obs_group.organizations = [organization]
+        obs_group.users = [observer]
+        cls.users['observer'] = observer
+        # AND page url
+        cls.url = reverse('exmo2010:monitorings_list')
+
+    @parameterized.expand(zip(['GET', 'POST']))
+    def test_redirect_anonymous(self, method, *args):
+        # WHEN anonymous user send request to monitorings page
+        request = MagicMock(user=self.users['anonymous'], method=method)
+        request.get_full_path.return_value = self.url
+        response = monitorings_list(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+        # AND response redirects to login page
+        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
+
+    @parameterized.expand(zip(['orguser', 'translator', 'observer', 'user']))
+    def test_forbid_get(self, username, *args):
+        # WHEN authenticated user get monitorings page
+        request = Mock(user=self.users[username], method='GET')
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, monitorings_list, request)
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB']))
+    def test_allow_get(self, username, *args):
+        # WHEN admin or any expert post get monitorings page
+        request = MagicMock(user=self.users[username], method='GET')
+        response = monitorings_list(request)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+    @parameterized.expand(zip(['unpublished', 'published']))
+    def test_allow_get_with_params(self, param, *args):
+        # WHEN admin or any expert post get monitorings page
+        request = MagicMock(user=self.users['expertA'], method='GET')
+        response = monitorings_list(request, param)
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
 
 
 class MonitoringDeleteTestCase(TestCase):

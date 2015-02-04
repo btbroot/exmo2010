@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -103,10 +103,11 @@ class CanonicalViewKwargsTestCase(TestCase):
         'clarification_pk',
         'claim_pk',
         'obs_group_pk',
-        'activation_key',  # for registration_activate
-        'user_pk',         # for password_reset_confirm
-        'token',           # for password_reset_confirm
-        'report_type',     # for monitoring_report_*
+        'monitoring_status',  # for monitorings_list
+        'activation_key',     # for registration_activate
+        'user_pk',            # for password_reset_confirm
+        'token',              # for password_reset_confirm
+        'report_type',        # for monitoring_report_*
         'print_report_type',  # for task_scores
     }
 

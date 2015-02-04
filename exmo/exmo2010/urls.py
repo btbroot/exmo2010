@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -101,7 +101,6 @@ scores_patterns += named_urls('',
 )
 
 monitoring_patterns = named_urls('monitorings.views',
-    (r'^$', 'monitorings_list'),
     (r'^add/$', MonitoringEditView, 'monitoring_add'),
     (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
     (r'^(?P<monitoring_pk>\d+)/comment_report/$', MonitoringCommentReportView, 'monitoring_comment_report'),
@@ -191,6 +190,8 @@ urlpatterns = named_urls('',
     (r'^settings/$', 'accounts.views.settings'),
     (r'^accounts/', include(auth_patterns)),
 
+    (r'^monitorings/$', 'monitorings.views.monitorings_list'),
+    (r'^monitorings/(?P<monitoring_status>unpublished|published)/$', 'monitorings.views.monitorings_list'),
     (r'^monitoring/', include(monitoring_patterns)),
 
     (r'^score/', include(scores_patterns)),

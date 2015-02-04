@@ -1,0 +1,157 @@
+{% extends "base_leftaligned.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
+{#    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>#}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            /* Tables sorting */
+            var ordering = ($('th').hasClass('edition')) ? [[5, 1]] : [[4, 1]]; /* for A and B experts */
+
+            $(".published-monitorings-table").tablesorter({
+                sortList: ordering,
+                dateFormat: "ddmmyyyy",
+                textExtraction: function(node) {
+                    var attr = $(node).attr('data-sort-value');
+                    if (typeof attr !== 'undefined' && attr !== false) {
+                        return attr;
+                    }
+                    return $(node).text();
+                }
+            });
+        })
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content_outer">
+            {% include '_messages.html' %}
+
+            <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                <h2>{% trans 'Monitoring cycles' %}</h2>
+
+                {% include "_monitorings_tabs.html" with tab='published' %}
+
+                <div class="published-monitorings-block">
+                    {% if monitorings_exist %}
+                        <table class="base-table published-monitorings-table">
+                            <caption>
+                                <form class="filter" action="" method="GET">
+                                    <div class="table">
+                                        <div class="table-cell">
+                                            {{ queryform.name }}
+                                        </div>
+                                        <div class="table-cell submit-cell">
+                                            <input type="submit" value="{% trans 'Find' %}" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </caption>
+
+                            <thead>
+                                <tr>
+                                    <th><span>{% trans 'Monitoring cycle' %}</span><span class="arrow"></span></th>
+                                    {% if request.user.is_expertA %}
+                                        <th class="icons-column edition" data-sorter="false"></th>
+                                    {% endif %}
+                                    <th class="date-cell"><span>{% trans 'Eval. start' %}</span><span class="arrow"></span></th>
+                                    <th class="date-cell"><span>{% trans 'Interact start' %}</span><span class="arrow"></span></th>
+                                    <th class="date-cell"><span>{% trans 'Interact end' %}</span><span class="arrow"></span></th>
+                                    <th class="date-cell"><span>{% trans 'Publish date' context 'short column title' %}</span><span class="arrow"></span></th>
+                                    <th class="icons-column settings" colspan="3" data-sorter="false">
+                                          {#<a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>#}
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            {% if monitorings %}
+                                <tbody>
+                                    {% for mon in monitorings %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'exmo2010:tasks_by_monitoring' mon.pk %}">
+                                                    {{ mon.name }}
+                                                </a>
+                                            </td>
+                                            {% if request.user.is_expertA %}
+                                                <td class="icons-column">
+                                                    <a href="{% url 'exmo2010:monitoring_update' mon.pk %}">
+                                                        <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            <td class="date-cell" data-sort-value="{{ mon.rate_date|date:"d/m/Y" }}">
+                                                {{ mon.rate_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell" data-sort-value="{{ mon.interact_date|date:"d/m/Y" }}">
+                                                {{ mon.interact_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell" data-sort-value="{{ mon.finishing_date|date:"d/m/Y" }}">
+                                                {{ mon.finishing_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell" data-sort-value="{{ mon.publish_date|date:"d/m/Y" }}">
+                                                {{ mon.publish_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.no_interact %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.hidden %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.has_questionnaire %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            {% endif %}
+                        </table>
+                    {% else %}
+                        {% trans 'No monitoring cycles' %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}

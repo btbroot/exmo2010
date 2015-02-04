@@ -1,6 +1,6 @@
 /*
 # This file is part of EXMO2010 software.
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,12 @@
 
 /* General style */
 
+h2 {
+    display: inline;
+    margin-right: 12px;
+    vertical-align: top;
+}
+
 h3 {
     margin: 0;
 }
@@ -27,8 +33,8 @@ input[type="checkbox"] {
     vertical-align: text-bottom;
 }
 
-select,
-input[type="text"] {
+.monitoring-form select,
+.monitoring-form input[type="text"] {
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
@@ -100,4 +106,41 @@ input[value="current_scores"] {
 .submit-cell a {
     margin-left: 20px;
     vertical-align: middle;
+}
+
+/* Inprogress and finished monitorings page */
+
+.unpublished-monitorings-block,
+.published-monitorings-block {
+    margin-top: 15px;
+}
+
+
+.published-monitorings-table caption {
+    margin-bottom: 15px;
+}
+
+.unpublished-monitorings-table h3 {
+    margin: 15px 0 5px;
+}
+
+thead th {
+    padding-top: 15px;
+}
+
+.date-cell {
+    min-width: 105px;
+    white-space: nowrap;
+}
+
+.table-name {
+    background: #ffffff;
+}
+
+.unpublished-monitorings-table tbody tr:first-child td.table-name {
+    border-bottom: none;
+}
+
+.unpublished-monitorings-table tbody tr.table-rows:first-child td {
+    border-top: 1px solid #d7d7d7;
 }

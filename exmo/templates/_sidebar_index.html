@@ -1,6 +1,6 @@
 {% comment %}
 # This file is part of EXMO2010 software.
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,13 +25,11 @@
 
 <div id="sidebar" class="" data-urlname="{{ request.resolver_match.url_name }}">
     <ul>
-        {% if is_expertA %}
-            <li data-urls="monitorings_list monitoring_add">
-                <a href="{% url 'exmo2010:monitorings_list' %}">{% trans "Monitoring cycles" %}</a>
-            </li>
-        {% endif %}
+        <li data-urls="monitorings_list monitoring_add monitoring_update">
+            <a href="{% url 'exmo2010:monitorings_list' %}">{% trans "Monitoring cycles" %}</a>
+        </li>
 
-        {% if is_expertB and not request.user.is_superuser%}
+        {% if is_expertB %}
             {# TODO: вкладки для эксперта Б или эксперта А с правами эксперта Б #}
         {% endif %}
     </ul>

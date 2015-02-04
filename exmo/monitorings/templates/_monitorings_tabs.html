@@ -1,0 +1,36 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n %}
+
+<script>
+    $(function(){
+        // Stylize active tab, prevent reloading page on click.
+        $('#tab_{{ tab }}').addClass('active').find('a').click(function(){ return false; });
+    });
+</script>
+<div class="tabs">
+    <span id='tab_unpublished'><a href="{% url 'exmo2010:monitorings_list' 'unpublished' %}">{% trans 'in progress' %}</a></span>
+    <span id='tab_published'><a href="{% url 'exmo2010:monitorings_list' 'published' %}">{% trans 'finished' %}</a></span>
+    {% if is_expertA %}
+        <span id='tab_add'><a href="{% url 'exmo2010:monitoring_add' %}">{% trans 'add' %}</a></span>
+    {% endif %}
+    {% ifequal tab 'edit' %}
+        <span id='tab_edit'><a href="{% url 'exmo2010:monitoring_add' %}">{% trans 'edit' %}</a></span>
+    {% endifequal %}
+</div>

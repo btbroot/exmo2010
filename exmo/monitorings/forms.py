@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -54,6 +54,15 @@ class MonitoringCopyForm(CurLocaleModelForm):
             donors -= {'all_scores', 'current_scores'}
 
         return donors
+
+
+class MonitoringsQueryForm(QueryForm):
+    name = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Monitoring cycle')}))
+
+    class Meta:
+        filters = {
+            'name': 'name__icontains',
+        }
 
 
 class RatingsQueryForm(QueryForm):

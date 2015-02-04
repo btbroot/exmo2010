@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,6 @@ from cStringIO import StringIO
 from operator import attrgetter
 
 from django.conf import settings
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
@@ -50,7 +49,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import DeleteView, DetailView, UpdateView
 from reversion.revisions import default_revision_manager as revision
 
-from .forms import MonitoringCopyForm, RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
+from .forms import MonitoringCopyForm, MonitoringsQueryForm, RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
@@ -106,23 +105,46 @@ def set_npa_params(request, monitoring_pk):
 
 
 @login_required
-def monitorings_list(request):
+def monitorings_list(request, monitoring_status='unpublished'):
     """
     List of monitorings for experts
     """
-
     if not request.user.userprofile.is_expert:
         raise PermissionDenied
 
-    queryset = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
-    queryset = annotate_exmo_perms(queryset.order_by('-publish_date'), request.user)
+    monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
 
-    headers = (
-        (_('monitoring'), 'name', 'name', None, None),
-        (_('status'), 'status', 'status', int, MONITORING_STATUS),
-    )
+    template_name = 'monitorings_unpublished.html'
+    queryform = MonitoringsQueryForm(request.GET)
+    context = {'queryform': queryform}
 
-    return table(request, headers, queryset=queryset, paginate_by=25, template_name='exmo2010/monitoring_list.html')
+    if monitoring_status == 'unpublished':
+        monitorings = monitorings.exclude(status=MONITORING_PUBLISHED).order_by('-status', '-publish_date')
+        db_statuses = monitorings.order_by('status').values_list('status', flat=True).distinct()
+
+        if queryform.is_valid():
+            monitorings = queryform.apply(monitorings)
+
+        statuses = []
+        for status, status_name in reversed(MONITORING_STATUS[:-1]):
+            statuses.append({'name': status_name,
+                             'unfiltered_monitorings_exist': status in db_statuses,
+                             'monitorings_list': monitorings.filter(status=status)})
+
+        context.update({'statuses': statuses})
+
+    elif monitoring_status == 'published':
+        template_name = 'monitorings_published.html'
+        monitorings = monitorings.filter(status=MONITORING_PUBLISHED).order_by('-publish_date')
+        monitorings_exist = monitorings.exists()
+
+        if queryform.is_valid():
+            monitorings = queryform.apply(monitorings)
+
+        context.update({'monitorings': monitorings,
+                        'monitorings_exist': monitorings_exist})
+
+    return TemplateResponse(request, template_name, context)
 
 
 class MonitoringMixin(LoginRequiredMixin):

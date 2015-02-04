@@ -1,0 +1,157 @@
+{% extends "base_leftaligned.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring.css' %}" />
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var header_place = '.unpublished-monitorings-table tbody > tr:first';
+            if ($(header_place).length) {
+                $('.unpublished-monitorings-table thead tr').insertAfter(header_place);
+            }
+        })
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content_outer">
+            {% include '_messages.html' %}
+
+            <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                <h2>{% trans 'Monitoring cycles' %}</h2>
+
+                {% include "_monitorings_tabs.html" with tab='unpublished' %}
+
+                <div class="unpublished-monitorings-block">
+                    <table class="base-table unpublished-monitorings-table">
+                        <caption>
+                            <form class="filter" action="" method="GET">
+                                <div class="table">
+                                    <div class="table-cell">
+                                        {{ queryform.name }}
+                                    </div>
+                                    <div class="table-cell submit-cell">
+                                        <input type="submit" value="{% trans 'Find' %}" />
+                                    </div>
+                                </div>
+                            </form>
+                        </caption>
+
+                        <thead>
+                            <tr>
+                                <th>{% trans 'Monitoring cycle' %}</th>
+                                {% if request.user.is_expertA %}
+                                    <th class="icons-column"></th>
+                                {% endif %}
+                                <th class="date-cell">{% trans 'Eval. start' %}</th>
+                                <th class="date-cell">{% trans 'Interact start' %}</th>
+                                <th class="date-cell">{% trans 'Interact end' %}</th>
+                                <th class="date-cell">{% trans 'Publish date' context 'short column title' %}<span class="arrow">↓</span></th>
+                                <th class="icons-column settings" colspan="3">
+                                    {#<a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>#}
+                                </th>
+                            </tr>
+                        </thead>
+
+                        {% for status in statuses %}
+                            {% if not status.monitorings_list and not status.unfiltered_monitorings_exist and 'name' not in request.GET.urlencode or status.monitorings_list and status.unfiltered_monitorings_exist %}
+                                <tbody>
+                                    <tr>
+                                        <td colspan="9" class="table-name">
+                                            <h3>{{ status.name|capfirst }}</h3>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            {% endif %}
+
+                            <tbody>
+                                {% if not status.monitorings_list and not status.unfiltered_monitorings_exist and 'name' not in request.GET.urlencode %}
+                                    <tr>
+                                       <td colspan="9" class="table-name">{% trans 'No monitoring cycles' %}</td>
+                                    </tr>
+                                {% elif status.monitorings_list and status.unfiltered_monitorings_exist %}
+                                    {% for mon in status.monitorings_list %}
+                                        <tr class="table-rows">
+                                            <td>
+                                                <a href="{% url 'exmo2010:tasks_by_monitoring' mon.pk %}">
+                                                    {{ mon.name }}
+                                                </a>
+                                            </td>
+                                            {% if request.user.is_expertA %}
+                                                <td class="icons-column">
+                                                    <a href="{% url 'exmo2010:monitoring_update' mon.pk %}">
+                                                        <img src="{% static 'admin/img/icon_changelink.gif' %}" />
+                                                    </a>
+                                                </td>
+                                            {% endif %}
+                                            <td class="date-cell">
+                                                {{ mon.rate_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell">
+                                                {{ mon.interact_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell">
+                                                {{ mon.finishing_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="date-cell">
+                                                {{ mon.publish_date|date:"DATE_FORMAT" }}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.no_interact %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.hidden %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                            <td class="icons-column">
+                                                {% if mon.has_questionnaire %}
+                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}
