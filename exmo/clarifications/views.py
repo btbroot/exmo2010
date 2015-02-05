@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -93,7 +93,7 @@ def clarification_report(request, monitoring_pk):
                 clarifications = clarifications.filter(creator__id=creator_id)
             if addressee_id != 0:
                 clarifications = clarifications.filter(score__task__user__id=addressee_id)
-            return TemplateResponse(request, 'clarification_report_table.html', {
+            return TemplateResponse(request, 'manage_monitoring/_clarification_report_table.html', {
                 'clarifications': clarifications
             })
         else:
@@ -128,7 +128,7 @@ def clarification_report(request, monitoring_pk):
             addressee_id_list=addressee_id_list
         )
 
-    return TemplateResponse(request, 'clarification_report.html', {
+    return TemplateResponse(request, 'manage_monitoring/clarification_report.html', {
         'monitoring': monitoring,
         'title': title,
         'clarifications': clarifications,
@@ -137,7 +137,7 @@ def clarification_report(request, monitoring_pk):
 
 
 @login_required
-def clarification_list(request):
+def clarifications_index(request):
     """
     Страница сводного списка уточнений для аналитиков.
 
@@ -148,8 +148,8 @@ def clarification_list(request):
 
     if request.is_ajax():
         context = {'clarifications': user.profile.get_closed_clarifications()}
-        return TemplateResponse(request, 'clarification_list_table.html', context)
+        return TemplateResponse(request, 'home/_clarifications_index.html', context)
 
     else:
         context = {'clarifications': user.profile.get_filtered_opened_clarifications()}
-        return TemplateResponse(request, 'clarification_list.html', context)
+        return TemplateResponse(request, 'home/clarifications_index.html', context)

@@ -1,0 +1,97 @@
+{% extends "base_leftaligned.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2010, 2011 Al Nikolov
+# Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
+# Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %} {% trans 'Clarifications' %} {% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/reports_analyst.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content_outer">
+            <h1 class="sidebar">{% trans "Home" context "front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                {% include '_messages.html' %}
+
+                <h2>{% trans 'Clarifications' %}</h1>
+
+                <table class="base-table">
+                    <tbody>
+                        <tr>
+                            <th>{% trans 'Time and date' %}</th>
+                            <th>{% trans 'Organization' %}</th>
+                            <th>{% trans 'Link to clarification' %}</th>
+                        </tr>
+                    </tbody>
+                </table>
+
+                {% if clarifications %}
+                    <table class="base-table">
+                        <tbody>
+                        <tr>
+                            <td colspan="3" class="report-title open">
+                                <span>{% trans 'Without answer' %}</span> ({{ clarifications|length }})
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="base-table open">
+                        <tbody>
+                            {% include "home/_clarifications_index.html" %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+                <table class="base-table">
+                    <tbody>
+                    <tr>
+                        <td colspan="3" class="report-title closed" rel="{% url 'exmo2010:clarifications_index' %}">
+                            <span>{% trans 'Processed' %}</span>&nbsp;<img src="{% static 'exmo2010/img/ajax-loader.gif' %}" />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="base-table closed">
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

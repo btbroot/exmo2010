@@ -1,0 +1,153 @@
+{% extends "base_centered.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        #tasks td, th {border-bottom: 1px solid #d7d7d7;}
+        #tasks tr.monitoring_1 td {border-bottom: none;}
+        #tasks caption div.table-cell {text-align: left;}
+        #tasks th {white-space: nowrap;}
+        #tasks h3 {margin: 0;}
+        caption {
+            margin-bottom: -5px
+        }
+        td.table-name {
+            border-bottom:none;
+            padding-top: 20px;
+            padding-bottom: 10px
+        }
+        tr.table-header th {
+            border-bottom:none;
+            padding-top: 20px;
+        }
+        tbody {margin-top: 15px;}
+        .filter input[name="org_name"], .filter select[name="monitoring"] {
+            width: 49%;
+        }
+        tr.zebra:nth-child(2n+1) {
+            background: none repeat scroll 0% 0% #F5F5F5;
+        }
+    </style>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/task_ajax_actions.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
+
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
+
+        <div id="content_outer">
+            <h1 class="sidebar">{% trans "Home" context "front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                {% include '_messages.html' %}
+
+                <div id="tasks">
+                    <h2>{% trans "Tasks" %}</h2>
+
+                    <div>
+                        {% if not tasks_exist %}
+                            {% trans 'No tasks' %}
+                        {% else %}
+                            <table>
+                                <caption>
+                                    <form class="filter" action="" method="GET">
+                                        <div class="table">
+                                            <div class="table-cell">
+                                                {{ queryform.org_name }}
+                                                {{ queryform.monitoring }}
+                                            </div>
+                                            <div class="table-cell">
+                                                {{ queryform.task_status }}
+                                            </div>
+                                            <div class="table-cell submit-cell">
+                                                <input type="submit" value="{% trans 'Find' %}" />
+                                            </div>
+                                        </div>
+                                    </form>
+                                </caption>
+
+                                {% if not monitorings %}
+                                    <tr class="table-header">
+                                        <th>{% trans 'Organization' %}</th>
+                                        <th>{% trans 'Website' %}</th>
+                                        <th>{% trans 'Status' context 'status of the task' %} <span class="arrow">↓</span> </th>
+                                        <th>{% trans 'Approve date' %}</th>
+                                        <th class="align-right">{% trans 'Completeness' %}</th>
+                                    </tr>
+                                {% else %}
+                                    {% for monitoring, tasks in monitorings %}
+                                        <tr class="monitoring_{{forloop.counter}}">
+                                            <td colspan="5" class="table-name">
+                                                <h3>
+                                                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">
+                                                        {{ monitoring.name }}
+                                                    </a>
+                                                </h3>
+                                            </td>
+                                        </tr>
+
+                                        {% if forloop.first %}
+                                            <tr>
+                                                <th>{% trans 'Organization' %}</th>
+                                                <th>{% trans 'Website' %}</th>
+                                                <th> {% trans 'Status' context 'status of the task' %} <span class="arrow">↓</span> </th>
+                                                <th>{% trans 'Approve date' %}</th>
+                                                <th class="align-right">{% trans 'Completeness' %}</th>
+                                            </tr>
+                                        {% endif %}
+
+                                        <tbody>
+                                            {% for task in tasks %}
+                                                <tr class="zebra">
+                                                    <td><a href="{% url 'exmo2010:task_scores' task.pk %}">{{ task.organization.name }}</a></td>
+                                                    <td class="breakword">
+                                                        <a href="{{ task.organization.url }}" target="_blank">
+                                                            {{ task.organization.url }}
+                                                        </a>
+                                                    </td>
+
+                                                    {% include '_task_ajax_actions_td.html' %}
+
+                                                    <td>{{ task.close_date|date:"DATE_FORMAT" }}</td>
+                                                    <td class="align-right">{{ task.completeness|floatformat:1 }}%</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    {% endfor %}
+                                {% endif %}
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from datetime import date
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -47,7 +49,6 @@ class Task(BaseModel):
     TASK_OPEN = 0
     TASK_READY = TASK_CLOSE = TASK_CLOSED = 1
     TASK_APPROVED = TASK_APPROVE = 2
-    TASK_CHECK = TASK_CHECKED = 3
     TASK_STATUS = (
         (TASK_OPEN, _('opened')),
         (TASK_CLOSE, _('closed')),
@@ -61,6 +62,7 @@ class Task(BaseModel):
 
     organization = models.ForeignKey(Organization, verbose_name=_('organization'))
     status = models.PositiveIntegerField(choices=TASK_STATUS, default=TASK_OPEN, verbose_name=_('status'))
+    close_date = models.DateField(null=True, blank=True, verbose_name=_('close date'), editable=False)
 
     def relevant_scores(self):
         return self.score_set.filter(revision=Score.REVISION_DEFAULT).exclude(parameter__exclude=self.organization)
@@ -111,6 +113,11 @@ class Task(BaseModel):
             task = Task.objects.get(pk=self.pk)
             if task.user != self.user:
                 new_user_assigned = True
+            if not self.close_date \
+               and task.status == self.TASK_OPEN \
+               and self.status == self.TASK_CLOSED:
+                # Set close date the first time status changes from "open" to "closed".
+                self.close_date = date.today()
 
         super(Task, self).save(*args, **kwargs)
         if new_user_assigned:

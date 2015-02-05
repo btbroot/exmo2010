@@ -30,7 +30,28 @@
         </li>
 
         {% if is_expertB %}
-            {# TODO: вкладки для эксперта Б или эксперта А с правами эксперта Б #}
+            <li data-urls="tasks_index">
+                <a href="{% url 'exmo2010:tasks_index' %}">{% trans "Tasks" %}</a>
+            </li>
+
+            <li class="nav-group">
+                {% trans 'Messages' %}
+            </li>
+            <li data-urls="comments_index">
+                <a href="{% url 'exmo2010:comments_index' %}">
+                    {% trans "Comments" %}: {{request.user.profile.get_not_answered_comments.count}}
+                </a>
+            </li>
+            <li data-urls="clarifications_index">
+                <a href="{% url 'exmo2010:clarifications_index' %}">
+                    {% trans "Clarifications" %}: {{request.user.profile.get_opened_clarifications.count}}
+                </a>
+            </li>
+            <li data-urls="claims_index">
+                <a href="{% url 'exmo2010:claims_index' %}">
+                    {% trans "Claims" %}: {{request.user.profile.get_opened_claims.count}}
+                </a>
+            </li>
         {% endif %}
     </ul>
 </div>

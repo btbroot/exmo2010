@@ -1,0 +1,27 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2014-2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+
+{% load i18n static %}
+<td id="task-status-{{ task.pk }}" class="task-status" data-perms="{{task.perms}}">
+    <img class="ajaxloader hidden" width="8" height="8" src="{% static 'exmo2010/img/ajax-loader.gif' %}">
+    <span class="task_status_display">{{task.get_status_display}}</span>
+    <span class="perms_close_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_close' task.pk %}">{% trans 'close' %}</a></span>
+    <span class="perms_approve_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_approve' task.pk %}">{% trans 'approve' %}</a></span>
+    <span class="perms_open_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_open' task.pk %}">{% trans 'open' %}</a></span>
+</td>

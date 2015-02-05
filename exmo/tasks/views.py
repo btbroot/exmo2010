@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -305,6 +305,8 @@ def tasks_by_monitoring(request, monitoring_pk):
                 request.GET = QueryDict('')
 
     tasks = Task.objects.filter(organization__monitoring=monitoring).select_related('user__userprofile', 'organization')
+
+    # TODO: use queryform instead of table().
     return table(
         request,
         headers,
@@ -315,7 +317,7 @@ def tasks_by_monitoring(request, monitoring_pk):
             'title': title,
             'invcodeform': SettingsInvCodeForm(),
         },
-        template_name="task_list.html",
+        template_name="manage_monitoring/tasks.html",
     )
 
 
@@ -353,7 +355,7 @@ def task_mass_assign_tasks(request, monitoring_pk):
                 else:
                     log.append('%s: %s' % (user.userprofile.legal_name, organization.name))
 
-    return TemplateResponse(request, 'mass_assign_tasks.html', {
+    return TemplateResponse(request, 'manage_monitoring/mass_assign_tasks.html', {
         'organizations': organizations,
         'users': users,
         'monitoring': monitoring,

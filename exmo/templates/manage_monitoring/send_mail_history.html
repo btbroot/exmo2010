@@ -44,7 +44,7 @@
         <div class="send-mail-content-block">
             <h2>{% trans "Mail" %}</h2>
 
-            {% include "_sendmail_tabs.html" with tab='mail_history' %}
+            {% include "manage_monitoring/_sendmail_tabs.html" with tab='mail_history' %}
 
             <div class="tab-content">
                 {% if is_mail_history_exist %}

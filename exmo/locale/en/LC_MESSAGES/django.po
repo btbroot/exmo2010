@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 10:24+0300\n"
+"POT-Creation-Date: 2015-02-05 18:23+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -44,8 +44,8 @@ msgstr ""
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:59
 #: exmo2010/models/userprofile.py:102
-#: organizations/templates/representatives.html:72
-#: organizations/templates/representatives.html:91
+#: templates/manage_monitoring/representatives.html:72
+#: templates/manage_monitoring/representatives.html:91
 msgid "Job title"
 msgstr ""
 
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Personal information successfully changed"
 msgstr ""
 
-#: accounts/templates/user_settings.html:60 exmo2010/forms.py:32
+#: accounts/templates/user_settings.html:60 exmo2010/forms.py:35
 #: exmo2010/custom_registration/forms.py:46
 #: exmo2010/custom_registration/forms.py:135
 #: exmo2010/custom_registration/forms.py:173
@@ -116,34 +116,34 @@ msgstr ""
 
 #: accounts/templates/user_settings.html:84
 #: accounts/templates/user_settings.html:222
-#: monitorings/templates/monitoring_comment_report.html:63
 #: monitorings/templates/monitoring_form.html:64
-#: monitorings/templates/set_npa_params.html:54
-#: organizations/templates/organizations_edit.html:76
-#: parameters/templates/parameter_form.html:80 templates/scores/score.html:221
-#: templates/scores/score.html.py:247 templates/scores/score.html:304
-#: templates/scores/task_scores.html:525
+#: parameters/templates/parameter_form.html:80
+#: templates/manage_monitoring/comment_report.html:63
+#: templates/manage_monitoring/organizations_edit.html:76
+#: templates/manage_monitoring/set_npa_params.html:54
+#: templates/scores/score.html:221 templates/scores/score.html.py:247
+#: templates/scores/score.html:304 templates/scores/task_scores.html:525
 msgid "Save"
 msgstr ""
 
 #: accounts/templates/user_settings.html:93
 #: exmo2010/custom_registration/forms.py:52
 #: exmo2010/models/organization.py:138
-#: organizations/templates/organizations.html:76
 #: templates/exmo2010/helpers/inv_code_bubble.html:37
+#: templates/manage_monitoring/organizations.html:76
 msgid "Invitation code"
 msgstr ""
 
-#: accounts/templates/user_settings.html:123 exmo2010/forms.py:47
+#: accounts/templates/user_settings.html:123 exmo2010/forms.py:58
 #: monitorings/templates/monitoring_form.html:177
-#: organizations/templates/organizations_delete.html:55
-#: organizations/templates/send_mail.html:139
-#: tasks/templates/mass_assign_tasks.html:52
 #: templates/exmo2010/feedback.html:67
 #: templates/exmo2010/monitoring_confirm_delete.html:40
 #: templates/exmo2010/parameter_confirm_delete.html:43
 #: templates/exmo2010/task_form.html:55
 #: templates/exmo2010/helpers/inv_code_bubble.html:39
+#: templates/manage_monitoring/mass_assign_tasks.html:52
+#: templates/manage_monitoring/organizations_delete.html:55
+#: templates/manage_monitoring/send_mail.html:139
 msgid "Send"
 msgstr ""
 
@@ -159,66 +159,64 @@ msgstr ""
 msgid "E-mail notifications"
 msgstr ""
 
-#: breadcrumbs/tests.py:36 exmo2010/urls.py:261 exmo2010/urls.py:326
+#: breadcrumbs/tests.py:36 exmo2010/urls.py:258 exmo2010/urls.py:323
 #: monitorings/templates/ratings.html:24 monitorings/templates/ratings.html:41
 #: templates/_header.html:60
 msgid "Ratings"
 msgstr ""
 
-#: breadcrumbs/tests.py:37 exmo2010/urls.py:327
+#: breadcrumbs/tests.py:37 exmo2010/urls.py:324
 #: monitorings/templates/rating.html:49 templates/_errors_header.html:32
 #: templates/_sidebar_monitoring.html:98
 #: templates/certificate_order_form.html:70
-#: templates/exmo2010/index_orgs.html:69
-#: templates/exmo2010/index_orgs.html:103
-#: templates/exmo2010/index_orgs.html:141
+#: templates/home/index_orguser.html:69 templates/home/index_orguser.html:103
+#: templates/home/index_orguser.html:141
 #: templates/registration/_auth_content_header.html:32
 msgid "Rating"
 msgstr ""
 
-#: breadcrumbs/tests.py:39 breadcrumbs/tests.py:44
-#: claims/templates/claim_list.html:48
-#: clarifications/templates/clarification_list.html:47
-#: custom_comments/templates/comment_list.html:48 exmo2010/forms.py:74
-#: exmo2010/urls.py:306 exmo2010/urls.py:307 exmo2010/urls.py:312
-#: exmo2010/urls.py:328 exmo2010/urls.py:329 monitorings/forms.py:78
-#: monitorings/templates/rating.html:113 organizations/forms.py:29
-#: organizations/templates/organizations.html:73
-#: organizations/templates/organizations.html:128
-#: templates/certificate_order_form.html:100
-#: templates/exmo2010/index_orgs.html:72
-#: templates/exmo2010/index_orgs.html:106
-#: templates/exmo2010/index_orgs.html:144
+#: breadcrumbs/tests.py:39 breadcrumbs/tests.py:44 exmo2010/forms.py:78
+#: exmo2010/forms.py:89 exmo2010/urls.py:303 exmo2010/urls.py:304
+#: exmo2010/urls.py:309 exmo2010/urls.py:325 exmo2010/urls.py:326
+#: monitorings/forms.py:78 monitorings/templates/rating.html:113
+#: organizations/forms.py:29 templates/certificate_order_form.html:100
+#: templates/home/claims_index.html:56
+#: templates/home/clarifications_index.html:56
+#: templates/home/comments_index.html:56 templates/home/index_analyst.html:92
+#: templates/home/index_analyst.html:112 templates/home/index_orguser.html:72
+#: templates/home/index_orguser.html:106 templates/home/index_orguser.html:144
 #: templates/mail/certificate_order_email.html:31
 #: templates/mail/certificate_order_email.txt:28
 #: templates/mail/feedback_recipient.html:28
 #: templates/mail/feedback_recipient.txt:28
+#: templates/manage_monitoring/organizations.html:73
+#: templates/manage_monitoring/organizations.html:128
 #: templates/registration/_auth_content_header.html:25
 msgid "Organization"
 msgstr ""
 
-#: breadcrumbs/tests.py:42 exmo2010/urls.py:263
+#: breadcrumbs/tests.py:42 exmo2010/urls.py:260
 #: monitorings/templates/monitoring_form.html:51
-#: monitorings/templates/monitorings_published.html:66
-#: monitorings/templates/monitorings_unpublished.html:54
 #: templates/_sidebar_index.html:29
+#: templates/home/monitorings_published.html:66
+#: templates/home/monitorings_unpublished.html:54
 msgid "Monitoring cycles"
 msgstr ""
 
-#: breadcrumbs/tests.py:43 exmo2010/urls.py:271 exmo2010/urls.py:272
-#: exmo2010/urls.py:274 exmo2010/urls.py:275 exmo2010/urls.py:277
-#: exmo2010/urls.py:278 exmo2010/urls.py:283 exmo2010/urls.py:284
-#: exmo2010/urls.py:285 exmo2010/urls.py:286 exmo2010/urls.py:288
-#: exmo2010/urls.py:289 exmo2010/urls.py:291 exmo2010/urls.py:293
-#: exmo2010/urls.py:294 exmo2010/urls.py:295 exmo2010/urls.py:296
-#: exmo2010/urls.py:298 exmo2010/urls.py:300 exmo2010/urls.py:302
-#: exmo2010/urls.py:304 exmo2010/models/questionnaire.py:36
+#: breadcrumbs/tests.py:43 exmo2010/urls.py:268 exmo2010/urls.py:269
+#: exmo2010/urls.py:271 exmo2010/urls.py:272 exmo2010/urls.py:274
+#: exmo2010/urls.py:275 exmo2010/urls.py:280 exmo2010/urls.py:281
+#: exmo2010/urls.py:282 exmo2010/urls.py:283 exmo2010/urls.py:285
+#: exmo2010/urls.py:286 exmo2010/urls.py:288 exmo2010/urls.py:290
+#: exmo2010/urls.py:291 exmo2010/urls.py:292 exmo2010/urls.py:293
+#: exmo2010/urls.py:295 exmo2010/urls.py:297 exmo2010/urls.py:299
+#: exmo2010/urls.py:301 exmo2010/models/questionnaire.py:36
 #: monitorings/forms.py:60 monitorings/forms.py:69
 #: monitorings/templates/monitoring_copy.html:67
 #: monitorings/templates/monitoring_form.html:96
-#: monitorings/templates/monitorings_published.html:88
-#: monitorings/templates/monitorings_unpublished.html:75
 #: monitorings/templates/ratings.html:58 templates/exmo2010/opendata.html:62
+#: templates/home/monitorings_published.html:88
+#: templates/home/monitorings_unpublished.html:75
 #: templates/mail/certificate_order_email.html:26
 #: templates/mail/certificate_order_email.txt:24
 #: templates/mail/parameter_email.html:27
@@ -234,103 +232,9 @@ msgstr ""
 msgid "all experts"
 msgstr ""
 
-#: claims/templates/claim_list.html:25 claims/templates/claim_list.html:42
-#: exmo2010/urls.py:259 templates/_sidebar_monitoring.html:86
-#: templates/scores/score.html:399
-msgid "Claims"
-msgstr ""
-
-#: claims/templates/claim_list.html:47
-#: clarifications/templates/clarification_list.html:46
-#: custom_comments/templates/comment_list.html:47
-#: tasks/templates/task_history.html:44
-msgid "Time and date"
-msgstr ""
-
-#: claims/templates/claim_list.html:49 claims/templates/claim_report.html:54
-msgid "Link to claim"
-msgstr ""
-
-#: claims/templates/claim_list.html:59 claims/templates/claim_report.html:64
-#: clarifications/templates/clarification_list.html:58
-#: clarifications/templates/clarification_report.html:66
-#: custom_comments/templates/comment_list.html:59
-msgid "Without answer"
-msgstr ""
-
-#: claims/templates/claim_list.html:76 claims/templates/claim_report.html:82
-#: clarifications/templates/clarification_list.html:75
-#: clarifications/templates/clarification_report.html:84
-#: custom_comments/templates/comment_list.html:76
-msgid "Processed"
-msgstr ""
-
-#: claims/templates/claim_list_table.html:35
-#: claims/templates/claim_report_table.html:30
-msgid "go to claim"
-msgstr ""
-
-#: claims/templates/claim_report.html:26 claims/templates/claim_report.html:44
-#, python-format
-msgid " Claims report for %(monitoring)s "
-msgstr ""
-
-#: claims/templates/claim_report.html:51
-#: clarifications/templates/clarification_report.html:53
-#: organizations/templates/send_mail_history.html:67
-msgid "Date and time"
-msgstr ""
-
-#: claims/templates/claim_report.html:52
-msgid "Claim addressee"
-msgstr ""
-
-#: claims/templates/claim_report.html:53
-msgid "Claim creator"
-msgstr ""
-
-#: claims/templates/claim_report.html:92 templates/scores/_claim.html:76
-msgid "There are no claims"
-msgstr ""
-
 #: clarifications/views.py:83
 #, python-format
 msgid "Clarifications report for \"%s\""
-msgstr ""
-
-#: clarifications/templates/clarification_list.html:25
-#: clarifications/templates/clarification_list.html:41 exmo2010/urls.py:260
-#: templates/_sidebar_monitoring.html:83 templates/scores/score.html:398
-msgid "Clarifications"
-msgstr ""
-
-#: clarifications/templates/clarification_list.html:48
-#: clarifications/templates/clarification_report.html:56
-msgid "Link to clarification"
-msgstr ""
-
-#: clarifications/templates/clarification_list_table.html:36
-#: clarifications/templates/clarification_report_table.html:30
-msgid "go to clarification"
-msgstr ""
-
-#: clarifications/templates/clarification_report.html:26
-#: clarifications/templates/clarification_report.html:46
-#, python-format
-msgid " Clarifications report for %(monitoring)s "
-msgstr ""
-
-#: clarifications/templates/clarification_report.html:54
-msgid "Clarification addressee"
-msgstr ""
-
-#: clarifications/templates/clarification_report.html:55
-msgid "Clarification creator"
-msgstr ""
-
-#: clarifications/templates/clarification_report.html:94
-#: templates/scores/_clarification.html:70
-msgid "There are no clarifications"
 msgstr ""
 
 #: custom_comments/models.py:36
@@ -346,7 +250,7 @@ msgid "Comment is closed and not answered"
 msgstr ""
 
 #: custom_comments/models.py:41 exmo2010/models/monitoring.py:58
-#: exmo2010/models/task.py:63 exmo2010/models/task.py:240 tasks/views.py:291
+#: exmo2010/models/task.py:64 exmo2010/models/task.py:244 tasks/views.py:291
 msgid "status"
 msgstr ""
 
@@ -354,28 +258,14 @@ msgstr ""
 msgid "posted by expert"
 msgstr ""
 
-#: custom_comments/templates/comment_list.html:25
-#: custom_comments/templates/comment_list.html:42 exmo2010/urls.py:258
-#: templates/_sidebar_monitoring.html:78 templates/scores/score.html:312
-msgid "Comments"
-msgstr ""
-
-#: custom_comments/templates/comment_list.html:49
-msgid "Link to comment"
-msgstr ""
-
-#: custom_comments/templates/comment_list_table.html:36
-msgid "go to comment"
-msgstr ""
-
 #: exmo/config.py:39
 msgid "Email Server Settings"
 msgstr ""
 
 #: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
-#: exmo2010/forms.py:51 organizations/templates/organizations.html:74
-#: templates/mail/feedback_recipient.html:34
+#: exmo2010/forms.py:51 templates/mail/feedback_recipient.html:34
 #: templates/mail/feedback_recipient.txt:31
+#: templates/manage_monitoring/organizations.html:74
 msgid "Email"
 msgstr ""
 
@@ -408,7 +298,6 @@ msgid "Links"
 msgstr ""
 
 #: exmo/config.py:94 exmo/config.py:102
-#: organizations/templates/organizations.html:139
 #: templates/mail/certificate_order_email.txt:26
 #: templates/mail/certificate_order_email.txt:30 templates/mail/digest.html:46
 #: templates/mail/digest.txt:37 templates/mail/score_claim.html:44
@@ -418,6 +307,7 @@ msgstr ""
 #: templates/mail/score_comment.html:49 templates/mail/score_comment.txt:31
 #: templates/mail/task_user_assigned.html:29
 #: templates/mail/task_user_assigned.txt:27
+#: templates/manage_monitoring/organizations.html:139
 msgid "Link"
 msgstr ""
 
@@ -517,28 +407,24 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: exmo2010/forms.py:33
+#: exmo2010/forms.py:36
 msgid "Your problem"
 msgstr ""
 
-#: exmo2010/forms.py:40
+#: exmo2010/forms.py:43
 msgid "to organization"
 msgstr ""
 
-#: exmo2010/forms.py:40
+#: exmo2010/forms.py:43
 msgid "to employee"
 msgstr ""
 
-#: exmo2010/forms.py:41
+#: exmo2010/forms.py:44
 msgid "by email"
 msgstr ""
 
-#: exmo2010/forms.py:41
+#: exmo2010/forms.py:44
 msgid "by post"
-msgstr ""
-
-#: exmo2010/forms.py:45
-msgid "Certificate for"
 msgstr ""
 
 #: exmo2010/forms.py:49 templates/mail/feedback_recipient.html:26
@@ -560,6 +446,18 @@ msgstr ""
 
 #: exmo2010/forms.py:54
 msgid "Address"
+msgstr ""
+
+#: exmo2010/forms.py:56
+msgid "Certificate for"
+msgstr ""
+
+#: exmo2010/forms.py:87
+msgid "Any status"
+msgstr ""
+
+#: exmo2010/forms.py:105
+msgid "Any monitoring"
 msgstr ""
 
 #: exmo2010/mail.py:82
@@ -589,7 +487,7 @@ msgid "You have an assigned task"
 msgstr ""
 
 #: exmo2010/mail.py:278 exmo2010/mail.py:285 exmo2010/urls.py:241
-#: exmo2010/views.py:114 templates/_footer.html:31
+#: exmo2010/views.py:164 templates/_footer.html:31
 #: templates/exmo2010/feedback.html:26
 msgid "Feedback"
 msgstr ""
@@ -623,8 +521,8 @@ msgid "Settings"
 msgstr ""
 
 #: exmo2010/urls.py:244 exmo2010/urls.py:245 exmo2010/urls.py:246
-#: monitorings/templates/monitoring_comment_report.html:68
 #: templates/_footer.html:28
+#: templates/manage_monitoring/comment_report.html:68
 msgid "Statistics"
 msgstr ""
 
@@ -665,111 +563,111 @@ msgstr ""
 msgid "Registration disallowed"
 msgstr ""
 
-#: exmo2010/urls.py:264
+#: exmo2010/urls.py:261
 msgid "Add monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:265
+#: exmo2010/urls.py:262
 msgid "Delete monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:266
+#: exmo2010/urls.py:263
 msgid "Edit monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:267 monitorings/templates/monitoring_copy.html:22
+#: exmo2010/urls.py:264 monitorings/templates/monitoring_copy.html:22
 #: monitorings/templates/monitoring_copy.html:37
 msgid "Copy monitoring cycle"
 msgstr ""
 
-#: exmo2010/urls.py:269
+#: exmo2010/urls.py:266
 msgid "Add questionnaire"
 msgstr ""
 
-#: exmo2010/urls.py:280
+#: exmo2010/urls.py:277
 msgid "Import parameter"
 msgstr ""
 
-#: exmo2010/urls.py:281
+#: exmo2010/urls.py:278
 msgid "Import organizations"
 msgstr ""
 
-#: exmo2010/urls.py:305
+#: exmo2010/urls.py:302
 msgid "Add task"
 msgstr ""
 
-#: exmo2010/urls.py:309
+#: exmo2010/urls.py:306
 msgid "Edit task"
 msgstr ""
 
-#: exmo2010/urls.py:310
+#: exmo2010/urls.py:307
 msgid "Delete task"
 msgstr ""
 
-#: exmo2010/urls.py:311 templates/scores/task_scores.html:74
+#: exmo2010/urls.py:308 templates/scores/task_scores.html:74
 msgid "Import task"
 msgstr ""
 
-#: exmo2010/urls.py:314 exmo2010/urls.py:315 exmo2010/urls.py:330
-#: exmo2010/models/parameter.py:34
-#: monitorings/templates/monitoring_parameter_filter.html:138
-#: monitorings/templates/monitoring_parameter_found_report.html:46
-#: parameters/forms.py:50 parameters/forms.py:85
+#: exmo2010/urls.py:311 exmo2010/urls.py:312 exmo2010/urls.py:327
+#: exmo2010/models/parameter.py:34 parameters/forms.py:50
+#: parameters/forms.py:85
+#: templates/manage_monitoring/parameter_filter.html:138
+#: templates/manage_monitoring/parameter_found_report.html:46
 #: templates/scores/task_scores.html:157 templates/scores/task_scores.html:359
 msgid "Parameter"
 msgstr ""
 
-#: exmo2010/urls.py:317
+#: exmo2010/urls.py:314
 msgid "Add parameter"
 msgstr ""
 
-#: exmo2010/urls.py:318 parameters/templates/parameter_form.html:27
+#: exmo2010/urls.py:315 parameters/templates/parameter_form.html:27
 #: parameters/templates/parameter_form.html:47 templates/scores/score.html:64
 msgid "Edit parameter"
 msgstr ""
 
-#: exmo2010/urls.py:319
+#: exmo2010/urls.py:316
 msgid "Delete parameter"
 msgstr ""
 
-#: exmo2010/urls.py:334 templates/certificate_order_form.html:24
+#: exmo2010/urls.py:331 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:37
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
 msgstr ""
 
-#: exmo2010/views.py:236
+#: exmo2010/views.py:286
 msgid "You ordered an openness certificate. Certificate will be prepared and sent within 5 working days."
 msgstr ""
 
-#: exmo2010/views.py:254
+#: exmo2010/views.py:304
 msgid "by all"
 msgstr ""
 
-#: exmo2010/views.py:254
+#: exmo2010/views.py:304
 msgid "by normative"
 msgstr ""
 
-#: exmo2010/views.py:254
+#: exmo2010/views.py:304
 msgid "by recommendatory"
 msgstr ""
 
-#: exmo2010/views.py:258
+#: exmo2010/views.py:308
 #, no-python-format
 msgid "For {task.organization.name} organization, which took {task.place} place with {task.task_openness:.3f}% openness in rating {rating_type} parameters, which published {date}."
 msgstr ""
 
-#: exmo2010/views.py:266
+#: exmo2010/views.py:316
 #, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr ""
 
-#: exmo2010/views.py:268
+#: exmo2010/views.py:318
 #, python-format
 msgid "On email address %s."
 msgstr ""
 
-#: exmo2010/views.py:278
+#: exmo2010/views.py:328
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr ""
@@ -964,7 +862,7 @@ msgid "monitoring"
 msgstr ""
 
 #: exmo2010/models/observers_group.py:34
-#: organizations/templates/send_mail_history.html:88
+#: templates/manage_monitoring/send_mail_history.html:88
 msgid "organizations"
 msgstr ""
 
@@ -1019,17 +917,18 @@ msgid "Organization"
 msgstr ""
 
 #: exmo2010/models/organization.py:129 monitorings/forms.py:37
-#: monitorings/templates/monitoring_parameter_found_report.html:47
-#: organizations/templates/organizations.html:47
-#: organizations/templates/organizations.html:131
-#: organizations/templates/organizations_edit.html:48
 #: templates/_sidebar_monitoring.html:43
+#: templates/manage_monitoring/organizations.html:47
+#: templates/manage_monitoring/organizations.html:131
+#: templates/manage_monitoring/organizations_edit.html:48
+#: templates/manage_monitoring/parameter_found_report.html:47
 #: templates/registration/_auth_content_header.html:23
 msgid "Organizations"
 msgstr ""
 
 #: exmo2010/models/organization.py:132 monitorings/templates/rating.html:116
 #: templates/certificate_order_form.html:101
+#: templates/home/index_analyst.html:93 templates/home/index_analyst.html:113
 msgid "Website"
 msgstr ""
 
@@ -1228,7 +1127,7 @@ msgstr ""
 msgid "pre-interact revision"
 msgstr ""
 
-#: exmo2010/models/score.py:64 exmo2010/models/task.py:235
+#: exmo2010/models/score.py:64 exmo2010/models/task.py:239
 msgid "task"
 msgstr ""
 
@@ -1309,36 +1208,40 @@ msgstr ""
 msgid "content"
 msgstr ""
 
-#: exmo2010/models/task.py:52 parameters/forms.py:58
+#: exmo2010/models/task.py:53 parameters/forms.py:58
 msgid "opened"
 msgstr ""
 
-#: exmo2010/models/task.py:53 parameters/forms.py:59
+#: exmo2010/models/task.py:54 parameters/forms.py:59
 msgid "closed"
 msgstr ""
 
-#: exmo2010/models/task.py:54 parameters/forms.py:60
+#: exmo2010/models/task.py:55 parameters/forms.py:60
 msgid "approved"
 msgstr ""
 
-#: exmo2010/models/task.py:60 exmo2010/models/task.py:236
+#: exmo2010/models/task.py:61 exmo2010/models/task.py:240
 msgid "user"
 msgstr ""
 
-#: exmo2010/models/task.py:62 tasks/views.py:290
+#: exmo2010/models/task.py:63 tasks/views.py:290
 msgid "organization"
 msgstr ""
 
-#: exmo2010/models/task.py:203
+#: exmo2010/models/task.py:65
+msgid "approve date"
+msgstr ""
+
+#: exmo2010/models/task.py:207
 msgid "Ready task must be 100 percent complete."
 msgstr ""
 
-#: exmo2010/models/task.py:208
+#: exmo2010/models/task.py:212
 #, python-format
 msgid "Approved task for monitoring %(monitoring)s and organization %(organization)s already exist."
 msgstr ""
 
-#: exmo2010/models/task.py:242
+#: exmo2010/models/task.py:246
 msgid "time"
 msgstr ""
 
@@ -1494,8 +1397,8 @@ msgstr ""
 msgid "Current scores"
 msgstr ""
 
-#: monitorings/forms.py:42 organizations/templates/representatives.html:42
-#: templates/_sidebar_monitoring.html:47
+#: monitorings/forms.py:42 templates/_sidebar_monitoring.html:47
+#: templates/manage_monitoring/representatives.html:42
 msgid "Representatives"
 msgstr ""
 
@@ -1507,7 +1410,8 @@ msgstr ""
 msgid "What to copy?"
 msgstr ""
 
-#: monitorings/forms.py:87 monitorings/templates/observers_groups.html:72
+#: monitorings/forms.py:87
+#: templates/manage_monitoring/observers_groups.html:72
 msgid "Group name"
 msgstr ""
 
@@ -1576,104 +1480,14 @@ msgid "finished"
 msgstr ""
 
 #: monitorings/templates/_monitorings_tabs.html:31
-#: monitorings/templates/_observers_group_tabs.html:23
-#: organizations/templates/_organizations_tabs.html:30
+#: templates/manage_monitoring/_observers_group_tabs.html:23
+#: templates/manage_monitoring/_organizations_tabs.html:30
 msgid "add"
 msgstr ""
 
 #: monitorings/templates/_monitorings_tabs.html:34
 #: templates/scores/score.html:216 templates/scores/score.html.py:242
 msgid "edit"
-msgstr ""
-
-#: monitorings/templates/_observers_group_form.html:46
-msgid "Edit"
-msgstr ""
-
-#: monitorings/templates/_observers_group_form.html:47
-#: parameters/templates/parameter_form.html:51
-msgid "Delete"
-msgstr ""
-
-#: monitorings/templates/_observers_group_form.html:49
-#: organizations/templates/organizations_edit.html:76
-msgid "Add"
-msgstr ""
-
-#: monitorings/templates/_observers_group_tabs.html:22
-#: organizations/templates/_organizations_tabs.html:29
-msgid "all"
-msgstr ""
-
-#: monitorings/templates/expert_list.html:36
-#, python-format
-msgid " Experts of monitoring %(monitoring)s "
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:26
-#: monitorings/templates/monitoring_comment_report.html:58
-#, python-format
-msgid " Comment report for %(monitoring)s "
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:70
-msgid "Total organizations"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:71
-msgid "Registered organizations"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:72
-msgid "Organizations with comments from Representatives"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:73
-msgid "Number of comments from organizations"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:74
-msgid "Number of comments from organizations with reply before deadline"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:75
-msgid "Number of comments from organizations with reply after deadline"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:76
-msgid "Number of comments from organizations without reply"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:77
-msgid "Number of comments from organizations which should be answered today"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:78
-msgid "Number of comments from organizations without reply before deadline"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:82
-msgid "Statistics by organization"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:96
-msgid "Statistics by iifd employers"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:111
-msgid "Comments list from organizations without reply before deadline"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:123
-msgid "Comments list from organization that should be replied today (exclude list above)"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:135
-msgid "Comments list from organization that should be replied (exclude list above)"
-msgstr ""
-
-#: monitorings/templates/monitoring_comment_report.html:148
-msgid "No comments from organizations"
 msgstr ""
 
 #: monitorings/templates/monitoring_copy.html:54
@@ -1698,11 +1512,12 @@ msgstr ""
 
 #: monitorings/templates/monitoring_form.html:25
 #: monitorings/templates/monitoring_form.html:46
-#: monitorings/templates/monitorings_published.html:22
-#: monitorings/templates/monitorings_published.html:61
-#: monitorings/templates/monitorings_unpublished.html:22
-#: monitorings/templates/monitorings_unpublished.html:49
-#: templates/exmo2010/index.html:25 templates/exmo2010/index_orgs.html:22
+#: templates/home/index_analyst.html:22 templates/home/index_anonymous.html:25
+#: templates/home/index_orguser.html:22
+#: templates/home/monitorings_published.html:22
+#: templates/home/monitorings_published.html:61
+#: templates/home/monitorings_unpublished.html:22
+#: templates/home/monitorings_unpublished.html:49
 msgctxt "Front page"
 msgid "Home"
 msgstr ""
@@ -1735,45 +1550,6 @@ msgstr ""
 
 #: monitorings/templates/monitoring_form.html:76
 msgid "Questionnaire is already created. To delete it turn off \"Add questionnaire\" checkbox and save changes"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:25
-#: monitorings/templates/monitoring_parameter_filter.html:82
-msgid "Parameter-criteria filter"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:94
-msgid "Evaluation criterion"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:95
-msgid "Value"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:123
-msgid "Task status"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:130
-msgid "Filter"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_filter.html:137
-msgid "Task"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_found_report.html:26
-#: monitorings/templates/monitoring_parameter_found_report.html:40
-#, python-format
-msgid " Parameter found report of %(monitoring)s "
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_found_report.html:48
-msgid "Organizations with found parameters"
-msgstr ""
-
-#: monitorings/templates/monitoring_parameter_found_report.html:62
-msgid "Total"
 msgstr ""
 
 #: monitorings/templates/monitoring_report.html:50
@@ -1846,88 +1622,6 @@ msgstr ""
 msgid "There's no any finished monitoring."
 msgstr ""
 
-#: monitorings/templates/monitorings_published.html:80
-#: monitorings/templates/monitorings_unpublished.html:67
-#: monitorings/templates/observers_groups.html:64
-#: monitorings/templates/rating.html:100 monitorings/templates/ratings.html:49
-#: organizations/templates/organizations.html:64
-#: organizations/templates/representatives.html:60
-#: organizations/templates/send_mail_history.html:59
-#: templates/certificate_order_form.html:87
-#: templates/scores/task_scores.html:140
-msgid "Find"
-msgstr ""
-
-#: monitorings/templates/monitorings_published.html:92
-#: monitorings/templates/monitorings_unpublished.html:79
-msgid "Eval. start"
-msgstr ""
-
-#: monitorings/templates/monitorings_published.html:93
-#: monitorings/templates/monitorings_unpublished.html:80
-msgid "Interact start"
-msgstr ""
-
-#: monitorings/templates/monitorings_published.html:94
-#: monitorings/templates/monitorings_unpublished.html:81
-msgid "Interact end"
-msgstr ""
-
-#: monitorings/templates/monitorings_published.html:95
-#: monitorings/templates/monitorings_unpublished.html:82
-msgctxt "short column title"
-msgid "Publish date"
-msgstr ""
-
-#: monitorings/templates/monitorings_published.html:151
-#: monitorings/templates/monitorings_unpublished.html:103
-msgid "No monitoring cycles"
-msgstr ""
-
-#: monitorings/templates/observers_group_confirm_delete.html:23
-#: monitorings/templates/observers_group_confirm_delete.html:40
-msgid "Observers group deleting"
-msgstr ""
-
-#: monitorings/templates/observers_group_confirm_delete.html:45
-#, python-format
-msgid "The <a href=\"%(url)s\">%(group_name)s</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?"
-msgstr ""
-
-#: monitorings/templates/observers_group_confirm_delete.html:46
-msgid "Yes, delete fully"
-msgstr ""
-
-#: monitorings/templates/observers_group_edit.html:25
-#: monitorings/templates/observers_group_edit.html:50
-msgid "Observers group editing"
-msgstr ""
-
-#: monitorings/templates/observers_group_edit.html:27
-msgid "Observers group adding"
-msgstr ""
-
-#: monitorings/templates/observers_group_edit.html:52
-#: monitorings/templates/observers_groups.html:23
-#: monitorings/templates/observers_groups.html:49
-#: templates/_sidebar_monitoring.html:51
-msgid "Observers"
-msgstr ""
-
-#: monitorings/templates/observers_groups.html:73
-msgctxt "number of organizations"
-msgid "Organizations"
-msgstr ""
-
-#: monitorings/templates/observers_groups.html:74
-msgctxt "number of users"
-msgid "Users"
-msgstr ""
-
-#: monitorings/templates/observers_groups.html:93
-msgid "No observers"
-msgstr ""
-
 #: monitorings/templates/rating.html:52
 #: templates/certificate_order_form.html:73
 msgid "common"
@@ -1965,6 +1659,19 @@ msgstr ""
 msgid "Get rating"
 msgstr ""
 
+#: monitorings/templates/rating.html:100 monitorings/templates/ratings.html:49
+#: templates/certificate_order_form.html:87
+#: templates/home/index_analyst.html:84
+#: templates/home/monitorings_published.html:80
+#: templates/home/monitorings_unpublished.html:67
+#: templates/manage_monitoring/observers_groups.html:64
+#: templates/manage_monitoring/organizations.html:64
+#: templates/manage_monitoring/representatives.html:60
+#: templates/manage_monitoring/send_mail_history.html:59
+#: templates/scores/task_scores.html:140
+msgid "Find"
+msgstr ""
+
 #: monitorings/templates/rating.html:110
 #: templates/certificate_order_form.html:102
 msgid "Position"
@@ -1975,8 +1682,8 @@ msgid "Repr."
 msgstr ""
 
 #: monitorings/templates/rating.html:127
-#: organizations/templates/representatives.html:73
-#: organizations/templates/representatives.html:92
+#: templates/manage_monitoring/representatives.html:73
+#: templates/manage_monitoring/representatives.html:92
 msgid "Comm."
 msgstr ""
 
@@ -2037,16 +1744,12 @@ msgctxt "literally"
 msgid "Average openness"
 msgstr ""
 
-#: monitorings/templates/set_npa_params.html:45
-msgid "Choose normative parameters"
-msgstr ""
-
-#: monitorings/templates/set_npa_params.html:55
-msgid "Reset Selection"
-msgstr ""
-
 #: organizations/forms.py:49
 msgid "Full name or e-mail"
+msgstr ""
+
+#: organizations/forms.py:67
+msgid "Organization is not selected"
 msgstr ""
 
 #: organizations/views.py:132
@@ -2074,169 +1777,15 @@ msgstr ""
 msgid "Form error!"
 msgstr ""
 
-#: organizations/views.py:306
-msgid "Organization is not selected"
-msgstr ""
-
-#: organizations/templates/_sendmail_tabs.html:29
-msgid "send mail"
-msgstr ""
-
-#: organizations/templates/_sendmail_tabs.html:30
-msgid "mail history"
-msgstr ""
-
-#: organizations/templates/organizations.html:75
-#: organizations/templates/representatives.html:71
-#: organizations/templates/representatives.html:90
-msgid "Phone"
-msgstr ""
-
-#: organizations/templates/organizations.html:78
-#: tasks/templates/task_list.html:76 templates/_sidebar_monitoring.html:38
-msgid "Tasks"
-msgstr ""
-
-#: organizations/templates/organizations.html:79
-msgid "Status"
-msgstr ""
-
-#: organizations/templates/organizations.html:112
-msgid "For selected"
-msgstr ""
-
-#: organizations/templates/organizations.html:112
-msgid "Create invite link"
-msgstr ""
-
-#: organizations/templates/organizations.html:117
-msgid "No organizations"
-msgstr ""
-
-#: organizations/templates/organizations.html:123
-msgid "Invite links"
-msgstr ""
-
-#: organizations/templates/organizations.html:124
-msgid "Close"
-msgstr ""
-
-#: organizations/templates/organizations.html:139
-msgctxt "short column title"
-msgid "Email"
-msgstr ""
-
-#: organizations/templates/organizations_delete.html:41
-msgid "Organization deleting"
-msgstr ""
-
-#: organizations/templates/organizations_delete.html:46
-msgid "When you delete organization you also delete this tasks:"
-msgstr ""
-
-#: organizations/templates/organizations_delete.html:54
-msgid "Delete this organization?"
-msgstr ""
-
-#: organizations/templates/organizations_edit.html:46
-msgid "Organization editing"
-msgstr ""
-
-#: organizations/templates/organizations_edit.html:83
-msgid "Enter a list of emails separating them by commas, spaces or newlines."
-msgstr ""
-
-#: organizations/templates/organizations_edit.html:86
-msgid "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines."
-msgstr ""
-
-#: organizations/templates/representatives.html:46
-#: templates/scores/task_scores.html:83
-msgid "Save as CSV"
-msgstr ""
-
-#: organizations/templates/representatives.html:69
-#: organizations/templates/representatives.html:88
-msgid "Full name"
-msgstr ""
-
-#: organizations/templates/representatives.html:70
-#: organizations/templates/representatives.html:89
-msgctxt "short spelling"
-msgid "E-mail"
-msgstr ""
-
-#: organizations/templates/representatives.html:74
-#: organizations/templates/representatives.html:93
-msgid "Date joined"
-msgstr ""
-
-#: organizations/templates/representatives.html:75
-#: organizations/templates/representatives.html:94
-msgid "Last login"
-msgstr ""
-
-#: organizations/templates/representatives.html:120
-msgid "No representatives"
-msgstr ""
-
-#: organizations/templates/send_mail.html:46
-#: organizations/templates/send_mail_history.html:45
-#: templates/_sidebar_monitoring.html:55
-msgid "Mail"
-msgstr ""
-
-#: organizations/templates/send_mail.html:70
-msgid "Keywords"
-msgstr ""
-
-#: organizations/templates/send_mail.html:73
-msgid "invitation link"
-msgstr ""
-
-#: organizations/templates/send_mail.html:74
-msgid "invitation code"
-msgstr ""
-
-#: organizations/templates/send_mail.html:99
-msgid "Attach file"
-msgstr ""
-
-#: organizations/templates/send_mail.html:106
-#: organizations/templates/send_mail_history.html:69
-#: templates/mail/email_preview.html:24
-msgctxt "mail destination"
-msgid "To"
-msgstr ""
-
-#: organizations/templates/send_mail.html:113
-msgid "All organizations"
-msgstr ""
-
-#: organizations/templates/send_mail.html:122
-msgid "All representatives"
-msgstr ""
-
-#: organizations/templates/send_mail.html:134
-msgid "Preview"
-msgstr ""
-
-#: organizations/templates/send_mail_history.html:68
-msgid "Letter subject and content"
-msgstr ""
-
-#: organizations/templates/send_mail_history.html:93
-msgid "representatives"
-msgstr ""
-
-#: organizations/templates/send_mail_history.html:102
-msgid "No mail history"
-msgstr ""
-
 #: parameters/templates/parameter_form.html:29
 #: parameters/templates/parameter_form.html:47
 #: templates/scores/task_scores.html:72
 msgid "Add new parameter"
+msgstr ""
+
+#: parameters/templates/parameter_form.html:51
+#: templates/manage_monitoring/observers_group_edit.html:83
+msgid "Delete"
 msgstr ""
 
 #: parameters/templates/parameter_form.html:82
@@ -2320,41 +1869,22 @@ msgstr ""
 msgid "expert"
 msgstr ""
 
-#: tasks/views.py:329
+#: tasks/views.py:331
 msgid "Mass assign tasks"
-msgstr ""
-
-#: tasks/templates/mass_assign_tasks.html:33
-#: templates/_sidebar_monitoring.html:59
-msgid "Task assignment"
-msgstr ""
-
-#: tasks/templates/mass_assign_tasks.html:36
-msgid "Process log:"
 msgstr ""
 
 #: tasks/templates/task_history.html:39 templates/_sidebar_task.html:38
 msgid "History"
 msgstr ""
 
+#: tasks/templates/task_history.html:44 templates/home/claims_index.html:55
+#: templates/home/clarifications_index.html:55
+#: templates/home/comments_index.html:55
+msgid "Time and date"
+msgstr ""
+
 #: tasks/templates/task_history.html:46
 msgid "Stage"
-msgstr ""
-
-#: tasks/templates/task_list.html:86
-msgid "Add new task"
-msgstr ""
-
-#: tasks/templates/task_list.html:112
-msgid "close"
-msgstr ""
-
-#: tasks/templates/task_list.html:113
-msgid "approve"
-msgstr ""
-
-#: tasks/templates/task_list.html:114
-msgid "open"
 msgstr ""
 
 #: templates/403.html:25 templates/403.html.py:28
@@ -2438,8 +1968,55 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: templates/_sidebar_index.html:34 templates/_sidebar_monitoring.html:38
+#: templates/home/index_analyst.html:66
+#: templates/manage_monitoring/organizations.html:78
+#: templates/manage_monitoring/tasks.html:37
+msgid "Tasks"
+msgstr ""
+
+#: templates/_sidebar_index.html:38
+msgid "Messages"
+msgstr ""
+
+#: templates/_sidebar_index.html:42 templates/_sidebar_monitoring.html:78
+#: templates/home/comments_index.html:25 templates/home/comments_index.html:50
+#: templates/scores/score.html:312
+msgid "Comments"
+msgstr ""
+
+#: templates/_sidebar_index.html:47 templates/_sidebar_monitoring.html:83
+#: templates/home/clarifications_index.html:25
+#: templates/home/clarifications_index.html:50 templates/scores/score.html:398
+msgid "Clarifications"
+msgstr ""
+
+#: templates/_sidebar_index.html:52 templates/_sidebar_monitoring.html:86
+#: templates/home/claims_index.html:25 templates/home/claims_index.html:50
+#: templates/scores/score.html:399
+msgid "Claims"
+msgstr ""
+
 #: templates/_sidebar_monitoring.html:33
 msgid "Cycle management"
+msgstr ""
+
+#: templates/_sidebar_monitoring.html:51
+#: templates/manage_monitoring/observers_group_edit.html:53
+#: templates/manage_monitoring/observers_groups.html:23
+#: templates/manage_monitoring/observers_groups.html:49
+msgid "Observers"
+msgstr ""
+
+#: templates/_sidebar_monitoring.html:55
+#: templates/manage_monitoring/send_mail.html:46
+#: templates/manage_monitoring/send_mail_history.html:45
+msgid "Mail"
+msgstr ""
+
+#: templates/_sidebar_monitoring.html:59
+#: templates/manage_monitoring/mass_assign_tasks.html:33
+msgid "Task assignment"
 msgstr ""
 
 #: templates/_sidebar_monitoring.html:63 templates/scores/score.html:79
@@ -2482,6 +2059,18 @@ msgstr ""
 #: templates/scores/recommendations.html:160
 #: templates/scores/recommendations_print.html:102
 msgid "Recommendations list"
+msgstr ""
+
+#: templates/_task_ajax_actions_td.html:24
+msgid "close"
+msgstr ""
+
+#: templates/_task_ajax_actions_td.html:25
+msgid "approve"
+msgstr ""
+
+#: templates/_task_ajax_actions_td.html:26
+msgid "open"
 msgstr ""
 
 #: templates/_tasks_stats.html:25
@@ -2602,31 +2191,6 @@ msgstr ""
 
 #: templates/exmo2010/feedback.html:40
 msgid "Please, describe your problem with as much detail as possible."
-msgstr ""
-
-#: templates/exmo2010/index.html:52
-msgid "Add new monitoring"
-msgstr ""
-
-#: templates/exmo2010/index_orgs.html:55
-msgid "My scores"
-msgstr ""
-
-#: templates/exmo2010/index_orgs.html:59
-msgid "Ratings in progress"
-msgstr ""
-
-#: templates/exmo2010/index_orgs.html:66
-msgid "Date of the end of the interaction"
-msgstr ""
-
-#: templates/exmo2010/index_orgs.html:100
-#: templates/exmo2010/index_orgs.html:138
-msgid "Publish date"
-msgstr ""
-
-#: templates/exmo2010/index_orgs.html:132
-msgid "Published ratings"
 msgstr ""
 
 #: templates/exmo2010/monitoring_confirm_delete.html:25
@@ -2884,6 +2448,124 @@ msgstr ""
 msgid "When new monitoring will start, you'll receive invitation code which is needed to be entered here."
 msgstr ""
 
+#: templates/home/_claims_index.html:35
+#: templates/manage_monitoring/_claim_report_table.html:30
+msgid "go to claim"
+msgstr ""
+
+#: templates/home/_clarifications_index.html:36
+#: templates/manage_monitoring/_clarification_report_table.html:30
+msgid "go to clarification"
+msgstr ""
+
+#: templates/home/_comments_index.html:36
+msgid "go to comment"
+msgstr ""
+
+#: templates/home/claims_index.html:43
+#: templates/home/clarifications_index.html:43
+#: templates/home/comments_index.html:43 templates/home/index_analyst.html:58
+msgctxt "front page"
+msgid "Home"
+msgstr ""
+
+#: templates/home/claims_index.html:57
+#: templates/manage_monitoring/claim_report.html:54
+msgid "Link to claim"
+msgstr ""
+
+#: templates/home/claims_index.html:67
+#: templates/home/clarifications_index.html:67
+#: templates/home/comments_index.html:67
+#: templates/manage_monitoring/claim_report.html:64
+#: templates/manage_monitoring/clarification_report.html:66
+msgid "Without answer"
+msgstr ""
+
+#: templates/home/claims_index.html:84
+#: templates/home/clarifications_index.html:84
+#: templates/home/comments_index.html:84
+#: templates/manage_monitoring/claim_report.html:82
+#: templates/manage_monitoring/clarification_report.html:84
+msgid "Processed"
+msgstr ""
+
+#: templates/home/clarifications_index.html:57
+#: templates/manage_monitoring/clarification_report.html:56
+msgid "Link to clarification"
+msgstr ""
+
+#: templates/home/comments_index.html:57
+msgid "Link to comment"
+msgstr ""
+
+#: templates/home/index_analyst.html:70
+msgid "No tasks"
+msgstr ""
+
+#: templates/home/index_analyst.html:94 templates/home/index_analyst.html:114
+msgctxt "status of the task"
+msgid "Status"
+msgstr ""
+
+#: templates/home/index_analyst.html:95 templates/home/index_analyst.html:115
+msgid "Approve date"
+msgstr ""
+
+#: templates/home/index_analyst.html:96 templates/home/index_analyst.html:116
+msgid "Completeness"
+msgstr ""
+
+#: templates/home/index_anonymous.html:52
+msgid "Add new monitoring"
+msgstr ""
+
+#: templates/home/index_orguser.html:55
+msgid "My scores"
+msgstr ""
+
+#: templates/home/index_orguser.html:59
+msgid "Ratings in progress"
+msgstr ""
+
+#: templates/home/index_orguser.html:66
+msgid "Date of the end of the interaction"
+msgstr ""
+
+#: templates/home/index_orguser.html:100 templates/home/index_orguser.html:138
+msgid "Publish date"
+msgstr ""
+
+#: templates/home/index_orguser.html:132
+msgid "Published ratings"
+msgstr ""
+
+#: templates/home/monitorings_published.html:92
+#: templates/home/monitorings_unpublished.html:79
+msgid "Eval. start"
+msgstr ""
+
+#: templates/home/monitorings_published.html:93
+#: templates/home/monitorings_unpublished.html:80
+msgid "Interact start"
+msgstr ""
+
+#: templates/home/monitorings_published.html:94
+#: templates/home/monitorings_unpublished.html:81
+msgid "Interact end"
+msgstr ""
+
+#: templates/home/monitorings_published.html:95
+#: templates/home/monitorings_unpublished.html:82
+msgctxt "short column title"
+msgid "Publish date"
+msgstr ""
+
+#: templates/home/monitorings_published.html:151
+#: templates/home/monitorings_unpublished.html:103
+msgid "No monitoring cycles"
+msgstr ""
+
 #: templates/mail/activation_email.html:30
 #: templates/mail/activation_email.txt:27
 msgid "In order to activate your account you should follow the link ONCE"
@@ -2934,6 +2616,13 @@ msgstr ""
 
 #: templates/mail/email_base.html:131 templates/mail/email_base.txt:31
 msgid "If you have any questions for Infometer, please contact technical support:"
+msgstr ""
+
+#: templates/mail/email_preview.html:24
+#: templates/manage_monitoring/send_mail.html:106
+#: templates/manage_monitoring/send_mail_history.html:69
+msgctxt "mail destination"
+msgid "To"
 msgstr ""
 
 #: templates/mail/feedback_creator.html:26
@@ -3006,6 +2695,364 @@ msgstr ""
 #: templates/mail/score_clarification.html:36
 #: templates/mail/score_clarification.txt:31
 msgid "Clarification"
+msgstr ""
+
+#: templates/manage_monitoring/_observers_group_tabs.html:22
+#: templates/manage_monitoring/_organizations_tabs.html:29
+msgid "all"
+msgstr ""
+
+#: templates/manage_monitoring/_sendmail_tabs.html:29
+msgid "send mail"
+msgstr ""
+
+#: templates/manage_monitoring/_sendmail_tabs.html:30
+msgid "mail history"
+msgstr ""
+
+#: templates/manage_monitoring/claim_report.html:26
+#: templates/manage_monitoring/claim_report.html:44
+#, python-format
+msgid " Claims report for %(monitoring)s "
+msgstr ""
+
+#: templates/manage_monitoring/claim_report.html:51
+#: templates/manage_monitoring/clarification_report.html:53
+#: templates/manage_monitoring/send_mail_history.html:67
+msgid "Date and time"
+msgstr ""
+
+#: templates/manage_monitoring/claim_report.html:52
+msgid "Claim addressee"
+msgstr ""
+
+#: templates/manage_monitoring/claim_report.html:53
+msgid "Claim creator"
+msgstr ""
+
+#: templates/manage_monitoring/claim_report.html:92
+#: templates/scores/_claim.html:76
+msgid "There are no claims"
+msgstr ""
+
+#: templates/manage_monitoring/clarification_report.html:26
+#: templates/manage_monitoring/clarification_report.html:46
+#, python-format
+msgid " Clarifications report for %(monitoring)s "
+msgstr ""
+
+#: templates/manage_monitoring/clarification_report.html:54
+msgid "Clarification addressee"
+msgstr ""
+
+#: templates/manage_monitoring/clarification_report.html:55
+msgid "Clarification creator"
+msgstr ""
+
+#: templates/manage_monitoring/clarification_report.html:94
+#: templates/scores/_clarification.html:70
+msgid "There are no clarifications"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:26
+#: templates/manage_monitoring/comment_report.html:58
+#, python-format
+msgid " Comment report for %(monitoring)s "
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:70
+msgid "Total organizations"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:71
+msgid "Registered organizations"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:72
+msgid "Organizations with comments from Representatives"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:73
+msgid "Number of comments from organizations"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:74
+msgid "Number of comments from organizations with reply before deadline"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:75
+msgid "Number of comments from organizations with reply after deadline"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:76
+msgid "Number of comments from organizations without reply"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:77
+msgid "Number of comments from organizations which should be answered today"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:78
+msgid "Number of comments from organizations without reply before deadline"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:82
+msgid "Statistics by organization"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:96
+msgid "Statistics by iifd employers"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:111
+msgid "Comments list from organizations without reply before deadline"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:123
+msgid "Comments list from organization that should be replied today (exclude list above)"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:135
+msgid "Comments list from organization that should be replied (exclude list above)"
+msgstr ""
+
+#: templates/manage_monitoring/comment_report.html:148
+msgid "No comments from organizations"
+msgstr ""
+
+#: templates/manage_monitoring/expert_list.html:36
+#, python-format
+msgid " Experts of monitoring %(monitoring)s "
+msgstr ""
+
+#: templates/manage_monitoring/mass_assign_tasks.html:36
+msgid "Process log:"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_confirm_delete.html:23
+#: templates/manage_monitoring/observers_group_confirm_delete.html:40
+msgid "Observers group deleting"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_confirm_delete.html:45
+#, python-format
+msgid "The <a href=\"%(url)s\">%(group_name)s</a> Observers group will be deleted. Any user added to this group will lose the rights of an observer. Do you wish to delete the group?"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_confirm_delete.html:46
+msgid "Yes, delete fully"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_edit.html:26
+#: templates/manage_monitoring/observers_group_edit.html:51
+msgid "Observers group editing"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_edit.html:28
+msgid "Observers group adding"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_edit.html:82
+msgid "Edit"
+msgstr ""
+
+#: templates/manage_monitoring/observers_group_edit.html:85
+#: templates/manage_monitoring/organizations_edit.html:76
+msgid "Add"
+msgstr ""
+
+#: templates/manage_monitoring/observers_groups.html:73
+msgctxt "number of organizations"
+msgid "Organizations"
+msgstr ""
+
+#: templates/manage_monitoring/observers_groups.html:74
+msgctxt "number of users"
+msgid "Users"
+msgstr ""
+
+#: templates/manage_monitoring/observers_groups.html:93
+msgid "No observers"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:75
+#: templates/manage_monitoring/representatives.html:71
+#: templates/manage_monitoring/representatives.html:90
+msgid "Phone"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:79
+msgid "Status"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:112
+msgid "For selected"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:112
+msgid "Create invite link"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:117
+msgid "No organizations"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:123
+msgid "Invite links"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:124
+msgid "Close"
+msgstr ""
+
+#: templates/manage_monitoring/organizations.html:139
+msgctxt "short column title"
+msgid "Email"
+msgstr ""
+
+#: templates/manage_monitoring/organizations_delete.html:41
+msgid "Organization deleting"
+msgstr ""
+
+#: templates/manage_monitoring/organizations_delete.html:46
+msgid "When you delete organization you also delete this tasks:"
+msgstr ""
+
+#: templates/manage_monitoring/organizations_delete.html:54
+msgid "Delete this organization?"
+msgstr ""
+
+#: templates/manage_monitoring/organizations_edit.html:46
+msgid "Organization editing"
+msgstr ""
+
+#: templates/manage_monitoring/organizations_edit.html:83
+msgid "Enter a list of emails separating them by commas, spaces or newlines."
+msgstr ""
+
+#: templates/manage_monitoring/organizations_edit.html:86
+msgid "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines."
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:25
+#: templates/manage_monitoring/parameter_filter.html:82
+msgid "Parameter-criteria filter"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:94
+msgid "Evaluation criterion"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:95
+msgid "Value"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:123
+msgid "Task status"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:130
+msgid "Filter"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_filter.html:137
+msgid "Task"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_found_report.html:26
+#: templates/manage_monitoring/parameter_found_report.html:40
+#, python-format
+msgid " Parameter found report of %(monitoring)s "
+msgstr ""
+
+#: templates/manage_monitoring/parameter_found_report.html:48
+msgid "Organizations with found parameters"
+msgstr ""
+
+#: templates/manage_monitoring/parameter_found_report.html:62
+msgid "Total"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:46
+#: templates/scores/task_scores.html:83
+msgid "Save as CSV"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:69
+#: templates/manage_monitoring/representatives.html:88
+msgid "Full name"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:70
+#: templates/manage_monitoring/representatives.html:89
+msgctxt "short spelling"
+msgid "E-mail"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:74
+#: templates/manage_monitoring/representatives.html:93
+msgid "Date joined"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:75
+#: templates/manage_monitoring/representatives.html:94
+msgid "Last login"
+msgstr ""
+
+#: templates/manage_monitoring/representatives.html:120
+msgid "No representatives"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:70
+msgid "Keywords"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:73
+msgid "invitation link"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:74
+msgid "invitation code"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:99
+msgid "Attach file"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:113
+msgid "All organizations"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:122
+msgid "All representatives"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail.html:134
+msgid "Preview"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail_history.html:68
+msgid "Letter subject and content"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail_history.html:93
+msgid "representatives"
+msgstr ""
+
+#: templates/manage_monitoring/send_mail_history.html:102
+msgid "No mail history"
+msgstr ""
+
+#: templates/manage_monitoring/set_npa_params.html:45
+msgid "Choose normative parameters"
+msgstr ""
+
+#: templates/manage_monitoring/set_npa_params.html:55
+msgid "Reset Selection"
+msgstr ""
+
+#: templates/manage_monitoring/tasks.html:47
+msgid "Add new task"
 msgstr ""
 
 #: templates/registration/login.html:36

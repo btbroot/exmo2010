@@ -35,6 +35,10 @@
     text-decoration: underline;
 }
 
+.base-table {
+    width: 100%;
+}
+
 .base-table td:first-child, .base-table td:last-child,
 .base-table th:first-child, .base-table th:last-child {
     width: 1%;
