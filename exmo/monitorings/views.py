@@ -101,7 +101,7 @@ def set_npa_params(request, monitoring_pk):
         formset = ParameterTypeFormSet(queryset=parameters)
 
     context = {"formset": formset, "monitoring": monitoring}
-    return TemplateResponse(request, 'set_npa_params.html', context)
+    return TemplateResponse(request, 'manage_monitoring/set_npa_params.html', context)
 
 
 @login_required
@@ -114,7 +114,7 @@ def monitorings_list(request, monitoring_status='unpublished'):
 
     monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
 
-    template_name = 'monitorings_unpublished.html'
+    template_name = 'home/monitorings_unpublished.html'
     queryform = MonitoringsQueryForm(request.GET)
     context = {'queryform': queryform}
 
@@ -134,7 +134,7 @@ def monitorings_list(request, monitoring_status='unpublished'):
         context.update({'statuses': statuses})
 
     elif monitoring_status == 'published':
-        template_name = 'monitorings_published.html'
+        template_name = 'home/monitorings_published.html'
         monitorings = monitorings.filter(status=MONITORING_PUBLISHED).order_by('-publish_date')
         monitorings_exist = monitorings.exists()
 
@@ -616,7 +616,7 @@ def monitoring_by_experts(request, monitoring_pk):
         queryset=queryset,
         paginate_by=15,
         extra_context={'monitoring': annotate_exmo_perms(monitoring, request.user)},
-        template_name="expert_list.html",
+        template_name="manage_monitoring/expert_list.html",
     )
 
 
@@ -703,7 +703,7 @@ def monitoring_parameter_filter(request, monitoring_pk):
         form = ParamCritScoreFilterForm(monitoring=monitoring)
         hide = 1
 
-    return TemplateResponse(request, 'monitoring_parameter_filter.html', {
+    return TemplateResponse(request, 'manage_monitoring/parameter_filter.html', {
         'form': form,
         'scores': queryset,
         'monitoring': monitoring,
@@ -763,7 +763,7 @@ def monitoring_parameter_found_report(request, monitoring_pk):
     if organization_count_total:
         score_per_organization_total = float(score_count_total) / organization_count_total * 100
 
-    return TemplateResponse(request, 'monitoring_parameter_found_report.html', {
+    return TemplateResponse(request, 'manage_monitoring/parameter_found_report.html', {
         'monitoring': monitoring,
         'object_list': object_list,
         'score_count_total': score_count_total,
@@ -1036,7 +1036,7 @@ def monitoring_parameter_import(request, monitoring_pk):
 
 
 class MonitoringCommentReportView(LoginRequiredMixin, UpdateView):
-    template_name = 'monitoring_comment_report.html'
+    template_name = 'manage_monitoring/comment_report.html'
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
@@ -1339,7 +1339,7 @@ def monitoring_export(request, monitoring_pk):
 
 
 class ObserversGroupView(LoginRequiredMixin, DetailView):
-    template_name = "observers_groups.html"
+    template_name = "manage_monitoring/observers_groups.html"
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
@@ -1378,7 +1378,7 @@ class ObserversGroupMixin(LoginRequiredMixin):
 
 
 class ObserversGroupEditView(ObserversGroupMixin, UpdateView):
-    template_name = "observers_group_edit.html"
+    template_name = "manage_monitoring/observers_group_edit.html"
 
     def get_object(self, queryset=None):
         if 'obs_group_pk' in self.kwargs:
@@ -1414,7 +1414,7 @@ class ObserversGroupEditView(ObserversGroupMixin, UpdateView):
 
 
 class ObserversGroupDeleteView(ObserversGroupMixin, DeleteView):
-    template_name = "observers_group_confirm_delete.html"
+    template_name = "manage_monitoring/observers_group_confirm_delete.html"
 
     def get_object(self, queryset=None):
         obs_group = get_object_or_404(ObserversGroup, pk=self.kwargs['obs_group_pk'])

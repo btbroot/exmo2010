@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,39 +19,43 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from ckeditor.widgets import CKEditorWidget
-from django import forms
 from django.contrib.admin import widgets as admin_widgets
-from django.forms.widgets import Textarea, Media
+from django.db.models import Q
+from django.forms import Form, CharField, ChoiceField, EmailField, IntegerField
+from django.forms.widgets import Textarea, TextInput, RadioSelect, Media
 from django.utils.translation import ugettext_lazy as _
 
 from core.utils import clean_message
 from queryform import QueryForm
+from .models import Task, Monitoring
+from .models.monitoring import RATE, RES, INT, FIN
 
 
-class FeedbackForm(forms.Form):
-    email = forms.EmailField(label=_("E-mail"), required=True)
-    comment = forms.CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your problem'), required=True)
+class FeedbackForm(Form):
+    email = EmailField(label=_("E-mail"), required=True)
+    comment = CharField(widget=CKEditorWidget(config_name='simplified'), label=_('Your problem'), required=True)
 
     def clean_comment(self):
         return clean_message(self.cleaned_data['comment'])
 
 
-class CertificateOrderForm(forms.Form):
+class CertificateOrderForm(Form):
     ADDRESSEE_CHOICES = (('org', _('to organization')), ('user', _('to employee')))
     DELIVERY_METHOD_CHOICES = (('email', _('by email')), ('post', _('by post')))
+    RATING_TYPE_CHOICES = (('all', 'all'), ('npa', 'npa'), ('other', 'other'))
 
-    task_id = forms.IntegerField()
-    rating_type = forms.ChoiceField(choices=zip(* [('all', 'npa', 'other')] * 2), initial='all', required=False)
-    addressee = forms.ChoiceField(label=_('Certificate for'), choices=ADDRESSEE_CHOICES,
-                                  widget=forms.RadioSelect(), initial='org', required=False)
-    delivery_method = forms.ChoiceField(label=_('Send'), choices=DELIVERY_METHOD_CHOICES, widget=forms.RadioSelect(),
-                                        initial='email', required=False)
-    name = forms.CharField(label=_('Name'), max_length=100, required=False)
-    wishes = forms.CharField(label=_('Wishes'), widget=Textarea(), required=False)
-    email = forms.EmailField(label=_('Email'), max_length=100, required=False)
-    for_whom = forms.CharField(label=_('For whom'), max_length=100, required=False)
-    zip_code = forms.CharField(label=_('Zip code'), max_length=6, min_length=6, required=False)
-    address = forms.CharField(label=_('Address'), widget=Textarea(), required=False)
+    task_id = IntegerField()
+    rating_type = ChoiceField(choices=RATING_TYPE_CHOICES, initial='all', required=False)
+    name = CharField(label=_('Name'), max_length=100, required=False)
+    wishes = CharField(label=_('Wishes'), widget=Textarea(), required=False)
+    email = EmailField(label=_('Email'), max_length=100, required=False)
+    for_whom = CharField(label=_('For whom'), max_length=100, required=False)
+    zip_code = CharField(label=_('Zip code'), max_length=6, min_length=6, required=False)
+    address = CharField(label=_('Address'), widget=Textarea(), required=False)
+    addressee = ChoiceField(
+        label=_('Certificate for'), choices=ADDRESSEE_CHOICES, widget=RadioSelect(), initial='org', required=False)
+    delivery_method = ChoiceField(
+        label=_('Send'), choices=DELIVERY_METHOD_CHOICES, widget=RadioSelect(), initial='email', required=False)
 
     def full_clean(self):
         '''
@@ -71,12 +75,35 @@ class CertificateOrderForm(forms.Form):
 
 
 class CertificateOrderQueryForm(QueryForm):
-    name_filter = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': _('Organization')}))
+    name_filter = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Organization')}))
 
     class Meta:
         filters = {
             'name_filter': 'name__icontains',
         }
+
+
+class AnalystTasksIndexQueryForm(QueryForm):
+    TASK_STATUS_CHOICES = [('', _('Any status'))] + list(Task.TASK_STATUS)
+
+    org_name = CharField(required=False, widget=TextInput(attrs={'placeholder': _('Organization')}))
+    task_status = ChoiceField(required=False, choices=TASK_STATUS_CHOICES)
+    monitoring = ChoiceField(required=False)
+
+    class Meta:
+        filters = {
+            'org_name': 'organization__name__icontains',
+            'task_status': 'status',
+            'monitoring': 'organization__monitoring__pk',
+        }
+
+    def __init__(self, analyst, *args, **kwargs):
+        super(AnalystTasksIndexQueryForm, self).__init__(*args, **kwargs)
+
+        filter = Q(organization__task__user=analyst, status__in=[RATE, RES, INT, FIN])
+        monitorings = Monitoring.objects.filter(filter).order_by('publish_date').distinct()
+        choices = [('', _('Any monitoring'))] + list(monitorings.values_list('pk', 'name'))
+        self.fields['monitoring'].choices = choices
 
 
 class FilteredSelectMultiple(admin_widgets.FilteredSelectMultiple):

@@ -1,5 +1,5 @@
 // This file is part of EXMO2010 software.
-// Copyright 2014 IRSI LTD
+// Copyright 2014-2015 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,9 @@ $(function(){
     });
 
     $("#sidebar_pad").show();
+
+    // Fix sidebar height to prevent breaking layout of sidebar_pad after page content dynamically shrinks.
+    $("#sidebar").css({'height': $('#sidebar').height()});
 
     $(window).resize();
 });

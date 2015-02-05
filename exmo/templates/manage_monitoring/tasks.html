@@ -22,55 +22,16 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block extra_css %}
-    <style>
-        .ajaxloader {
-            height: 11px;
-            width: 11px;
-        }
-    </style>
-{% endblock %}
-
 {% block extra_script %}
-    <script>
-        $(function(){
-            function show_status_actions(td) {
-                $(td).children('img').hide();  // hide "loading..." image
-                $(td).children('.task_status_display').show();
-                var perms = $(td).data('perms').split(' ');
-                for (var i = 0; i < perms.length; i++) {
-                    action_class = '.perms_' + perms[i];
-                    $(td).find(action_class).show();  // show permitted action
-                }
-            }
-
-            $('td.task-status').each(function(){show_status_actions(this)});
-
-            $(document).on('click', 'td.task-status a', function () {
-                var td = $(this).closest('td');
-                td.children().hide().filter('img').show();  // hide contents, show "loading..." image
-                $.post($(this).attr('href'))
-                    .done(function(new_data) {
-                        td.data('perms', new_data.perms);
-                        td.children('.task_status_display').html(new_data.status_display);
-                        show_status_actions(td);
-                    })
-                    .fail(function() {
-                        // Permision denied or error
-                        show_status_actions(td);  // just show previous state
-                    });
-                return false;
-            });
-        });
-    </script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/task_ajax_actions.js' %}"></script>
 {% endblock %}
 
 {% block content %}
-    <h1 class='{{ request.user.is_expert|yesno:"sidebar," }}'>{{ monitoring.name }}</h1>
+    <h1 class="sidebar">{{ monitoring.name }}</h1>
 
     {% include "_sidebar_monitoring.html" %}
 
-    <div class="content {{ request.user.is_expert|yesno:'cell,' }}">
+    <div class="content cell">
         {% include '_messages.html' %}
 
         <h2>{% trans "Tasks" %}</h2>
@@ -106,13 +67,8 @@
                                 {{ task.user.userprofile.legal_name }}
                             </td>
                         {% endif %}
-                        <td id="task-status-{{ task.pk }}" class="task-status" data-perms="{{task.perms}}">
-                            <img class="ajaxloader hidden" width="8" height="8" src="{% static 'exmo2010/img/ajax-loader.gif' %}">
-                            <span class="task_status_display">{{task.get_status_display}}</span>
-                            <span class="perms_close_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_close' task.pk %}">{% trans 'close' %}</a></span>
-                            <span class="perms_approve_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_approve' task.pk %}">{% trans 'approve' %}</a></span>
-                            <span class="perms_open_task hidden">&nbsp;<a href="{% url 'exmo2010:ajax_task_open' task.pk %}">{% trans 'open' %}</a></span>
-                        </td>
+
+                        {% include '_task_ajax_actions_td.html' %}
 
                         <td>
                             <a href="{% url 'exmo2010:task_scores' task.pk %}">

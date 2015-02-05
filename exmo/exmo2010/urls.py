@@ -190,6 +190,7 @@ urlpatterns = named_urls('',
     (r'^settings/$', 'accounts.views.settings'),
     (r'^accounts/', include(auth_patterns)),
 
+    (r'^tasks_index/$', 'exmo2010.views.tasks_index'),
     (r'^monitorings/$', 'monitorings.views.monitorings_list'),
     (r'^monitorings/(?P<monitoring_status>unpublished|published)/$', 'monitorings.views.monitorings_list'),
     (r'^monitoring/', include(monitoring_patterns)),
@@ -206,9 +207,9 @@ urlpatterns = named_urls('',
     (r'^post_org_param_relevance/$', PostOrgParamRelevanceView, 'post_org_param_relevance'),
 
     # Отчеты
-    (r'^reports/comments/$', 'custom_comments.views.comment_list'),
-    (r'^reports/clarifications/$', 'clarifications.views.clarification_list'),
-    (r'^reports/claims/$', 'claims.views.claim_list'),
+    (r'^reports/comments/$', 'custom_comments.views.comments_index'),
+    (r'^reports/clarifications/$', 'clarifications.views.clarifications_index'),
+    (r'^reports/claims/$', 'claims.views.claims_index'),
     (r'^reports/monitoring/$', 'monitorings.views.monitoring_report'),
     (r'^reports/monitoring/(?P<report_type>inprogress|finished)/$',
         'monitorings.views.monitoring_report', 'monitoring_report_type'),
@@ -255,9 +256,6 @@ def crumbs_tree(is_expert=False):
     }
 
     expert_tree = {
-        'comment_list': _('Comments'),
-        'claim_list':   _('Claims'),
-        'clarification_list': _('Clarifications'),
         'ratings': _('Ratings'),
 
         'monitorings_list': (_('Monitoring cycles'), {

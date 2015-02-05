@@ -46,7 +46,7 @@
         <div class="organizations-content-block">
             <h2>{% trans "Organizations" %}</h2>
 
-            {% include "_organizations_tabs.html" with tab='all' %}
+            {% include "manage_monitoring/_organizations_tabs.html" with tab='all' %}
 
             <div class="tab-content">
                 {% if is_organizations_exists %}

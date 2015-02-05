@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -21,11 +21,10 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.template.response import TemplateResponse
-from django.utils.translation import ugettext as _
 
 
 @login_required
-def comment_list(request):
+def comments_index(request):
     """
     Страница сводного списка комментариев.
 
@@ -36,7 +35,7 @@ def comment_list(request):
 
     if request.is_ajax():
         comments = user.profile.get_answered_comments()
-        return TemplateResponse(request, 'comment_list_table.html', {'comments': comments})
+        return TemplateResponse(request, 'home/_comments_index.html', {'comments': comments})
     else:
         comments = user.profile.get_filtered_not_answered_comments()
-        return TemplateResponse(request, 'comment_list.html', {'comments': comments})
+        return TemplateResponse(request, 'home/comments_index.html', {'comments': comments})

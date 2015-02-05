@@ -60,6 +60,13 @@ class RepresentativesQueryForm(QueryForm):
             'organization': 'organization__pk',
         }
 
+    def __init__(self, monitoring, *args, **kwargs):
+        super(RepresentativesQueryForm, self).__init__(*args, **kwargs)
+
+        orgs = monitoring.organization_set.exclude(userprofile=None).order_by('name')
+        org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
+        self.fields['organization'].choices = org_choices
+
 
 class InviteOrgsQueryForm(QueryForm):
     timestamp = forms.DateField(required=False, widget=forms.TextInput())

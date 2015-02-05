@@ -48,7 +48,7 @@ from modeltranslation_utils import CurLocaleModelForm
 
 
 class OrganizationsView(LoginRequiredMixin, DetailView):
-    template_name = "organizations.html"
+    template_name = "manage_monitoring/organizations.html"
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
@@ -88,7 +88,7 @@ class OrganizationsMixin(LoginRequiredMixin):
 
 
 class OrganizationsEditView(OrganizationsMixin, UpdateView):
-    template_name = "organizations_edit.html"
+    template_name = "manage_monitoring/organizations_edit.html"
 
     def get_object(self, queryset=None):
         if 'org_pk' in self.kwargs:
@@ -109,7 +109,7 @@ class OrganizationsEditView(OrganizationsMixin, UpdateView):
 
 
 class OrganizationsDeleteView(OrganizationsMixin, DeleteView):
-    template_name = "organizations_delete.html"
+    template_name = "manage_monitoring/organizations_delete.html"
 
     def get_object(self, queryset=None):
         org = get_object_or_404(Organization, pk=self.kwargs['org_pk'])
@@ -162,7 +162,7 @@ class SendMailMixin(LoginRequiredMixin):
 
 
 class SendMailView(SendMailMixin, UpdateView):
-    template_name = "send_mail.html"
+    template_name = "manage_monitoring/send_mail.html"
 
     def get_form_class(self):
         form = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': forms.TextInput})
@@ -269,7 +269,7 @@ class SendMailView(SendMailMixin, UpdateView):
 
 
 class SendMailHistoryView(SendMailMixin, DetailView):
-    template_name = "send_mail_history.html"
+    template_name = "manage_monitoring/send_mail_history.html"
 
     def get_context_data(self, **kwargs):
         context = super(SendMailHistoryView, self).get_context_data(**kwargs)
@@ -287,7 +287,7 @@ class SendMailHistoryView(SendMailMixin, DetailView):
 
 
 class RepresentativesView(LoginRequiredMixin, DetailView):
-    template_name = "representatives.html"
+    template_name = "manage_monitoring/representatives.html"
     pk_url_kwarg = 'monitoring_pk'
     model = Monitoring
 
@@ -300,14 +300,12 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(RepresentativesView, self).get_context_data(**kwargs)
 
-        orgs = self.monitoring.organization_set.exclude(userprofile=None).order_by('name').prefetch_related('userprofile_set')
-
-        queryform = RepresentativesQueryForm(self.request.GET)
-        org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
-        queryform.fields['organization'].choices = org_choices
+        queryform = RepresentativesQueryForm(self.monitoring, self.request.GET)
 
         orgusers = UserProfile.objects.filter(organization__monitoring=self.monitoring)
         representatives_exist = orgusers.exists()
+
+        orgs = self.monitoring.organization_set.exclude(userprofile=None).order_by('name').prefetch_related('userprofile_set')
 
         if queryform.is_valid():
             orgusers = queryform.apply(orgusers)

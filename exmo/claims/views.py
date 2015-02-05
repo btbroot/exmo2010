@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -111,7 +111,7 @@ def claim_report(request, monitoring_pk):
                 claims = claims.filter(creator__id=creator_id)
             if addressee_id != 0:
                 claims = claims.filter(addressee__id=addressee_id)
-            return TemplateResponse(request, 'claim_report_table.html', {'claims': claims})
+            return TemplateResponse(request, 'manage_monitoring/_claim_report_table.html', {'claims': claims})
         else:
             raise Http404
 
@@ -142,7 +142,7 @@ def claim_report(request, monitoring_pk):
             addressee_id_list=addressee_id_list
         )
 
-    return TemplateResponse(request, 'claim_report.html', {
+    return TemplateResponse(request, 'manage_monitoring/claim_report.html', {
         'monitoring': monitoring,
         'claims': claims,
         'form': form,
@@ -150,7 +150,7 @@ def claim_report(request, monitoring_pk):
 
 
 @login_required
-def claim_list(request):
+def claims_index(request):
     """
     Страница сводного списка претензий для аналитиков.
 
@@ -161,7 +161,7 @@ def claim_list(request):
 
     if request.is_ajax():
         context = {'claims': user.profile.get_closed_claims()}
-        return TemplateResponse(request, 'claim_list_table.html', context)
+        return TemplateResponse(request, 'home/_claims_index.html', context)
     else:
         context = {'claims': user.profile.get_filtered_opened_claims()}
-        return TemplateResponse(request, 'claim_list.html', context)
+        return TemplateResponse(request, 'home/claims_index.html', context)

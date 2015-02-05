@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from ckeditor.views import upload
 from django import http
@@ -39,10 +39,10 @@ from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
 
-from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm
+from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, AnalystTasksIndexQueryForm
 from .mail import mail_certificate_order, mail_feedback
 from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task
-from .models.monitoring import INT, FIN, PUB
+from .models.monitoring import RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
 from auth.helpers import perm_filter
 from core.response import JSONResponse
@@ -62,19 +62,46 @@ def index(request):
         return HttpResponseRedirect(reverse('exmo2010:monitorings_list'))
 
     if user.is_expertB:
-        pass
+        return HttpResponseRedirect(reverse('exmo2010:tasks_index'))
 
-    monitorings = perm_filter(user, 'view_monitoring', Monitoring.objects.all())
-    context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), user)}
-
-    return TemplateResponse(request, 'exmo2010/index.html', context)
+    # Regular unprivileged users will see the same as anonymous.
+    return index_anonymous(request)
 
 
 def index_anonymous(request):
     monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
     context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user)}
 
-    return TemplateResponse(request, 'exmo2010/index.html', context)
+    return TemplateResponse(request, 'home/index_anonymous.html', context)
+
+
+def tasks_index(request):
+    queryform = AnalystTasksIndexQueryForm(request.user, request.GET)
+
+    Monitoring.objects.filter()
+    filter = Q(user=request.user, organization__monitoring__status__in=[RATE, RES, INT, FIN])
+    tasks = Task.objects.filter(filter).prefetch_related('organization__monitoring', 'qanswer_set')
+
+    if queryform.is_valid():
+        tasks = queryform.apply(tasks)
+
+    monitorings = defaultdict(list)
+    tasks = annotate_exmo_perms(tasks, request.user)
+
+    for task in tasks:
+        monitorings[task.organization.monitoring].append(task)
+
+    task_order_key = lambda task: task.status + task.completeness / 100
+    for monitoring in monitorings:
+        monitorings[monitoring].sort(key=task_order_key)
+
+    context = {
+        'tasks_exist': Task.objects.filter(filter).exists(),
+        'monitorings': sorted(monitorings.items(), key=lambda x: x[0].publish_date),
+        'queryform': queryform
+    }
+
+    return TemplateResponse(request, 'home/index_analyst.html', context)
 
 
 def index_orgs(request):
@@ -93,7 +120,7 @@ def index_orgs(request):
     if request.user.is_organization:
         context.update({'invcodeform': SettingsInvCodeForm()})
 
-    return TemplateResponse(request, 'exmo2010/index_orgs.html', context)
+    return TemplateResponse(request, 'home/index_orguser.html', context)
 
 
 def feedback(request):
