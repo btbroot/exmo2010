@@ -23,11 +23,13 @@ import re
 import string
 
 import reversion
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import modelform_factory
+from django.db import IntegrityError
 from django.forms.widgets import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import get_object_or_404
@@ -35,13 +37,14 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, ListView, UpdateView, View
 
+from .forms import MassAssignmentTasksForm
 from accounts.forms import SettingsInvCodeForm
 from auth.helpers import perm_filter
 from core.helpers import table
 from core.response import JSONResponse
 from core.views import login_required_on_deny, LoginRequiredMixin
 from core.utils import UnicodeReader, UnicodeWriter
-from exmo2010.models import (Monitoring, Organization, Parameter, Score, Task,
+from exmo2010.models import (Monitoring, Parameter, Score, Task,
                              TaskHistory, LicenseTextFragments, UserProfile)
 from perm_utils import annotate_exmo_perms
 
@@ -322,43 +325,32 @@ def tasks_by_monitoring(request, monitoring_pk):
 
 
 @login_required
-def task_mass_assign_tasks(request, monitoring_pk):
+def mass_assign_tasks(request, monitoring_pk):
     monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
     if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
         raise PermissionDenied
 
-    organizations = Organization.objects.filter(monitoring=monitoring)
-    title = _('Mass assign tasks')
-    groups = []
-    for group_name in ['expertsA', 'expertsB']:
-        group, created = Group.objects.get_or_create(name=group_name)
-        groups.append(group)
-    users = User.objects.filter(is_active=True).filter(groups__in=groups)
-    log = []
-    if request.method == 'POST' and 'organizations' in request.POST and 'users' in request.POST:
-        for organization_id in request.POST.getlist('organizations'):
-            for user_id in request.POST.getlist('users'):
+    if request.method == 'POST':
+        form = MassAssignmentTasksForm(request.POST, monitoring=monitoring)
+        if form.is_valid():
+            user = form.cleaned_data['expert']
+            user_name = user.userprofile.full_name
+            for org in form.cleaned_data['organizations']:
                 try:
-                    user = User.objects.get(pk=user_id)
-                    organization = Organization.objects.get(pk=int(organization_id))
-                    task = Task(
-                        user=user,
-                        organization=organization,
-                        status=Task.TASK_OPEN,
-                    )
-                    task.full_clean()
-                    task.save()
-                except ValidationError, e:
-                    log.append('; '.join(['%s: %s' % (i[0], ', '.join(i[1])) for i in e.message_dict.items()]))
-                except Exception, e:
-                    log.append(e)
-                else:
-                    log.append('%s: %s' % (user.userprofile.legal_name, organization.name))
+                    task, created = Task.objects.get_or_create(user=user, organization=org, status=Task.TASK_OPEN)
+                    if created:
+                        messages.info(request, u'%s: %s' % (user_name, org.name))
+                    else:
+                        messages.warning(request, _(u'User %(user)s already have a task by %(org)s organization') %
+                                         {'user': user_name, 'org': org.name})
+                except IntegrityError as e:
+                    messages.warning(request, e)
+
+            return HttpResponseRedirect(reverse('exmo2010:mass_assign_tasks', args=[monitoring.pk]))
+    else:
+        form = MassAssignmentTasksForm(monitoring=monitoring)
 
     return TemplateResponse(request, 'manage_monitoring/mass_assign_tasks.html', {
-        'organizations': organizations,
-        'users': users,
         'monitoring': monitoring,
-        'log': log,
-        'title': title,
+        'form': form,
     })

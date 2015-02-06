@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -62,21 +62,19 @@ class TaskAssignSideEffectsTestCase(TestCase):
         self.expertB3.profile.is_expertB = True
 
     def test_mass_assign_tasks(self):
-        # WHEN I mass-asign Tasks for 2 organizations to 2 users
-        url = reverse('exmo2010:task_mass_assign_tasks', args=[self.monitoring_id])
-        self.client.post(
-            url,
-            {
-                'organizations': [self.organization1.pk, self.organization2.pk],
-                'users': [self.expertB1.pk, self.expertB2.pk]
-            })
+        # WHEN I mass-asign Tasks for 2 organizations to 1 user
+        url = reverse('exmo2010:mass_assign_tasks', args=[self.monitoring_id])
+        self.client.post(url, {
+            'organizations': [self.organization1.pk, self.organization2.pk],
+            'expert': self.expertB1.pk,
+        })
 
-        # THEN there should be 2x2 Tasks for each user/org pair
-        self.assertEqual(Task.objects.count(), 4)
+        # THEN there should be 2 Tasks for user
+        self.assertEqual(Task.objects.count(), 2)
         # AND Every Task should have corresponding TaskHistory
-        self.assertEqual(TaskHistory.objects.count(), 4)
-        # AND Every expertB should receive 2 Email notifications about her new assigned Tasks
-        self.assertEqual(len(mail.outbox), 4)
+        self.assertEqual(TaskHistory.objects.count(), 2)
+        # AND expertB should receive 2 Email notifications about her new assigned Tasks
+        self.assertEqual(len(mail.outbox), 2)
 
     def test_add_single_task(self):
         # WHEN I create new task

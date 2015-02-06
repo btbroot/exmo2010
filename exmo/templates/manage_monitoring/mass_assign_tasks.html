@@ -21,6 +21,25 @@
 {% endcomment %}
 {% load i18n %}
 
+{% block title %}{{ monitoring.name }}{% endblock %}
+
+{% block extra_css %}
+    <style>
+        h2, ul {margin: 0;}
+        h3 {margin-top: 10px;}
+        input[type="submit"] {width: 100px;}
+        .task-assignment-block {margin-top: 20px;}
+        .table-cell-R {
+            vertical-align: baseline;
+            line-height: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block extra_script %}
+    {{ form.media }}
+{% endblock %}
+
 {% block content %}
 
     <h1 class="sidebar">{{ monitoring.name }}</h1>
@@ -28,28 +47,77 @@
     {% include "_sidebar_monitoring.html" %}
 
     <div class="content cell">
-        {% include '_messages.html' %}
+        {% regroup messages by tags as messages %}
+
+        {% if messages %}
+            {% for tags in messages %}
+                {% if tags.grouper == 'warning' %}
+                    <div class="{{ tags.grouper }}">
+                        <ul>
+                            {% for message in tags.list %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         <h2>{% trans "Task assignment" %}</h2>
 
-        {% if log %}
-            <div id="failure">{% trans "Process log:" %}:
-                <ul>
-                    {% for message in log %}
-                        <li>{{message}}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+        <div class="task-assignment-block">
+            {% include "_form_errors.html" with form=form %}
 
-        <form method="post">{% csrf_token %}
-            <select multiple="multiple" name="users">
-                {% for user in users %}<option value="{{user.pk}}">{{user.userprofile.legal_name}}</option>{% endfor %}
-            </select>
-            <select multiple="multiple" name="organizations">
-                {% for organization in organizations %}<option value="{{organization.pk}}">{{organization.name}}</option>{% endfor %}
-            </select>
-            <input type="submit" value="{% trans 'Send' %}" />
-        </form>
+            <form action="" method="post">{% csrf_token %}
+                <div class="form-table">
+                    <div class="table-row">
+                        <div class="table-cell-R">
+                            {{ form.expert.label }}
+                        </div>
+
+                        <div class="table-cell-L">
+                            {{ form.expert }}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">
+                            {{ form.organizations.label }}
+                        </div>
+
+                        <div class="table-cell-L">
+                            {{ form.organizations }}
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+
+                        <div class="table-cell-L">
+                            <input type="submit" value="{% trans 'Assign' %}"/>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+
+                        <div class="table-cell-L">
+                            {% if messages %}
+                                {% for tags in messages %}
+                                    {% if tags.grouper == 'info' %}
+                                        <h3>{% blocktrans count counter=tags.list|length %}{{ counter }} task was created{% plural %}{{ counter }} tasks was created{% endblocktrans %}</h3>
+                                        <ul>
+                                            {% for message in tags.list %}
+                                                <li>{{ message }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}

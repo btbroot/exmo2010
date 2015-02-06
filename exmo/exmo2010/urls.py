@@ -124,7 +124,7 @@ monitoring_patterns = named_urls('monitorings.views',
 )
 
 monitoring_patterns += named_urls('tasks.views',
-    (r'^(?P<monitoring_pk>\d+)/mass_assign_tasks/$', 'task_mass_assign_tasks'),
+    (r'^(?P<monitoring_pk>\d+)/mass_assign_tasks/$', 'mass_assign_tasks'),
     (r'^(?P<monitoring_pk>\d+)/task/add/$', TaskEditView, 'task_add'),
     (r'^(?P<monitoring_pk>\d+)/tasks/$', 'tasks_by_monitoring'),
 )
@@ -295,7 +295,7 @@ def crumbs_tree(is_expert=False):
 
             'set_npa_params': _('Monitoring cycle'),
 
-            'task_mass_assign_tasks': _('Monitoring cycle'),
+            'mass_assign_tasks': _('Monitoring cycle'),
 
             'monitoring_rating': _('Monitoring cycle'),
 
