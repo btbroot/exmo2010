@@ -21,7 +21,7 @@
 <script>
     $(function(){
         // Stylize active tab, prevent reloading page on click.
-        $('#tab_{{ tab }}').addClass('active').find('a').click(function(){ return false; });
+        $('#tab_{{ tab }}').addClass('active').find('a').css('cursor', 'default').click(function(){ return false; });
     });
 </script>
 <div class="tabs">
@@ -31,6 +31,9 @@
         <span id='tab_add'><a href="{% url 'exmo2010:monitoring_add' %}">{% trans 'add' %}</a></span>
     {% endif %}
     {% ifequal tab 'edit' %}
-        <span id='tab_edit'><a href="{% url 'exmo2010:monitoring_add' %}">{% trans 'edit' %}</a></span>
+        <span id='tab_edit'><a href="">{% trans 'edit' %}</a></span>
+    {% endifequal %}
+    {% ifequal tab 'copy' %}
+        <span id='tab_copy'><a href="">{% trans 'copy' %}</a></span>
     {% endifequal %}
 </div>

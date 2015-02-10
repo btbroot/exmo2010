@@ -42,12 +42,19 @@ input[type="checkbox"] {
 }
 
 
+/* Monitoring add, edit and copy pages */
+
+.monitoring-form-block {
+    margin-top: 15px;
+}
+
+
 /* Button */
 
 .likeabutton,
 .likeabutton:hover {
-    margin: 10px 0 20px;
-    background-color: #ecffec;
+    display: inline-block;
+    margin-bottom: 20px;
 }
 
 
@@ -108,7 +115,7 @@ input[value="current_scores"] {
     vertical-align: middle;
 }
 
-/* Inprogress and finished monitorings page */
+/* Inprogress and finished monitorings pages */
 
 .unpublished-monitorings-block,
 .published-monitorings-block {

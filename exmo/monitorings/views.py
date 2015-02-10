@@ -933,18 +933,14 @@ def monitoring_organization_import(request, monitoring_pk):
         errors.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
         errors.append(_("Import error: %s." % e))
-    title = _('Import organizations from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Organization)
 
     return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
-        'title': title,
+        'monitoring': monitoring,
         'errors': errors,
         'row_count': '{}/{}'.format(rowOKCount, row_num),
-        'result_title': '{}/{}'.format(monitoring, request.FILES['orgfile']),
-        'back_url': reverse('exmo2010:monitoring_update', args=[monitoring.pk]),
-        'back_title': _('Back to the monitoring'),
     })
 
 
@@ -1020,18 +1016,14 @@ def monitoring_parameter_import(request, monitoring_pk):
         errors.append(_("File, you are loading is not valid CSV."))
     except Exception, e:
         errors.append(_("Import error: %s." % e))
-    title = _('Import parameters from CSV for monitoring %s') % monitoring
 
     if must_register:
         revision.register(Parameter)
 
     return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
-        'title': title,
+        'monitoring': monitoring,
         'errors': errors,
         'row_count': '{}/{}'.format(rowOKCount, row_num),
-        'result_title': '{}/{}'.format(monitoring, request.FILES['paramfile']),
-        'back_url': reverse('exmo2010:monitoring_update', args=[monitoring.pk]),
-        'back_title': _('Back to the monitoring'),
     })
 
 

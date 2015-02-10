@@ -19,7 +19,7 @@
 {% endcomment %}
 {% load i18n static widget_tweaks %}
 
-{% block title %}{% trans 'Copy monitoring cycle' %}{% endblock %}
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring.css' %}" />
@@ -30,119 +30,132 @@
     <script type="text/javascript" src="{% static 'js/monitoring.js' %}"></script>
 {% endblock %}
 
-{% block content %}
-    <div class="content">
-        {% include '_messages.html' %}
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
 
-        <h1>{% trans 'Copy monitoring cycle' %}</h1>
+        <div id="header">
+            {% include '_header.html' %}
+        </div>
 
-        {% if form.errors %}
-            <div class="warning">
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ field.label }} {{ error|lower }}</li>
-                        {% endfor %}
-                    {% endfor %}
-                </ul>
+        <div id="content_outer">
+            <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                {% include '_messages.html' %}
+
+                <h2>{% trans 'Monitoring cycles' %}</h2>
+
+                {% include "_monitorings_tabs.html" with tab='copy' %}
+
+                <div class="monitoring-form-block">
+                    {% if form.errors %}
+                        <div class="warning">
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ field.label }} {{ error|lower }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form class="monitoring-form" action="" method="post">{% csrf_token %}
+                        <div class="table">
+                            <div class="table-row">
+                                <div class="table-cell-R">{% trans 'Original cycle' %}</div>
+                                <div class="table-cell-L">
+                                    <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}" target="_blank">{{ monitoring.name }}</a>
+                                </div>
+                            </div>
+
+                            <div class="table-row choice-buttons">
+                                <div class="table-cell-R">{{ form.donors.label }}</div>
+                                <div class="table-cell-L">{{ form.donors }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <h3>{% trans 'Monitoring cycle settings' %}</h3>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.trans_fields.name.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L name-cell">{{ form.trans_fields.name }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">{{ form.status.label }}</div>
+                                <div class="table-cell-L">{{ form.status }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">{{ form.openness_expression.label }}</div>
+                                <div class="table-cell-L">{{ form.openness_expression }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.no_interact }} {{ form.no_interact.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.hidden }} {{ form.hidden.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.add_questionnaire }} {{ form.add_questionnaire.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <h3>{% trans 'Calendar' %}</h3>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.rate_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.rate_date|attr:"maxlength:10" }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.interact_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.interact_date|attr:"maxlength:10" }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.finishing_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.finishing_date|attr:"maxlength:10" }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.publish_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.publish_date|attr:"maxlength:10" }}</div>
+                            </div>
+
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L submit-cell">
+                                    <input type="submit" value="{% trans 'Copy' %}" />
+                                    <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">{% trans 'Cancel' %}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-        {% endif %}
-
-        <form class="monitoring-form" action="" method="post">{% csrf_token %}
-            <div class="table">
-                <div class="table-row">
-                    <div class="table-cell-R">{% trans 'Original cycle' %}</div>
-                    <div class="table-cell-L">
-                        <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}" target="_blank">{{ monitoring.name }}</a>
-                    </div>
-                </div>
-
-                <div class="table-row choice-buttons">
-                    <div class="table-cell-R">{{ form.donors.label }}</div>
-                    <div class="table-cell-L">{{ form.donors }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-L">
-                        <h3>{% trans 'Monitoring cycle' %}</h3>
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">
-                        {{ form.trans_fields.name.label }}<span class="required">*</span>
-                    </div>
-                    <div class="table-cell-L name-cell">{{ form.trans_fields.name }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.status.label }}</div>
-                    <div class="table-cell-L">{{ form.status }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">{{ form.openness_expression.label }}</div>
-                    <div class="table-cell-L">{{ form.openness_expression }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">{{ form.no_interact }} {{ form.no_interact.label_tag }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">{{ form.hidden }} {{ form.hidden.label_tag }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L">{{ form.add_questionnaire }} {{ form.add_questionnaire.label_tag }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-L">
-                        <h3>{% trans 'Calendar' %}</h3>
-                    </div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">
-                        {{ form.rate_date.label }}<span class="required">*</span>
-                    </div>
-                    <div class="table-cell-L datepicker">{{ form.rate_date|attr:"maxlength:10" }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">
-                        {{ form.interact_date.label }}<span class="required">*</span>
-                    </div>
-                    <div class="table-cell-L datepicker">{{ form.interact_date|attr:"maxlength:10" }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">
-                        {{ form.finishing_date.label }}<span class="required">*</span>
-                    </div>
-                    <div class="table-cell-L datepicker">{{ form.finishing_date|attr:"maxlength:10" }}</div>
-                </div>
-
-                <div class="table-row">
-                    <div class="table-cell-R">
-                        {{ form.publish_date.label }}<span class="required">*</span>
-                    </div>
-                    <div class="table-cell-L datepicker">{{ form.publish_date|attr:"maxlength:10" }}</div>
-                </div>
-
-
-                <div class="table-row">
-                    <div class="table-cell-R"></div>
-                    <div class="table-cell-L submit-cell">
-                        <input type="submit" value="{% trans 'Copy' %}" />
-                        <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">{% trans 'Cancel' %}</a>
-                    </div>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 {% endblock %}

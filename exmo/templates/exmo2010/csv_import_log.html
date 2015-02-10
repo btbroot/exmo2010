@@ -21,21 +21,38 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block title %}{% trans "Import results" %} {{ result_title }}{% endblock %}
+{% block title %}{% trans "Home" context "Front page" %}{% endblock %}
 
-{% block content %}
-    <p>{% trans "Rows ok/all" %}: {{ row_count }}</p>
+{% block main %}
+    <div id="main" class="without_breadcrumbs">
 
-    {% if errors %}
-        <div>
-            {% trans "Errors encountered" %}:
-            <ul>
-                {% for error in errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
+        <div id="header">
+            {% include '_header.html' %}
         </div>
-    {% endif %}
 
-    <a href="{{ back_url }}">{{ back_title }}</a>
+        <div id="content_outer">
+            <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
+
+            {% include "_sidebar_index.html" %}
+
+            <div class="content cell">
+                {% include '_messages.html' %}
+
+                <p>{% trans "Rows ok/all" %}: {{ row_count }}</p>
+
+                {% if errors %}
+                    <div>
+                        {% trans "Errors encountered" %}:
+                        <ul>
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">{% trans 'Back to the monitoring' %}</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

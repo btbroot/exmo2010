@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-11 09:53+0300\n"
+"POT-Creation-Date: 2015-02-11 10:23+0300\n"
 "PO-Revision-Date: 2015-01-16 22:27+0300\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
@@ -119,7 +119,7 @@ msgstr "Электронная почта"
 
 #: accounts/templates/user_settings.html:84
 #: accounts/templates/user_settings.html:222
-#: monitorings/templates/monitoring_form.html:64
+#: monitorings/templates/monitoring_form.html:68
 #: parameters/templates/parameter_form.html:80
 #: templates/manage_monitoring/comment_report.html:63
 #: templates/manage_monitoring/organizations_edit.html:76
@@ -138,9 +138,7 @@ msgid "Invitation code"
 msgstr "Код приглашения"
 
 #: accounts/templates/user_settings.html:123 exmo2010/forms.py:58
-#: monitorings/templates/monitoring_form.html:177
 #: templates/exmo2010/feedback.html:67
-#: templates/exmo2010/monitoring_confirm_delete.html:40
 #: templates/exmo2010/parameter_confirm_delete.html:43
 #: templates/exmo2010/task_form.html:55
 #: templates/exmo2010/helpers/inv_code_bubble.html:39
@@ -198,6 +196,7 @@ msgid "Organization"
 msgstr "Организация"
 
 #: breadcrumbs/tests.py:42 exmo2010/urls.py:261
+#: monitorings/templates/monitoring_copy.html:48
 #: monitorings/templates/monitoring_form.html:51
 #: templates/_sidebar_index.html:29
 #: templates/home/monitorings_published.html:66
@@ -214,8 +213,6 @@ msgstr "Циклы мониторинга"
 #: exmo2010/urls.py:296 exmo2010/urls.py:298 exmo2010/urls.py:300
 #: exmo2010/urls.py:302 exmo2010/models/questionnaire.py:36
 #: monitorings/forms.py:60 monitorings/forms.py:69
-#: monitorings/templates/monitoring_copy.html:67
-#: monitorings/templates/monitoring_form.html:96
 #: monitorings/templates/ratings.html:58 templates/exmo2010/opendata.html:62
 #: templates/home/monitorings_published.html:88
 #: templates/home/monitorings_unpublished.html:75
@@ -577,8 +574,7 @@ msgstr "Удалить цикл мониторинга"
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo2010/urls.py:265 monitorings/templates/monitoring_copy.html:22
-#: monitorings/templates/monitoring_copy.html:37
+#: exmo2010/urls.py:265
 msgid "Copy monitoring cycle"
 msgstr "Копировать цикл мониторинга"
 
@@ -1232,9 +1228,8 @@ msgid "organization"
 msgstr "организация"
 
 #: exmo2010/models/task.py:65
-#, fuzzy
 msgid "close date"
-msgstr "закрыта"
+msgstr "дата закрытия"
 
 #: exmo2010/models/task.py:210
 msgid "Ready task must be 100 percent complete."
@@ -1443,35 +1438,21 @@ msgstr "Одобренные задачи"
 msgid "All tasks"
 msgstr "Все задачи"
 
-#: monitorings/views.py:931 monitorings/views.py:1018 tasks/views.py:157
+#: monitorings/views.py:931 monitorings/views.py:1014 tasks/views.py:157
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "строка %(row)d (csv). %(raw)s"
 
-#: monitorings/views.py:933 monitorings/views.py:1020 tasks/views.py:159
+#: monitorings/views.py:933 monitorings/views.py:1016 tasks/views.py:159
 msgid "File, you are loading is not valid CSV."
 msgstr "Файл, который Вы загружаете не валиден или не является CSV-файлом."
 
-#: monitorings/views.py:935 monitorings/views.py:1022 tasks/views.py:161
+#: monitorings/views.py:935 monitorings/views.py:1018 tasks/views.py:161
 #, python-format
 msgid "Import error: %s."
 msgstr "Ошибка импорта: %s."
 
-#: monitorings/views.py:936
-#, python-format
-msgid "Import organizations from CSV for monitoring %s"
-msgstr "Импортировать организации из CSV для %s"
-
-#: monitorings/views.py:947 monitorings/views.py:1034
-msgid "Back to the monitoring"
-msgstr "Вернуться в цикл мониторинга "
-
-#: monitorings/views.py:1023
-#, python-format
-msgid "Import parameters from CSV for monitoring %s"
-msgstr "Импортировать параметры из CSV для %s"
-
-#: monitorings/views.py:1072 monitorings/templates/monitoring_report.html:45
+#: monitorings/views.py:1064 monitorings/templates/monitoring_report.html:45
 msgid "Monitoring statistics"
 msgstr "Статистика по циклам мониторинга"
 
@@ -1494,28 +1475,18 @@ msgstr "добавить"
 msgid "edit"
 msgstr "редактировать"
 
-#: monitorings/templates/monitoring_copy.html:54
-msgid "Original cycle"
-msgstr "Исходный цикл"
+#: monitorings/templates/_monitorings_tabs.html:37
+msgid "copy"
+msgstr "копировать"
 
-#: monitorings/templates/monitoring_copy.html:105
-#: monitorings/templates/monitoring_form.html:141
-msgid "Calendar"
-msgstr "Календарь"
-
-#: monitorings/templates/monitoring_copy.html:141
-#: monitorings/templates/monitoring_form.html:60
-msgid "Copy"
-msgstr "Копировать"
-
-#: monitorings/templates/monitoring_copy.html:142
-#: templates/_columns_picker_modal_window.html:32
-#: templates/scores/score.html:223 templates/scores/score.html.py:249
-msgid "Cancel"
-msgstr "Отмена"
-
+#: monitorings/templates/monitoring_copy.html:22
+#: monitorings/templates/monitoring_copy.html:41
 #: monitorings/templates/monitoring_form.html:25
-#: monitorings/templates/monitoring_form.html:46
+#: monitorings/templates/monitoring_form.html:44
+#: templates/exmo2010/csv_import_log.html:24
+#: templates/exmo2010/csv_import_log.html:34
+#: templates/exmo2010/monitoring_confirm_delete.html:25
+#: templates/exmo2010/monitoring_confirm_delete.html:35
 #: templates/home/index_anonymous.html:25 templates/home/index_orguser.html:22
 #: templates/home/monitorings_published.html:22
 #: templates/home/monitorings_published.html:61
@@ -1526,35 +1497,76 @@ msgctxt "Front page"
 msgid "Home"
 msgstr "Главная"
 
+#: monitorings/templates/monitoring_copy.html:68
+msgid "Original cycle"
+msgstr "Исходный цикл"
+
+#: monitorings/templates/monitoring_copy.html:80
+#: monitorings/templates/monitoring_form.html:99
+msgid "Monitoring cycle settings"
+msgstr "Настройки цикла"
+
+#: monitorings/templates/monitoring_copy.html:116
+#: monitorings/templates/monitoring_form.html:142
+msgid "Calendar"
+msgstr "Календарь"
+
+#: monitorings/templates/monitoring_copy.html:151
+#: monitorings/templates/monitoring_form.html:62
+msgid "Copy"
+msgstr "Копировать"
+
+#: monitorings/templates/monitoring_copy.html:152
+#: templates/_columns_picker_modal_window.html:32
+#: templates/scores/score.html:223 templates/scores/score.html.py:249
+msgid "Cancel"
+msgstr "Отмена"
+
 #: monitorings/templates/monitoring_form.html:63
+#: parameters/templates/parameter_form.html:51
+#: templates/exmo2010/monitoring_confirm_delete.html:50
+#: templates/manage_monitoring/observers_group_edit.html:83
+msgid "Delete"
+msgstr "Удалить"
+
+#: monitorings/templates/monitoring_form.html:67
 msgid "Export organizations"
 msgstr "Экспортировать организации"
 
-#: monitorings/templates/monitoring_form.html:64
+#: monitorings/templates/monitoring_form.html:68
 msgid "Import organizations from CSV"
 msgstr "Импортировать организации из CSV"
 
-#: monitorings/templates/monitoring_form.html:65
-#: monitorings/templates/monitoring_form.html:70
+#: monitorings/templates/monitoring_form.html:69
+#: monitorings/templates/monitoring_form.html:74
 #: templates/scores/task_scores.html:77
 msgid "Import"
 msgstr "Импорт"
 
-#: monitorings/templates/monitoring_form.html:68
+#: monitorings/templates/monitoring_form.html:72
 msgid "Export parameters"
 msgstr "Экспортировать параметры"
 
-#: monitorings/templates/monitoring_form.html:69
+#: monitorings/templates/monitoring_form.html:73
 msgid "Import parameters from CSV"
 msgstr "Импортировать параметры из CSV"
 
-#: monitorings/templates/monitoring_form.html:73
+#: monitorings/templates/monitoring_form.html:77
 msgid "Edit questionnaire"
 msgstr "Редактировать анкету"
 
-#: monitorings/templates/monitoring_form.html:76
+#: monitorings/templates/monitoring_form.html:80
 msgid "Questionnaire is already created. To delete it turn off \"Add questionnaire\" checkbox and save changes"
 msgstr "Анкета уже создана. Для её удаления снимите галочку напротив \"Добавить анкету в цикл\", и сохраните изменения"
+
+#: monitorings/templates/monitoring_form.html:178
+#: templates/_columns_picker_modal_window.html:31
+msgid "Change"
+msgstr "Изменить"
+
+#: monitorings/templates/monitoring_form.html:180
+msgid "Create"
+msgstr "Создать"
 
 #: monitorings/templates/monitoring_report.html:50
 #: monitorings/templates/monitoring_report.html:73
@@ -1801,11 +1813,6 @@ msgstr "Ошибка формы!"
 msgid "Add new parameter"
 msgstr "Добавить новый параметр"
 
-#: parameters/templates/parameter_form.html:51
-#: templates/manage_monitoring/observers_group_edit.html:83
-msgid "Delete"
-msgstr "Удалить"
-
 #: parameters/templates/parameter_form.html:82
 msgid "Save and send notifications"
 msgstr "Сохранить и отправить уведомление экспертам"
@@ -1941,10 +1948,6 @@ msgstr "На сервере произошла ошибка. О ней было 
 #: templates/_columns_picker_modal_window.html:25
 msgid "Table settings"
 msgstr "Настройка таблицы"
-
-#: templates/_columns_picker_modal_window.html:31
-msgid "Change"
-msgstr "Изменить"
 
 #: templates/_errors_header.html:29 templates/_header.html:52
 msgid "Main"
@@ -2190,17 +2193,23 @@ msgstr "Пред."
 msgid "Next"
 msgstr "След."
 
-#: templates/exmo2010/csv_import_log.html:24
-msgid "Import results"
-msgstr "Результаты импорта"
-
-#: templates/exmo2010/csv_import_log.html:27
+#: templates/exmo2010/csv_import_log.html:41
+#: templates/exmo2010/csv_import_log_tasks.html:27
 msgid "Rows ok/all"
 msgstr "Строк успешно/обработано"
 
-#: templates/exmo2010/csv_import_log.html:31
+#: templates/exmo2010/csv_import_log.html:45
+#: templates/exmo2010/csv_import_log_tasks.html:31
 msgid "Errors encountered"
 msgstr "Ошибки"
+
+#: templates/exmo2010/csv_import_log.html:54
+msgid "Back to the monitoring"
+msgstr "Вернуться в цикл мониторинга"
+
+#: templates/exmo2010/csv_import_log_tasks.html:24
+msgid "Import results"
+msgstr "Результаты импорта"
 
 #: templates/exmo2010/feedback.html:31 templates/mail/feedback_creator.html:24
 #: templates/mail/feedback_creator.txt:25
@@ -2216,16 +2225,11 @@ msgstr "Если у вас возникли проблемы при исполь
 msgid "Please, describe your problem with as much detail as possible."
 msgstr "Пожалуйста, опишите вашу проблему как можно подробнее."
 
-#: templates/exmo2010/monitoring_confirm_delete.html:25
-#, python-format
-msgid "Delete monitoring %(monitoring)s"
-msgstr "Удалить цикл мониторинга %(monitoring)s"
-
-#: templates/exmo2010/monitoring_confirm_delete.html:33
+#: templates/exmo2010/monitoring_confirm_delete.html:43
 msgid "When you delete monitoring you also delete this tasks:"
 msgstr "При удалении цикла мониторинга Вы так же удалите следующие задачи:"
 
-#: templates/exmo2010/monitoring_confirm_delete.html:39
+#: templates/exmo2010/monitoring_confirm_delete.html:49
 msgid "Delete this monitoring?"
 msgstr "Удалить цикл мониторинга?"
 
@@ -2582,7 +2586,7 @@ msgid "Status"
 msgstr "Статус"
 
 #: templates/home/tasks_index.html:102 templates/home/tasks_index.html:122
-msgid "Approve date"
+msgid "Close date"
 msgstr "Дата закрытия"
 
 #: templates/home/tasks_index.html:103 templates/home/tasks_index.html:123

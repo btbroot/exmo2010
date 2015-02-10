@@ -48,7 +48,7 @@
         </h1>
 
         {% if param.pk %}
-            <a class="likeabutton" href="{% url 'exmo2010:parameter_delete' view.task.pk param.pk %}">{% trans 'Delete' %}</a>
+            <a class="likeabutton red" href="{% url 'exmo2010:parameter_delete' view.task.pk param.pk %}">{% trans 'Delete' %}</a>
         {% endif %}
 
         <p>{{ form.non_field_errors }}</p>

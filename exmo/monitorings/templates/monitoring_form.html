@@ -41,13 +41,13 @@
         </div>
 
         <div id="content_outer">
-            {% include '_messages.html' %}
-
             <h1 class="sidebar">{% trans "Home" context "Front page" %}</h1>
 
             {% include "_sidebar_index.html" %}
 
             <div class="content cell">
+                {% include '_messages.html' %}
+
                 <h2>{% trans 'Monitoring cycles' %}</h2>
 
                 {% if monitoring %}
@@ -56,129 +56,134 @@
                     {% include "_monitorings_tabs.html" with tab='add' %}
                 {% endif %}
 
-                {% if monitoring %}
-                    <a class="likeabutton" href="{% url 'exmo2010:monitoring_copy' monitoring.pk %}">{% trans 'Copy' %}</a>
-
-                    <form action="{% url 'exmo2010:monitoring_organization_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-                        <a href="{% url 'exmo2010:monitoring_organization_export' monitoring.pk %}">{% trans 'Export organizations' %}</a> /
-                        <label>{% trans "Import organizations from CSV" %}: <input type="file" accept=".csv" name="orgfile" value="{% trans 'Save' %}"></label>
-                        <input type="submit" value="{% trans 'Import' %}" />
-                    </form>
-                    <form action="{% url 'exmo2010:monitoring_parameter_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-                        <a href="{% url 'exmo2010:monitoring_parameter_export' monitoring.pk %}">{% trans 'Export parameters' %}</a> /
-                        <label>{% trans "Import parameters from CSV" %}: <input type="file" accept=".csv" name="paramfile"></label>
-                        <input type="submit" value="{% trans 'Import' %}" />
-                    </form>
-                    {% if not monitoring.has_questions %}
-                        <a id="addqa" class="hidden" href="{% url 'exmo2010:add_questionnaire' monitoring.pk %}">{% trans 'Edit questionnaire' %}</a>
-                        <br />
-                    {% else %}
-                        <div style="background-color: #ffffcc;">{% trans 'Questionnaire is already created. To delete it turn off "Add questionnaire" checkbox and save changes' %}.</div>
-                    {% endif %}
-                {% endif %}
-
-                {% if form.errors %}
-                    <div class="warning">
-                        <ul>
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <li>{{ field.label }} {{ error|lower }}</li>
-                                {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-
-                <form id="main_form" class="monitoring-form" action="" method="post">{% csrf_token %}
-                    <div class="table">
-                        <div class="table-row">
-                            <div class="table-cell-L">
-                                <h3>{% trans 'Monitoring cycle' %}</h3>
-                            </div>
+                <div class="monitoring-form-block">
+                    {% if monitoring %}
+                        <div>
+                            <a class="likeabutton green" href="{% url 'exmo2010:monitoring_copy' monitoring.pk %}">{% trans 'Copy' %}</a>
+                            <a class="likeabutton red" href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}">{% trans 'Delete' %}</a>
                         </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.trans_fields.name.label }}<span class="required">*</span>
-                            </div>
-                            <div class="table-cell-L name-cell">{{ form.trans_fields.name }}</div>
-                        </div>
-
-                        {% if form.status %}
-                            <div class="table-row">
-                                <div class="table-cell-R">{{ form.status.label }}</div>
-                                <div class="table-cell-L">{{ form.status }}</div>
-                            </div>
+                        <form action="{% url 'exmo2010:monitoring_organization_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                            <a href="{% url 'exmo2010:monitoring_organization_export' monitoring.pk %}">{% trans 'Export organizations' %}</a> /
+                            <label>{% trans "Import organizations from CSV" %}: <input type="file" accept=".csv" name="orgfile" value="{% trans 'Save' %}"></label>
+                            <input type="submit" value="{% trans 'Import' %}" />
+                        </form>
+                        <form action="{% url 'exmo2010:monitoring_parameter_import' monitoring.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+                            <a href="{% url 'exmo2010:monitoring_parameter_export' monitoring.pk %}">{% trans 'Export parameters' %}</a> /
+                            <label>{% trans "Import parameters from CSV" %}: <input type="file" accept=".csv" name="paramfile"></label>
+                            <input type="submit" value="{% trans 'Import' %}" />
+                        </form>
+                        {% if not monitoring.has_questions %}
+                            <a id="addqa" class="hidden" href="{% url 'exmo2010:add_questionnaire' monitoring.pk %}">{% trans 'Edit questionnaire' %}</a>
+                            <br />
+                        {% else %}
+                            <div style="background-color: #ffffcc;">{% trans 'Questionnaire is already created. To delete it turn off "Add questionnaire" checkbox and save changes' %}.</div>
                         {% endif %}
+                    {% endif %}
 
-                        <div class="table-row">
-                            <div class="table-cell-R">{{ form.openness_expression.label }}</div>
-                            <div class="table-cell-L">{{ form.openness_expression }}</div>
+                    {% if form.errors %}
+                        <div class="warning">
+                            <ul>
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <li>{{ field.label }} {{ error|lower }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
                         </div>
+                    {% endif %}
 
-                        <div class="table-row">
-                            <div class="table-cell-R">{{ form.map_link.label }}</div>
-                            <div class="table-cell-L">{{ form.map_link }}</div>
-                        </div>
+                    <form id="main_form" class="monitoring-form" action="" method="post">{% csrf_token %}
+                        <div class="table">
+                            <div class="table-row">
+                                <h3>{% trans 'Monitoring cycle settings' %}</h3>
+                            </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R"></div>
-                            <div class="table-cell-L">{{ form.no_interact }} {{ form.no_interact.label_tag }}</div>
-                        </div>
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.trans_fields.name.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L name-cell">{{ form.trans_fields.name }}</div>
+                            </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R"></div>
-                            <div class="table-cell-L">{{ form.hidden }} {{ form.hidden.label_tag }}</div>
-                        </div>
+                            {% if form.status %}
+                                <div class="table-row">
+                                    <div class="table-cell-R">{{ form.status.label }}</div>
+                                    <div class="table-cell-L">{{ form.status }}</div>
+                                </div>
+                            {% endif %}
 
-                        <div class="table-row">
-                            <div class="table-cell-R"></div>
-                            <div class="table-cell-L">{{ form.add_questionnaire }} {{ form.add_questionnaire.label_tag }}</div>
-                        </div>
+                            <div class="table-row">
+                                <div class="table-cell-R">{{ form.openness_expression.label }}</div>
+                                <div class="table-cell-L">{{ form.openness_expression }}</div>
+                            </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-L">
+                            <div class="table-row">
+                                <div class="table-cell-R">{{ form.map_link.label }}</div>
+                                <div class="table-cell-L">{{ form.map_link }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.no_interact }} {{ form.no_interact.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.hidden }} {{ form.hidden.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L">{{ form.add_questionnaire }} {{ form.add_questionnaire.label_tag }}</div>
+                            </div>
+
+                            <div class="table-row">
                                 <h3>{% trans 'Calendar' %}</h3>
                             </div>
-                        </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.rate_date.label }}<span class="required">*</span>
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.rate_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.rate_date|attr:"maxlength:10" }}</div>
                             </div>
-                            <div class="table-cell-L datepicker">{{ form.rate_date|attr:"maxlength:10" }}</div>
-                        </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.interact_date.label }}<span class="required">*</span>
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.interact_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.interact_date|attr:"maxlength:10" }}</div>
                             </div>
-                            <div class="table-cell-L datepicker">{{ form.interact_date|attr:"maxlength:10" }}</div>
-                        </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.finishing_date.label }}<span class="required">*</span>
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.finishing_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.finishing_date|attr:"maxlength:10" }}</div>
                             </div>
-                            <div class="table-cell-L datepicker">{{ form.finishing_date|attr:"maxlength:10" }}</div>
-                        </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.publish_date.label }}<span class="required">*</span>
+                            <div class="table-row">
+                                <div class="table-cell-R">
+                                    {{ form.publish_date.label }}<span class="required">*</span>
+                                </div>
+                                <div class="table-cell-L datepicker">{{ form.publish_date|attr:"maxlength:10" }}</div>
                             </div>
-                            <div class="table-cell-L datepicker">{{ form.publish_date|attr:"maxlength:10" }}</div>
-                        </div>
 
 
-                        <div class="table-row">
-                            <div class="table-cell-R"></div>
-                            <div class="table-cell-L submit-cell">
-                                <input type="submit" value="{% trans 'Send' %}" />
+                            <div class="table-row">
+                                <div class="table-cell-R"></div>
+                                <div class="table-cell-L submit-cell">
+                                    {% if monitoring %}
+                                        <input type="submit" value="{% trans 'Change' %}" />
+                                    {% else %}
+                                        <input type="submit" value="{% trans 'Create' %}" />
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

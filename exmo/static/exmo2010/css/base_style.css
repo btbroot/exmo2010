@@ -679,6 +679,17 @@ input[type=submit][disabled] {
     line-height: 24px;
 }
 
+.likeabutton.green,
+.likeabutton.green:hover {
+    background-color: #ecffec;
+}
+
+.likeabutton.red,
+.likeabutton.red:hover {
+    background-color: #ffecec;
+    float: right;
+}
+
 
 /* MESSAGES & ERRORS */
 

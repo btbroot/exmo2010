@@ -161,7 +161,7 @@ def task_import(request, task_pk):
         errors.append(_("Import error: %s." % e))
     title = _('Import CSV for task %s') % task
 
-    return TemplateResponse(request, 'exmo2010/csv_import_log.html', {
+    return TemplateResponse(request, 'exmo2010/csv_import_log_tasks.html', {
         'title': title,
         'errors': errors,
         'row_count': '{}/{}'.format(rowOKCount, row_num),
