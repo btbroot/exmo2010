@@ -686,8 +686,8 @@ input[type=submit][disabled] {
 
 .likeabutton.red,
 .likeabutton.red:hover {
-    background-color: #ffecec;
     float: right;
+    background-color: #ffecec;
 }
 
 
@@ -763,7 +763,7 @@ input[type=submit][disabled] {
 
 .success,
 .warning {
-    margin: 0px 0px 10px;
+    margin: 0 0 10px;
     padding: 10px;
     color: #000000;
 }
@@ -793,7 +793,7 @@ input[type=submit][disabled] {
 /* BUBBLE BLOCK */
 
 .bubble {
-    margin: 10px 0px 20px;
+    margin: 10px 0 20px;
     padding: 10px;
     border: #fecb80 1px solid;
     background-color: #feeacb;
@@ -896,10 +896,10 @@ i.add {
 }
 
 i.delete {
-    background: url("../img/delete.png") no-repeat;
-    background-size: 10px 10px;
     width: 10px;
     height: 10px;
+    background: url("../img/delete.png") no-repeat;
+    background-size: 10px 10px;
     /* AlphaImageLoader is background-size property for IE8 and below */
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/delete.png', sizingMethod=scale)";
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/delete.png', sizingMethod=scale);
@@ -1042,6 +1042,10 @@ input.name_input[type="text"] {
     background-color: white;
 }
 
+#columns_settings_window h2 {
+    margin-bottom: 10px;
+}
+
 #columns_settings_window input[type="checkbox"] {
     margin: 0;
     height: 15px;
@@ -1075,8 +1079,10 @@ input.name_input[type="text"] {
 }
 
 .task-status .ajaxloader {
-    height: 11px;
     width: 11px;
+    height: 11px;
 }
 
-.breakword {word-break: break-all;}
+.breakword {
+    word-break: break-all;
+}

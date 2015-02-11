@@ -19,7 +19,24 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 {% endcomment %}
-{% load i18n %}
+{% load i18n static %}
+
+<script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('mousewheel', '.simplemodal-overlay, .simplemodal-data', function() { return false; });
+
+        $(".modal-open").click(function(e) {
+            $("#columns_settings_window").modal({overlayClose: true});
+            return false;
+        });
+
+        $(".modal a.close_window").click(function(e) {
+            $.modal.close();
+            return false;
+        });
+    })
+</script>
 
 <div id="columns_settings_window" class="modal hidden">
     <h2>{% trans "Table settings" %}</h2>

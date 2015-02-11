@@ -30,7 +30,6 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
-from django.http import Http404
 from django.test import TestCase
 from django.utils.formats import get_format
 from django.utils.translation import get_language
@@ -116,7 +115,7 @@ class MonitoringsAccessTestCase(OptimizedTestCase):
 
     @parameterized.expand(zip(['admin', 'expertA', 'expertB']))
     def test_allow_get(self, username, *args):
-        # WHEN admin or any expert post get monitorings page
+        # WHEN admin or any expert get monitorings page
         request = MagicMock(user=self.users[username], method='GET')
         response = monitorings_list(request)
         # THEN response status_code should be 200 (OK)
@@ -124,11 +123,37 @@ class MonitoringsAccessTestCase(OptimizedTestCase):
 
     @parameterized.expand(zip(['unpublished', 'published']))
     def test_allow_get_with_params(self, param, *args):
-        # WHEN admin or any expert post get monitorings page
+        # WHEN admin or any expert get monitorings page
         request = MagicMock(user=self.users['expertA'], method='GET')
         response = monitorings_list(request, param)
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
+
+    @parameterized.expand(zip(['orguser', 'translator', 'observer', 'user']))
+    def test_forbid_post(self, username, *args):
+        # WHEN authenticated user changes columns visibility settings on monitorings page
+        data = {'mon_evaluation_start': True,
+                'mon_interact_start': False,
+                'mon_interact_end': True,
+                'mon_publish_date': False,
+                'columns_picker_submit': True}
+        request = Mock(user=self.users[username], method='POST', POST=data)
+        # THEN response should raise PermissionDenied exception
+        self.assertRaises(PermissionDenied, monitorings_list, request)
+
+    @parameterized.expand(zip(['admin', 'expertA', 'expertB']))
+    def test_allow_post(self, username, *args):
+        # WHEN admin or any expert changes columns visibility settings on monitorings page
+        data = {'mon_evaluation_start': True,
+                'mon_interact_start': False,
+                'mon_interact_end': True,
+                'mon_publish_date': False,
+                'columns_picker_submit': True}
+        request = MagicMock(user=self.users[username], method='POST', POST=data)
+        request.get_full_path.return_value = self.url
+        response = monitorings_list(request)
+        # THEN response status_code should be 302 (redirect)
+        self.assertEqual(response.status_code, 302)
 
 
 class MonitoringDeleteTestCase(TestCase):

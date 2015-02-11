@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -44,8 +44,13 @@ class ColumnsPickerModel(Model):
 
     TASKSCORES_COLUMNS_FIELDS = 'st_criteria st_score st_difference st_weight st_type'.split()
 
-    def task_scores_column_settings(self):
-        return {col: getattr(self, col) for col in self.TASKSCORES_COLUMNS_FIELDS}
+    # Monitoring dates table columns
+    mon_evaluation_start = BooleanField(verbose_name=_("Eval. start"), default=True)
+    mon_interact_start = BooleanField(verbose_name=_("Interact start"), default=True)
+    mon_interact_end = BooleanField(verbose_name=_("Interact end"), default=True)
+    mon_publish_date = BooleanField(verbose_name=_("Publish date"), default=True)
+
+    MONITORINGS_INDEX_COLUMNS_FIELDS = 'mon_evaluation_start mon_interact_start mon_interact_end mon_publish_date'.split()
 
 
 class ColumnsPickerForm(forms.ModelForm):
@@ -92,8 +97,8 @@ class ColumnsPickerForm(forms.ModelForm):
 
 def rating_columns_form(request):
     from .models import UserProfile
-    fields = 'rt_initial_openness rt_final_openness rt_difference rt_representatives rt_comment_quantity'
-    RatingColumnsForm = modelform_factory(UserProfile, form=ColumnsPickerForm, fields=fields.split())
+    RatingColumnsForm = modelform_factory(UserProfile, form=ColumnsPickerForm,
+                                          fields=UserProfile.RATING_COLUMNS_FIELDS)
 
     if request.user.is_active:
         if request.method == 'POST' and 'columns_picker_submit' in request.POST:
@@ -121,7 +126,8 @@ def rating_columns_form(request):
 
 def task_scores_columns_form(request):
     from .models import UserProfile
-    ScoresColumnsForm = modelform_factory(UserProfile, form=ColumnsPickerForm, fields=UserProfile.TASKSCORES_COLUMNS_FIELDS)
+    ScoresColumnsForm = modelform_factory(UserProfile, form=ColumnsPickerForm,
+                                          fields=UserProfile.TASKSCORES_COLUMNS_FIELDS)
 
     if request.user.is_expert:
         if request.method == 'POST' and 'columns_picker_submit' in request.POST:
@@ -140,3 +146,16 @@ def task_scores_columns_form(request):
             'st_type': True
         }
         return ScoresColumnsForm(data)
+
+
+def monitorings_index_columns_form(request):
+    from .models import UserProfile
+    MonitoringsIndexColumnsForm = modelform_factory(UserProfile, form=ColumnsPickerForm,
+                                                    fields=UserProfile.MONITORINGS_INDEX_COLUMNS_FIELDS)
+
+    if request.method == 'POST' and 'columns_picker_submit' in request.POST:
+        data = request.POST
+    else:
+        data = None
+
+    return MonitoringsIndexColumnsForm(data, instance=request.user.profile)

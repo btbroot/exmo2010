@@ -19,7 +19,7 @@
 
 /* General style */
 
-h2 {
+.content.cell h2 {
     display: inline;
     margin-right: 12px;
     vertical-align: top;

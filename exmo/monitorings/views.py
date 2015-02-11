@@ -55,7 +55,7 @@ from core.helpers import table
 from core.utils import UnicodeReader, UnicodeWriter
 from core.views import login_required_on_deny, LoginRequiredMixin
 from custom_comments.utils import comment_report
-from exmo2010.columns_picker import rating_columns_form
+from exmo2010.columns_picker import monitorings_index_columns_form, rating_columns_form
 from exmo2010.forms import FilteredSelectMultiple
 from exmo2010.models import (Claim, Clarification, LicenseTextFragments, Monitoring, ObserversGroup, Organization,
                              Parameter, Questionnaire, Score, Task, UserProfile, generate_inv_code)
@@ -112,11 +112,17 @@ def monitorings_list(request, monitoring_status='unpublished'):
     if not request.user.userprofile.is_expert:
         raise PermissionDenied
 
+    # Process monitorings_index_columns_form data to know what columns to show in table
+    columns_form = monitorings_index_columns_form(request)
+    if columns_form.post_ok(request):
+        # After form submission redirect to the same page.
+        return HttpResponseRedirect(request.path)
+
     monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
 
     template_name = 'home/monitorings_unpublished.html'
     queryform = MonitoringsQueryForm(request.GET)
-    context = {'queryform': queryform}
+    context = {'queryform': queryform, 'columns_form': columns_form}
 
     if monitoring_status == 'unpublished':
         monitorings = monitorings.exclude(status=MONITORING_PUBLISHED).order_by('-status', '-publish_date')

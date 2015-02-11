@@ -2,7 +2,7 @@
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-// Copyright 2014 IRSI LTD
+// Copyright 2014-2015 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,6 @@ $(document).ready(function() {
 
     $(".relevant-params-table").tablesorter({sortList: ordering});
     $(".nonrelevant-params-table").tablesorter({sortList: [[1, 0]]});
-
 
     /* Rating place */
 
@@ -57,20 +56,4 @@ $(document).ready(function() {
             this.submit();
         });
     }
-
-    /* Modal window */
-
-    $(document).on('mousewheel', '.simplemodal-overlay, .simplemodal-data', function() {
-        return false;
-    });
-
-    $(".modal-open").click(function(e) {
-        $("#columns_settings_window").modal({overlayClose: true});
-        return false;
-    });
-
-    $(".modal a.close_window").click(function(e) {
-        $.modal.close();
-        return false;
-    });
 });

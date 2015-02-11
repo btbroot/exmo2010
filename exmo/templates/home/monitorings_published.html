@@ -26,12 +26,16 @@
 {% endblock %}
 
 {% block extra_script %}
-{#    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>#}
     <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             /* Tables sorting */
-            var ordering = ($('th').hasClass('edition')) ? [[5, 1]] : [[4, 1]]; /* for A and B experts */
+            var ordering = [[]];
+            var colCount = 0;
+            $('.published-monitorings-table th').each(function () {
+                if ($(this).hasClass('sort')) { ordering = [[colCount, 1]]; }
+                colCount++;
+            });
 
             $(".published-monitorings-table").tablesorter({
                 sortList: ordering,
@@ -87,14 +91,22 @@
                                 <tr>
                                     <th><span>{% trans 'Monitoring cycle' %}</span><span class="arrow"></span></th>
                                     {% if request.user.is_expertA %}
-                                        <th class="icons-column edition" data-sorter="false"></th>
+                                        <th class="icons-column" data-sorter="false"></th>
                                     {% endif %}
-                                    <th class="date-cell"><span>{% trans 'Eval. start' %}</span><span class="arrow"></span></th>
-                                    <th class="date-cell"><span>{% trans 'Interact start' %}</span><span class="arrow"></span></th>
-                                    <th class="date-cell"><span>{% trans 'Interact end' %}</span><span class="arrow"></span></th>
-                                    <th class="date-cell"><span>{% trans 'Publish date' context 'short column title' %}</span><span class="arrow"></span></th>
+                                    {% if columns_form.mon_evaluation_start.value %}
+                                        <th class="date-cell"><span>{% trans 'Eval. start' %}</span><span class="arrow"></span></th>
+                                    {% endif %}
+                                    {% if columns_form.mon_interact_start.value %}
+                                        <th class="date-cell"><span>{% trans 'Interact start' %}</span><span class="arrow"></span></th>
+                                    {% endif %}
+                                    {% if columns_form.mon_interact_end.value %}
+                                        <th class="date-cell"><span>{% trans 'Interact end' %}</span><span class="arrow"></span></th>
+                                    {% endif %}
+                                    {% if columns_form.mon_publish_date.value %}
+                                        <th class="date-cell sort"><span>{% trans 'Publish date' context 'short column title' %}</span><span class="arrow"></span></th>
+                                    {% endif %}
                                     <th class="icons-column settings" colspan="3" data-sorter="false">
-                                          {#<a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>#}
+                                        <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
                                     </th>
                                 </tr>
                             </thead>
@@ -115,18 +127,26 @@
                                                     </a>
                                                 </td>
                                             {% endif %}
-                                            <td class="date-cell" data-sort-value="{{ mon.rate_date|date:"d/m/Y" }}">
-                                                {{ mon.rate_date|date:"DATE_FORMAT" }}
-                                            </td>
-                                            <td class="date-cell" data-sort-value="{{ mon.interact_date|date:"d/m/Y" }}">
-                                                {{ mon.interact_date|date:"DATE_FORMAT" }}
-                                            </td>
-                                            <td class="date-cell" data-sort-value="{{ mon.finishing_date|date:"d/m/Y" }}">
-                                                {{ mon.finishing_date|date:"DATE_FORMAT" }}
-                                            </td>
-                                            <td class="date-cell" data-sort-value="{{ mon.publish_date|date:"d/m/Y" }}">
-                                                {{ mon.publish_date|date:"DATE_FORMAT" }}
-                                            </td>
+                                            {% if columns_form.mon_evaluation_start.value %}
+                                                <td class="date-cell" data-sort-value="{{ mon.rate_date|date:"d/m/Y" }}">
+                                                    {{ mon.rate_date|date:"DATE_FORMAT" }}
+                                                </td>
+                                            {% endif %}
+                                            {% if columns_form.mon_interact_start.value %}
+                                                <td class="date-cell" data-sort-value="{{ mon.interact_date|date:"d/m/Y" }}">
+                                                    {{ mon.interact_date|date:"DATE_FORMAT" }}
+                                                </td>
+                                            {% endif %}
+                                            {% if columns_form.mon_interact_end.value %}
+                                                <td class="date-cell" data-sort-value="{{ mon.finishing_date|date:"d/m/Y" }}">
+                                                    {{ mon.finishing_date|date:"DATE_FORMAT" }}
+                                                </td>
+                                            {% endif %}
+                                            {% if columns_form.mon_publish_date.value %}
+                                                <td class="date-cell" data-sort-value="{{ mon.publish_date|date:"d/m/Y" }}">
+                                                    {{ mon.publish_date|date:"DATE_FORMAT" }}
+                                                </td>
+                                            {% endif %}
                                             <td class="icons-column">
                                                 {% if mon.no_interact %}
                                                     <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
@@ -152,6 +172,9 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Modal window -->
+            {% include "_columns_picker_modal_window.html" with form=columns_form %}
         </div>
     </div>
 {%endblock%}

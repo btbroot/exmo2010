@@ -2,7 +2,7 @@
 // Copyright 2010, 2011, 2013 Al Nikolov
 // Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 // Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-// Copyright 2014 IRSI LTD
+// Copyright 2014-2015 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -36,22 +36,6 @@ $(document).ready(function() {
         $(this).replaceWith(v[i]);
     });
 
-    /* Modal */
-
-    $(document).on('mousewheel', '.simplemodal-overlay, .simplemodal-data', function() {
-        return false;
-    });
-
-    $(".modal-open").click(function() {
-        $("#columns_settings_window").modal({overlayClose: true});
-        return false;
-    });
-
-    $(".modal a.close_window").click(function() {
-        $.modal.close();
-        return false;
-    });
-
     /* Active tabs */
 
     var rating_type = $('div.tabs').data('rating_type');
@@ -82,7 +66,7 @@ $(document).ready(function() {
     $('#user-defined-parameters>p a').click(function( e ) {
         parametersToggle();
         e.preventDefault();
-    })
+    });
 
     /* User defined mode, submit button ability */
 
@@ -90,7 +74,7 @@ $(document).ready(function() {
         $checkboxes = $('#pselect_form > div input[type="checkbox"]');
 
     function isAnyChecked() {
-        var any_checked = false
+        var any_checked = false;
         $checkboxes.each(function() {
             var checked = $(this).attr('checked');
             if (checked)

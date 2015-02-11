@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,11 +24,13 @@ from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
 from exmo2010.models import Task, Organization
-from exmo2010.models import Monitoring, MONITORING_PUBLISHED
+from exmo2010.models import Monitoring, INT, PUB
 
 
 @attr('selenium')
 class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
+    # exmo2010:monitoring_rating
+
     # Check if initial openness column is display
     modal_window = '.modal-open'
     init_openness = '.init-openness'
@@ -38,7 +40,7 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
         expertB.profile.is_expertB = True
         # AND published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring = mommy.make(Monitoring, status=PUB)
         # AND organization at this monitoring
         self.organization = mommy.make(Organization, monitoring=self.monitoring)
         # AND task for expert B
@@ -81,6 +83,55 @@ class OpennessInitialColumnTestCase(BaseSeleniumTestCase):
         self.find('#columns_settings_window input[type="submit"]').click()
         # THEN initial openness column should be displayed
         self.assertVisible(self.init_openness)
+
+
+@attr('selenium')
+class MonitoringsIndexColumnsTestCase(BaseSeleniumTestCase):
+    # exmo2010:monitorings_list
+
+    # Check if monitorings index columns are display
+
+    def setUp(self):
+        # GIVEN expert B account
+        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        expertB.profile.is_expertB = True
+        # AND interaction monitoring
+        self.monitoring = mommy.make(Monitoring, status=INT)
+        # AND organization in this monitoring
+        self.organization = mommy.make(Organization, monitoring=self.monitoring)
+        # AND task for expert B
+        self.task = mommy.make(
+            Task,
+            organization=self.organization,
+            user=expertB,
+            status=Task.TASK_APPROVED,
+        )
+
+        self.url = reverse('exmo2010:monitorings_list')
+
+    def test_dates_columns_visibility(self):
+        # WHEN I am logged in as expert B
+        self.login('expertB', 'password')
+        # AND get monitorings page
+        self.get(self.url)
+        # THEN 4 monitoring dates columns should be visible
+        self.assertEqual(len(self.findall('th.date-cell')), 4)
+
+        # WHEN I click to modal window
+        self.find('.modal-open').click()
+        # THEN modal window should become visible
+        self.assertVisible('#columns_settings_window')
+
+        # WHEN I uncheck all checkboxes
+        self.find('#id_mon_evaluation_start').click()
+        self.find('#id_mon_interact_start').click()
+        self.find('#id_mon_interact_end').click()
+        self.find('#id_mon_publish_date').click()
+        # AND submit my changes
+        self.find('#columns_settings_window input[type="submit"]').click()
+        self.assertHidden('#columns_settings_window')
+        # THEN monitoring dates columns should be hidden
+        self.assertEqual(len(self.findall('th.date-cell')), 0)
 
 
 @attr('selenium')
