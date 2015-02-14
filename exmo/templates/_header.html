@@ -21,53 +21,89 @@
 {% endcomment %}
 {% load i18n %}
 
-<ul id="language_menu">
-    {% for language_code, language_name in LANGUAGES %}
-        <li>
-            <form name="switch_lang" action="{% url 'exmo2010:change_language' %}" method="POST">{% csrf_token %}
-                <input name="next" type="hidden" value="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}" />
-                <input name="language" type="hidden" value="{{ language_code }}" />
-                <a href="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}">{{ language_name }}</a>
-            </form>
-        </li>
-    {% endfor %}
-</ul>
+<div class="top-header-menu">
+    <ul id="language_menu">
+        {% for language_code, language_name in LANGUAGES %}
+            <li>
+                <form name="switch_lang" action="{% url 'exmo2010:change_language' %}" method="POST">{% csrf_token %}
+                    <input name="next" type="hidden" value="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}" />
+                    <input name="language" type="hidden" value="{{ language_code }}" />
+                    <a href="/{{ language_code }}{{ request.path|urlencode|slice:"3:" }}">{{ language_name }}</a>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
 
-<ul id="account_menu">
-    {% if request.user.is_authenticated %}
-        <li>{{ request.user.userprofile.legal_name }}</li>
-        <li class="pref-icon"><a href="{% url 'exmo2010:settings' %}">{% trans 'Preferences' %}</a></li>
-        <li class="logout-icon"><a href="{% url 'exmo2010:auth_logout' %}">{% trans 'Log out' %}</a></li>
-    {% else %}
-        <li><a href="{% url 'exmo2010:registration_form' %}">{% trans 'Registration' %}</a></li>
-        <li><a href="{% url 'exmo2010:auth_login' %}">{% trans 'Login' %}</a></li>
-    {% endif %}
-</ul>
+    <ul id="account_menu">
+        {% if request.user.is_authenticated %}
+            <li>{{ request.user.userprofile.legal_name }}</li>
+            <li class="pref-icon"><a href="{% url 'exmo2010:settings' %}">{% trans 'Preferences' %}</a></li>
+            <li class="logout-icon"><a href="{% url 'exmo2010:auth_logout' %}">{% trans 'Log out' %}</a></li>
+        {% else %}
+            <li><a href="{% url 'exmo2010:registration_form' %}">{% trans 'Registration' %}</a></li>
+            <li><a href="{% url 'exmo2010:auth_login' %}">{% trans 'Login' %}</a></li>
+        {% endif %}
+    </ul>
+</div>
 
-<ul id="navigation_menu">
-    <li class="brand">
-        <a class="logo_{{ LANGUAGE_CODE }}" href="{% url 'exmo2010:index' %}"></a>
-    </li>
-    <li class="menu-item">
-        <a href="{% url 'exmo2010:index' %}">{% trans 'Main' %}</a>
-    </li>
-    {% if request.user.is_organization %}
-        <li class="menu-item">
-            <a href="{% url 'exmo2010:certificate_order' %}">{% trans 'Order certificate' %}</a>
+<div class="header-menu">
+    <ul id="navigation_menu">
+        <li class="brand">
+            <a class="logo_{{ LANGUAGE_CODE }}" href="{% url 'exmo2010:index' %}"></a>
         </li>
-    {% endif %}
-    <li class="menu-item">
-        <a href="{% url 'exmo2010:ratings' %}">{% trans 'Ratings' %}</a>
-    </li>
-    <li class="menu-item">
-        <a href="{% url 'exmo2010:help' %}">{% trans 'Help' %}</a>
-    </li>
-    {% if request.user.is_superuser or request.user.is_staff %}
         <li class="menu-item">
-            <a href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
+            <a href="{% url 'exmo2010:index' %}">{% trans 'Main' %}</a>
         </li>
-    {% endif %}
-    <li class="portal">
-        <a href="{{ exmo2010.livesettings.link_to_portal }}" target="_blank">{% trans 'To portal' %}</a>
-    </li>
-</ul>
+        {% if request.user.is_organization %}
+            <li class="menu-item">
+                <a href="{% url 'exmo2010:certificate_order' %}">{% trans 'Order certificate' %}</a>
+            </li>
+        {% endif %}
+        <li class="menu-item">
+            <a href="{% url 'exmo2010:ratings' %}">{% trans 'Ratings' %}</a>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'exmo2010:help' %}">{% trans 'Help' %}</a>
+        </li>
+        {% if request.user.is_superuser or request.user.is_staff %}
+            <li class="menu-item">
+                <a href="{% url 'admin:index' %}">{% trans 'Admin' %}</a>
+            </li>
+        {% endif %}
+    </ul>
+
+    <ul id="notification_menu">
+        {% if request.user.is_expertB %}
+            <li>
+                <a href="{% url 'exmo2010:comments_index' %}">
+                    <i class="header-icon comment">
+                        {% if request.user.profile.get_not_answered_comments.count %}
+                            <span class="notification">{{ request.user.profile.get_not_answered_comments.count }}</span>
+                        {% endif %}
+                    </i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'exmo2010:clarifications_index' %}">
+                    <i class="header-icon clarification">
+                        {% if request.user.profile.get_opened_clarifications.count %}
+                            <span class="notification">{{ request.user.profile.get_opened_clarifications.count }}</span>
+                        {% endif %}
+                    </i>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'exmo2010:claims_index' %}">
+                    <i class="header-icon claim">
+                        {% if request.user.profile.get_opened_claims.count %}
+                            <span class="notification">{{ request.user.profile.get_opened_claims.count }}</span>
+                        {% endif %}
+                    </i>
+                </a>
+            </li>
+        {% endif %}
+        <li class="portal">
+            <a href="{{ exmo2010.livesettings.link_to_portal }}" target="_blank">{% trans 'To portal' %}</a>
+        </li>
+    </ul>
+</div>

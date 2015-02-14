@@ -39,17 +39,17 @@
             </li>
             <li data-urls="comments_index">
                 <a href="{% url 'exmo2010:comments_index' %}">
-                    {% trans "Comments" %}: {{request.user.profile.get_not_answered_comments.count}}
+                    {% trans "Comments" %}: {{ request.user.profile.get_not_answered_comments.count }}
                 </a>
             </li>
             <li data-urls="clarifications_index">
                 <a href="{% url 'exmo2010:clarifications_index' %}">
-                    {% trans "Clarifications" %}: {{request.user.profile.get_opened_clarifications.count}}
+                    {% trans "Clarifications" %}: {{ request.user.profile.get_opened_clarifications.count }}
                 </a>
             </li>
             <li data-urls="claims_index">
                 <a href="{% url 'exmo2010:claims_index' %}">
-                    {% trans "Claims" %}: {{request.user.profile.get_opened_claims.count}}
+                    {% trans "Claims" %}: {{ request.user.profile.get_opened_claims.count }}
                 </a>
             </li>
         {% endif %}

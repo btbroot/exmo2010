@@ -250,6 +250,7 @@ p.help {
 
 div.breadcrumbs {
     display: block;
+    clear: both;
     margin: 0;
     padding-top: 8px;
     padding-bottom: 0;
@@ -294,6 +295,15 @@ div.breadcrumbs a {
 
 /* HEADER */
 
+/* top header menu */
+
+.top-header-menu {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    height: 30px;
+}
+
 /* language menu & account menu */
 
 #language_menu,
@@ -331,12 +341,11 @@ div.breadcrumbs a {
     background: url(../img/exit.png) no-repeat 0 7px;
 }
 
-/* navigation menu */
+/* header menu */
 
-#navigation_menu {
+.header-menu {
     clear: both;
-    margin: 0;
-    padding: 0;
+    height: 40px;
     border-top: 1px solid #356a95;
     border-bottom: 1px solid #356a95;
     background: #30659e none;
@@ -344,23 +353,57 @@ div.breadcrumbs a {
     line-height: 40px;
 }
 
-#navigation_menu li {
-    display: inline-block;
-    padding: 0 10px;
-    list-style-type: none;
+/* navigation menu & notification menu */
+
+#navigation_menu,
+#notification_menu {
+    margin: 0;
+    padding: 0;
 }
 
-#navigation_menu li.portal {
+#navigation_menu {
+    float: left;
+}
+
+#notification_menu {
     float: right;
+}
+
+#navigation_menu li,
+#notification_menu li {
+    display: inline-block;
+    height: 40px;
+    list-style-type: none;
+    line-height: 40px;
+}
+
+#navigation_menu li {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 0 10px;
+}
+
+#notification_menu li {
+    padding: 0 5px;
+}
+
+#notification_menu li.portal {
     margin-top: -1px;
-    padding: 0;
+    margin-left: 10px;
+    padding: 0 20px;
     border-top: 1px solid #829aca;
     border-bottom: 1px solid #829aca;
     background-color: #96aede;
     font-weight: bold;
 }
 
-#navigation_menu li a {
+#notification_menu li.portal a:hover {
+    color: #005c9c;
+}
+
+#navigation_menu li a,
+#notification_menu li a {
     color: #ffffff;
     font-size: 14px;
 }
@@ -378,6 +421,19 @@ div.breadcrumbs a {
     margin: 0 20px;
     padding: 0;
     width: 140px;
+}
+
+.notification {
+    position: absolute;
+    bottom: 18px;
+    left: 18px;
+    padding: 0 0.375em;
+    height: 1.3em;
+    border: 1px solid white;
+    border-radius: 1em;
+    background-color: #e91823;
+    font: normal 11px Arial;
+    line-height: 1.4em;
 }
 
 /* logo (en) */
@@ -398,14 +454,6 @@ div.breadcrumbs a {
 
 #navigation_menu li.brand a.logo_ru:hover {
     background-position: 0 -35px;
-}
-
-#navigation_menu li.portal a {
-    padding: 12px 20px;
-}
-
-#navigation_menu li.portal a:hover {
-    color: #005c9c;
 }
 
 /* errors navigation menu */
@@ -944,6 +992,48 @@ i.upload {
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/upload.png', sizingMethod=scale)";
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/upload.png', sizingMethod=scale);
 }
+
+/* Header Icons */
+
+i.header-icon {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+}
+
+i.claim {
+    background: url("../img/claim.png") no-repeat;
+    background-size: 32px 64px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/claim.png', sizingMethod=scale)";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/claim.png', sizingMethod=scale);
+}
+
+
+i.clarification {
+    background: url("../img/clarification.png") no-repeat;
+    background-size: 32px 64px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/clarification.png', sizingMethod=scale)";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/clarification.png', sizingMethod=scale);
+}
+
+i.comment {
+    background: url("../img/comment.png") no-repeat;
+    background-size: 32px 64px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/comment.png', sizingMethod=scale)";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/comment.png', sizingMethod=scale);
+}
+
+i.claim:hover,
+i.clarification:hover,
+i.comment:hover {
+    background-position-y: -32px;
+}
+
 
 /* Ajax */
 
