@@ -86,7 +86,7 @@
                                     <th class="date-cell">{% trans 'Interact end' %}</th>
                                 {% endif %}
                                 {% if columns_form.mon_publish_date.value %}
-                                    <th class="date-cell">{% trans 'Publish date' context 'short column title' %}<span class="arrow">↓</span></th>
+                                    <th class="date-cell">{% trans 'Publish date' context 'short column title' %}<span class="arrow">↑</span></th>
                                 {% endif %}
                                 <th class="icons-column settings" colspan="3">
                                     <a href="#" class="modal-open"><img src="{% static 'exmo2010/img/settings.png' %}" /></a>
@@ -147,17 +147,17 @@
                                             {% endif %}
                                             <td class="icons-column">
                                                 {% if mon.no_interact %}
-                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                    <img src="{% static 'exmo2010/img/no_interact.png' %}" />
                                                 {% endif %}
                                             </td>
                                             <td class="icons-column">
                                                 {% if mon.hidden %}
-                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                    <img src="{% static 'exmo2010/img/hidden.png' %}" />
                                                 {% endif %}
                                             </td>
                                             <td class="icons-column">
                                                 {% if mon.has_questionnaire %}
-                                                    <img src="{% static 'exmo2010/img/red_spot_5x5.svg' %}" />
+                                                    <img src="{% static 'exmo2010/img/questionnaire.png' %}" />
                                                 {% endif %}
                                             </td>
                                         </tr>

@@ -115,7 +115,7 @@ input[value="current_scores"] {
     vertical-align: middle;
 }
 
-/* Inprogress and finished monitorings pages */
+/* Unpublished and published monitorings pages */
 
 .unpublished-monitorings-block,
 .published-monitorings-block {
@@ -133,6 +133,10 @@ input[value="current_scores"] {
 
 thead th {
     padding-top: 15px;
+}
+
+th.settings a {
+    float: right;
 }
 
 .date-cell {

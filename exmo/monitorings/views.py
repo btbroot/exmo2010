@@ -125,7 +125,7 @@ def monitorings_list(request, monitoring_status='unpublished'):
     context = {'queryform': queryform, 'columns_form': columns_form}
 
     if monitoring_status == 'unpublished':
-        monitorings = monitorings.exclude(status=MONITORING_PUBLISHED).order_by('-status', '-publish_date')
+        monitorings = monitorings.exclude(status=MONITORING_PUBLISHED).order_by('-status', 'publish_date')
         db_statuses = monitorings.order_by('status').values_list('status', flat=True).distinct()
 
         if queryform.is_valid():
