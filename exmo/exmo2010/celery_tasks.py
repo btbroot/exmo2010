@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,6 +18,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import email
 import imaplib
 import re
 import sys
@@ -69,21 +71,27 @@ def check_mdn_emails():
         print sys.exc_info()[1]
         sys.exit(1)
 
-    m.list()  # list of "folders"
     m.select("INBOX")  # connect to inbox.
+    resp, emails = m.search(None, "(UNSEEN)")  # check only unseen emails
 
-    resp, items = m.search(None, "(UNSEEN)")  # check only unseen emails
-
-    if items[0]:
-        for email_id in items[0].split():
+    if emails[0]:
+        for email_id in emails[0].split():
             try:
-                resp, data = m.fetch(email_id, "(RFC822)")  # fetching the mail, "(RFC822)" means "get the whole stuff"
-                email_body = data[0][1]  # getting the mail content
+                resp, data = m.fetch(email_id, "(RFC822)")  # fetching the email, "(RFC822)" means "get the whole stuff"
+                msg = email.message_from_string(data[0][1])  # getting the email content
+                message_id = msg.get('In-Reply-To')
 
-                if email_body.find('message/disposition-notification') != -1:
-                    # email is MDN
-                    match = re.search("Original-Message-ID: <(?P<invitation_code>[\w\d]+)@(?P<host>[\w\d.-]+)>",
-                                      email_body)
+                if not message_id:
+                    for part in msg.walk():
+                        if part.get_content_subtype() == 'disposition-notification':
+                            payloads = part.get_payload() if msg.is_multipart() else [part.get_payload()]
+                            id_list = filter(None, [p.get('Original-Message-ID') for p in payloads])
+                            if id_list:
+                                # Use first found Message-ID
+                                message_id = id_list[0]
+                                break
+                if message_id:
+                    match = re.search("<(?P<invitation_code>[\w\d]{6})@(?P<host>[\w\d.-]+)>", message_id)
                     if match:
                         invitation_code = match.group('invitation_code')
                         m.store(email_id, '+FLAGS', '\\Deleted')  # add 'delete' flag
@@ -91,7 +99,7 @@ def check_mdn_emails():
                         if org.inv_status in ['SNT', 'NTS']:
                             org.inv_status = 'RD'
                             org.save()
-            except:
+            except Exception:
                 continue
         m.expunge()
 

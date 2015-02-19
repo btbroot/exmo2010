@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -124,6 +124,7 @@ def mail_organization(email, org, subject, body, attachments=None):
         'Disposition-Notification-To': extra_headers_email,
         'X-Confirm-Reading-To': extra_headers_email,
         'Return-Receipt-To': extra_headers_email,
+        'In-Reply-To': '<%s@%s>' % (org.inv_code, DNS_NAME),
         'Message-ID': '<%s@%s>' % (org.inv_code, DNS_NAME)}
 
     send_org_email.delay(message, org.pk)
