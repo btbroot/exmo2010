@@ -27,9 +27,7 @@ from django.utils.translation import ugettext_lazy as _
 from .base import BaseModel
 from .claim import Claim
 from .clarification import Clarification
-from .monitoring import (
-    MONITORING_PUBLISHED, MONITORING_PREPARE, MONITORING_INTERACTION,
-    MONITORING_FINALIZING, MONITORING_RATE, MONITORING_RESULT)
+from .monitoring import PRE, RATE, RES, INT, FIN
 from .organization import Organization
 from .score import Score
 
@@ -131,161 +129,64 @@ class UserProfile(BaseModel, ColumnsPickerModel):
         monitoring_running = False
         monitoring_name = None
         for o in self.organization.order_by("-id"):
-            if o.monitoring.status in (MONITORING_INTERACTION,
-                                       MONITORING_FINALIZING):
+            if o.monitoring.status in (INT, FIN):
                 show_bubble = False
             else:
                 if not monitoring_running:
                     monitoring_name = o.monitoring.name
             if not monitoring_running and \
-               o.monitoring.status in (MONITORING_RATE,
-                                       MONITORING_RESULT,
-                                       MONITORING_PREPARE):
+               o.monitoring.status in (PRE, RATE, RES):
                 monitoring_running = True
                 monitoring_name = o.monitoring.name
         return show_bubble, monitoring_running, monitoring_name
 
-    def _get_my_scores(self):
-        return Score.objects.filter(task__user=self.user)
-
-    # оценки, к которым имеет доступ ЭкспертБ.
-    def _get_my_filtered_scores(self, enum="messages"):
-        statuses = []
-        if enum == "messages":
-            statuses = [MONITORING_PREPARE,
-                        MONITORING_PUBLISHED]
-        elif enum == "comments":
-            statuses = [MONITORING_PREPARE,
-                        MONITORING_PUBLISHED,
-                        MONITORING_RATE,
-                        MONITORING_RESULT]
-
-        return Score.objects.filter(task__user=self.user).exclude(task__organization__monitoring__status__in=statuses)
+    def get_opened_comments(self):
+        """
+        Возвращает queryset из коментов представителей организаций на которые не был дан ответ
+        """
+        from custom_comments.models import CommentExmo
+        return CommentExmo.objects.filter(object_pk__in=Score.objects.filter(task__user=self.user),
+                                          content_type__model='score',
+                                          user__groups__name=UserProfile.organization_group,
+                                          status=CommentExmo.OPEN)\
+                                  .order_by('submit_date')
 
     def get_answered_comments(self):
         """
-        Возвращает queryset из коментов на которые был дан ответ пользователем.
+        Возвращает queryset из коментов представителей организаций на которые был дан ответ экспертом
         """
         from custom_comments.models import CommentExmo
-        return CommentExmo.objects.order_by('-submit_date').filter(
-            object_pk__in=self._get_my_scores(),
-            content_type__model='score',
-            status=CommentExmo.ANSWERED,
-            user__groups__name=UserProfile.organization_group)
-
-    def get_not_answered_comments(self):
-        """
-        Возвращает queryset из коментов на которые еще не был дан ответ.
-        """
-        from custom_comments.models import CommentExmo
-        comments = CommentExmo.objects.filter(
-            object_pk__in=self._get_my_scores(),
-            content_type__model='score',
-            status=CommentExmo.OPEN).order_by('-submit_date')
-        return comments
-
-    def get_closed_without_answer_comments(self):
-        """
-        Возвращает queryset из коментов, которые закрыты без ответа.
-        """
-        from custom_comments.models import CommentExmo
-        comments = CommentExmo.objects.filter(
-            object_pk__in=self._get_my_scores(),
-            content_type__model='score',
-            status=CommentExmo.NOT_ANSWERED).order_by('-submit_date')
-        return comments
-
-    def get_opened_claims(self):
-        """
-        Возвращает queryset из открытых претензий
-        """
-        claims = Claim.objects.filter(score__task__user=self.user,
-                              close_date__isnull=True).order_by('-open_date')
-        return claims
-
-    def get_closed_claims(self):
-        """
-        Возвращает queryset из закрытых претензий
-        """
-        claims = Claim.objects.filter(addressee=self.user,
-            close_date__isnull=False).order_by('-open_date')
-
-        return claims
+        return CommentExmo.objects.filter(object_pk__in=Score.objects.filter(task__user=self.user),
+                                          content_type__model='score',
+                                          user__groups__name=UserProfile.organization_group,
+                                          status=CommentExmo.ANSWERED)\
+                                  .order_by('-submit_date')
 
     def get_opened_clarifications(self):
         """
         Возвращает queryset из открытых уточнений
         """
-        clarifications = Clarification.objects.filter(
-            score__task__user=self.user,
-            close_date__isnull=True).order_by('-open_date')
-        return clarifications
+        return Clarification.objects.filter(score__task__user=self.user, close_date__isnull=True)\
+                                    .order_by('open_date')
 
     def get_closed_clarifications(self):
         """
         Возвращает queryset из закрытых уточнений
         """
-        clarifications = Clarification.objects.filter(score__task__user=self.user,
-            close_date__isnull=False).order_by('-open_date')
+        return Clarification.objects.filter(score__task__user=self.user, close_date__isnull=False)\
+                                    .order_by('-open_date')
 
-        return clarifications
+    def get_opened_claims(self):
+        """
+        Возвращает queryset из открытых претензий
+        """
+        return Claim.objects.filter(addressee=self.user, close_date__isnull=True).order_by('open_date')
 
-    def get_comment_count(self):
+    def get_closed_claims(self):
         """
-        Возвращает количество комментариев в оценках
+        Возвращает queryset из закрытых претензий
         """
-        answered_comments = self.get_answered_comments().count()
-        not_answered_comments = self.get_not_answered_comments().count()
-        return answered_comments + not_answered_comments
-
-    def get_claim_count(self):
-        """
-        Возвращает количество претензий в оценках
-        """
-        open_claims = self.get_opened_claims().count()
-        closed_claims = self.get_closed_claims().count()
-        return open_claims + closed_claims
-
-    def get_clarification_count(self):
-        """
-        Возвращает количество уточнений в оценках
-        """
-        open_clarifications = self.get_opened_clarifications().count()
-        closed_clarifications = self.get_closed_clarifications().count()
-        return open_clarifications + closed_clarifications
-
-    def get_filtered_not_answered_comments(self):
-        """
-        Возвращает queryset из не отвеченных комментариев в соответствующих
-        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
-        """
-        from custom_comments.models import CommentExmo
-        return CommentExmo.objects.order_by('submit_date').filter(
-            object_pk__in=self._get_my_filtered_scores("comments"),
-            content_type__model='score',
-            status=CommentExmo.OPEN,
-            user__groups__name=UserProfile.organization_group)
-
-    def get_filtered_opened_clarifications(self):
-        """
-        Возвращает queryset из не отвеченных уточнений в соответствующих
-        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
-        """
-        clarifications = Clarification.objects.filter(
-            score__task__user=self.user,
-            score__in=self._get_my_filtered_scores("messages"),
-            close_date__isnull=True).order_by('open_date')
-        return clarifications
-
-    def get_filtered_opened_claims(self):
-        """
-        Возвращает queryset из не отвеченных претензий в соответствующих
-        этапах мониторинга, фильтр по этапам нужен для ЭкспертаБ.
-        """
-        claims = Claim.objects.filter(
-            addressee=self.user,
-            close_date__isnull=True).order_by('open_date')
-        return claims
+        return Claim.objects.filter(addressee=self.user, close_date__isnull=False).order_by('-open_date')
 
     def _get_full_name(self, first_name_first=False):
         name_list = filter(None, [self.user.last_name.strip(), self.user.first_name.strip()])

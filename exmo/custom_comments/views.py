@@ -25,17 +25,12 @@ from django.template.response import TemplateResponse
 
 @login_required
 def comments_index(request):
-    """
-    Страница сводного списка комментариев.
-
-    """
-    user = request.user
-    if not user.profile.is_expert:
+    if not request.user.profile.is_expert:
         raise PermissionDenied
 
     if request.is_ajax():
-        comments = user.profile.get_answered_comments()
-        return TemplateResponse(request, 'home/_comments_index.html', {'comments': comments})
+        return TemplateResponse(request, 'home/_comments_index.html',
+                                {'comments': request.user.profile.get_answered_comments()})
     else:
-        comments = user.profile.get_filtered_not_answered_comments()
-        return TemplateResponse(request, 'home/comments_index.html', {'comments': comments})
+        return TemplateResponse(request, 'home/comments_index.html',
+                                {'comments': request.user.profile.get_opened_comments()})

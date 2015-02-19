@@ -77,8 +77,8 @@
             <li>
                 <a href="{% url 'exmo2010:comments_index' %}">
                     <i class="header-icon comment">
-                        {% if request.user.profile.get_not_answered_comments.count %}
-                            <span class="notification">{{ request.user.profile.get_not_answered_comments.count }}</span>
+                        {% if request.user.profile.get_opened_comments.count %}
+                            <span class="notification">{{ request.user.profile.get_opened_comments.count }}</span>
                         {% endif %}
                     </i>
                 </a>

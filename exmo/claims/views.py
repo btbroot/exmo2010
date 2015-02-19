@@ -24,7 +24,6 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
-from django.utils.translation import ugettext as _
 
 from .forms import ClaimReportForm
 from core.response import JSONResponse
@@ -151,17 +150,12 @@ def claim_report(request, monitoring_pk):
 
 @login_required
 def claims_index(request):
-    """
-    Страница сводного списка претензий для аналитиков.
-
-    """
-    user = request.user
-    if not user.profile.is_expert:
+    if not request.user.profile.is_expert:
         raise PermissionDenied
 
     if request.is_ajax():
-        context = {'claims': user.profile.get_closed_claims()}
-        return TemplateResponse(request, 'home/_claims_index.html', context)
+        return TemplateResponse(request, 'home/_claims_index.html',
+                                {'claims': request.user.profile.get_closed_claims()})
     else:
-        context = {'claims': user.profile.get_filtered_opened_claims()}
-        return TemplateResponse(request, 'home/claims_index.html', context)
+        return TemplateResponse(request, 'home/claims_index.html',
+                            {'claims': request.user.profile.get_opened_claims()})

@@ -22,7 +22,7 @@
 {% endcomment %}
 {% load i18n static %}
 
-{% block title %} {% trans 'Claims' %} {% endblock %}
+{% block title %}{% trans 'Claims' %}{% endblock %}
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/reports_analyst.css' %}"/>
@@ -47,7 +47,7 @@
             <div class="content cell">
                 {% include '_messages.html' %}
 
-                <h2>{% trans 'Claims' %}</h1>
+                <h2>{% trans 'Claims' %}</h2>
 
                 <table class="base-table">
                     <tbody>

@@ -138,18 +138,12 @@ def clarification_report(request, monitoring_pk):
 
 @login_required
 def clarifications_index(request):
-    """
-    Страница сводного списка уточнений для аналитиков.
-
-    """
-    user = request.user
-    if not user.profile.is_expert:
+    if not request.user.profile.is_expert:
         raise PermissionDenied
 
     if request.is_ajax():
-        context = {'clarifications': user.profile.get_closed_clarifications()}
-        return TemplateResponse(request, 'home/_clarifications_index.html', context)
-
+        return TemplateResponse(request, 'home/_clarifications_index.html',
+                                {'clarifications': request.user.profile.get_closed_clarifications()})
     else:
-        context = {'clarifications': user.profile.get_filtered_opened_clarifications()}
-        return TemplateResponse(request, 'home/clarifications_index.html', context)
+        return TemplateResponse(request, 'home/clarifications_index.html',
+                                {'clarifications': request.user.profile.get_opened_clarifications()})

@@ -39,7 +39,7 @@
             </li>
             <li data-urls="comments_index">
                 <a href="{% url 'exmo2010:comments_index' %}">
-                    {% trans "Comments" %}: {{ request.user.profile.get_not_answered_comments.count }}
+                    {% trans "Comments" %}: {{ request.user.profile.get_opened_comments.count }}
                 </a>
             </li>
             <li data-urls="clarifications_index">
