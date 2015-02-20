@@ -266,15 +266,10 @@
         {% endif %}
 
         {% if score.perms.edit_score %}
-            <div class="tab-edit-block">
-                <form method="post" class="tab_edit {% if interaction and score.pk %}hidden{% endif %}">{% csrf_token %}
-                    {% for field in form.hidden_fields %}
-                        {{ field }}
-                    {% endfor %}
-                    <div class="errors">
-                        {{ form.non_field_errors }}
-                    </div>
+            <div class="tab-edit-block {% if interaction and score.pk %}hidden{% endif %}">
+                {% include "_form_errors.html" with form=form %}
 
+                <form method="post" class="tab_edit">{% csrf_token %}
                     <div class="form-table editable-score-table {{ recommendations_required|yesno:'recommendations_required,' }}">
                         <div class="tbody">
                             {% for field in criteria %}

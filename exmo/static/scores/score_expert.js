@@ -1,7 +1,7 @@
 // This file is part of EXMO2010 software.
 // Copyright 2013 Al Nikolov
 // Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-// Copyright 2014 IRSI LTD
+// Copyright 2014-2015 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -372,12 +372,12 @@ $(document).ready(function() {
                 $(".comment-form").show();
                 switch (e.target.hash) {
                     case '#reply':
-                        $('.tab_edit').hide();
+                        $('.tab-edit-block').hide();
                         $('.tab-reply-block').show();
                         deleteAllAutoScoreCommentBricks();
                         break;
                     case '#change_score':
-                        $('.tab_edit').show();
+                        $('.tab-edit-block').show();
                         $('.tab-reply-block').hide();
                         rebuild_bricks();
                         break;
@@ -402,7 +402,7 @@ $(document).ready(function() {
         }
 
         // If form was posted and contain errors - open edit tab.
-        if ($('form.tab_edit div.errors li').length) {
+        if ($('div.tab-edit-block div.warning ul li').length) {
             $('a[href="#change_score"]').click();
         }
 
