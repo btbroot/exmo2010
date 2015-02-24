@@ -216,3 +216,38 @@ div.content.cell {
 .inline {
     display: inline;
 }
+
+#login_bubble {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    z-index: 1111;
+    width: 200px;
+    opacity: 0.8;
+    text-align: center;
+    color: #fff;
+    line-height: 18px;
+    font-size: 12px;
+}
+
+#login_bubble .pointer {
+    background: url("../img/corner.svg") no-repeat scroll 150px 0 transparent;
+    height: 10px;
+}
+
+#login_bubble .square {
+    background-color: #d80038;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+#login_bubble .close {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    color: #fff;
+}
+
+#login_bubble .close:hover {
+    text-decoration: underline;
+}

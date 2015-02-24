@@ -28,8 +28,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/index_anonymous.css' %}" />
 {% endblock %}
 
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/login_bubble.js' %}"></script>
+{% endblock %}
+
 {% block main %}
     <div id="main" class="without_breadcrumbs">
+
+        <div id="login_bubble">
+            <div class="pointer"></div>
+            <div class="square">
+                {% trans "If you are registered, please sign in." %}
+                <a class="close">{% trans "Close" %}</a>
+            </div>
+        </div>
 
         <div id="header">
             {% include '_header.html' %}

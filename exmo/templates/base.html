@@ -42,6 +42,7 @@
 
         <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
         <script type="text/javascript" src="{% static 'compat.js' %}"></script>
+        <script type="text/javascript" src="{% static 'cookies.js' %}"></script>
         <script type="text/javascript" src="{% static 'exmo2010/js/jquery/jquery.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-1.10.4.custom.js' %}"></script>
         <script type="text/javascript" src="{% static 'jquery-ui/jquery-ui-i18n.js' %}"></script>
@@ -58,6 +59,15 @@
                     $(this).closest('form').submit();
                     return false;
                 });
+
+                {% comment %}
+                    This cookies dance may be performed on server side, but will probably be more complex...
+                {% endcomment %}
+                {% if request.user.is_authenticated %}
+                    // Erase stored state of login bubble when user logs in. So after
+                    // logout bubble will be visible again.
+                    eraseCookie('hide_login_bubble');
+                {% endif %}
             });
         </script>
         {% block extra_script %}{% endblock %}
