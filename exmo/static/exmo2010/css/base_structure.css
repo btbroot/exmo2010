@@ -1,7 +1,7 @@
 /*
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -52,17 +52,17 @@ body:before {
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
-    min-height: 100%;
-    background-color: #ffffff;
     margin-bottom: -100px;
-    border-top: 1px solid #fff;
+    min-height: 100%;
+    border-top: 1px solid #ffffff;
+    background-color: #ffffff;
 }
 
 #main.fixed-width {
     margin: 0 auto;
     min-width: 770px;
     max-width: 950px;
-    border: 1px solid #D7D7D7;
+    border: 1px solid #d7d7d7;
 }
 
 #main.fixed-width .table,
@@ -102,13 +102,13 @@ body:before {
 
 h1.sidebar {
     margin: 0;
-    background-color: #f8f8f8;
     padding: 20px 20px 10px;
     min-height: 32px;
+    background-color: #f8f8f8;
 }
 
 h1 {
-    padding: 15px 20px 0px;
+    padding: 15px 20px 0;
 }
 
 div.content > h1 {
@@ -121,24 +121,42 @@ div.content > h1 {
 }
 
 .fixed-width #content_outer {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
     padding-bottom: 100px;
-    border: 1px solid #FFF;
-    box-sizing: border-box;
+    border: 1px solid #ffffff;
 }
 
 .without_breadcrumbs #content_outer {
+    margin-top: 71px;  /* header height without breadcrumbs */
     padding-bottom: 100px;
-    margin-top: 73px;  /* header height without breadcrumbs */
     border-top: none;
 }
 
-div.content {
-    padding: 15px 20px;
-    background-color: #ffffff;
-    width: 100%;
-    box-sizing: border-box;
+#content_outer.index_anonymous .content {
+    padding: 0;
 }
 
+#content_outer.index_anonymous .content:nth-of-type(odd) {
+    background: #f2f2f2;
+}
+
+#content_outer.index_anonymous .content_inner {
+    margin: 0 auto;
+    padding: 5px;
+    min-width: 820px;
+    max-width: 940px;
+}
+
+div.content {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 15px 20px;
+    width: 100%;
+    background-color: #ffffff;
+}
 
 div.content.cell {
     display: table-cell;
@@ -146,16 +164,16 @@ div.content.cell {
 }
 
 #footer {
+    z-index: 100;
+    clear: both;
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
+    margin-top: -100px;
+    width: 100%;
     height: 100px;
     border-top: 1px solid #d6d6d6;
     background-color: #eeeeee;
-    z-index: 100;
-    width: 100%;
-    clear: both;
-    margin-top: -100px;
 }
 
 .clearfix:after {

@@ -44,7 +44,6 @@ from .mail import mail_certificate_order, mail_feedback
 from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task
 from .models.monitoring import RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
-from auth.helpers import perm_filter
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
 from perm_utils import annotate_exmo_perms
@@ -69,10 +68,7 @@ def index(request):
 
 
 def index_anonymous(request):
-    monitorings = perm_filter(request.user, 'view_monitoring', Monitoring.objects.all())
-    context = {'monitorings': annotate_exmo_perms(monitorings.order_by('-publish_date'), request.user)}
-
-    return TemplateResponse(request, 'home/index_anonymous.html', context)
+    return TemplateResponse(request, 'home/index_anonymous.html', context={})
 
 
 def tasks_index(request):

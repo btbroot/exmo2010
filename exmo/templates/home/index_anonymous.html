@@ -25,7 +25,7 @@
 {% block title %}{% trans "Home" context "Front page" %}{% endblock %}
 
 {% block extra_css %}
-    <style>div.table {margin: 0 auto;}</style>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/index_anonymous.css' %}" />
 {% endblock %}
 
 {% block main %}
@@ -35,53 +35,18 @@
             {% include '_header.html' %}
         </div>
 
-        <div id="content_outer">
-
+        <div id="content_outer" class="index_anonymous">
             <div class="content">
-
-                {% include '_messages.html' %}
-
-                {% include "exmo2010/helpers/inv_code_bubble.html" %}
-
-                <div class="table zebra">
-                    <div class="thead">
-                        <div class="table-row">
-                            <div class="table-cell-L">
-                                {% if perms.create_monitoring %}
-                                    <a href="{% url 'exmo2010:monitoring_add' %}">
-                                        {% trans 'Add new monitoring' %}&nbsp;<img src="{% static 'admin/img/icon_addlink.gif' %}">
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tbody">
-                        {% for monitoring in monitorings %}
-                            <div class="table-row">
-                                <div class="table-cell-L">
-                                    {% if request.user.is_expert %}
-                                        <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}">{{ monitoring }}</a>
-                                        {% if monitoring.perms.edit_monitoring %}
-                                            &nbsp;
-                                            <a href="{% url 'exmo2010:monitoring_update' monitoring.pk %}">
-                                                <img src="{% static 'admin/img/icon_changelink.gif' %}" >
-                                            </a>
-                                        {% endif %}
-                                        {% if monitoring.perms.delete_monitoring %}
-                                            &nbsp;
-                                            <a href="{% url 'exmo2010:monitoring_delete' monitoring.pk %}">
-                                                <img src="{% static 'admin/img/icon_deletelink.gif' %}" >
-                                            </a>
-                                        {% endif %}
-                                    {% else %}
-                                        <a href="{% url 'exmo2010:monitoring_rating' monitoring.pk %}">{{ monitoring }}</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
+                <div id="find_score" class="content_inner"></div>
+            </div>
+            <div class="content">
+                <div id="about_project" class="content_inner"></div>
+            </div>
+            <div class="content">
+                <div id="feedbacks" class="content_inner"></div>
+            </div>
+            <div class="content">
+                <div id="contacts" class="content_inner"></div>
             </div>
         </div>
     </div>
