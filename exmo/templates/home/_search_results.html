@@ -1,0 +1,110 @@
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+
+{% if result == 'invalid_url' %}
+    <div class="not-url-error">
+        <i class="icon error"></i>
+        <p>{% trans 'You entered text that does not look like side address' %}</p>
+    </div>
+{% elif result == 'not_found' %}
+    <div class="not-found-error">
+        <p>{% trans 'No data found' %}</p>
+        <div>
+            <p>{% blocktrans with org_url=org_url %}We have not yet evaluated {{ org_url }} website{% endblocktrans %}</p>
+            <p>{% trans 'Please <a href="#contacts">contact us</a> if its possible evaluation is of interest for you' %}</p>
+        </div>
+    </div>
+{% else %}
+    <div class="search-results">
+        {% if tasks %}
+            <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    /* Tables sorting */
+                    $(".results-table").tablesorter({
+                        sortList: [[0, 1]],
+                        dateFormat: "ddmmyyyy",
+                        textExtraction: function(node) {
+                            var attr = $(node).attr('data-sort-value');
+                            if (typeof attr !== 'undefined' && attr !== false) {
+                                return attr;
+                            }
+                            return $(node).text();
+                        }
+                    });
+                })
+            </script>
+
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th class="align-left date-cell"><span>{% trans 'Publish date' %}</span><span class="sort"></span></th>
+                        <th class="align-left"><span>{% trans 'Rating' %}</span><span class="sort"></span></th>
+                        <th class="align-left"><span>{% trans 'Organization' %}</span><span class="sort"></span></th>
+                        <th class="align-right"><span>{% trans 'Final openness' %}</span><span class="sort"></span></th>
+                        <th class="align-right"><span>{% trans 'Position' %}</span><span class="sort"></span></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for task in tasks %}
+                        <tr>
+                            <td class="align-left date-cell" data-sort-value="{{ task.organization.monitoring.publish_date|date:"d/m/Y" }}">
+                                {{ task.organization.monitoring.publish_date|date:"DATE_FORMAT" }}
+                            </td>
+                            <td class="align-left">
+                                <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">
+                                    {{ task.organization.monitoring.name }}
+                                </a>
+                            </td>
+                            <td class="align-left">
+                                <a href="{% url 'exmo2010:recommendations' task.pk %}">
+                                    {{ task.organization.name }}
+                                </a>
+                            </td>
+                            <td class="align-right">
+                                {{ task.openness|floatformat:3 }} %
+                            </td>
+                            <td class="align-right">
+                                {{ task.rating_place }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if result == 'rate' %}
+            <div class="rate-or-results">
+                <p>{% blocktrans with org_url=org_url %}{{ org_url }} website is under evaluation{% endblocktrans %}</p>
+                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
+            </div>
+        {% elif result == 'interaction' %}
+            <div class="interaction-or-finishing">
+                {% url 'exmo2010:registration_form' as registration_url %}
+                {% url 'exmo2010:auth_login' as login_url %}
+                <p>{% blocktrans with org_url=org_url %}We are now consulting on problems of {{ org_url }} website{% endblocktrans %}</p>
+                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
+                <p>{% blocktrans %}If you have already received an invitation for interaction with experts, please <a href="{{ registration_url }}" class="with-border">register</a> or <a href="{{ login_url }}" class="with-border">log in</a>{% endblocktrans %}</p>
+            </div>
+        {% endif %}
+
+    </div>
+{% endif %}

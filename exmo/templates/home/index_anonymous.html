@@ -30,6 +30,64 @@
 
 {% block extra_script %}
     <script type="text/javascript" src="{% static 'exmo2010/js/login_bubble.js' %}"></script>
+    <script>
+        $(function(){
+            $('#add_phone').click(function(){
+                $('#id_phone').show()
+                $(this).hide()
+                return false;
+            });
+
+            $('#submit_message').click(function(){
+                var form = $(this).closest('form')
+                form.find('.required').each(function(){
+                    $(this).closest('div').find('div.err').hide()
+                    if ($.trim($(this).val()) == '') {
+                        $(this).closest('div').find('div.err_required').show()
+                        $(this).addClass('error');
+                    } else {
+                        $(this).removeClass('error');
+                    }
+                })
+                if (form.find('.required.error').length == 0) {
+
+                    var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                    if(!emailReg.test($('#id_email').val())) {
+                        $('#email_err').show()
+                        return false;
+                    }
+                    $.post(form.attr('action'), form.serialize())
+                        .done(function() {
+                            form[0].reset();
+                            $('div.submit_result_message').hide();
+                            $('div.submit_result_message.success').show();
+                        })
+                        .fail(function() {
+                            $('div.submit_result_message').hide();
+                            $('div.submit_result_message.warning').show();
+                        });
+                }
+                return false;
+            });
+
+            $('#find_score_button').click(function(){
+                $('#find_score_button').prop('disabled', true);
+                $.get($(this).closest('form').attr('action'), $(this).closest('form').serialize())
+                    .done(function(new_data) {
+                        $('div.steps-block, div.ajax-error').hide();
+                        $('div.results-block').html(new_data).show();
+                        $('#find_score_button').prop('disabled', false);
+                    })
+                    .fail(function() {
+                        // Permission denied or error
+                        $('div.results-block, div.steps-block').hide();
+                        $('div.ajax-error').show();
+                        $('#find_score_button').prop('disabled', false);
+                    });
+                return false;
+            })
+        })
+    </script>
 {% endblock %}
 
 {% block main %}
@@ -49,16 +107,130 @@
 
         <div id="content_outer" class="index_anonymous">
             <div class="content">
-                <div id="find_score" class="content_inner"></div>
+                <div id="find_score" class="content_inner">
+                    <div class="top-block">
+                        <h1>{% trans 'Infometer: A Tool for Measuring and Increasing Informational Openness' %}</h1>
+                        <h2>{% trans 'See the openness rate for the governmental website' %}</h2>
+                        <form action="{% url 'exmo2010:ajax_index_find_score' %}" method="get">
+                            <input type="text" name="org_url" placeholder="{% trans 'Example: minsvyaz.ru' %}">
+                            <input type="submit" id="find_score_button" value="{% trans 'Look up' %}">
+                        </form>
+                    </div>
+
+                    <div class="steps-block">
+                        <div class="step">
+                            <img src="{% static 'exmo2010/img/step-1.svg' %}">
+                            <p>{% trans 'Enter site address' %}</p>
+                        </div>
+                        <div class="right-arrow">
+                            <img src="{% static 'exmo2010/img/step-arrow.svg' %}">
+                        </div>
+                        <div class="step">
+                            <img src="{% static 'exmo2010/img/step-2.svg' %}">
+                            <p>{% trans 'Look up site score' %}</p>
+                        </div>
+                        <div class="right-arrow">
+                            <img src="{% static 'exmo2010/img/step-arrow.svg' %}">
+                        </div>
+                        <div class="step">
+                            <img src="{% static 'exmo2010/img/step-3.svg' %}">
+                            <p>{% trans 'Contact us to get recommendations' %}</p>
+                        </div>
+                    </div>
+
+                    <div class="results-block">
+                        {% include 'home/_search_results.html' %}
+                    </div>
+
+                    <div class="ajax-error hidden">
+                        {% trans 'server error' %}
+                    </div>
+                </div>
             </div>
-            <div class="content">
+            <div class="content hidden">
                 <div id="about_project" class="content_inner"></div>
             </div>
-            <div class="content">
+            <div class="content hidden">
                 <div id="feedbacks" class="content_inner"></div>
             </div>
             <div class="content">
-                <div id="contacts" class="content_inner"></div>
+                <div id="contacts" class="content_inner">
+                    <h2>{% trans "Contacts" %}</h2>
+                    <div>
+                        <div class="warning hidden submit_result_message">
+                            {% trans "Server error" %}
+                        </div>
+                        <div class="success hidden submit_result_message">
+                            {% trans "Message sent" %}
+                        </div>
+                        <div class="table-row">
+                            <div class="contacts_left">
+                                <h3>{% trans "Leave a message" %}</h3>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="contacts_left">
+                                <form method="post" action='{% url "exmo2010:ajax_submit_contacts_form" %}'>
+                                    <div>
+                                        <textarea id="id_text" name="text" class="required" placeholder="{% trans 'Message text' %}" ></textarea>
+                                        <div class="hidden err err_required">
+                                            <img src="{% static 'exmo2010/img/error.svg' %}"/>
+                                            {% trans 'Required field' %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <input type="text" name="name" class="required" id="id_name" placeholder="{% trans 'Name' %}" />
+                                        <div class="hidden err err_required">
+                                            <img src="{% static 'exmo2010/img/error.svg' %}"/>
+                                            {% trans 'Required field' %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <input type="text" name="email" class="required" id="id_email" placeholder="{% trans 'Email' %}" />
+                                        <a id="add_phone" href="#">
+                                            <img src="{% static 'exmo2010/img/add.svg' %}"/> {% trans "Add phone" %}
+                                        </a>
+                                        <input class="hidden" name="phone" type="text" id="id_phone" placeholder="+7">
+                                        <div class="hidden err err_required">
+                                            <img src="{% static 'exmo2010/img/error.svg' %}"/>
+                                            {% trans 'Required field' %}
+                                        </div>
+                                        <div id="email_err" class="hidden err err_invalid">
+                                            <img src="{% static 'exmo2010/img/error.svg' %}"/>
+                                            {% trans 'Invalid email' %}
+                                        </div>
+                                    </div>
+                                    <div class='align-center'>
+                                        <input id="submit_message" type="submit" value="{% trans 'Send message' %}" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="contacts_right">
+                                <div>
+                                    <h3>
+                                        <img src="{% static 'exmo2010/img/phone.svg' %}"/> +7 (812) 766-03-66
+                                    </h3>
+                                </div>
+                                <div class="our_mail">
+                                    <h3>
+                                        <img src="{% static 'exmo2010/img/mail.svg' %}"/>
+                                        <a href="mailto:info@svobodainfo.org">info@svobodainfo.org</a>
+                                    </h3>
+                                </div>
+                                <div><img src="{% static 'exmo2010/img/person.svg' %}"/>
+                                    <div id="contact_person" class="table-cell-L">
+                                        <h3>{% trans "Vadim Kuptsov" %}</h3>
+                                        <div id="contact_description">
+                                            <p>{% trans "Contact person" %}</p>
+                                            <p>{% trans "Responsible for communication with government representatives" %}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>

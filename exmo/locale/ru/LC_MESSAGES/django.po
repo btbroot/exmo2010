@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-24 23:56+0300\n"
-"PO-Revision-Date: 2015-02-24 23:29+0300\n"
+"POT-Creation-Date: 2015-04-14 00:09+0300\n"
+"PO-Revision-Date: 2015-04-14 00:09+0300\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
 "Language: ru\n"
@@ -137,7 +137,7 @@ msgstr "Сохранить"
 msgid "Invitation code"
 msgstr "Код приглашения"
 
-#: accounts/templates/user_settings.html:123 exmo2010/forms.py:58
+#: accounts/templates/user_settings.html:123 exmo2010/forms.py:65
 #: templates/exmo2010/feedback.html:67
 #: templates/exmo2010/parameter_confirm_delete.html:43
 #: templates/exmo2010/task_form.html:55
@@ -159,28 +159,28 @@ msgstr "Изменить пароль"
 msgid "E-mail notifications"
 msgstr "Рассылка уведомлений"
 
-#: breadcrumbs/tests.py:36 exmo2010/urls.py:259 exmo2010/urls.py:324
+#: breadcrumbs/tests.py:36 exmo2010/urls.py:262 exmo2010/urls.py:327
 #: monitorings/templates/ratings.html:24 monitorings/templates/ratings.html:41
 #: templates/_header.html:63
 msgid "Ratings"
 msgstr "Рейтинги"
 
-#: breadcrumbs/tests.py:37 exmo2010/urls.py:325
+#: breadcrumbs/tests.py:37 exmo2010/urls.py:328
 #: monitorings/templates/rating.html:48 templates/_errors_header.html:32
 #: templates/_sidebar_monitoring.html:98
 #: templates/certificate_order_form.html:70
-#: templates/home/index_orguser.html:69 templates/home/index_orguser.html:103
-#: templates/home/index_orguser.html:141
+#: templates/home/_search_results.html:59 templates/home/index_orguser.html:69
+#: templates/home/index_orguser.html:103 templates/home/index_orguser.html:141
 #: templates/registration/_auth_content_header.html:32
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: breadcrumbs/tests.py:39 breadcrumbs/tests.py:44 exmo2010/forms.py:78
-#: exmo2010/forms.py:89 exmo2010/urls.py:304 exmo2010/urls.py:305
-#: exmo2010/urls.py:310 exmo2010/urls.py:326 exmo2010/urls.py:327
+#: breadcrumbs/tests.py:39 breadcrumbs/tests.py:44 exmo2010/forms.py:85
+#: exmo2010/forms.py:96 exmo2010/urls.py:307 exmo2010/urls.py:308
+#: exmo2010/urls.py:313 exmo2010/urls.py:329 exmo2010/urls.py:330
 #: monitorings/forms.py:78 monitorings/templates/rating.html:112
 #: organizations/forms.py:29 templates/certificate_order_form.html:100
-#: templates/home/claims_index.html:56
+#: templates/home/_search_results.html:60 templates/home/claims_index.html:56
 #: templates/home/clarifications_index.html:56
 #: templates/home/comments_index.html:56 templates/home/index_orguser.html:72
 #: templates/home/index_orguser.html:106 templates/home/index_orguser.html:144
@@ -195,7 +195,7 @@ msgstr "Рейтинг"
 msgid "Organization"
 msgstr "Организация"
 
-#: breadcrumbs/tests.py:42 exmo2010/urls.py:261
+#: breadcrumbs/tests.py:42 exmo2010/urls.py:264
 #: monitorings/templates/monitoring_copy.html:48
 #: monitorings/templates/monitoring_form.html:51
 #: templates/_sidebar_index.html:29
@@ -204,14 +204,14 @@ msgstr "Организация"
 msgid "Monitoring cycles"
 msgstr "Циклы мониторинга"
 
-#: breadcrumbs/tests.py:43 exmo2010/urls.py:269 exmo2010/urls.py:270
-#: exmo2010/urls.py:272 exmo2010/urls.py:273 exmo2010/urls.py:275
-#: exmo2010/urls.py:276 exmo2010/urls.py:281 exmo2010/urls.py:282
-#: exmo2010/urls.py:283 exmo2010/urls.py:284 exmo2010/urls.py:286
-#: exmo2010/urls.py:287 exmo2010/urls.py:289 exmo2010/urls.py:291
-#: exmo2010/urls.py:292 exmo2010/urls.py:293 exmo2010/urls.py:294
-#: exmo2010/urls.py:296 exmo2010/urls.py:298 exmo2010/urls.py:300
-#: exmo2010/urls.py:302 exmo2010/models/questionnaire.py:36
+#: breadcrumbs/tests.py:43 exmo2010/urls.py:272 exmo2010/urls.py:273
+#: exmo2010/urls.py:275 exmo2010/urls.py:276 exmo2010/urls.py:278
+#: exmo2010/urls.py:279 exmo2010/urls.py:284 exmo2010/urls.py:285
+#: exmo2010/urls.py:286 exmo2010/urls.py:287 exmo2010/urls.py:289
+#: exmo2010/urls.py:290 exmo2010/urls.py:292 exmo2010/urls.py:294
+#: exmo2010/urls.py:295 exmo2010/urls.py:296 exmo2010/urls.py:297
+#: exmo2010/urls.py:299 exmo2010/urls.py:301 exmo2010/urls.py:303
+#: exmo2010/urls.py:305 exmo2010/models/questionnaire.py:36
 #: monitorings/forms.py:60 monitorings/forms.py:69
 #: monitorings/templates/ratings.html:58 templates/exmo2010/opendata.html:62
 #: templates/home/monitorings_published.html:92
@@ -262,7 +262,10 @@ msgid "Email Server Settings"
 msgstr "Конфигурация почтового сервера"
 
 #: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
-#: exmo2010/forms.py:51 templates/mail/feedback_recipient.html:34
+#: exmo2010/forms.py:58 templates/home/index_anonymous.html:189
+#: templates/mail/contacts_recipient.html:24
+#: templates/mail/contacts_recipient.txt:24
+#: templates/mail/feedback_recipient.html:34
 #: templates/mail/feedback_recipient.txt:31
 #: templates/manage_monitoring/organizations.html:74
 msgid "Email"
@@ -421,8 +424,8 @@ msgstr "Начало в/д"
 msgid "Interact end"
 msgstr "Конец в/д"
 
-#: exmo2010/columns_picker.py:51 templates/home/index_orguser.html:100
-#: templates/home/index_orguser.html:138
+#: exmo2010/columns_picker.py:51 templates/home/_search_results.html:58
+#: templates/home/index_orguser.html:100 templates/home/index_orguser.html:138
 msgid "Publish date"
 msgstr "Дата публикации"
 
@@ -430,52 +433,55 @@ msgstr "Дата публикации"
 msgid "Your problem"
 msgstr "Ваша проблема"
 
-#: exmo2010/forms.py:43
+#: exmo2010/forms.py:50
 msgid "to organization"
 msgstr "организации"
 
-#: exmo2010/forms.py:43
+#: exmo2010/forms.py:50
 msgid "to employee"
 msgstr "сотрудника"
 
-#: exmo2010/forms.py:44
+#: exmo2010/forms.py:51
 msgid "by email"
 msgstr "на электронную почту"
 
-#: exmo2010/forms.py:44
+#: exmo2010/forms.py:51
 msgid "by post"
 msgstr "почтой России"
 
-#: exmo2010/forms.py:49 templates/mail/feedback_recipient.html:26
+#: exmo2010/forms.py:56 templates/home/index_anonymous.html:182
+#: templates/mail/contacts_recipient.html:23
+#: templates/mail/contacts_recipient.txt:23
+#: templates/mail/feedback_recipient.html:26
 #: templates/mail/feedback_recipient.txt:26
 msgid "Name"
 msgstr "Имя"
 
-#: exmo2010/forms.py:50
+#: exmo2010/forms.py:57
 msgid "Wishes"
 msgstr "Особые пожелания"
 
-#: exmo2010/forms.py:52
+#: exmo2010/forms.py:59
 msgid "For whom"
 msgstr "Кому"
 
-#: exmo2010/forms.py:53
+#: exmo2010/forms.py:60
 msgid "Zip code"
 msgstr "Индекс"
 
-#: exmo2010/forms.py:54
+#: exmo2010/forms.py:61
 msgid "Address"
 msgstr "Адрес"
 
-#: exmo2010/forms.py:56
+#: exmo2010/forms.py:63
 msgid "Certificate for"
 msgstr "Сертификат на имя"
 
-#: exmo2010/forms.py:87
+#: exmo2010/forms.py:94
 msgid "Any status"
 msgstr "Все статусы"
 
-#: exmo2010/forms.py:105
+#: exmo2010/forms.py:112
 msgid "Any monitoring"
 msgstr "Все циклы мониторинга"
 
@@ -505,54 +511,58 @@ msgstr "{subject_prefix}Изменен параметр: {param}"
 msgid "You have an assigned task"
 msgstr "Вам назначена задача"
 
-#: exmo2010/mail.py:279 exmo2010/mail.py:286 exmo2010/urls.py:242
-#: exmo2010/views.py:137 templates/_footer.html:31
+#: exmo2010/mail.py:279 exmo2010/mail.py:286 exmo2010/urls.py:245
+#: exmo2010/views.py:189 templates/_footer.html:31
 #: templates/exmo2010/feedback.html:26
 msgid "Feedback"
 msgstr "Обратная связь"
 
-#: exmo2010/mail.py:293
+#: exmo2010/mail.py:295 exmo2010/mail.py:302
+msgid "Infometer communication"
+msgstr "АИС Инфометр"
+
+#: exmo2010/mail.py:309
 #, python-format
 msgid "Password reset on %s"
 msgstr "Смена пароля на %s"
 
-#: exmo2010/mail.py:299
+#: exmo2010/mail.py:315
 #, python-format
 msgid "Registration on %s"
 msgstr "Регистрация на %s"
 
-#: exmo2010/urls.py:240 templates/_footer.html:27
+#: exmo2010/urls.py:243 templates/_footer.html:27
 msgid "About"
 msgstr "О проекте"
 
-#: exmo2010/urls.py:241 templates/_errors_header.html:35
+#: exmo2010/urls.py:244 templates/_errors_header.html:35
 #: templates/_header.html:66
 msgid "Help"
 msgstr "Помощь"
 
-#: exmo2010/urls.py:243 templates/_footer.html:30
+#: exmo2010/urls.py:246 templates/_footer.html:30
 #: templates/exmo2010/opendata.html:28 templates/exmo2010/opendata.html:32
 msgid "Open data"
 msgstr "Открытые данные"
 
-#: exmo2010/urls.py:244 templates/admin/base_site.html:36
+#: exmo2010/urls.py:247 templates/admin/base_site.html:36
 msgid "Settings"
 msgstr "Настройки"
 
-#: exmo2010/urls.py:245 exmo2010/urls.py:246 exmo2010/urls.py:247
+#: exmo2010/urls.py:248 exmo2010/urls.py:249 exmo2010/urls.py:250
 #: templates/_footer.html:28
 #: templates/manage_monitoring/comment_report.html:68
 msgid "Statistics"
 msgstr "Статистика"
 
-#: exmo2010/urls.py:249 templates/_header.html:44
+#: exmo2010/urls.py:252 templates/_header.html:44
 #: templates/registration/login.html:25 templates/registration/login.html:51
 #: templates/registration/password_reset_request.html:52
 #: templates/registration/registration_form.html:51
 msgid "Login"
 msgstr "Вход в систему"
 
-#: exmo2010/urls.py:250 exmo2010/urls.py:251 exmo2010/urls.py:252
+#: exmo2010/urls.py:253 exmo2010/urls.py:254 exmo2010/urls.py:255
 #: templates/registration/login.html:53
 #: templates/registration/password_reset_confirm.html:25
 #: templates/registration/password_reset_confirm.html:38
@@ -564,7 +574,7 @@ msgstr "Вход в систему"
 msgid "Password recovery"
 msgstr "Восстановление пароля"
 
-#: exmo2010/urls.py:253 templates/_header.html:43
+#: exmo2010/urls.py:256 templates/_header.html:43
 #: templates/registration/login.html:52
 #: templates/registration/password_reset_request.html:53
 #: templates/registration/registration_form.html:25
@@ -572,61 +582,61 @@ msgstr "Восстановление пароля"
 msgid "Registration"
 msgstr "Регистрация"
 
-#: exmo2010/urls.py:254 templates/registration/please_confirm_email.html:25
+#: exmo2010/urls.py:257 templates/registration/please_confirm_email.html:25
 #: templates/registration/please_confirm_email.html:28
 msgid "Registration confirm"
 msgstr "Подтверждение регистрации"
 
-#: exmo2010/urls.py:255 templates/registration/registration_closed.html:25
+#: exmo2010/urls.py:258 templates/registration/registration_closed.html:25
 #: templates/registration/registration_closed.html:28
 msgid "Registration disallowed"
 msgstr "Регистрация запрещена"
 
-#: exmo2010/urls.py:262
+#: exmo2010/urls.py:265
 msgid "Add monitoring cycle"
 msgstr "Добавить цикл мониторинга"
 
-#: exmo2010/urls.py:263
+#: exmo2010/urls.py:266
 msgid "Delete monitoring cycle"
 msgstr "Удалить цикл мониторинга"
 
-#: exmo2010/urls.py:264
+#: exmo2010/urls.py:267
 msgid "Edit monitoring cycle"
 msgstr "Редактировать цикл мониторинга"
 
-#: exmo2010/urls.py:265
+#: exmo2010/urls.py:268
 msgid "Copy monitoring cycle"
 msgstr "Копировать цикл мониторинга"
 
-#: exmo2010/urls.py:267
+#: exmo2010/urls.py:270
 msgid "Add questionnaire"
 msgstr "Добавить анкету в цикл"
 
-#: exmo2010/urls.py:278
+#: exmo2010/urls.py:281
 msgid "Import parameter"
 msgstr "Импортировать параметры"
 
-#: exmo2010/urls.py:279
+#: exmo2010/urls.py:282
 msgid "Import organizations"
 msgstr "Импортировать организации"
 
-#: exmo2010/urls.py:303
+#: exmo2010/urls.py:306
 msgid "Add task"
 msgstr "Добавить задачу"
 
-#: exmo2010/urls.py:307
+#: exmo2010/urls.py:310
 msgid "Edit task"
 msgstr "Редактировать задачу"
 
-#: exmo2010/urls.py:308
+#: exmo2010/urls.py:311
 msgid "Delete task"
 msgstr "Удалить задачу"
 
-#: exmo2010/urls.py:309 templates/scores/task_scores.html:73
+#: exmo2010/urls.py:312 templates/scores/task_scores.html:73
 msgid "Import task"
 msgstr "Импортировать задачу"
 
-#: exmo2010/urls.py:312 exmo2010/urls.py:313 exmo2010/urls.py:328
+#: exmo2010/urls.py:315 exmo2010/urls.py:316 exmo2010/urls.py:331
 #: exmo2010/models/parameter.py:34 parameters/forms.py:50
 #: parameters/forms.py:85
 #: templates/manage_monitoring/parameter_filter.html:138
@@ -635,57 +645,57 @@ msgstr "Импортировать задачу"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: exmo2010/urls.py:315
+#: exmo2010/urls.py:318
 msgid "Add parameter"
 msgstr "Добавить параметр"
 
-#: exmo2010/urls.py:316 parameters/templates/parameter_form.html:27
+#: exmo2010/urls.py:319 parameters/templates/parameter_form.html:27
 #: parameters/templates/parameter_form.html:47 templates/scores/score.html:64
 msgid "Edit parameter"
 msgstr "Редактировать параметр"
 
-#: exmo2010/urls.py:317
+#: exmo2010/urls.py:320
 msgid "Delete parameter"
 msgstr "Удалить параметр"
 
-#: exmo2010/urls.py:332 templates/certificate_order_form.html:24
+#: exmo2010/urls.py:335 templates/certificate_order_form.html:24
 #: templates/certificate_order_form.html:37
 #: templates/certificate_order_unavailable.html:22
 msgid "Openness certificate"
 msgstr "Сертификат открытости"
 
-#: exmo2010/views.py:259
+#: exmo2010/views.py:311
 msgid "You ordered an openness certificate. Certificate will be prepared and sent within 5 working days."
 msgstr "Вы заказали сертификат открытости. Сертификат будет подготовлен и отправлен в течение 5 рабочих дней."
 
-#: exmo2010/views.py:277
+#: exmo2010/views.py:329
 msgid "by all"
 msgstr "по всем"
 
-#: exmo2010/views.py:277
+#: exmo2010/views.py:329
 msgid "by normative"
 msgstr "по нормативным"
 
-#: exmo2010/views.py:277
+#: exmo2010/views.py:329
 msgid "by recommendatory"
 msgstr "по рекомендательным"
 
-#: exmo2010/views.py:281
+#: exmo2010/views.py:333
 #, no-python-format
 msgid "For {task.organization.name} organization, which took {task.place} place with {task.task_openness:.3f}% openness in rating {rating_type} parameters, which published {date}."
 msgstr "Для организации {task.organization.name}, занявшей {task.place} место с открытостью {task.task_openness:.3f}% в рейтинге {rating_type} параметрам, опубликованном {date}."
 
-#: exmo2010/views.py:289
+#: exmo2010/views.py:341
 #, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr "На адрес {zip_code}, {address}, {addressee}."
 
-#: exmo2010/views.py:291
+#: exmo2010/views.py:343
 #, python-format
 msgid "On email address %s."
 msgstr "На адрес электронной почты %s."
 
-#: exmo2010/views.py:301
+#: exmo2010/views.py:353
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr "Подготовить диплом на имя %s."
@@ -1710,6 +1720,7 @@ msgstr "Найти"
 
 #: monitorings/templates/rating.html:109
 #: templates/certificate_order_form.html:102
+#: templates/home/_search_results.html:62
 msgid "Position"
 msgstr "Место"
 
@@ -1729,6 +1740,7 @@ msgstr "Пер. открытость"
 
 #: monitorings/templates/rating.html:138
 #: templates/certificate_order_form.html:103
+#: templates/home/_search_results.html:61
 msgid "Final openness"
 msgstr "Открытость"
 
@@ -1958,6 +1970,7 @@ msgid "We're sorry, but the requested page could not be found."
 msgstr "Извините, но страницы с таким адресом не существует."
 
 #: templates/500.html:25 templates/500.html.py:28
+#: templates/home/index_anonymous.html:161
 msgid "Server error"
 msgstr "Ошибка сервера"
 
@@ -2509,6 +2522,43 @@ msgstr "перейти к уточнению"
 msgid "go to comment"
 msgstr "перейти к комментарию"
 
+#: templates/home/_search_results.html:24
+msgid "You entered text that does not look like side address"
+msgstr "Вы ищете текст, который не является адресом сайта"
+
+#: templates/home/_search_results.html:28
+msgid "No data found"
+msgstr "Ничего не найдено"
+
+#: templates/home/_search_results.html:30
+#, python-format
+msgid "We have not yet evaluated %(org_url)s website"
+msgstr "Мы еще не оценивали сайт %(org_url)s"
+
+#: templates/home/_search_results.html:31
+msgid "Please <a href=\"#contacts\">contact us</a> if its possible evaluation is of interest for you"
+msgstr "Если вам интересна возможность его оценки — <a href=\"#contacts\">свяжитесь с нами</a>"
+
+#: templates/home/_search_results.html:96
+#, python-format
+msgid "%(org_url)s website is under evaluation"
+msgstr "В настоящее время мы оцениваем сайт %(org_url)s"
+
+#: templates/home/_search_results.html:97
+#: templates/home/_search_results.html:104
+msgid "Please <a href=\"#contacts\">contact us</a> if you represent it"
+msgstr "Если вы его представитель — <a href=\"#contacts\">свяжитесь с нами</a>"
+
+#: templates/home/_search_results.html:103
+#, python-format
+msgid "We are now consulting on problems of %(org_url)s website"
+msgstr "В настоящее время мы консультируем по проблемам сайта %(org_url)s"
+
+#: templates/home/_search_results.html:105
+#, python-format
+msgid "If you have already received an invitation for interaction with experts, please <a href=\"%(registration_url)s\" class=\"with-border\">register</a> or <a href=\"%(login_url)s\" class=\"with-border\">log in</a>"
+msgstr "Если вы уже получили приглашение к взаимодействию с экспертами, то <a href=\"%(registration_url)s\" class=\"with-border\">зарегистрируйтесь</a> или <a href=\"%(login_url)s\" class=\"with-border\">войдите</a> на сайт"
+
 #: templates/home/claims_index.html:43
 #: templates/home/clarifications_index.html:43
 #: templates/home/comments_index.html:43 templates/home/tasks_index.html:65
@@ -2546,14 +2596,92 @@ msgstr "Ссылка на уточнение"
 msgid "Link to comment"
 msgstr "Ссылка на комментарий"
 
-#: templates/home/index_anonymous.html:41
+#: templates/home/index_anonymous.html:99
 msgid "If you are registered, please sign in."
 msgstr "Если вы зарегистрированы, то войдите в систему."
 
-#: templates/home/index_anonymous.html:42
+#: templates/home/index_anonymous.html:100
 #: templates/manage_monitoring/organizations.html:124
 msgid "Close"
 msgstr "Закрыть"
+
+#: templates/home/index_anonymous.html:112
+msgid "Infometer: A Tool for Measuring and Increasing Informational Openness"
+msgstr "Инфометр — инструмент измерения и повышения информационной открытости"
+
+#: templates/home/index_anonymous.html:113
+msgid "See the openness rate for the governmental website"
+msgstr "Узнайте оценку сайта органа власти"
+
+#: templates/home/index_anonymous.html:115
+msgid "Example: minsvyaz.ru"
+msgstr "Например, minsvyaz.ru"
+
+#: templates/home/index_anonymous.html:116
+msgid "Look up"
+msgstr "Узнать"
+
+#: templates/home/index_anonymous.html:123
+msgid "Enter site address"
+msgstr "Введите адрес сайта"
+
+#: templates/home/index_anonymous.html:130
+msgid "Look up site score"
+msgstr "Узнайте оценку сайта органа власти"
+
+#: templates/home/index_anonymous.html:137
+msgid "Contact us to get recommendations"
+msgstr "Свяжитесь с нами для получения консультации"
+
+#: templates/home/index_anonymous.html:146
+msgid "server error"
+msgstr "Ошибка сервера"
+
+#: templates/home/index_anonymous.html:158
+msgid "Contacts"
+msgstr "Контакты"
+
+#: templates/home/index_anonymous.html:164
+msgid "Message sent"
+msgstr "Сообщение отправлено"
+
+#: templates/home/index_anonymous.html:168
+msgid "Leave a message"
+msgstr "Напишите нам"
+
+#: templates/home/index_anonymous.html:175
+msgid "Message text"
+msgstr "Текст сообщения"
+
+#: templates/home/index_anonymous.html:178
+#: templates/home/index_anonymous.html:185
+#: templates/home/index_anonymous.html:196
+msgid "Required field"
+msgstr "Обязательное поле"
+
+#: templates/home/index_anonymous.html:191
+msgid "Add phone"
+msgstr "Добавить телефон"
+
+#: templates/home/index_anonymous.html:200
+msgid "Invalid email"
+msgstr "Недействительный email"
+
+#: templates/home/index_anonymous.html:204
+msgid "Send message"
+msgstr "Отправить сообщение"
+
+#: templates/home/index_anonymous.html:222
+msgid "Vadim Kuptsov"
+msgstr "Вадим Купцов"
+
+#: templates/home/index_anonymous.html:224
+msgid "Contact person"
+msgstr "Контактное лицо проекта"
+
+#: templates/home/index_anonymous.html:225
+msgid "Responsible for communication with government representatives"
+msgstr "Специалист по связям с органами государственной власти"
 
 #: templates/home/index_orguser.html:55
 msgid "My scores"
@@ -2619,6 +2747,29 @@ msgstr "Спасибо"
 #: templates/mail/digest.txt:34
 msgid "User"
 msgstr "Пользователь"
+
+#: templates/mail/contacts_creator.html:22
+#: templates/mail/contacts_creator.txt:23
+msgid "You've sent the letter to Infometer maintenance staff."
+msgstr "Вы отправили письмо специалистам, обслуживающим Инфометр."
+
+#: templates/mail/contacts_creator.html:24
+#: templates/mail/contacts_creator.txt:25
+msgid "Your message"
+msgstr "Ваше сообщение"
+
+#: templates/mail/contacts_recipient.html:26
+#: templates/mail/contacts_recipient.txt:26
+#: templates/manage_monitoring/organizations.html:75
+#: templates/manage_monitoring/representatives.html:71
+#: templates/manage_monitoring/representatives.html:90
+msgid "Phone"
+msgstr "Телефон"
+
+#: templates/mail/contacts_recipient.html:28
+#: templates/mail/contacts_recipient.txt:29
+msgid "Message"
+msgstr "Сообщение"
 
 #: templates/mail/digest.html:29 templates/mail/digest.txt:27
 msgid "Hello"
@@ -2915,12 +3066,6 @@ msgstr "Пользователей"
 #: templates/manage_monitoring/observers_groups.html:93
 msgid "No observers"
 msgstr "Наблюдателей нет"
-
-#: templates/manage_monitoring/organizations.html:75
-#: templates/manage_monitoring/representatives.html:71
-#: templates/manage_monitoring/representatives.html:90
-msgid "Phone"
-msgstr "Телефон"
 
 #: templates/manage_monitoring/organizations.html:79
 msgid "Status"

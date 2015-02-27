@@ -21,6 +21,346 @@
     color: #111111;
 }
 
+.content input[type="text"], .content textarea {
+    padding-left: 20px;
+    width: 420px; /* 540px-120px */
+    height: 46px;
+    border: 2px solid #005c9c;
+    border-radius: 3px;
+    background-color: #ffffff;
+    color: #acacac;
+    font-weight: bold;
+    font-size: 17px;
+    resize: none;
+    font-family: Arial;
+}
+
+.content textarea {
+    padding-top: 10px;
+}
+
+.content input[type="submit"] {
+    height: 46px;
+    border: none;
+    border-radius: 3px;
+    background: #005c9c;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 40px;
+}
+
+
+.content input[type="submit"]:active {
+    background: #0577c7;
+    color: #ffffff;
+}
+
+/* "FIND SCORE" BLOCK */
+
 #find_score {
-    min-height: 440px;
+    min-height: 501px;
+}
+
+#find_score .top-block {
+    margin: 0 auto;
+    width: 540px;
+}
+
+#find_score h1 {
+    padding: 0;
+    color: #005c9c;
+    text-align: center;
+    font-weight: bold;
+    font-size: 23px;
+    line-height: 36px;
+}
+
+#find_score h2 {
+    margin: 40px 0 15px;
+    text-align: center;
+}
+
+#find_score form {
+    font-size: 0;
+}
+
+#find_score input {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    margin: 0;
+}
+
+#find_score input:focus {
+    outline: 0;
+}
+
+#find_score input[type="text"] {
+    height: 46px;
+    border-right: none;
+    border-radius: 3px 0 0 3px;
+}
+
+#contacts input[type="text"] {
+    height: 42px;
+}
+
+#find_score input[type="text"]:focus {
+    color: #666666;
+}
+
+#find_score input[type="submit"] {
+    width: 120px;
+    border-radius: 0 3px 3px 0;
+    padding: 0;
+}
+
+#find_score input[type="submit"]:hover {
+    background: #30659e;
+    color: #ffffd6;
+}
+
+
+#contacts input[type="submit"] {
+    width: 260px;
+}
+
+#contacts input[type="submit"]:hover {
+    background: #30659e;
+    color: #ffffd6;
+}
+
+
+/* Steps block */
+
+.steps-block {
+    margin-top: 47px;
+    text-align: center;
+}
+
+.step {
+    display: inline-block;
+    width: 260px;
+    vertical-align: top;
+}
+
+.step img {
+    height: 80px;
+}
+
+.step p {
+    margin: 36px 0 0;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+.right-arrow {
+    display: inline-block;
+    width: 40px;
+    height: 80px;
+    vertical-align: top;
+    line-height: 80px;
+}
+
+.right-arrow img {
+    vertical-align: middle;
+}
+
+/* Results block */
+
+.results-block {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.not-url-error p {
+    display: inline-block;
+    margin: 0 0 0 10px;
+    color: #d80038;
+    vertical-align: middle;
+    font-size: 14px;
+    line-height: 25px;
+}
+
+.not-found-error > p {
+    margin: 0;
+    color: #d80038;
+    font-size: 14px;
+}
+
+.not-found-error div p {
+    margin: 0;
+}
+
+.not-found-error div p:first-child {
+    margin: 20px 0 15px;
+}
+
+
+.results-table {
+    margin: 0 60px;
+    min-width: 700px;
+    max-width: 820px;
+    border-spacing: 0;
+}
+
+.results-table th {
+    border: none;
+    color: #005c9c;
+    white-space: nowrap;
+}
+
+.results-table th,
+.results-table td {
+    padding: 10px;
+    border: none;
+}
+
+.results-table tbody {
+    background: #ffffff;
+}
+
+.results-table tbody tr:nth-of-type(odd) {
+    background: #fcfcfc;
+}
+
+.results-table tbody tr:not(:first-child) {
+    border-top: 1px solid #f2f2f2;
+}
+
+.results-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 3px;
+}
+.results-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 3px;
+}
+
+.rate-or-results,
+.interaction-or-finishing {
+    margin-top: 20px;
+}
+
+.rate-or-results p,
+.interaction-or-finishing p {
+    margin: 0;
+    line-height: 22px;
+}
+
+a.with-border {
+    display: inline-block;
+    padding: 2px;
+    border: 2px solid #30659e;
+    border-radius: 3px;
+    background: #f2f2f2;
+    color: #30659e;
+    line-height: 16px;
+}
+
+a.with-border:hover {
+    background: #30659e;
+    color: #ffffd6;
+}
+
+a.with-border:active {
+    background: #0577c7;
+    color: #ffffff;
+}
+
+
+input:focus::-webkit-input-placeholder { color:transparent; }
+input:focus:-moz-placeholder { color:transparent; } /* FF 4-18 */
+input:focus::-moz-placeholder { color:transparent; } /* FF 19+ */
+input:focus:-ms-input-placeholder { color:transparent; } /* IE 10+ */
+
+textarea:focus::-webkit-input-placeholder { color:transparent; }
+textarea:focus:-moz-placeholder { color:transparent; } /* FF 4-18 */
+textarea:focus::-moz-placeholder { color:transparent; } /* FF 19+ */
+textarea:focus:-ms-input-placeholder { color:transparent; } /* IE 10+ */
+
+div.contacts_right, div.contacts_left {
+    display: table-cell;
+}
+
+div.contacts_right {
+    padding-left: 90px;
+    margin-top: 60px;
+}
+
+div.contacts_right img {
+    width: 24px;
+    margin-right: 20px;
+    margin-bottom: 2px;
+    float: left;
+}
+
+div.err img {
+    width: 16px;
+}
+
+div.err {
+    color: #d80038;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#contacts .error {
+    border-color: #d80038;
+}
+
+#contacts h2 {
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+#contacts input[type="text"], #contacts textarea {
+    font-size: 14px;
+}
+
+.contacts_left form > div {
+    margin: 10px 0;
+}
+
+#id_text {
+    height: 80px;
+}
+
+.our_mail a {
+    color: #005c9c;
+}
+
+.our_mail a:active {
+    color: #0577c7;
+}
+
+.contacts_right > div {
+    margin-bottom: 20px;
+}
+
+#add_phone img {
+    width: 16px;
+    position: relative;
+    bottom: -3px;
+    margin-right: 6px;
+}
+
+#id_email, #id_phone {
+    width: 184px;
+}
+
+#id_email {
+    margin-right: 20px;
+}
+
+#contact_description {
+    margin-top: 10px;
+    width: 270px;
+}
+
+#contact_description p {
+    margin: 0px;
+    line-height: 26px;
+}
+
+#contact_person {
+    padding: 2px 0;
 }

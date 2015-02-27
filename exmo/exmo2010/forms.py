@@ -39,6 +39,13 @@ class FeedbackForm(Form):
         return clean_message(self.cleaned_data['comment'])
 
 
+class ContactsForm(Form):
+    email = EmailField()
+    text = CharField()
+    name = CharField()
+    phone = CharField(required=False)
+
+
 class CertificateOrderForm(Form):
     ADDRESSEE_CHOICES = (('org', _('to organization')), ('user', _('to employee')))
     DELIVERY_METHOD_CHOICES = (('email', _('by email')), ('post', _('by post')))
