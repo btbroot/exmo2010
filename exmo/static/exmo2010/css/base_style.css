@@ -562,24 +562,6 @@ table.base-table tbody tr:hover {
 
 /* SORTABLE TABLES HEADERS */
 
-.heading th {
-    background-color: #ffffff;
-}
-
-.heading th a {
-    border-bottom: 1px #222222 dotted;
-    color: #222222;
-}
-
-.heading th a:hover {
-    border-bottom: none;
-    text-decoration: none;
-}
-
-.heading > th > form {
-    margin: 5px 0 0;
-}
-
 .tablesorter-header-inner span:first-child {
     border-bottom: 1px dotted #000000;
     cursor: pointer;
@@ -589,12 +571,37 @@ span.arrow {
     margin-left: 2px;
 }
 
-.tablesorter-headerDesc  span.arrow:before {
+.tablesorter-headerDesc span.arrow:before {
     content: "↓";
 }
 
 .tablesorter-headerAsc span.arrow:before {
     content: "↑";
+}
+
+span.sort {
+    margin-left: 5px;
+}
+
+.results-table .tablesorter-header-inner span:first-child {
+    border-bottom: none;
+}
+
+.tablesorter-headerDesc .tablesorter-header-inner span:first-child,
+.tablesorter-headerAsc .tablesorter-header-inner span:first-child {
+    color: #111111;
+}
+
+.tablesorter-headerDesc span.sort:before {
+    content: url("../img/sort-down.svg");
+    display: inline-block;
+    width: 10px;
+}
+
+.tablesorter-headerAsc span.sort:before {
+    content: url("../img/sort-up.svg");
+    display: inline-block;
+    width: 10px;
 }
 
 
@@ -959,6 +966,18 @@ i.download {
     /* AlphaImageLoader is background-size property for IE8 and below */
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/download.png', sizingMethod=scale)";
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/download.png', sizingMethod=scale);
+}
+
+i.error {
+    margin: 0;
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+    background: url("../img/error.svg") no-repeat;
+    background-size: 25px 25px;
+    /* AlphaImageLoader is background-size property for IE8 and below */
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/error.svg', sizingMethod=scale)";
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/error.svg', sizingMethod=scale);
 }
 
 i.map {

@@ -287,6 +287,22 @@ def mail_feedback(request, sender_email, body):
         to=[config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')]))
 
 
+def mail_contacts_frontpage(formdata):
+    # Send email back to author
+    send_email.delay(ExmoEmail(
+        template_basename='mail/contacts_creator',
+        context=formdata,
+        subject=_("Infometer communication"),
+        to=[formdata["email"]]))
+
+    # Send email to support staff
+    send_email.delay(ExmoEmail(
+        template_basename='mail/contacts_recipient',
+        context=formdata,
+        subject=_("Infometer communication"),
+        to=[config_value('EmailServer', 'DEFAULT_SUPPORT_EMAIL')]))
+
+
 def mail_password_reset(request, user, reset_url):
     send_email.delay(ExmoEmail(
         template_basename='mail/password_reset_email',

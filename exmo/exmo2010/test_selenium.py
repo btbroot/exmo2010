@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,6 +28,52 @@ from nose.plugins.attrib import attr
 from core.test_utils import BaseSeleniumTestCase
 from exmo2010.models import Parameter, Organization, Score, Task
 from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED
+
+
+@attr('selenium')
+class ContactsFormTestCase(BaseSeleniumTestCase):
+    # exmo2010:index
+
+    # Submitting valid contacts form should display success message and send email.
+    # Submitting invalid form should display errors.
+
+    def test_default_visible_formfields(self):
+        # WHEN i get index page.
+        self.get(reverse('exmo2010:index'))
+
+        # INITIALLY validation erros should be hidden.
+        self.assertHidden('div.err_required')
+        self.assertHidden('div.err_invalid')
+
+        # WHEN i click submit button with empty contacts message form.
+        self.find('#submit_message').click()
+        # THEN required error messages should become visible.
+        self.assertVisible('div.err_required')
+
+        # WHEN i fill all inputs, bit with invalid email.
+        self.find('#id_name').send_keys('name')
+        self.find('#id_email').send_keys('invalid')
+        self.find('#id_text').send_keys('txt')
+
+        # AND i click submit button.
+        self.find('#submit_message').click()
+        # THEN ivalid error message should become visible.
+        self.assertVisible('div.err_invalid')
+
+        # WHEN i fill valid email.
+        self.find('#id_email').send_keys('correct@email.org')
+        # AND i click submit button.
+        self.find('#submit_message').click()
+
+        # THEN all validation erros should become hidden.
+        self.assertHidden('div.err_required')
+        self.assertHidden('div.err_invalid')
+
+        # AND success message should become visible.
+        self.assertVisible('div.submit_result_message.success')
+
+        # AND there should be 2 email messages in the outbox.
+        self.assertEqual(len(mail.outbox), 2)
 
 
 @attr('selenium')

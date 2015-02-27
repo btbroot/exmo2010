@@ -216,6 +216,9 @@ urlpatterns = named_urls('',
     (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
         'monitorings.views.monitoring_report', 'monitoring_report_finished'),
 
+    (r'^ajax_index_find_score/$', 'exmo2010.views.ajax_index_find_score'),
+    (r'^ajax_submit_contacts_form/$', 'exmo2010.views.ajax_submit_contacts_form'),
+
     (r'^certificate_order/$', CertificateOrderView, 'certificate_order'),
     (r'^claim/delete/$', 'claims.views.claim_delete'),
     (r'^toggle_comment/$', 'scores.views.toggle_comment'),

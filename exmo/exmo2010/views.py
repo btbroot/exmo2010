@@ -18,6 +18,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import re
 from collections import OrderedDict, defaultdict
 
 from ckeditor.views import upload
@@ -27,7 +28,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.template import RequestContext, loader
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
@@ -39,10 +40,10 @@ from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
 
-from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm
-from .mail import mail_certificate_order, mail_feedback
-from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task
-from .models.monitoring import RATE, RES, INT, FIN, PUB
+from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm, ContactsForm
+from .mail import mail_certificate_order, mail_feedback, mail_contacts_frontpage
+from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task, Organization
+from .models.monitoring import PRE, RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
@@ -122,6 +123,58 @@ def index_orgs(request):
     return TemplateResponse(request, 'home/index_orguser.html', context)
 
 
+org_url_re = re.compile('(http://|https://)?(www\.)?(?P<base_url>[a-zA-Z1-9][a-zA-Z1-9\-]*\.[a-zA-Z1-9\-\.]+)(/.*)?$')
+
+
+def ajax_index_find_score(request):
+    if request.method != "GET":
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
+
+    if 'org_url' not in request.GET:
+        return HttpResponseBadRequest()
+
+    context = {'result': '', 'tasks': None, 'org_url': request.GET['org_url']}
+
+    query = org_url_re.match(request.GET['org_url'])
+    if not query:
+        context['result'] = 'invalid_url'
+    else:
+        filter = Q(organization__url__icontains=query.group('base_url'), organization__monitoring__hidden=False)
+        tasks = Task.objects.filter(filter).prefetch_related('organization__monitoring')
+
+        if not tasks:
+            context['result'] = 'not_found'
+        else:
+            context['tasks'] = []
+
+            # Try to find matching unfinished monitorings to show info block.
+            # We should show only one info block about RATE/RES or INT/FIN monitoring. INT/FIN has
+            # precedence (as latest monitoring phase).
+            for task in tasks:
+                if task.organization.monitoring.status in [RATE, RES] and not context['result']:
+                    context['result'] = 'rate'
+                elif task.organization.monitoring.status in [INT, FIN]:
+                    context['result'] = 'interaction'
+                elif task.organization.monitoring.status == PUB and task.status == Task.TASK_APPROVED:
+                    # Approved tasks from published monitorings should be displayed in table.
+                    context['tasks'].append(task)
+
+    return TemplateResponse(request, 'home/_search_results.html', context)
+
+
+def ajax_submit_contacts_form(request):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(permitted_methods=['POST'])
+
+    form = ContactsForm(request.POST)
+    if form.is_valid():
+        mail_contacts_frontpage(form.cleaned_data)
+    else:
+        return HttpResponseBadRequest()
+
+    return JSONResponse({'ok': True})
+
+
 def feedback(request):
     success = False
 
@@ -129,7 +182,6 @@ def feedback(request):
         form = FeedbackForm(initial={'email': request.user.email})
     else:
         form = FeedbackForm()
-
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():

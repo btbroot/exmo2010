@@ -36,7 +36,7 @@ from .middleware import CustomLocaleMiddleware
 from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter,
                      Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED)
 from .templatetags.exmo2010_filters import linkify
-from .views import CertificateOrderView, ckeditor_upload
+from .views import CertificateOrderView, ckeditor_upload, org_url_re
 from core.test_utils import OptimizedTestCase
 from core.utils import get_named_patterns, workday_count
 
@@ -485,3 +485,27 @@ class WorkdayCountTestCase(TestCase):
         fmt = '%Y.%m.%d %H:%M'
         result = workday_count(datetime.strptime(start, fmt), datetime.strptime(end, fmt))
         self.assertEqual(result, expected_result)
+
+
+class IndexFindScoreRegexTestCase(TestCase):
+    # exmo2010:ajax_index_find_score
+
+    # Regular expression should match only valid url provided via input form.
+
+    @parameterized.expand([
+        ('http://www.123.ru/', '123.ru'),
+        ('https://www.123.ru/', '123.ru'),
+        ('123.ru/456', '123.ru'),
+        ('www.123.ru/&q=zxc', '123.ru'),
+    ])
+    def test_valid(self, input, expected):
+        self.assertEqual(org_url_re.match(input).group('base_url'), expected)
+
+    @parameterized.expand([
+        ('http:www.123.ru/', ),
+        ('123', ),
+        ('qwe', ),
+        ('.www.123/&q=zxc', ),
+    ])
+    def test_invalid(self, input):
+        self.assertEqual(org_url_re.match(input), None)

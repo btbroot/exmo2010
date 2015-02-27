@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Слой_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 100 80" enable-background="new 0 0 100 80" xml:space="preserve">
+<path fill="#CECECE" d="M100,50H26c-3.3,0-6-2.7-6-6V6c0-3.3,2.7-6,6-6h68c3.3,0,6,2.7,6,6V50z"/>
+<path fill="#245F97" d="M74,70H0V26c0-3.3,2.7-6,6-6h68c3.3,0,6,2.7,6,6v38C80,67.3,77.3,70,74,70z"/>
+<polygon fill="#245F97" points="10,70 0,70 0,80 "/>
+<polygon fill="#CECECE" points="100,60 100,50 90,50 "/>
+</svg>
