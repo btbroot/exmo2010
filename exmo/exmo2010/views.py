@@ -72,6 +72,9 @@ def index_anonymous(request):
 
 
 def tasks_index(request):
+    if not request.user.is_expertB:
+        raise PermissionDenied
+
     queryform = TasksIndexQueryForm(request.user, request.GET)
 
     Monitoring.objects.filter()
