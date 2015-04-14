@@ -174,17 +174,24 @@ class ExistingEmailForm(forms.Form):
 
     def clean(self):
         """
-        Check if account with presented email is already exists.
+        Check if account with given email exists.
         """
         email = self.cleaned_data.get('email')
         if email:
-            try:
-                user = User.objects.get(email__iexact=email)
-            except ObjectDoesNotExist:
+            users = User.objects.filter(email__iexact=email)
+            if not users:
                 raise forms.ValidationError(mark_safe(_(
                     "This account does not exist. Check the e-mail address or <a href='%s'>register</a>.") %
                     reverse('exmo2010:registration_form')))
-            banned = user.profile.email_confirmed and not user.is_active
-            if banned or user.password == UNUSABLE_PASSWORD:
+            # We will check only first user with this email. We can have many old users with
+            # same email in database, but if one is banned, others should also be banned by administrator.
+            for user in users:
+                banned = user.profile.email_confirmed and not user.is_active
+                if not banned and user.password != UNUSABLE_PASSWORD:
+                    # OK, found user who is not banned.
+                    break
+            else:
+                # All found users are banned.
                 raise forms.ValidationError(_("The user account associated with this e-mail was suspended."))
+
         return self.cleaned_data

@@ -22,6 +22,7 @@ from urllib import urlencode
 
 from django.conf import settings
 from django.contrib.auth import login as auth_login, logout as auth_logout, REDIRECT_FIELD_NAME, authenticate
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD
 from django.contrib.auth.models import Group, User
 from django.core.urlresolvers import reverse
 from django.forms.fields import Field
@@ -59,14 +60,21 @@ def password_reset_request(request, **kwargs):
     else:  # POST
         form = ExistingEmailForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(email__iexact=form.cleaned_data["email"])
-            token = tokens.PasswordResetTokenGenerator().make_token(user)
-            url = reverse('exmo2010:password_reset_confirm', args=(user.pk, token))
-            if request.GET:
-                inv_codes = request.GET.getlist('code', [])
-                params = {'code': inv_codes}
-                url += '?{}'.format(urlencode(params, True))
-            mail_password_reset(request, user, url)
+            # Get all active users with this email, and send email to each of them. We have to
+            # support old users in database, who have username not matching her email.
+            for user in User.objects.filter(email__iexact=form.cleaned_data["email"]):
+                banned = user.profile.email_confirmed and not user.is_active
+                if banned or user.password == UNUSABLE_PASSWORD:
+                    # User is banned, ignore. (Form will pass validation only if there is at least one active user)
+                    continue
+
+                token = tokens.PasswordResetTokenGenerator().make_token(user)
+                url = reverse('exmo2010:password_reset_confirm', args=(user.pk, token))
+                if request.GET:
+                    inv_codes = request.GET.getlist('code', [])
+                    params = {'code': inv_codes}
+                    url += '?{}'.format(urlencode(params, True))
+                mail_password_reset(request, user, url)
             return redirect('{}?{}'.format(reverse('exmo2010:password_reset_sent'),
                                            urlencode({'email': form.cleaned_data['email']})))
     data = {'form': form, 'orgs': orgs, 'required_error': Field.default_error_messages['required'],
