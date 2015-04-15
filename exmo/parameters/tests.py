@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -165,7 +165,8 @@ class ParamCreateTestCase(TestCase):
         params = Parameter.objects.values_list(*'code name weight monitoring_id'.split())
         self.assertEqual(list(params), [(456, 'ppp', 1, self.monitoring.pk)])
         # AND response should redirect to task_scores
-        self.assertRedirects(response, reverse('exmo2010:task_scores', args=[self.task.pk]))
+        url = '%s#parameter_456' % reverse('exmo2010:task_scores', args=[self.task.pk])
+        self.assertRedirects(response, url)
 
 
 class ParamEditEmailNotifyTestCase(TestCase):
