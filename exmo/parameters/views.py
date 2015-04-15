@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -75,16 +75,13 @@ class PostOrgParamRelevanceView(LoginRequiredMixin, View):
             return HttpResponseRedirect(reverse('exmo2010:task_scores', args=[task.pk]))
 
 
-class ParameterMixin(LoginRequiredMixin):
+class ParamEditView(LoginRequiredMixin, UpdateView):
     context_object_name = 'param'
+    template_name = "parameter_form.html"
 
     def get_success_url(self):
         base_url = reverse('exmo2010:task_scores', args=[self.task.pk])
-        return '%s?%s' % (base_url, self.request.GET.urlencode())
-
-
-class ParamEditView(ParameterMixin, UpdateView):
-    template_name = "parameter_form.html"
+        return '%s?%s#parameter_%s' % (base_url, self.request.GET.urlencode(), self.object.code)
 
     def get_object(self, queryset=None):
         self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
@@ -116,8 +113,13 @@ class ParamEditView(ParameterMixin, UpdateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ParamDeleteView(ParameterMixin, DeleteView):
+class ParamDeleteView(LoginRequiredMixin, DeleteView):
+    context_object_name = 'param'
     template_name = "exmo2010/parameter_confirm_delete.html"
+
+    def get_success_url(self):
+        base_url = reverse('exmo2010:task_scores', args=[self.task.pk])
+        return '%s?%s' % (base_url, self.request.GET.urlencode())
 
     def get_object(self, queryset=None):
         self.task = get_object_or_404(Task, pk=self.kwargs["task_pk"])
