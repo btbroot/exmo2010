@@ -21,12 +21,14 @@ from contextlib import contextmanager
 
 from django.conf import settings
 from django.core import mail
+from django.core.files.storage import default_storage
 from django.db import transaction
-from django.test import LiveServerTestCase, SimpleTestCase, Client
+from django.test import LiveServerTestCase, SimpleTestCase, Client, TestCase
 from django.test.client import RequestFactory
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
+from inmemorystorage.storage import InMemoryDir
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
@@ -189,3 +191,13 @@ class OptimizedTestCase(SimpleTestCase):
         restore_transaction_methods()
         transaction.rollback(using='default')
         transaction.leave_transaction_management(using='default')
+
+    def tearDown(self):
+        # Clear file storage between tests.
+        default_storage.filesystem = InMemoryDir()
+
+
+class FileStorageTestCase(TestCase):
+    def tearDown(self):
+        # Clear file storage between tests.
+        default_storage.filesystem = InMemoryDir()

@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import json
-import os
+from os.path import join, basename
 from urllib import urlencode
 
 from django import forms
@@ -37,6 +37,7 @@ from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, DetailView, UpdateView
+from pytils.translit import translify
 
 from .forms import InviteOrgsQueryForm, OrganizationsQueryForm, RepresentativesQueryForm
 from core.response import JSONResponse
@@ -127,22 +128,19 @@ def ajax_upload_file(request):
         upload_file = request.FILES.get('upload_file')
         error = None
         if upload_file:
-            if upload_file.content_type in settings.EMAIL_ATTACHMENT_CONTENT_TYPES:
-                if upload_file._size > max_upload_size:
-                    error = _('Please keep file size under {max_size}. Current file size {size}.').format({
-                        'max_size': filesizeformat(max_upload_size), 'size': filesizeformat(upload_file._size)})
-            else:
-                error = _('This file type is not allowed.')
+            # BUG #2369 restriction of file content type does not work. (Removed from code now)
+            if upload_file._size > max_upload_size:
+                error = _('Please keep file size under {max_size}. Current file size {size}.').format({
+                    'max_size': filesizeformat(max_upload_size), 'size': filesizeformat(upload_file._size)})
         else:
             error = _('No file.')
         context = {'error': error}
 
         if not error:
             upload_path = settings.EMAIL_ATTACHMENT_UPLOAD_PATH
-            upload_filename = default_storage.get_available_name(os.path.join(upload_path, upload_file.name))
+            upload_filename = default_storage.get_available_name(join(upload_path, translify(upload_file.name)))
             saved_path = default_storage.save(upload_filename, upload_file)
-            saved_filename = os.path.basename(saved_path)
-            context = {'saved_filename': saved_filename, 'original_filename': upload_file.name}
+            context = {'saved_filename': basename(saved_path), 'original_filename': upload_file.name}
 
         return JSONResponse(context)
 
@@ -198,7 +196,7 @@ class SendMailView(SendMailMixin, UpdateView):
 
             if attachments_names:
                 for saved_filename, original_filename in json.loads(attachments_names).items():
-                    saved_file = default_storage.open(os.path.join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, saved_filename))
+                    saved_file = default_storage.open(join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, saved_filename))
                     attachments.append((original_filename, saved_file.read()))
                     saved_file.close()
 

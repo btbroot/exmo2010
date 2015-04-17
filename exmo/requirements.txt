@@ -51,9 +51,11 @@ kombu==3.0.24
 lxml==3.4.1
 pymongo==2.7.2
 python-dateutil==2.3
+pytils
 
 #for testing:
 SQLAlchemy
+django-inmemorystorage
 django-nose
 nose-parameterized
 mock

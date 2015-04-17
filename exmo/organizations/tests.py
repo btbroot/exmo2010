@@ -17,7 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import json
 from cStringIO import StringIO
+from os.path import join
 
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User, Group
@@ -25,6 +27,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import default_storage
+from django.core.files import File
 from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -33,8 +37,10 @@ from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
+
+
 from .views import RepresentativesView, ajax_upload_file
-from core.test_utils import OptimizedTestCase
+from core.test_utils import OptimizedTestCase, FileStorageTestCase
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import (
@@ -618,7 +624,40 @@ class AjaxUploadFileAccessTestCase(OptimizedTestCase):
 
     @parameterized.expand(zip(['admin', 'expertA']))
     def test_allow_post(self, username, *args):
-        # WHEN privileged user upload file
-        request = MagicMock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
+        mock_file = Mock(spec=File, _size=12, read=lambda: 'some content')
+        mock_file.name = u'ЫВА.doc'
+        # WHEN privileged user uploads file
+        request = Mock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': mock_file})
         # THEN response status_code should be 200 (OK)
         self.assertEqual(ajax_upload_file(request).status_code, 200)
+
+
+class AjaxUploadUnicodeFileTestCase(FileStorageTestCase):
+    # exmo2010:ajax_upload_file
+
+    # BUG #2369
+    # Uploaded files with unicode names should get translified names.
+
+    def setUp(self):
+        # GIVEN i am logged in as experA
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+    def test(self):
+        url = reverse('exmo2010:ajax_upload_file')
+        mock_file = Mock(spec=File, _size=12, read=lambda: 'some content')
+        mock_file.name = u'ЫВА.doc'
+
+        # WHEN i upload file with unicode symbols in name
+        response = self.client.post(url, {'upload_file': mock_file}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+        # THEN response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND saved filename should get translified
+        result = json.loads(response.content)
+        self.assertEqual(result['saved_filename'], 'YiVA.doc')
+        # AND saved file content should match uploaded file content
+        saved_file = default_storage.open(join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, result['saved_filename']))
+        self.assertEqual(saved_file.read(), 'some content')

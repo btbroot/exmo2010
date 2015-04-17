@@ -307,6 +307,9 @@ INSTALLED_APPS = (
 if TEST:
     INSTALLED_APPS += ('django_nose',)
 
+    # Save uploaded files in memory.
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
+
 # Customization
 COMMENTS_APP = 'custom_comments'
 CSRF_FAILURE_VIEW = 'exmo2010.custom_registration.views.csrf_failure'
