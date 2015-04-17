@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -139,28 +139,6 @@ STATICFILES_FINDERS = (
 EMAIL_ATTACHMENT_UPLOAD_PATH = 'email_attachments/'
 # A number indicating the maximum file size allowed for upload
 EMAIL_ATTACHMENT_MAX_UPLOAD_SIZE = 15 * 1024 * 1024  # 15MB
-# List containing allowed content types
-EMAIL_ATTACHMENT_CONTENT_TYPES = [
-    'application/msword',  # doc
-    'application/vnd.ms-excel',  # xls
-    'application/vnd.ms-powerpoint',  # ppt, pps
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # docx
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',  # xlsx
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',  # pptx
-    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',  # ppsx
-    'application/vnd.oasis.opendocument.text',  # odt
-    'application/vnd.oasis.opendocument.spreadsheet',  # ods
-    'application/vnd.oasis.opendocument.presentation',  # odp
-    'application/pdf',  # pdf
-    'text/plain',  # txt
-    'image/bmp',  # bmp
-    'image/gif',  # gif
-    'image/jpeg',  # jpeg
-    'image/pjpeg',  # jpe
-    'image/png',  # png
-    'image/svg+xml',  # svg
-    'image/tiff',  # tiff
-]
 
 # Cache
 CACHE_PATH = '/var/cache/exmo2010/'
@@ -306,6 +284,9 @@ INSTALLED_APPS = (
 
 if TEST:
     INSTALLED_APPS += ('django_nose',)
+
+    # Save uploaded files in memory.
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
 
 # Customization
 COMMENTS_APP = 'custom_comments'

@@ -2,7 +2,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -51,9 +51,11 @@ kombu==3.0.24
 lxml==3.4.1
 pymongo==2.7.2
 python-dateutil==2.3
+pytils
 
 #for testing:
 SQLAlchemy
+django-inmemorystorage
 django-nose
 nose-parameterized
 mock
