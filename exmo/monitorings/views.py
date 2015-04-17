@@ -1175,20 +1175,11 @@ def replace_string(cell):
 
 
 class MonitoringExport(object):
-    #отсортированные критерии для экспорта в csv
-    CSV_CRITERIONS = [
-        'name',
-        'id',
-        'found',
-    ]
-    CSV_CRITERIONS.extend(Parameter.OPTIONAL_CRITERIA)
-    CSV_CRITERIONS.extend(['social', 'type', 'revision'])
-
     def __init__(self, monitoring):
         self.monitoring = monitoring
         scores = list(Score.objects.raw(monitoring.sql_scores()))
         position = 0
-        #dict with organization as keys and el as list of scores for json export
+        # dict with organization as keys and el as list of scores for json export
         self.tasks = OrderedDict()
         if not len(scores):
             return
@@ -1208,12 +1199,14 @@ class MonitoringExport(object):
                 'type': 'npa' if score.parameter_npa else 'other',
                 'revision': Score.REVISION_EXPORT[score.revision],
                 'id': score.parameter_id,
+                'links': score.links or '',
+                'recommendations': score.recommendations or '',
             }
             if settings.DEBUG:
                 score_dict['pk'] = score.pk
             for criteria in Parameter.OPTIONAL_CRITERIA:
                 row_criteria = getattr(score, criteria, -1)
-                #for sql_v1: document and image always None
+                # for sql_v1: document and image always None
                 if row_criteria is None:
                     row_criteria = -1
                 row_criteria = float(row_criteria)
@@ -1254,8 +1247,7 @@ class MonitoringExport(object):
             json_dump_args = {'indent': 2}
         response = HttpResponse(mimetype='application/json')
         response.encoding = 'UTF-8'
-        response['Content-Disposition'] = \
-            'attachment; filename=monitoring-%s.json' % self.monitoring.pk
+        response['Content-Disposition'] = 'attachment; filename=monitoring-%s.json' % self.monitoring.pk
         response.write(
             simplejson.dumps(
                 ret, **json_dump_args
@@ -1268,7 +1260,7 @@ class MonitoringExport(object):
             'attachment; filename=monitoring-%s.csv' % self.monitoring.pk
         response.encoding = 'UTF-16'
         writer = UnicodeWriter(response)
-        #csv HEAD
+        # csv HEAD
         writer.writerow([
             "#Monitoring",
             "Organization",
@@ -1287,8 +1279,13 @@ class MonitoringExport(object):
             "Image",
             "Social",
             "Type",
-            "Revision"
+            "Revision",
+            "Links",
+            "Recommendations"
         ])
+
+        score_fields = ['name', 'id', 'found'] + Parameter.OPTIONAL_CRITERIA
+        score_fields += ['social', 'type', 'revision', 'links', 'recommendations']
         for task in self.tasks.values():
             for score_dict in task['scores']:
                 row = [
@@ -1299,13 +1296,9 @@ class MonitoringExport(object):
                     task['openness_initial'],
                     task['openness'],
                 ]
-                row.extend(
-                    [
-                        unicode(score_dict.get(c, "not relevant"))
-                        for c in self.CSV_CRITERIONS
-                    ])
+                row.extend([unicode(score_dict.get(c, "not relevant")) for c in score_fields])
                 writer.writerow(row)
-        #csv FOOTER
+        # csv FOOTER
         license = LicenseTextFragments.objects.filter(pk='license')
         if license:
             writer.writerow([u'#%s' % license[0].csv_footer])

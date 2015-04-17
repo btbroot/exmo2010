@@ -977,8 +977,8 @@ class TestMonitoringExport(TestCase):
             # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
             parameter = mommy.make(Parameter, monitoring=monitoring, complete=False, weight=1)
             # AND в каждой задаче есть две ревизии оценки по parameter
-            score = mommy.make(Score, task=task, parameter=parameter)
-            score = mommy.make(Score, task=task, parameter=parameter, revision=Score.REVISION_INTERACT)
+            mommy.make(Score, task=task, parameter=parameter, links='link', recommendations='yep')
+            mommy.make(Score, task=task, parameter=parameter, revision=Score.REVISION_INTERACT)
 
     def parameter_type(self, score):
         return 'npa' if score.parameter.npa else 'other'
@@ -1009,9 +1009,7 @@ class TestMonitoringExport(TestCase):
         self.assertEqual(
             json_file['monitoring']['tasks'][0]['openness'],
             ('%.3f' % task.openness) if task.openness is not None else task.openness)
-        self.assertEqual(
-            int(json_file['monitoring']['tasks'][0]['position']),
-            1)
+        self.assertEqual(int(json_file['monitoring']['tasks'][0]['position']), 1)
         # AND балл найденности (в первой задаче, в оценке по первому параметру)
         # в БД и json совпадает
         self.assertEqual(
@@ -1021,11 +1019,15 @@ class TestMonitoringExport(TestCase):
             json_file['monitoring']['tasks'][0]['scores'][0]['type'],
             self.parameter_type(score)
         )
+        # AND exported "links" match database
+        self.assertEqual(
+            json_file['monitoring']['tasks'][0]['scores'][0]['links'], score.links)
+        # AND exported "recommendations" match database
+        self.assertEqual(
+            json_file['monitoring']['tasks'][0]['scores'][0]['recommendations'], score.recommendations)
 
-    @parameterized.expand(
-        [("expression-v%d" % code, code)
-            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
-    def test_csv(self, name, code):
+    @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
+    def test_csv(self, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
         # WHEN анонимный пользователь запрашивает данные каждого мониторинга в csv
         url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
@@ -1046,7 +1048,7 @@ class TestMonitoringExport(TestCase):
             else:
                 if row[0].startswith('#'):
                     continue
-                self.assertEqual(len(row), 18)
+                self.assertEqual(len(row), 20)
                 revision = row[17]
                 self.assertIn(revision, Score.REVISION_EXPORT.values())
                 for k, v in Score.REVISION_EXPORT.iteritems():
@@ -1057,31 +1059,20 @@ class TestMonitoringExport(TestCase):
                 # AND имя мониторинга в БД и json совпадает
                 self.assertEqual(row[0], monitoring.name)
                 # AND имя организации (для первой задачи) в БД и json совпадает
-                self.assertEqual(
-                    row[1],
-                    organization.name)
-                self.assertEqual(
-                    int(row[2]),
-                    organization.pk)
-                self.assertEqual(
-                    int(row[3]),
-                    1)
+                self.assertEqual(row[1], organization.name)
+                self.assertEqual(int(row[2]), organization.pk)
+                self.assertEqual(int(row[3]), 1)
                 # AND КИД (для первой задачи) в БД и json совпадает
-                self.assertEqual(
-                    row[5],
-                    '%.3f' % task.openness if task.openness is not None else '')
-                self.assertEqual(
-                    float(row[7]),
-                    float(score.parameter.pk))
+                self.assertEqual(row[5], '%.3f' % task.openness if task.openness is not None else '')
+                self.assertEqual(float(row[7]), float(score.parameter.pk))
                 # AND балл найденности (в первой задаче, в оценке по первому параметру)
                 # в БД и json совпадает
-                self.assertEqual(
-                    int(row[8]),
-                    int(score.found))
-                self.assertEqual(
-                    row[16],
-                    self.parameter_type(score)
-                )
+                self.assertEqual(int(row[8]), int(score.found))
+                self.assertEqual(row[16], self.parameter_type(score))
+                # AND exported "links" match database
+                self.assertEqual(row[18], score.links or '')
+                # AND exported "recommendations" match database
+                self.assertEqual(row[19], score.recommendations or '')
 
 
 class TestMonitoringExportApproved(TestCase):
