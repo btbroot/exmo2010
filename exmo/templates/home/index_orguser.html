@@ -78,7 +78,7 @@
                                     {% for task in int_tasks %}
                                         <tr>
                                             <td>
-                                                {{ task.organization.monitoring.publish_date }}
+                                                {{ task.organization.monitoring.finishing_date }}
                                             </td>
                                             <td>
                                                 <a href="{% url 'exmo2010:monitoring_rating' task.organization.monitoring.pk %}">{{ task.organization.monitoring.name }}</a>
