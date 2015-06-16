@@ -740,7 +740,7 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
     def setUp(self):
         content_type = ContentType.objects.get_for_model(Score)
 
-        # GIVEN organization and parameter in PUBLISHED monitoring
+        # GIVEN organization in PUBLISHED monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED)
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
@@ -770,7 +770,7 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
         self.score_nonerelevant.comments = [comment(self.score_nonerelevant, n) for n in range(3)]
 
     def test_score_comments_toggle(self):
-        # WHEN I login
+        # WHEN I login as representative
         self.login('orguser', 'password')
 
         # AND I get recommendations page
@@ -827,6 +827,10 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
 
 @attr('selenium')
 class ScoreEditInteractionJsTestCase(BaseSeleniumTestCase):
+    # exmo2010:score
+
+    # BUG 2194: Comments are not saved in "score change" mode.
+
     # ExpertA and expertB assigned to task should be able to edit score in INTERACTION monitoring.
     # And comment should be added
 
@@ -853,8 +857,6 @@ class ScoreEditInteractionJsTestCase(BaseSeleniumTestCase):
         ('expertB',),
     ])
     def test_edit_score_and_post_comment(self, username):
-        # BUG 2194: Comments are not saved in "score change" mode.
-
         # WHEN I log in as expert
         self.login(username, 'password')
         # AND get score page
@@ -876,3 +878,42 @@ class ScoreEditInteractionJsTestCase(BaseSeleniumTestCase):
         self.assertVisible('.table-messages-parameter tr#c1')
         # AND visible comment text and posted comment text should be equal
         self.assertEquals(self.find('tr#c1 div.messages-content div p:nth-child(2)').text, 'Comment')
+
+
+@attr('selenium')
+class CkeditorInstancesLimitTestCase(BaseSeleniumTestCase):
+    # exmo2010:recommendations
+
+    # BUG 2377: CKEditor script raises "too much recursion" in Firefox on recommendations page
+
+    # Firefox only. When there are too many recommendations (about 100+), CKEditor instances will fail to
+    # initialize, so the user is unable to leave comments from this page. Browser log indicates javascript exception:
+    # too much recursion     ckeditor.js:91:103
+
+    def setUp(self):
+        # GIVEN organization in INTERACTION monitoring
+        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
+
+        # AND organization representative
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.profile.is_organization = True
+        orguser.profile.organization = [org]
+        # AND approved task
+        self.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+        # AND 150 0% scores with recommendations
+        for p in range(150):
+            param = mommy.make(Parameter, code=p, monitoring=org.monitoring, weight=1)
+            mommy.make(Score, task=self.task, parameter=param, found=0, recommendations='lol')
+
+    def test_recursion(self):
+        # WHEN I login as org representative
+        self.login('orguser', 'password')
+
+        # AND I get recommendations page
+        self.get(reverse('exmo2010:recommendations', args=(self.task.pk,)))
+
+        # THEN browser severe errors log should not contain "too much recursion"
+        messages = self.webdrv.get_log('browser')
+        severe_messages = [msg['message'] for msg in messages if msg['level'] == u'SEVERE']
+        if 'too much recursion' in severe_messages:
+            raise AssertionError('CKEditor script raises "too much recursion"')

@@ -19,6 +19,7 @@
 {% endcomment %}
 {% load i18n comments %}
 {% load bleach from bleach_tags %}
+{% load set_data from widget_tweaks %}
 {% load date_until linkify remove_extra_dot from exmo2010_filters %}
 
 {% for comment in score.comments %}
@@ -61,7 +62,13 @@
             <div class="hidden">
                 <form method="post" action="{% url 'exmo2010:post_score_comment' score.pk %}">{% csrf_token %}
                     <input type="hidden" name="next" value="{% url 'exmo2010:recommendations' view.task.pk %}#param{{ score.parameter.pk }}" />
-                    {{ score.comment_form.comment }}
+
+                    {% comment %}
+                        # BUG 2377: We have to initialize ckeditor only on demand - after user clicks on fake_input. Set
+                        # data-processed=1 to prevent automatic initialization in ckeditor-init.js
+                    {% endcomment %}
+                    {{ score.comment_form.comment|set_data:"processed:1" }}
+
                     <input type="submit"  class="tab-reply-block" value="{% trans 'Post comment' %}" disabled="disabled" />
                 </form>
             </div>

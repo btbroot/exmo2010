@@ -15,46 +15,6 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 $(document).ready(function() {
-
-    if (CKEDITOR.env.isCompatible) {
-        $.each(CKEDITOR.instances, function(id, editor){
-            if (editor != undefined) {
-                // Update original form inputs when text typed in CKEDITOR
-                // Enable submit button if CKEDITOR input not empty.
-                function ckChangeHandler(e) {
-                    var editor_body = $(e.sender.document.$).find('body');
-                    var submit = $(e.sender.element.$).closest('form').find('input[type=submit]');
-
-                    if(editor_body && $.trim(editor_body.text()) != '') {
-                        submit.prop('disabled', false);
-                    } else {
-                        submit.prop('disabled', true);
-                    }
-                    e.sender.updateElement()
-                }
-
-                if ($.browser.msie) {
-                    editor.on('contentDom', function(e) {
-                        editor.document.on('keyup', function(event) { ckChangeHandler(e); });
-                    });
-                } else {
-                    editor.on('change', ckChangeHandler);
-                }
-            }
-        });
-    } else {
-        $('div.comment-form').find('textarea').each(function(){
-            $(this).on('change keyup paste', function() {
-                var submit = $(this).closest('form').find('input[type=submit]');
-                if($.trim($(this).val()) != '') {
-                    submit.prop('disabled', false);
-                } else {
-                    submit.prop('disabled', true);
-                }
-            })
-        });
-    }
-
     $('a[href="#show_grounds"]').click(function(e){
         $(e.target).siblings('.grounds').slideToggle(function(){
             $(e.target).hide().siblings('a[href="#hide_grounds"]').show();
@@ -93,11 +53,54 @@ $(document).ready(function() {
         }
     });
 
+    if (!CKEDITOR.env.isCompatible) {
+        $('div.comment-form').find('textarea').each(function(){
+            $(this).on('change keyup paste', function() {
+                var submit = $(this).closest('form').find('input[type=submit]');
+                if($.trim($(this).val()) != '') {
+                    submit.prop('disabled', false);
+                } else {
+                    submit.prop('disabled', true);
+                }
+            })
+        });
+    }
+
     $('input.fake_input').click(function(){
         var div = $(this).hide().closest('div.comment-form').find('div');
-        var comment_area = div.find('textarea');
-        var cke_area = CKEDITOR.instances[comment_area.attr('id')];
         div.show();
-        cke_area != undefined ? cke_area.focus() : comment_area.focus();
+
+        var textarea = div.find('textarea');
+
+        if (!CKEDITOR.env.isCompatible) {
+            textarea.focus();
+        }
+        else {
+            var editor = CKEDITOR.replace(textarea.attr('id'), textarea.data('config'));
+
+            editor.on('instanceReady', function(){ editor.focus(); })
+
+            // Update original form inputs when text typed in CKEDITOR
+            // Enable submit button if CKEDITOR input not empty.
+            function ckChangeHandler(e) {
+                var editor_body = $(e.sender.document.$).find('body');
+                var submit = $(e.sender.element.$).closest('form').find('input[type=submit]');
+
+                if(editor_body && $.trim(editor_body.text()) != '') {
+                    submit.prop('disabled', false);
+                } else {
+                    submit.prop('disabled', true);
+                }
+                e.sender.updateElement()
+            }
+
+            if ($.browser.msie) {
+                editor.on('contentDom', function(e) {
+                    editor.document.on('keyup', function(event) { ckChangeHandler(e); });
+                });
+            } else {
+                editor.on('change', ckChangeHandler);
+            }
+        }
     })
 });
