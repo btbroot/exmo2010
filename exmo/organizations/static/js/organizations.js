@@ -165,6 +165,11 @@ $(document).ready(function () {
     $('.invite_widgets').on('click', 'input.invite_link', function(){ this.select(); });
 
     // Forbid manual editing invite_link input.
-    $('.invite_widgets').on('keypress', 'input.invite_link', function(){ return false; })
+    $('.invite_widgets').on('keypress', 'input.invite_link', function(e){
+        if (e.key == 'c' && (e.ctrlKey == true || e.metaKey == true)) {
+            return true;  // allow to copy text
+        }
+        return false;
+    })
 
 });
