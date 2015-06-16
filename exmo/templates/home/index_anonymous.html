@@ -93,6 +93,7 @@
 {% block main %}
     <div id="main" class="without_breadcrumbs">
 
+        {% if request.user.is_anonymous %}
         <div id="login_bubble">
             <div class="pointer"></div>
             <div class="square">
@@ -100,6 +101,7 @@
                 <a class="close">{% trans "Close" %}</a>
             </div>
         </div>
+        {% endif %}
 
         <div id="header">
             {% include '_header.html' %}
