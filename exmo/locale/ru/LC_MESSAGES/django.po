@@ -22,8 +22,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-17 21:54+0300\n"
-"PO-Revision-Date: 2015-04-17 21:54+0300\n"
+"POT-Creation-Date: 2015-06-19 22:34+0300\n"
+"PO-Revision-Date: 2015-06-19 22:34+0300\n"
 "Last-Translator: Edited with Lokalize\n"
 "Language-Team: Russian <>\n"
 "Language: ru\n"
@@ -184,7 +184,7 @@ msgstr "Рейтинг"
 #: templates/home/clarifications_index.html:56
 #: templates/home/comments_index.html:56 templates/home/index_orguser.html:72
 #: templates/home/index_orguser.html:106 templates/home/index_orguser.html:144
-#: templates/home/tasks_index.html:99 templates/home/tasks_index.html:119
+#: templates/home/tasks_index.html:103 templates/home/tasks_index.html:123
 #: templates/mail/certificate_order_email.html:31
 #: templates/mail/certificate_order_email.txt:28
 #: templates/mail/feedback_recipient.html:28
@@ -262,7 +262,7 @@ msgid "Email Server Settings"
 msgstr "Конфигурация почтового сервера"
 
 #: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
-#: exmo2010/forms.py:58 templates/home/index_anonymous.html:189
+#: exmo2010/forms.py:58 templates/home/index_anonymous.html:191
 #: templates/mail/contacts_recipient.html:24
 #: templates/mail/contacts_recipient.txt:24
 #: templates/mail/feedback_recipient.html:34
@@ -449,7 +449,7 @@ msgstr "на электронную почту"
 msgid "by post"
 msgstr "почтой России"
 
-#: exmo2010/forms.py:56 templates/home/index_anonymous.html:182
+#: exmo2010/forms.py:56 templates/home/index_anonymous.html:184
 #: templates/mail/contacts_recipient.html:23
 #: templates/mail/contacts_recipient.txt:23
 #: templates/mail/feedback_recipient.html:26
@@ -957,7 +957,7 @@ msgstr "Организации"
 
 #: exmo2010/models/organization.py:132 monitorings/templates/rating.html:115
 #: templates/certificate_order_form.html:101
-#: templates/home/tasks_index.html:100 templates/home/tasks_index.html:120
+#: templates/home/tasks_index.html:104 templates/home/tasks_index.html:124
 msgid "Website"
 msgstr "Cайт"
 
@@ -1709,7 +1709,7 @@ msgstr "Сформировать рейтинг"
 #: templates/certificate_order_form.html:87
 #: templates/home/monitorings_published.html:84
 #: templates/home/monitorings_unpublished.html:67
-#: templates/home/tasks_index.html:91
+#: templates/home/tasks_index.html:95
 #: templates/manage_monitoring/observers_groups.html:64
 #: templates/manage_monitoring/organizations.html:64
 #: templates/manage_monitoring/representatives.html:60
@@ -1814,28 +1814,24 @@ msgstr "ФИО или электронная почта"
 msgid "Organization is not selected"
 msgstr "Организация не выбрана"
 
-#: organizations/views.py:132
+#: organizations/views.py:133
 #, python-brace-format
 msgid "Please keep file size under {max_size}. Current file size {size}."
 msgstr "Размер файла должен быть меньше {max_size}. Текущий размер {size}."
 
-#: organizations/views.py:135
-msgid "This file type is not allowed."
-msgstr "Недопустимый тип файла."
-
-#: organizations/views.py:137
+#: organizations/views.py:136
 msgid "No file."
 msgstr "Файл не выбран."
 
-#: organizations/views.py:257
+#: organizations/views.py:255
 msgid "This email will not be delivered to anyone!"
 msgstr "Это письмо не будет доставлено никому!"
 
-#: organizations/views.py:259
+#: organizations/views.py:257
 msgid "Mails sent."
 msgstr "Письма отправлены."
 
-#: organizations/views.py:266
+#: organizations/views.py:264
 msgid "Form error!"
 msgstr "Ошибка формы!"
 
@@ -1970,7 +1966,7 @@ msgid "We're sorry, but the requested page could not be found."
 msgstr "Извините, но страницы с таким адресом не существует."
 
 #: templates/500.html:25 templates/500.html.py:28
-#: templates/home/index_anonymous.html:161
+#: templates/home/index_anonymous.html:163
 msgid "Server error"
 msgstr "Ошибка сервера"
 
@@ -2028,7 +2024,7 @@ msgid "Admin"
 msgstr "Админ"
 
 #: templates/_sidebar_index.html:34 templates/_sidebar_monitoring.html:38
-#: templates/home/tasks_index.html:73
+#: templates/home/tasks_index.html:77
 #: templates/manage_monitoring/organizations.html:78
 #: templates/manage_monitoring/tasks.html:37
 msgid "Tasks"
@@ -2569,7 +2565,7 @@ msgstr "Если вы уже получили приглашение к взаи
 
 #: templates/home/claims_index.html:43
 #: templates/home/clarifications_index.html:43
-#: templates/home/comments_index.html:43 templates/home/tasks_index.html:65
+#: templates/home/comments_index.html:43 templates/home/tasks_index.html:69
 msgctxt "front page"
 msgid "Home"
 msgstr "Главная"
@@ -2604,92 +2600,88 @@ msgstr "Ссылка на уточнение"
 msgid "Link to comment"
 msgstr "Ссылка на комментарий"
 
-#: templates/home/index_anonymous.html:99
+#: templates/home/index_anonymous.html:100
 msgid "If you are registered, please sign in."
 msgstr "Если вы зарегистрированы, то войдите в систему."
 
-#: templates/home/index_anonymous.html:100
+#: templates/home/index_anonymous.html:101
 #: templates/manage_monitoring/organizations.html:124
 msgid "Close"
 msgstr "Закрыть"
 
-#: templates/home/index_anonymous.html:112
+#: templates/home/index_anonymous.html:114
 msgid "Infometer: A Tool for Measuring and Increasing Informational Openness"
 msgstr "Инфометр — инструмент измерения и повышения информационной открытости"
 
-#: templates/home/index_anonymous.html:113
+#: templates/home/index_anonymous.html:115
 msgid "See the openness rate for the governmental website"
 msgstr "Узнайте оценку сайта органа власти"
 
-#: templates/home/index_anonymous.html:115
+#: templates/home/index_anonymous.html:117
 msgid "Example: minsvyaz.ru"
 msgstr "Например, minsvyaz.ru"
 
-#: templates/home/index_anonymous.html:116
+#: templates/home/index_anonymous.html:118
 msgid "Look up"
 msgstr "Узнать"
 
-#: templates/home/index_anonymous.html:123
+#: templates/home/index_anonymous.html:125
 msgid "Enter site address"
 msgstr "Введите адрес сайта"
 
-#: templates/home/index_anonymous.html:130
+#: templates/home/index_anonymous.html:132
 msgid "Look up site score"
 msgstr "Узнайте оценку сайта органа власти"
 
-#: templates/home/index_anonymous.html:137
+#: templates/home/index_anonymous.html:139
 msgid "Contact us to get recommendations"
 msgstr "Свяжитесь с нами для получения консультации"
 
-#: templates/home/index_anonymous.html:146
+#: templates/home/index_anonymous.html:148
 msgid "server error"
 msgstr "Ошибка сервера"
 
-#: templates/home/index_anonymous.html:158
+#: templates/home/index_anonymous.html:160
 msgid "Contacts"
 msgstr "Контакты"
 
-#: templates/home/index_anonymous.html:164
+#: templates/home/index_anonymous.html:166
 msgid "Message sent"
 msgstr "Сообщение отправлено"
 
-#: templates/home/index_anonymous.html:168
+#: templates/home/index_anonymous.html:170
 msgid "Leave a message"
 msgstr "Напишите нам"
 
-#: templates/home/index_anonymous.html:175
+#: templates/home/index_anonymous.html:177
 msgid "Message text"
 msgstr "Текст сообщения"
 
-#: templates/home/index_anonymous.html:178
-#: templates/home/index_anonymous.html:185
-#: templates/home/index_anonymous.html:196
+#: templates/home/index_anonymous.html:180
+#: templates/home/index_anonymous.html:187
+#: templates/home/index_anonymous.html:198
 msgid "Required field"
 msgstr "Обязательное поле"
 
-#: templates/home/index_anonymous.html:191
+#: templates/home/index_anonymous.html:193
 msgid "Add phone"
 msgstr "Добавить телефон"
 
-#: templates/home/index_anonymous.html:200
+#: templates/home/index_anonymous.html:202
 msgid "Invalid email"
 msgstr "Недействительный email"
 
-#: templates/home/index_anonymous.html:204
+#: templates/home/index_anonymous.html:206
 msgid "Send message"
 msgstr "Отправить сообщение"
 
-#: templates/home/index_anonymous.html:222
-msgid "Vadim Kuptsov"
-msgstr "Вадим Купцов"
-
 #: templates/home/index_anonymous.html:224
-msgid "Contact person"
-msgstr "Контактное лицо проекта"
+msgid "Mikhail Karyagin"
+msgstr "Михаил Карягин"
 
-#: templates/home/index_anonymous.html:225
-msgid "Responsible for communication with government representatives"
-msgstr "Специалист по связям с органами государственной власти"
+#: templates/home/index_anonymous.html:226
+msgid "Leading expert of project"
+msgstr "Ведущий эксперт проекта"
 
 #: templates/home/index_orguser.html:55
 msgid "My scores"
@@ -2718,20 +2710,20 @@ msgstr "Публикация"
 msgid "No monitoring cycles"
 msgstr "Циклов нет"
 
-#: templates/home/tasks_index.html:77
+#: templates/home/tasks_index.html:81
 msgid "No tasks"
 msgstr "Нет задач"
 
-#: templates/home/tasks_index.html:101 templates/home/tasks_index.html:121
+#: templates/home/tasks_index.html:105 templates/home/tasks_index.html:125
 msgctxt "status of the task"
 msgid "Status"
 msgstr "Статус"
 
-#: templates/home/tasks_index.html:102 templates/home/tasks_index.html:122
+#: templates/home/tasks_index.html:106 templates/home/tasks_index.html:126
 msgid "Close date"
 msgstr "Дата закрытия"
 
-#: templates/home/tasks_index.html:103 templates/home/tasks_index.html:123
+#: templates/home/tasks_index.html:107 templates/home/tasks_index.html:127
 msgid "Completeness"
 msgstr "Выполнено"
 
@@ -3359,7 +3351,7 @@ msgstr "Ваше уточнение"
 msgid "Clarify"
 msgstr "Уточнить"
 
-#: templates/scores/_recomm_comments.html:28
+#: templates/scores/_recomm_comments.html:29
 #, python-format
 msgid " Show all %(counter)s comments "
 msgid_plural " Show all %(counter)s comments "
@@ -3367,29 +3359,29 @@ msgstr[0] "Показать все %(counter)s комментариев"
 msgstr[1] "Показать все %(counter)s комментария"
 msgstr[2] "Показать все %(counter)s комментариев"
 
-#: templates/scores/_recomm_comments.html:31
+#: templates/scores/_recomm_comments.html:32
 msgid "Hide comments"
 msgstr "Скрыть комментарии"
 
-#: templates/scores/_recomm_comments.html:49 templates/scores/score.html:352
+#: templates/scores/_recomm_comments.html:50 templates/scores/score.html:352
 #, python-format
 msgid "Deadline for answer to your comment is %(deadline_date)s."
 msgstr "Крайний срок ответа на ваш комментарий %(deadline_date)s."
 
-#: templates/scores/_recomm_comments.html:59
+#: templates/scores/_recomm_comments.html:60
 msgctxt "verb"
 msgid "Comment"
 msgstr "Комментировать"
 
-#: templates/scores/_recomm_comments.html:65 templates/scores/score.html:377
+#: templates/scores/_recomm_comments.html:73 templates/scores/score.html:377
 msgid "Post comment"
 msgstr "Оставить комментарий"
 
-#: templates/scores/_recomm_comments.html:71
+#: templates/scores/_recomm_comments.html:79
 msgid "You can't leave new comments. We will answer last comments and adjust scores."
 msgstr "Вы не можете оставлять новые комментарии. Мы отвечаем на последние комментарии и корректируем оценки."
 
-#: templates/scores/_recomm_comments.html:75
+#: templates/scores/_recomm_comments.html:83
 msgid "Rating is published. You can't leave new comments."
 msgstr "Рейтинг опубликован. Вы не можете оставлять новые комментарии."
 
