@@ -29,6 +29,7 @@
 {% endblock %}
 
 {% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
     <script type="text/javascript" src="{% static 'exmo2010/js/login_bubble.js' %}"></script>
     <script>
         $(function(){
@@ -85,6 +86,13 @@
                         $('#find_score_button').prop('disabled', false);
                     });
                 return false;
+            })
+
+            $('a.video_click').click(function(){
+                $('#video_modal_window').modal({overlayClose: true});
+            })
+            $('a.presentation_click').click(function(){
+                $('#presentation_modal_window').modal({overlayClose: true});
             })
         })
     </script>
@@ -149,12 +157,42 @@
                     </div>
                 </div>
             </div>
-            <div class="content hidden">
-                <div id="about_project" class="content_inner"></div>
+            <div class="content">
+                <div id="about_project" class="content_inner">
+                    <h2>{% trans "About project" %}</h2>
+                    <div class="fixed_table">
+                        <div class="table-row editable_content">
+                            <div class="table-cell">
+                                {{ editable.about_project_left.content|safe }}
+                            </div>
+                            <div class="table-cell">
+                                {{ editable.about_project_right.content|safe }}
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <a class="a_button"> {% trans "Open official website rating" %} </a>
+                            </div>
+                            <div class="table-cell">
+                                <a class="a_button"> {% trans "Contact us to get recommendations" context "home page" %} </a>
+                            </div>
+                        </div>
+                        <div id="video_presentation_row" class="table-row">
+                            <div class="table-cell">
+                                <a class="video_click"> <img src="{% static 'exmo2010/img/video.svg' %}"/> </a> <br/>
+                                <a class="video_click"> {% trans "Video about how Infometer works" %} </a>
+                            </div>
+                            <div class="table-cell">
+                                <a class="presentation_click"> <img src="{% static 'exmo2010/img/presentation.svg' %}"/> </a><br/>
+                                <a class="presentation_click"> {% trans "Presentation of our acheivements" %} </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="content hidden">
+<!--            <div class="content">
                 <div id="feedbacks" class="content_inner"></div>
-            </div>
+            </div>-->
             <div class="content">
                 <div id="contacts" class="content_inner">
                     <h2>{% trans "Contacts" %}</h2>
@@ -232,6 +270,26 @@
                     </div>
 
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="video_modal_window" class="modal hidden">
+        <div>
+            <img src="{% static 'exmo2010/img/cross.svg' %}" class="simplemodal-close" />
+            <h2>{% trans "Video about how Infometer works" %}</h2>
+            <div>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/6ExEKZnhVSQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="presentation_modal_window" class="modal hidden">
+        <div>
+            <img src="{% static 'exmo2010/img/cross.svg' %}" class="simplemodal-close" />
+            <h2>{% trans "Presentation of our acheivements" %}</h2>
+            <div>
+                <iframe src="//www.slideshare.net/slideshow/embed_code/key/uhozwxcALkxUJ5" width="640" height="535" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
             </div>
         </div>
     </div>

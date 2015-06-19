@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -51,3 +52,8 @@ class StaticPageTranslationOptions(TranslationOptions):
 @register(models.LicenseTextFragments)
 class LicenseTextFragmentsTranslationOptions(TranslationOptions):
     fields = ('page_footer', 'csv_footer')
+
+
+@register(models.FrontPageTextFragments)
+class FrontPageFragmentsTranslationOptions(TranslationOptions):
+    fields = ('content',)

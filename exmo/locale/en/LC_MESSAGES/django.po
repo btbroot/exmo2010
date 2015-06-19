@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-19 22:32+0300\n"
+"POT-Creation-Date: 2015-07-22 21:37+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -259,7 +259,7 @@ msgid "Email Server Settings"
 msgstr ""
 
 #: exmo/config.py:45 exmo/config.py:63 exmo/config.py:72 exmo/config.py:81
-#: exmo2010/forms.py:58 templates/home/index_anonymous.html:191
+#: exmo2010/forms.py:58 templates/home/index_anonymous.html:229
 #: templates/mail/contacts_recipient.html:24
 #: templates/mail/contacts_recipient.txt:24
 #: templates/mail/feedback_recipient.html:34
@@ -446,7 +446,7 @@ msgstr ""
 msgid "by post"
 msgstr ""
 
-#: exmo2010/forms.py:56 templates/home/index_anonymous.html:184
+#: exmo2010/forms.py:56 templates/home/index_anonymous.html:222
 #: templates/mail/contacts_recipient.html:23
 #: templates/mail/contacts_recipient.txt:23
 #: templates/mail/feedback_recipient.html:26
@@ -509,7 +509,7 @@ msgid "You have an assigned task"
 msgstr ""
 
 #: exmo2010/mail.py:279 exmo2010/mail.py:286 exmo2010/urls.py:245
-#: exmo2010/views.py:192 templates/_footer.html:31
+#: exmo2010/views.py:195 templates/_footer.html:31
 #: templates/exmo2010/feedback.html:26
 msgid "Feedback"
 msgstr ""
@@ -661,38 +661,38 @@ msgstr ""
 msgid "Openness certificate"
 msgstr ""
 
-#: exmo2010/views.py:314
+#: exmo2010/views.py:317
 msgid "You ordered an openness certificate. Certificate will be prepared and sent within 5 working days."
 msgstr ""
 
-#: exmo2010/views.py:332
+#: exmo2010/views.py:335
 msgid "by all"
 msgstr ""
 
-#: exmo2010/views.py:332
+#: exmo2010/views.py:335
 msgid "by normative"
 msgstr ""
 
-#: exmo2010/views.py:332
+#: exmo2010/views.py:335
 msgid "by recommendatory"
 msgstr ""
 
-#: exmo2010/views.py:336
+#: exmo2010/views.py:339
 #, no-python-format
 msgid "For {task.organization.name} organization, which took {task.place} place with {task.task_openness:.3f}% openness in rating {rating_type} parameters, which published {date}."
 msgstr ""
 
-#: exmo2010/views.py:344
+#: exmo2010/views.py:347
 #, python-brace-format
 msgid "On address {zip_code}, {address}, {addressee}."
 msgstr ""
 
-#: exmo2010/views.py:346
+#: exmo2010/views.py:349
 #, python-format
 msgid "On email address %s."
 msgstr ""
 
-#: exmo2010/views.py:356
+#: exmo2010/views.py:359
 #, python-format
 msgid "Prepare a certificate in the name of %s."
 msgstr ""
@@ -1221,7 +1221,8 @@ msgstr ""
 msgid "A technical error of scores evaluation. To edit the score start from the go back to task page and skip to page of parameter evaluation by link from score table."
 msgstr ""
 
-#: exmo2010/models/static_page.py:30 exmo2010/models/text_fragments.py:35
+#: exmo2010/models/static_page.py:30 exmo2010/models/text_fragments.py:37
+#: exmo2010/models/text_fragments.py:74
 msgid "identifier"
 msgstr ""
 
@@ -1229,7 +1230,7 @@ msgstr ""
 msgid "description"
 msgstr ""
 
-#: exmo2010/models/static_page.py:32
+#: exmo2010/models/static_page.py:32 exmo2010/models/text_fragments.py:75
 msgid "content"
 msgstr ""
 
@@ -1270,36 +1271,44 @@ msgstr ""
 msgid "time"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:32
+#: exmo2010/models/text_fragments.py:34
 msgid "License text fragment"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:33
+#: exmo2010/models/text_fragments.py:35
 msgid "License text fragments"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:36
+#: exmo2010/models/text_fragments.py:38
 msgid "page footer"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:37
+#: exmo2010/models/text_fragments.py:39
 msgid "csv footer"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:38
+#: exmo2010/models/text_fragments.py:40
 msgid "json name"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:39
+#: exmo2010/models/text_fragments.py:41
 msgid "json url"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:40
+#: exmo2010/models/text_fragments.py:42
 msgid "json rightsholder"
 msgstr ""
 
-#: exmo2010/models/text_fragments.py:41
+#: exmo2010/models/text_fragments.py:43
 msgid "json source"
+msgstr ""
+
+#: exmo2010/models/text_fragments.py:71
+msgid "Front page text fragment"
+msgstr ""
+
+#: exmo2010/models/text_fragments.py:72
+msgid "Front page text fragments"
 msgstr ""
 
 #: exmo2010/models/userprofile.py:62
@@ -1948,7 +1957,7 @@ msgid "We're sorry, but the requested page could not be found."
 msgstr ""
 
 #: templates/500.html:25 templates/500.html.py:28
-#: templates/home/index_anonymous.html:163
+#: templates/home/index_anonymous.html:201
 msgid "Server error"
 msgstr ""
 
@@ -2582,86 +2591,109 @@ msgstr ""
 msgid "Link to comment"
 msgstr ""
 
-#: templates/home/index_anonymous.html:100
+#: templates/home/index_anonymous.html:108
 msgid "If you are registered, please sign in."
 msgstr ""
 
-#: templates/home/index_anonymous.html:101
+#: templates/home/index_anonymous.html:109
 #: templates/manage_monitoring/organizations.html:124
 msgid "Close"
 msgstr ""
 
-#: templates/home/index_anonymous.html:114
+#: templates/home/index_anonymous.html:122
 msgid "Infometer: A Tool for Measuring and Increasing Informational Openness"
 msgstr ""
 
-#: templates/home/index_anonymous.html:115
+#: templates/home/index_anonymous.html:123
 msgid "See the openness rate for the governmental website"
 msgstr ""
 
-#: templates/home/index_anonymous.html:117
+#: templates/home/index_anonymous.html:125
 msgid "Example: minsvyaz.ru"
 msgstr ""
 
-#: templates/home/index_anonymous.html:118
+#: templates/home/index_anonymous.html:126
 msgid "Look up"
 msgstr ""
 
-#: templates/home/index_anonymous.html:125
+#: templates/home/index_anonymous.html:133
 msgid "Enter site address"
 msgstr ""
 
-#: templates/home/index_anonymous.html:132
+#: templates/home/index_anonymous.html:140
 msgid "Look up site score"
 msgstr ""
 
-#: templates/home/index_anonymous.html:139
+#: templates/home/index_anonymous.html:147
 msgid "Contact us to get recommendations"
 msgstr ""
 
-#: templates/home/index_anonymous.html:148
+#: templates/home/index_anonymous.html:156
 msgid "server error"
 msgstr ""
 
-#: templates/home/index_anonymous.html:160
-msgid "Contacts"
+#: templates/home/index_anonymous.html:162
+msgid "About project"
 msgstr ""
 
-#: templates/home/index_anonymous.html:166
-msgid "Message sent"
-msgstr ""
-
-#: templates/home/index_anonymous.html:170
-msgid "Leave a message"
+#: templates/home/index_anonymous.html:174
+msgid "Open official website rating"
 msgstr ""
 
 #: templates/home/index_anonymous.html:177
+msgctxt "home page"
+msgid "Contact us to get recommendations"
+msgstr ""
+
+#: templates/home/index_anonymous.html:183
+#: templates/home/index_anonymous.html:280
+msgid "Video about how Infometer works"
+msgstr ""
+
+#: templates/home/index_anonymous.html:187
+#: templates/home/index_anonymous.html:290
+msgid "Presentation of our acheivements"
+msgstr ""
+
+#: templates/home/index_anonymous.html:198
+msgid "Contacts"
+msgstr ""
+
+#: templates/home/index_anonymous.html:204
+msgid "Message sent"
+msgstr ""
+
+#: templates/home/index_anonymous.html:208
+msgid "Leave a message"
+msgstr ""
+
+#: templates/home/index_anonymous.html:215
 msgid "Message text"
 msgstr ""
 
-#: templates/home/index_anonymous.html:180
-#: templates/home/index_anonymous.html:187
-#: templates/home/index_anonymous.html:198
+#: templates/home/index_anonymous.html:218
+#: templates/home/index_anonymous.html:225
+#: templates/home/index_anonymous.html:236
 msgid "Required field"
 msgstr ""
 
-#: templates/home/index_anonymous.html:193
+#: templates/home/index_anonymous.html:231
 msgid "Add phone"
 msgstr ""
 
-#: templates/home/index_anonymous.html:202
+#: templates/home/index_anonymous.html:240
 msgid "Invalid email"
 msgstr ""
 
-#: templates/home/index_anonymous.html:206
+#: templates/home/index_anonymous.html:244
 msgid "Send message"
 msgstr ""
 
-#: templates/home/index_anonymous.html:224
+#: templates/home/index_anonymous.html:262
 msgid "Mikhail Karyagin"
 msgstr ""
 
-#: templates/home/index_anonymous.html:226
+#: templates/home/index_anonymous.html:264
 msgid "Leading expert of project"
 msgstr ""
 

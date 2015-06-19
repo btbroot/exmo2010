@@ -75,6 +75,7 @@
     line-height: 36px;
 }
 
+
 #find_score h2 {
     margin: 40px 0 15px;
     text-align: center;
@@ -308,8 +309,9 @@ div.err {
 }
 
 #contacts h2 {
-    margin-bottom: 50px;
+    margin-bottom: 45px;
     text-align: center;
+    font-size: 23px;
 }
 
 #contacts input[type="text"], #contacts textarea {
@@ -363,4 +365,67 @@ div.err {
 
 #contact_person {
     padding: 2px 0;
+}
+
+
+a.a_button:hover {
+    background: #30659E;
+
+}
+a.a_button {
+    background: #005C9C;
+    padding: 10px 0;
+    color: #fff;
+    width: 100%;
+    display: inline-block;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+#video_presentation_row {
+    font-weight: bold;
+}
+
+#about_project .editable_content .table-cell {
+    text-align: left;
+}
+
+#about_project img {
+    margin: 45px 0 20px;
+    text-align: center;
+    width: 200px;
+}
+
+#about_project h2 {
+    margin: 0 0 45px;
+    text-align: center;
+    font-size: 23px;
+}
+
+div.modal {
+    background: #fff;
+    padding: 20px;
+}
+
+div.modal h2 {
+    margin-bottom: 20px;
+}
+
+div.modal img.simplemodal-close {
+    width: 10px;
+    background: #fff;
+    border: 2px solid #005c9c;
+    border-radius: 22px;
+    padding: 4px;
+    position: relative;
+    right: -26px;
+    top: -26px;
+    float: right;
+    cursor: pointer;
+}
+
+div.fixed_table{
+    display: table;
+    table-layout: fixed;
+    width: 100%;
 }
