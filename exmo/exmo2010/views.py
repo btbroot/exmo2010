@@ -42,7 +42,8 @@ from livesettings import config_value
 
 from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm, ContactsForm
 from .mail import mail_certificate_order, mail_feedback, mail_contacts_frontpage
-from .models import LicenseTextFragments, Monitoring, ObserversGroup, StaticPage, Task, Organization
+from .models import Monitoring, ObserversGroup, StaticPage, Task
+from .models.text_fragments import FrontPageTextFragments, LicenseTextFragments
 from .models.monitoring import PRE, RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
 from core.response import JSONResponse
@@ -69,7 +70,9 @@ def index(request):
 
 
 def index_anonymous(request):
-    return TemplateResponse(request, 'home/index_anonymous.html', context={})
+    fragments = {f.id: f for f in FrontPageTextFragments.objects.all()}
+    context = {'editable': fragments}
+    return TemplateResponse(request, 'home/index_anonymous.html', context=context)
 
 
 def tasks_index(request):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -82,5 +82,29 @@ class StaticDataInitMiddleware(object):
                 page.save()
 
         models.LicenseTextFragments.objects.get_or_create(id='license')
+
+        left, created = models.FrontPageTextFragments.objects.get_or_create(id='about_project_left')
+        if created:
+            left.content_ru = """
+            <p style="text-align:center"><strong><span style="font-size:36px">3 710</span></strong></p>
+            <p style="text-align:center">сайтов оценили за 2014 год</p>
+            <div style="margin-left:20px;margin-right:20px;margin-top:25px;">
+                <p><span style="font-size:14px"><strong>Измерение информационной открытости</strong></span></p>
+                <p>Мы измеряем, насколько сайты соответствуют требованиям закона в процентах и граммах.</p>
+            </div>
+            """
+            left.save()
+
+        right, created = models.FrontPageTextFragments.objects.get_or_create(id='about_project_right')
+        if created:
+            right.content_ru = """
+            <p style="text-align:center"><span style="font-size:36px"><strong>25%</strong></span></p>
+            <p style="text-align:center">средний прирост открытости</p>
+            <div style="margin-left:20px;margin-right:20px;margin-top:25px;">
+                <p><span style="font-size:14px"><strong>Повышение информационной открытости</strong></span></p>
+                <p>Мы консультируем по вопросам соблюдения нормативных требований к сайтам.</p>
+            </div>
+            """
+            right.save()
 
         raise MiddlewareNotUsed  # remove this middleware from stack
