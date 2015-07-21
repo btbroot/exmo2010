@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from django.utils.decorators import method_decorator
 
-from exmo2010.models import UserProfile
+from exmo2010.models import UserProfile, Organization
 
 
 PASSWORD_ALLOWED_CHARS = string.ascii_letters + string.digits
@@ -76,7 +76,12 @@ class RegistrationForm(forms.Form):
         Return list of invitation codes or empty list.
         TODO: check whether invitation code exists.
         """
-        return filter(None, self.cleaned_data.get('invitation_code', '').split(','))
+        codes = self.cleaned_data.get('invitation_code', '').split(',')
+        for inv_code in codes:
+            if inv_code and not Organization.objects.filter(inv_code=inv_code).exists():
+                raise forms.ValidationError(_(
+                    "Organization with given invitation code does not exist."))
+        return filter(None, codes)
 
     def clean(self):
         """

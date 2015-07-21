@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-22 21:37+0300\n"
+"POT-Creation-Date: 2015-07-22 21:39+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "Old password"
 msgstr ""
 
-#: accounts/forms.py:98 exmo2010/custom_registration/forms.py:123
+#: accounts/forms.py:98 exmo2010/custom_registration/forms.py:128
 msgid "New password"
 msgstr ""
 
@@ -109,8 +109,8 @@ msgstr ""
 
 #: accounts/templates/user_settings.html:60 exmo2010/forms.py:35
 #: exmo2010/custom_registration/forms.py:46
-#: exmo2010/custom_registration/forms.py:135
-#: exmo2010/custom_registration/forms.py:173
+#: exmo2010/custom_registration/forms.py:140
+#: exmo2010/custom_registration/forms.py:178
 msgid "E-mail"
 msgstr ""
 
@@ -698,7 +698,7 @@ msgid "Prepare a certificate in the name of %s."
 msgstr ""
 
 #: exmo2010/custom_registration/forms.py:47
-#: exmo2010/custom_registration/forms.py:136
+#: exmo2010/custom_registration/forms.py:141
 msgid "Password"
 msgstr ""
 
@@ -707,36 +707,40 @@ msgid "Get answers from experts on e-mail"
 msgstr ""
 
 #: exmo2010/custom_registration/forms.py:71
-#: exmo2010/custom_registration/forms.py:130
+#: exmo2010/custom_registration/forms.py:135
 msgid "Password contains unallowed characters. Please use only latin letters and digits."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:88
+#: exmo2010/custom_registration/forms.py:83
+msgid "Organization with given invitation code does not exist."
+msgstr ""
+
+#: exmo2010/custom_registration/forms.py:93
 #, python-format
 msgid "Account with this email already exists. <a href='%s'>Log in</a> or use another email address to register."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:152
-#: exmo2010/custom_registration/forms.py:184
+#: exmo2010/custom_registration/forms.py:157
+#: exmo2010/custom_registration/forms.py:189
 #, python-format
 msgid "This account does not exist. Check the e-mail address or <a href='%s'>register</a>."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:158
+#: exmo2010/custom_registration/forms.py:163
 #, python-format
 msgid "You have entered an incorrect password. Try again or use <a href='%s'>the password recovery</a>."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:164
+#: exmo2010/custom_registration/forms.py:169
 #, python-format
 msgid "Click on the link inside the activation email. If you have not received it, we can <a href='%s'>send the email again</a>."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:168
+#: exmo2010/custom_registration/forms.py:173
 msgid "This account is inactive."
 msgstr ""
 
-#: exmo2010/custom_registration/forms.py:195
+#: exmo2010/custom_registration/forms.py:200
 msgid "The user account associated with this e-mail was suspended."
 msgstr ""
 
