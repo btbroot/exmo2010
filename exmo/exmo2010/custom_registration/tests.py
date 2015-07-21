@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -322,14 +322,16 @@ class RegistrationFormValidationTestCase(OptimizedTestCase):
     @classmethod
     def setUpClass(cls):
         super(RegistrationFormValidationTestCase, cls).setUpClass()
+        mommy.make(Organization, inv_code='123')
         cls.url = reverse('exmo2010:registration_form')
 
     @parameterized.expand([
-        ('email@test.com', 'password'),
+        ('email1@test.com', 'password', ''),
+        ('email2@test.com', 'password', '123'),
     ])
-    def test_valid_form(self, email, password):
+    def test_valid_form(self, email, password, inv_code):
         # WHEN anonymous submits request with valid data
-        data = {'email': email, 'password': password}
+        data = {'email': email, 'password': password, 'invitation_code': inv_code}
         request = MagicMock(user=AnonymousUser(), method='POST', POST=data, GET=QueryDict(''))
         request.path_info = self.url
         response = registration_form(request)
@@ -339,14 +341,16 @@ class RegistrationFormValidationTestCase(OptimizedTestCase):
         self.assertEqual(User.objects.filter(email=email).count(), 1)
 
     @parameterized.expand([
-        ('', 'password'),  # missing email
-        ('invalid_email.com', 'password'),  # incorrect email
-        ('valid_email@test.com', ''),  # missing password
+        ('', 'password', ''),  # missing email
+        ('invalid_email.com', 'password', ''),  # incorrect email
+        ('valid_email@test.com', '', ''),  # missing password
+        ('valid_email@test.com', 'password', '456'),  # invalid invite code
+        ('valid_email@test.com', 'password', 'ыва'),  # invalid invite code (cyrillic, see BUG 2386)
     ])
-    def test_invalid_form(self, email, password):
+    def test_invalid_form(self, email, password, inv_code):
         # WHEN anonymous submits request with invalid data
-        data = {'email': email, 'password': password}
-        request = MagicMock(user=AnonymousUser(), method='POST', POST=data)
+        data = {'email': email, 'password': password, 'invitation_code': inv_code}
+        request = MagicMock(user=AnonymousUser(), method='POST', POST=data, GET=QueryDict(''))
         request.path_info = self.url
         response = registration_form(request)
         # THEN response status_code should be 200 (OK)
