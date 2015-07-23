@@ -56,7 +56,7 @@ class FeedbackEmailTestCase(TestCase):
     """ When feedback form is submitted, two emails should be sent - to staff and back to submitter """
 
     def test_feedback_email(self):
-        response = self.client.post(reverse('exmo2010:feedback'), {'email': 'tst@ya.ru', 'comment': '123'})
+        response = self.client.post(reverse('exmo2010:feedback_form'), {'email': 'tst@ya.ru', 'comment': '123'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(mail.outbox), 2)
 

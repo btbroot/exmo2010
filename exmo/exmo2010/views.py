@@ -42,7 +42,7 @@ from livesettings import config_value
 
 from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm, ContactsForm
 from .mail import mail_certificate_order, mail_feedback, mail_contacts_frontpage
-from .models import Monitoring, ObserversGroup, StaticPage, Task
+from .models import Monitoring, ObserversGroup, StaticPage, Task, FeedbackItem
 from .models.text_fragments import FrontPageTextFragments, LicenseTextFragments
 from .models.monitoring import PRE, RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
@@ -71,7 +71,11 @@ def index(request):
 
 def index_anonymous(request):
     fragments = {f.id: f for f in FrontPageTextFragments.objects.all()}
-    context = {'editable': fragments}
+    context = {
+        'editable': fragments,
+        'feedback_items': FeedbackItem.objects.all()[:3],
+        'feedback_count': FeedbackItem.objects.count()
+    }
     return TemplateResponse(request, 'home/index_anonymous.html', context=context)
 
 
@@ -179,6 +183,13 @@ def ajax_submit_contacts_form(request):
 
 
 def feedback(request):
+    context = {
+        'feedback_items': FeedbackItem.objects.all(),
+    }
+    return TemplateResponse(request, 'feedback.html', context=context)
+
+
+def feedback_form(request):
     success = False
 
     if request.user.is_active:
@@ -196,7 +207,7 @@ def feedback(request):
         'form': form,
         'success': success,
     }
-    return TemplateResponse(request, 'exmo2010/feedback.html', context)
+    return TemplateResponse(request, 'feedback_form.html', context)
 
 
 class StaticPageView(DetailView):

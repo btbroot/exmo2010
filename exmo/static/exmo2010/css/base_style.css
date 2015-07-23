@@ -1195,3 +1195,32 @@ input.name_input[type="text"] {
 .breakword {
     word-break: break-all;
 }
+
+
+div.modal_with_pad {
+    background: #fff;
+    padding: 20px;
+}
+
+div.modal_with_pad h2 {
+    margin-bottom: 20px;
+}
+
+div.modal_with_pad img.simplemodal-close {
+    width: 10px;
+    background: #fff;
+    border: 2px solid #005c9c;
+    border-radius: 22px;
+    padding: 4px;
+    position: relative;
+    right: -26px;
+    top: -26px;
+    float: right;
+    cursor: pointer;
+}
+
+div.fixed_table{
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
