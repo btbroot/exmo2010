@@ -28,7 +28,7 @@
             <a href="{% url 'exmo2010:monitoring_report' %}">{% trans "Statistics" %}</a> |
             <a href="{{ exmo2010.livesettings.link_to_methodology }}" target="_blank">{% trans "Methodology" %}</a> |
             <a href="{% url 'exmo2010:opendata' %}">{% trans "Open data" %}</a> |
-            <a href="{% url 'exmo2010:feedback' %}">{% trans "Feedback" %}</a>
+            <a href="{% url 'exmo2010:feedback_form' %}">{% trans "Feedback" %}</a>
         </div>
         <div class="right-cell tiny">
             {% blocktrans with url="http://trac.svobodainfo.org/" %}<a href="{{ url }}" target="_blank">This program</a> is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Software rightholders:{% endblocktrans %}

@@ -152,6 +152,11 @@ class LicenseTextFragmentsAdmin(TabbedTranslationAdmin):
     list_display = ('id', 'page_footer', 'csv_footer', 'json_name', 'json_url', 'json_rightsholder', 'json_source')
 
 
+@register(models.FeedbackItem)
+class FeedbackItemAdmin(admin.ModelAdmin):
+    list_display = ('created', 'header')
+
+
 @register(models.FrontPageTextFragments)
 class FrontPageTextFragmentsAdmin(TabbedTranslationAdmin):
     list_display = ('id',)

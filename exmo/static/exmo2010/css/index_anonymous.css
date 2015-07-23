@@ -49,6 +49,10 @@
     line-height: 40px;
 }
 
+.content input[type="submit"]:hover {
+    background: #30659e;
+    color: #ffffd6;
+}
 
 .content input[type="submit"]:active {
     background: #0577c7;
@@ -116,19 +120,8 @@
     padding: 0;
 }
 
-#find_score input[type="submit"]:hover {
-    background: #30659e;
-    color: #ffffd6;
-}
-
-
 #contacts input[type="submit"] {
     width: 260px;
-}
-
-#contacts input[type="submit"]:hover {
-    background: #30659e;
-    color: #ffffd6;
 }
 
 
@@ -308,7 +301,7 @@ div.err {
     border-color: #d80038;
 }
 
-#contacts h2 {
+#contacts h2, #feedback h2, #about_project h2 {
     margin-bottom: 45px;
     text-align: center;
     font-size: 23px;
@@ -370,6 +363,7 @@ div.err {
 
 a.a_button:hover {
     background: #30659E;
+     color: #ffffd6;
 
 }
 a.a_button {
@@ -380,6 +374,11 @@ a.a_button {
     display: inline-block;
     border-radius: 3px;
     font-weight: bold;
+}
+
+a.a_button:active {
+    background: #0577c7;
+    color: #ffffff;
 }
 
 #video_presentation_row {
@@ -393,39 +392,27 @@ a.a_button {
 #about_project img {
     margin: 45px 0 20px;
     text-align: center;
-    width: 200px;
+/*     width: 200px; */
+/* temporarily increase size, see ticket #2394 */
+    width: 225px;
 }
 
-#about_project h2 {
-    margin: 0 0 45px;
+#feedback .a_button {
+    width: auto;
+    padding: 5px;
+}
+
+#all_reviews {
+    font-weight: bold;
     text-align: center;
-    font-size: 23px;
 }
 
-div.modal {
+#feedback_count {
+    padding: 1px;
     background: #fff;
-    padding: 20px;
+    color: #005C9C;
 }
 
-div.modal h2 {
-    margin-bottom: 20px;
-}
-
-div.modal img.simplemodal-close {
-    width: 10px;
-    background: #fff;
-    border: 2px solid #005c9c;
-    border-radius: 22px;
-    padding: 4px;
-    position: relative;
-    right: -26px;
-    top: -26px;
-    float: right;
-    cursor: pointer;
-}
-
-div.fixed_table{
-    display: table;
-    table-layout: fixed;
-    width: 100%;
+a.presentation_click, a.video_click {
+    font-weight: bold;
 }

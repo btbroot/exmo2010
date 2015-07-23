@@ -23,7 +23,7 @@ import types
 import reversion
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.views.generic import TemplateView, RedirectView
 
 from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
@@ -228,7 +228,8 @@ urlpatterns = named_urls('',
     (r'^change_language/$', 'exmo2010.views.change_language'),
 
     (r'^opendata/$', OpenDataView, 'opendata'),
-    (r'^feedback/$', 'exmo2010.views.feedback'),
+    (r'^feedback/$', 'exmo2010.views.feedback_form'),
+    (r'^opinions/$', 'exmo2010.views.feedback'),
     (r'^ajax_set_profile_setting/$', AjaxSetProfileSettingView, 'ajax_set_profile_setting'),
     (r'^ajax_get_pc/$', 'parameters.views.ajax_get_pc'),
     (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
@@ -242,9 +243,11 @@ def crumbs_tree(is_expert=False):
     common_tree = {
         'about': _('About'),
         'help':  _('Help'),
-        'feedback': _('Feedback'),
         'opendata': _('Open data'),
         'settings': _('Settings'),
+        'feedback_form': _('Feedback'),
+        #'feedback': _('Feedback'),
+        'feedback': pgettext_lazy('plural', u'Feedback'),
         'monitoring_report':          _('Statistics'),
         'monitoring_report_type':     _('Statistics'),
         'monitoring_report_finished': _('Statistics'),

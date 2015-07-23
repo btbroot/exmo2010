@@ -1,0 +1,57 @@
+{% extends "base_centered.html" %}
+{% comment %}
+# This file is part of EXMO2010 software.
+# Copyright 2015 IRSI LTD
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+{% endcomment %}
+{% load i18n static %}
+{% load bleach from bleach_tags %}
+
+{% block title %}{% trans "Feedback" context "plural" %}{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'exmo2010/js/jquery.simplemodal-1.4.4.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/feedback.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="feedback" class="content">
+        <h1>{% trans "Feedback" context "plural" %}</h1>
+        {% for feedback_item in feedback_items %}
+            <div class="fb_item">
+                <div class="table-cell-L feedback_left">
+                    <img class="scanned hidden" src="{{ MEDIA_URL }}{{ feedback_item.scanned_image }}"/>
+                    <img class="emblem" src="{{ MEDIA_URL }}{{ feedback_item.emblem }}"/> <br/>
+                    <a class="feedback_click" href="#">
+                        <img src="{% static 'exmo2010/img/original.svg' %}"/>  <br/>
+                        {% trans "Original" %}
+                    </a>
+                </div>
+                <div class="table-cell-L feedback_right">
+                    <h4>{{ feedback_item.header }}</h4>
+                    <p> {{ feedback_item.text|bleach }} </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="feedback_modal_window" class="modal_with_pad hidden">
+        <div>
+            <img src="{% static 'exmo2010/img/cross.svg' %}" class="simplemodal-close" />
+            <div id="feedback_modal_window_content"></div>
+        </div>
+    </div>
+{% endblock %}

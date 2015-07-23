@@ -266,3 +266,48 @@ div.content.cell {
 #login_bubble .close:hover {
     text-decoration: underline;
 }
+
+
+#feedback_modal_window {
+    min-width: 600px;
+    min-height: 200px;
+    max-width: 95%;
+    margin-top: 10px;
+}
+
+#feedback_modal_window_content {
+    text-align: center;
+    display: inline-block;
+}
+
+#feedback_modal_window_content img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
+#feedback img.emblem {
+    height: 90px;
+}
+
+#feedback div.fb_item {
+    margin: 0 0 30px;
+    padding: 0 0 30px;
+    border-bottom: solid 1px #cecece;
+}
+
+#feedback .feedback_click img {
+    margin: 20px 0 10px;
+    height: 40px;
+}
+
+#feedback div.feedback_left {
+    width: 120px;
+    font-weight: bold;
+    text-align: center;
+    padding-right: 20px;
+}
+
+#feedback div.feedback_right {
+    vertical-align: top;
+}

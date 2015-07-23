@@ -22,6 +22,7 @@ from exmo import config  # livesettings init
 
 from .claim import *
 from .clarification import *
+from .feedback import *
 from .monitoring import *
 from .openness_expression import *
 from .organization import *
