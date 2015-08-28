@@ -35,8 +35,8 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
+from django.db import transaction, connection
 from django.db.models import Count, Q
-from django.db import transaction
 from django.db.utils import DEFAULT_DB_ALIAS
 from django.forms import Form, ModelMultipleChoiceField, CheckboxSelectMultiple, BooleanField
 from django.forms.models import modelformset_factory, modelform_factory
@@ -52,7 +52,7 @@ from reversion.revisions import default_revision_manager as revision
 from .forms import MonitoringCopyForm, MonitoringsQueryForm, RatingsQueryForm, RatingQueryForm, ObserversGroupQueryForm
 from auth.helpers import perm_filter
 from core.helpers import table
-from core.utils import UnicodeReader, UnicodeWriter
+from core.utils import UnicodeReader, UnicodeWriter, dictfetchall
 from core.views import login_required_on_deny, LoginRequiredMixin
 from custom_comments.utils import comment_report
 from exmo2010.columns_picker import monitorings_index_columns_form, rating_columns_form
@@ -1177,58 +1177,66 @@ def replace_string(cell):
 class MonitoringExport(object):
     def __init__(self, monitoring):
         self.monitoring = monitoring
-        scores = list(Score.objects.raw(monitoring.sql_scores()))
-        position = 0
-        # dict with organization as keys and el as list of scores for json export
-        self.tasks = OrderedDict()
+        cursor = connection.cursor()
+        cursor.execute(monitoring.sql_scores())
+        scores = dictfetchall(cursor)
+        cursor.close()
+
         if not len(scores):
             return
+
+        if monitoring.openness_expression.code == 1:
+            criteria = Parameter.OPTIONAL_CRITERIA_V1
+        else:
+            criteria = Parameter.OPTIONAL_CRITERIA
+
+        # dict with organization as keys and el as list of scores for json export
+        self.tasks = OrderedDict()
+        rating_place = 0
         current_openness = None
+
         for score in scores:
             # skip score from non-approved task
-            if score.task_status != Task.TASK_APPROVED:
+            if score['task_status'] != Task.TASK_APPROVED:
                 continue
-            if not current_openness or score.task_openness != current_openness:
-                position += 1
-                current_openness = score.task_openness
+
+            if not current_openness or score['task_openness'] != current_openness:
+                rating_place += 1
+                current_openness = score['task_openness']
 
             score_dict = {
-                'name': score.parameter_name.strip(),
-                'social': score.weight,
-                'found': score.found,
-                'type': 'npa' if score.parameter_npa else 'other',
-                'revision': Score.REVISION_EXPORT[score.revision],
-                'id': score.parameter_id,
-                'links': (score.links or '').strip(),
-                'recommendations': (score.recommendations or '').strip(),
+                'name': score['parameter_name'].strip(),
+                'social': score['weight'],
+                'found': score['found'],
+                'type': 'npa' if score['parameter_npa'] else 'other',
+                'revision': Score.REVISION_EXPORT[score['revision']],
+                'id': score['parameter_id'],
+                'links': (score['links'] or '').strip(),
+                'recommendations': (score['recommendations'] or '').strip(),
             }
             if settings.DEBUG:
-                score_dict['pk'] = score.pk
-            for criteria in Parameter.OPTIONAL_CRITERIA:
-                row_criteria = getattr(score, criteria, -1)
-                # for sql_v1: document and image always None
-                if row_criteria is None:
-                    row_criteria = -1
-                row_criteria = float(row_criteria)
-                if row_criteria > -1:
-                    score_dict[criteria] = row_criteria
+                score_dict['pk'] = score['id']
 
-            if score.organization_id in self.tasks.keys():
-                self.tasks[score.organization_id]['scores'].append(score_dict)
+            for criterion in criteria:
+                if score[criterion] != -1:
+                    score_dict[criterion] = float(score[criterion])
+
+            if score['organization_id'] in self.tasks.keys():
+                self.tasks[score['organization_id']]['scores'].append(score_dict)
             else:
-                if score.task_openness is not None:
-                    score.task_openness = '%.3f' % score.task_openness
-                if score.openness_initial is not None:
-                    score.openness_initial = '%.3f' % score.openness_initial
+                if score['task_openness'] is not None:
+                    score['task_openness'] = '%.3f' % score['task_openness']
+                if score['openness_initial'] is not None:
+                    score['openness_initial'] = '%.3f' % score['openness_initial']
 
-                self.tasks[score.organization_id] = {
+                self.tasks[score['organization_id']] = {
                     'scores': [score_dict, ],
-                    'position': position,
-                    'openness': score.task_openness,
-                    'openness_initial': score.openness_initial,
-                    'name': score.organization_name,
-                    'id': score.organization_id,
-                    'url': score.url,
+                    'position': rating_place,
+                    'openness': score['task_openness'],
+                    'openness_initial': score['openness_initial'],
+                    'name': score['organization_name'],
+                    'id': score['organization_id'],
+                    'url': score['url'],
                 }
 
     def json(self):

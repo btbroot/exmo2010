@@ -17,6 +17,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+from __future__ import unicode_literals
+
 import datetime
 import json
 import unittest
@@ -959,120 +962,115 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, url))
 
 
+class MonitoringExportIrrelevantTestCase(TestCase):
+    # exmo2010:monitoring_export
 
-class TestMonitoringExport(TestCase):
-    # Scenario: Экспорт данных мониторинга
+    # In JSON export, irrelevant criteria of scores should be omitted.
+    # In CSV export, irrelevant criteria of scores should have value "not relevant".
+
     def setUp(self):
-        # GIVEN предопределены все code OPENNESS_EXPRESSION
         for code in OpennessExpression.OPENNESS_EXPRESSIONS:
-            # AND для каждого code есть опубликованный мониторинг
-            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=PUB)
-            # AND в каждом мониторинге есть организация
-            org = mommy.make(Organization, monitoring=monitoring)
-            # AND есть активный пользователь, не суперюзер, expert (см выше, этот - не эксперт, надо создать эксперта)
-            expert = mommy.make_recipe('exmo2010.active_user')
-            expert.profile.is_expertB = True
-            # AND в каждой организации есть одобренная задача для expert
-            task = mommy.make(Task, organization=org, user=expert, status=Task.TASK_APPROVED,)
-            # AND в каждом мониторинге есть параметр parameter с одним нерелевантным критерием
-            parameter = mommy.make(Parameter, monitoring=monitoring, complete=False, weight=1)
-            # AND в каждой задаче есть две ревизии оценки по parameter
-            mommy.make(Score, task=task, parameter=parameter, links='link', recommendations='yep')
-            mommy.make(Score, task=task, parameter=parameter, revision=Score.REVISION_INTERACT)
+            # GIVEN PUBLISHED monitoring
+            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=PUB, name='mv%d' % code)
+            # AND organization
+            org = mommy.make(Organization, monitoring=monitoring, name='org')
+            # AND approved task
+            task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
+            # AND parameter, with all criteria relevant, except "complete"
+            parameter = mommy.make(Parameter, monitoring=monitoring, complete=False, weight=1, name='p')
+            # AND score
+            mommy.make(Score, task=task, parameter=parameter, found=1, links='link', recommendations='yep')
 
-    def parameter_type(self, score):
-        return 'npa' if score.parameter.npa else 'other'
+    expected_json = {
+        1: {'monitoring': {
+            'name': 'mv1',
+            'tasks': [
+                {
+                    'id': 1,
+                    'name': 'org',
+                    'openness': '100.000',
+                    'openness_initial': '100.000',
+                    'position': 1,
+                    'url': None,
+                    'scores': [{
+                            # "complete" should be omitted
+                            'accessible': 0,
+                            'found': 1,
+                            'hypertext': 0,
+                            'id': 1,
+                            'links': 'link',
+                            'name': 'p',
+                            'recommendations': 'yep',
+                            'revision': 'default',
+                            'social': 1,
+                            'topical': 0,
+                            'type': 'other'}]
+                }]}},
+        8: {'monitoring': {
+            'name': 'mv8',
+            'tasks': [
+                {
+                    'id': 2,
+                    'name': 'org',
+                    'openness': '100.000',
+                    'openness_initial': '100.000',
+                    'position': 1,
+                    'url': None,
+                    'scores': [{
+                            # "complete" should be omitted
+                            'accessible': 0,
+                            'document': 0,
+                            'found': 1,
+                            'hypertext': 0,
+                            'id': 2,
+                            'image': 0,
+                            'links': 'link',
+                            'name': 'p',
+                            'recommendations': 'yep',
+                            'revision': 'default',
+                            'social': 1,
+                            'topical': 0,
+                            'type': 'other'}]
+                }]}}
+    }
 
-    @parameterized.expand(
-        [("expression-v%d" % code, code)
-            for code in OpennessExpression.OPENNESS_EXPRESSIONS])
-    def test_json(self, name, code):
+    CSV_HEAD = ','.join([
+        '#Monitoring', 'Organization', 'Organization_id', 'Position', 'Initial Openness', 'Openness',
+        'Parameter', 'Parameter_id', 'Found', 'Complete', 'Topical', 'Accessible', 'Hypertext', 'Document',
+        'Image', 'Social', 'Type', 'Revision', 'Links', 'Recommendations'])
+
+    expected_csv = {
+        # For v1 "complete" criterion should be "not relevant", as well as "Document" and "Image" (does not exist in v1)
+        1: CSV_HEAD + '\r\nmv1,org,1,1,100.000,100.000,p,1,1,not relevant,0.0,0.0,0.0,not relevant,not relevant,1,other,default,link,yep\r\n#\r\n',
+        # For v8 "complete" criterion should be "not relevant"
+        8: CSV_HEAD + '\r\nmv8,org,2,1,100.000,100.000,p,2,1,not relevant,0.0,0.0,0.0,0.0,0.0,1,other,default,link,yep\r\n#\r\n'
+    }
+
+    @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
+    def test_json(self, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в json
+        # WHEN user gets monitoring exported as JSON
         url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
         response = self.client.get(url + '?format=json')
-        # THEN запрос удовлетворяется
+        # THEN response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
-        # AND отдается json
+        # AND response content-type is "application/json"
         self.assertEqual(response.get('content-type'), 'application/json')
-        json_file = json.loads(response.content)
-        organization = monitoring.organization_set.all()[0]
-        task = organization.task_set.all()[0]
-        score = task.score_set.filter(revision=Score.REVISION_DEFAULT,)[0]
-        # AND имя мониторинга в БД и json совпадает
-        self.assertEqual(json_file['monitoring']['name'], monitoring.name)
-        # AND имя организации (для первой задачи) в БД и json совпадает
-        self.assertEqual(
-            json_file['monitoring']['tasks'][0]['name'],
-            organization.name)
-        # AND КИД (для первой задачи) в БД и json совпадает
-        self.assertEqual(
-            json_file['monitoring']['tasks'][0]['openness'],
-            ('%.3f' % task.openness) if task.openness is not None else task.openness)
-        self.assertEqual(int(json_file['monitoring']['tasks'][0]['position']), 1)
-        # AND балл найденности (в первой задаче, в оценке по первому параметру)
-        # в БД и json совпадает
-        self.assertEqual(
-            int(json_file['monitoring']['tasks'][0]['scores'][0]['found']),
-            int(score.found))
-        self.assertEqual(
-            json_file['monitoring']['tasks'][0]['scores'][0]['type'],
-            self.parameter_type(score)
-        )
-        # AND exported "links" match database
-        self.assertEqual(
-            json_file['monitoring']['tasks'][0]['scores'][0]['links'], score.links)
-        # AND exported "recommendations" match database
-        self.assertEqual(
-            json_file['monitoring']['tasks'][0]['scores'][0]['recommendations'], score.recommendations)
+        # AND JSON content has irrelevant criteria excluded from scores
+        self.assertEqual(self.expected_json[code], json.loads(response.content))
 
     @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
     def test_csv(self, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN анонимный пользователь запрашивает данные каждого мониторинга в csv
+        # WHEN user gets monitoring exported as CSV
         url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
         response = self.client.get(url + '?format=csv')
-        # THEN запрос удовлетворяется
+        # THEN response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
-        # AND отдается csv
+        # AND response content-type is "application/vnd.ms-excel"
         self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = UnicodeReader(StringIO(response.content))
-        organization = monitoring.organization_set.all()[0]
-        task = organization.task_set.all()[0]
-        row_count = 0
-        for row in csv:
-            row_count += 1
-            if row_count == 1:
-                self.assertEqual(row[0], '#Monitoring')
-                continue
-            else:
-                if row[0].startswith('#'):
-                    continue
-                self.assertEqual(len(row), 20)
-                revision = row[17]
-                self.assertIn(revision, Score.REVISION_EXPORT.values())
-                for k, v in Score.REVISION_EXPORT.iteritems():
-                    if v == revision:
-                        revision = k
-                        break
-                score = task.score_set.filter(revision=revision)[0]
-                # AND имя мониторинга в БД и json совпадает
-                self.assertEqual(row[0], monitoring.name)
-                # AND имя организации (для первой задачи) в БД и json совпадает
-                self.assertEqual(row[1], organization.name)
-                self.assertEqual(int(row[2]), organization.pk)
-                self.assertEqual(int(row[3]), 1)
-                # AND КИД (для первой задачи) в БД и json совпадает
-                self.assertEqual(row[5], '%.3f' % task.openness if task.openness is not None else '')
-                self.assertEqual(float(row[7]), float(score.parameter.pk))
-                # AND балл найденности (в первой задаче, в оценке по первому параметру)
-                # в БД и json совпадает
-                self.assertEqual(int(row[8]), int(score.found))
-                self.assertEqual(row[16], self.parameter_type(score))
-                # AND exported "links" match database
-                self.assertEqual(row[18], score.links or '')
-                # AND exported "recommendations" match database
-                self.assertEqual(row[19], score.recommendations or '')
+        # AND CSV content has irrelevant criteria marked with "not relevant" values
+        self.assertEqual(self.expected_csv[code], response.content.decode('utf16'))
 
 
 class TestMonitoringExportApproved(TestCase):

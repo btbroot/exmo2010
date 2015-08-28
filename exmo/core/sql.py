@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -329,6 +330,8 @@ SELECT
     `exmo2010_score`.`id`,
     `exmo2010_score`.`found`,
     `exmo2010_score`.`revision`,
+    `exmo2010_score`.`links`,
+    `exmo2010_score`.`recommendations`,
     %(sql_monitoring)s,
     `exmo2010_parameter`.`weight`,
     `exmo2010_parameter`.`name` as parameter_name,
