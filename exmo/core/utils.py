@@ -3,6 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -203,3 +204,11 @@ def round_ex(x):
         return round(x, 1 - _x.exponent - len(_x.digits))
     else:
         return round(x, 1)
+
+
+def dictfetchall(cursor):
+    """
+    Returns all rows from a cursor as a list of dictionaries.
+    """
+    keys = [col[0] for col in cursor.description]
+    return [dict(zip(keys, values)) for values in cursor.fetchall()]

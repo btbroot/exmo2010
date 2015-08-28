@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2015 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -53,6 +53,7 @@ class Parameter(BaseModel):
 
     #необязательные критерии в оценке
     OPTIONAL_CRITERIA = 'complete topical accessible hypertext document image'.split()
+    OPTIONAL_CRITERIA_V1 = 'complete topical accessible hypertext'.split()
 
     NPA_TYPE = {0: _("recommendatory"), 1: _("normative")}
 
