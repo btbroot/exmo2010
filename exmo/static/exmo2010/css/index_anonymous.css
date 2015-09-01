@@ -416,3 +416,11 @@ a.a_button:active {
 a.presentation_click, a.video_click {
     font-weight: bold;
 }
+
+#find_score img.loader
+{
+    float: right;
+    position: relative;
+    top: -46px;
+    left: 56px;
+}

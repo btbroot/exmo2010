@@ -75,17 +75,20 @@
 
             $('#find_score_button').click(function(){
                 $('#find_score_button').prop('disabled', true);
+                $('#find_score img.loader').show();
                 $.get($(this).closest('form').attr('action'), $(this).closest('form').serialize())
                     .done(function(new_data) {
                         $('div.steps-block, div.ajax-error').hide();
                         $('div.results-block').html(new_data).show();
                         $('#find_score_button').prop('disabled', false);
+                        $('#find_score img.loader').hide();
                     })
                     .fail(function() {
                         // Permission denied or error
                         $('div.results-block, div.steps-block').hide();
                         $('div.ajax-error').show();
                         $('#find_score_button').prop('disabled', false);
+                        $('#find_score img.loader').hide();
                     });
                 return false;
             })
@@ -126,6 +129,7 @@
                         <form action="{% url 'exmo2010:ajax_index_find_score' %}" method="get">
                             <input type="text" name="org_url" placeholder="{% trans 'Example: minsvyaz.ru' %}">
                             <input type="submit" id="find_score_button" value="{% trans 'Look up' %}">
+                            <img class="loader hidden" src="{% static 'exmo2010/img/ajax-loader-48.gif' %}">
                         </form>
                     </div>
 
