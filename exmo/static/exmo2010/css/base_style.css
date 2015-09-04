@@ -343,7 +343,7 @@ div.breadcrumbs a {
 
 /* header menu */
 
-.header-menu {
+div.header-menu {
     clear: both;
     height: 40px;
     border-top: 1px solid #356a95;
@@ -351,6 +351,12 @@ div.breadcrumbs a {
     background: #30659e none;
     list-style: none;
     line-height: 40px;
+}
+
+div.header-menu.error_page {
+    border-top: 1px solid #666666;
+    border-bottom: 1px solid #666666;
+    background-color: #666666;
 }
 
 /* navigation menu & notification menu */
@@ -463,9 +469,21 @@ div.breadcrumbs a {
     background-color: #666666;
 }
 
-#navigation_menu.errors-header li.portal {
-    border: none;
+#notification_menu.errors-header li.portal {
+    margin-top: -1px;
+    margin-left: 10px;
+    padding: 0 20px;
+    border-top: 1px solid #bbbbbb;
+    border-bottom: 1px solid #bbbbbb;
+
     background-color: #bbbbbb;
+    padding: 0px 20px;
+    font-weight: bold;
+
+}
+
+#notification_menu.errors-header li.portal a:hover {
+    color: #666;
 }
 
 

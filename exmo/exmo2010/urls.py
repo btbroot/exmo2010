@@ -21,6 +21,7 @@
 import types
 
 import reversion
+from django.conf import settings
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
@@ -237,6 +238,9 @@ urlpatterns = named_urls('',
 
     (r'^ajax_upload_file/$', 'organizations.views.ajax_upload_file'),
 )
+
+if settings.DEBUG:
+    urlpatterns += (url(r'^500/$', 'exmo2010.views.server_error'),)
 
 
 def crumbs_tree(is_expert=False):
