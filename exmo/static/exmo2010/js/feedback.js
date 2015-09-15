@@ -33,7 +33,7 @@ $(document).ready(function () {
                 $('#feedback_modal_window_content').width(maxw);
             }
         }
-        else if (original_img.naturalHeight > maxh) {
+        else if (original_img.naturalWidth > maxw) {
             $('#feedback_modal_window_content').width(maxw);
         }
         else if (original_img.naturalHeight > maxh) {
