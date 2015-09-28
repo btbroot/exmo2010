@@ -52,6 +52,7 @@
 
             <form id="email_form" action="{% url 'exmo2010:send_mail' monitoring.pk %}" method="post">{% csrf_token %}
                 {{ form.attachments_names.as_hidden }}
+                {{ form.handpicked_orgs.as_hidden }}
                     <div class="form-table org-email-form">
                         <div class="table-row">
                             <div class="table-cell-R">
@@ -77,13 +78,13 @@
                     </div>
 
                     <div class="table-row">
-                            <div class="table-cell-R">
-                                {{ form.comment.label }} <span class="required">*</span>
-                            </div>
+                        <div class="table-cell-R">
+                            {{ form.comment.label }} <span class="required">*</span>
+                        </div>
 
-                            <div class="table-cell-L text-area">
-                                {{ form.comment }}
-                            </div>
+                        <div class="table-cell-L text-area">
+                            {{ form.comment }}
+                        </div>
                     </div>
 
                     <div class="table-row attachments-block">
@@ -98,48 +99,51 @@
                             <div class="float-right">
                                 <a href="#" id="upload_link" class="pseudo">{% trans 'Attach file' %}</a>
                             </div>
-                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R">
+                            {% trans 'To' context 'mail destination' %}
                         </div>
 
-                        <div class="table-row">
-                            <div class="table-cell-R">
-                                {% trans 'To' context 'mail destination' %}
-                            </div>
-
-                            <div class="table-cell-L">
-                                <div class="destination">
-                                    <div>
-                                        <input class='group' type='checkbox' id='all_orgs'/>
-                                        <label for='all_orgs'>{% trans 'All organizations' %}</label>
-                                    </div>
-                                    <div>{{ form.dst_orgs_noreg }} {{ form.dst_orgs_noreg.label_tag }}</div>
-                                    <div>{{ form.dst_orgs_inact }} {{ form.dst_orgs_inact.label_tag }}</div>
-                                    <div>{{ form.dst_orgs_activ }} {{ form.dst_orgs_activ.label_tag }}</div>
+                        <div class="table-cell-L">
+                            {% if form.initial.handpicked_orgs %}
+                                <div> {% trans 'handpicked organizations:' %} </div>
+                            {% endif %}
+                            <div class="destination">
+                                <div>
+                                    <input class='group' type='checkbox' id='all_orgs'/>
+                                    <label for='all_orgs'>{% trans 'All organizations' %}</label>
                                 </div>
-                                <div class="destination">
-                                    <div>
-                                        <input class='group' type='checkbox' id='all_orgusers'/>
-                                        <label for='all_orgusers'>{% trans 'All representatives' %}</label>
-                                    </div>
-                                    <div>{{ form.dst_orgusers_inact }} {{ form.dst_orgusers_inact.label_tag }}</div>
-                                    <div>{{ form.dst_orgusers_activ }} {{ form.dst_orgusers_activ.label_tag }}</div>
+                                <div>{{ form.dst_orgs_noreg }} {{ form.dst_orgs_noreg.label_tag }}</div>
+                                <div>{{ form.dst_orgs_inact }} {{ form.dst_orgs_inact.label_tag }}</div>
+                                <div>{{ form.dst_orgs_activ }} {{ form.dst_orgs_activ.label_tag }}</div>
+                            </div>
+                            <div class="destination">
+                                <div>
+                                    <input class='group' type='checkbox' id='all_orgusers'/>
+                                    <label for='all_orgusers'>{% trans 'All representatives' %}</label>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="table-row">
-                            <div class="table-cell-R"></div>
-
-                            <div class="table-cell-L">
-                            <input type="button" id="preview_btn" value="{% trans 'Preview' %}"/>
-
-                            <div class="preview-block info-block hidden">
-                                <iframe id="iframe_preview"></iframe>
-                            </div>
-                            <input type="submit" class="hidden" value="{% trans 'Send' %}"/>
+                                <div>{{ form.dst_orgusers_inact }} {{ form.dst_orgusers_inact.label_tag }}</div>
+                                <div>{{ form.dst_orgusers_activ }} {{ form.dst_orgusers_activ.label_tag }}</div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="table-row">
+                        <div class="table-cell-R"></div>
+
+                        <div class="table-cell-L">
+                        <input type="button" id="preview_btn" value="{% trans 'Preview' %}"/>
+
+                        <div class="preview-block info-block hidden">
+                            <iframe id="iframe_preview"></iframe>
+                        </div>
+                        <input type="submit" class="hidden" value="{% trans 'Send' %}"/>
+                        </div>
+                    </div>
+                </div>
             </form>
 
             <!-- Upload attachments form -->

@@ -1,5 +1,5 @@
 // This file is part of EXMO2010 software.
-// Copyright 2014 IRSI LTD
+// Copyright 2014-2015 IRSI LTD
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU Affero General Public License as
@@ -53,8 +53,20 @@ $(document).ready(function () {
     $('input[type="checkbox"].group_actions').click(group_action_checkup);
 
 
-    // Show invite_links modal window when group action button clicked.
-    $('#group_actions input.action').click(function(){
+    // Go to send_mail page with selected orgs when send_mail group action button clicked.
+    $('#group_actions input.send_mail').click(function(){
+        var checked = $('input[type="checkbox"].group_actions:checked').not('.toggle_all');
+
+        var pks = [];
+        for (var i=0; i<checked.length; i++) {
+            pks.push( $(checked[i]).closest('tr').data('pk'))
+        }
+        url = $('#group_actions').data('sendmail_url') + '?' + $.param({orgs: pks}, true);
+        window.location = url;
+    })
+
+    // Show invite_links modal window when create_inv_links group action button clicked.
+    $('#group_actions input.create_inv_links').click(function(){
         var checked = $('input[type="checkbox"].group_actions:checked').not('.toggle_all');
         if (checked.length == 1) {
             // Only one organization selected.

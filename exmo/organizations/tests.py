@@ -32,12 +32,10 @@ from django.core.files import File
 from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from livesettings import config_get, config_value
+from livesettings import config_get
 from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
-
-
 
 from .views import RepresentativesView, ajax_upload_file
 from core.test_utils import OptimizedTestCase, FileStorageTestCase
@@ -220,6 +218,126 @@ class OrganizationsPageAccessTestCase(TestCase):
         self.assertEqual(resp.status_code, response_code)
 
 
+class HandpickedOrgusersEmailTestCase(TestCase):
+    # exmo2010:send_mail
+
+    # When form is submitted with handpicked organizations, email messages should be sent only to
+    # those representatives, who represent at least one handpicked org and match filters, selected with form.
+
+    def setUp(self):
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN published monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+
+        # AND 5 organizations of different inv_status
+        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
+        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
+        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
+        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
+        self.org_act = mommy.make(Organization, monitoring=self.monitoring, email='act@test.ru', inv_status='ACT')
+
+        # AND inactive representative of organization org_act
+        self.orguser_inactive1 = User.objects.create_user('orguser_inactive1', 'inactive1@test.ru', 'password')
+        self.orguser_inactive1.get_profile().organization = [self.org_act]
+
+        # AND inactive representative of organization org_rgs
+        self.orguser_inactive2 = User.objects.create_user('orguser_inactive2', 'inactive2@test.ru', 'password')
+        self.orguser_inactive2.get_profile().organization = [self.org_rgs]
+
+        # AND active representative of organization org_rgs
+        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
+        self.orguser_active.get_profile().organization = [self.org_rgs]
+
+        # AND comment of active representative
+        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
+        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
+        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
+
+        # AND I am logged in as expertA
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+        self.client.login(username='expertA', password='password')
+
+        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
+
+    @parameterized.expand([
+        ('dst_orgusers_inact', {('inactive1@test.ru',)}),   # inactive2 user does not match handpicked organizations
+        ('dst_orgusers_activ', set()),                      # active user does not match handpicked organizations
+    ])
+    def test_send_orguser_emails(self, selected_orgusers, expected_receivers):
+        # WHEN I hand-pick org_nts and org_act
+        post_data = {
+            selected_orgusers: '1',
+            'comment': u'Содержание',
+            'subject': u'Тема',
+            'handpicked_orgs': [self.org_nts.pk, self.org_act.pk]}
+
+        # AND I submit email form
+        response = self.client.post(self.url, post_data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND i should be redirected to the mail history list page
+        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
+
+        # AND email messages should be sent to expected receivers
+        receivers = set(tuple(m.to) for m in mail.outbox)
+        self.assertEqual(receivers, expected_receivers)
+
+
+class HandpickedOrgEmailTestCase(TestCase):
+    # exmo2010:send_mail
+
+    # When form is submitted with handpicked organizations, email messages should be sent only to
+    # those orgs, which was handpicked and match filters, selected with form.
+
+    def setUp(self):
+        # GIVEN published monitoring
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+
+        # AND 4 organizations of different inv_status
+        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
+        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
+        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
+        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
+        # AND 2 active ('ACT' inv_status) organizations
+        self.org_act1 = mommy.make(Organization, monitoring=self.monitoring, email='act1@test.ru', inv_status='ACT')
+        self.org_act2 = mommy.make(Organization, monitoring=self.monitoring, email='act2@test.ru', inv_status='ACT')
+
+        # AND I am logged in as expertA
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+        self.client.login(username='expertA', password='password')
+
+        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
+
+    @parameterized.expand([
+        ('dst_orgs_noreg', ['nts']),   # 'snt' and 'rd' organizations should be omitted
+        ('dst_orgs_inact', []),        # 'rgs' organization should be omitted
+        ('dst_orgs_activ', ['act1']),  # 'act2' organization should be omitted
+    ])
+    def test_send_org_emails(self, selected_orgs, expected_receivers):
+        # WHEN I hand-pick 2 organizations: nts and act1
+        handpicked_orgs = [self.org_nts.pk, self.org_act1.pk]
+        post_data = {'comment': 'txt', 'subject': 'subj', selected_orgs: '1', 'handpicked_orgs': handpicked_orgs}
+
+        # AND I submit email form
+        response = self.client.post(self.url, post_data, follow=True)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # AND i should be redirected to the mail history list page
+        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
+
+        # AND email messages should be sent to expected receivers
+        receivers = set(tuple(m.to) for m in mail.outbox)
+        expected_receivers = set((addr + '@test.ru',) for addr in expected_receivers)
+        self.assertEqual(receivers, expected_receivers)
+
+
 class SelectiveOrgEmailTestCase(TestCase):
     # exmo2010:send_mail
 
@@ -250,9 +368,6 @@ class SelectiveOrgEmailTestCase(TestCase):
         task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
         score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
         mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
-
-        # AND server email address
-        self.server_address = config_value('EmailServer', 'DEFAULT_FROM_EMAIL')
 
         # AND I am logged in as expertA
         self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')

@@ -83,7 +83,7 @@
                         <tbody>
                             {% for org in organizations %}
                                 {% comment %} row id for testing {% endcomment %}
-                                <tr id="org_row_{{ org.pk }}" data-name="{{ org.name }}" data-code="{{ org.inv_code }}" data-email="{{ org.email }}">
+                                <tr id="org_row_{{ org.pk }}" data-pk="{{ org.pk }}" data-name="{{ org.name }}" data-code="{{ org.inv_code }}" data-email="{{ org.email }}">
                                     <td><input class="group_actions" type="checkbox"/></td>
                                     <td>
                                         <a href="{% url 'exmo2010:tasks_by_monitoring' monitoring.pk %}?filter0={{ org.name|urlencode }}">{{ org.name|truncatechars:"123" }}</a>
@@ -107,8 +107,10 @@
                         </tbody>
                     </table>
 
-                    <div id="group_actions">
-                        {% trans 'For selected' %} <input class="action" type="button" value="{% trans 'Create invite link' %}" disabled="disabled"/>
+                    <div id="group_actions" data-sendmail_url="{% url 'exmo2010:send_mail' monitoring.pk %}">
+                        {% trans 'For selected' %}
+                        <input class="action create_inv_links" type="button" value="{% trans 'Create invite link' %}" disabled="disabled"/>
+                        <input class="action send_mail" type="button" value="{% trans 'Send mail' %}" disabled="disabled"/>
                     </div>
 
                     {% include "_tasks_stats.html" %}
