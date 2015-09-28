@@ -41,7 +41,7 @@ textarea,
 
 /* == SEND MAIL == */
 
-.org-email-form .table-cell-R {
+.org-email-form .table-cell-R, .org-email-form .table-cell-L {
     vertical-align: top;
     line-height: 22px;
 }

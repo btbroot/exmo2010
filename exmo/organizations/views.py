@@ -164,12 +164,16 @@ class SendMailView(SendMailMixin, UpdateView):
 
     def get_form_class(self):
         form = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': forms.TextInput})
-        form.base_fields.update({'attachments_names': forms.CharField(required=False, widget=forms.Textarea())})
+        form.base_fields.update({
+            'attachments_names': forms.CharField(required=False, widget=forms.Textarea()),
+            'handpicked_orgs': forms.ModelMultipleChoiceField(self.monitoring.organization_set, required=False)})
         return form
 
     def get_form_kwargs(self):
         kwargs = super(SendMailView, self).get_form_kwargs()
-        kwargs.update({'instance': InviteOrgs(monitoring=self.monitoring)})
+        kwargs.update({
+            'instance': InviteOrgs(monitoring=self.monitoring),
+            'initial': {'handpicked_orgs': self.request.GET.getlist('orgs')}})
         return kwargs
 
     def replace_link(self, text, email, orgs):
@@ -200,13 +204,20 @@ class SendMailView(SendMailMixin, UpdateView):
                     attachments.append((original_filename, saved_file.read()))
                     saved_file.close()
 
+        # At first, send messages to organizations, selected with checkbox filters. If request is ajax - return
+        # preview of message to the first matching organization.
+        if formdata['handpicked_orgs']:
+            prepicked_orgs = Organization.objects.filter(pk__in=formdata['handpicked_orgs'])
+        else:
+            prepicked_orgs = self.monitoring.organization_set.all()
+
         orgs = []
         if formdata.get('dst_orgs_noreg'):
-            orgs += self.monitoring.organization_set.filter(inv_status__in=['NTS', 'SNT', 'RD'])
+            orgs += prepicked_orgs.filter(inv_status__in=['NTS', 'SNT', 'RD'])
         if formdata.get('dst_orgs_inact'):
-            orgs += self.monitoring.organization_set.filter(inv_status='RGS')
+            orgs += prepicked_orgs.filter(inv_status='RGS')
         if formdata.get('dst_orgs_activ'):
-            orgs += self.monitoring.organization_set.filter(inv_status='ACT')
+            orgs += prepicked_orgs.filter(inv_status='ACT')
 
         for org in orgs:
             comment_text = formdata['comment'].replace('%code%', org.inv_code)
@@ -218,9 +229,12 @@ class SendMailView(SendMailMixin, UpdateView):
                 else:
                     mail_organization(addr, org, formdata['subject'], text, attachments)
 
-        orgs = set(self.monitoring.organization_set.all())
-
+        # Secondly, send messages to org-users (representatives), selected with checkbox filters. If request is
+        # ajax - return preview of message to the first matching user.
         orgusers = UserProfile.objects.filter(organization__monitoring=self.monitoring).prefetch_related('organization')
+        if formdata['handpicked_orgs']:
+            orgusers = orgusers.filter(organization__in=formdata['handpicked_orgs'])
+
         scores = Score.objects.filter(parameter__monitoring=self.monitoring)
         active = orgusers.filter(user__comment_comments__object_pk__in=scores).distinct()
         inactive = orgusers.exclude(user__comment_comments__object_pk__in=scores).distinct()
@@ -231,8 +245,12 @@ class SendMailView(SendMailMixin, UpdateView):
         if formdata.get('dst_orgusers_activ'):
             mailto += list(active)
 
+        monitoring_orgs = set(self.monitoring.organization_set.all())
+
         for user in mailto:
-            user_orgs = filter(orgs.__contains__, user.organization.all())
+            # All orgs of this user in this monitoring.
+            user_orgs = filter(monitoring_orgs.__contains__, user.organization.all())
+
             if '%code%' in formdata['comment']:
                 # Send email to this user for every related organization in this monitoring.
                 comment_text = self.replace_link(formdata['comment'], user.user.email, user_orgs)
