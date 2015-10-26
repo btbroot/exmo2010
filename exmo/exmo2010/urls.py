@@ -232,7 +232,6 @@ urlpatterns = named_urls('',
     (r'^feedback/$', 'exmo2010.views.feedback_form'),
     (r'^opinions/$', 'exmo2010.views.feedback'),
     (r'^ajax_set_profile_setting/$', AjaxSetProfileSettingView, 'ajax_set_profile_setting'),
-    (r'^ajax_get_pc/$', 'parameters.views.ajax_get_pc'),
     (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
     (r'^ajax_get_qqt/$', 'questionnaire.views.ajax_get_qqt'),
 

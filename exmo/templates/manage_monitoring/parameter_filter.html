@@ -31,16 +31,32 @@
 {% block extra_script %}
     <script>
         $(function () {
+            var relevant = {
+                {% for param in form.parameter.field.queryset %}
+                    {{ param.pk }}: "{{ param.relevant_criteria|join:' ' }}", {% endfor %}
+            };
+
+            function showRelevant() {
+                var criteria = relevant[$("#id_parameter").val()].split(' ');
+                $('table.criteria tbody tr').hide();
+                for (i=0; i<criteria.length; i++) {
+                    $('table.criteria tbody tr.row-' + criteria[i]).show();
+                }
+            }
+
             if ({{ hide }}) {
                 $('#filter_params').hide();
                 $('input[type="submit"]').attr('disabled', 'disabled').hide();
             } else {
-                getData();
+                showRelevant();
             }
 
-            $('select').change(function parameterCallBack() {
+            $('select').change(function() {
                 var param_value = $("#id_parameter").val();
-                $("#filter_form").get(0).reset();
+
+                // Reset criteria radio-inputs to '-'
+                $('table.criteria input[value="5"]').click();
+
                 $("#id_parameter").val(param_value);
 
                 var empty_value = (param_value == '');
@@ -48,24 +64,11 @@
                 $('#filter_params').toggle(!empty_value);
                 if (!empty_value) {
                     $("table.criteria tr").show();
-                    getData();
+                    showRelevant();
                 }
                 $('input[type="submit"]').prop('disabled', empty_value).toggle(!empty_value);
             });
 
-            function getData() {
-                $.ajax({
-                    url: "{% url 'exmo2010:ajax_get_pc' %}",
-                    type: "POST",
-                    async: false,
-                    data: { p_id: $("#id_parameter").val() },
-                    success: function(data) {
-                        $.each(data, function(index, value) {
-                            $("table.criteria tr.row-" + value).hide();
-                        });
-                    }
-                });
-            }
         });
     </script>
 {% endblock %}
@@ -97,23 +100,14 @@
                         </thead>
 
                         <tbody>
-                            {% for field in form %}
-                                {% if field.field == form.found.field or field.field == form.complete.field or field.field == form.topical.field or field.field == form.accessible.field or field.field == form.hypertext.field or field.field == form.document.field or field.field == form.image.field %}
-                                    <tr class="row-{{ forloop.counter0 }}">
-                                        <td>
-                                            {{ field.label }}
-                                        </td>
-                                        <td>
-                                            {{ field }}
-                                        </td>
+                            {% for field in form.criteria_fields %}
+                                <tr class="row-{{ field.name }}">
+                                    <td>{{ field.label }}</td>  <td>{{ field }}</td>
+                                </tr>
+                                {% if field.errors  %}
+                                    <tr class="row-{{ field.name }}">
+                                        <td colspan="2"> {{ field.errors }} </td>
                                     </tr>
-                                    {% if field.errors  %}
-                                        <tr class="row-{{ forloop.counter0 }}">
-                                            <td colspan="2">
-                                                {{ field.errors }}
-                                            </td>
-                                        </tr>
-                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </tbody>
@@ -131,7 +125,7 @@
             </form>
 
             {% if scores %}
-                <table class="criteria">
+                <table class="results">
                     <thead>
                         <tr>
                             <th>{% trans 'Task' %}</th>

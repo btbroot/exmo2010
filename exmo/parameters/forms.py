@@ -26,20 +26,6 @@ from exmo2010.models import Parameter
 from queryform import QueryForm
 
 
-SCORE_CHOICES1 = (
-    (5, "-"),
-    (0, "0"),
-    (1, "1"),
-)
-
-SCORE_CHOICES2 = (
-    (5, "-"),
-    (1, "1"),
-    (2, "2"),
-    (3, "3"),
-)
-
-
 class ParamCritScoreFilterForm(forms.Form):
     """
     Форма фильтрации оценок по параметру и значениям критериев.
@@ -47,14 +33,19 @@ class ParamCritScoreFilterForm(forms.Form):
     означающий, что ничего не выбрано и фильтрация по этому критерию не нужна.
 
     """
+    _01 = ((5, "-"), (0, "0"), (1, "1"))
+    _123 = ((5, "-"), (1, "1"), (2, "2"), (3, "3"))
+
     parameter = ModelSelect2Field(label=_('Parameter'), queryset=None, empty_label="")
-    found = forms.ChoiceField(label=_('Found'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
-    complete = forms.ChoiceField(label=_('Complete'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
-    topical = forms.ChoiceField(label=_('Topical'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
-    accessible = forms.ChoiceField(label=_('Accessible'), choices=SCORE_CHOICES2, initial=5, widget=forms.RadioSelect)
-    hypertext = forms.ChoiceField(label=_('Hypertext'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
-    document = forms.ChoiceField(label=_('Document'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
-    image = forms.ChoiceField(label=_('Image'), choices=SCORE_CHOICES1, initial=5, widget=forms.RadioSelect)
+
+    found = forms.ChoiceField(label=_('Found'), choices=_01, initial=5, widget=forms.RadioSelect)
+    complete = forms.ChoiceField(label=_('Complete'), choices=_123, initial=5, widget=forms.RadioSelect)
+    topical = forms.ChoiceField(label=_('Topical'), choices=_123, initial=5, widget=forms.RadioSelect)
+    accessible = forms.ChoiceField(label=_('Accessible'), choices=_123, initial=5, widget=forms.RadioSelect)
+    hypertext = forms.ChoiceField(label=_('Hypertext'), choices=_01, initial=5, widget=forms.RadioSelect)
+    document = forms.ChoiceField(label=_('Document'), choices=_01, initial=5, widget=forms.RadioSelect)
+    image = forms.ChoiceField(label=_('Image'), choices=_01, initial=5, widget=forms.RadioSelect)
+
     t_opened = forms.BooleanField(label=_('opened'), required=False, initial=True)
     t_closed = forms.BooleanField(label=_('closed'), required=False, initial=True)
     t_approved = forms.BooleanField(label=_('approved'), required=False, initial=True)
@@ -64,6 +55,11 @@ class ParamCritScoreFilterForm(forms.Form):
         super(ParamCritScoreFilterForm, self).__init__(*args, **kwargs)
         self.fields['parameter'].queryset = Parameter.objects.filter(monitoring=monitoring).order_by('code')
         self.fields['parameter'].label_from_instance = lambda param: u"%s — %s" % (param.code, param.name)
+
+    def criteria_fields(self):
+        yield self['found']
+        for criterion in Parameter.OPTIONAL_CRITERIA:
+            yield self[criterion]
 
 
 class ParameterTypeForm(forms.ModelForm):

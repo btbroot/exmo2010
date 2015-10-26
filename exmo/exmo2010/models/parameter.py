@@ -62,6 +62,12 @@ class Parameter(BaseModel):
     def npa_display(self):
         return self.NPA_TYPE.get(self.npa)
 
+    def relevant_criteria(self):
+        yield 'found'
+        for crit in self.OPTIONAL_CRITERIA:
+            if getattr(self, crit, None):
+                yield crit
+
     def save(self, *args, **kwargs):
         from .score import Score
 
