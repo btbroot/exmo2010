@@ -107,4 +107,26 @@ class StaticDataInitMiddleware(object):
             """
             right.save()
 
+        leading_expert, created = models.FrontPageTextFragments.objects.get_or_create(id='leading_expert')
+        if created:
+            leading_expert.content_ru = "Михаил Карягин"
+            leading_expert.content_en = "Mikhail Karyagin"
+            leading_expert.save()
+
+        contact_phone, created = models.FrontPageTextFragments.objects.get_or_create(id='contact_phone')
+        if created:
+            contact_phone.content_ru = "+7 (812) 944-13-40"
+            contact_phone.save()
+
+        contact_email, created = models.FrontPageTextFragments.objects.get_or_create(id='contact_email')
+        if created:
+            contact_email.content_ru = "info@infometer.org"
+            contact_email.save()
+
+        contact_description, created = models.FrontPageTextFragments.objects.get_or_create(id='contact_description')
+        if created:
+            contact_description.content_ru = "Ведущий эксперт проекта"
+            contact_description.content_en = "Leading expert of the project"
+            contact_description.save()
+
         raise MiddlewareNotUsed  # remove this middleware from stack

@@ -22,6 +22,7 @@
 {% endcomment %}
 {% load i18n static %}
 {% load bleach from bleach_tags %}
+{% load strict_bleach from exmo2010_filters %}
 
 {% block title %}{% trans "Home" context "Front page" %}{% endblock %}
 
@@ -287,20 +288,20 @@
                             <div class="contacts_right">
                                 <div>
                                     <h3>
-                                        <img src="{% static 'exmo2010/img/phone.svg' %}"/> +7 (812) 944-13-40
+                                        <img src="{% static 'exmo2010/img/phone.svg' %}"/> {{ editable.contact_phone.content|strict_bleach }}
                                     </h3>
                                 </div>
                                 <div class="our_mail">
                                     <h3>
                                         <img src="{% static 'exmo2010/img/mail.svg' %}"/>
-                                        <a href="mailto:info@infometer.org">info@infometer.org</a>
+                                        <a href="mailto:{{ editable.contact_email.content }}">{{ editable.contact_email.content|strict_bleach }}</a>
                                     </h3>
                                 </div>
                                 <div><img src="{% static 'exmo2010/img/person.svg' %}"/>
                                     <div id="contact_person" class="table-cell-L">
-                                        <h3>{% trans "Mikhail Karyagin" %}</h3>
+                                        <h3>{{ editable.leading_expert.content|strict_bleach }}</h3>
                                         <div id="contact_description">
-                                            <p>{% trans "Leading expert of project" %}</p>
+                                            {{ editable.contact_description.content|strict_bleach:"div,p,br" }}
                                         </div>
                                     </div>
                                 </div>
