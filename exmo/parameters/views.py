@@ -127,22 +127,3 @@ class ParamDeleteView(LoginRequiredMixin, DeleteView):
             raise PermissionDenied
 
         return get_object_or_404(Parameter, pk=self.kwargs['parameter_pk'])
-
-
-@login_required
-@csrf_exempt
-def ajax_get_pc(request):
-    """
-    AJAX-вьюха для получения списка критериев, отключенных у параметра.
-
-    """
-    if request.method == "POST" and request.is_ajax():
-        parameter = get_object_or_404(Parameter, pk=request.POST.get("p_id"))
-        skip_list = []
-        for index, crit in enumerate(Parameter.OPTIONAL_CRITERIA):
-            if not getattr(parameter, crit, None):
-                skip_list.append(index+2)
-
-        return HttpResponse(json.dumps(skip_list), mimetype='application/json')
-
-    raise PermissionDenied

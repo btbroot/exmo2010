@@ -28,7 +28,7 @@
     width: 100%;
 }
 
-table.criteria {
+table.criteria, table.results {
     margin: 20px 0;
 }
 
