@@ -62,3 +62,9 @@ mock
 model-mommy
 selenium
 django-pedant
+Werkzeug==0.9.4
+django_extensions
+django-debug-toolbar==1.0.1
+
+# This forked version of User Panel supports django-debug-toolbar 1.0.1
+git+https://github.com/Fak3/django-debug-toolbar-user-panel.git

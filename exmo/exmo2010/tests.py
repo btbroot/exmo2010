@@ -38,7 +38,7 @@ from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter,
                      Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED)
 from .templatetags.exmo2010_filters import linkify
 from .views import CertificateOrderView, ckeditor_upload, org_url_re
-from core.test_utils import OptimizedTestCase
+from core.test_utils import OptimizedTestCase, TranslationTestCase
 from core.utils import get_named_patterns, workday_count
 
 
@@ -56,10 +56,12 @@ class TestPhonesFieldValidation(TestCase):
 class FeedbackEmailTestCase(TestCase):
     """ When feedback form is submitted, two emails should be sent - to staff and back to submitter """
 
-    def test_feedback_email(self):
-        response = self.client.post(reverse('exmo2010:feedback_form'), {'email': 'tst@ya.ru', 'comment': '123'})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(mail.outbox), 2)
+    @parameterized.expand(settings.LANGUAGES)
+    def test_feedback_email(self, language_code, language_name):
+        with translation.override(language_code):
+            response = self.client.post(reverse('exmo2010:feedback_form'), {'email': 'tst@ya.ru', 'comment': '123'})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(mail.outbox), 2)
 
 
 class NegativeParamMonitoringRatingTestCase(TestCase):
@@ -277,7 +279,7 @@ class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
         self.assertEqual(set(orgs), set(expected_orgs))
 
 
-class ChangeLanguageViewTestCase(TestCase):
+class ChangeLanguageViewTestCase(TranslationTestCase):
     # Scenario: Change language view tests
 
     def setUp(self):
@@ -302,7 +304,7 @@ class ChangeLanguageViewTestCase(TestCase):
         self.assertEqual(user_profile.language, language_code)
 
 
-class CustomLocaleMiddlewareTest(TestCase):
+class CustomLocaleMiddlewareTest(TranslationTestCase):
     # Scenario: Custom locale middleware tests
 
     def setUp(self):
