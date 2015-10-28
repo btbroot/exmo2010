@@ -38,6 +38,13 @@ from .celery_tasks import send_email, send_org_email
 from .models import UserProfile, Organization, MONITORING_INTERACTION, MONITORING_FINALIZING
 
 
+# TRAC BUG 2299
+# Django BUG https://code.djangoproject.com/ticket/22561
+# Revert django/core/mail/message.py hack. Use BASE64 to encode UTF-8 messages.
+from email import charset as Charset
+Charset.add_charset('utf-8', Charset.SHORTEST, Charset.BASE64, 'utf-8')
+
+
 class ExmoEmail(EmailMultiAlternatives):
     def __init__(self, *args, **kwargs):
         template_basename = kwargs.pop('template_basename')

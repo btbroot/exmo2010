@@ -201,3 +201,19 @@ class FileStorageTestCase(TestCase):
     def tearDown(self):
         # Clear file storage between tests.
         default_storage.filesystem = InMemoryDir()
+
+
+class TranslationTestCase(TestCase):
+    """
+    This tescase should be used, when translation language is modified inside test body.
+    It will save previous language, and restore it when finished.
+    """
+    @classmethod
+    def setUpClass(cls):
+        # Save current language.
+        cls._prev_language = translation.get_language()
+
+    @classmethod
+    def tearDownClass(cls):
+        # Restore current language after test.
+        translation.activate(cls._prev_language)
