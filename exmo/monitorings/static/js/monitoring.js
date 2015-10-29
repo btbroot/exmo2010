@@ -39,7 +39,7 @@ $(document).ready(function () {
 
     // NOTE: set interact and finishing dates to pass form validation
     // (maybe later implement proper custom validation in form)
-    $("#main_form").submit(function() {
+    $(".monitoring-form").submit(function() {
         if ($("input[name='no_interact']").is(":checked")) {
             var rate_date = $('#id_rate_date').val();
             $("#id_interact_date").val(rate_date);
