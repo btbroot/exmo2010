@@ -328,6 +328,7 @@ class RegistrationFormValidationTestCase(OptimizedTestCase):
     @parameterized.expand([
         ('email1@test.com', 'password', ''),
         ('email2@test.com', 'password', '123'),
+        ('email3@мвд.рф', 'password', '123'),
     ])
     def test_valid_form(self, email, password, inv_code):
         # WHEN anonymous submits request with valid data
@@ -343,6 +344,7 @@ class RegistrationFormValidationTestCase(OptimizedTestCase):
     @parameterized.expand([
         ('', 'password', ''),  # missing email
         ('invalid_email.com', 'password', ''),  # incorrect email
+        ('юзер@мвд.рф', 'password', ''),   # rfc6531 usernames in email is not supported yet
         ('valid_email@test.com', '', ''),  # missing password
         ('valid_email@test.com', 'password', '456'),  # invalid invite code
         ('valid_email@test.com', 'password', 'ыва'),  # invalid invite code (cyrillic, see BUG 2386)

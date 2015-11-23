@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -500,6 +501,7 @@ class IndexFindScoreRegexTestCase(TestCase):
         ('https://www.123.ru/', '123.ru'),
         ('123.ru/456', '123.ru'),
         ('www.123.ru/&q=zxc', '123.ru'),
+        ('http://www.мвд.рф/&q=zxc', 'мвд.рф'),
     ])
     def test_valid(self, input, expected):
         self.assertEqual(org_url_re.match(input).group('base_url'), expected)
@@ -509,6 +511,7 @@ class IndexFindScoreRegexTestCase(TestCase):
         ('123', ),
         ('qwe', ),
         ('.www.123/&q=zxc', ),
+        ('/.мвд.рф/', ),
     ])
     def test_invalid(self, input):
         self.assertEqual(org_url_re.match(input), None)

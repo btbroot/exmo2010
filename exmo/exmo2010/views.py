@@ -131,7 +131,9 @@ def index_orgs(request):
     return TemplateResponse(request, 'home/index_orguser.html', context)
 
 
-org_url_re = re.compile('(http://|https://)?(www\.)?(?P<base_url>[a-zA-Z1-9][a-zA-Z1-9\-]*\.[a-zA-Z1-9\-\.]+)(/.*)?$')
+org_url_re = re.compile(
+    u'(http://|https://)?(www\.)?'
+    u'(?P<base_url>[a-zA-Zа-яА-Я1-9][a-zA-Zа-яА-Я1-9\-]*\.[a-zA-Zа-яА-Я1-9\-\.]+)(/.*)?$')
 
 
 def ajax_index_find_score(request):
