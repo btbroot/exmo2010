@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from __future__ import unicode_literals
+
 from datetime import datetime
 
 from bs4 import BeautifulSoup
@@ -68,10 +70,10 @@ class NegativeParamMonitoringRatingTestCase(TestCase):
         # GIVEN monitoring with parameter that has negative weight
         self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
         # AND parameter with weight -1
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=None,
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=[],
                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND parameter with weight 2
-        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=None,
+        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=[],
                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND organization, approved task
         org = mommy.make(Organization, monitoring=self.monitoring)
@@ -200,9 +202,9 @@ class CertificateOpennessValuesByTypeTestCase(TestCase):
         self.task = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
         # AND normative parameter
         kwargs = dict(complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
-        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=None, npa=True, **kwargs)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=[], npa=True, **kwargs)
         # AND recommendatory parameter
-        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=None, npa=False, **kwargs)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=[], npa=False, **kwargs)
         # AND not equal scores for 2 parameters
         kwargs1 = dict(found=1, complete=2, topical=2, accessible=3, hypertext=1, document=1, image=0)
         kwargs2 = dict(found=1, complete=3, topical=3, accessible=2, hypertext=0, document=1, image=1)
@@ -497,6 +499,7 @@ class IndexFindScoreRegexTestCase(TestCase):
         ('https://www.123.ru/', '123.ru'),
         ('123.ru/456', '123.ru'),
         ('www.123.ru/&q=zxc', '123.ru'),
+        ('http://www.мвд.рф/&q=zxc', 'мвд.рф'),
     ])
     def test_valid(self, input, expected):
         self.assertEqual(org_url_re.match(input).group('base_url'), expected)
@@ -506,6 +509,7 @@ class IndexFindScoreRegexTestCase(TestCase):
         ('123', ),
         ('qwe', ),
         ('.www.123/&q=zxc', ),
+        ('/.мвд.рф/', ),
     ])
     def test_invalid(self, input):
         self.assertEqual(org_url_re.match(input), None)

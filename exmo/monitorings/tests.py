@@ -1403,7 +1403,7 @@ class RatingStatsTestCase(TestCase):
         # AND 2 approved tasks
         self.tasks = mommy.make(Task, organization=self.organization, status=Task.TASK_APPROVED, _quantity=2)
         # AND 2 parameters with positive weight
-        self.parameters = mommy.make(Parameter, monitoring=self.monitoring, weight=1, exclude=None, _quantity=2,
+        self.parameters = mommy.make(Parameter, monitoring=self.monitoring, weight=1, exclude=[], _quantity=2,
                                      complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND 2 scores for each parameter
         mommy.make(Score, task=self.tasks[0], parameter=self.parameters[0],
