@@ -43,7 +43,7 @@ from exmo2010.mail import mail_register_activation, mail_password_reset
 from exmo2010.models import Monitoring, Organization, Task, UserProfile
 
 
-@csrf_protect
+@never_cache
 def password_reset_request(request, **kwargs):
     # TODO: Rate limit sending email to prevent flooding from our address.
     if request.method not in ['POST', 'GET']:
@@ -119,6 +119,7 @@ def password_reset_confirm(request, user_pk, token):
     return TemplateResponse(request, 'registration/password_reset_confirm.html', {'form': form})
 
 
+@never_cache
 def registration_form(request):
     if request.method not in ['POST', 'GET']:
         return HttpResponseNotAllowed(permitted_methods=['POST', 'GET'])
@@ -161,6 +162,7 @@ def registration_form(request):
     return TemplateResponse(request, 'registration/registration_form.html', data)
 
 
+@never_cache
 def send_activation_email(request):
     # TODO: Rate limit sending email to prevent flooding from our address.
     if request.method != 'GET':
@@ -185,6 +187,7 @@ def send_activation_email(request):
                                        urlencode({'email': request.GET.get('email')})))
 
 
+@never_cache
 def confirm_email(request, user_pk, token):
     try:
         user = User.objects.get(pk=user_pk)
@@ -211,7 +214,6 @@ def confirm_email(request, user_pk, token):
             return redirect('exmo2010:index')
 
 
-@csrf_protect
 @never_cache
 def login(request):
     if request.method not in ['POST', 'GET']:
@@ -259,6 +261,7 @@ def login(request):
     return TemplateResponse(request, 'registration/login.html', data)
 
 
+@never_cache
 def logout(request):
     auth_logout(request)
 
@@ -270,6 +273,7 @@ def logout(request):
     return HttpResponseRedirect(redirect_url)
 
 
+@never_cache
 def auth_orguser(request):
     """
     If authenticated user is not expert with given GET parameter 'code' -
