@@ -61,3 +61,4 @@ nose-parameterized
 mock
 model-mommy
 selenium
+django-pedant

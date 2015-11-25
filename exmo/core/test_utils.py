@@ -19,16 +19,18 @@
 #
 from contextlib import contextmanager
 
+from django import test
 from django.conf import settings
 from django.core import mail
 from django.core.files.storage import default_storage
 from django.db import transaction
-from django.test import LiveServerTestCase, SimpleTestCase, Client, TestCase
+from django.test import LiveServerTestCase, Client, TestCase
 from django.test.client import RequestFactory
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
 from inmemorystorage.storage import InMemoryDir
+from pedant.utils import PedanticTestCaseMixin
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
@@ -64,7 +66,7 @@ WebElement.find = _find
 WebElement.findall = _findall
 
 
-class BaseSeleniumTestCase(LiveServerTestCase):
+class BaseSeleniumTestCase(PedanticTestCaseMixin, LiveServerTestCase):
     """
     Base class for all selenium tests
     To configure default webdriver used, set SELENIUM_WEBDRIVER in your settings.py
@@ -166,6 +168,18 @@ class BaseSeleniumTestCase(LiveServerTestCase):
         self.webdrv.switch_to.default_content()
 
 
+class SimpleTestCase(PedanticTestCaseMixin, test.SimpleTestCase):
+    pass
+
+
+class TestCase(PedanticTestCaseMixin, test.TestCase):
+    pass
+
+
+class TransactionTestCase(PedanticTestCaseMixin, test.TransactionTestCase):
+    pass
+
+
 class OptimizedTestCase(SimpleTestCase):
     """
     This testcase will not reset database between tests, so database setup may be done once in setUpClass method.
@@ -201,3 +215,4 @@ class FileStorageTestCase(TestCase):
     def tearDown(self):
         # Clear file storage between tests.
         default_storage.filesystem = InMemoryDir()
+

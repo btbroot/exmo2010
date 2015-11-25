@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from core.test_utils import TestCase
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from mock import Mock, patch
@@ -431,8 +431,8 @@ class AjaxGetRatingPlacesTestCase(TestCase):
         self.task2 = mommy.make(Task, organization__monitoring=monitoring, status=Task.TASK_APPROVED)
         # AND 2 parameters (normative and recommendatory)
         kwargs = dict(complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
-        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=None, npa=True, **kwargs)
-        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=None, **kwargs)
+        parameter1 = mommy.make(Parameter, monitoring=monitoring, weight=1, exclude=[], npa=True, **kwargs)
+        parameter2 = mommy.make(Parameter, monitoring=monitoring, weight=2, exclude=[], **kwargs)
         # AND 2 scores for each task
         kwargs1 = dict(found=1, complete=2, topical=3, accessible=2, hypertext=1, document=1, image=1)
         kwargs2 = dict(found=1, complete=3, topical=1, accessible=1, hypertext=0, document=1, image=1)

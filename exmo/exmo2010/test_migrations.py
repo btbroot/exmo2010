@@ -16,10 +16,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.core.management import call_command
-from django.test import TransactionTestCase
 from model_mommy import mommy
-
 from south.migration import Migrations
+
+from core.test_utils import TransactionTestCase
 
 
 class MigrationTestCase(TransactionTestCase):

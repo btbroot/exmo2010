@@ -216,3 +216,6 @@ class Score(BaseModel):
     def comment_form(self, data=None):
         kwargs = dict(fields=['comment'], widgets={'comment': CKEditorWidget(config_name='simplified')})
         return modelform_factory(CommentExmo, **kwargs)(data=data, prefix='score_%s' % str(self.pk))
+
+    # NOTE: this is workaround for pedantic tests. When we get rid of contrib.comments, this won't be needed.
+    comments = []

@@ -23,7 +23,7 @@ from django.core import mail
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
-from django.test import TestCase
+from core.test_utils import TestCase
 from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized

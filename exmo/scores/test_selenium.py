@@ -29,6 +29,7 @@ from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 from selenium.webdriver.common.keys import Keys
 
+from exmo2010.middleware import StaticDataInitMiddleware
 from core.test_utils import BaseSeleniumTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import User, Organization, Task, Parameter, Score, UserProfile, Claim
@@ -704,6 +705,13 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         self.score1 = mommy.make(Score, task=task, parameter=parameter, revision=0, found=1)
         self.score2 = mommy.make(Score, task=task, parameter=parameter, revision=1, found=0)
 
+        # NOTE: middleware is only instantiated once per LiveServerTestCase, so after second test will clear
+        # database static data will be missing. This is workaround.
+        try:
+            StaticDataInitMiddleware()
+        except:
+            pass
+
     @parameterized.expand([
         ('orguser',),
         ('user',),
@@ -723,7 +731,7 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         # THEN initial scores should be visible
         self.assertVisible('.score-interim')
 
-        # WHEN I click 'show_interim_score'
+        # WHEN I click 'show_interim_score' again
         self.find('a[href="#show_interim_score"]').click()
         # THEN initial scores should be hidden
         self.assertHidden('.score-interim')

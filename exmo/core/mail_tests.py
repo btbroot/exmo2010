@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.core import mail
-from django.test import SimpleTestCase
+from core.test_utils import SimpleTestCase
 from django.utils.six import string_types
 
 

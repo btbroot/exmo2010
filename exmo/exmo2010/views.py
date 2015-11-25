@@ -74,7 +74,8 @@ def index_anonymous(request):
     context = {
         'editable': fragments,
         'feedback_items': FeedbackItem.objects.all()[:3],
-        'feedback_count': FeedbackItem.objects.count()
+        'feedback_count': FeedbackItem.objects.count(),
+        'tasks': None
     }
     return TemplateResponse(request, 'home/index_anonymous.html', context=context)
 
@@ -363,7 +364,8 @@ class CertificateOrderView(FormView):
             'organization': task.organization,
             'description': description,
             'on_address': on_address,
-            'special_wishes': form_data['wishes']
+            'special_wishes': form_data['wishes'],
+            'prepare_for': None
         }
 
         if form_data['addressee'] == "user":

@@ -19,7 +19,7 @@
 #
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from core.test_utils import TestCase
 from django.utils.translation import ugettext_lazy as _
 from model_mommy import mommy
 from nose_parameterized import parameterized

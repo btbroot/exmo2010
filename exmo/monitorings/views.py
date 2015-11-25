@@ -440,7 +440,7 @@ def _comments_stats(tasks):
     '''
     ntasks = len(tasks)
     if ntasks == 0:
-        return {k: 0 for k in 'repr_len active_repr_len comments'.split()}
+        return {k: 0 for k in 'repr_len active_repr_len num_comments'.split()}
 
     orgusers_by_task, orgcomments_by_task = defaultdict(list), defaultdict(list)
 
@@ -1147,6 +1147,8 @@ def ratings(request):
             sql_openness = m.openness_expression.get_sql_openness()
             tasks = Task.approved_tasks.filter(organization__monitoring=m).extra(select={'_openness': sql_openness})
             m.avg_openness = avg('_openness', tasks)
+        else:
+            m.avg_openness = 0
 
     queryform = RatingsQueryForm(request.GET)
 

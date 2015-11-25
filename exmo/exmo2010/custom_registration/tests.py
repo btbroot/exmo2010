@@ -24,7 +24,6 @@ from django.contrib.auth import authenticate
 from django.core import mail
 from django.core.urlresolvers import resolve, reverse
 from django.http.request import QueryDict
-from django.test import TestCase
 from mock import MagicMock
 from model_mommy import mommy
 from nose_parameterized import parameterized
@@ -32,6 +31,7 @@ from nose_parameterized import parameterized
 from . import tokens
 from .views import registration_form
 from core.test_utils import OptimizedTestCase
+from core.test_utils import TestCase
 from exmo2010.models import Monitoring, Organization, Task, MONITORING_INTERACTION
 
 

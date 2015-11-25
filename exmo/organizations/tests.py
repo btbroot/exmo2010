@@ -31,7 +31,7 @@ from django.core.files.storage import default_storage
 from django.core.files import File
 from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from core.test_utils import TestCase
 from livesettings import config_get
 from mock import MagicMock, Mock
 from model_mommy import mommy

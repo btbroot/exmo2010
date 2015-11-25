@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from django.forms.models import modelform_factory
-from django.test import TestCase
+from core.test_utils import TestCase
 from django.utils import translation
 from model_mommy import mommy
 

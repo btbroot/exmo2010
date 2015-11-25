@@ -25,7 +25,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from core.test_utils import TestCase
 from mock import MagicMock, Mock, patch
 from model_mommy import mommy
 from nose_parameterized import parameterized

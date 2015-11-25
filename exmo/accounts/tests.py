@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.usr/licenses/>.
 #
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from core.test_utils import TestCase
 from nose_parameterized import parameterized
 
 from exmo2010.models import *

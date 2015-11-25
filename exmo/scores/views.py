@@ -341,10 +341,14 @@ class TaskScoresView(TaskScoresMixin, DetailView):
         monitoring = self.task.organization.monitoring
         self.queryform = ParametersQueryForm(self.request.GET)
 
+        # These fields should be annotated on paramter for strict pedantic tests.
+        _param_extra = {'select': {'comment_url': 0, 'score_pk': 0, 'score_table': 0, 'score_openness': 0, 'score_openness_delta': 0}}
+
         # Relevant parameters
         relevant_parameters = Parameter.objects.filter(monitoring=monitoring)\
                                                .exclude(exclude=self.task.organization)\
-                                               .defer('grounds', 'rating_procedure', 'notes')
+                                               .defer('grounds', 'rating_procedure', 'notes')\
+                                               .extra(**_param_extra)
         scores_rel = Score.objects.filter(task=self.task)\
                                   .exclude(parameter__exclude=self.task.organization)\
                                   .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
@@ -361,7 +365,8 @@ class TaskScoresView(TaskScoresMixin, DetailView):
         if self.request.user.is_expert:
             # Non relevant parameters
             nonrelevant_parameters = Parameter.objects.filter(monitoring=monitoring, exclude=self.task.organization)\
-                                                      .defer('grounds', 'rating_procedure', 'notes')
+                                                      .defer('grounds', 'rating_procedure', 'notes')\
+                                                      .extra(**_param_extra)
             scores_nonrel = Score.objects.filter(task=self.task, parameter__exclude=self.task.organization)\
                                          .defer('links', 'recommendations', 'created', 'last_modified', 'editor')
             nonrelevant_parameters_exist = nonrelevant_parameters.exists()
