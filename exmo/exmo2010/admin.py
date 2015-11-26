@@ -127,7 +127,7 @@ class MonitoringAdmin(TranslationAdmin):
 @register(models.Organization)
 class OrganizationAdmin(TranslationAdmin, VersionAdmin):
     list_display = ('pk', 'name', 'inv_code')
-    search_fields = ('name', 'inv_code')
+    search_fields = ('name', 'inv_code', 'id')
     list_filter = ('monitoring',)
     readonly_fields = ('inv_code',)
 
