@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,8 +20,9 @@
 #
 from django.contrib import auth
 from django.contrib.auth.models import Group, User, AnonymousUser
-from django.db import models
-from django.db.models.signals import post_save, m2m_changed
+from django.db.models import (
+    ForeignKey, PositiveSmallIntegerField, CharField, BooleanField, ManyToManyField, OneToOneField, DateTimeField)
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 
 from .base import BaseModel
@@ -51,6 +52,20 @@ def group_property(group):
     _getter = lambda self: check_role(self.user, [group])
 
     return property(_getter, _setter)
+
+
+class OrgUser(BaseModel):
+    """
+    UserProfile-to-Organization M2M realtionship model.
+    """
+    class Meta(BaseModel.Meta):
+        unique_together = ('userprofile', 'organization')
+    userprofile = ForeignKey("UserProfile")
+    organization = ForeignKey("Organization")
+
+    # Seen by default is True to ease testing. It is only set to False explicitly when
+    # monitoring is copied. Will be reset to True in OrguserTrackingMiddleware.
+    seen = BooleanField(default=True)
 
 
 class UserProfile(BaseModel, ColumnsPickerModel):
@@ -91,29 +106,29 @@ class UserProfile(BaseModel, ColumnsPickerModel):
         ('az', _('Azerbaijani')),
     )
 
-    user = models.OneToOneField(User)
+    user = OneToOneField(User)
     # email_confirmed is True by default to ease tests. After regular registration this field is set to False.
-    email_confirmed = models.BooleanField(default=True)
-    organization = models.ManyToManyField(Organization, null=True, blank=True, verbose_name=_('organizations for view'))
-    sex = models.PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
-    subscribe = models.BooleanField(verbose_name=_("Subscribe to news"), default=False)
-    position = models.CharField(verbose_name=_("Job title"), max_length=48, null=True, blank=True)
-    phone = models.CharField(verbose_name=_("Phone number"), max_length=30, null=True, blank=True)
+    email_confirmed = BooleanField(default=True)
+    organization = ManyToManyField(Organization, through=OrgUser, null=True, blank=True, verbose_name=_('organizations for view'))
+    sex = PositiveSmallIntegerField(verbose_name=_("Sex"), choices=SEX_CHOICES, default=0, db_index=True)
+    subscribe = BooleanField(verbose_name=_("Subscribe to news"), default=False)
+    position = CharField(verbose_name=_("Job title"), max_length=48, null=True, blank=True)
+    phone = CharField(verbose_name=_("Phone number"), max_length=30, null=True, blank=True)
 
     # Change notification settings
-    notification_type = models.PositiveSmallIntegerField(verbose_name=_("Notification about changes"),
-                                                         choices=NOTIFICATION_TYPE_CHOICES,
-                                                         default=NOTIFICATION_DISABLE)
-    notification_interval = models.PositiveSmallIntegerField(verbose_name=_("Notification interval"),
-                                                             choices=NOTIFICATION_INTERVAL_CHOICES,
-                                                             default=1)
-    notification_self = models.BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
-    notification_thread = models.BooleanField(verbose_name=_("Send whole comment thread"), default=False)
-    digest_date_journal = models.DateTimeField(verbose_name=_('Last digest sending date'), blank=True, null=True)
+    notification_type = PositiveSmallIntegerField(verbose_name=_("Notification about changes"),
+                                                  choices=NOTIFICATION_TYPE_CHOICES,
+                                                  default=NOTIFICATION_DISABLE)
+    notification_interval = PositiveSmallIntegerField(verbose_name=_("Notification interval"),
+                                                      choices=NOTIFICATION_INTERVAL_CHOICES,
+                                                      default=1)
+    notification_self = BooleanField(verbose_name=_("Receive a notice about self changes"), default=False)
+    notification_thread = BooleanField(verbose_name=_("Send whole comment thread"), default=False)
+    digest_date_journal = DateTimeField(verbose_name=_('Last digest sending date'), blank=True, null=True)
     # language locale settings
-    language = models.CharField(verbose_name=_('Language'), choices=LANGUAGE_CHOICES,
-                                max_length=2, blank=True, null=True)
-    show_interim_score = models.BooleanField(verbose_name=_("Show initial scores"), default=False)
+    language = CharField(verbose_name=_('Language'), choices=LANGUAGE_CHOICES,
+                         max_length=2, blank=True, null=True)
+    show_interim_score = BooleanField(verbose_name=_("Show initial scores"), default=False)
 
     @property
     def bubble_info(self):
@@ -285,15 +300,19 @@ def _user_has_perm(user, perm, obj):
     return False
 
 
-def org_changed(sender, instance, action, **kwargs):
+# NOTE: Currently it is impossible to use add(), create(), etc. with custom M2M relation model, see
+# https://code.djangoproject.com/ticket/9475
+# Having custom OrgUser relation model force us to instantinate it directly insetad of using add()
+# method, so `m2m_changed` signal became useless. We should use post_save on OrgUser instead.
+
+def orguser_saved(sender, instance, created, **kwargs):
     """
-    Change organization`s invitation status if current user is the first member of this organization.
+    Change organization`s invitation status if current user is the first seen member of this organization.
 
     """
-    if action == 'post_add':
-        instance.organization.exclude(inv_status='ACT')\
-                             .filter(userprofile__isnull=False)\
-                             .update(inv_status='RGS')
+    if instance.seen and not instance.organization.inv_status == 'ACT':
+        instance.organization.inv_status = 'RGS'
+        instance.organization.save()
 
-# invoke signal when 'organization' field at UserProfile was changed
-m2m_changed.connect(org_changed, sender=UserProfile.organization.through)
+
+post_save.connect(orguser_saved, sender=OrgUser)

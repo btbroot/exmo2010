@@ -170,11 +170,36 @@ class ObserversGroupAdmin(admin.ModelAdmin):
     list_filter = ('monitoring',)
 
 
+class OrgUserInline(VerboseAdminMixin, admin.StackedInline):
+    model = models.OrgUser
+    fk_name = 'userprofile'
+    raw_id_fields_verbose = ('organization', )
+    extra = 0
+
+
+@register(models.UserProfile)
+class UserProfileAdmin(VerboseAdminMixin, admin.ModelAdmin):
+    search_fields = ('user__username', 'user__email',)
+    readonly_fields = ('user', )
+    inlines = [OrgUserInline, ]
+
+
+@register(models.OrgUser)
+class OrgUserAdmin(VerboseAdminMixin, admin.ModelAdmin):
+    list_display = ('userprofile', 'organization')
+    search_fields = ('userprofile__user__username', 'organization__name', 'organization__monitoring__name')
+    raw_id_fields = ('userprofile', 'organization',)
+    list_filter = ('organization__monitoring',)
+
+
 class UserProfileInline(VerboseAdminMixin, admin.StackedInline):
     model = models.UserProfile
     fk_name = 'user'
     max_num = 1
-    raw_id_fields_verbose = ('organization', )
+
+    # NOTE: Sadly enough orgusers can't be edited here since custom M2M model is used, see
+    # https://code.djangoproject.com/ticket/9475
+    # raw_id_fields_verbose = ('organization', )
 
     class Media:
         css = {
@@ -185,7 +210,6 @@ class UserProfileInline(VerboseAdminMixin, admin.StackedInline):
 class CustomUserAdmin(UserAdmin):
     filter_horizontal = ('user_permissions', 'groups')
     inlines = [UserProfileInline, ]
-
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

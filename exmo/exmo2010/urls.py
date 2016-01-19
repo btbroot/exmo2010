@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,7 @@ from django.core.urlresolvers import RegexURLResolver, RegexURLPattern
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.views.generic import TemplateView, RedirectView
 
-from .views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
+from .views.views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
 from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
                                ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView, MonitoringCopyView)
 from organizations.views import (OrganizationsView, OrganizationsEditView, OrganizationsDeleteView,
@@ -101,23 +101,26 @@ scores_patterns += named_urls('',
     (r'^answer_clarification/(?P<clarification_pk>\d+)/$', 'clarifications.views.clarification_answer'),
 )
 
+export_patterns = named_urls('exmo2010.views.export_import',
+    (r'^monitoring/(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/organization_export/$', 'monitoring_organization_export'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/organization_import/$', 'monitoring_organization_import'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/parameter_export/$', 'monitoring_parameter_export'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/parameter_import/$', 'monitoring_parameter_import'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
+)
+
 monitoring_patterns = named_urls('monitorings.views',
     (r'^add/$', MonitoringEditView, 'monitoring_add'),
-    (r'^(?P<monitoring_pk>\d+)/by_criteria_mass_export/$', 'monitoring_by_criteria_mass_export'),
     (r'^(?P<monitoring_pk>\d+)/comment_report/$', MonitoringCommentReportView, 'monitoring_comment_report'),
     (r'^(?P<monitoring_pk>\d+)/experts/$', 'monitoring_by_experts'),
-    (r'^(?P<monitoring_pk>\d+)/organization_export/$', 'monitoring_organization_export'),
-    (r'^(?P<monitoring_pk>\d+)/organization_import/$', 'monitoring_organization_import'),
-    (r'^(?P<monitoring_pk>\d+)/parameter_export/$', 'monitoring_parameter_export'),
     (r'^(?P<monitoring_pk>\d+)/parameter_filter/$', 'monitoring_parameter_filter'),
     (r'^(?P<monitoring_pk>\d+)/parameter_found_report/$', 'monitoring_parameter_found_report'),
-    (r'^(?P<monitoring_pk>\d+)/parameter_import/$', 'monitoring_parameter_import'),
     (r'^(?P<monitoring_pk>\d+)/rating/$', 'monitoring_rating'),
     (r'^(?P<monitoring_pk>\d+)/set_npa_params/$', 'set_npa_params'),
     (r'^(?P<monitoring_pk>\d+)_update/$', MonitoringEditView, 'monitoring_update'),
     (r'^(?P<monitoring_pk>\d+)_delete/$', MonitoringDeleteView, 'monitoring_delete'),
     (r'^(?P<monitoring_pk>\d+)_copy/$', MonitoringCopyView, 'monitoring_copy'),
-    (r'^(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
     (r'^(?P<monitoring_pk>\d+)/observers_groups/$', ObserversGroupView, 'observers_groups'),
     (r'^(?P<monitoring_pk>\d+)/observers_group/add/$', ObserversGroupEditView, 'observers_group_add'),
     (r'^(?P<monitoring_pk>\d+)/observers_group/(?P<obs_group_pk>\d+)_update/$', ObserversGroupEditView, 'observers_group_update'),
@@ -187,11 +190,12 @@ auth_patterns = named_urls('exmo2010.custom_registration.views',
 
 
 urlpatterns = named_urls('',
-    (r'^$', 'exmo2010.views.index'),
+    (r'^$', 'exmo2010.views.views.index'),
     (r'^settings/$', 'accounts.views.settings'),
     (r'^accounts/', include(auth_patterns)),
+    (r'^', include(export_patterns)),
 
-    (r'^tasks_index/$', 'exmo2010.views.tasks_index'),
+    (r'^tasks_index/$', 'exmo2010.views.views.tasks_index'),
     (r'^monitorings/$', 'monitorings.views.monitorings_list'),
     (r'^monitorings/(?P<monitoring_status>unpublished|published)/$', 'monitorings.views.monitorings_list'),
     (r'^monitoring/', include(monitoring_patterns)),
@@ -211,14 +215,16 @@ urlpatterns = named_urls('',
     (r'^reports/comments/$', 'custom_comments.views.comments_index'),
     (r'^reports/clarifications/$', 'clarifications.views.clarifications_index'),
     (r'^reports/claims/$', 'claims.views.claims_index'),
-    (r'^reports/monitoring/$', 'monitorings.views.monitoring_report'),
-    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/$',
-        'monitorings.views.monitoring_report', 'monitoring_report_type'),
-    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
-        'monitorings.views.monitoring_report', 'monitoring_report_finished'),
 
-    (r'^ajax_index_find_score/$', 'exmo2010.views.ajax_index_find_score'),
-    (r'^ajax_submit_contacts_form/$', 'exmo2010.views.ajax_submit_contacts_form'),
+    # Public stats
+    (r'^reports/monitoring/$', 'exmo2010.views.views.public_stats'),
+    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/$',
+        'exmo2010.views.views.public_stats', 'public_stats_type'),
+    (r'^reports/monitoring/(?P<report_type>inprogress|finished)/(?P<monitoring_pk>\d+)/$',
+        'exmo2010.views.views.public_stats', 'public_stats_finished'),
+
+    (r'^ajax_index_find_score/$', 'exmo2010.views.views.ajax_index_find_score'),
+    (r'^ajax_submit_contacts_form/$', 'exmo2010.views.views.ajax_submit_contacts_form'),
 
     (r'^certificate_order/$', CertificateOrderView, 'certificate_order'),
     (r'^claim/delete/$', 'claims.views.claim_delete'),
@@ -226,11 +232,11 @@ urlpatterns = named_urls('',
     (r'^ratings/$', 'monitorings.views.ratings'),
     (r'^help/$', HelpView, 'help'),
     (r'^about/$', AboutView, 'about'),
-    (r'^change_language/$', 'exmo2010.views.change_language'),
+    (r'^change_language/$', 'exmo2010.views.views.change_language'),
 
     (r'^opendata/$', OpenDataView, 'opendata'),
-    (r'^feedback/$', 'exmo2010.views.feedback_form'),
-    (r'^opinions/$', 'exmo2010.views.feedback'),
+    (r'^feedback/$', 'exmo2010.views.views.feedback_form'),
+    (r'^opinions/$', 'exmo2010.views.views.feedback'),
     (r'^ajax_set_profile_setting/$', AjaxSetProfileSettingView, 'ajax_set_profile_setting'),
     (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
     (r'^ajax_get_qqt/$', 'questionnaire.views.ajax_get_qqt'),
@@ -239,7 +245,8 @@ urlpatterns = named_urls('',
 )
 
 if settings.DEBUG:
-    urlpatterns += (url(r'^500/$', 'exmo2010.views.server_error'),)
+    # This view is only used to visually check and debug standard http-500 page.
+    urlpatterns += (url(r'^500/$', 'exmo2010.views.views.server_error'),)
 
 
 def crumbs_tree(is_expert=False):
@@ -250,9 +257,9 @@ def crumbs_tree(is_expert=False):
         'settings': _('Settings'),
         'feedback_form': _('Feedback'),
         'feedback': pgettext_lazy('plural', u'Feedback'),
-        'monitoring_report':          _('Statistics'),
-        'monitoring_report_type':     _('Statistics'),
-        'monitoring_report_finished': _('Statistics'),
+        'public_stats':          _('Statistics'),
+        'public_stats_type':     _('Statistics'),
+        'public_stats_finished': _('Statistics'),
 
         'auth_login': _('Login'),
         'password_reset_request':  _('Password recovery'),

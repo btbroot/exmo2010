@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,7 @@ from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404, HttpResponseBadRequest, HttpResponseNotAllowed
@@ -40,11 +41,11 @@ from django.views.generic import TemplateView, DetailView, FormView, View
 from django.views.i18n import set_language
 from livesettings import config_value
 
-from .forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm, ContactsForm
-from .mail import mail_certificate_order, mail_feedback, mail_contacts_frontpage
-from .models import Monitoring, ObserversGroup, StaticPage, Task, FeedbackItem
-from .models.text_fragments import FrontPageTextFragments, LicenseTextFragments
-from .models.monitoring import PRE, RATE, RES, INT, FIN, PUB
+from ..forms import FeedbackForm, CertificateOrderForm, CertificateOrderQueryForm, TasksIndexQueryForm, ContactsForm
+from ..mail import mail_certificate_order, mail_feedback, mail_contacts_frontpage
+from ..models import Monitoring, ObserversGroup, StaticPage, Task, FeedbackItem
+from ..models.text_fragments import FrontPageTextFragments, LicenseTextFragments
+from ..models.monitoring import PRE, RATE, RES, INT, FIN, PUB
 from accounts.forms import SettingsInvCodeForm
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
@@ -375,6 +376,53 @@ class CertificateOrderView(FormView):
             email_data.update({'prepare_for': prepare_for})
 
         return email_data
+
+
+def public_stats(request, report_type='inprogress', monitoring_pk=None):
+    """
+    Статистика по мониторингам.
+
+    """
+    if report_type not in ['inprogress', 'finished']:
+        raise Http404
+
+    all_monitorings = None
+    paginator_list = None
+    title = _('Monitoring statistics')
+
+    if report_type == 'inprogress':
+        all_monitorings = Monitoring.objects.exclude(status=PUB).exclude(hidden=True).order_by('-rate_date')
+    elif report_type == 'finished':
+        all_monitorings = Monitoring.objects.filter(status=PUB).exclude(hidden=True).order_by('-publish_date')
+
+    if monitoring_pk:
+        monitorings = Monitoring.objects.filter(status=PUB, pk=monitoring_pk, hidden=False)
+    else:
+        monitorings = all_monitorings
+
+        paginator = Paginator(monitorings, 10)
+        try:
+            page = int(request.GET.get('page', '1'))
+            if page < 1:
+                page = 1
+        except ValueError:
+            page = 1
+
+        try:
+            paginator_list = paginator.page(page)
+        except (EmptyPage, InvalidPage):
+            paginator_list = paginator.page(1)
+
+        monitorings = paginator_list.object_list
+
+    return TemplateResponse(request, 'public_stats.html', {
+        'paginator': paginator_list,
+        'monitorings': monitorings,
+        'report_type': report_type,
+        'title': title,
+        'monitoring_id': monitoring_pk,
+        'all_monitorings': all_monitorings,
+    })
 
 
 class AjaxSetProfileSettingView(LoginRequiredMixin, View):

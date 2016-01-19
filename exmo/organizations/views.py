@@ -39,12 +39,13 @@ from django.utils.translation import ugettext as _
 from django.views.generic import DeleteView, DetailView, UpdateView
 from pytils.translit import translify
 
-from .forms import InviteOrgsQueryForm, OrganizationsQueryForm, RepresentativesQueryForm
+from .forms import SentMailHistoryQueryForm, OrganizationsQueryForm, RepresentativesQueryForm
 from core.response import JSONResponse
 from core.views import LoginRequiredMixin
 from core.utils import UnicodeWriter
 from exmo2010.mail import mail_organization, mail_orguser
-from exmo2010.models import LicenseTextFragments, Monitoring, Organization, InviteOrgs, Score, UserProfile
+from exmo2010.models import (
+    LicenseTextFragments, Monitoring, Organization, SentMailHistory, Score, UserProfile, OrgUser)
 from modeltranslation_utils import CurLocaleModelForm
 
 
@@ -163,7 +164,7 @@ class SendMailView(SendMailMixin, UpdateView):
     template_name = "manage_monitoring/send_mail.html"
 
     def get_form_class(self):
-        form = modelform_factory(InviteOrgs, exclude=('monitoring', 'inv_status'), widgets={'subject': forms.TextInput})
+        form = modelform_factory(SentMailHistory, exclude=('monitoring', 'inv_status'), widgets={'subject': forms.TextInput})
         form.base_fields.update({
             'attachments_names': forms.CharField(required=False, widget=forms.Textarea()),
             'handpicked_orgs': forms.ModelMultipleChoiceField(self.monitoring.organization_set, required=False)})
@@ -172,7 +173,7 @@ class SendMailView(SendMailMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super(SendMailView, self).get_form_kwargs()
         kwargs.update({
-            'instance': InviteOrgs(monitoring=self.monitoring),
+            'instance': SentMailHistory(monitoring=self.monitoring),
             'initial': {'handpicked_orgs': self.request.GET.getlist('orgs')}})
         return kwargs
 
@@ -235,15 +236,21 @@ class SendMailView(SendMailMixin, UpdateView):
         if formdata['handpicked_orgs']:
             orgusers = orgusers.filter(organization__in=formdata['handpicked_orgs'])
 
+        seen = OrgUser.objects.filter(organization__monitoring=self.monitoring, seen=True).values_list('userprofile_id', flat=True)
+
         scores = Score.objects.filter(parameter__monitoring=self.monitoring)
-        active = orgusers.filter(user__comment_comments__object_pk__in=scores).distinct()
-        inactive = orgusers.exclude(user__comment_comments__object_pk__in=scores).distinct()
+        orgusers_seen = orgusers.filter(pk__in=seen)
+        orgusers_unseen = orgusers.exclude(pk__in=seen)
+        active = orgusers_seen.filter(user__comment_comments__object_pk__in=scores).distinct()
+        inactive = orgusers_seen.exclude(user__comment_comments__object_pk__in=scores).distinct()
 
         mailto = []
         if formdata.get('dst_orgusers_inact'):
             mailto += list(inactive)
         if formdata.get('dst_orgusers_activ'):
             mailto += list(active)
+        if formdata.get('dst_orgusers_unseen'):
+            mailto += list(orgusers_unseen)
 
         monitoring_orgs = set(self.monitoring.organization_set.all())
 
@@ -289,10 +296,10 @@ class SendMailHistoryView(SendMailMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(SendMailHistoryView, self).get_context_data(**kwargs)
-        mail_history = InviteOrgs.objects.filter(monitoring=self.object)
+        mail_history = SentMailHistory.objects.filter(monitoring=self.object)
         is_mail_history_exist = mail_history.exists()
 
-        self.queryform = InviteOrgsQueryForm(self.request.GET)
+        self.queryform = SentMailHistoryQueryForm(self.request.GET)
         if self.queryform.is_valid():
             mail_history = self.queryform.apply(mail_history)
 
@@ -337,6 +344,7 @@ class RepresentativesView(LoginRequiredMixin, DetailView):
                 if user.pk in queried_users:
                     scores = Score.objects.filter(task__organization=org).values_list('pk', flat=True)
                     user.comments = user.user.comment_comments.filter(object_pk__in=scores)
+                    user.seen = OrgUser.objects.filter(userprofile=user, organization=org, seen=True).exists()
                     org.users.append(user)
 
         context['orgs'] = [org for org in orgs if org.users]
@@ -356,7 +364,7 @@ def representatives_export(request, monitoring_pk):
 
     for org in orgs:
         org.users = []
-        for user in sorted(org.userprofile_set.all(),  key=lambda m: m.full_name):
+        for user in sorted(org.userprofile_set.all(), key=lambda m: m.full_name):
             scores = Score.objects.filter(task__organization=org).values_list('pk', flat=True)
             user.comments = user.user.comment_comments.filter(object_pk__in=scores)
             org.users.append(user)

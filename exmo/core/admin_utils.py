@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -68,15 +69,21 @@ class VerboseAdminMixin(object):
             return None
         db = kwargs.get('using')
 
-        if db_field.name in self.raw_id_fields:
-            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.rel, self.admin_site, using=db)
-            kwargs['help_text'] = ''
-        elif db_field.name in self.raw_id_fields_verbose:
+        if db_field.name in self.raw_id_fields_verbose:
             kwargs['widget'] = VerboseManyToManyRawIdWidget(db_field.rel, self.admin_site,
                                                             using=db, attrs={'width': '640px'})
             kwargs['help_text'] = ''
-        elif db_field.name in (list(self.filter_vertical) + list(self.filter_horizontal)):
-            kwargs['widget'] = widgets.FilteredSelectMultiple(db_field.verbose_name,
-                                                              (db_field.name in self.filter_vertical))
+            return db_field.formfield(**kwargs)
+        else:
+            return super(VerboseAdminMixin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
-        return db_field.formfield(**kwargs)
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        db = kwargs.get('using')
+
+        if db_field.name in self.raw_id_fields_verbose:
+            kwargs['widget'] = VerboseForeignKeyRawIdWidget(db_field.rel, self.admin_site,
+                                                            using=db, attrs={'width': '640px'})
+            kwargs['help_text'] = ''
+            return db_field.formfield(**kwargs)
+        else:
+            return super(VerboseAdminMixin, self).formfield_for_foreignkey(db_field, request, **kwargs)

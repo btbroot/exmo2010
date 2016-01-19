@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,7 +35,7 @@ from nose_parameterized import parameterized
 
 from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
-from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Task, Score, UserProfile
+from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Task, Score, UserProfile, OrgUser
 from exmo2010.models.monitoring import INT, PUB, RATE
 from scores.views import rating_update
 
@@ -61,7 +61,7 @@ class ScoreAddAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for monitoring
@@ -500,7 +500,8 @@ class AjaxOpennessAccessTestCase(OptimizedTestCase):
             Task, organization=org6, user=expertB_engaged, status=Task.TASK_CLOSED)
         # AND org representative
         cls.users['org_user'] = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
-        cls.users['org_user'].profile.organization = [org1, org2]
+        mommy.make(OrgUser, organization=org1, userprofile=cls.users['org_user'].profile)
+        mommy.make(OrgUser, organization=org2, userprofile=cls.users['org_user'].profile)
         # AND just registered user
         cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
 
@@ -658,7 +659,7 @@ class AjaxSetPofileSettingTestCase(TestCase):
         # AND organization representative with 'show_interim_score' setting turned on
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.show_interim_score = True
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         orguser.profile.save()
         # AND I am logged in as organization representative
         self.client.login(username='orguser', password='password')
@@ -879,7 +880,7 @@ class TaskScoresColumnsPickerTestCase(OptimizedTestCase):
         cls.expertA.profile.is_expertA = True
         # AND org representative
         cls.org_user = User.objects.create_user('org_user', 'orguser@svobodainfo.org', 'password')
-        cls.org_user.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=cls.org_user.profile)
         # AND all users have all columns disabled in database.
         UserProfile.objects.update(**{
             'st_criteria': False,

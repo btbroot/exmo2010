@@ -4,7 +4,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2015 IRSI LTD
+# Copyright 2015-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -23,7 +23,7 @@
 {% load i18n static %}
 
 {% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/monitoring_report.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/public_stats.css' %}" />
 {% endblock %}
 
 {% block extra_script %}
@@ -47,14 +47,14 @@
         <div id="report_menu">
         {% if report_type == 'finished' %}
 
-            <span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'inprogress' %}">{% trans 'In progress' %}</a></span>
+            <span class="menuitem"><a href="{% url 'exmo2010:public_stats_type' 'inprogress' %}">{% trans 'In progress' %}</a></span>
             <span class="menuitem">{% trans 'Finished' %}</span>
 
             {% if monitorings %}
 
             <h3>{% trans 'Select monitoring cycle' %}</h3>
 
-            <p><select onchange="location = '{% url 'exmo2010:monitoring_report_type' 'finished' %}' + this.options[this.selectedIndex].value;">
+            <p><select onchange="location = '{% url 'exmo2010:public_stats_type' 'finished' %}' + this.options[this.selectedIndex].value;">
                 <option value=""
                 {% if not monitoring_id %}selected{% endif %}>
                     {% trans 'All finished monitorings' %}
@@ -70,7 +70,7 @@
             {% endif %}
 
         {% else %}
-            <span class="menuitem">{% trans 'In progress' %}</span><span class="menuitem"><a href="{% url 'exmo2010:monitoring_report_type' 'finished' %}">{% trans 'Finished' %}</a></span>
+            <span class="menuitem">{% trans 'In progress' %}</span><span class="menuitem"><a href="{% url 'exmo2010:public_stats_type' 'finished' %}">{% trans 'Finished' %}</a></span>
         {% endif %}
 
         </div>

@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,7 @@ from django.views.decorators.csrf import csrf_protect
 from . import tokens
 from .forms import LoginForm, RegistrationForm, ExistingEmailForm, SetPasswordForm
 from exmo2010.mail import mail_register_activation, mail_password_reset
-from exmo2010.models import Monitoring, Organization, Task, UserProfile
+from exmo2010.models import Monitoring, Organization, Task, UserProfile, OrgUser
 
 
 @never_cache
@@ -323,7 +323,9 @@ def set_orguser_perms_and_redirect(user, orgs):
     Otherwise redirect to index page.
     """
     if orgs:
-        user.profile.organization.add(*orgs)
+        for org in orgs:
+            OrgUser.objects.get_or_create(userprofile=user.profile, organization=org)
+
         if not user.profile.is_organization:
             org_group = Group.objects.get(name=UserProfile.organization_group)
             user.groups.add(org_group)

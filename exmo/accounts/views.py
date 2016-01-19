@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012, 2013 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014, 2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 
 from .forms import (SettingsChPassForm, SettingsInvCodeForm, SettingsPersInfForm,
                     SettingsPersInfFormFull, SubscribeAndNotifyForm, SubscribeForm)
-from exmo2010.models import Organization, UserProfile
+from exmo2010.models import Organization, UserProfile, OrgUser
 
 
 @login_required
@@ -92,7 +92,7 @@ def settings(request):
                     og = Group.objects.get(name=UserProfile.organization_group)
                     # Безопасно так делать, даже если он уже там.
                     user.groups.add(og)
-                    profile.organization.add(organization)
+                    OrgUser.objects.get_or_create(organization=organization, userprofile=profile)
                     inv_code_form_mess = "%s: %s" % (_("You are associated with the organization with"),
                                                      organization.name)
                     is_organization = True

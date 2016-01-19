@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,136 +27,24 @@ from cStringIO import StringIO
 
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, Group, User
+from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from core.test_utils import TestCase
 from django.utils.formats import get_format
 from django.utils.translation import get_language
-from mock import MagicMock, Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from .forms import MonitoringCopyForm
-from .views import monitorings_list, monitoring_organization_export
 from core.utils import UnicodeReader
 from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
-from exmo2010.models import (Claim, Monitoring, ObserversGroup, OpennessExpression,
+from exmo2010.models import (Claim, Monitoring, ObserversGroup, OrgUser,
                              Organization, Parameter, Task, Score, UserProfile)
 from exmo2010.models.monitoring import INT, PRE, PUB
-
-
-class MonitoringsAccessTestCase(OptimizedTestCase):
-    # exmo2010:monitorings_list
-
-    # Should always redirect anonymous to login page.
-    # Should forbid get requests for non-experts.
-    # Should forbid get requests with incorrect parameters for experts.
-    # Should allow get requests with correct parameters for experts.
-
-    @classmethod
-    def setUpClass(cls):
-        super(MonitoringsAccessTestCase, cls).setUpClass()
-
-        cls.users = {}
-        # GIVEN monitoring with organization
-        cls.monitoring = mommy.make(Monitoring)
-        organization = mommy.make(Organization, monitoring=cls.monitoring)
-        # AND anonymous user
-        cls.users['anonymous'] = AnonymousUser()
-        # AND user without any permissions
-        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
-        # AND superuser
-        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-        cls.users['expertB'] = expertB
-        # AND expert A
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        cls.users['expertA'] = expertA
-        # AND organization representative
-        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
-        cls.users['orguser'] = orguser
-        # AND translator
-        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
-        translator.profile.is_translator = True
-        cls.users['translator'] = translator
-        # AND observer user
-        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
-        # AND observers group for monitoring
-        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
-        obs_group.organizations = [organization]
-        obs_group.users = [observer]
-        cls.users['observer'] = observer
-        # AND page url
-        cls.url = reverse('exmo2010:monitorings_list')
-
-    @parameterized.expand(zip(['GET', 'POST']))
-    def test_redirect_anonymous(self, method, *args):
-        # WHEN anonymous user send request to monitorings page
-        request = MagicMock(user=self.users['anonymous'], method=method)
-        request.get_full_path.return_value = self.url
-        response = monitorings_list(request)
-        # THEN response status_code should be 302 (redirect)
-        self.assertEqual(response.status_code, 302)
-        # AND response redirects to login page
-        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
-
-    @parameterized.expand(zip(['orguser', 'translator', 'observer', 'user']))
-    def test_forbid_get(self, username, *args):
-        # WHEN authenticated user get monitorings page
-        request = Mock(user=self.users[username], method='GET')
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, monitorings_list, request)
-
-    @parameterized.expand(zip(['admin', 'expertA', 'expertB']))
-    def test_allow_get(self, username, *args):
-        # WHEN admin or any expert get monitorings page
-        request = MagicMock(user=self.users[username], method='GET')
-        response = monitorings_list(request)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-    @parameterized.expand(zip(['unpublished', 'published']))
-    def test_allow_get_with_params(self, param, *args):
-        # WHEN admin or any expert get monitorings page
-        request = MagicMock(user=self.users['expertA'], method='GET')
-        response = monitorings_list(request, param)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-    @parameterized.expand(zip(['orguser', 'translator', 'observer', 'user']))
-    def test_forbid_post(self, username, *args):
-        # WHEN authenticated user changes columns visibility settings on monitorings page
-        data = {'mon_evaluation_start': True,
-                'mon_interact_start': False,
-                'mon_interact_end': True,
-                'mon_publish_date': False,
-                'columns_picker_submit': True}
-        request = Mock(user=self.users[username], method='POST', POST=data)
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, monitorings_list, request)
-
-    @parameterized.expand(zip(['admin', 'expertA', 'expertB']))
-    def test_allow_post(self, username, *args):
-        # WHEN admin or any expert changes columns visibility settings on monitorings page
-        data = {'mon_evaluation_start': True,
-                'mon_interact_start': False,
-                'mon_interact_end': True,
-                'mon_publish_date': False,
-                'columns_picker_submit': True}
-        request = MagicMock(user=self.users[username], method='POST', POST=data)
-        request.get_full_path.return_value = self.url
-        response = monitorings_list(request)
-        # THEN response status_code should be 302 (redirect)
-        self.assertEqual(response.status_code, 302)
 
 
 class MonitoringDeleteTestCase(TestCase):
@@ -195,82 +83,6 @@ class MonitoringDeleteTestCase(TestCase):
         self.assertEqual(Organization.objects.count(), 0)
         self.assertEqual(Parameter.objects.count(), 0)
         self.assertEqual(Monitoring.objects.count(), 0)
-
-
-class MonitoringEditAccessTestCase(TestCase):
-    # exmo2010:monitoring_update
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # Should allow only expertA to edit monitoring
-
-    def setUp(self):
-        # GIVEN monitoring with organization
-        self.monitoring = mommy.make(Monitoring, name='initial', status=PRE)
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-
-        # AND user without any permissions
-        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        # AND superuser
-        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
-        # AND expert A
-        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
-        # AND organization representative
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.profile.organization = [organization]
-
-        self.url = reverse('exmo2010:monitoring_update', args=[self.monitoring.pk])
-
-    def test_anonymous_monitoring_edit_get(self):
-        # WHEN anonymous user gets monitoring edit page
-        response = self.client.get(self.url, follow=True)
-        # THEN he is redirected to login page
-        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
-
-    @parameterized.expand([
-        ('user', 403),
-        ('org', 403),
-        ('expertB', 403),
-        ('expertA', 200),
-        ('admin', 200),
-    ])
-    def test_monitoring_edit_get(self, username, expected_response_code):
-        self.client.login(username=username, password='password')
-
-        # WHEN user gets monitoring edit page
-        response = self.client.get(self.url)
-
-        # THEN response status_code equals expected
-        self.assertEqual(response.status_code, expected_response_code)
-
-    @parameterized.expand([
-        ('user',),
-        ('org',),
-        ('expertB',),
-    ])
-    def test_forbid_unauthorized_monitoring_edit_post(self, username):
-        self.client.login(username=username, password='password')
-
-        input_format = get_format('DATE_INPUT_FORMATS')[0]
-        now = datetime.datetime.now().strftime(input_format)
-
-        # WHEN unauthorized user forges and POSTs monitoring edit form with changed name
-        self.client.post(self.url, {
-            'rate_date': now,
-            'interact_date': now,
-            'finishing_date': now,
-            'publish_date': now,
-            'openness_expression': 8,
-            'status': PRE,
-            'name': 'forged'})
-
-        # THEN monitoring does not get changed in the database
-        new_name = Monitoring.objects.get(pk=self.monitoring.pk).name
-        self.assertEqual(self.monitoring.name, new_name)
 
 
 class RatingsAverageTestCase(TestCase):
@@ -434,7 +246,8 @@ class OrgUserRatingsTableVisibilityTestCase(TestCase):
         # AND organization representative account
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         org.groups.add(Group.objects.get(name=org.profile.organization_group))
-        org.profile.organization = [organization_1, organization_2]
+        mommy.make(OrgUser, organization=organization_1, userprofile=org.profile)
+        mommy.make(OrgUser, organization=organization_2, userprofile=org.profile)
 
         # AND I logged in as organization representative
         self.client.login(username='org', password='password')
@@ -558,7 +371,7 @@ class RatingColumnsPickerTestCase(OptimizedTestCase):
         cls.expertA.profile.is_expertA = True
         # AND org representative
         cls.org_user = User.objects.create_user('org_user', 'orguser@svobodainfo.org', 'password')
-        cls.org_user.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=cls.org_user.profile)
 
         # AND all users have all columns disabled in database.
         UserProfile.objects.update(**{
@@ -741,6 +554,8 @@ class NameFilterRatingTestCase(TestCase):
 
 
 class RatingActiveRepresentativesTestCase(TestCase):
+    # exmo2010:monitoring_rating
+
     ''' Should count active and total organizations representatives on rating page '''
 
     def setUp(self):
@@ -752,7 +567,8 @@ class RatingActiveRepresentativesTestCase(TestCase):
         self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
         self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
         profile = self.usr.get_profile()
-        profile.organization = [organization1, organization2]
+        mommy.make(OrgUser, organization=organization1, userprofile=profile)
+        mommy.make(OrgUser, organization=organization2, userprofile=profile)
         profile.save()
         # AND two corresponding tasks, parameters, and scores for organizations
         task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
@@ -857,7 +673,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         self.orguser.groups.add(Group.objects.get(name=self.orguser.profile.organization_group))
         profile = self.orguser.get_profile()
-        profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=profile)
 
         # AND expertA
         self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
@@ -962,119 +778,11 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, url))
 
 
-class MonitoringExportIrrelevantTestCase(TestCase):
+class TestMonitoringExportApproved(TestCase):
     # exmo2010:monitoring_export
 
-    # In JSON export, irrelevant criteria of scores should be omitted.
-    # In CSV export, irrelevant criteria of scores should have value "not relevant".
-
-    def setUp(self):
-        for code in OpennessExpression.OPENNESS_EXPRESSIONS:
-            # GIVEN PUBLISHED monitoring
-            monitoring = mommy.make(Monitoring, openness_expression__code=code, status=PUB, name='mv%d' % code)
-            # AND organization
-            org = mommy.make(Organization, monitoring=monitoring, name='org')
-            # AND approved task
-            task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
-            # AND parameter, with all criteria relevant, except "complete"
-            parameter = mommy.make(Parameter, monitoring=monitoring, complete=False, weight=1, name='p')
-            # AND score
-            mommy.make(Score, task=task, parameter=parameter, found=1, links='link', recommendations='yep')
-
-    expected_json = {
-        1: {'monitoring': {
-            'name': 'mv1',
-            'tasks': [
-                {
-                    'id': 1,
-                    'name': 'org',
-                    'openness': '100.000',
-                    'openness_initial': '100.000',
-                    'position': 1,
-                    'url': None,
-                    'scores': [{
-                            # "complete" should be omitted
-                            'accessible': 0,
-                            'found': 1,
-                            'hypertext': 0,
-                            'id': 1,
-                            'links': 'link',
-                            'name': 'p',
-                            'recommendations': 'yep',
-                            'revision': 'default',
-                            'social': 1,
-                            'topical': 0,
-                            'type': 'other'}]
-                }]}},
-        8: {'monitoring': {
-            'name': 'mv8',
-            'tasks': [
-                {
-                    'id': 2,
-                    'name': 'org',
-                    'openness': '100.000',
-                    'openness_initial': '100.000',
-                    'position': 1,
-                    'url': None,
-                    'scores': [{
-                            # "complete" should be omitted
-                            'accessible': 0,
-                            'document': 0,
-                            'found': 1,
-                            'hypertext': 0,
-                            'id': 2,
-                            'image': 0,
-                            'links': 'link',
-                            'name': 'p',
-                            'recommendations': 'yep',
-                            'revision': 'default',
-                            'social': 1,
-                            'topical': 0,
-                            'type': 'other'}]
-                }]}}
-    }
-
-    CSV_HEAD = ','.join([
-        '#Monitoring', 'Organization', 'Organization_id', 'Position', 'Initial Openness', 'Openness',
-        'Parameter', 'Parameter_id', 'Found', 'Complete', 'Topical', 'Accessible', 'Hypertext', 'Document',
-        'Image', 'Social', 'Type', 'Revision', 'Links', 'Recommendations'])
-
-    expected_csv = {
-        # For v1 "complete" criterion should be "not relevant", as well as "Document" and "Image" (does not exist in v1)
-        1: CSV_HEAD + '\r\nmv1,org,1,1,100.000,100.000,p,1,1,not relevant,0.0,0.0,0.0,not relevant,not relevant,1,other,default,link,yep\r\n#\r\n',
-        # For v8 "complete" criterion should be "not relevant"
-        8: CSV_HEAD + '\r\nmv8,org,2,1,100.000,100.000,p,2,1,not relevant,0.0,0.0,0.0,0.0,0.0,1,other,default,link,yep\r\n#\r\n'
-    }
-
-    @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
-    def test_json(self, code):
-        monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN user gets monitoring exported as JSON
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=json')
-        # THEN response status code is 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND response content-type is "application/json"
-        self.assertEqual(response.get('content-type'), 'application/json')
-        # AND JSON content has irrelevant criteria excluded from scores
-        self.assertEqual(self.expected_json[code], json.loads(response.content))
-
-    @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
-    def test_csv(self, code):
-        monitoring = Monitoring.objects.get(openness_expression__code=code)
-        # WHEN user gets monitoring exported as CSV
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=csv')
-        # THEN response status code is 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND response content-type is "application/vnd.ms-excel"
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        # AND CSV content has irrelevant criteria marked with "not relevant" values
-        self.assertEqual(self.expected_csv[code], response.content.decode('utf16'))
-
-
-class TestMonitoringExportApproved(TestCase):
     # Scenario: Экспорт данных мониторинга
+
     def setUp(self):
         # GIVEN published monitoring with 1 organization
         self.monitoring = mommy.make(Monitoring, status=PUB)
@@ -1133,126 +841,9 @@ class TestMonitoringExportApproved(TestCase):
         self.assertEqual(len(csv), 3)
 
 
-class OrganizationExportAccessTestCase(OptimizedTestCase):
-    # exmo2010:monitoring_organization_export
-
-    # Should allow experts A and superusers download csv-file.
-    # Should redirect anonymous to login page.
-    # Should forbid all other users to download csv-file.
-
-    @classmethod
-    def setUpClass(cls):
-        super(OrganizationExportAccessTestCase, cls).setUpClass()
-
-        cls.users = {}
-        # GIVEN monitoring with organization
-        cls.monitoring = mommy.make(Monitoring)
-        organization = mommy.make(Organization, monitoring=cls.monitoring)
-        # AND anonymous user
-        cls.users['anonymous'] = AnonymousUser()
-        # AND user without any permissions
-        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
-        # AND superuser
-        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-        cls.users['expertB'] = expertB
-        # AND expert A
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        cls.users['expertA'] = expertA
-        # AND organization representative
-        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
-        cls.users['orguser'] = orguser
-        # AND translator
-        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
-        translator.profile.is_translator = True
-        cls.users['translator'] = translator
-        # AND observer user
-        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
-        # AND observers group for monitoring
-        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
-        obs_group.organizations = [organization]
-        obs_group.users = [observer]
-        cls.users['observer'] = observer
-        # AND url
-        cls.url = reverse('exmo2010:monitoring_organization_export', args=[cls.monitoring.pk])
-
-    @parameterized.expand(zip(['admin', 'expertA']))
-    def test_allow_csv(self, username, *args):
-        # WHEN privileged user download file
-        request = Mock(user=self.users[username], method='GET')
-        response = monitoring_organization_export(request, self.monitoring.pk)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-    @parameterized.expand(zip(['expertB', 'orguser', 'translator', 'observer', 'user']))
-    def test_forbid_csv(self, username, *args):
-        # WHEN authenticated user without permissions download file
-        request = Mock(user=self.users[username], method='GET')
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, monitoring_organization_export, request, self.monitoring.pk)
-
-    def test_redirect_anonymous(self):
-        # WHEN anonymous user download file
-        request = MagicMock(user=self.users['anonymous'], method='GET')
-        request.get_full_path.return_value = self.url
-        response = monitoring_organization_export(request, self.monitoring.pk)
-        # THEN response status_code should be 302 (redirect)
-        self.assertEqual(response.status_code, 302)
-        # AND response redirects to login page
-        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
-
-
-class OrganizationExportTestCase(TestCase):
-    # exmo2010:monitoring_organization_export
-
-    # Organizations export response should contain properly generated csv-file content.
-
-    def setUp(self):
-        # GIVEN published monitoring with 1 organization
-        monitoring = mommy.make(Monitoring)
-        # AND organization with email, url and phone
-        self.org = mommy.make(Organization, monitoring=monitoring,
-                              email='org@test.com', url='http://org.ru', phone='1234567')
-        # AND expert A account
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        # AND organization export url
-        self.url = reverse('exmo2010:monitoring_organization_export', args=[monitoring.pk])
-
-    def test_organization_csv(self):
-        # WHEN I am logged in as expert A
-        self.client.login(username='expertA', password='password')
-        # AND download csv
-        hostname = 'test.host.com'
-        response = self.client.get(self.url, HTTP_HOST=hostname)
-        # THEN status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND file should be csv-file
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = [line for line in UnicodeReader(StringIO(response.content))]
-        # AND file should contain 3 lines (header, 1 string of content and license)
-        self.assertEqual(len(csv), 3)
-        for row in csv:
-            if not row[0].startswith('#'):
-                # AND length of content line should equal 6
-                self.assertEqual(len(row), 6)
-                org_data = [
-                    self.org.name,
-                    self.org.url,
-                    self.org.email,
-                    self.org.phone,
-                    self.org.inv_code,
-                    'http://' + hostname + reverse('exmo2010:auth_orguser') + '?code={}'.format(self.org.inv_code)
-                ]
-                # AND content should describe existing organization
-                self.assertEqual(row, org_data)
-
-
 class UploadParametersCSVTest(TestCase):
+    # exmo2010:monitoring_parameter_import
+
     # Upload parameters.
 
     def setUp(self):
@@ -1282,6 +873,8 @@ class UploadParametersCSVTest(TestCase):
 
 
 class TranslatedMonitoringScoresDataExportTestCase(TestCase):
+    # exmo2010:monitoring_export
+
     # Should export content in a different languages
 
     def setUp(self):
@@ -1354,7 +947,7 @@ class OrgUserRatingAccessTestCase(TestCase):
         # AND representative user for one organization
         user = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
         user.groups.add(Group.objects.get(name=user.profile.organization_group))
-        user.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=user.profile)
         # AND INT monitoring with organization, not connected to representative user and parameter
         self.monitoring_unrelated = mommy.make(Monitoring, status=INT)
         organization_unrelated2 = mommy.make(Organization, monitoring=self.monitoring_unrelated)
@@ -1445,6 +1038,8 @@ class RatingStatsTestCase(TestCase):
 
 
 class RatingStatsOrgCountTestCase(TestCase):
+    # exmo2010:monitoring_rating
+
     # Rating stats with 'user' rating_type should
     # proprely count rated and total organizations
 
@@ -1543,11 +1138,12 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
         # AND organization representative connected to the first organization
         self.orguser1 = User.objects.create_user('org1', 'org@svobodainfo.org', 'password')
         self.orguser1.groups.add(Group.objects.get(name=self.orguser1.profile.organization_group))
-        self.orguser1.profile.organization = [organization1]
+        mommy.make(OrgUser, organization=organization1, userprofile=self.orguser1.profile)
         # AND one more organization representative connected to both organizations
         self.orguser2 = User.objects.create_user('org2', 'org@svobodainfo.org', 'password')
         self.orguser2.groups.add(Group.objects.get(name=self.orguser2.profile.organization_group))
-        self.orguser2.profile.organization = [organization1, organization2]
+        mommy.make(OrgUser, organization=organization1, userprofile=self.orguser2.profile)
+        mommy.make(OrgUser, organization=organization2, userprofile=self.orguser2.profile)
         # AND content_type
         self.content_type = ContentType.objects.get_for_model(Score)
         # AND domain
@@ -1572,81 +1168,6 @@ class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
         statistics = self.monitoring.statistics()
         # THEN active orgusers count in monitoring statistics should equal 1
         self.assertEqual(statistics['organization_users_active'], 1)
-
-
-class MonitoringCopyAccessTestCase(TestCase):
-    # exmo2010:monitoring_copy
-
-    # TODO: move this testcase into *permissions* tests directory
-
-    # Should allow only expertA to copy monitoring
-
-    def setUp(self):
-        # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring)
-        # AND organization
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-        # AND superuser account
-        User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
-        # AND expert A account
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        # AND expert B account
-        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-        # AND organization representative
-        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
-        # AND user without any permissions
-        User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
-        # AND monitoring copy page url
-        self.url = reverse('exmo2010:monitoring_copy', args=[self.monitoring.pk])
-
-    def test_anonymous_monitoring_copy_get(self):
-        # WHEN anonymous user gets monitoring copy page
-        response = self.client.get(self.url, follow=True)
-        # THEN he is redirected to login page
-        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
-
-    @parameterized.expand([
-        ('user', 403),
-        ('orguser', 403),
-        ('expertB', 403),
-        ('expertA', 200),
-        ('admin', 200),
-    ])
-    def test_monitoring_copy_get(self, username, expected_response_code):
-        # WHEN I am logged in
-        self.client.login(username=username, password='password')
-        # AND I get monitoring copy page
-        response = self.client.get(self.url)
-        # THEN response status_code equals expected
-        self.assertEqual(response.status_code, expected_response_code)
-
-    @parameterized.expand([
-        ('user',),
-        ('orguser',),
-        ('expertB',),
-    ])
-    def test_forbid_unauthorized_monitoring_copy_post(self, username):
-        # WHEN I am logged in
-        self.client.login(username=username, password='password')
-
-        now = datetime.datetime.now().strftime(get_format('DATE_INPUT_FORMATS')[0])
-
-        # AND I forge and POST monitoring copy form
-        self.client.post(self.url, {
-            'name_%s' % get_language(): 'monitoring name',
-            'status': PRE,
-            'openness_expression': 8,
-            'donors': ['all'],
-            'rate_date': now,
-            'interact_date': now,
-            'finishing_date': now,
-            'publish_date': now,
-        })
-        # THEN monitoring copy does not get created in the database
-        self.assertEqual(1, Monitoring.objects.all().count())
 
 
 class MonitoringCopyFormTestCase(TestCase):
@@ -1696,19 +1217,22 @@ class CopyMonitoringViewTestCase(TestCase):
         # GIVEN monitoring
         self.monitoring = mommy.make(Monitoring)
         # AND 3 organizations connected to monitoring
-        orgs = mommy.make(Organization, monitoring=self.monitoring, _quantity=3)
+        self.orgs = mommy.make(Organization, monitoring=self.monitoring, _quantity=3)
         # AND parameter connected to monitoring
         self.parameter = mommy.make(Parameter, monitoring=self.monitoring)
         # AND expert A account
-        self.expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
         self.expertA.profile.is_expertA = True
         # AND expert B account
-        self.expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
+        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
         self.expertB.profile.is_expertB = True
+        # AND orguser
+        self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        mommy.make(OrgUser, organization=self.orgs[0], userprofile=self.orguser.profile)
         # AND 3 approved tasks connected to organizations
-        task1 = mommy.make(Task, organization=orgs[0], user=self.expertB, status=Task.TASK_APPROVED)
-        task2 = mommy.make(Task, organization=orgs[1], user=self.expertB, status=Task.TASK_APPROVED)
-        task3 = mommy.make(Task, organization=orgs[2], user=self.expertB, status=Task.TASK_APPROVED)
+        task1 = mommy.make(Task, organization=self.orgs[0], user=self.expertB, status=Task.TASK_APPROVED)
+        task2 = mommy.make(Task, organization=self.orgs[1], user=self.expertB, status=Task.TASK_APPROVED)
+        task3 = mommy.make(Task, organization=self.orgs[2], user=self.expertB, status=Task.TASK_APPROVED)
         # AND 1 score for each task
         mommy.make(Score, task=task1, parameter=self.parameter)
         mommy.make(Score, task=task2, parameter=self.parameter)
@@ -1737,18 +1261,35 @@ class CopyMonitoringViewTestCase(TestCase):
         # WHEN I get new monitoring and parameter
         copied_monitoring = Monitoring.objects.all().order_by('-id')[0]
         copied_parameter = Parameter.objects.all().order_by('-id')[0]
+
         # THEN monitorings fields should be equal
-        # FIXME: modeltranslated fields doesn`t exists in post request
+        # FIXME: modeltranslated fields doesn`t exist in post request
         # self.assertEqual(getattr(copied_monitoring, 'name_%s' % get_language()), 'monitoring name')
         self.assertEqual(copied_monitoring.status, PRE)
+
         # AND organizations names should be equal
         self.assertEqual(set(self.monitoring.organization_set.values_list('name', flat=True)),
                          set(copied_monitoring.organization_set.values_list('name', flat=True)))
+
+        # AND all copied orgs have NTS status.
+        statuses = copied_monitoring.organization_set.values_list('inv_status', flat=True)
+        self.assertEqual(set(statuses), {'NTS', })
+
         # AND parameters name and code should be equal
         self.assertEqual(set(self.monitoring.parameter_set.values_list('name', 'code')),
                          set(copied_monitoring.parameter_set.values_list('name', 'code')))
+
         # AND scores fields should be equal
         fields = 'found complete topical accessible hypertext document image links recommendations revision'.split()
         self.assertEqual(
             set(self.parameter.score_set.values_list(*fields)),
             set(copied_parameter.score_set.values_list(*fields)))
+
+        # AND there should be unseen orguser for the first organization
+        org0_copy = copied_monitoring.organization_set.get(name=self.orgs[0].name)
+        self.assertEqual(
+            set(OrgUser.objects.values_list('userprofile_id', 'organization_id', 'seen')),
+            {
+                (self.orguser.profile.pk, self.orgs[0].pk, True),
+                (self.orguser.profile.pk, org0_copy.pk, False)  # unseen
+            })

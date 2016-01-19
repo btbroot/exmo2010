@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
 # Copyright 2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -98,3 +99,33 @@ class Exmo2010MigrationsTestCase(MigrationTestCase):
         email_not_confirmed_users = UserProfile.objects.filter(email_confirmed=False)
         self.assertEqual(set(email_not_confirmed_users.values_list('user__username', flat=True)),
                          {'inactive_user'})
+
+    def test_0045_auto__add_orguser__add_unique_orguser_userprofile_organization(self):
+        # Migrate back to migration 0044.
+        orm = self.migrate('0044')
+
+        UserProfile = orm['exmo2010.UserProfile']
+        Organization = orm['exmo2010.Organization']
+
+        # GIVEN organization
+        org = mommy.make(Organization)
+        # AND orguser
+        mommy.make(UserProfile, organization=[org], user__username='orguser1')
+
+        org_pks = Organization.objects.values_list('pk')
+        orgusers = UserProfile.objects.filter(organization__in=org_pks)
+
+        # There should be exactly one orguser
+        self.assertEqual(set(orgusers.values_list('user__username', flat=True)), {u'orguser1', })
+
+        # Apply migration
+        orm = self.migrate('0045_auto__add_orguser__add_unique_orguser_userprofile_organization')
+
+        UserProfile = orm['exmo2010.UserProfile']
+        Organization = orm['exmo2010.Organization']
+
+        org_pks = Organization.objects.values_list('pk')
+        orgusers = UserProfile.objects.filter(organization__in=org_pks)
+
+        # There should be exactly one orguser
+        self.assertEqual(set(orgusers.values_list('user__username', flat=True)), {u'orguser1', })

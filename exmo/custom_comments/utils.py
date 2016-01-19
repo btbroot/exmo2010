@@ -85,7 +85,8 @@ def comment_report(monitoring):
     active_orgs = dict_active_orgs.values()
     active_experts = dict_active_experts.values()
     num_expert_comments = sum(e.num_comments for e in active_experts)
-    num_orgs_with_user = monitoring.organization_set.filter(userprofile__isnull=False).distinct().count()
+    num_orgs_with_user = monitoring.organization_set.filter(
+        userprofile__isnull=False, orguser__seen=True).distinct().count()
 
     # Clean unneeded intermediate local variables before returning the rest as result dictionary.
     del scores, _scores, dict_active_experts, dict_active_orgs, org_users

@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -29,10 +29,9 @@ from nose.plugins.attrib import attr
 from nose_parameterized import parameterized
 from selenium.webdriver.common.keys import Keys
 
-from exmo2010.middleware import StaticDataInitMiddleware
 from core.test_utils import BaseSeleniumTestCase
 from custom_comments.models import CommentExmo
-from exmo2010.models import User, Organization, Task, Parameter, Score, UserProfile, Claim
+from exmo2010.models import User, Organization, Task, Parameter, Score, UserProfile, Claim, OrgUser
 from exmo2010.models.monitoring import (
     Monitoring, MONITORING_RATE, MONITORING_RESULT, MONITORING_INTERACTION, MONITORING_FINALIZING, MONITORING_PUBLISHED)
 
@@ -230,7 +229,7 @@ class DisableEmptyCommentSubmitTestCase(BaseSeleniumTestCase):
         # AND organization representative account
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND approved task assigned to expert B
         task = mommy.make(Task, organization=org, user=expertB, status=Task.TASK_APPROVED)
 
@@ -420,7 +419,7 @@ class ScoreToggleCommentTestCase(BaseSeleniumTestCase):
 
             orguser = User.objects.create_user('orguser %d' % status, 'org@svobodainfo.org', 'password')
             orguser.groups.add(Group.objects.get(name=UserProfile.organization_group))
-            orguser.profile.organization = [org]
+            mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
 
             mommy.make(
                 CommentExmo,
@@ -696,7 +695,7 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND approved task
         task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
         # AND parameter
@@ -704,13 +703,6 @@ class ToggleInitialScoresDisplayTestCase(BaseSeleniumTestCase):
         # AND scores with two revisions
         self.score1 = mommy.make(Score, task=task, parameter=parameter, revision=0, found=1)
         self.score2 = mommy.make(Score, task=task, parameter=parameter, revision=1, found=0)
-
-        # NOTE: middleware is only instantiated once per LiveServerTestCase, so after second test will clear
-        # database static data will be missing. This is workaround.
-        try:
-            StaticDataInitMiddleware()
-        except:
-            pass
 
     @parameterized.expand([
         ('orguser',),
@@ -753,7 +745,7 @@ class ToggleHiddenCommentsDisplayTestCase(BaseSeleniumTestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND approved task
         self.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
         # AND 100% score
@@ -905,7 +897,7 @@ class CkeditorInstancesLimitTestCase(BaseSeleniumTestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.profile.is_organization = True
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND approved task
         self.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
         # AND 150 0% scores with recommendations

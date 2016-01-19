@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
 # Copyright 2013 Al Nikolov
-# Copyright 2015 IRSI LTD
+# Copyright 2015-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ from model_mommy import mommy
 from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
-from exmo2010.models import Parameter, Organization, Score, Task
+from exmo2010.models import Parameter, Organization, Score, Task, OrgUser
 from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED
 
 
@@ -105,7 +105,7 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
         # AND organization representative account
         orguser = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization.add(org)
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         orguser.first_name = 'Org'
         orguser.save()
 
@@ -206,11 +206,13 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
         self.find('form.filter input[type="submit"]').click()
         # THEN warning message should be displayed
         self.assertVisible('p.warning')
-        # AND submit bttin should be disabled
+        # AND submit button should be disabled
         self.assertDisabled(self.submit_button)
-        # WHEN click on browser 'back' button
+        # WHEN I click on browser 'back' button
         self.webdrv.back()
-        # AND submit first certificate form
+        # THEN submit button should be visible
+        self.assertVisible(self.submit_button)
+        # WHEN I submit first certificate form
         self.find(self.submit_button).click()
         # AND submit second certificate form
         self.assertVisible('#confirm')

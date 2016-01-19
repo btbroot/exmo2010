@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@ from django.views.generic import RedirectView
 admin.autodiscover()
 
 
-handler500 = 'exmo2010.views.server_error'
+handler500 = 'exmo2010.views.views.server_error'
 
 
 urlpatterns = patterns('',
@@ -40,7 +40,7 @@ urlpatterns += i18n_patterns('',
     url(r'^admin/settings/', include('livesettings.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^jsi18n/', 'django.views.i18n.javascript_catalog', {'packages': ['django.conf', 'django.contrib.admin']}),
-    url(r'^ckeditor/upload/', 'exmo2010.views.ckeditor_upload', name='ckeditor_upload'),
+    url(r'^ckeditor/upload/', 'exmo2010.views.views.ckeditor_upload', name='ckeditor_upload'),
     url(r'^ckeditor/', include('ckeditor.urls')),
     url(r'^', include('exmo2010.urls', namespace='exmo2010', app_name='exmo2010')),
 )

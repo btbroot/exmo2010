@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -30,7 +30,7 @@ from nose_parameterized import parameterized
 
 from .views import PostOrgParamRelevanceView
 from core.test_utils import OptimizedTestCase
-from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Score, Task
+from exmo2010.models import Monitoring, ObserversGroup, Organization, Parameter, Score, Task, OrgUser
 
 
 class ParameterEditAccessTestCase(TestCase):
@@ -55,7 +55,7 @@ class ParameterEditAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=org.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for monitoring
@@ -277,7 +277,7 @@ class PostOrgParamRelevanceAccessTestCase(OptimizedTestCase):
         cls.users['expertA'] = expertA
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
         cls.users['orguser'] = orguser
         # AND translator
         translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')

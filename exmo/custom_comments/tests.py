@@ -35,7 +35,7 @@ from custom_comments.models import CommentExmo
 from custom_comments.utils import comment_report
 from exmo2010.celery_tasks import send_digest
 from exmo2010.models.monitoring import Monitoring, MONITORING_PUBLISHED, MONITORING_INTERACTION, MONITORING_STATUS
-from exmo2010.models import Organization, Parameter, Score, Task, UserProfile
+from exmo2010.models import Organization, Parameter, Score, Task, UserProfile, OrgUser
 from scores.views import post_score_comment
 
 
@@ -51,12 +51,12 @@ class CommentReportTestCase(TestCase):
         self.org_orphan = mommy.make(Organization, monitoring=self.monitoring)
         # AND 2 organization representatives for org1
         org1user1 = mommy.make(User)
-        org1user1.profile.organization.add(self.org1)
+        mommy.make(OrgUser, organization=self.org1, userprofile=org1user1.profile)
         org1user2 = mommy.make(User)
-        org1user2.profile.organization.add(self.org1)
+        mommy.make(OrgUser, organization=self.org1, userprofile=org1user2.profile)
         # AND 1 organization representative for org2
         org2user1 = mommy.make(User)
-        org2user1.profile.organization.add(self.org2)
+        mommy.make(OrgUser, organization=self.org2, userprofile=org2user1.profile)
         # AND expertA
         expertA = mommy.make(User)
         expertA.profile.is_expertA = True
@@ -122,7 +122,7 @@ class OpenCommentsAnswerTimeUrgencyTestCase(TestCase):
 
         # AND organization representative
         orguser = mommy.make(User)
-        orguser.profile.organization.add(self.org)
+        mommy.make(OrgUser, organization=self.org, userprofile=orguser.profile)
 
         # AND today is 2014.08.14 10:25 (Thursday morning)
         patch('custom_comments.utils.datetime', Mock(today=lambda: datetime(2014, 8, 14, 10, 25))).start()
@@ -167,7 +167,7 @@ class ForbidCommentNotApprovedTaskTestCase(TestCase):
 
         # AND i am logged in as organization representative
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization.add(org)
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         self.client.login(username='orguser', password='password')
 
     def test_forbid_comment_not_approved_task(self):
@@ -290,7 +290,7 @@ class CommentMailNotificationTestCase(TestCase):
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=UserProfile.organization_group))
         profile = orguser.profile
-        profile.organization = [self.org]
+        mommy.make(OrgUser, organization=self.org, userprofile=profile)
         profile.notification_type = UserProfile.NOTIFICATION_ONEBYONE
         profile.save()
 
