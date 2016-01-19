@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -35,10 +35,10 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from .middleware import CustomLocaleMiddleware
-from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter,
+from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter, OrgUser,
                      Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED)
 from .templatetags.exmo2010_filters import linkify
-from .views import CertificateOrderView, ckeditor_upload, org_url_re
+from .views.views import CertificateOrderView, ckeditor_upload, org_url_re
 from core.test_utils import OptimizedTestCase, TranslationTestCase
 from core.utils import get_named_patterns, workday_count
 
@@ -76,7 +76,7 @@ class NegativeParamMonitoringRatingTestCase(TestCase):
                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND parameter with weight 2
         self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=[],
-                                    complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
+                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND organization, approved task
         org = mommy.make(Organization, monitoring=self.monitoring)
         task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
@@ -111,7 +111,7 @@ class CanonicalViewKwargsTestCase(TestCase):
         'activation_key',     # for registration_activate
         'user_pk',            # for password_reset_confirm
         'token',              # for password_reset_confirm
-        'report_type',        # for monitoring_report_*
+        'report_type',        # for public_stats_*
         'print_report_type',  # for task_scores
     }
 
@@ -123,13 +123,13 @@ class CanonicalViewKwargsTestCase(TestCase):
             raise Exception(
                 'Urlpattern ("%s", "%s") uses positional args and can\'t be reversed for this test. '
                 'It should be modified to use only kwargs or excluded from this test and tested explicitly'
-                    % (pat.regex.pattern, pat.name))
+                % (pat.regex.pattern, pat.name))
         unknown_kwargs = set(pat.regex.groupindex) - self.canonical_kwargs
         if unknown_kwargs:
             raise Exception(
                 'Urlpattern ("%s", "%s") uses unknown kwargs and can\'t be reversed for this test. '
                 'These kwargs should be added to this test\'s auto_pattern_kwargs in setUp'
-                    % (pat.regex.pattern, pat.name))
+                % (pat.regex.pattern, pat.name))
 
 
 class CertificateOrderFormValidationTestCase(OptimizedTestCase):
@@ -155,7 +155,7 @@ class CertificateOrderFormValidationTestCase(OptimizedTestCase):
         # AND organization representative
         cls.orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         cls.orguser.groups.add(Group.objects.get(name=cls.orguser.profile.organization_group))
-        cls.orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=cls.orguser.profile)
 
     def mock_request(self, values):
         data = dict(zip(self.fields, values), task_id=self.task.pk, rating_type='all')
@@ -213,11 +213,11 @@ class CertificateOpennessValuesByTypeTestCase(TestCase):
         mommy.make(Score, task=self.task, parameter=parameter1, **kwargs1)
         mommy.make(Score, task=self.task, parameter=parameter2, **kwargs2)
         # AND organization representative account
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.groups.add(Group.objects.get(name=org.profile.organization_group))
-        org.profile.organization.add(organization)
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
+        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
+        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
         # AND I am logged in as organization representative
-        self.client.login(username='org', password='password')
+        self.client.login(username='orguser', password='password')
 
     @parameterized.expand([
         ('all', 26.125),
@@ -259,9 +259,11 @@ class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
         mommy.make(Score, task=task, parameter=parameter_all_non_npa, found=1)
 
         # AND organization representative account
-        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
+        orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization = [org_npa, org_non_npa, org_all]
+        mommy.make(OrgUser, organization=org_npa, userprofile=orguser.profile)
+        mommy.make(OrgUser, organization=org_all, userprofile=orguser.profile)
+        mommy.make(OrgUser, organization=org_non_npa, userprofile=orguser.profile)
         # AND I am logged in as organization representative
         self.client.login(username='orguser', password='password')
 
@@ -389,7 +391,7 @@ class CKEditorImageUploadAccessTestCase(OptimizedTestCase):
         cls.users['expertA'] = expertA
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
         cls.users['orguser'] = orguser
         # AND translator
         translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
@@ -515,3 +517,19 @@ class IndexFindScoreRegexTestCase(TestCase):
     ])
     def test_invalid(self, input):
         self.assertEqual(org_url_re.match(input), None)
+
+
+class OrguserTrackingMiddlewareTestCase(TestCase):
+    def test_update_seen(self):
+        # GIVEN organization
+        org = mommy.make(Organization)
+        # AND not-seen orguser
+        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile, seen=False)
+
+        # WHEN i sign-in as orguser
+        self.client.login(username='orguser', password='password')
+        # AND i get any page
+        self.client.get('/')
+        # THEN my status should be updated to "seen"
+        self.assertEqual(set(OrgUser.objects.values_list('userprofile_id', 'seen')), {(orguser.profile.pk, True), })

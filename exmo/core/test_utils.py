@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,19 +22,22 @@ from contextlib import contextmanager
 from django import test
 from django.conf import settings
 from django.core import mail
+from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
 from django.db import transaction
-from django.test import LiveServerTestCase, Client, TestCase
+from django.test import LiveServerTestCase, Client
 from django.test.client import RequestFactory
 from django.test.testcases import disable_transaction_methods, restore_transaction_methods
 from django.utils import translation
 from django.utils.decorators import method_decorator
+from django.utils.importlib import import_module
 from inmemorystorage.storage import InMemoryDir
 from pedant.utils import PedanticTestCaseMixin
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.remote.command import Command
 
 try:
     from pyvirtualdisplay import Display
@@ -66,6 +69,24 @@ WebElement.find = _find
 WebElement.findall = _findall
 
 
+class ReraisingWebdriverMixin(object):
+    error_text = ['error occured', 'Server error 500']
+
+    def execute(self, driver_command, params=None):
+        """
+        On any selenium command check page source for text that looks like 500 error, and
+        raise exception if it is found.
+        TODO: try to use middleware to get traceback, or catch 404 errors.
+        """
+        extra_errors = getattr(settings, 'SELENIUM_CATCH_ERROR_TEXT', [])
+        result = super(ReraisingWebdriverMixin, self).execute(driver_command, params)
+        if self.session_id and driver_command not in [Command.GET_PAGE_SOURCE, Command.GET_CURRENT_URL]:
+            for text in self.error_text + extra_errors:
+                if text in self.page_source:
+                    raise Exception('Server error 500: %s' % self.current_url)
+        return result
+
+
 class BaseSeleniumTestCase(PedanticTestCaseMixin, LiveServerTestCase):
     """
     Base class for all selenium tests
@@ -74,6 +95,7 @@ class BaseSeleniumTestCase(PedanticTestCaseMixin, LiveServerTestCase):
     default: FALLBACK - will try to find first working webdriver
 
     """
+    pre_setup_callbacks = []
 
     @classmethod
     def setUpClass(cls):
@@ -82,18 +104,36 @@ class BaseSeleniumTestCase(PedanticTestCaseMixin, LiveServerTestCase):
             if webdriver_type == 'FALLBACK':
                 for webdriver_type in 'Firefox PhantomJS Chrome Opera'.split():
                     try:
-                        cls.webdrv = getattr(webdriver, webdriver_type)()
+                        MyWdrv = type(webdriver_type, (ReraisingWebdriverMixin, getattr(webdriver, webdriver_type)), {})
+                        cls.webdrv = MyWdrv()
                     except Exception:
                         continue
                     break
                 else:
                     raise Exception("Can't find any webdriver. Make sure that it is installed and in $PATH")
             else:
-                cls.webdrv = getattr(webdriver, webdriver_type)()
+                MyWdrv = type(webdriver_type, (ReraisingWebdriverMixin, getattr(webdriver, webdriver_type)), {})
+                cls.webdrv = MyWdrv()
         translation.activate(settings.LANGUAGE_CODE)
 
         super(BaseSeleniumTestCase, cls).setUpClass()
         cls.requestfactory = RequestFactory(SERVER_NAME=cls.server_thread.host, SERVER_PORT=cls.server_thread.port)
+
+        pre_setup = getattr(settings, 'SELENIUM_PRE_SETUP_CALLBACKS', [])
+        for callback_path in pre_setup:
+            try:
+                module, callback_name = callback_path.rsplit('.', 1)
+            except ValueError:
+                raise ImproperlyConfigured('%s isn\'t a valid callback path' % callback_path)
+            try:
+                mod = import_module(module)
+            except ImportError as e:
+                raise ImproperlyConfigured('Error importing module %s: "%s"' % (module, e))
+            try:
+                callback = getattr(mod, callback_name)
+            except AttributeError:
+                raise ImproperlyConfigured('Module "%s" does not define a "%s" class' % (module, callback))
+            cls.pre_setup_callbacks += [callback]
 
     @classmethod
     def tearDownClass(cls):
@@ -101,6 +141,11 @@ class BaseSeleniumTestCase(PedanticTestCaseMixin, LiveServerTestCase):
         if not getattr(cls, '__unittest_skip__', False):
             cls.webdrv.quit()
         super(BaseSeleniumTestCase, cls).tearDownClass()
+
+    def _pre_setup(self):
+        for callback in self.pre_setup_callbacks:
+            callback()
+        super(BaseSeleniumTestCase, self)._pre_setup()
 
     def find(self, selector):
         try:

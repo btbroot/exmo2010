@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,7 @@ from nose_parameterized import parameterized
 from .views import TaskHistoryView
 from core.test_utils import OptimizedTestCase
 from exmo2010.models import (
-    Monitoring, ObserversGroup, Organization, TaskHistory, Task, Score,
+    Monitoring, ObserversGroup, Organization, TaskHistory, Task, Score, OrgUser,
     Parameter, MONITORING_INTERACTION, MONITORING_RATE)
 
 
@@ -457,7 +457,7 @@ class TaskListAccessTestCase(TestCase):
 
         # AND org repersentative, with Organization from this monitoring
         org_user = User.objects.create_user('org_user', 'usr@svobodainfo.org', 'password')
-        org_user.profile.organization = [org1]
+        mommy.make(OrgUser, organization=org1, userprofile=org_user.profile)
 
         # AND just registered user
         user = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
@@ -607,7 +607,7 @@ class TaskHistoryAccessTestCase(OptimizedTestCase):
         cls.users['expertA'] = expertA
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
         cls.users['orguser'] = orguser
         # AND translator
         translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')

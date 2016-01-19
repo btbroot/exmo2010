@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -154,17 +154,17 @@ class Monitoring(BaseModel):
         from .userprofile import UserProfile
 
         stat = {}
-        scores = Score.objects.filter(task__organization__monitoring=self)
-
-        stat['organization'] = self.organization_set.count()
+        scores = list(Score.objects.filter(task__organization__monitoring=self).values_list('pk', flat=True))
+        orgs = list(self.organization_set.values_list('pk', flat=True))
+        stat['organization'] = len(orgs)
 
         stat['organization_rated'] = Task.approved_tasks.filter(organization__monitoring=self).count()
+        orgusers = User.objects.filter(userprofile__organization__in=orgs, userprofile__orguser__seen=True)
+        orgusers = set(orgusers.values_list('pk', flat=True))
 
-        stat['organization_users'] = User.objects.filter(
-            groups__name='organizations',
-            userprofile__organization__in=self.organization_set.all()
-        ).count()
+        stat['organization_users'] = len(orgusers)
 
+        # TODO: this is probably wrong
         stat['organization_users_active'] = UserProfile.objects.filter(user__comment_comments__object_pk__in=scores)\
                                                                .distinct()\
                                                                .count()
@@ -174,14 +174,13 @@ class Monitoring(BaseModel):
         stat['comment_organization'] = Comment.objects.filter(
             content_type__model='score',
             object_pk__in=scores,
-            user__in=User.objects.filter(groups__name='organizations')
+            user__in=orgusers
         ).count()
 
         stat['comment_expert'] = Comment.objects.filter(
             content_type__model='score',
-            object_pk__in=scores,
-            user__in=User.objects.exclude(groups__name='organizations')
-        ).count()
+            object_pk__in=scores
+        ).exclude(user__in=orgusers).count()
 
         rating_list = self.rating()
         if rating_list:

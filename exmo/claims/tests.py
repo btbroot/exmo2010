@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +25,7 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from exmo2010.models import (
-    Monitoring, Organization, Score, Claim,
+    Monitoring, Organization, Score, Claim, OrgUser,
     ObserversGroup, Task, MONITORING_RATE)
 
 
@@ -47,7 +48,7 @@ class ClaimCreateAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for rate monitoring
@@ -109,7 +110,7 @@ class ClaimAnswerAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for rate monitoring
@@ -173,7 +174,7 @@ class ClaimDeleteAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for rate monitoring
@@ -244,7 +245,7 @@ class ClaimCreatedEmailNotifyTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         org_user = User.objects.create_user('org', 'org@ya.ru', 'password')
-        org_user.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=org_user.profile)
 
         # AND score
         self.score = mommy.make(Score, task=task, parameter__monitoring=monitoring)
@@ -300,7 +301,7 @@ class ClaimDeletedEmailNotifyTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         org_user = User.objects.create_user('org', 'org@ya.ru', 'password')
-        org_user.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=org_user.profile)
 
         # AND score with existing claim
         self.score = mommy.make(Score, task=task, parameter__monitoring=monitoring)

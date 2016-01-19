@@ -27,6 +27,8 @@ from django.utils import translation
 from django.utils.encoding import iri_to_uri
 from livesettings import config_value
 
+from .models import OrgUser
+
 
 class CustomLocaleMiddleware(LocaleMiddleware):
 
@@ -37,8 +39,11 @@ class CustomLocaleMiddleware(LocaleMiddleware):
             language = user.profile.language
             language_in_path = translation.get_language_from_path(request.path_info)
             if language_in_path and language != language_in_path:
-                full_path = '%s%s' % (request.path_info[3:], request.META.get('QUERY_STRING', '') and
-                                     ('?' + iri_to_uri(request.META.get('QUERY_STRING', ''))) or '')
+                if request.META.get('QUERY_STRING', ''):
+                    query = '?' + iri_to_uri(request.META['QUERY_STRING'])
+                else:
+                    query = ''
+                full_path = '%s%s' % (request.path_info[3:], query)
                 language_url = "%s://%s/%s%s" % (
                     request.is_secure() and 'https' or 'http',
                     request.get_host(), language, full_path)
@@ -48,6 +53,19 @@ class CustomLocaleMiddleware(LocaleMiddleware):
 
         translation.activate(language)
         request.LANGUAGE_CODE = translation.get_language()
+
+
+class OrguserTrackingMiddleware(object):
+    """
+    Mark orguser as "seen" on any request.
+    NOTE: It should be placed after AuthenticationMiddleware
+    """
+    def process_request(self, request):
+        if request.user.is_authenticated():
+            for orguser in OrgUser.objects.filter(userprofile=request.user.profile, seen=False):
+                # NOTE: We rely on post_save signal, hence can't use update()
+                orguser.seen = True
+                orguser.save()
 
 
 class StaticDataInitMiddleware(object):

@@ -68,7 +68,7 @@ class RepresentativesQueryForm(QueryForm):
         self.fields['organization'].choices = org_choices
 
 
-class InviteOrgsQueryForm(QueryForm):
+class SentMailHistoryQueryForm(QueryForm):
     timestamp = forms.DateField(required=False, widget=forms.TextInput())
 
     class Meta:

@@ -3,7 +3,7 @@
 # Copyright 2010, 2011, 2013 Al Nikolov
 # Copyright 2010, 2011 non-profit partnership Institute of Information Freedom Development
 # Copyright 2012-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,11 +22,10 @@ import string
 import random
 import re
 
-from ckeditor.fields import RichTextField
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
-from django.utils.translation import pgettext, pgettext_lazy, ugettext, ugettext_lazy as _
+from django.utils.translation import pgettext_lazy, ugettext, ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
 
 from .base import BaseModel
@@ -184,48 +183,3 @@ class Organization(BaseModel):
         for email in self.email.replace(' ', '').split(','):
             if email:
                 yield email
-
-
-class InviteOrgs(BaseModel):
-    """
-    Invites organizations history.
-
-    """
-    timestamp = models.DateTimeField(auto_now_add=True, verbose_name=_('date and time'), editable=False)
-    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
-    subject = models.TextField(verbose_name=_('subject'))
-    comment = RichTextField(config_name='advanced', verbose_name=_('Letter content'))
-    inv_status = models.CharField(max_length=3,
-                                  choices=INV_STATUS_ALL, default='ALL',
-                                  verbose_name=_('Invitation status'))
-    dst_orgs_noreg = models.BooleanField(default=False, verbose_name=pgettext_lazy(u'(organizations)', u'Not registered'))
-    dst_orgs_inact = models.BooleanField(default=False, verbose_name=pgettext_lazy(u'(organizations)', u'Inactive'))
-    dst_orgs_activ = models.BooleanField(default=False, verbose_name=pgettext_lazy(u'(organizations)', u'Active'))
-
-    def dst_orgs_display(self):
-        if self.dst_orgs_noreg and self.dst_orgs_inact and self.dst_orgs_activ:
-            return pgettext(u'(organizations)', u'All')
-        else:
-            verbose_names = []
-            for attr in ['dst_orgs_noreg', 'dst_orgs_inact', 'dst_orgs_activ']:
-                if getattr(self, attr):
-                    verbose_names.append(unicode(self._meta.get_field(attr).verbose_name))
-            return ', '.join(verbose_names)
-
-    dst_orgusers_inact = models.BooleanField(default=False, verbose_name=pgettext_lazy(u'(representatives)', u'Inactive'))
-    dst_orgusers_activ = models.BooleanField(default=False, verbose_name=pgettext_lazy(u'(representatives)', u'Active'))
-
-    def dst_orgusers_display(self):
-        if self.dst_orgusers_inact and self.dst_orgusers_activ:
-            return pgettext(u'(representatives)', u'All')
-        else:
-            verbose_names = []
-            for attr in ['dst_orgusers_inact', 'dst_orgusers_activ']:
-                if getattr(self, attr):
-                    verbose_names.append(unicode(self._meta.get_field(attr).verbose_name))
-            return ', '.join(verbose_names)
-
-    def clean(self):
-        dst = 'dst_orgs_noreg dst_orgs_inact dst_orgs_activ dst_orgusers_inact dst_orgusers_activ'.split()
-        if not any(getattr(self, attr) for attr in dst):
-            raise ValidationError(_(u'Message should have destination organizations or representatives'))

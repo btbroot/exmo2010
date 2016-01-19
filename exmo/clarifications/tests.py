@@ -2,6 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
+# Copyright 2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -24,7 +25,7 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from exmo2010.models import (
-    Monitoring, Organization, Score, Clarification,
+    Monitoring, Organization, Score, Clarification, OrgUser,
     ObserversGroup, Task, MONITORING_RATE)
 
 
@@ -47,7 +48,7 @@ class ClarificationCreateAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for rate monitoring
@@ -111,7 +112,7 @@ class ClarificationAnswerAccessTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for rate monitoring
@@ -181,7 +182,7 @@ class ClarificationEmailNotifyTestCase(TestCase):
         expertA.profile.is_expertA = True
         # AND organization representative
         org_user = User.objects.create_user('org', 'org@ya.ru', 'password')
-        org_user.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=org_user.profile)
 
         # AND task for expertB1
         task = mommy.make(Task, organization=organization, user=expertB1)

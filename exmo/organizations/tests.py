@@ -2,7 +2,7 @@
 # This file is part of EXMO2010 software.
 # Copyright 2013 Al Nikolov
 # Copyright 2013-2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2014-2016 IRSI LTD
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -42,7 +42,7 @@ from core.test_utils import OptimizedTestCase, FileStorageTestCase
 from core.utils import UnicodeReader
 from custom_comments.models import CommentExmo
 from exmo2010.models import (
-    Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED
+    Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED, OrgUser
 )
 
 
@@ -119,7 +119,7 @@ class OrganizationEditAccessTestCase(TestCase):
         expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
-        orguser.profile.organization = [self.organization]
+        mommy.make(OrgUser, organization=self.organization, userprofile=orguser.profile)
         # AND observer user
         observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
         # AND observers group for monitoring
@@ -193,7 +193,7 @@ class OrganizationsPageAccessTestCase(TestCase):
         self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
         # AND organizations representative
         self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        self.orguser.get_profile().organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=self.orguser.get_profile())
 
         self.url = reverse('exmo2010:organizations', args=[org.monitoring.pk])
 
@@ -239,15 +239,15 @@ class HandpickedOrgusersEmailTestCase(TestCase):
 
         # AND inactive representative of organization org_act
         self.orguser_inactive1 = User.objects.create_user('orguser_inactive1', 'inactive1@test.ru', 'password')
-        self.orguser_inactive1.get_profile().organization = [self.org_act]
+        mommy.make(OrgUser, organization=self.org_act, userprofile=self.orguser_inactive1.get_profile())
 
         # AND inactive representative of organization org_rgs
         self.orguser_inactive2 = User.objects.create_user('orguser_inactive2', 'inactive2@test.ru', 'password')
-        self.orguser_inactive2.get_profile().organization = [self.org_rgs]
+        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_inactive2.get_profile())
 
         # AND active representative of organization org_rgs
         self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
-        self.orguser_active.get_profile().organization = [self.org_rgs]
+        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_active.get_profile())
 
         # AND comment of active representative
         task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
@@ -341,33 +341,18 @@ class HandpickedOrgEmailTestCase(TestCase):
 class SelectiveOrgEmailTestCase(TestCase):
     # exmo2010:send_mail
 
-    # Email messages should be sent only to those receivers, which was selected in form.
+    # Email messages should be sent only to those organizations, which was selected in form.
 
     def setUp(self):
-        content_type = ContentType.objects.get_for_model(Score)
-
-        # GIVEN published monitoring
+        # GIVEN PUBLISHED monitoring
         self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
 
-        # AND 5 organizations of different inv_status
+        # AND 5 organizations of different inv_status in monitoring
         self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
         self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
         self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
         self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
         self.org_act = mommy.make(Organization, monitoring=self.monitoring, email='act@test.ru', inv_status='ACT')
-
-        # AND inactive representative of organization org_rgs
-        self.orguser_inactive = User.objects.create_user('orguser_inactive', 'inactive@test.ru', 'password')
-        self.orguser_inactive.get_profile().organization = [self.org_rgs]
-
-        # AND active representative of organization org_rgs
-        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
-        self.orguser_active.get_profile().organization = [self.org_rgs]
-
-        # AND comment of active representative
-        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
-        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
-        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
 
         # AND I am logged in as expertA
         self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
@@ -398,9 +383,62 @@ class SelectiveOrgEmailTestCase(TestCase):
         expected_receivers = set((addr + '@test.ru',) for addr in expected_receivers)
         self.assertEqual(receivers, expected_receivers)
 
+
+class SelectiveOrgUserEmailTestCase(TestCase):
+    # exmo2010:send_mail
+
+    # Email messages should be sent only to those orgusers, which was selected in form.
+    # Status of the users in other monitorings should not affect selection filter.
+
+    def setUp(self):
+        content_type = ContentType.objects.get_for_model(Score)
+
+        # GIVEN 2 PUBLISHED monitorings
+        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+        self.monitoring_other = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
+
+        # AND organization in monitoring
+        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
+
+        # AND organization in monitoring_other
+        self.org_other = mommy.make(Organization, monitoring=self.monitoring_other, email='rgs_other@test.ru', inv_status='RGS')
+
+        # AND user, unseen representative of organization org_rgs, but seen in org_other
+        self.orguser_unseen = User.objects.create_user('orguser_unseen', 'unseen@test.ru', 'password')
+        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_unseen.profile, seen=False)
+        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_unseen.profile, seen=True)
+
+        # AND inactive representative of organization org_rgs, but active in org_other
+        self.orguser_inactive = User.objects.create_user('orguser_inactive', 'inactive@test.ru', 'password')
+        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_inactive.profile)
+        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_inactive.profile)
+
+        # AND active representative of organization org_rgs, but inactive in org_other
+        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
+        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_active.profile)
+        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_active.profile)
+
+        # AND comment of active representative in org_rgs
+        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
+        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
+        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
+
+        # AND comment of inactive representative in org_other
+        task = mommy.make(Task, organization=self.org_other, status=Task.TASK_APPROVED)
+        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring_other)
+        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_inactive)
+
+        # AND I am logged in as expertA
+        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
+        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
+        self.client.login(username='expertA', password='password')
+
+        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
+
     @parameterized.expand([
         ('dst_orgusers_inact', {('inactive@test.ru',)}),
         ('dst_orgusers_activ', {('active@test.ru',)}),
+        ('dst_orgusers_unseen', {('unseen@test.ru',)}),
     ])
     def test_send_orguser_emails(self, selected_orgusers, expected_receivers):
         post_data = {'comment': u'Содержание', 'subject': u'Тема', selected_orgusers: '1'}
@@ -483,7 +521,7 @@ class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCa
         score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=org_activated, parameter=param)
         # AND orguser, representative of org_activated
         orguser = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        orguser.profile.organization = [org_activated]
+        mommy.make(OrgUser, organization=org_activated, userprofile=orguser.profile)
         # AND orguser comment for score of org_activated
         mommy.make(CommentExmo, content_type=content_type, object_pk=score.pk, user=orguser, site=site)
         # AND I am logged in as orguser
@@ -492,7 +530,7 @@ class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCa
     def test_registered_status(self):
         # WHEN I submit form with invitation code of org_read
         self.client.post(reverse('exmo2010:settings'), {'invitation_code': self.org_read.inv_code})
-        #THEN org_read status should change to 'registered'
+        # THEN org_read status should change to 'registered'
         new_status = Organization.objects.get(pk=self.org_read.pk).inv_status
         self.assertEqual(new_status, 'RGS')
 
@@ -510,7 +548,7 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization = [self.org]
+        mommy.make(OrgUser, organization=self.org, userprofile=orguser.profile)
         # AND I am logged in as organization representative
         self.client.login(username='orguser', password='password')
 
@@ -543,7 +581,7 @@ class RepresentativesExportTestCase(TestCase):
         # AND org representative
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization = [org]
+        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
         # AND comment from orguser
         mommy.make(CommentExmo, object_pk=score.pk, user=orguser)
         # AND I am logged in as expert A
@@ -603,7 +641,8 @@ class RepresentativesFilterByOrganizationsTestCase(TestCase):
         # AND 1 representative connected to 2 organizations
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization = [self.org1, self.org2]
+        mommy.make(OrgUser, organization=self.org1, userprofile=orguser.profile)
+        mommy.make(OrgUser, organization=self.org2, userprofile=orguser.profile)
         # AND I am logged in as expert A
         self.client.login(username='expertA', password='password')
 
@@ -630,7 +669,8 @@ class OrguserCommentCountTestCase(TestCase):
         # AND 1 representative of 2 organizations
         orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
         orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        orguser.profile.organization = [self.org1, self.org2]
+        mommy.make(OrgUser, organization=self.org1, userprofile=orguser.profile)
+        mommy.make(OrgUser, organization=self.org2, userprofile=orguser.profile)
 
         # AND score for each organization
         score_org1 = mommy.make(Score, task__organization=self.org1, parameter=self.param)
@@ -686,7 +726,7 @@ class AjaxUploadFileAccessTestCase(OptimizedTestCase):
         cls.users['expertA'] = expertA
         # AND organization representative
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        orguser.profile.organization = [organization]
+        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
         cls.users['orguser'] = orguser
         # AND translator
         translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')

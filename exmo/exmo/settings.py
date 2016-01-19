@@ -143,7 +143,7 @@ EMAIL_ATTACHMENT_MAX_UPLOAD_SIZE = 15 * 1024 * 1024  # 15MB
 # Cache
 CACHE_PATH = '/var/cache/exmo2010/'
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
-CACHE_PREFIX = 'Cache'
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -210,6 +210,7 @@ MIDDLEWARE_CLASSES += (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'exmo2010.middleware.OrguserTrackingMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
@@ -334,6 +335,22 @@ BLEACH_STRIP_TAGS = True
 BLEACH_STRIP_COMMENTS = False
 
 DEVEL = False
+
+SELENIUM_CATCH_ERROR_TEXT = ['class="error-page"']
+SELENIUM_PRE_SETUP_CALLBACKS = ['exmo.settings.selenium_pre_setup']
+
+
+def selenium_pre_setup():
+    """
+    In LiveServer tests, middleware is only instantiated once per LiveServerTestCase, so after
+    second test will clear database static data will be missing. This is workaround.
+    """
+    from exmo2010.middleware import StaticDataInitMiddleware
+    try:
+        StaticDataInitMiddleware()
+    except:
+        pass
+
 
 if os.path.isfile('exmo/local_settings.py'):
     from local_settings import *
