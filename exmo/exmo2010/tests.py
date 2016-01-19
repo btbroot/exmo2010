@@ -526,16 +526,23 @@ class IndexFindScoreRegexTestCase(TestCase):
 
 
 class OrguserTrackingMiddlewareTestCase(TestCase):
-    def test_update_seen(self):
-        # GIVEN organization
-        org = mommy.make(Organization)
-        # AND not-seen orguser
+    def test_update_seen_and_inv_status(self):
+        # GIVEN organization of status 'NTS' (invitations not sent)
+        org = mommy.make(Organization, inv_status='NTS')
+
+        # WHEN not-seen orguser is created
         orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
         mommy.make(OrgUser, organization=org, userprofile=orguser.profile, seen=False)
+
+        # THEN Organization status should still be 'NTS' (invitations not sent)
+        self.assertEqual(Organization.objects.get(pk=org.pk).inv_status, 'NTS')
 
         # WHEN i sign-in as orguser
         self.client.login(username='orguser', password='password')
         # AND i get any page
         self.client.get('/')
+
         # THEN my status should be updated to "seen"
         self.assertEqual(set(OrgUser.objects.values_list('userprofile_id', 'seen')), {(orguser.profile.pk, True), })
+        # AND Organization status should change to 'RGS' (registered)
+        self.assertEqual(Organization.objects.get(pk=org.pk).inv_status, 'RGS')

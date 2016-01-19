@@ -310,7 +310,7 @@ def orguser_saved(sender, instance, created, **kwargs):
     Change organization`s invitation status if current user is the first seen member of this organization.
 
     """
-    if created and not instance.organization.inv_status == 'ACT' and instance.seen:
+    if instance.seen and not instance.organization.inv_status == 'ACT':
         instance.organization.inv_status = 'RGS'
         instance.organization.save()
 
