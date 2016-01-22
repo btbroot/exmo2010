@@ -33,6 +33,21 @@
     </div>
 {% else %}
     <div class="search-results">
+        {% if result == 'rate' %}
+            <div class="rate-or-results">
+                <p>{% blocktrans with org_url=org_url %}{{ org_url }} website is under evaluation{% endblocktrans %}</p>
+                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
+            </div>
+        {% elif result == 'interaction' %}
+            <div class="interaction-or-finishing">
+                {% url 'exmo2010:registration_form' as registration_url %}
+                {% url 'exmo2010:auth_login' as login_url %}
+                <p>{% blocktrans with org_url=org_url %}We are now consulting on problems of {{ org_url }} website{% endblocktrans %}</p>
+                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
+                <p>{% blocktrans %}If you have already received an invitation for interaction with experts, please <a href="{{ registration_url }}" class="with-border">register</a> or <a href="{{ login_url }}" class="with-border">log in</a>{% endblocktrans %}</p>
+            </div>
+        {% endif %}
+
         {% if tasks %}
             <script type="text/javascript" src="{% static 'exmo2010/js/jquery.tablesorter.js' %}"></script>
             <script type="text/javascript">
@@ -90,21 +105,5 @@
                 </tbody>
             </table>
         {% endif %}
-
-        {% if result == 'rate' %}
-            <div class="rate-or-results">
-                <p>{% blocktrans with org_url=org_url %}{{ org_url }} website is under evaluation{% endblocktrans %}</p>
-                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
-            </div>
-        {% elif result == 'interaction' %}
-            <div class="interaction-or-finishing">
-                {% url 'exmo2010:registration_form' as registration_url %}
-                {% url 'exmo2010:auth_login' as login_url %}
-                <p>{% blocktrans with org_url=org_url %}We are now consulting on problems of {{ org_url }} website{% endblocktrans %}</p>
-                <p>{% trans 'Please <a href="#contacts">contact us</a> if you represent it' %}</p>
-                <p>{% blocktrans %}If you have already received an invitation for interaction with experts, please <a href="{{ registration_url }}" class="with-border">register</a> or <a href="{{ login_url }}" class="with-border">log in</a>{% endblocktrans %}</p>
-            </div>
-        {% endif %}
-
     </div>
 {% endif %}
