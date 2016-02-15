@@ -358,10 +358,10 @@ class CertificateOrderView(FormView):
             rating_type=rating_type_text[form_data['rating_type']],
             date=dateformat.format(task.organization.monitoring.publish_date, "j E Y"))
 
-        if form_data['delivery_method'] == "post":
-            on_address = _('On address {zip_code}, {address}, {addressee}.').format(**form_data)
-        else:
-            on_address = _('On email address %s.') % form_data['email']
+        #if form_data['delivery_method'] == "post":
+            #on_address = _('On address {zip_code}, {address}, {addressee}.').format(**form_data)
+        #else:
+        on_address = _('On email address %s.') % form_data['email']
 
         email_data = {
             'organization': task.organization,

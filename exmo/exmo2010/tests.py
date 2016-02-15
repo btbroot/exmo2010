@@ -166,8 +166,9 @@ class CertificateOrderFormValidationTestCase(OptimizedTestCase):
         ('org', 'email', '', 'test@mail.com', '', '', ''),
         ('user', 'email', 'name', 'test@mail.com', '', '', ''),
         # Postal Delivery
-        ('org', 'post', '', '', 'for me', '123456', 'address'),
-        ('user', 'post', 'name', '', 'for me', '123456', 'address'),
+        # NOTE: temporarily disabled in code
+        #('org', 'post', '', '', 'for me', '123456', 'address'),
+        #('user', 'post', 'name', '', 'for me', '123456', 'address'),
     ])
     def test_valid_form(self, *values):
         # WHEN orguser submits request with valid data
@@ -179,11 +180,12 @@ class CertificateOrderFormValidationTestCase(OptimizedTestCase):
         # Email Delivery
         ('org', 'email', '', '', '', '', ''),  # missing email
         # Postal Delivery
-        ('org', 'post', '', '', 'for me', '123456', ''),   # missing address
-        ('org', 'post', '', '', 'for me', '', 'address'),  # missing zip_code
-        ('org', 'post', '', '', '', '123456', 'address'),  # missing for_whom
-        ('org', 'post', '', '', 'for me', '1234', 'address'),  # malformed zip_code
-        ('org', 'post', '', '', 'for me', 'text', 'address'),
+        # NOTE: temporarily disabled in code
+        #('org', 'post', '', '', 'for me', '123456', ''),   # missing address
+        #('org', 'post', '', '', 'for me', '', 'address'),  # missing zip_code
+        #('org', 'post', '', '', '', '123456', 'address'),  # missing for_whom
+        #('org', 'post', '', '', 'for me', '1234', 'address'),  # malformed zip_code
+        #('org', 'post', '', '', 'for me', 'text', 'address'),
     ])
     def test_invalid_form(self, *values):
         # WHEN orguser submits request with invalid data
@@ -193,6 +195,8 @@ class CertificateOrderFormValidationTestCase(OptimizedTestCase):
 
 
 class CertificateOpennessValuesByTypeTestCase(TestCase):
+    # exmo2010:certificate_order
+
     # SHOULD display correct openness value of requested rating type
 
     def setUp(self):
@@ -235,6 +239,8 @@ class CertificateOpennessValuesByTypeTestCase(TestCase):
 
 
 class CertificateOrgsFilterByRatingTypeTestCase(TestCase):
+    # exmo2010:certificate_order
+
     # SHOULD display only organizations with requested rating type
 
     def setUp(self):

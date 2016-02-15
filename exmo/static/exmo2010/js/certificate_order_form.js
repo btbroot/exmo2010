@@ -47,24 +47,25 @@ $(document).ready(function() {
     });
     $("input[name='addressee']:checked").change();
 
-    $("input[name='delivery_method']").change(function(){
-        $('.error').hide();
-        if ($(this).val() == "email") {
-            $('.post_group').hide();
-            $('.email_group').show();
-        }
-        else {
-            $('.post_group').show();
-            $('.email_group').hide();
-        }
-    });
-    $("input[name='delivery_method']:checked").change();
-
-    $('#id_zip_code').keypress(function(e) {
-        if (e.which && (e.which < 48 || e.which > 57) && e.which != 8) {
-            e.preventDefault();
-        }
-    });
+//     NOTE: postal delivery temporarily diabled in code.
+//     $("input[name='delivery_method']").change(function(){
+//         $('.error').hide();
+//         if ($(this).val() == "email") {
+//             $('.post_group').hide();
+//             $('.email_group').show();
+//         }
+//         else {
+//             $('.post_group').show();
+//             $('.email_group').hide();
+//         }
+//     });
+//     $("input[name='delivery_method']:checked").change();
+//
+//     $('#id_zip_code').keypress(function(e) {
+//         if (e.which && (e.which < 48 || e.which > 57) && e.which != 8) {
+//             e.preventDefault();
+//         }
+//     });
 
     $('#confirm').click(function() {
         $('#certificate_form').append($('<input>', {type:'hidden', name:'confirm'}));

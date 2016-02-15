@@ -56,24 +56,28 @@ class CertificateOrderForm(Form):
     name = CharField(label=_('Name'), max_length=100, required=False)
     wishes = CharField(label=_('Wishes'), widget=Textarea(), required=False)
     email = EmailField(label=_('Email'), max_length=100, required=False)
+
+    # NOTE: postal delivery disabled temporarily
     for_whom = CharField(label=_('For whom'), max_length=100, required=False)
     zip_code = CharField(label=_('Zip code'), max_length=6, min_length=6, required=False)
     address = CharField(label=_('Address'), widget=Textarea(), required=False)
+
     addressee = ChoiceField(
         label=_('Certificate for'), choices=ADDRESSEE_CHOICES, widget=RadioSelect(), initial='org', required=False)
     delivery_method = ChoiceField(
         label=_('Send'), choices=DELIVERY_METHOD_CHOICES, widget=RadioSelect(), initial='email', required=False)
 
     def full_clean(self):
-        '''
+        """
         Determine required fields from 'addressee' and 'delivery_method' values
-        '''
-        if self._raw_value('delivery_method') == 'post':
-            self.fields['for_whom'].required = True
-            self.fields['zip_code'].required = True
-            self.fields['address'].required = True
-        else:
-            self.fields['email'].required = True
+        """
+        # NOTE: postal delivery disabled temporarily
+        # if self._raw_value('delivery_method') == 'post':
+            # self.fields['for_whom'].required = True
+            # self.fields['zip_code'].required = True
+            # self.fields['address'].required = True
+        # else:
+        self.fields['email'].required = True
 
         if self._raw_value('addressee') == 'user':
             self.fields['name'].required = True

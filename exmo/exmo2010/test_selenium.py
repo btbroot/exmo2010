@@ -123,9 +123,11 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
         self.assertVisible(self.email_element_id)
         self.assertHidden(self.name_element_id)
         self.assertHidden(self.wishes_element_id)
-        self.assertHidden(self.for_whom_element_id)
-        self.assertHidden(self.zip_code_element_id)
-        self.assertHidden(self.address_element_id)
+
+        # NOTE: postal delivery temporarily disabled
+        #self.assertHidden(self.for_whom_element_id)
+        #self.assertHidden(self.zip_code_element_id)
+        #self.assertHidden(self.address_element_id)
 
     def test_submit_form_with_empty_email_field(self):
         # WHEN i submit form with empty email field
@@ -168,28 +170,34 @@ class CertificateOrderTestCase(BaseSeleniumTestCase):
         self.assertVisible(self.name_element_id)
         self.assertVisible(self.wishes_element_id)
 
-    def test_click_to_delivery_method_radio(self):
-        # WHEN i click 'delivery method' radio button
-        delivery_method_0 = self.find('input[name="delivery_method"][value="email"]')
-        delivery_method_1 = self.find('input[name="delivery_method"][value="post"]')
-        delivery_method_1.click()
-        self.assertEqual(delivery_method_0.is_selected(), False)
-        self.assertEqual(delivery_method_1.is_selected(), True)
-        # THEN 'for whom', 'zip code' and 'address' fields should get visible
-        self.assertVisible(self.for_whom_element_id)
-        self.assertVisible(self.zip_code_element_id)
-        self.assertVisible(self.address_element_id)
-        # AND 'email' field should disappear
-        self.assertHidden(self.email_element_id)
+    # NOTE: postal delivery temporarily disabled
+    #def test_click_to_delivery_method_radio(self):
+        ## WHEN i click 'delivery method' radio button
+        #delivery_method_0 = self.find('input[name="delivery_method"][value="email"]')
+        #delivery_method_1 = self.find('input[name="delivery_method"][value="post"]')
+        #delivery_method_1.click()
+        #self.assertEqual(delivery_method_0.is_selected(), False)
+        #self.assertEqual(delivery_method_1.is_selected(), True)
+        ## THEN 'for whom', 'zip code' and 'address' fields should get visible
+        #self.assertVisible(self.for_whom_element_id)
+        #self.assertVisible(self.zip_code_element_id)
+        #self.assertVisible(self.address_element_id)
+        ## AND 'email' field should disappear
+        #self.assertHidden(self.email_element_id)
 
     def test_submit_two_forms(self):
         # WHEN i fill form properly
         self.find('input[name="addressee"][value="user"]').click()
-        self.find('input[name="delivery_method"][value="post"]').click()
+        #self.find('input[name="delivery_method"][value="post"]').click()
         self.find(self.name_element_id).send_keys('Name Surname')
-        self.find(self.for_whom_element_id).send_keys('Name Surname')
-        self.find(self.zip_code_element_id).send_keys('123456')
-        self.find(self.address_element_id).send_keys('St.Peterburg, Nevsky st., 1')
+        self.find(self.email_element_id).clear()
+        self.find(self.email_element_id).send_keys('correct@email.org')
+
+        # NOTE: postal delivery temporarily disabled
+        #self.find(self.for_whom_element_id).send_keys('Name Surname')
+        #self.find(self.zip_code_element_id).send_keys('123456')
+        #self.find(self.address_element_id).send_keys('St.Peterburg, Nevsky st., 1')
+
         # AND submit form
         self.find(self.submit_button).click()
         # AND submit confirmation form at the second page
