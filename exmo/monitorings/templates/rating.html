@@ -213,13 +213,13 @@
                     {% if rating_columns_form.rt_representatives.value %}
                         {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
                         <td class="representatives">
-                            <strong>{{ rating_stats.repr_len }} / {{ rating_stats.active_repr_len }}</strong>
+                            <strong>{{ rating_stats.repr_len|floatformat:1 }} / {{ rating_stats.active_repr_len|floatformat:1 }}</strong>
                         </td>
                     {% endif %}
 
                     {% if rating_columns_form.rt_comment_quantity.value %}
                         <td class="comments">
-                            <strong>{{ rating_stats.num_comments }}</strong>
+                            <strong>{{ rating_stats.num_comments|floatformat:1 }}</strong>
                         </td>
                     {% endif %}
 

@@ -455,9 +455,9 @@ def _comments_stats(tasks):
         task.active_repr_len = len(set(orgcomments_by_task[task.pk]))
 
     return {
-        'repr_len': sum(t.repr_len for t in tasks) / ntasks,
-        'active_repr_len': sum(t.active_repr_len for t in tasks) / ntasks,
-        'num_comments': sum(t.num_comments for t in tasks) / ntasks}
+        'repr_len': float(sum(t.repr_len for t in tasks)) / ntasks,
+        'active_repr_len': float(sum(t.active_repr_len for t in tasks)) / ntasks,
+        'num_comments': float(sum(t.num_comments for t in tasks)) / ntasks}
 
 
 @login_required

@@ -648,7 +648,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
         representatives = td.strong.string
 
         # THEN table cell contents string with correct order of users quantity
-        self.assertEqual(representatives, "1 / 0")
+        self.assertEqual(representatives, "1.0 / 0.0")
 
 
 class HiddenMonitoringVisibilityTestCase(TestCase):
