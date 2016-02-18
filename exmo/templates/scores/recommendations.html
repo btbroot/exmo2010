@@ -165,7 +165,9 @@
                 </caption>
 
                 {% if scores|length == 0 %}
-                    <p>{% trans 'No recommendations' %}</p>
+                    <tr> <td> <p>{% trans 'No recommendations' %}</p> </td> </tr>
+                {% elif task.organization.recommendations_hidden and not request.user.is_expert %}
+                    <tr> <td> <p>{% trans 'Recommendations hidden' %}</p>  </td> </tr>
                 {% else %}
                     {% for score in scores %}
                         {% if score.is_relevant %}

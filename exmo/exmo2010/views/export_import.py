@@ -288,6 +288,7 @@ def monitoring_organization_export(request, monitoring_pk):
         'Url',
         'Email',
         'Phone',
+        'recommendations_hidden',
         'Code',
         'Invitation link',
     ])
@@ -297,6 +298,7 @@ def monitoring_organization_export(request, monitoring_pk):
             o.url,
             o.email,
             o.phone,
+            str(o.recommendations_hidden),
             o.inv_code,
             request.build_absolute_uri(reverse('exmo2010:auth_orguser') + '?code={}'.format(o.inv_code)),
         )
@@ -333,7 +335,7 @@ def monitoring_organization_import(request, monitoring_pk):
     try:
         for row_num, row in enumerate(reader, start=1):
             if row[0] and row[0].startswith('#'):
-                for key in ['name', 'url', 'email', 'phone']:
+                for key in ['name', 'url', 'email', 'phone', 'recommendations_hidden']:
                     for item in row:
                         if item and key in item.lower():
                             indexes[key] = row.index(item)
@@ -350,17 +352,23 @@ def monitoring_organization_import(request, monitoring_pk):
             try:
                 organization = Organization.objects.get(monitoring=monitoring, name=row[indexes['name']])
             except Organization.DoesNotExist:
-                organization = Organization()
+                organization = Organization(name=row[indexes['name']])
                 organization.monitoring = monitoring
             except Exception, e:
                 errors.append("row %d. %s" % (row_num, e))
                 continue
             try:
-                for key in indexes.keys():
-                    cell = row[indexes[key]]
-                    if key in ['email', 'phone'] and cell:
-                        cell = replace_string(cell)
-                    setattr(organization, key, cell.strip() if cell else '')
+                if row[indexes['email']]:
+                    organization.email = replace_string(row[indexes['email']]).strip()
+                if row[indexes['phone']]:
+                    organization.phone = replace_string(row[indexes['phone']]).strip()
+                if row[indexes['url']]:
+                    organization.url = row[indexes['url']].strip()
+                if row[indexes['recommendations_hidden']] == 'False':
+                    organization.recommendations_hidden = False
+                if row[indexes['recommendations_hidden']] == 'True':
+                    organization.recommendations_hidden = True
+
                 organization.inv_code = generate_inv_code(6)
                 organization.full_clean()
                 organization.save()
@@ -570,4 +578,59 @@ def monitoring_by_criteria_mass_export(request, monitoring_pk):
     buffer.flush()
     response.write(buffer.getvalue())
     buffer.close()
+    return response
+
+
+@login_required
+def representatives_export(request, monitoring_pk):
+    monitoring = get_object_or_404(Monitoring, pk=monitoring_pk)
+    if not request.user.has_perm('exmo2010.admin_monitoring', monitoring):
+        raise PermissionDenied
+
+    orgs = monitoring.organization_set.order_by('name')
+
+    for org in orgs:
+        org.users = []
+        for user in sorted(org.userprofile_set.all(), key=lambda m: m.full_name):
+            scores = Score.objects.filter(task__organization=org).values_list('pk', flat=True)
+            user.comments = user.user.comment_comments.filter(object_pk__in=scores)
+            org.users.append(user)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=representatives-%s.csv' % monitoring_pk
+    response.encoding = 'UTF-16'
+    writer = UnicodeWriter(response)
+    writer.writerow([
+        '#Verified',
+        'Organization',
+        'First name',
+        'Last name',
+        'Email',
+        'Phone',
+        'Job title',
+        'Comments count',
+        'Date joined',
+        'Last login',
+    ])
+
+    for org in orgs:
+        for user in org.users:
+            row = [
+                int(user.user.is_active),
+                org.name,
+                user.user.first_name,
+                user.user.last_name,
+                user.user.email,
+                user.phone,
+                user.position,
+                user.comments.count(),
+                user.user.date_joined.date().isoformat(),
+                user.user.last_login.date().isoformat(),
+            ]
+            writer.writerow(row)
+
+    license = LicenseTextFragments.objects.filter(pk='license')
+    if license:
+        writer.writerow([u'#%s' % license[0].csv_footer])
+
     return response

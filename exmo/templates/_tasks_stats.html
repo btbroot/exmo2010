@@ -23,7 +23,7 @@
 
 <div id=monitoring_stats>
     {% trans 'Organizations count' %}:
-        <a href="{% url 'exmo2010:organizations' monitoring.pk %}">
+        <a href="{% url 'exmo2010:manage_orgs' monitoring.pk %}">
             {{ monitoring.organization_set.count }}
         </a>
     <br />

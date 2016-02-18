@@ -28,10 +28,10 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.views.generic import TemplateView, RedirectView
 
 from .views.views import AboutView, AjaxSetProfileSettingView, CertificateOrderView, HelpView, OpenDataView
+from .views.send_mail import SendMailView, SendMailHistoryView
 from monitorings.views import (MonitoringEditView, MonitoringDeleteView, MonitoringCommentReportView,
                                ObserversGroupView, ObserversGroupEditView, ObserversGroupDeleteView, MonitoringCopyView)
-from organizations.views import (OrganizationsView, OrganizationsEditView, OrganizationsDeleteView,
-                                 SendMailView, SendMailHistoryView, RepresentativesView)
+from organizations.views import ManageOrgsView, OrganizationEditView, OrganizationDeleteView, RepresentativesView
 from parameters.views import ParamEditView, ParamDeleteView, PostOrgParamRelevanceView
 from tasks.views import (AjaxTaskApproveView, AjaxTaskOpenView, AjaxTaskCloseView,
                          TaskEditView, TaskDeleteView, TaskHistoryView)
@@ -108,6 +108,7 @@ export_patterns = named_urls('exmo2010.views.export_import',
     (r'^monitoring/(?P<monitoring_pk>\d+)/parameter_export/$', 'monitoring_parameter_export'),
     (r'^monitoring/(?P<monitoring_pk>\d+)/parameter_import/$', 'monitoring_parameter_import'),
     (r'^monitoring/(?P<monitoring_pk>\d+)/export/$', 'monitoring_export'),
+    (r'^monitoring/(?P<monitoring_pk>\d+)/representatives_export/$', 'representatives_export'),
 )
 
 monitoring_patterns = named_urls('monitorings.views',
@@ -134,14 +135,13 @@ monitoring_patterns += named_urls('tasks.views',
 )
 
 monitoring_patterns += named_urls('organizations.views',
-    (r'^(?P<monitoring_pk>\d+)/organizations/$', OrganizationsView, 'organizations'),
-    (r'^(?P<monitoring_pk>\d+)/organizations/add/$', OrganizationsEditView, 'organizations_add'),
-    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_update/$', OrganizationsEditView, 'organizations_update'),
-    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_delete/$', OrganizationsDeleteView, 'organizations_delete'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/$', ManageOrgsView, 'manage_orgs'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/add/$', OrganizationEditView, 'organization_add'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_update/$', OrganizationEditView, 'organization_update'),
+    (r'^(?P<monitoring_pk>\d+)/organizations/(?P<org_pk>\d+)_delete/$', OrganizationDeleteView, 'organization_delete'),
     (r'^(?P<monitoring_pk>\d+)/send_mail/$', SendMailView, 'send_mail'),
     (r'^(?P<monitoring_pk>\d+)/send_mail/history/$', SendMailHistoryView, 'send_mail_history'),
     (r'^(?P<monitoring_pk>\d+)/representatives/$', RepresentativesView, 'representatives'),
-    (r'^(?P<monitoring_pk>\d+)/representatives_export/$', 'representatives_export'),
 )
 
 monitoring_patterns += named_urls('questionnaire.views',
@@ -241,7 +241,7 @@ urlpatterns = named_urls('',
     (r'^ajax_get_qq/$', 'questionnaire.views.ajax_get_qq'),
     (r'^ajax_get_qqt/$', 'questionnaire.views.ajax_get_qqt'),
 
-    (r'^ajax_upload_file/$', 'organizations.views.ajax_upload_file'),
+    (r'^ajax_upload_file/$', 'exmo2010.views.send_mail.ajax_upload_file'),
 )
 
 if settings.DEBUG:
@@ -293,10 +293,10 @@ def crumbs_tree(is_expert=False):
             'monitoring_parameter_import':    _('Import parameter'),
             'monitoring_organization_import': _('Import organizations'),
 
-            'organizations': _('Monitoring cycle'),
-            'organizations_add': _('Monitoring cycle'),
-            'organizations_update': _('Monitoring cycle'),
-            'organizations_delete': _('Monitoring cycle'),
+            'manage_orgs': _('Monitoring cycle'),
+            'organization_add': _('Monitoring cycle'),
+            'organization_update': _('Monitoring cycle'),
+            'organization_delete': _('Monitoring cycle'),
 
             'send_mail': _('Monitoring cycle'),
             'send_mail_history': _('Monitoring cycle'),

@@ -26,7 +26,7 @@ from nose.plugins.attrib import attr
 
 from core.test_utils import BaseSeleniumTestCase
 from exmo2010.models import Organization
-from .views import SendMailView
+from exmo2010.views.send_mail import SendMailView
 
 
 @attr('selenium')
@@ -100,7 +100,7 @@ class SendmailDisableButtonsTestCase(BaseSeleniumTestCase):
 
 @attr('selenium')
 class OrganizationsDisableGroupactionTestCase(BaseSeleniumTestCase):
-    # exmo2010:organizations
+    # exmo2010:manage_orgs
 
     # "Create invite link" group-action button should be disabled if no checkbox ticked.
 
@@ -114,7 +114,7 @@ class OrganizationsDisableGroupactionTestCase(BaseSeleniumTestCase):
         self.login('expertA', 'password')
 
         # AND I am on "organizations" page
-        self.get(reverse('exmo2010:organizations', args=[org.monitoring.pk]))
+        self.get(reverse('exmo2010:manage_orgs', args=[org.monitoring.pk]))
 
     def test_sendmail_disable_submit(self):
         # INITIALLY group-action button should be disabled
@@ -134,8 +134,47 @@ class OrganizationsDisableGroupactionTestCase(BaseSeleniumTestCase):
 
 
 @attr('selenium')
+class SelectedOrgsHideRecommendationsTestCase(BaseSeleniumTestCase):
+    # exmo2010:manage_orgs
+
+    # Selected orgs should have recommendations_hidden flag after group action.
+
+    def setUp(self):
+        # GIVEN monitoring with 3 organizations
+        self.org1 = mommy.make(Organization, name='org1', recommendations_hidden=False)
+        self.org2 = mommy.make(Organization, name='org2', monitoring=self.org1.monitoring, recommendations_hidden=False)
+        self.org3 = mommy.make(Organization, name='org3', monitoring=self.org1.monitoring, recommendations_hidden=False)
+
+        # AND I am logged in as expertA
+        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
+        expertA.profile.is_expertA = True
+        self.login('expertA', 'password')
+
+        # AND I am on "organizations" page
+        self.get(reverse('exmo2010:manage_orgs', args=[self.org1.monitoring.pk]))
+
+    def test_group_action(self):
+        # WHEN I tick org2 and org3 checkbox
+        self.find('#org_row_%s input.group_actions' % self.org2.pk).click()
+        self.find('#org_row_%s input.group_actions' % self.org3.pk).click()
+
+        # THEN "Hide recommendations" group-action button should become enabled
+        self.assertEnabled('#group_actions input.hide_recommendations')
+
+        # WHEN i click "Hide recommendations" button
+        self.find('#group_actions input.hide_recommendations').click()
+
+        # THEN success message should be displayed
+        self.assertVisible('.success')
+
+        # AND only org1 should have recommendations_hidden == False
+        data = Organization.objects.values_list('name', 'recommendations_hidden')
+        self.assertEqual(set(data), {('org1', False), ('org2', True), ('org3', True), })
+
+
+@attr('selenium')
 class OrganizationsSelectedOrgsInviteLinksTestCase(BaseSeleniumTestCase):
-    # exmo2010:organizations
+    # exmo2010:manage_orgs
 
     # Invite links should include codes of all selected organizations.
     # Invite links modal window should have proper invite widgets for selected organizations.
@@ -156,7 +195,7 @@ class OrganizationsSelectedOrgsInviteLinksTestCase(BaseSeleniumTestCase):
         self.login('expertA', 'password')
 
         # AND I am on "organizations" page
-        self.get(reverse('exmo2010:organizations', args=[self.org1.monitoring.pk]))
+        self.get(reverse('exmo2010:manage_orgs', args=[self.org1.monitoring.pk]))
 
     def test_multiple_orgs_group_action(self):
         # WHEN I tick first and second organizations checkbox
@@ -164,10 +203,10 @@ class OrganizationsSelectedOrgsInviteLinksTestCase(BaseSeleniumTestCase):
         self.find('#org_row_%s input.group_actions' % self.org2.pk).click()
 
         # THEN "Create invite link" group-action button should become enabled
-        self.assertEnabled('#group_actions input.action')
+        self.assertEnabled('#group_actions input.create_inv_links')
 
         # WHEN i click "Create invite link" button
-        self.find('#group_actions input.action').click()
+        self.find('#group_actions input.create_inv_links').click()
 
         # THEN invite links modal window should become visible
         self.assertVisible('#invite_links_window')
@@ -245,7 +284,7 @@ class OrganizationsSelectedOrgsInviteLinksTestCase(BaseSeleniumTestCase):
 
 @attr('selenium')
 class OrganizationsVerifyJavasciptInviteLinksTestCase(BaseSeleniumTestCase):
-    # exmo2010:organizations
+    # exmo2010:manage_orgs
 
     # Invite links generated in javascript should be equal to server-generated.
 
@@ -262,7 +301,7 @@ class OrganizationsVerifyJavasciptInviteLinksTestCase(BaseSeleniumTestCase):
         self.sendmailview = SendMailView(request=self.requestfactory.get(''))
 
         # AND I am on "organizations" page
-        self.get(reverse('exmo2010:organizations', args=[self.org.monitoring.pk]))
+        self.get(reverse('exmo2010:manage_orgs', args=[self.org.monitoring.pk]))
 
     def test_single_org_link_icon_click(self):
         # WHEN I click first organization link icon

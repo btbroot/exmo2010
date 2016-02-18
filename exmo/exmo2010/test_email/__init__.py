@@ -1,7 +1,6 @@
-{% comment %}
+# -*- coding: utf-8 -*-
 # This file is part of EXMO2010 software.
-# Copyright 2014 Foundation "Institute for Information Freedom Development"
-# Copyright 2014-2015 IRSI LTD
+# Copyright 2016 IRSI Ltd
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -16,16 +15,3 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-{% endcomment %}
-{% load i18n %}
-
-<script>
-    $(function(){
-        // Stylize active tab, prevent reloaing page on click.
-        $('#tab_{{ tab }}').addClass('active').find('a').click(function(){ return false; });
-    });
-</script>
-<div class="tabs">
-    <span id='tab_all'><a href="{% url 'exmo2010:manage_orgs' monitoring.pk %}">{% trans 'all' %}</a></span>
-    <span id='tab_add'><a href="{% url 'exmo2010:organization_add' monitoring.pk %}">{% trans 'add' %}</a></span>
-</div>

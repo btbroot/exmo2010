@@ -39,8 +39,8 @@
         </li>
 
         {% if is_expertA %}
-            <li data-urls="organizations organizations_add organizations_update organizations_delete">
-                <a href="{% url 'exmo2010:organizations' monitoring.pk %}">{% trans "Organizations" %}</a>
+            <li data-urls="manage_orgs organization_add organization_update organization_delete">
+                <a href="{% url 'exmo2010:manage_orgs' monitoring.pk %}">{% trans "Organizations" %}</a>
             </li>
 
             <li data-urls="representatives">

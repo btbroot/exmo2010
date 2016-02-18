@@ -25,11 +25,11 @@
 {% block title %}{{ monitoring.name }}{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/organizations.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'exmo2010/css/organizations.css' %}"/>
 {% endblock %}
 
 {% block extra_script %}
-    <script type="text/javascript" src="{% static 'js/organization_edit.js' %}"></script>
+    <script type="text/javascript" src="{% static 'exmo2010/js/organization_edit.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -69,6 +69,10 @@
                         <tr>
                             <td>{{ form.email.label_tag }}</td>
                             <td class="field">{{ form.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ form.recommendations_hidden.label_tag }}</td>
+                            <td class="field">{{ form.recommendations_hidden }}</td>
                         </tr>
                         <tr>
                             <td></td>

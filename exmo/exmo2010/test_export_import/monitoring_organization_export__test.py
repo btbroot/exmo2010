@@ -35,16 +35,13 @@ class OrganizationExportTestCase(TestCase):
     # Organizations export response should contain properly generated csv-file content.
 
     def setUp(self):
-        # GIVEN published monitoring with 1 organization
-        monitoring = mommy.make(Monitoring)
-        # AND organization with email, url and phone
-        self.org = mommy.make(Organization, monitoring=monitoring,
-                              email='org@test.com', url='http://org.ru', phone='1234567')
+        # GIVEN organization with email, url and phone
+        self.org = mommy.make(Organization, name='org', email='org@test.com', url='http://org.ru', phone='1234567')
         # AND expert A account
         expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
         expertA.profile.is_expertA = True
         # AND organization export url
-        self.url = reverse('exmo2010:monitoring_organization_export', args=[monitoring.pk])
+        self.url = reverse('exmo2010:monitoring_organization_export', args=[self.org.monitoring.pk])
 
     def test_organization_csv(self):
         # WHEN I am logged in as expert A
@@ -61,13 +58,14 @@ class OrganizationExportTestCase(TestCase):
         self.assertEqual(len(csv), 3)
         for row in csv:
             if not row[0].startswith('#'):
-                # AND length of content line should equal 6
-                self.assertEqual(len(row), 6)
+                # AND length of content line should equal 7
+                self.assertEqual(len(row), 7)
                 org_data = [
                     self.org.name,
                     self.org.url,
                     self.org.email,
                     self.org.phone,
+                    str(self.org.recommendations_hidden),
                     self.org.inv_code,
                     'http://' + hostname + reverse('exmo2010:auth_orguser') + '?code={}'.format(self.org.inv_code)
                 ]

@@ -66,12 +66,3 @@ class RepresentativesQueryForm(QueryForm):
         orgs = monitoring.organization_set.exclude(userprofile=None).order_by('name')
         org_choices = [('', _('Organization is not selected'))] + list(orgs.values_list('pk', 'name'))
         self.fields['organization'].choices = org_choices
-
-
-class SentMailHistoryQueryForm(QueryForm):
-    timestamp = forms.DateField(required=False, widget=forms.TextInput())
-
-    class Meta:
-        filters = {
-            'timestamp': 'timestamp__gte',
-        }

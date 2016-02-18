@@ -52,18 +52,37 @@ $(document).ready(function () {
     // Perform group action checkup when checkbox clicked.
     $('input[type="checkbox"].group_actions').click(group_action_checkup);
 
-
-    // Go to send_mail page with selected orgs when send_mail group action button clicked.
-    $('#group_actions input.send_mail').click(function(){
+    var get_checked = function() {
         var checked = $('input[type="checkbox"].group_actions:checked').not('.toggle_all');
 
         var pks = [];
         for (var i=0; i<checked.length; i++) {
-            pks.push( $(checked[i]).closest('tr').data('pk'))
+            pks.push($(checked[i]).closest('tr').data('pk'))
         }
+        return pks
+    }
+
+    // Go to send_mail page with selected orgs when send_mail group action button clicked.
+    $('#group_actions input.send_mail').click(function(){
+        var pks = get_checked();
         url = $('#group_actions').data('sendmail_url') + '?' + $.param({orgs: pks}, true);
         window.location = url;
     })
+
+    $('#group_actions input.hide_recommendations').click(function(){
+        var pks = get_checked();
+        $('#id_orgs').val(pks);
+        $('#id_action').val('hide_recommendations');
+        $('#group_action_form').submit();
+    })
+
+    $('#group_actions input.unhide_recommendations').click(function(){
+        var pks = get_checked();
+        $('#id_orgs').val(pks);
+        $('#id_action').val('unhide_recommendations');
+        $('#group_action_form').submit();
+    })
+
 
     // Show invite_links modal window when create_inv_links group action button clicked.
     $('#group_actions input.create_inv_links').click(function(){

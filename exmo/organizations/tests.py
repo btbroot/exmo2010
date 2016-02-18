@@ -17,37 +17,24 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import json
-from cStringIO import StringIO
-from os.path import join
 
-from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, User, Group
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core import mail
-from django.core.exceptions import PermissionDenied
-from django.core.files.storage import default_storage
-from django.core.files import File
-from django.core.mail.utils import DNS_NAME
 from django.core.urlresolvers import reverse
 from core.test_utils import TestCase
-from livesettings import config_get
-from mock import MagicMock, Mock
 from model_mommy import mommy
-from nose_parameterized import parameterized
+from mock import Mock
 
-from .views import RepresentativesView, ajax_upload_file
-from core.test_utils import OptimizedTestCase, FileStorageTestCase
-from core.utils import UnicodeReader
+from .views import RepresentativesView
 from custom_comments.models import CommentExmo
 from exmo2010.models import (
-    Monitoring, Organization, Task, Parameter, Score, ObserversGroup, MONITORING_INTERACTION, MONITORING_PUBLISHED, OrgUser
+    Monitoring, Organization, Task, Parameter, Score, INT, PUB, OrgUser
 )
 
 
 class OrgCreateTestCase(TestCase):
-    # exmo2010:organizations_add
+    # exmo2010:organization_add
 
     # test adding organization using form
 
@@ -62,7 +49,7 @@ class OrgCreateTestCase(TestCase):
     def test_add_org(self):
         formdata = {'name_en': 'ooo'}
         # WHEN I submit organization add form
-        response = self.client.post(reverse('exmo2010:organizations_add', args=[self.monitoring.pk]), formdata)
+        response = self.client.post(reverse('exmo2010:organization_add', args=[self.monitoring.pk]), formdata)
         # THEN response status_code should be 302 (Redirect)
         self.assertEqual(response.status_code, 302)
         # AND new organization should get created in database
@@ -71,7 +58,7 @@ class OrgCreateTestCase(TestCase):
 
 
 class DuplicateOrgCreationTestCase(TestCase):
-    # exmo2010:organizations_add
+    # exmo2010:organization_add
 
     # Should return validation error if organization with already existing name is added
 
@@ -88,7 +75,7 @@ class DuplicateOrgCreationTestCase(TestCase):
     def test_error_on_duplicate(self):
         formdata = {'name_en': self.org.name}
         # WHEN I submit organization add form with existing name
-        response = self.client.post(reverse('exmo2010:organizations_add', args=[self.monitoring.pk]), formdata)
+        response = self.client.post(reverse('exmo2010:organization_add', args=[self.monitoring.pk]), formdata)
         # THEN response status_code should be 200 (OK)
         self.assertEqual(response.status_code, 200)
         # AND no new orgs should get created in database
@@ -96,412 +83,6 @@ class DuplicateOrgCreationTestCase(TestCase):
         # AND error message should say that such organization exists
         errors = {'__all__': [u'Organization with this Name [en] and Monitoring already exists.']}
         self.assertEqual(response.context['form'].errors, errors)
-
-
-class OrganizationEditAccessTestCase(TestCase):
-    # Should allow only expertA to edit organization
-
-    def setUp(self):
-        # GIVEN monitoring with organization
-        self.monitoring = mommy.make(Monitoring)
-        self.organization = mommy.make(
-            Organization, monitoring=self.monitoring, url='1.ru', email='1@ya.ru', name='initial')
-
-        # AND user without any permissions
-        User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        # AND superuser
-        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
-        # AND expert A
-        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
-        # AND organization representative
-        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
-        mommy.make(OrgUser, organization=self.organization, userprofile=orguser.profile)
-        # AND observer user
-        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
-        # AND observers group for monitoring
-        obs_group = mommy.make(ObserversGroup, monitoring=self.monitoring)
-        obs_group.organizations = [self.organization]
-        obs_group.users = [observer]
-
-        self.url = reverse('exmo2010:organizations_update', args=[self.monitoring.pk, self.organization.pk])
-
-    def test_anonymous_org_edit_get(self):
-        # WHEN anonymous user gets organization edit page
-        response = self.client.get(self.url, follow=True)
-        # THEN he is redirected to login page
-        self.assertRedirects(response, settings.LOGIN_URL + '?next=' + self.url)
-
-    @parameterized.expand([
-        ('user', 403),
-        ('orguser', 403),
-        ('observer', 403),
-        ('expertB', 403),
-        ('expertA', 200),
-        ('admin', 200),
-    ])
-    def test_organization_edit_get(self, username, expected_response_code):
-        self.client.login(username=username, password='password')
-
-        # WHEN user gets organization edit page
-        response = self.client.get(self.url)
-
-        # THEN response status_code equals expected
-        self.assertEqual(response.status_code, expected_response_code)
-
-    @parameterized.expand([
-        ('user',),
-        ('orguser',),
-        ('observer',),
-        ('expertB',),
-    ])
-    def test_forbid_unauthorized_organization_edit_post(self, username):
-        self.client.login(username=username, password='password')
-
-        # WHEN unauthorized user forges and POSTs organization edit form with changed url, email and name
-        self.client.post(self.url, {
-            'org-monitoring': self.monitoring.pk,
-            'org-url': '2.ru',
-            'org-email': '2@ya.ru',
-            'org-name': 'forged'})
-
-        # THEN organization does not get changed in the database
-        initial_fields = {f: getattr(self.organization, f) for f in 'url email name'.split()}
-        new_org_fields = Organization.objects.values(*initial_fields).get(pk=self.organization.pk)
-        self.assertEqual(new_org_fields, initial_fields)
-
-
-class OrganizationsPageAccessTestCase(TestCase):
-    # exmo2010:organizations
-
-    # Scenario: try to get organizations page by any users
-    def setUp(self):
-        # GIVEN organization in INTERACTION monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)
-        # AND user without any permissions
-        self.user = User.objects.create_user('user', 'user@svobodainfo.org', 'password')
-        # AND superuser
-        self.admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        # AND expert B
-        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        self.expertB.groups.add(Group.objects.get(name=self.expertB.profile.expertB_group))
-        # AND expert A
-        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        # AND organizations representative
-        self.orguser = User.objects.create_user('orguser', 'orguser@svobodainfo.org', 'password')
-        mommy.make(OrgUser, organization=org, userprofile=self.orguser.get_profile())
-
-        self.url = reverse('exmo2010:organizations', args=[org.monitoring.pk])
-
-    def test_anonymous_organizations_page_access(self):
-        # WHEN anonymous user get organizations page
-        resp = self.client.get(self.url, follow=True)
-        # THEN redirect to login page
-        self.assertRedirects(resp, settings.LOGIN_URL + '?next=' + self.url)
-
-    @parameterized.expand([
-        ('user', 403),
-        ('orguser', 403),
-        ('expertB', 403),
-        ('expertA', 200),
-        ('admin', 200),
-    ])
-    def test_authenticated__user_organizations_page_access(self, username, response_code):
-        # WHEN user get organizations page
-        self.client.login(username=username, password='password')
-        resp = self.client.get(self.url)
-        # THEN only admin and expert A have access
-        self.assertEqual(resp.status_code, response_code)
-
-
-class HandpickedOrgusersEmailTestCase(TestCase):
-    # exmo2010:send_mail
-
-    # When form is submitted with handpicked organizations, email messages should be sent only to
-    # those representatives, who represent at least one handpicked org and match filters, selected with form.
-
-    def setUp(self):
-        content_type = ContentType.objects.get_for_model(Score)
-
-        # GIVEN published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-
-        # AND 5 organizations of different inv_status
-        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
-        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
-        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
-        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
-        self.org_act = mommy.make(Organization, monitoring=self.monitoring, email='act@test.ru', inv_status='ACT')
-
-        # AND inactive representative of organization org_act
-        self.orguser_inactive1 = User.objects.create_user('orguser_inactive1', 'inactive1@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_act, userprofile=self.orguser_inactive1.get_profile())
-
-        # AND inactive representative of organization org_rgs
-        self.orguser_inactive2 = User.objects.create_user('orguser_inactive2', 'inactive2@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_inactive2.get_profile())
-
-        # AND active representative of organization org_rgs
-        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_active.get_profile())
-
-        # AND comment of active representative
-        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
-        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
-        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
-
-        # AND I am logged in as expertA
-        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        self.client.login(username='expertA', password='password')
-
-        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
-
-    @parameterized.expand([
-        ('dst_orgusers_inact', {('inactive1@test.ru',)}),   # inactive2 user does not match handpicked organizations
-        ('dst_orgusers_activ', set()),                      # active user does not match handpicked organizations
-    ])
-    def test_send_orguser_emails(self, selected_orgusers, expected_receivers):
-        # WHEN I hand-pick org_nts and org_act
-        post_data = {
-            selected_orgusers: '1',
-            'comment': u'Содержание',
-            'subject': u'Тема',
-            'handpicked_orgs': [self.org_nts.pk, self.org_act.pk]}
-
-        # AND I submit email form
-        response = self.client.post(self.url, post_data, follow=True)
-
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND i should be redirected to the mail history list page
-        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
-
-        # AND email messages should be sent to expected receivers
-        receivers = set(tuple(m.to) for m in mail.outbox)
-        self.assertEqual(receivers, expected_receivers)
-
-
-class HandpickedOrgEmailTestCase(TestCase):
-    # exmo2010:send_mail
-
-    # When form is submitted with handpicked organizations, email messages should be sent only to
-    # those orgs, which was handpicked and match filters, selected with form.
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-
-        # AND 4 organizations of different inv_status
-        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
-        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
-        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
-        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
-        # AND 2 active ('ACT' inv_status) organizations
-        self.org_act1 = mommy.make(Organization, monitoring=self.monitoring, email='act1@test.ru', inv_status='ACT')
-        self.org_act2 = mommy.make(Organization, monitoring=self.monitoring, email='act2@test.ru', inv_status='ACT')
-
-        # AND I am logged in as expertA
-        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        self.client.login(username='expertA', password='password')
-
-        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
-
-    @parameterized.expand([
-        ('dst_orgs_noreg', ['nts']),   # 'snt' and 'rd' organizations should be omitted
-        ('dst_orgs_inact', []),        # 'rgs' organization should be omitted
-        ('dst_orgs_activ', ['act1']),  # 'act2' organization should be omitted
-    ])
-    def test_send_org_emails(self, selected_orgs, expected_receivers):
-        # WHEN I hand-pick 2 organizations: nts and act1
-        handpicked_orgs = [self.org_nts.pk, self.org_act1.pk]
-        post_data = {'comment': 'txt', 'subject': 'subj', selected_orgs: '1', 'handpicked_orgs': handpicked_orgs}
-
-        # AND I submit email form
-        response = self.client.post(self.url, post_data, follow=True)
-
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND i should be redirected to the mail history list page
-        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
-
-        # AND email messages should be sent to expected receivers
-        receivers = set(tuple(m.to) for m in mail.outbox)
-        expected_receivers = set((addr + '@test.ru',) for addr in expected_receivers)
-        self.assertEqual(receivers, expected_receivers)
-
-
-class SelectiveOrgEmailTestCase(TestCase):
-    # exmo2010:send_mail
-
-    # Email messages should be sent only to those organizations, which was selected in form.
-
-    def setUp(self):
-        # GIVEN PUBLISHED monitoring
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-
-        # AND 5 organizations of different inv_status in monitoring
-        self.org_nts = mommy.make(Organization, monitoring=self.monitoring, email='nts@test.ru', inv_status='NTS')
-        self.org_snt = mommy.make(Organization, monitoring=self.monitoring, email='snt@test.ru', inv_status='SNT')
-        self.org_rd = mommy.make(Organization, monitoring=self.monitoring, email='rd@test.ru', inv_status='RD')
-        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
-        self.org_act = mommy.make(Organization, monitoring=self.monitoring, email='act@test.ru', inv_status='ACT')
-
-        # AND I am logged in as expertA
-        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        self.client.login(username='expertA', password='password')
-
-        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
-
-    @parameterized.expand([
-        ('dst_orgs_noreg', {'nts', 'snt', 'rd'}),
-        ('dst_orgs_inact', {'rgs'}),
-        ('dst_orgs_activ', {'act'}),
-    ])
-    def test_send_org_emails(self, selected_orgs, expected_receivers):
-        post_data = {'comment': u'Содержание', 'subject': u'Тема', selected_orgs: '1'}
-
-        # WHEN I submit email form
-        response = self.client.post(self.url, post_data, follow=True)
-
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND i should be redirected to the mail history list page
-        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
-
-        # AND email messages should be sent to expected receivers
-        receivers = set(tuple(m.to) for m in mail.outbox)
-        expected_receivers = set((addr + '@test.ru',) for addr in expected_receivers)
-        self.assertEqual(receivers, expected_receivers)
-
-
-class SelectiveOrgUserEmailTestCase(TestCase):
-    # exmo2010:send_mail
-
-    # Email messages should be sent only to those orgusers, which was selected in form.
-    # Status of the users in other monitorings should not affect selection filter.
-
-    def setUp(self):
-        content_type = ContentType.objects.get_for_model(Score)
-
-        # GIVEN 2 PUBLISHED monitorings
-        self.monitoring = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-        self.monitoring_other = mommy.make(Monitoring, status=MONITORING_PUBLISHED)
-
-        # AND organization in monitoring
-        self.org_rgs = mommy.make(Organization, monitoring=self.monitoring, email='rgs@test.ru', inv_status='RGS')
-
-        # AND organization in monitoring_other
-        self.org_other = mommy.make(Organization, monitoring=self.monitoring_other, email='rgs_other@test.ru', inv_status='RGS')
-
-        # AND user, unseen representative of organization org_rgs, but seen in org_other
-        self.orguser_unseen = User.objects.create_user('orguser_unseen', 'unseen@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_unseen.profile, seen=False)
-        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_unseen.profile, seen=True)
-
-        # AND inactive representative of organization org_rgs, but active in org_other
-        self.orguser_inactive = User.objects.create_user('orguser_inactive', 'inactive@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_inactive.profile)
-        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_inactive.profile)
-
-        # AND active representative of organization org_rgs, but inactive in org_other
-        self.orguser_active = User.objects.create_user('orguser_active', 'active@test.ru', 'password')
-        mommy.make(OrgUser, organization=self.org_rgs, userprofile=self.orguser_active.profile)
-        mommy.make(OrgUser, organization=self.org_other, userprofile=self.orguser_active.profile)
-
-        # AND comment of active representative in org_rgs
-        task = mommy.make(Task, organization=self.org_rgs, status=Task.TASK_APPROVED)
-        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring)
-        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_active)
-
-        # AND comment of inactive representative in org_other
-        task = mommy.make(Task, organization=self.org_other, status=Task.TASK_APPROVED)
-        score = mommy.make(Score, task=task, parameter__monitoring=self.monitoring_other)
-        mommy.make(CommentExmo, object_pk=score.pk, content_type=content_type, user=self.orguser_inactive)
-
-        # AND I am logged in as expertA
-        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        self.client.login(username='expertA', password='password')
-
-        self.url = reverse('exmo2010:send_mail', args=[self.monitoring.pk])
-
-    @parameterized.expand([
-        ('dst_orgusers_inact', {('inactive@test.ru',)}),
-        ('dst_orgusers_activ', {('active@test.ru',)}),
-        ('dst_orgusers_unseen', {('unseen@test.ru',)}),
-    ])
-    def test_send_orguser_emails(self, selected_orgusers, expected_receivers):
-        post_data = {'comment': u'Содержание', 'subject': u'Тема', selected_orgusers: '1'}
-
-        # WHEN I submit email form
-        response = self.client.post(self.url, post_data, follow=True)
-
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND i should be redirected to the mail history list page
-        self.assertRedirects(response, reverse('exmo2010:send_mail_history', args=[self.monitoring.pk]))
-
-        # AND email messages should be sent to expected receivers
-        receivers = set(tuple(m.to) for m in mail.outbox)
-        self.assertEqual(receivers, expected_receivers)
-
-
-class OrgEmailHeadersTestCase(TestCase):
-    # exmo2010:send_mail
-
-    # Email messages sent to organizations should have proper headers.
-
-    def setUp(self):
-        # GIVEN organization with 'NTS' inv_status
-        self.org = mommy.make(Organization, email='nts@test.ru', inv_status='NTS')
-
-        # AND I am logged in as expertA
-        self.expertA = User.objects.create_user('expertA', 'experta@svobodainfo.org', 'password')
-        self.expertA.groups.add(Group.objects.get(name=self.expertA.profile.expertA_group))
-        self.client.login(username='expertA', password='password')
-
-    def test_send_org_emails(self):
-        url = reverse('exmo2010:send_mail', args=[self.org.monitoring.pk])
-        post_data = {'comment': u'Содержание', 'subject': u'Тема', 'dst_orgs_noreg': '1'}
-        server_address = config_get('EmailServer', 'DEFAULT_FROM_EMAIL')
-        server_email_address = 'test@domain.com'
-        server_address.update(u'Имя хоста <{}>'.format(server_email_address))
-
-        # WHEN I submit email form
-        response = self.client.post(url, post_data, follow=True)
-
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND one email should be sent
-        self.assertEqual(len(mail.outbox), 1)
-
-        # AND email message should have expected headers
-        message = mail.outbox[0]
-        self.assertEqual(message.from_email, server_address)
-        self.assertEqual(message.subject, u'Тема')
-        self.assertEqual(message.to, [self.org.email])
-        # AND should have headers for Message Delivery Notification and ID
-        self.assertEqual(message.extra_headers['Disposition-Notification-To'], server_email_address)
-        self.assertEqual(message.extra_headers['Return-Receipt-To'], server_email_address)
-        self.assertEqual(message.extra_headers['X-Confirm-Reading-To'], server_email_address)
-        self.assertEqual(message.extra_headers['Message-ID'], '<%s@%s>' % (self.org.inv_code, DNS_NAME))
-
-        # TODO: move out this into new TestCase
-        # AND invitation status should change from 'Not sent' to 'Sent'
-        for org in Organization.objects.all():
-            self.assertEqual(org.inv_status, 'SNT')
 
 
 class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCase):
@@ -513,9 +94,9 @@ class OrganizationStatusRegisteredOnFirstRegisteredRepresentativeTestCase(TestCa
         content_type = ContentType.objects.get_for_model(Score)
 
         # GIVEN organization with 'read' invitation status in interaction monitoring
-        self.org_read = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION, inv_status='RD')
+        self.org_read = mommy.make(Organization, monitoring__status=INT, inv_status='RD')
         # AND organization with 'activated' invitation status in published monitoring
-        org_activated = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED, inv_status='ACT')
+        org_activated = mommy.make(Organization, monitoring__status=PUB, inv_status='ACT')
         # AND score of org_activated
         param = mommy.make(Parameter, monitoring=org_activated.monitoring, weight=1)
         score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=org_activated, parameter=param)
@@ -541,7 +122,7 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
 
     def setUp(self):
         # GIVEN organization in interaction monitoring
-        self.org = mommy.make(Organization, name='org2', monitoring__status=MONITORING_INTERACTION, inv_status='RGS')
+        self.org = mommy.make(Organization, name='org2', monitoring__status=INT, inv_status='RGS')
         # AND corresponding parameter, and score for organization
         param = mommy.make(Parameter, monitoring=self.org.monitoring, weight=1)
         self.score = mommy.make(Score, task__status=Task.TASK_APPROVED, task__organization=self.org, parameter=param)
@@ -558,72 +139,6 @@ class OrganizationStatusActivatedOnFirstCommentTestCase(TestCase):
         self.client.post(url, {'score_%s-comment' % self.score.pk: '123'})
         # THEN organization invitation status should change to 'activated' ('ACT')
         self.assertEqual(Organization.objects.get(pk=self.org.pk).inv_status, 'ACT')
-
-
-class RepresentativesExportTestCase(TestCase):
-    # exmo2010:representatives_export
-
-    def setUp(self):
-        # GIVEN monitoring
-        self.monitoring = mommy.make(Monitoring)
-        # AND there is 1 organization in monitoring
-        org = mommy.make(Organization, monitoring=self.monitoring)
-        # AND expert A account
-        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        self.expertA.profile.is_expertA = True
-        # AND expert B with approved task in monitoring
-        self.expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        self.expertB.profile.is_expertB = True
-        task = mommy.make(Task, organization=org, user=self.expertB, status=Task.TASK_APPROVED)
-        # AND parameter with score
-        parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
-        score = mommy.make(Score, task=task, parameter=parameter)
-        # AND org representative
-        orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
-        orguser.groups.add(Group.objects.get(name=orguser.profile.organization_group))
-        mommy.make(OrgUser, organization=org, userprofile=orguser.profile)
-        # AND comment from orguser
-        mommy.make(CommentExmo, object_pk=score.pk, user=orguser)
-        # AND I am logged in as expert A
-        self.client.login(username='expertA', password='password')
-
-    def test_csv(self):
-        # WHEN I get csv-file from response for current monitoring
-        monitoring = Monitoring.objects.get(pk=self.monitoring.pk)
-        url = reverse('exmo2010:representatives_export', args=[monitoring.pk])
-        response = self.client.get(url)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND csv-file should be valid
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = UnicodeReader(StringIO(response.content))
-        organization = monitoring.organization_set.all()[0]
-        user = organization.userprofile_set.all()[0]
-        for row in csv:
-            if row[0].startswith('#'):
-                continue
-            # AND length of row should be 10
-            self.assertEqual(len(row), 10)
-            # AND row 1 should contain user activation status
-            self.assertEqual(int(row[0]), int(user.user.is_active))
-            # AND row 2 should contain organization name
-            self.assertEqual(row[1], organization.name)
-            # AND row 3 should contain user first name
-            self.assertEqual(row[2], user.user.first_name)
-            # AND row 4 should contain user last name
-            self.assertEqual(row[3], user.user.last_name)
-            # AND row 5 should contain user e-mail
-            self.assertEqual(row[4], user.user.email)
-            # AND row 6 should contain user phone number
-            self.assertEqual(row[5], user.phone or '')
-            # AND row 7 should contain user job title
-            self.assertEqual(row[6], user.position or '')
-            # AND row 8 should contain count of comments
-            self.assertEqual(int(row[7]), 1)
-            # AND row 9 should contain date of user registration
-            self.assertEqual(row[8], user.user.date_joined.date().isoformat())
-            # AND row 10 should contain date of user last login
-            self.assertEqual(row[9], user.user.last_login.date().isoformat())
 
 
 class RepresentativesFilterByOrganizationsTestCase(TestCase):
@@ -695,124 +210,3 @@ class OrguserCommentCountTestCase(TestCase):
         self.assertEqual(orgs['org1'].users[0].comments.count(), 2)
         # AND org2 comments count should be 1
         self.assertEqual(orgs['org2'].users[0].comments.count(), 1)
-
-
-class AjaxUploadFileAccessTestCase(OptimizedTestCase):
-    # exmo2010:ajax_upload_file
-
-    # Should forbid anonymous or unprivileged user to upload files
-
-    @classmethod
-    def setUpClass(cls):
-        super(AjaxUploadFileAccessTestCase, cls).setUpClass()
-
-        cls.users = {}
-        # GIVEN monitoring with organization
-        cls.monitoring = mommy.make(Monitoring)
-        organization = mommy.make(Organization, monitoring=cls.monitoring)
-        # AND anonymous user
-        cls.users['anonymous'] = AnonymousUser()
-        # AND user without any permissions
-        cls.users['user'] = User.objects.create_user('user', 'usr@svobodainfo.org', 'password')
-        # AND superuser
-        cls.users['admin'] = User.objects.create_superuser('admin', 'usr@svobodainfo.org', 'password')
-        # AND expert B
-        expertB = User.objects.create_user('expertB', 'usr@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-        cls.users['expertB'] = expertB
-        # AND expert A
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        cls.users['expertA'] = expertA
-        # AND organization representative
-        orguser = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        mommy.make(OrgUser, organization=organization, userprofile=orguser.profile)
-        cls.users['orguser'] = orguser
-        # AND translator
-        translator = User.objects.create_user('translator', 'usr@svobodainfo.org', 'password')
-        translator.profile.is_translator = True
-        cls.users['translator'] = translator
-        # AND observer user
-        observer = User.objects.create_user('observer', 'usr@svobodainfo.org', 'password')
-        # AND observers group for monitoring
-        obs_group = mommy.make(ObserversGroup, monitoring=cls.monitoring)
-        obs_group.organizations = [organization]
-        obs_group.users = [observer]
-        cls.users['observer'] = observer
-        # AND url
-        cls.url = reverse('exmo2010:ajax_upload_file')
-
-    def test_redirect_get_anonymous(self):
-        # WHEN anonymous user get upload url
-        request = MagicMock(user=self.users['anonymous'], method='GET', is_ajax=lambda: True)
-        request.get_full_path.return_value = self.url
-        response = ajax_upload_file(request)
-        # THEN response status_code should be 302 (redirect)
-        self.assertEqual(response.status_code, 302)
-        # AND response redirects to login page
-        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
-
-    @parameterized.expand(zip(['admin', 'expertA', 'expertB', 'translator', 'orguser', 'observer', 'user']))
-    def test_redirect_get(self, username, *args):
-        # WHEN unprivileged user get upload url
-        request = MagicMock(user=self.users[username], method='GET', is_ajax=lambda: True)
-        request.get_full_path.return_value = self.url
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, ajax_upload_file, request)
-
-    def test_redirect_post_anonymous(self):
-        # WHEN anonymous user upload file
-        request = MagicMock(user=self.users['anonymous'], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
-        request.get_full_path.return_value = self.url
-        response = ajax_upload_file(request)
-        # THEN response status_code should be 302 (redirect)
-        self.assertEqual(response.status_code, 302)
-        # AND response redirects to login page
-        self.assertEqual(response['Location'], '{}?next={}'.format(settings.LOGIN_URL, self.url))
-
-    @parameterized.expand(zip(['expertB', 'translator', 'orguser', 'observer', 'user']))
-    def test_forbid_post(self, username, *args):
-        # WHEN unprivileged user upload file
-        request = Mock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': Mock()})
-        # THEN response should raise PermissionDenied exception
-        self.assertRaises(PermissionDenied, ajax_upload_file, request)
-
-    @parameterized.expand(zip(['admin', 'expertA']))
-    def test_allow_post(self, username, *args):
-        mock_file = Mock(spec=File, _size=12, read=lambda: 'some content')
-        mock_file.name = u'ЫВА.doc'
-        # WHEN privileged user uploads file
-        request = Mock(user=self.users[username], method='POST', is_ajax=lambda: True, FILES={'upload_file': mock_file})
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(ajax_upload_file(request).status_code, 200)
-
-
-class AjaxUploadUnicodeFileTestCase(FileStorageTestCase):
-    # exmo2010:ajax_upload_file
-
-    # BUG #2369
-    # Uploaded files with unicode names should get translified names.
-
-    def setUp(self):
-        # GIVEN i am logged in as experA
-        expertA = User.objects.create_user('expertA', 'usr@svobodainfo.org', 'password')
-        expertA.profile.is_expertA = True
-        self.client.login(username='expertA', password='password')
-
-    def test(self):
-        url = reverse('exmo2010:ajax_upload_file')
-        mock_file = Mock(spec=File, _size=12, read=lambda: 'some content')
-        mock_file.name = u'ЫВА.doc'
-
-        # WHEN i upload file with unicode symbols in name
-        response = self.client.post(url, {'upload_file': mock_file}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-
-        # THEN response status code is 200 (OK)
-        self.assertEqual(response.status_code, 200)
-
-        # AND saved filename should get translified
-        result = json.loads(response.content)
-        self.assertEqual(result['saved_filename'], 'YiVA.doc')
-        # AND saved file content should match uploaded file content
-        saved_file = default_storage.open(join(settings.EMAIL_ATTACHMENT_UPLOAD_PATH, result['saved_filename']))
-        self.assertEqual(saved_file.read(), 'some content')

@@ -252,10 +252,12 @@
                                     </div>
                                 {% endif %}
                                 <div class="read" data-empty_text="{% trans 'No recommendations' %}">
-                                    {% if score.recommendations %}
-                                        {{ score.recommendations|linkify|strict_bleach:'a'|linebreaksbr }}
-                                    {% else %}
+                                    {% if not score.recommendations %}
                                         {% trans 'No recommendations' %}
+                                    {% elif score.task.organization.recommendations_hidden and not request.user.is_expert %}
+                                        {% trans 'Recommendations hidden' %}
+                                    {% else %}
+                                        {{ score.recommendations|linkify|strict_bleach:'a'|linebreaksbr }}
                                     {% endif %}
                                 </div>
                             </div>

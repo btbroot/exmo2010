@@ -24,7 +24,7 @@ import re
 
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.db import models
+from django.db.models import TextField, BooleanField, CharField, ForeignKey, URLField
 from django.utils.translation import pgettext_lazy, ugettext, ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
 
@@ -49,24 +49,12 @@ def generate_inv_code(ch_nr):
     return "".join(random.sample(INV_CODE_CHARS, ch_nr))
 
 
-class OrganizationMngr(models.Manager):
-    """
-    Менеджер с одним специальным методом для генерации кодов приглашения
-     для всех орг-ий, у которых его нет.
-    """
-    def create_inv_codes(self):
-        orgs = self.filter(inv_code="")
-        for o in orgs:
-            o.inv_code = generate_inv_code(6)
-            o.save()
-
-
 phone_re = re.compile(r'([+()\d\s\-]{3,25})')
 email_re = re.compile(r'([0-9a-zA-Z]([-\.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})')
 delimiters_re = re.compile(r',|\s||(,\s)|\n|(,\n)')
 
 
-class EmailsField(models.TextField):
+class EmailsField(TextField):
     def to_python(self, value):
         sub_emails = re.sub(email_re, '', value)
         sub_emails = re.sub(delimiters_re, '', sub_emails)
@@ -101,7 +89,7 @@ def format_phone(phone):
     return phone
 
 
-class PhonesField(models.TextField):
+class PhonesField(TextField):
     def to_python(self, value):
         sub_phones = re.sub(phone_re, '', value)
         sub_phones = re.sub(delimiters_re, '', sub_phones)
@@ -127,21 +115,16 @@ class Organization(BaseModel):
         verbose_name = pgettext_lazy(u'change organization in admin', u'Organization')
         verbose_name_plural = _('Organizations')
 
-    name = models.CharField(max_length=255, verbose_name=_('name'))
-    url = models.URLField(max_length=255, null=True, blank=True, verbose_name=_('Website'))
+    name = CharField(max_length=255, verbose_name=_('name'))
+    url = URLField(max_length=255, null=True, blank=True, verbose_name=_('Website'))
     email = EmailsField(null=True, blank=True, verbose_name=_('email'))
     phone = PhonesField(null=True, blank=True, verbose_name=_('phone'))
-    monitoring = models.ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
+    monitoring = ForeignKey("Monitoring", verbose_name=_('monitoring'), editable=False)
 
-    inv_code = models.CharField(
-        verbose_name=_("Invitation code"), blank=True,
-        max_length=6, unique=True, editable=False)
+    inv_code = CharField(verbose_name=_("Invitation code"), blank=True, max_length=6, unique=True, editable=False)
+    inv_status = CharField(max_length=3, choices=INV_STATUS, default='NTS', verbose_name=_('Invitation status'), editable=False)
 
-    inv_status = models.CharField(
-        max_length=3, choices=INV_STATUS, default='NTS',
-        verbose_name=_('Invitation status'), editable=False)
-
-    objects = OrganizationMngr()
+    recommendations_hidden = BooleanField(verbose_name=_("Recommendations hidden"), default=False)
 
     def __unicode__(self):
         return self.name
