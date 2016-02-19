@@ -127,6 +127,18 @@
                         </th>
                     {% endif %}
 
+                    {% if rating_columns_form.rt_initial_recomm.value %}
+                        <th class="comments">
+                            <span>{% trans "Init. rec." %}</span><span class="arrow"></span>
+                        </th>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_done_recomm.value %}
+                        <th class="comments">
+                            <span>{% trans "Done rec." %}</span><span class="arrow"></span>
+                        </th>
+                    {% endif %}
+
                     {% if rating_columns_form.rt_initial_openness.value %}
                         <th class="init-openness">
                             <span>{% trans "Init. openness" %}</span><span class="arrow"></span>
@@ -173,6 +185,14 @@
                         <td class="comments">{{ task.num_comments }}</td>
                     {% endif %}
 
+                    {% if rating_columns_form.rt_initial_recomm.value %}
+                        <td class="comments">{{ task.interim_recommends_len }}</td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_done_recomm.value %}
+                        <td class="comments">{{ task.done_recommends_len }}</td>
+                    {% endif %}
+
                     {% if rating_columns_form.rt_initial_openness.value %}
                         <td class="init-openness">{{ task.task_openness_initial|floatformat:3 }}%</td>
                     {% endif %}
@@ -205,7 +225,8 @@
             {% endfor %}
             </tbody>
             {% if rating_stats %}
-                <tfoot><tr>
+                <tfoot>
+                <tr>
                     <td colspan=3>
                         <strong>{% trans "Average value" %}</strong>
                     </td>
@@ -213,13 +234,25 @@
                     {% if rating_columns_form.rt_representatives.value %}
                         {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
                         <td class="representatives">
-                            <strong>{{ rating_stats.repr_len|floatformat:1 }} / {{ rating_stats.active_repr_len|floatformat:1 }}</strong>
+                            <strong>{{ rating_stats.avg_repr_len|floatformat:1 }} / {{ rating_stats.avg_active_repr_len|floatformat:1 }}</strong>
                         </td>
                     {% endif %}
 
                     {% if rating_columns_form.rt_comment_quantity.value %}
                         <td class="comments">
-                            <strong>{{ rating_stats.num_comments|floatformat:1 }}</strong>
+                            <strong>{{ rating_stats.avg_num_comments|floatformat:1 }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_initial_recomm.value %}
+                        <td class="comments">
+                            <strong>{{ rating_stats.avg_interim_recommends_len|floatformat:1 }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_done_recomm.value %}
+                        <td class="comments">
+                            <strong>{{ rating_stats.avg_done_recommends_len|floatformat:1 }}</strong>
                         </td>
                     {% endif %}
 
@@ -255,9 +288,56 @@
                     {% endif %}
 
                     {% if user.is_active %}
-                    <td></td>
+                        <td></td>
                     {% endif %}
-                </tr></tfoot>
+                </tr>
+                <tr>
+                    <td colspan=3>
+                        <strong>{% trans "Sum" %}</strong>
+                    </td>
+
+                    {% if rating_columns_form.rt_representatives.value %}
+                        {# class name "representatives" used to traverse DOM in unit test via BeautifulSoup #}
+                        <td class="representatives">
+                            <strong>{{ rating_stats.sum_repr_len }} / {{ rating_stats.sum_active_repr_len }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_comment_quantity.value %}
+                        <td class="comments">
+                            <strong>{{ rating_stats.sum_num_comments }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_initial_recomm.value %}
+                        <td class="comments">
+                            <strong>{{ rating_stats.sum_interim_recommends_len }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_done_recomm.value %}
+                        <td class="comments">
+                            <strong>{{ rating_stats.sum_done_recommends_len }}</strong>
+                        </td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_initial_openness.value %}
+                        <td class="init-openness"></td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_final_openness.value %}
+                        <td class="openness"></td>
+                    {% endif %}
+
+                    {% if rating_columns_form.rt_difference.value %}
+                        <td class="diff"></td>
+                    {% endif %}
+
+                    {% if user.is_active %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+                </tfoot>
             {% endif %}
         </table>
 

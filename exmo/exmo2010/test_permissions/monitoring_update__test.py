@@ -35,8 +35,6 @@ from exmo2010.models.monitoring import PRE
 class MonitoringEditAccessTestCase(TestCase):
     # exmo2010:monitoring_update
 
-    # TODO: move this testcase to *permissions* tests directory
-
     # Should allow only expertA to edit monitoring
 
     def setUp(self):

@@ -21,16 +21,12 @@
 from __future__ import unicode_literals
 
 import datetime
-import json
-import unittest
-from cStringIO import StringIO
 
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from core.test_utils import TestCase
 from django.utils.formats import get_format
@@ -39,7 +35,6 @@ from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from .forms import MonitoringCopyForm
-from core.utils import UnicodeReader
 from core.test_utils import OptimizedTestCase
 from custom_comments.models import CommentExmo
 from exmo2010.models import (Claim, Monitoring, ObserversGroup, OrgUser,
@@ -85,7 +80,7 @@ class MonitoringDeleteTestCase(TestCase):
         self.assertEqual(Monitoring.objects.count(), 0)
 
 
-class RatingsAverageTestCase(TestCase):
+class RatingsAvgOpennessTestCase(TestCase):
     # exmo2010:ratings
 
     # TODO: move this testcase to *general logic* tests directory
@@ -132,219 +127,6 @@ class RatingsAverageTestCase(TestCase):
         self.assertEqual(monitorings[self.monitoring_nonzero_score.pk].avg_openness, 100.0)
 
 
-class ExpertARatingsTableVisibilityTestCase(TestCase):
-    # exmo2010:ratings
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # On ratings page expert A should see only published monitorings (including hidden)
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=PUB)
-        # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
-
-        # AND expert A account
-        expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        expertA.groups.add(Group.objects.get(name=expertA.profile.expertA_group))
-
-        # AND I logged in as expert A
-        self.client.login(username='expertA', password='password')
-
-    def test_visible_monitorings(self):
-        # WHEN I get ratings page
-        response = self.client.get(reverse('exmo2010:ratings'))
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND context should contain expected monitorings count
-        expected_pks = {self.mon_published.pk, self.mon_published_hidden.pk}
-        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
-
-
-class ExpertBRatingsTableVisibilityTestCase(TestCase):
-    # exmo2010:ratings
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # On ratings page expert B should see only published monitorings that are not hidden
-    # and published monitorings with assigned tasks (hidden or not)
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=PUB)
-        # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND published hidden monitoring with expert B task
-        self.mon_published_hidden_with_task = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
-        # AND interaction monitoring with expert B task
-        self.mon_interaction_with_task = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring with expert B task
-        self.mon_interaction_hidden_with_task = mommy.make(Monitoring, status=INT, hidden=True)
-        # AND 1 organization in published hidden monitoring
-        organization_1 = mommy.make(Organization, monitoring=self.mon_published_hidden_with_task)
-        # AND 1 organization in interaction monitoring
-        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_with_task)
-        # AND 1 organization in interaction hidden monitoring
-        organization_3 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_task)
-
-        # AND expert B account
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.groups.add(Group.objects.get(name=expertB.profile.expertB_group))
-        mommy.make(Task, organization=organization_1, user=expertB, status=Task.TASK_APPROVED)
-        mommy.make(Task, organization=organization_2, user=expertB, status=Task.TASK_APPROVED)
-        mommy.make(Task, organization=organization_3, user=expertB, status=Task.TASK_APPROVED)
-
-        # AND I logged in as expert B
-        self.client.login(username='expertB', password='password')
-
-    def test_visible_monitorings(self):
-        # WHEN I get ratings page
-        response = self.client.get(reverse('exmo2010:ratings'))
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND context should contain expected monitorings count
-        expected_pks = {self.mon_published.pk, self.mon_published_hidden_with_task.pk}
-        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
-
-
-class OrgUserRatingsTableVisibilityTestCase(TestCase):
-    # exmo2010:ratings
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # On ratings page organization representative should see only
-    # published monitorings and those with related organizations
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=PUB)
-        # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
-        # AND interaction monitoring with representative
-        self.mon_interaction_with_representative = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring with representative
-        self.mon_interaction_hidden_with_representative = mommy.make(Monitoring, status=INT,
-                                                                     hidden=True)
-        # AND 1 organization in interaction monitoring with representative
-        organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_representative)
-        # AND 1 organization in interaction hidden monitoring with representative
-        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_representative)
-
-        # AND organization representative account
-        org = User.objects.create_user('org', 'org@svobodainfo.org', 'password')
-        org.groups.add(Group.objects.get(name=org.profile.organization_group))
-        mommy.make(OrgUser, organization=organization_1, userprofile=org.profile)
-        mommy.make(OrgUser, organization=organization_2, userprofile=org.profile)
-
-        # AND I logged in as organization representative
-        self.client.login(username='org', password='password')
-
-    def test_visible_monitorings(self):
-        # WHEN I get ratings page
-        response = self.client.get(reverse('exmo2010:ratings'))
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND context should contain expected monitorings count
-        expected_pks = {self.mon_published.pk,
-                        self.mon_interaction_with_representative.pk,
-                        self.mon_interaction_hidden_with_representative.pk}
-        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
-
-
-class ObserversGroupRatingsTableVisibilityTestCase(TestCase):
-    # exmo2010:ratings
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # On ratings page observers should see only
-    # published monitorings and those with observed organizations
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=PUB)
-        # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
-        # AND interaction monitoring with observed organizations
-        self.mon_interaction_with_observed_orgs = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring with observed organizations
-        self.mon_interaction_hidden_with_observed_orgs = mommy.make(Monitoring, status=INT, hidden=True)
-
-        # AND 1 organization in interaction monitoring with observed organizations
-        organization_1 = mommy.make(Organization, monitoring=self.mon_interaction_with_observed_orgs)
-        # AND 1 organization in interaction hidden monitoring with observed organizations
-        organization_2 = mommy.make(Organization, monitoring=self.mon_interaction_hidden_with_observed_orgs)
-
-        # AND observer account
-        observer = User.objects.create_user('observer', 'observer@svobodainfo.org', 'password')
-        # AND observers group for interaction monitoring with observed organizations
-        obs_group_1 = mommy.make(ObserversGroup, monitoring=self.mon_interaction_with_observed_orgs)
-        obs_group_1.organizations = [organization_1]
-        obs_group_1.users = [observer]
-        # AND observers group for interaction hidden monitoring with observed organizations
-        obs_group_2 = mommy.make(ObserversGroup, monitoring=self.mon_interaction_hidden_with_observed_orgs)
-        obs_group_2.organizations = [organization_2]
-        obs_group_2.users = [observer]
-
-        # AND I logged in as observer
-        self.client.login(username='observer', password='password')
-
-    def test_visible_monitorings(self):
-        # WHEN I get ratings page
-        response = self.client.get(reverse('exmo2010:ratings'))
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND context should contain expected monitorings count
-        expected_pks = {self.mon_published.pk,
-                        self.mon_interaction_with_observed_orgs.pk,
-                        self.mon_interaction_hidden_with_observed_orgs.pk}
-        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
-
-
-class AnonymousUserRatingsTableVisibilityTestCase(TestCase):
-    # exmo2010:ratings
-
-    # TODO: move this testcase to *permissions* tests directory
-
-    # On ratings page anonymous and regular users should see only
-    # published monitorings that are not hidden
-
-    def setUp(self):
-        # GIVEN published monitoring
-        self.mon_published = mommy.make(Monitoring, status=PUB)
-        # AND published hidden monitoring
-        self.mon_published_hidden = mommy.make(Monitoring, status=PUB, hidden=True)
-        # AND interaction monitoring
-        self.mon_interaction = mommy.make(Monitoring, status=INT)
-        # AND interaction hidden monitoring
-        self.mon_interaction_hidden = mommy.make(Monitoring, status=INT, hidden=True)
-
-    def test_visible_monitorings(self):
-        # WHEN I get ratings page
-        response = self.client.get(reverse('exmo2010:ratings'))
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND context should contain expected monitorings count
-        expected_pks = {self.mon_published.pk}
-        self.assertEqual(set(m.pk for m in response.context['monitoring_list']), expected_pks)
-
-
 class RatingColumnsPickerTestCase(OptimizedTestCase):
     # exmo2010:monitoring_rating
 
@@ -379,7 +161,9 @@ class RatingColumnsPickerTestCase(OptimizedTestCase):
             'rt_final_openness': False,
             'rt_difference': False,
             'rt_representatives': False,
-            'rt_comment_quantity': False
+            'rt_comment_quantity': False,
+            'rt_initial_recomm': False,
+            'rt_done_recomm': False,
         })
         cls.url = reverse('exmo2010:monitoring_rating', args=(task.pk,))
 
@@ -399,7 +183,9 @@ class RatingColumnsPickerTestCase(OptimizedTestCase):
             'rt_final_openness': False,
             'rt_difference': False,
             'rt_representatives': True,
-            'rt_comment_quantity': False
+            'rt_comment_quantity': False,
+            'rt_initial_recomm': False,
+            'rt_done_recomm': False,
         }
         profile = UserProfile.objects.filter(user=self.expertA)
         self.assertEqual(profile.values(*UserProfile.RATING_COLUMNS_FIELDS)[0], expected_data)
@@ -436,7 +222,9 @@ class RatingColumnsPickerTestCase(OptimizedTestCase):
             'rt_final_openness': False,
             'rt_difference': False,
             'rt_representatives': False,  # forbidden column
-            'rt_comment_quantity': False
+            'rt_comment_quantity': False,
+            'rt_initial_recomm': False,
+            'rt_done_recomm': False,
         }
         profile = UserProfile.objects.filter(user=self.org_user)
         self.assertEqual(profile.values(*UserProfile.RATING_COLUMNS_FIELDS)[0], expected_data)
@@ -470,7 +258,9 @@ class RatingColumnsPickerTestCase(OptimizedTestCase):
             'rt_final_openness': True,
             'rt_representatives': False,
             'rt_comment_quantity': False,
-            'rt_initial_openness': False
+            'rt_initial_openness': False,
+            'rt_initial_recomm': False,
+            'rt_done_recomm': False,
         }
         visible = {col: response.context['rating_columns_form'][col].value() for col in expected_data}
         self.assertEqual(visible, expected_data)
@@ -511,15 +301,27 @@ class RatingTableValuesTestCase(TestCase):
         # THEN output average data equals expected values
         self.assertEqual(a['num_approved_tasks'], 1)
         self.assertEqual(a['num_rated_tasks'], 1)
-        self.assertEqual(a['repr_len'], 0)
-        self.assertEqual(a['active_repr_len'], 0)
-        self.assertEqual(a['num_comments'], 0)
+
+        self.assertEqual(a['avg_repr_len'], 0)
+        self.assertEqual(a['avg_active_repr_len'], 0)
+        self.assertEqual(a['avg_num_comments'], 0)
+        self.assertEqual(a['avg_interim_recommends_len'], 0)
+        self.assertEqual(a['avg_done_recommends_len'], 0)
+
+        self.assertEqual(a['sum_repr_len'], 0)
+        self.assertEqual(a['sum_active_repr_len'], 0)
+        self.assertEqual(a['sum_num_comments'], 0)
+        self.assertEqual(a['sum_interim_recommends_len'], 0)
+        self.assertEqual(a['sum_done_recommends_len'], 0)
+
         self.assertEqual(a['openness'], 0)
         self.assertEqual(a['openness_initial'], 0)
         self.assertEqual(a['openness_delta'], 0.0)
 
 
 class NameFilterRatingTestCase(TestCase):
+    # exmo2010:monitoring_rating
+
     # If name filter given on rating page, should show only filtered orgs
 
     def setUp(self):
@@ -556,20 +358,18 @@ class NameFilterRatingTestCase(TestCase):
 class RatingActiveRepresentativesTestCase(TestCase):
     # exmo2010:monitoring_rating
 
-    ''' Should count active and total organizations representatives on rating page '''
+    # Should count active and total organizations representatives on rating page
 
     def setUp(self):
         # GIVEN User instance and two connected organizations to it
         monitoring = mommy.make(Monitoring, status=PUB)
-        monitoring_id = monitoring.pk
         organization1 = mommy.make(Organization, name='org1', monitoring=monitoring)
         organization2 = mommy.make(Organization, name='org2', monitoring=monitoring)
-        self.url = reverse('exmo2010:monitoring_rating', args=[monitoring_id])
-        self.usr = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
-        profile = self.usr.get_profile()
-        mommy.make(OrgUser, organization=organization1, userprofile=profile)
-        mommy.make(OrgUser, organization=organization2, userprofile=profile)
-        profile.save()
+
+        self.orguser = User.objects.create_user('usr', 'usr@svobodainfo.org', 'password')
+        mommy.make(OrgUser, organization=organization1, userprofile=self.orguser.profile)
+        mommy.make(OrgUser, organization=organization2, userprofile=self.orguser.profile)
+
         # AND two corresponding tasks, parameters, and scores for organizations
         task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
         task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
@@ -582,9 +382,11 @@ class RatingActiveRepresentativesTestCase(TestCase):
         # AND superuser
         self.admin = User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
 
+        self.url = reverse('exmo2010:monitoring_rating', args=[monitoring.pk])
+
     def test_first_org_active_users(self):
         # WHEN representative adds a comment to first task's score
-        comment = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.usr, site=self.site)
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score1.pk, user=self.orguser, site=self.site)
         comment.save()
 
         # AND requests rating page for monitoring
@@ -605,9 +407,9 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
     def test_second_org_active_users(self):
         # WHEN representative adds two comments to second task's score
-        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.usr, site=self.site)
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.orguser, site=self.site)
         comment.save()
-        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.usr, site=self.site)
+        comment = CommentExmo(content_type=self.content_type, object_pk=self.score2.pk, user=self.orguser, site=self.site)
         comment.save()
 
         # AND requests rating page for monitoring
@@ -620,7 +422,7 @@ class RatingActiveRepresentativesTestCase(TestCase):
 
     def test_non_existing_score_comments(self):
         # GIVEN comment to non-existing score
-        comment = CommentExmo(content_type=self.content_type, object_pk=3, user=self.usr, site=self.site)
+        comment = CommentExmo(content_type=self.content_type, object_pk=3, user=self.orguser, site=self.site)
         comment.save()
 
         # WHEN user requests rating page for monitoring
@@ -658,7 +460,7 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
     # TODO: split in few separate testcases for each view.
 
     def setUp(self):
-        # GIVEN hidden and published monitoring
+        # GIVEN hidden published monitoring
         self.monitoring = mommy.make(Monitoring, status=PUB, hidden=True)
         self.monitoring_id = self.monitoring.pk
 
@@ -778,209 +580,6 @@ class HiddenMonitoringVisibilityTestCase(TestCase):
         self.assertRedirects(response, '{}?next={}'.format(settings.LOGIN_URL, url))
 
 
-class TestMonitoringExportApproved(TestCase):
-    # exmo2010:monitoring_export
-
-    # Scenario: Экспорт данных мониторинга
-
-    def setUp(self):
-        # GIVEN published monitoring with 1 organization
-        self.monitoring = mommy.make(Monitoring, status=PUB)
-        organization = mommy.make(Organization, monitoring=self.monitoring)
-        # AND 2 experts B
-        expertB_1 = User.objects.create_user('expertB_1', 'expertB_1@svobodainfo.org', 'password')
-        expertB_1.profile.is_expertB = True
-        expertB_2 = User.objects.create_user('expertB_2', 'expertB_2@svobodainfo.org', 'password')
-        expertB_2.profile.is_expertB = True
-        # AND approved task assigned to expertB_1
-        approved_task = mommy.make(
-            Task,
-            organization=organization,
-            user=expertB_1,
-            status=Task.TASK_APPROVED,
-        )
-        # AND open task assigned to expertB_2
-        open_task = mommy.make(
-            Task,
-            organization=organization,
-            user=expertB_2,
-            status=Task.TASK_OPEN,
-        )
-        # AND 1 parameter
-        parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
-        # AND 1 score for each task
-        mommy.make(Score, task=approved_task, parameter=parameter)
-        mommy.make(Score, task=open_task, parameter=parameter)
-
-    def test_approved_json(self):
-        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
-        response = self.client.get(url + '?format=json')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается json
-        self.assertEqual(response.get('content-type'), 'application/json')
-        json_file = json.loads(response.content)
-        self.assertEqual(len(json_file['monitoring']['tasks']), 1, json.dumps(json_file, indent=2))
-
-    # FIXME: не работает в автотестах перед пушем в мастер.
-    # По какой-то причине в csv присутствует еще и первоначальная оценка.
-    # Traceback (most recent call last):
-    #   File "/tmp/exmo_test_repo/exmo/monitorings/tests.py", line 888, in test_approved_csv
-    #     self.assertEqual(len(csv), 3)
-    # AssertionError: 4 != 3
-    @unittest.skipIf(not settings.DEBUG, 'Git hook with autotests return AssertionError')
-    def test_approved_csv(self):
-        url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
-        response = self.client.get(url + '?format=csv')
-        # THEN запрос удовлетворяется
-        self.assertEqual(response.status_code, 200)
-        # AND отдается csv
-        self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
-        csv = [line for line in UnicodeReader(StringIO(response.content))]
-        # only header, 1 string of content and license
-        self.assertEqual(len(csv), 3)
-
-
-class UploadParametersCSVTest(TestCase):
-    # exmo2010:monitoring_parameter_import
-
-    # Upload parameters.
-
-    def setUp(self):
-        # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=INT)
-        # AND expert A account
-        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
-        self.expertA.profile.is_expertA = True
-        # AND url for csv-file importing
-        self.url = reverse('exmo2010:monitoring_parameter_import', args=[self.monitoring.pk])
-        # AND I am logged in as expert A
-        self.client.login(username='expertA', password='password')
-
-    def test_empty_name_param_upload(self):
-        csv_data = unicode(
-            # code,name,grounds,rating_procedure,notes,complete,topical,accessible,hypertext,document,image,weight
-            '1,name1,grounds1,,,1,1,1,1,0,0,3\n'
-            '2,name2,,rating_procedure2,notes2,1,1,1,1,0,0,3\n'
-            '3,\n'   # incomplete row
-            '4,name4,grounds4,rating_procedure4,notes4,1,1,1,1,0,0,3')
-        f = ContentFile(csv_data.encode('utf-16'), name='temp.csv')
-
-        # WHEN I upload csv file with incomplete third row, missing name and all columns after
-        response = self.client.post(self.url, data={'paramfile': f, 'monitoring_pk': self.monitoring.pk})
-        # THEN response should display error in third line
-        self.assertEqual(response.context['errors'], ['row 3 (csv). Empty name'])
-
-
-class TranslatedMonitoringScoresDataExportTestCase(TestCase):
-    # exmo2010:monitoring_export
-
-    # Should export content in a different languages
-
-    def setUp(self):
-        # GIVEN published monitoring with 1 organization
-        self.monitoring = mommy.make(Monitoring, status=PUB, name_en='monitoring', name_ru=u'мониторинг')
-        self.organization = mommy.make(Organization, monitoring=self.monitoring, name_en='organization', name_ru=u'организация')
-        # AND expert B account
-        expertB = User.objects.create_user('expertB', 'expertB@svobodainfo.org', 'password')
-        expertB.profile.is_expertB = True
-        # AND 2 users accounts with different languages
-        user_en = User.objects.create_user('user_en', 'en_user@svobodainfo.org', 'password')
-        user_en.profile.language = 'en'
-        user_en.profile.save()
-        user_ru = User.objects.create_user('user_ru', 'ru_user@svobodainfo.org', 'password')
-        user_ru.profile.language = 'ru'
-        user_ru.profile.save()
-        # AND approved task assigned to expert B
-        task = mommy.make(Task, organization=self.organization, user=expertB, status=Task.TASK_APPROVED,)
-        # AND 1 parameter
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1, name_en='parameter', name_ru=u'параметр')
-        # AND 2 scores
-        mommy.make(Score, task=task, parameter=self.parameter)
-        mommy.make(Score, task=task, parameter=self.parameter, revision=Score.REVISION_INTERACT)
-        self.url = reverse('exmo2010:monitoring_export', args=[self.monitoring.pk])
-
-    @parameterized.expand([
-        ('ru',),
-        ('en',),
-    ])
-    def test_json(self, lang):
-        # WHEN I am logged in as user
-        self.client.login(username='user_%s' % lang, password='password')
-        # AND I get json-file from response for current monitoring
-        response = self.client.get(self.url + '?format=json', follow=True)
-        json_file = json.loads(response.content)
-        # THEN monitoring, organization and parameter names should be in user preferable language
-        field = 'name_%s' % lang
-        self.assertEqual(json_file['monitoring']['name'], getattr(self.monitoring, field))
-        self.assertEqual(json_file['monitoring']['tasks'][0]['name'], getattr(self.organization, field))
-        self.assertEqual(json_file['monitoring']['tasks'][0]['scores'][0]['name'], getattr(self.parameter, field))
-
-    @parameterized.expand([
-        ('ru',),
-        ('en',),
-    ])
-    def test_csv(self, lang):
-        # WHEN I am logged in as user
-        self.client.login(username='user_%s' % lang, password='password')
-        # AND I get csv-file from response for current monitoring
-        response = self.client.get(self.url + '?format=csv', follow=True)
-        csv = UnicodeReader(StringIO(response.content))
-        field = 'name_%s' % lang
-        for count, row in enumerate(csv, 1):
-            if count != 1 and not row[0].startswith('#'):
-                # THEN monitoring, organization and parameter names should be in user preferable language
-                self.assertEqual(row[0], getattr(self.monitoring, field))
-                self.assertEqual(row[1], getattr(self.organization, field))
-                self.assertEqual(row[6], getattr(self.parameter, field))
-
-
-class OrgUserRatingAccessTestCase(TestCase):
-    # Should allow org representatives to see only related orgs in unpublished ratings
-
-    def setUp(self):
-        # GIVEN INT monitoring with 2 organizations and parameter
-        self.monitoring_related = mommy.make(Monitoring, status=INT)
-        organization = mommy.make(Organization, monitoring=self.monitoring_related)
-        organization_unrelated = mommy.make(Organization, monitoring=self.monitoring_related)
-        parameter = mommy.make(Parameter, monitoring=self.monitoring_related, weight=1)
-        # AND representative user for one organization
-        user = User.objects.create_user('orguser', 'usr@svobodainfo.org', 'password')
-        user.groups.add(Group.objects.get(name=user.profile.organization_group))
-        mommy.make(OrgUser, organization=organization, userprofile=user.profile)
-        # AND INT monitoring with organization, not connected to representative user and parameter
-        self.monitoring_unrelated = mommy.make(Monitoring, status=INT)
-        organization_unrelated2 = mommy.make(Organization, monitoring=self.monitoring_unrelated)
-        parameter_unrelated = mommy.make(Parameter, monitoring=self.monitoring_unrelated, weight=1)
-        # AND approved task for each organization
-        self.task_related = mommy.make(Task, organization=organization, status=Task.TASK_APPROVED)
-        task_unrelated = mommy.make(Task, organization=organization_unrelated, status=Task.TASK_APPROVED)
-        task_unrelated2 = mommy.make(Task, organization=organization_unrelated2, status=Task.TASK_APPROVED)
-        # AND score for each task
-        mommy.make(Score, task=self.task_related, parameter=parameter)
-        mommy.make(Score, task=task_unrelated, parameter=parameter)
-        mommy.make(Score, task=task_unrelated2, parameter=parameter_unrelated)
-        # AND I am logged in as orguser
-        self.client.login(username='orguser', password='password')
-
-    def test_forbid_org_access_to_unrelated_unpublished_rating(self):
-        url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_unrelated.pk])
-        # WHEN I get unrelated unpublished rating page
-        response = self.client.get(url)
-        # THEN response status_code should be 403 (forbidden)
-        self.assertEqual(response.status_code, 403)
-
-    def test_allow_org_see_related_org_unpublished_rating(self):
-        url = reverse('exmo2010:monitoring_rating', args=[self.monitoring_related.pk])
-        # WHEN I get related unpublished rating page
-        response = self.client.get(url)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        tasks = [task.pk for task in response.context['rating_list']]
-        # AND I see only my own task in the list
-        self.assertEqual(tasks, [self.task_related.pk])
-
-
 class RatingStatsTestCase(TestCase):
     # exmo2010:monitoring_rating
 
@@ -1081,43 +680,6 @@ class RatingStatsOrgCountTestCase(TestCase):
         self.assertEqual(response.context['rating_stats']['num_rated_tasks'], 1)
 
 
-class SuperuserRatingOrgsVisibilityTestCase(TestCase):
-    # exmo2010:monitoring_rating
-
-    # TODO: move this testcase into *permissions* tests directory
-
-    # Superuser should see all organizations on rating page
-
-    def setUp(self):
-        # GIVEN interaction monitoring
-        self.monitoring = mommy.make(Monitoring, status=INT)
-        # AND 2 organizations connected to monitoring
-        organization1 = mommy.make(Organization, name='org1', monitoring=self.monitoring)
-        organization2 = mommy.make(Organization, name='org2', monitoring=self.monitoring)
-        # AND 2 approved tasks connected to organizations
-        self.task1 = mommy.make(Task, organization=organization1, status=Task.TASK_APPROVED)
-        self.task2 = mommy.make(Task, organization=organization2, status=Task.TASK_APPROVED)
-        # AND parameter connected to monitoring
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
-        # AND 1 score for each task
-        mommy.make(Score, task=self.task1, parameter=self.parameter)
-        mommy.make(Score, task=self.task2, parameter=self.parameter)
-        # AND superuser account
-        User.objects.create_superuser('admin', 'admin@svobodainfo.org', 'password')
-        # AND monitoring rating page url
-        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
-        # AND I am logged in as superuser
-        self.client.login(username='admin', password='password')
-
-    def test_rating_list(self):
-        # WHEN I get rating page
-        response = self.client.get(self.url)
-        # THEN response status_code should be 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        # AND count of approved tasks should be 2
-        self.assertEqual(len(response.context['rating_list']), 2)
-
-
 class StatisticsActiveOrganizationRepresentsTestCase(TestCase):
     # Monitorings statistics should contain correct count of active users
 
@@ -1206,6 +768,75 @@ class MonitoringCopyFormTestCase(TestCase):
         self.assertEqual(form.cleaned_data['donors'], expected_list)
 
 
+class RatingRecommendationsStatsTestCase(TestCase):
+    # exmo2010:monitoring_rating
+
+    # TODO: move this testcase into *general logic* tests directory
+
+    # Interim recommendations count and done recommendations count should be properly calculated
+
+    def setUp(self):
+        # GIVEN monitoring
+        self.monitoring = mommy.make(Monitoring)
+
+        # AND parameter of nonzero weight
+        self.param1 = mommy.make(Parameter, monitoring=self.monitoring, weight=1)
+
+        # AND approved task
+        self.task = mommy.make(Task, status=Task.TASK_APPROVED, organization__monitoring=self.monitoring)
+
+        # AND I am logged in as expert A
+        self.expertA = User.objects.create_user('expertA', 'expertA@svobodainfo.org', 'password')
+        self.expertA.profile.is_expertA = True
+        self.client.login(username='expertA', password='password')
+
+        self.url = reverse('exmo2010:monitoring_rating', args=[self.monitoring.pk])
+
+    def test1(self):
+        # GIVEN interim score with recommendations
+        mommy.make(Score, revision=Score.INTERIM, task=self.task, parameter=self.param1, recommendations='lol')
+        # AND final score without recommendations
+        mommy.make(Score, revision=Score.FINAL, task=self.task, parameter=self.param1, recommendations='')
+
+        # WHEN I get rating page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND count of interim recommendations should be 1
+        self.assertEqual(response.context['rating_list'][0].interim_recommends_len, 1)
+        # AND count of done recommendations should be 1
+        self.assertEqual(response.context['rating_list'][0].done_recommends_len, 1)
+
+    def test2(self):
+        # GIVEN final score without recommendations
+        mommy.make(Score, revision=Score.FINAL, task=self.task, parameter=self.param1, recommendations='')
+
+        # WHEN I get rating page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND count of interim recommendations should be 0
+        self.assertEqual(response.context['rating_list'][0].interim_recommends_len, 0)
+        # AND count of done recommendations should be 0
+        self.assertEqual(response.context['rating_list'][0].done_recommends_len, 0)
+
+    def test3(self):
+        # GIVEN final score with recommendations
+        mommy.make(Score, revision=Score.FINAL, task=self.task, parameter=self.param1, recommendations='lol')
+
+        # WHEN I get rating page
+        response = self.client.get(self.url)
+
+        # THEN response status_code should be 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        # AND count of interim recommendations should be 1
+        self.assertEqual(response.context['rating_list'][0].interim_recommends_len, 1)
+        # AND count of done recommendations should be 0
+        self.assertEqual(response.context['rating_list'][0].done_recommends_len, 0)
+
+
 class CopyMonitoringViewTestCase(TestCase):
     # exmo2010:monitoring_copy
 
@@ -1239,7 +870,7 @@ class CopyMonitoringViewTestCase(TestCase):
         mommy.make(Score, task=task3, parameter=self.parameter)
         # AND monitoring copy page url
         self.url = reverse('exmo2010:monitoring_copy', args=[self.monitoring.pk])
-        # WHEN I am logged in as expert A
+        # AND I am logged in as expert A
         self.client.login(username='expertA', password='password')
 
     def test_copy_monitoring(self):

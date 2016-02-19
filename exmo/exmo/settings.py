@@ -68,32 +68,6 @@ DATABASES = {
     }
 }
 
-# Tests
-TEST = 'test' in sys.argv
-if TEST:
-    SOUTH_TESTS_MIGRATE = False
-    # execute celery tasks immediately
-    CELERY_ALWAYS_EAGER = True
-    # in-memory SQLite used for testing.
-    CELERY_RESULT_BACKEND = 'db+sqlite:///celery_results.db'
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': ':memory:',
-        }
-    }
-
-    PASSWORD_HASHERS = (
-        'django.contrib.auth.hashers.MD5PasswordHasher',
-    )
-
-    import logging
-    logging.getLogger('south').setLevel(logging.WARNING)
-    logging.getLogger('configuration').setLevel(logging.WARNING)
-    logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(logging.WARNING)
-
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
 # A secret key for this particular Django installation. Used in secret-key hashing algorithms.
 # 'django_key' file with SECRET_KEY is generated in manage.py
 with open(path('exmo/django_key')) as f:
@@ -281,13 +255,10 @@ INSTALLED_APPS = (
     'scores',
     'tasks',
     'questionnaire',
+
+    'django_nose'
 )
 
-if TEST:
-    INSTALLED_APPS += ('django_nose',)
-
-    # Save uploaded files in memory.
-    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
 
 # Customization
 COMMENTS_APP = 'custom_comments'
@@ -335,6 +306,47 @@ BLEACH_STRIP_TAGS = True
 BLEACH_STRIP_COMMENTS = False
 
 DEVEL = False
+
+
+# Tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+TEST = 'test' in sys.argv
+if TEST:
+    # Use dummy cache, as django does not reset cache between tests, see https://code.djangoproject.com/ticket/11505
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+    CACHE_TIMEOUT = 0
+
+    SOUTH_TESTS_MIGRATE = False
+
+    # execute celery tasks immediately
+    CELERY_ALWAYS_EAGER = True
+
+    # in-memory SQLite used for testing.
+    CELERY_RESULT_BACKEND = 'db+sqlite:///celery_results.db'
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+
+    PASSWORD_HASHERS = (
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    )
+
+    import logging
+    logging.getLogger('south').setLevel(logging.WARNING)
+    logging.getLogger('configuration').setLevel(logging.WARNING)
+    logging.getLogger('selenium.webdriver.remote.remote_connection').setLevel(logging.WARNING)
+
+    # Save uploaded files in memory.
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
+
 
 SELENIUM_CATCH_ERROR_TEXT = ['class="error-page"']
 SELENIUM_PRE_SETUP_CALLBACKS = ['exmo.settings.selenium_pre_setup']

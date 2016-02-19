@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 23:54+0300\n"
-"PO-Revision-Date: 2016-02-18 23:54+0400\n"
+"POT-Creation-Date: 2016-02-20 01:45+0300\n"
+"PO-Revision-Date: 2016-02-20 01:45+0400\n"
 "Last-Translator: u1 <someuniquename@gmail.com>\n"
 "Language-Team: Russian <kde-i18n-doc@kde.org>\n"
 "Language: ru\n"
@@ -47,14 +47,14 @@ msgid "Last name"
 msgstr "Фамилия"
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:59
-#: exmo2010/models/userprofile.py:115
+#: exmo2010/models/userprofile.py:118
 #: templates/manage_monitoring/representatives.html:72
 #: templates/manage_monitoring/representatives.html:91
 msgid "Job title"
 msgstr "Должность"
 
 #: accounts/forms.py:64 exmo2010/custom_registration/forms.py:60
-#: exmo2010/models/userprofile.py:116
+#: exmo2010/models/userprofile.py:119
 msgid "Phone number"
 msgstr "Контактный телефон"
 
@@ -326,7 +326,7 @@ msgstr "Ссылка на методику"
 msgid "Global Parameters"
 msgstr "Глобальные параметры"
 
-#: exmo/config.py:115 monitorings/views.py:502 tasks/forms.py:27
+#: exmo/config.py:115 monitorings/views.py:541 tasks/forms.py:27
 #: tasks/templates/task_history.html:45
 msgid "Expert"
 msgstr "Эксперт"
@@ -367,65 +367,73 @@ msgstr "Вы уверены?"
 msgid "%(prefix)s Email digest"
 msgstr "%(prefix)s Дайджест"
 
-#: exmo2010/columns_picker.py:30
+#: exmo2010/columns_picker.py:34
 msgctxt "number of representatives"
 msgid "Representatives"
 msgstr "Представителей"
 
-#: exmo2010/columns_picker.py:31
+#: exmo2010/columns_picker.py:35
 msgid "Comment quantity"
 msgstr "Количество комментариев"
 
-#: exmo2010/columns_picker.py:32
+#: exmo2010/columns_picker.py:36
+msgid "Initial recommendations num"
+msgstr "Количество первичных рекомендаций"
+
+#: exmo2010/columns_picker.py:37
+msgid "Done recommendations num"
+msgstr "Количество выполненных рекомендаций"
+
+#: exmo2010/columns_picker.py:38
 msgid "Initial Openness"
 msgstr "Первичная открытость"
 
-#: exmo2010/columns_picker.py:33
+#: exmo2010/columns_picker.py:39
 msgid "Final Openness"
 msgstr "Итоговая открытость"
 
-#: exmo2010/columns_picker.py:34 exmo2010/columns_picker.py:41
+#: exmo2010/columns_picker.py:40 exmo2010/columns_picker.py:54
 #: templates/scores/task_scores.html:174 templates/scores/task_scores.html:376
 msgid "Difference"
 msgstr "Изменение"
 
-#: exmo2010/columns_picker.py:39
+#: exmo2010/columns_picker.py:52
 msgid "Criteria"
 msgstr "Критерии"
 
-#: exmo2010/columns_picker.py:40 templates/scores/task_scores.html:171
+#: exmo2010/columns_picker.py:53 templates/scores/task_scores.html:171
 #: templates/scores/task_scores.html:373
 msgid "Score"
 msgstr "Оценка"
 
-#: exmo2010/columns_picker.py:42 templates/scores/task_scores.html:177
+#: exmo2010/columns_picker.py:55 templates/scores/task_scores.html:177
 #: templates/scores/task_scores.html:379
 #: templates/scores/task_scores_print.html:45
 msgid "Weight"
 msgstr "КСЗ"
 
-#: exmo2010/columns_picker.py:43 templates/scores/task_scores.html:180
+#: exmo2010/columns_picker.py:56 templates/scores/task_scores.html:180
 #: templates/scores/task_scores.html:382
 #: templates/scores/task_scores_print.html:47
 msgid "Type"
 msgstr "Тип"
 
-#: exmo2010/columns_picker.py:48 templates/home/monitorings_published.html:97
+#: exmo2010/columns_picker.py:61 templates/home/monitorings_published.html:97
 #: templates/home/monitorings_unpublished.html:80
 msgid "Eval. start"
 msgstr "Начало оценки"
 
-#: exmo2010/columns_picker.py:49 templates/home/monitorings_published.html:100
+#: exmo2010/columns_picker.py:62 templates/home/monitorings_published.html:100
 #: templates/home/monitorings_unpublished.html:83
 msgid "Interact start"
 msgstr "Начало в/д"
 
-#: exmo2010/columns_picker.py:50 templates/home/monitorings_published.html:103
+#: exmo2010/columns_picker.py:63 templates/home/monitorings_published.html:103
 #: templates/home/monitorings_unpublished.html:86
 msgid "Interact end"
 msgstr "Конец в/д"
 
-#: exmo2010/columns_picker.py:51 templates/home/_search_results.html:73
+#: exmo2010/columns_picker.py:64 templates/home/_search_results.html:73
 #: templates/home/index_orguser.html:100 templates/home/index_orguser.html:138
 msgid "Publish date"
 msgstr "Дата публикации"
@@ -1327,122 +1335,130 @@ msgstr "Фрагмент текста главной страницы"
 msgid "Front page text fragments"
 msgstr "Фрагменты текста главной страницы"
 
-#: exmo2010/models/userprofile.py:77
+#: exmo2010/models/userprofile.py:63
+msgid "Representative-organization link"
+msgstr "Привязка представителя к организации"
+
+#: exmo2010/models/userprofile.py:64
+msgid "Representative-organization links"
+msgstr "Привязки представителей к организациям"
+
+#: exmo2010/models/userprofile.py:80
 msgid "user profile"
 msgstr "Профиль пользователя"
 
-#: exmo2010/models/userprofile.py:80
+#: exmo2010/models/userprofile.py:83
 msgid "not set"
 msgstr "не указан"
 
-#: exmo2010/models/userprofile.py:81
+#: exmo2010/models/userprofile.py:84
 msgid "male"
 msgstr "мужской"
 
-#: exmo2010/models/userprofile.py:82
+#: exmo2010/models/userprofile.py:85
 msgid "female"
 msgstr "женский"
 
-#: exmo2010/models/userprofile.py:89
+#: exmo2010/models/userprofile.py:92
 msgid "do not send"
 msgstr "не присылать"
 
-#: exmo2010/models/userprofile.py:90
+#: exmo2010/models/userprofile.py:93
 msgid "one email per one changing"
 msgstr "о каждом новом изменении"
 
-#: exmo2010/models/userprofile.py:91
+#: exmo2010/models/userprofile.py:94
 msgid "one email for all in time interval"
 msgstr "о всех за промежуток времени"
 
-#: exmo2010/models/userprofile.py:95
+#: exmo2010/models/userprofile.py:98
 msgid "Once in 1 hour"
 msgstr "Раз в 1 час"
 
-#: exmo2010/models/userprofile.py:96
+#: exmo2010/models/userprofile.py:99
 msgid "Once in 3 hours"
 msgstr "Раз в 3 часа"
 
-#: exmo2010/models/userprofile.py:97
+#: exmo2010/models/userprofile.py:100
 msgid "Once in 6 hours"
 msgstr "Раз в 6 часов"
 
-#: exmo2010/models/userprofile.py:98
+#: exmo2010/models/userprofile.py:101
 msgid "Once in 12 hours"
 msgstr "Раз в 12 часов"
 
-#: exmo2010/models/userprofile.py:99
+#: exmo2010/models/userprofile.py:102
 msgid "Once in 24 hours"
 msgstr "Раз в 24 часа"
 
-#: exmo2010/models/userprofile.py:103
+#: exmo2010/models/userprofile.py:106
 msgid "Russian"
 msgstr "Русский"
 
-#: exmo2010/models/userprofile.py:104
+#: exmo2010/models/userprofile.py:107
 msgid "English"
 msgstr "Английский"
 
-#: exmo2010/models/userprofile.py:105
+#: exmo2010/models/userprofile.py:108
 msgid "Georgian"
 msgstr "Грузинский"
 
-#: exmo2010/models/userprofile.py:106
+#: exmo2010/models/userprofile.py:109
 msgid "Azerbaijani"
 msgstr "Азербайджанский"
 
-#: exmo2010/models/userprofile.py:112
+#: exmo2010/models/userprofile.py:115
 msgid "organizations for view"
 msgstr "организации для просмотра"
 
-#: exmo2010/models/userprofile.py:113
+#: exmo2010/models/userprofile.py:116
 msgid "Sex"
 msgstr "Пол"
 
-#: exmo2010/models/userprofile.py:114
+#: exmo2010/models/userprofile.py:117
 msgid "Subscribe to news"
 msgstr "Подписаться на рассылку новостей"
 
-#: exmo2010/models/userprofile.py:119
+#: exmo2010/models/userprofile.py:122
 msgid "Notification about changes"
 msgstr "Уведомления об изменениях"
 
-#: exmo2010/models/userprofile.py:122
+#: exmo2010/models/userprofile.py:125
 msgid "Notification interval"
 msgstr "Интервал уведомления"
 
-#: exmo2010/models/userprofile.py:125
+#: exmo2010/models/userprofile.py:128
 msgid "Receive a notice about self changes"
 msgstr "Получать уведомления о собственных изменениях"
 
-#: exmo2010/models/userprofile.py:126
+#: exmo2010/models/userprofile.py:129
 msgid "Send whole comment thread"
 msgstr "Присылать всю ветку комментариев"
 
-#: exmo2010/models/userprofile.py:127
+#: exmo2010/models/userprofile.py:130
 msgid "Last digest sending date"
 msgstr "Дата последней отправки дайджеста"
 
-#: exmo2010/models/userprofile.py:129
+#: exmo2010/models/userprofile.py:132
 msgid "Language"
 msgstr "Язык"
 
-#: exmo2010/models/userprofile.py:131
+#: exmo2010/models/userprofile.py:134
 msgid "Show initial scores"
 msgstr "Показать первичные оценки"
 
-#: exmo2010/views/export_import.py:376 exmo2010/views/export_import.py:459
+#: exmo2010/views/export_import.py:384 exmo2010/views/export_import.py:467
 #: tasks/views.py:157
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr "строка %(row)d (csv). %(raw)s"
 
-#: exmo2010/views/export_import.py:378 exmo2010/views/export_import.py:461
+#: exmo2010/views/export_import.py:386 exmo2010/views/export_import.py:469
 #: tasks/views.py:159
 msgid "File, you are loading is not valid CSV."
 msgstr "Файл, который Вы загружаете не валиден или не является CSV-файлом."
 
-#: exmo2010/views/export_import.py:380 exmo2010/views/export_import.py:463
+#: exmo2010/views/export_import.py:388 exmo2010/views/export_import.py:471
 #: tasks/views.py:161
 #, python-format
 msgid "Import error: %s."
@@ -1546,19 +1562,19 @@ msgstr "Невозможно изменить выборку согласова�
 msgid "Changes have saved."
 msgstr "Изменения сохранены."
 
-#: monitorings/views.py:503
+#: monitorings/views.py:542
 msgid "Open tasks"
 msgstr "Открытые задачи"
 
-#: monitorings/views.py:504
+#: monitorings/views.py:543
 msgid "Ready tasks"
 msgstr "Готовые задачи"
 
-#: monitorings/views.py:505
+#: monitorings/views.py:544
 msgid "Approved tasks"
 msgstr "Одобренные задачи"
 
-#: monitorings/views.py:506
+#: monitorings/views.py:545
 msgid "All tasks"
 msgstr "Все задачи"
 
@@ -1741,24 +1757,36 @@ msgid "Comm."
 msgstr "Коммен."
 
 #: monitorings/templates/rating.html:132
+msgid "Init. rec."
+msgstr "Пер. рек."
+
+#: monitorings/templates/rating.html:138
+msgid "Done rec."
+msgstr "Вып. рек."
+
+#: monitorings/templates/rating.html:144
 msgid "Init. openness"
 msgstr "Пер. открытость"
 
-#: monitorings/templates/rating.html:138
+#: monitorings/templates/rating.html:150
 #: templates/certificate_order_form.html:103
 #: templates/home/_search_results.html:76
 msgid "Final openness"
 msgstr "Открытость"
 
-#: monitorings/templates/rating.html:144
+#: monitorings/templates/rating.html:156
 msgid "Diff."
 msgstr "Измен."
 
-#: monitorings/templates/rating.html:210
+#: monitorings/templates/rating.html:231
 msgid "Average value"
 msgstr "Среднее значение"
 
-#: monitorings/templates/rating.html:266
+#: monitorings/templates/rating.html:296
+msgid "Sum"
+msgstr "Сумма"
+
+#: monitorings/templates/rating.html:346
 #, python-format
 msgid ""
 "\n"
@@ -1778,7 +1806,7 @@ msgstr[2] ""
 "\n"
 "Всего в цикле мониторинга %(count)s организаций"
 
-#: monitorings/templates/rating.html:272
+#: monitorings/templates/rating.html:352
 #, python-format
 msgid ""
 "\n"

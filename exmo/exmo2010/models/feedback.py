@@ -29,8 +29,8 @@ class FeedbackItem(BaseModel):
 
     header = models.TextField(verbose_name=_('header'))
     text = RichTextField(verbose_name=_('text'))
-    scanned_image = models.ImageField(upload_to='feedback/scanned/', verbose_name=_('scanned image'))
-    emblem = models.ImageField(upload_to='feedback/emblems/', verbose_name=_('emblem'))
+    scanned_image = models.ImageField(upload_to='feedback/scanned/', verbose_name=_('scanned image'), max_length=255)
+    emblem = models.ImageField(upload_to='feedback/emblems/', verbose_name=_('emblem'), max_length=255)
     created = models.DateTimeField(verbose_name=_('creation time'))
 
     def __unicode__(self):

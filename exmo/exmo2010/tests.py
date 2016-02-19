@@ -38,7 +38,7 @@ from .middleware import CustomLocaleMiddleware
 from .models import (Group, Monitoring, ObserversGroup, Organization, Parameter, OrgUser,
                      Score, PhonesField, Task, UserProfile, MONITORING_PUBLISHED)
 from .templatetags.exmo2010_filters import linkify
-from .views.views import CertificateOrderView, ckeditor_upload, org_url_re
+from .views.views import ckeditor_upload, org_url_re
 from core.test_utils import OptimizedTestCase, TranslationTestCase
 from core.utils import get_named_patterns, workday_count
 
@@ -72,10 +72,10 @@ class NegativeParamMonitoringRatingTestCase(TestCase):
         # GIVEN monitoring with parameter that has negative weight
         self.monitoring = mommy.make(Monitoring, openness_expression__code=8)
         # AND parameter with weight -1
-        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=[],
+        self.parameter = mommy.make(Parameter, monitoring=self.monitoring, weight=-1, exclude=[], code='1',
                                     complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND parameter with weight 2
-        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=[],
+        self.parameter2 = mommy.make(Parameter, monitoring=self.monitoring, weight=2, exclude=[], code='2',
                                      complete=1, topical=1, accessible=1, hypertext=1, document=1, image=1)
         # AND organization, approved task
         org = mommy.make(Organization, monitoring=self.monitoring)
@@ -130,68 +130,6 @@ class CanonicalViewKwargsTestCase(TestCase):
                 'Urlpattern ("%s", "%s") uses unknown kwargs and can\'t be reversed for this test. '
                 'These kwargs should be added to this test\'s auto_pattern_kwargs in setUp'
                 % (pat.regex.pattern, pat.name))
-
-
-class CertificateOrderFormValidationTestCase(OptimizedTestCase):
-    # TODO: move this testcase to *validation* tests directory
-
-    # exmo2010:certificate_order
-
-    # CertificateOrderForm should properly validate input data
-
-    fields = 'addressee delivery_method name email for_whom zip_code address'.split()
-
-    @classmethod
-    def setUpClass(cls):
-        super(CertificateOrderFormValidationTestCase, cls).setUpClass()
-        cls.view = staticmethod(CertificateOrderView.as_view())
-
-        # GIVEN organization and approved task in PUBLISHED monitoring
-        org = mommy.make(Organization, monitoring__status=MONITORING_PUBLISHED)
-        cls.task = mommy.make(Task, organization=org, status=Task.TASK_APPROVED)
-        # AND parameter with score
-        param = mommy.make(Parameter, monitoring=org.monitoring, weight=1)
-        mommy.make(Score, task=cls.task, parameter=param, found=1)
-        # AND organization representative
-        cls.orguser = User.objects.create_user('orguser', 'org@svobodainfo.org', 'password')
-        cls.orguser.groups.add(Group.objects.get(name=cls.orguser.profile.organization_group))
-        mommy.make(OrgUser, organization=org, userprofile=cls.orguser.profile)
-
-    def mock_request(self, values):
-        data = dict(zip(self.fields, values), task_id=self.task.pk, rating_type='all')
-        return Mock(user=self.orguser, method='POST', is_ajax=lambda: False, POST=data, GET={})
-
-    @parameterized.expand([
-        # Email Delivery
-        ('org', 'email', '', 'test@mail.com', '', '', ''),
-        ('user', 'email', 'name', 'test@mail.com', '', '', ''),
-        # Postal Delivery
-        # NOTE: temporarily disabled in code
-        #('org', 'post', '', '', 'for me', '123456', 'address'),
-        #('user', 'post', 'name', '', 'for me', '123456', 'address'),
-    ])
-    def test_valid_form(self, *values):
-        # WHEN orguser submits request with valid data
-        response = self.view(self.mock_request(values))
-        # THEN form validation should succeed
-        self.assertEqual(response.context_data['form'].is_valid(), True)
-
-    @parameterized.expand([
-        # Email Delivery
-        ('org', 'email', '', '', '', '', ''),  # missing email
-        # Postal Delivery
-        # NOTE: temporarily disabled in code
-        #('org', 'post', '', '', 'for me', '123456', ''),   # missing address
-        #('org', 'post', '', '', 'for me', '', 'address'),  # missing zip_code
-        #('org', 'post', '', '', '', '123456', 'address'),  # missing for_whom
-        #('org', 'post', '', '', 'for me', '1234', 'address'),  # malformed zip_code
-        #('org', 'post', '', '', 'for me', 'text', 'address'),
-    ])
-    def test_invalid_form(self, *values):
-        # WHEN orguser submits request with invalid data
-        response = self.view(self.mock_request(values))
-        # THEN form validation should fail
-        self.assertEqual(response.context_data['form'].is_valid(), False)
 
 
 class CertificateOpennessValuesByTypeTestCase(TestCase):

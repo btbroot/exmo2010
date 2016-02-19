@@ -120,7 +120,7 @@ class Monitoring(BaseModel):
         tasks = Task.approved_tasks.filter(organization__monitoring=self).extra(
             select={'task_openness': sql_openness, 'task_openness_initial': sql_openness_initial},
             where=['%s IS NOT NULL' % sql_openness],
-            order_by=['-task_openness']).select_related('organization').distinct()
+            order_by=['-task_openness']).select_related('organization').prefetch_related('score_set__parameter').distinct()
 
         previous_openness = None
         place = 0
@@ -164,10 +164,12 @@ class Monitoring(BaseModel):
 
         stat['organization_users'] = len(orgusers)
 
-        # TODO: this is probably wrong
-        stat['organization_users_active'] = UserProfile.objects.filter(user__comment_comments__object_pk__in=scores)\
-                                                               .distinct()\
-                                                               .count()
+        active_orgusers = {
+            'user__comment_comments__object_pk__in': scores,
+            'organization__in': orgs,
+            'orguser__seen': True
+        }
+        stat['organization_users_active'] = UserProfile.objects.filter(**active_orgusers).distinct().count()
 
         stat['expert'] = User.objects.filter(task__organization__monitoring=self).distinct().count()
 

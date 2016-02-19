@@ -18,22 +18,28 @@
 from __future__ import unicode_literals
 
 import json
+
 from django.core.urlresolvers import reverse
-from core.test_utils import TestCase
+from core.test_utils import OptimizedTestCase
+from mock import Mock
 from model_mommy import mommy
 from nose_parameterized import parameterized
 
 from exmo2010.models import (Monitoring, OpennessExpression, Organization, Parameter, Task, Score)
 from exmo2010.models.monitoring import PUB
+from exmo2010.views.export_import import monitoring_export
 
 
-class MonitoringExportIrrelevantTestCase(TestCase):
+class MonitoringExportIrrelevantTestCase(OptimizedTestCase):
     # exmo2010:monitoring_export
 
     # In JSON export, irrelevant criteria of scores should be omitted.
     # In CSV export, irrelevant criteria of scores should have value "not relevant".
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        super(MonitoringExportIrrelevantTestCase, cls).setUpClass()
+        cls.maxDiff = None
         for code in OpennessExpression.OPENNESS_EXPRESSIONS:
             # GIVEN PUBLISHED monitoring
             monitoring = mommy.make(Monitoring, openness_expression__code=code, status=PUB, name='mv%d' % code)
@@ -106,33 +112,41 @@ class MonitoringExportIrrelevantTestCase(TestCase):
 
     expected_csv = {
         # For v1 "complete" criterion should be "not relevant", as well as "Document" and "Image" (does not exist in v1)
-        1: CSV_HEAD + '\r\nmv1,org,1,1,100.000,100.000,p,1,1,not relevant,0.0,0.0,0.0,not relevant,not relevant,1,other,default,link,yep\r\n#\r\n',
+        1: CSV_HEAD + '\r\nmv1,org,1,1,100.000,100.000,p,1,1,not relevant,0.0,0.0,0.0,not relevant,not relevant,1,other,default,link,yep\r\n',
         # For v8 "complete" criterion should be "not relevant"
-        8: CSV_HEAD + '\r\nmv8,org,2,1,100.000,100.000,p,2,1,not relevant,0.0,0.0,0.0,0.0,0.0,1,other,default,link,yep\r\n#\r\n'
+        8: CSV_HEAD + '\r\nmv8,org,2,1,100.000,100.000,p,2,1,not relevant,0.0,0.0,0.0,0.0,0.0,1,other,default,link,yep\r\n'
     }
 
     @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
     def test_json(self, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
+
         # WHEN user gets monitoring exported as JSON
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=json')
+        request = Mock(method='GET', GET={'format': 'json'})
+        response = monitoring_export(request, monitoring.pk)
+
         # THEN response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+
         # AND response content-type is "application/json"
         self.assertEqual(response.get('content-type'), 'application/json')
+
         # AND JSON content has irrelevant criteria excluded from scores
         self.assertEqual(self.expected_json[code], json.loads(response.content))
 
     @parameterized.expand(zip(OpennessExpression.OPENNESS_EXPRESSIONS))
     def test_csv(self, code):
         monitoring = Monitoring.objects.get(openness_expression__code=code)
+
         # WHEN user gets monitoring exported as CSV
-        url = reverse('exmo2010:monitoring_export', args=[monitoring.pk])
-        response = self.client.get(url + '?format=csv')
+        request = Mock(method='GET', GET={'format': 'csv'})
+        response = monitoring_export(request, monitoring.pk)
+
         # THEN response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+
         # AND response content-type is "application/vnd.ms-excel"
         self.assertEqual(response.get('content-type'), 'application/vnd.ms-excel')
+
         # AND CSV content has irrelevant criteria marked with "not relevant" values
         self.assertEqual(self.expected_csv[code], response.content.decode('utf16'))

@@ -386,8 +386,10 @@ def monitoring_rating(request, monitoring_pk):
     }
 
     orgs = set()
-    if user.is_active and ObserversGroup.objects.filter(monitoring=monitoring, users=user).exists():
-        orgs = orgs.union(set(user.observersgroup_set.filter(monitoring=monitoring).values_list('organizations__pk', flat=True)))
+    if user.is_active:
+        # Include all orgs from all observers groups that current user belongs to.
+        obs_groups = user.observersgroup_set.filter(monitoring=monitoring)
+        orgs = orgs.union(set(obs_groups.values_list('organizations__pk', flat=True)))
 
     if user.is_expert or monitoring.is_published:
 
@@ -425,13 +427,26 @@ def monitoring_rating(request, monitoring_pk):
 
 
 def _comments_stats(tasks):
-    '''
+    """
     Calculate and annotate each task in the list with comment statistics
     Return summary comment statistics.
-    '''
+    """
     ntasks = len(tasks)
     if ntasks == 0:
-        return {k: 0 for k in 'repr_len active_repr_len num_comments'.split()}
+        return {
+            'sum_repr_len': 0,
+            'sum_active_repr_len': 0,
+            'sum_num_comments': 0,
+
+            'avg_repr_len': 0,
+            'avg_active_repr_len': 0,
+            'avg_num_comments': 0,
+
+            'sum_interim_recommends_len': 0,
+            'sum_done_recommends_len': 0,
+
+            'avg_interim_recommends_len': 0,
+            'avg_done_recommends_len': 0}
 
     orgusers_by_task, orgcomments_by_task = defaultdict(list), defaultdict(list)
 
@@ -454,10 +469,34 @@ def _comments_stats(tasks):
         task.repr_len = len(orgusers_by_task[task.pk])
         task.active_repr_len = len(set(orgcomments_by_task[task.pk]))
 
+        task.interim_recommends_len = 0
+        task.final_recommends_len = 0
+
+        final_scores = [s for s in task.score_set.all() if s.revision == Score.FINAL]
+        interim_scores_by_param = dict((s.parameter.pk, s) for s in task.score_set.all() if s.revision == Score.INTERIM)
+        for score in final_scores:
+            interim_score = interim_scores_by_param.get(score.parameter.pk, score)
+            if score.recommendations:
+                task.final_recommends_len += 1
+            if interim_score.recommendations:
+                task.interim_recommends_len += 1
+
+        task.done_recommends_len = task.interim_recommends_len - task.final_recommends_len
+
     return {
-        'repr_len': float(sum(t.repr_len for t in tasks)) / ntasks,
-        'active_repr_len': float(sum(t.active_repr_len for t in tasks)) / ntasks,
-        'num_comments': float(sum(t.num_comments for t in tasks)) / ntasks}
+        'sum_repr_len': sum(t.repr_len for t in tasks),
+        'sum_active_repr_len': sum(t.active_repr_len for t in tasks),
+        'sum_num_comments': sum(t.num_comments for t in tasks),
+
+        'avg_repr_len': float(sum(t.repr_len for t in tasks)) / ntasks,
+        'avg_active_repr_len': float(sum(t.active_repr_len for t in tasks)) / ntasks,
+        'avg_num_comments': float(sum(t.num_comments for t in tasks)) / ntasks,
+
+        'sum_interim_recommends_len': sum(t.interim_recommends_len for t in tasks),
+        'sum_done_recommends_len': sum(t.done_recommends_len for t in tasks),
+
+        'avg_interim_recommends_len': float(sum(t.num_comments for t in tasks)) / ntasks,
+        'avg_done_recommends_len': float(sum(t.done_recommends_len for t in tasks)) / ntasks}
 
 
 @login_required

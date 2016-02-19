@@ -23,19 +23,32 @@ from django.utils.translation import pgettext_lazy
 
 
 class ColumnsPickerModel(Model):
+    """
+    This abstract model holds on/off state of columns of some html tables on the site for a single user.
+    Normally User or UserProfile model should use this as base model.
+    """
     class Meta:
         abstract = True
 
-    # Rating table columns
+    # exmo2010:monitoring_rating columns
     rt_representatives = BooleanField(verbose_name=pgettext_lazy(u'number of representatives', u'Representatives'), default=True)
     rt_comment_quantity = BooleanField(verbose_name=_("Comment quantity"), default=True)
+    rt_initial_recomm = BooleanField(verbose_name=_("Initial recommendations num"), default=False)
+    rt_done_recomm = BooleanField(verbose_name=_("Done recommendations num"), default=False)
     rt_initial_openness = BooleanField(verbose_name=_("Initial Openness"), default=False)
     rt_final_openness = BooleanField(verbose_name=_("Final Openness"), default=True)
     rt_difference = BooleanField(verbose_name=_("Difference"), default=True)
 
-    RATING_COLUMNS_FIELDS = 'rt_initial_openness rt_final_openness rt_difference rt_representatives rt_comment_quantity'.split()
+    RATING_COLUMNS_FIELDS = [
+        'rt_initial_openness',
+        'rt_final_openness',
+        'rt_difference',
+        'rt_initial_recomm',
+        'rt_done_recomm',
+        'rt_representatives',
+        'rt_comment_quantity']
 
-    # Task-scores table columns
+    # exmo2010:task_scores columns
     st_criteria = BooleanField(verbose_name=_("Criteria"), default=True)
     st_score = BooleanField(verbose_name=_("Score"), default=True)
     st_difference = BooleanField(verbose_name=_("Difference"), default=True)
@@ -44,7 +57,7 @@ class ColumnsPickerModel(Model):
 
     TASKSCORES_COLUMNS_FIELDS = 'st_criteria st_score st_difference st_weight st_type'.split()
 
-    # Monitoring dates table columns
+    # exmo2010:monitorings_list columns
     mon_evaluation_start = BooleanField(verbose_name=_("Eval. start"), default=True)
     mon_interact_start = BooleanField(verbose_name=_("Interact start"), default=True)
     mon_interact_end = BooleanField(verbose_name=_("Interact end"), default=True)
@@ -119,6 +132,8 @@ def rating_columns_form(request):
             'rt_final_openness': True,
             'rt_representatives': False,
             'rt_comment_quantity': False,
+            'rt_interim_recomm': False,
+            'rt_done_recomm': False,
             'rt_initial_openness': False
         }
         return RatingColumnsForm(data)

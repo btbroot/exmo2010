@@ -31,6 +31,7 @@ class ManageOrgsPageAccessTestCase(TestCase):
     # exmo2010:manage_orgs
 
     # Scenario: try to get organizations page by any users
+
     def setUp(self):
         # GIVEN organization in INTERACTION monitoring
         org = mommy.make(Organization, monitoring__status=MONITORING_INTERACTION)

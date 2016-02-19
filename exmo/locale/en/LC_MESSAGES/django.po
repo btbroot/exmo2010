@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-18 03:36+0300\n"
+"POT-Creation-Date: 2016-02-20 01:42+0300\n"
 "PO-Revision-Date: 2014-03-07 11:21+0400\n"
 "Last-Translator: Roman Evstifeev <revstifeev@svobodainfo.org>\n"
 "Language-Team: Russian <iifd-list@svobodainfo.org>\n"
@@ -43,14 +43,14 @@ msgid "Last name"
 msgstr ""
 
 #: accounts/forms.py:61 exmo2010/custom_registration/forms.py:59
-#: exmo2010/models/userprofile.py:115
+#: exmo2010/models/userprofile.py:118
 #: templates/manage_monitoring/representatives.html:72
 #: templates/manage_monitoring/representatives.html:91
 msgid "Job title"
 msgstr ""
 
 #: accounts/forms.py:64 exmo2010/custom_registration/forms.py:60
-#: exmo2010/models/userprofile.py:116
+#: exmo2010/models/userprofile.py:119
 msgid "Phone number"
 msgstr ""
 
@@ -119,7 +119,7 @@ msgstr ""
 #: monitorings/templates/monitoring_form.html:68
 #: parameters/templates/parameter_form.html:80
 #: templates/manage_monitoring/comment_report.html:63
-#: templates/manage_monitoring/organization_edit.html:76
+#: templates/manage_monitoring/organization_edit.html:80
 #: templates/manage_monitoring/set_npa_params.html:54
 #: templates/scores/score.html:221 templates/scores/score.html.py:247
 #: templates/scores/score.html:301 templates/scores/task_scores.html:524
@@ -322,7 +322,7 @@ msgstr ""
 msgid "Global Parameters"
 msgstr ""
 
-#: exmo/config.py:115 monitorings/views.py:502 tasks/forms.py:27
+#: exmo/config.py:115 monitorings/views.py:541 tasks/forms.py:27
 #: tasks/templates/task_history.html:45
 msgid "Expert"
 msgstr ""
@@ -363,65 +363,73 @@ msgstr ""
 msgid "%(prefix)s Email digest"
 msgstr ""
 
-#: exmo2010/columns_picker.py:30
+#: exmo2010/columns_picker.py:34
 msgctxt "number of representatives"
 msgid "Representatives"
 msgstr ""
 
-#: exmo2010/columns_picker.py:31
+#: exmo2010/columns_picker.py:35
 msgid "Comment quantity"
 msgstr ""
 
-#: exmo2010/columns_picker.py:32
+#: exmo2010/columns_picker.py:36
+msgid "Initial recommendations num"
+msgstr ""
+
+#: exmo2010/columns_picker.py:37
+msgid "Done recommendations num"
+msgstr ""
+
+#: exmo2010/columns_picker.py:38
 msgid "Initial Openness"
 msgstr ""
 
-#: exmo2010/columns_picker.py:33
+#: exmo2010/columns_picker.py:39
 msgid "Final Openness"
 msgstr ""
 
-#: exmo2010/columns_picker.py:34 exmo2010/columns_picker.py:41
+#: exmo2010/columns_picker.py:40 exmo2010/columns_picker.py:54
 #: templates/scores/task_scores.html:174 templates/scores/task_scores.html:376
 msgid "Difference"
 msgstr ""
 
-#: exmo2010/columns_picker.py:39
+#: exmo2010/columns_picker.py:52
 msgid "Criteria"
 msgstr ""
 
-#: exmo2010/columns_picker.py:40 templates/scores/task_scores.html:171
+#: exmo2010/columns_picker.py:53 templates/scores/task_scores.html:171
 #: templates/scores/task_scores.html:373
 msgid "Score"
 msgstr ""
 
-#: exmo2010/columns_picker.py:42 templates/scores/task_scores.html:177
+#: exmo2010/columns_picker.py:55 templates/scores/task_scores.html:177
 #: templates/scores/task_scores.html:379
 #: templates/scores/task_scores_print.html:45
 msgid "Weight"
 msgstr ""
 
-#: exmo2010/columns_picker.py:43 templates/scores/task_scores.html:180
+#: exmo2010/columns_picker.py:56 templates/scores/task_scores.html:180
 #: templates/scores/task_scores.html:382
 #: templates/scores/task_scores_print.html:47
 msgid "Type"
 msgstr ""
 
-#: exmo2010/columns_picker.py:48 templates/home/monitorings_published.html:97
+#: exmo2010/columns_picker.py:61 templates/home/monitorings_published.html:97
 #: templates/home/monitorings_unpublished.html:80
 msgid "Eval. start"
 msgstr ""
 
-#: exmo2010/columns_picker.py:49 templates/home/monitorings_published.html:100
+#: exmo2010/columns_picker.py:62 templates/home/monitorings_published.html:100
 #: templates/home/monitorings_unpublished.html:83
 msgid "Interact start"
 msgstr ""
 
-#: exmo2010/columns_picker.py:50 templates/home/monitorings_published.html:103
+#: exmo2010/columns_picker.py:63 templates/home/monitorings_published.html:103
 #: templates/home/monitorings_unpublished.html:86
 msgid "Interact end"
 msgstr ""
 
-#: exmo2010/columns_picker.py:51 templates/home/_search_results.html:73
+#: exmo2010/columns_picker.py:64 templates/home/_search_results.html:73
 #: templates/home/index_orguser.html:100 templates/home/index_orguser.html:138
 msgid "Publish date"
 msgstr ""
@@ -1322,122 +1330,130 @@ msgstr ""
 msgid "Front page text fragments"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:77
-msgid "user profile"
+#: exmo2010/models/userprofile.py:63
+msgid "Representative-organization link"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:64
+msgid "Representative-organization links"
 msgstr ""
 
 #: exmo2010/models/userprofile.py:80
+msgid "user profile"
+msgstr ""
+
+#: exmo2010/models/userprofile.py:83
 msgid "not set"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:81
+#: exmo2010/models/userprofile.py:84
 msgid "male"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:82
+#: exmo2010/models/userprofile.py:85
 msgid "female"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:89
+#: exmo2010/models/userprofile.py:92
 msgid "do not send"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:90
+#: exmo2010/models/userprofile.py:93
 msgid "one email per one changing"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:91
+#: exmo2010/models/userprofile.py:94
 msgid "one email for all in time interval"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:95
+#: exmo2010/models/userprofile.py:98
 msgid "Once in 1 hour"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:96
+#: exmo2010/models/userprofile.py:99
 msgid "Once in 3 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:97
+#: exmo2010/models/userprofile.py:100
 msgid "Once in 6 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:98
+#: exmo2010/models/userprofile.py:101
 msgid "Once in 12 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:99
+#: exmo2010/models/userprofile.py:102
 msgid "Once in 24 hours"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:103
+#: exmo2010/models/userprofile.py:106
 msgid "Russian"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:104
+#: exmo2010/models/userprofile.py:107
 msgid "English"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:105
+#: exmo2010/models/userprofile.py:108
 msgid "Georgian"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:106
+#: exmo2010/models/userprofile.py:109
 msgid "Azerbaijani"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:112
+#: exmo2010/models/userprofile.py:115
 msgid "organizations for view"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:113
+#: exmo2010/models/userprofile.py:116
 msgid "Sex"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:114
+#: exmo2010/models/userprofile.py:117
 msgid "Subscribe to news"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:119
+#: exmo2010/models/userprofile.py:122
 msgid "Notification about changes"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:122
+#: exmo2010/models/userprofile.py:125
 msgid "Notification interval"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:125
+#: exmo2010/models/userprofile.py:128
 msgid "Receive a notice about self changes"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:126
+#: exmo2010/models/userprofile.py:129
 msgid "Send whole comment thread"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:127
+#: exmo2010/models/userprofile.py:130
 msgid "Last digest sending date"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:129
+#: exmo2010/models/userprofile.py:132
 msgid "Language"
 msgstr ""
 
-#: exmo2010/models/userprofile.py:131
+#: exmo2010/models/userprofile.py:134
 msgid "Show initial scores"
 msgstr ""
 
-#: exmo2010/views/export_import.py:376 exmo2010/views/export_import.py:459
+#: exmo2010/views/export_import.py:384 exmo2010/views/export_import.py:467
 #: tasks/views.py:157
 #, python-format
 msgid "row %(row)d (csv). %(raw)s"
 msgstr ""
 
-#: exmo2010/views/export_import.py:378 exmo2010/views/export_import.py:461
+#: exmo2010/views/export_import.py:386 exmo2010/views/export_import.py:469
 #: tasks/views.py:159
 msgid "File, you are loading is not valid CSV."
 msgstr ""
 
-#: exmo2010/views/export_import.py:380 exmo2010/views/export_import.py:463
+#: exmo2010/views/export_import.py:388 exmo2010/views/export_import.py:471
 #: tasks/views.py:161
 #, python-format
 msgid "Import error: %s."
@@ -1541,19 +1557,19 @@ msgstr ""
 msgid "Changes have saved."
 msgstr ""
 
-#: monitorings/views.py:503
+#: monitorings/views.py:542
 msgid "Open tasks"
 msgstr ""
 
-#: monitorings/views.py:504
+#: monitorings/views.py:543
 msgid "Ready tasks"
 msgstr ""
 
-#: monitorings/views.py:505
+#: monitorings/views.py:544
 msgid "Approved tasks"
 msgstr ""
 
-#: monitorings/views.py:506
+#: monitorings/views.py:545
 msgid "All tasks"
 msgstr ""
 
@@ -1736,24 +1752,36 @@ msgid "Comm."
 msgstr ""
 
 #: monitorings/templates/rating.html:132
-msgid "Init. openness"
+msgid "Init. rec."
 msgstr ""
 
 #: monitorings/templates/rating.html:138
+msgid "Done rec."
+msgstr ""
+
+#: monitorings/templates/rating.html:144
+msgid "Init. openness"
+msgstr ""
+
+#: monitorings/templates/rating.html:150
 #: templates/certificate_order_form.html:103
 #: templates/home/_search_results.html:76
 msgid "Final openness"
 msgstr ""
 
-#: monitorings/templates/rating.html:144
+#: monitorings/templates/rating.html:156
 msgid "Diff."
 msgstr ""
 
-#: monitorings/templates/rating.html:210
+#: monitorings/templates/rating.html:231
 msgid "Average value"
 msgstr ""
 
-#: monitorings/templates/rating.html:266
+#: monitorings/templates/rating.html:296
+msgid "Sum"
+msgstr ""
+
+#: monitorings/templates/rating.html:346
 #, python-format
 msgid ""
 "\n"
@@ -1766,7 +1794,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: monitorings/templates/rating.html:272
+#: monitorings/templates/rating.html:352
 #, python-format
 msgid ""
 "\n"
@@ -1801,15 +1829,15 @@ msgstr ""
 msgid "Organization is not selected"
 msgstr ""
 
-#: organizations/views.py:84
+#: organizations/views.py:85
 msgid "Recommendations of given orgs will be hidden."
 msgstr ""
 
-#: organizations/views.py:87
+#: organizations/views.py:88
 msgid "Recommendations of given orgs will be visible."
 msgstr ""
 
-#: organizations/views.py:92
+#: organizations/views.py:93
 msgid "Form invalid."
 msgstr ""
 
@@ -3117,7 +3145,7 @@ msgid "Edit"
 msgstr ""
 
 #: templates/manage_monitoring/observers_group_edit.html:85
-#: templates/manage_monitoring/organization_edit.html:76
+#: templates/manage_monitoring/organization_edit.html:80
 msgid "Add"
 msgstr ""
 
@@ -3151,11 +3179,11 @@ msgstr ""
 msgid "Organization editing"
 msgstr ""
 
-#: templates/manage_monitoring/organization_edit.html:83
+#: templates/manage_monitoring/organization_edit.html:87
 msgid "Enter a list of emails separating them by commas, spaces or newlines."
 msgstr ""
 
-#: templates/manage_monitoring/organization_edit.html:86
+#: templates/manage_monitoring/organization_edit.html:90
 msgid "Enter a list of phone numbers in format +x(xxx)xxx-xx-xx, separating them by commas or newlines."
 msgstr ""
 

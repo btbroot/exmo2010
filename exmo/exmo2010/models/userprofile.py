@@ -60,6 +60,9 @@ class OrgUser(BaseModel):
     """
     class Meta(BaseModel.Meta):
         unique_together = ('userprofile', 'organization')
+        verbose_name = _('Representative-organization link')
+        verbose_name_plural = _('Representative-organization links')
+
     userprofile = ForeignKey("UserProfile")
     organization = ForeignKey("Organization")
 

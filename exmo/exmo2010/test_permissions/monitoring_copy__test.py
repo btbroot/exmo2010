@@ -36,8 +36,6 @@ from exmo2010.models.monitoring import PRE
 class MonitoringCopyAccessTestCase(TestCase):
     # exmo2010:monitoring_copy
 
-    # TODO: move this testcase into *permissions* tests directory
-
     # Should allow only expertA to copy monitoring
 
     def setUp(self):
