@@ -44,18 +44,18 @@ mail_task_opts = dict(
     rate_limit=settings.EMAIL_RATE_LIMIT)
 
 
-@shared_task(**mail_task_opts)
+@shared_task(ignore_result=True, **mail_task_opts)
 def send_email(message):
     message.send()
 
 
-@shared_task(**mail_task_opts)
+@shared_task(ignore_result=True, **mail_task_opts)
 def send_org_email(message, org_pk):
     message.send()
     Organization.objects.filter(pk=org_pk, inv_status='NTS').update(inv_status='SNT')
 
 
-@periodic_task(run_every=crontab(minute="*/30"))
+@periodic_task(ignore_result=True, run_every=crontab(minute="*/30"))
 def check_mdn_emails():
     """
     Check unseen emails for MDN (Message Disposition Notification).
@@ -104,7 +104,7 @@ def check_mdn_emails():
         m.expunge()
 
 
-@periodic_task(run_every=crontab(minute="*/60"))
+@periodic_task(ignore_result=True, run_every=crontab(minute="*/60"))
 def send_digest(now=datetime.now()):
     from exmo2010.mail import ExmoEmail
 

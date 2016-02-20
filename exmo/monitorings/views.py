@@ -472,10 +472,12 @@ def _comments_stats(tasks):
         task.interim_recommends_len = 0
         task.final_recommends_len = 0
 
-        final_scores = [s for s in task.score_set.all() if s.revision == Score.FINAL]
-        interim_scores_by_param = dict((s.parameter.pk, s) for s in task.score_set.all() if s.revision == Score.INTERIM)
+        scores = list(task.score_set.only('recommendations', 'revision', 'parameter', 'id', 'task'))
+
+        final_scores = [s for s in scores if s.revision == Score.FINAL]
+        interim_scores_by_param = dict((s.parameter_id, s) for s in scores if s.revision == Score.INTERIM)
         for score in final_scores:
-            interim_score = interim_scores_by_param.get(score.parameter.pk, score)
+            interim_score = interim_scores_by_param.get(score.parameter_id, score)
             if score.recommendations:
                 task.final_recommends_len += 1
             if interim_score.recommendations:

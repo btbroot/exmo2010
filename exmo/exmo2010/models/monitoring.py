@@ -120,7 +120,7 @@ class Monitoring(BaseModel):
         tasks = Task.approved_tasks.filter(organization__monitoring=self).extra(
             select={'task_openness': sql_openness, 'task_openness_initial': sql_openness_initial},
             where=['%s IS NOT NULL' % sql_openness],
-            order_by=['-task_openness']).select_related('organization').prefetch_related('score_set__parameter').distinct()
+            order_by=['-task_openness']).select_related('organization').distinct()
 
         previous_openness = None
         place = 0
